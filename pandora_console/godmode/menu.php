@@ -208,7 +208,7 @@ if (!empty($sub)) {
 }
 
 
-if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, 'RR')) {
+if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'PM')) {
     // Servers
     $menu_godmode['gservers']['text'] = __('Servers');
     $menu_godmode['gservers']['sec2'] = 'godmode/servers/modificar_server';
@@ -418,9 +418,11 @@ if (is_array($config['extensions'])) {
     $sub['godmode/extensions']['type'] = 'direct';
     $sub['godmode/extensions']['subtype'] = 'nolink';
 
-    $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
-    if ($menu_godmode['gextensions']['sub'] != null) {
-        $menu_godmode['gextensions']['sub'] = $submenu;
+    if (is_array($menu_godmode['gextensions']['sub'])) {
+        $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
+        if ($menu_godmode['gextensions']['sub'] != null) {
+            $menu_godmode['gextensions']['sub'] = $submenu;
+        }
     }
 }
 

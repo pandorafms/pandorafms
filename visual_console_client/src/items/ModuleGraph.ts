@@ -1,8 +1,8 @@
 import {
   LinkedVisualConsoleProps,
-  UnknownObject,
+  AnyObject,
   WithModuleProps
-} from "../types";
+} from "../lib/types";
 import {
   linkedVCPropsDecoder,
   modulePropsDecoder,
@@ -28,7 +28,7 @@ export type ModuleGraphProps = {
  * is missing from the raw object or have an invalid type.
  */
 export function moduleGraphPropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): ModuleGraphProps | never {
   if (stringIsEmpty(data.html) && stringIsEmpty(data.encodedHtml)) {
     throw new TypeError("missing html content.");
@@ -56,6 +56,15 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
    */
   protected resizeElement(width: number): void {
     super.resizeElement(width, 0);
+  }
+
+  /**
+   * @override Item.initResizementListener. To disable the functionality.
+   * Start the resizement funtionality.
+   * @param element Element to move inside its container.
+   */
+  protected initResizementListener(): void {
+    // No-Op. Disable the resizement functionality for this item.
   }
 
   protected createDomElement(): HTMLElement {
@@ -106,9 +115,7 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     }
 
     // Hack to execute the JS after the HTML is added to the DOM.
-    const aux = document.createElement("div");
-    aux.innerHTML = this.props.html;
-    const scripts = aux.getElementsByTagName("script");
+    const scripts = element.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {
       if (scripts[i].src.length === 0) {
         eval(scripts[i].innerHTML.trim());

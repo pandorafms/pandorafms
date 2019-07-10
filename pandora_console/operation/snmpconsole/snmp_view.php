@@ -778,7 +778,7 @@ $table->headstyle[7] = 'text-align: center';
 $table->head[8] = __('Action');
 $table->align[8] = 'center';
 $table->size[8] = '10%';
-$table->headstyle[8] = 'text-align: center';
+$table->headstyle[8] = 'min-width: 125px;text-align: center';
 
 $table->head[9] = html_print_checkbox_extended(
     'allbox',

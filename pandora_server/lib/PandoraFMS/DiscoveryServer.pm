@@ -113,10 +113,6 @@ sub run ($) {
     print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Discovery Server.", 1);
     my $threads = $pa_config->{'recon_threads'};
 
-    # Prepare some environmental variables.
-    $ENV{'AWS_ACCESS_KEY_ID'} = pandora_get_config_value($dbh, 'aws_access_key_id');
-    $ENV{'AWS_SECRET_ACCESS_KEY'} = pandora_get_config_value($dbh, 'aws_secret_access_key');
-
     # Use hightest value
     if ($pa_config->{'discovery_threads'}  > $pa_config->{'recon_threads'}) {
         $threads = $pa_config->{'discovery_threads'};
@@ -141,12 +137,21 @@ sub data_producer ($) {
     # Manual tasks are "forced" like the other, setting the utimestamp to 1
     # By default, after create a tasks it takes the utimestamp to 0
     # Status -1 means "done".
-    
-    my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
-        WHERE id_recon_server = ?
-        AND disabled = 0
-        AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
-            OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
+    my @rows;
+    if (pandora_is_master($pa_config) == 0) {
+        @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
+            WHERE id_recon_server = ?
+            AND disabled = 0
+            AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
+                OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
+    } else {
+        @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
+            WHERE (id_recon_server = ? OR id_recon_server = ANY(SELECT id_server FROM tserver WHERE status = 0 AND server_type = ?))
+            AND disabled = 0
+            AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
+                OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id, DISCOVERYSERVER);
+    }
+
     foreach my $row (@rows) {
         
         # Update task status
@@ -193,42 +198,46 @@ sub data_consumer ($$) {
         my %cnf_extra;
         if ($task->{'type'} == DISCOVERY_CLOUD_AWS_EC2
         || $task->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
-            $cnf_extra{'aws_access_key_id'} = pandora_get_config_value($dbh, 'aws_access_key_id');
-            $cnf_extra{'aws_secret_access_key'} = pandora_get_config_value($dbh, 'aws_secret_access_key');
+            # auth_strings stores the crential identifier to be used.
+            my $key = pandora_get_credential($dbh, $task->{'auth_strings'});
+
+            if (ref($key) eq "HASH") {
+				$cnf_extra{'aws_access_key_id'} = $key->{'username'};
+				$cnf_extra{'aws_secret_access_key'} = $key->{'password'};
+            } else {
+                # Invalid credential.
+                return;
+            }
+
             $cnf_extra{'cloud_util_path'} = pandora_get_config_value($dbh, 'cloud_util_path');
 
-            if (!defined($ENV{'AWS_ACCESS_KEY_ID'}) || !defined($ENV{'AWS_SECRET_ACCESS_KEY'})
-            || $cnf_extra{'aws_secret_access_key'} ne $ENV{'AWS_ACCESS_KEY_ID'}
-            || $cnf_extra{'cloud_util_path'} ne $ENV{'AWS_SECRET_ACCESS_KEY'}) {
-                # Environmental data is out of date. Create a tmp file to manage
-                # credentials. Perl limitation. We cannot update ENV here.
-                $cnf_extra{'creds_file'} = $pa_config->{'temporal'} . '/tmp_discovery.' . md5($task->{'id_rt'} . $task->{'name'} . time());
-                eval {
-                    open(my $__file_cfg, '> '. $cnf_extra{'creds_file'}) or die($!);
-                    print $__file_cfg $cnf_extra{'aws_access_key_id'} . "\n";
-                    print $__file_cfg $cnf_extra{'aws_secret_access_key'} . "\n";
-                    close($__file_cfg);
-                    set_file_permissions(
-                        $pa_config,
-                        $cnf_extra{'creds_file'},
-                        "0600"
-                    );
-                };
-                if ($@) {
-                    logger(
-                        $pa_config,
-                        'Cannot instantiate configuration file for task: ' . safe_output($task->{'name'}),
-                        5
-                    );
-                    # A server restart will override ENV definition (see run)
-                    logger(
-                        $pa_config,
-                        'Cannot execute Discovery task: ' . safe_output($task->{'name'}) . '. Please restart the server.',
-                        1
-                    );
-                    # Skip this task.
-                    return;
-                }
+            # Pass credentials by file due Perl limitations. We cannot update ENV here.
+            $cnf_extra{'creds_file'} = $pa_config->{'temporal'} . '/tmp_discovery.' . md5($task->{'id_rt'} . $task->{'name'} . time());
+            eval {
+                open(my $__file_cfg, '> '. $cnf_extra{'creds_file'}) or die($!);
+                print $__file_cfg $cnf_extra{'aws_access_key_id'} . "\n";
+                print $__file_cfg $cnf_extra{'aws_secret_access_key'} . "\n";
+                close($__file_cfg);
+                set_file_permissions(
+                    $pa_config,
+                    $cnf_extra{'creds_file'},
+                    "0600"
+                );
+            };
+            if ($@) {
+                logger(
+                    $pa_config,
+                    'Cannot instantiate configuration file for task: ' . safe_output($task->{'name'}),
+                    5
+                );
+                # A server restart will override ENV definition (see run)
+                logger(
+                    $pa_config,
+                    'Cannot execute Discovery task: ' . safe_output($task->{'name'}) . '. Please restart the server.',
+                    1
+                );
+                # Skip this task.
+                return;
             }
         }
 
@@ -481,7 +490,7 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
     }
 
     # Connect the modules if they are not already connected.
-    my $connection_id = get_db_value($self->{'dbh'}, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ?) OR (module_b = ? AND module_a = ?)', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
+    my $connection_id = get_db_value($self->{'dbh'}, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ? AND `type` = "direct") OR (module_b = ? AND module_a = ? AND `type` = "direct")', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
     if (! defined($connection_id)) {
         db_do($self->{'dbh'}, 'INSERT INTO tmodule_relationship (`module_a`, `module_b`, `id_rt`) VALUES(?, ?, ?)', $module_id_1, $module_id_2, $self->{'task_id'});
     }

@@ -29,6 +29,7 @@ use Sys::Syslog;
 use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
 use threads;
+use threads::shared;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -1864,7 +1865,7 @@ sub stop_server_threads {
 	$THRRUN = 0;
 
 	foreach my $thr (@ServerThreads) {
-			$thr->detach();
+			$thr->join();
 	}
 
 	@ServerThreads = ();

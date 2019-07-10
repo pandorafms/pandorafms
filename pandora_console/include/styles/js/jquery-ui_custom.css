@@ -1,16 +1,30 @@
 @import url(calendar.css);
 
 /* --- JQUERY-UI --- */
+
+.ui-dialog .ui-corner-all .ui-widget {
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
 .ui-dialog .ui-dialog-titlebar {
-  background-color: #82b92e !important;
+  background-color: #82b92e;
+  border-radius: 0;
+  margin: 0;
+  display: inherit;
+  text-align: center;
+  padding: 0.4em 33px 0.4em 12px;
+  height: 30px;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /*center ui dialog center*/
-.ui-dialog-titlebar .ui-icon-closethick {
-  margin-top: -5px !important;
-}
 .ui-button-text-only .ui-button-text {
-  font-family: nunito;
+  font-family: "lato", "Open Sans", sans-serif;
   font-size: 9pt;
   color: #82b92e;
 }
@@ -20,43 +34,33 @@
 }
 .ui-datepicker .ui-datepicker-title select,
 .ui-datepicker .ui-datepicker-title option {
-  color: #111 !important;
-}
-.ui-dialog .ui-dialog-titlebar {
-  display: inherit;
-  text-align: center;
-  padding: 0.4em 1em;
-  height: 30px;
-  position: relative;
+  color: #111;
 }
 .ui-dialog .ui-dialog-title {
-  font-family: Nunito, sans-serif;
-  margin: 0.1em 0 !important;
-  white-space: nowrap !important;
-  width: 100% !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  font-size: 11pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   position: relative;
-  top: 5px;
-  float: none !important;
+  font-size: 12pt;
 }
 .ui-dialog .ui-dialog-titlebar-close {
-  position: absolute !important;
-  right: 1em !important;
-  width: 21px !important;
-  margin: 0px 0 0 0 !important;
-  padding: 1px !important;
-  height: 20px !important;
-  bottom: 30% !important;
-  top: 20% !important;
+  position: absolute;
+  right: 1em;
+  width: 21px;
+  margin: 0px 0 0 0;
+  padding: 1px;
+  height: 20px;
+  bottom: 30%;
+  top: 20%;
 }
 .ui-dialog .ui-dialog-content {
-  position: relative !important;
+  position: relative;
   border: 0;
-  padding: 0.5em 1em !important;
-  background: none !important;
-  overflow: auto !important;
+  padding: 0.5em 1em;
+  background: none;
+  overflow: auto;
   margin-bottom: 1em;
 }
 .ui-dialog .ui-dialog-buttonpane {
@@ -79,70 +83,69 @@
   width: 90px;
 }
 .ui-widget-header .ui-icon {
-  background-image: url(../images/ui-icons_444444_256x240.png) !important;
+  background-image: url(../images/ui-icons_444444_256x240.png);
 }
 .ui-icon,
 .ui-widget-content .ui-icon {
-  background-image: url(../images/ui-icons_444444_256x240.png) !important;
+  background-image: url(../images/ui-icons_444444_256x240.png);
 }
 .ui-widget-content {
-  background: #ffffff url(../images/ui-bg_flat_75_ffffff_40x100.png) 50% 50%
-    repeat-x;
+  background: #fff;
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
   margin-top: 3px;
-  border: 1px solid #d3d3d3 !important;
-  border-bottom: 0 !important;
-  background: #e6e6e6 url(../images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50%
-    repeat-x !important;
-  font-weight: normal !important;
-  color: #555555 !important;
+  border: 1px solid #d3d3d3;
+  border-bottom: 0;
+  background: #e6e6e6;
+  font-weight: normal;
+  color: #555555;
 }
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-left,
 .ui-corner-tl {
-  border-top-left-radius: 0 !important;
+  border-top-left-radius: 0;
 }
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-right,
 .ui-corner-tr {
-  border-top-right-radius: 0 !important;
+  border-top-right-radius: 0;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-left,
 .ui-corner-bl {
-  border-bottom-left-radius: 0 !important;
+  border-bottom-left-radius: 0;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-right,
 .ui-corner-br {
-  border-bottom-right-radius: 0 !important;
+  border-bottom-right-radius: 0;
 }
 #ui-datepicker-div {
   border-color: #b1b1b1;
   background: #ffffff;
 }
 .ui-widget-header {
-  background: #b1b1b1 !important;
-  color: #ffffff !important;
+  background: #b1b1b1;
+  color: #ffffff;
 }
 .ui-datepicker-calendar th {
   background-color: #3f3f3f;
 }
 .ui-dialog .ui-widget-header {
   background-color: #82b92e;
+  margin: -1px -1px 0px -1px;
 }
 .ui_tpicker_hour,
 .ui_tpicker_minute,
 .ui_tpicker_second,
 .ui-slider-handle {
-  border: 1px solid #aaaaaa !important;
+  border: 1px solid #aaaaaa;
 }
 .ui-timepicker-div dd {
   margin: 0px 15px 0px 15px;
@@ -151,32 +154,38 @@
   color: white;
 }
 .ui-datepicker-buttonpane button {
-  border-color: #b1b1b1 !important;
+  border-color: #b1b1b1;
 }
 .ui-datepicker-buttonpane .ui-datepicker-current {
-  margin-left: 0.2em !important;
+  margin-left: 0.2em;
 }
 .ui-dialog .ui-widget-content {
-  border: 0px !important;
+  border: 0px;
 }
 .ui-dialog {
   box-shadow: 5px 5px 19px #4e4e4e;
-  border: 0px !important;
-  padding: 0 !important;
+  border: 0px;
+  padding: 0;
 }
 .ui-dialog-titlebar {
-  border: 0px !important;
-}
-.ui-dialog-titlebar .ui-icon-closethick,
-.ui-dialog-titlebar .ui-state-default,
-.ui-dialog-titlebar .ui-state-hover,
-.ui-dialog-titlebar button {
-  background: transparent;
   border: 0px;
 }
-.ui-dialog-titlebar .ui-icon-closethick {
-  background-image: url("../../../images/icono_cerrar.png") !important;
+
+.ui-state-hover .ui-icon,
+.ui-state-focus .ui-icon,
+.ui-button:hover .ui-icon,
+.ui-button:focus .ui-icon {
+  background: none;
 }
+.ui-dialog-titlebar.ui-icon-closethick:hover,
+.ui-dialog-titlebar .ui-icon-closethick {
+  background: none;
+}
+.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close,
+.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close:hover {
+  background: url("../../../images/icono_cerrar.png") no-repeat center center;
+}
+
 .ui-dialog-title {
   color: #ffffff;
   font-size: 9pt;
@@ -185,7 +194,7 @@
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-  font-family: Verdana, Arial, sans-serif !important;
+  font-family: "lato", "Open Sans", sans-serif;
 }
 
 a.ui-button:active,
@@ -195,69 +204,67 @@ a.ui-button:active,
 .ui-state-focus .ui-widget-header,
 .ui-state-focus .ui-button:hover,
 .ui-button:focus {
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
 }
 
 .ui-state-hover,
 .ui-widget-content .ui-state-hover,
 .ui-widget-header .ui-state-hover {
-  border: 1px solid #999999 !important;
-  border-bottom: 0 !important;
-  background: #dadada url(../images/ui-bg_glass_75_dadada_1x400.png) 50% 50%
-    repeat-x !important;
+  border: 1px solid #999999;
+  border-bottom: 0;
+  background: #dadada;
 }
 
 .ui-state-active,
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
-  border: 1px solid #aaaaaa !important;
-  border-bottom: 0 !important;
-  background: #ffffff url(../images/ui-bg_glass_65_ffffff_1x400.png) 50% 50%
-    repeat-x !important;
-  font-weight: normal !important;
-  color: #212121 !important;
+  border: 1px solid #aaaaaa;
+  border-bottom: 0;
+  background: #ffffff;
+  font-weight: normal;
+  color: #212121;
 }
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
-  color: #212121 !important;
+  color: #212121;
 }
 
 ul.ui-front {
-  z-index: 1000000 !important;
-  padding-right: 0px !important;
+  z-index: 1000000;
+  padding-right: 0px;
 }
 
 ul.ui-front li {
-  padding: 3px !important;
+  padding: 3px;
 }
 
 ul.ui-front li:hover {
-  background-color: #e1e3e1 !important;
+  background-color: #e1e3e1;
 }
 
 ul.ui-front li a.ui-menu-item-wrapper {
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
 }
 
 ul.ui-front li a.ui-menu-item-wrapper span {
-  padding-left: 5px !important;
+  padding-left: 5px;
 }
 
 ul.ui-front li a.ui-menu-item-wrapper:hover {
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 input[type="submit"].ui-button-dialog {
-  margin: 0.5em 1em 0.5em 0 !important;
-  cursor: pointer !important;
-  background: white !important;
-  background-color: white !important;
-  color: #82b92e !important;
-  text-align: center !important;
-  border: 1px solid #82b92e !important;
-  height: 30px !important;
-  width: 90px !important;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  background: white;
+  background-color: white;
+  color: #82b92e;
+  text-align: center;
+  border: 1px solid #82b92e;
+  height: 30px;
+  width: 90px;
 }

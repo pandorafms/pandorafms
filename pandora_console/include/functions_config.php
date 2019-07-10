@@ -180,7 +180,7 @@ function config_update_config()
                         $error_update[] = __('Automatic check for updates');
                     }
 
-                    if (!config_update_value('cert_path', (bool) get_parameter('cert_path'))) {
+                    if (!config_update_value('cert_path', get_parameter('cert_path'))) {
                         $error_update[] = __('SSL cert path');
                     }
 
@@ -650,6 +650,42 @@ function config_update_config()
 
                     if (!config_update_value('saml_path', get_parameter('saml_path'))) {
                         $error_update[] = __('Saml path');
+                    }
+
+                    if (!config_update_value('saml_source', get_parameter('saml_source'))) {
+                        $error_update[] = __('Saml source');
+                    }
+
+                    if (!config_update_value('saml_user_id', get_parameter('saml_user_id'))) {
+                        $error_update[] = __('Saml user id parameter');
+                    }
+
+                    if (!config_update_value('saml_mail', get_parameter('saml_mail'))) {
+                        $error_update[] = __('Saml mail parameter');
+                    }
+
+                    if (!config_update_value('saml_group_name', get_parameter('saml_group_name'))) {
+                        $error_update[] = __('Saml group name parameter');
+                    }
+
+                    if (!config_update_value('saml_attr_type', (bool) get_parameter('saml_attr_type'))) {
+                        $error_update[] = __('Saml attr type parameter');
+                    }
+
+                    if (!config_update_value('saml_profiles_and_tags', get_parameter('saml_profiles_and_tags'))) {
+                        $error_update[] = __('Saml profiles and tags parameter');
+                    }
+
+                    if (!config_update_value('saml_profile', get_parameter('saml_profile'))) {
+                        $error_update[] = __('Saml profile parameters');
+                    }
+
+                    if (!config_update_value('saml_tag', get_parameter('saml_tag'))) {
+                        $error_update[] = __('Saml tag parameter');
+                    }
+
+                    if (!config_update_value('saml_profile_tag_separator', get_parameter('saml_profile_tag_separator'))) {
+                        $error_update[] = __('Saml profile and tag separator');
                     }
 
                     if (!config_update_value('double_auth_enabled', get_parameter('double_auth_enabled'))) {
@@ -2167,9 +2203,9 @@ function config_process_config()
     if (!isset($config['ad_adv_perms'])) {
         config_update_value('ad_adv_perms', '');
     } else {
+        $temp_ad_adv_perms = [];
         if (!json_decode(io_safe_output($config['ad_adv_perms']))) {
-            $temp_ad_adv_perms = [];
-            if (!isset($config['ad_adv_perms']) && $config['ad_adv_perms'] != '') {
+            if ($config['ad_adv_perms'] != '') {
                 $perms = explode(';', io_safe_output($config['ad_adv_perms']));
                 foreach ($perms as $ad_adv_perm) {
                     if (preg_match('/[\[\]]/', $ad_adv_perm)) {
@@ -2232,22 +2268,26 @@ function config_process_config()
                 if (!empty($new_ad_adv_perms)) {
                     $temp_ad_adv_perms = json_encode($new_ad_adv_perms);
                 }
+            } else {
+                $temp_ad_adv_perms = '';
             }
-
-            config_update_value('ad_adv_perms', $temp_ad_adv_perms);
+        } else {
+            $temp_ad_adv_perms = $config['ad_adv_perms'];
         }
+
+          config_update_value('ad_adv_perms', $temp_ad_adv_perms);
     }
 
     if (!isset($config['ldap_adv_perms'])) {
         config_update_value('ldap_adv_perms', '');
     } else {
+        $temp_ldap_adv_perms = [];
         if (!json_decode(io_safe_output($config['ldap_adv_perms']))) {
-            $temp_ldap_adv_perms = [];
-            if (!isset($config['ad_adv_perms']) && $config['ldap_adv_perms'] != '') {
+            if ($config['ldap_adv_perms'] != '') {
                 $perms = explode(';', io_safe_output($config['ldap_adv_perms']));
-                foreach ($perms as $ad_adv_perm) {
-                    if (preg_match('/[\[\]]/', $ad_adv_perm)) {
-                        $all_data = explode(',', io_safe_output($ad_adv_perm));
+                foreach ($perms as $ldap_adv_perm) {
+                    if (preg_match('/[\[\]]/', $ldap_adv_perm)) {
+                        $all_data = explode(',', io_safe_output($ldap_adv_perm));
                         $profile = $all_data[0];
                         $group_pnd = $all_data[1];
                         $groups_ad = str_replace(['[', ']'], '', $all_data[2]);
@@ -2277,7 +2317,7 @@ function config_process_config()
                             'groups_ldap' => $groups_ldap,
                         ];
                     } else {
-                        $all_data = explode(',', io_safe_output($ad_adv_perm));
+                        $all_data = explode(',', io_safe_output($ldap_adv_perm));
                         $profile = $all_data[0];
                         $group_pnd = $all_data[1];
                         $groups_ad = $all_data[2];
@@ -2306,10 +2346,14 @@ function config_process_config()
                 if (!empty($new_ldap_adv_perms)) {
                     $temp_ldap_adv_perms = json_encode($new_ldap_adv_perms);
                 }
+            } else {
+                $temp_ldap_adv_perms = '';
             }
-
-            config_update_value('ldap_adv_perms', $temp_ldap_adv_perms);
+        } else {
+            $temp_ldap_adv_perms = $config['ldap_adv_perms'];
         }
+
+        config_update_value('ldap_adv_perms', $temp_ldap_adv_perms);
     }
 
     if (!isset($config['rpandora_server'])) {
@@ -2354,6 +2398,42 @@ function config_process_config()
 
     if (!isset($config['saml_path'])) {
         config_update_value('saml_path', '/opt/');
+    }
+
+    if (!isset($config['saml_source'])) {
+        config_update_value('saml_source', '');
+    }
+
+    if (!isset($config['saml_user_id'])) {
+        config_update_value('saml_user_id', '');
+    }
+
+    if (!isset($config['saml_mail'])) {
+        config_update_value('saml_mail', '');
+    }
+
+    if (!isset($config['saml_group_name'])) {
+        config_update_value('saml_group_name', '');
+    }
+
+    if (!isset($config['saml_attr_type'])) {
+        config_update_value('saml_attr_type', false);
+    }
+
+    if (!isset($config['saml_profiles_and_tags'])) {
+        config_update_value('saml_profiles_and_tags', '');
+    }
+
+    if (!isset($config['saml_profile'])) {
+        config_update_value('saml_profile', '');
+    }
+
+    if (!isset($config['saml_tag'])) {
+        config_update_value('saml_tag', '');
+    }
+
+    if (!isset($config['saml_profile_tag_separator'])) {
+        config_update_value('saml_profile_tag_separator', '');
     }
 
     if (!isset($config['autoupdate'])) {
@@ -2871,7 +2951,17 @@ function config_prepare_session()
 
     // Reset the expiration time upon page load //session_name() is default name of session PHPSESSID.
     if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+        $update_cookie = true;
+        if (is_ajax()) {
+            // Avoid session upadte while processing ajax responses - notifications.
+            if (get_parameter('check_new_notifications', false)) {
+                $update_cookie = false;
+            }
+        }
+
+        if ($update_cookie === true) {
+            setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+        }
     }
 
     ini_set('post_max_size', $config['max_file_size']);

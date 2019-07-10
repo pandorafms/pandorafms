@@ -261,138 +261,47 @@ function snmp_browser_get_tree(
 ) {
     global $config;
 
-    if ($target_ip == '') {
-        return __('Target IP cannot be blank.');
-    }
+    $output = get_snmpwalk(
+        $target_ip,
+        $version,
+        $community,
+        $snmp3_auth_user,
+        $snmp3_security_level,
+        $snmp3_auth_method,
+        $snmp3_auth_pass,
+        $snmp3_privacy_method,
+        $snmp3_privacy_pass,
+        0,
+        $starting_oid,
+        '',
+        $server_to_exec,
+        '',
+        ''
+    );
 
-    // Call snmpwalk
-    if (empty($config['snmpwalk'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpwalk_bin = '/usr/local/bin/snmpwalk';
-            break;
-
-            case 'NetBSD':
-                $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
-            break;
-
-            default:
-                $snmpwalk_bin = 'snmpwalk';
-            break;
-        }
-    } else {
-        $snmpwalk_bin = $config['snmpwalk'];
-    }
-
-    switch (PHP_OS) {
-        case 'WIN32':
-        case 'WINNT':
-        case 'Windows':
-            $error_redir_dir = 'NUL';
-        break;
-
-        default:
-            $error_redir_dir = '/dev/null';
-        break;
-    }
-
-    if ($server_to_exec != 0) {
-        $sql = sprintf('SELECT ip_address FROM tserver WHERE id_server = %d', $server_to_exec);
-        $server_data = db_get_row_sql($sql);
-
-        if (enterprise_installed()) {
-            enterprise_include_once('include/functions_satellite.php');
-
-            $oid_tree = ['__LEAVES__' => []];
-            if ($version == '3') {
-                switch ($snmp3_security_level) {
-                    case 'authPriv':
-                        $command = $snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-                    break;
-
-                    case 'authNoPriv':
-                        $command = $snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-                    break;
-
-                    case 'noAuthNoPriv':
-                        $command = $snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-                    break;
-                }
-            } else {
-                $command = $snmpwalk_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Cc -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir;
-            }
-
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command.'"', $output, $rc);
-        } else {
-            $oid_tree = ['__LEAVES__' => []];
-            if ($version == '3') {
-                switch ($snmp3_security_level) {
-                    case 'authPriv':
-                        exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                    break;
-
-                    case 'authNoPriv':
-                        exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                    break;
-
-                    case 'noAuthNoPriv':
-                        exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                    break;
-                }
-            } else {
-                exec($snmpwalk_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Cc -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-            }
-        }
-    } else {
-        $oid_tree = ['__LEAVES__' => []];
-        if ($version == '3') {
-            switch ($snmp3_security_level) {
-                case 'authPriv':
-                    exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                break;
-
-                case 'authNoPriv':
-                    exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                break;
-
-                case 'noAuthNoPriv':
-                    exec($snmpwalk_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-                break;
-            }
-        } else {
-            exec($snmpwalk_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Cc -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($starting_oid).' 2> '.$error_redir_dir, $output, $rc);
-        }
-    }
-
-    foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode('=', $line);
-        if (! isset($full_oid[1])) {
-            continue;
-        }
-
-        $oid = trim($full_oid[0]);
-        $value = trim($full_oid[1]);
-
-        // Parse the OID
+    // Build the tree.
+    $oid_tree = ['__LEAVES__' => []];
+    foreach ($output as $oid => $value) {
+        // Parse the OID.
+        $oid_len = strlen($oid);
         $group = 0;
         $sub_oid = '';
         $ptr = &$oid_tree['__LEAVES__'];
 
-        for ($i = 0; $i < strlen($oid); $i++) {
+        for ($i = 0; $i < $oid_len; $i++) {
             // "X.Y.Z"
             if ($oid[$i] == '"') {
                 $group = ($group ^ 1);
             }
 
-            // Move to the next element of the OID
+            // Move to the next element of the OID.
             if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[($i + 1)] == ':'))) {
-                // Skip the next :
+                // Skip the next ":".
                 if ($oid[$i] == ':') {
                     $i++;
                 }
 
-                // Starting dot
+                // Starting dot.
                 if ($sub_oid == '') {
                     continue;
                 }
@@ -410,7 +319,7 @@ function snmp_browser_get_tree(
             }
         }
 
-        // The last element will contain the full OID
+        // The last element will contain the full OID.
         $ptr[$sub_oid] = [
             '__OID__'   => $oid,
             '__VALUE__' => $value,
@@ -459,83 +368,27 @@ function snmp_browser_get_oid(
         return;
     }
 
+    $output = get_snmpwalk(
+        $target_ip,
+        $version,
+        $community,
+        $snmp3_auth_user,
+        $snmp3_security_level,
+        $snmp3_auth_method,
+        $snmp3_auth_pass,
+        $snmp3_privacy_method,
+        $snmp3_privacy_pass,
+        0,
+        $target_oid,
+        '',
+        $server_to_exec,
+        '',
+        '-On'
+    );
+
     $oid_data['oid'] = $target_oid;
-    if (empty($config['snmpget'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpget_bin = '/usr/local/bin/snmpget';
-            break;
-
-            case 'NetBSD':
-                $snmpget_bin = '/usr/pkg/bin/snmpget';
-            break;
-
-            default:
-                $snmpget_bin = 'snmpget';
-            break;
-        }
-    } else {
-        $snmpget_bin = $config['snmpget'];
-    }
-
-    switch (PHP_OS) {
-        case 'WIN32':
-        case 'WINNT':
-        case 'Windows':
-            $error_redir_dir = 'NUL';
-        break;
-
-        default:
-            $error_redir_dir = '/dev/null';
-        break;
-    }
-
-    if ($server_to_exec != 0) {
-        $sql = sprintf(
-            'SELECT ip_address FROM tserver WHERE id_server = %d',
-            $server_to_exec
-        );
-        $server_data = db_get_row_sql($sql);
-
-        if ($version == '3') {
-            $command = $snmpget_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir;
-        } else {
-            $command = $snmpget_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -On -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir;
-        }
-
-        exec(
-            'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command.'"',
-            $output,
-            $rc
-        );
-    } else {
-        if ($version == '3') {
-            exec(
-                $snmpget_bin.' -m ALL -v 3 -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir,
-                $output,
-                $rc
-            );
-        } else {
-            exec(
-                $snmpget_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -On -c '.escapeshellarg(io_safe_output($community)).' -v '.escapeshellarg($version).' '.escapeshellarg($target_ip).' '.escapeshellarg($target_oid).' 2> '.$error_redir_dir,
-                $output,
-                $rc
-            );
-        }
-    }
-
-    if ($rc != 0) {
-        return $oid_data;
-    }
-
-    foreach ($output as $line) {
-        // Separate the OID from the value.
-        $full_oid = explode('=', $line);
-        if (! isset($full_oid[1])) {
-            break;
-        }
-
-        $oid = trim($full_oid[0]);
+    foreach ($output as $oid => $value) {
+        $oid = trim($oid);
         $oid_data['numeric_oid'] = $oid;
 
         // Translate the OID.
@@ -594,16 +447,19 @@ function snmp_browser_get_oid(
             $oid_data['description'] = $custom_data['description'];
         }
 
-        $full_value = explode(':', trim($full_oid[1]));
+        $full_value = explode(':', trim($value));
         if (! isset($full_value[1])) {
-            $oid_data['value'] = trim($full_oid[1]);
+            $oid_data['value'] = trim($value);
         } else {
             $oid_data['type'] = trim($full_value[0]);
             $oid_data['value'] = trim($full_value[1]);
         }
 
-        return $oid_data;
+        // There should only be one OID.
+        break;
     }
+
+    return $oid_data;
 }
 
 
@@ -741,7 +597,7 @@ function snmp_browser_print_oid(
  *
  * @return string The container div.
  */
-function snmp_browser_print_container($return=false, $width='100%', $height='500px', $display='')
+function snmp_browser_print_container($return=false, $width='100%', $height='60%', $display='')
 {
     // Target selection
     $table = new stdClass();
@@ -900,10 +756,10 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
         $output .= '<div id="snmp3_browser_options" style="display: none;">';
     }
 
-    $output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', true, true);
+    $output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', '', true, true);
     $output .= '</div>';
     $output .= '<div style="width: 100%; padding-top: 10px;">';
-    $output .= ui_toggle(html_print_table($table2, true), __('Search options'), '', true, true);
+    $output .= ui_toggle(html_print_table($table2, true), __('Search options'), '', '', true, true);
     $output .= '</div>';
 
     // SNMP tree container
@@ -917,7 +773,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
 
     $output .= '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
     $output .= '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">'.html_print_image('images/spinner.gif', true).'</div>';
-    $output .= '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
+    $output .= '<div id="snmp_browser" style="height: 100%; min-height:100px; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
     $output .= '<div class="databox" id="snmp_data" style="margin: 5px;"></div>';
     $output .= '</div>';
     $output .= '</div>';

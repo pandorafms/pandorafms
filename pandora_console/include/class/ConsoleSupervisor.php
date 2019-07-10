@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_update_manager.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
@@ -1940,6 +1941,7 @@ class ConsoleSupervisor
     public function checkUpdateManagerRegistration()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
         if (update_manager_verify_registration() === false) {
@@ -2244,6 +2246,7 @@ class ConsoleSupervisor
     public function getUMMessages()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
 
         if (update_manager_verify_registration() === false) {
             // Console not subscribed.
@@ -2260,8 +2263,6 @@ class ConsoleSupervisor
         // Only ask for messages once a day.
         $future = (time() + 2 * SECONDS_1HOUR);
         config_update_value('last_um_check', $future);
-
-        include_once $config['homedir'].'/include/functions_update_manager.php';
 
         $params = [
             'pandora_uid' => $config['pandora_uid'],

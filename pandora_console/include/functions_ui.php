@@ -760,6 +760,12 @@ function ui_print_os_icon(
         $subfolder .= '/so_big_icons';
     }
 
+    if (is_metaconsole()) {
+        $no_in_meta = true;
+    } else {
+        $no_in_meta = false;
+    }
+
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
     $os_name = get_os_name($id_os);
     if (empty($icon)) {
@@ -770,7 +776,7 @@ function ui_print_os_icon(
                 $options,
                 true,
                 $relative,
-                false,
+                $no_in_meta,
                 true
             );
         } else {
@@ -778,13 +784,13 @@ function ui_print_os_icon(
         }
     } else if ($apply_skin) {
         if ($only_src) {
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, false, true);
+            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, $no_in_meta, true);
         } else {
             if (!isset($options['title'])) {
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, false, true);
+            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, $no_in_meta, true);
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
@@ -1441,11 +1447,16 @@ function ui_require_css_file($name, $path='include/styles/')
 
     if (! file_exists($filename)
         && ! file_exists($config['homedir'].'/'.$filename)
+        && ! file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename)
     ) {
         return false;
     }
 
-    $config['css'][$name] = $filename;
+    if (is_metaconsole()) {
+        $config['css'][$name] = '/../../'.$filename;
+    } else {
+        $config['css'][$name] = $filename;
+    }
 
     return true;
 }
@@ -1738,10 +1749,17 @@ function ui_process_page_head($string, $bitfield)
 
     // Add the jquery UI styles CSS.
     $config['css']['jquery-UI'] = 'include/styles/js/jquery-ui.min.css';
+    $config['css']['jquery-UI-custom'] = 'include/styles/js/jquery-ui_custom.css';
     // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/dialog.css';
     // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/js/introjs.css';
+
+    // If the theme is the default, we don't load it twice.
+    if ($config['style'] !== 'pandora') {
+        // It loads the last of all.
+        $config['css']['theme'] = 'include/styles/'.$config['style'].'.css';
+    }
 
     // If skin's css files exists then add them.
     if ($exists_css) {
@@ -1754,9 +1772,10 @@ function ui_process_page_head($string, $bitfield)
         // User style should go last so it can rewrite common styles.
         $config['css'] = array_merge(
             [
-                'common'         => 'include/styles/common.css',
-                'menu'           => 'include/styles/menu.css',
-                $config['style'] => 'include/styles/'.$config['style'].'.css',
+                'common'  => 'include/styles/common.css',
+                'menu'    => 'include/styles/menu.css',
+                'tables'  => 'include/styles/tables.css',
+                'general' => 'include/styles/pandora.css',
             ],
             $config['css']
         );
@@ -1781,47 +1800,6 @@ function ui_process_page_head($string, $bitfield)
 
     /*
      * End load CSS
-     */
-
-    /*
-     * Load JS
-     */
-
-    if (empty($config['js'])) {
-        $config['js'] = [];
-        // If it's empty, false or not init set array to empty just in case.
-    }
-
-    // Pandora specific JavaScript should go first.
-    $config['js'] = array_merge(['pandora' => 'include/javascript/pandora.js'], $config['js']);
-    // Load base64 javascript library.
-    $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
-    // Load webchat javascript library.
-    $config['js']['webchat'] = 'include/javascript/webchat.js';
-    // Load qrcode library.
-    $config['js']['qrcode'] = 'include/javascript/qrcode.js';
-    // Load intro.js library (for bubbles and clippy).
-    $config['js']['intro'] = 'include/javascript/intro.js';
-    $config['js']['clippy'] = 'include/javascript/clippy.js';
-    // Load Underscore.js library.
-    $config['js']['underscore'] = 'include/javascript/underscore-min.js';
-
-    // Load other javascript.
-    // We can't load empty.
-    $loaded = [''];
-    foreach ($config['js'] as $name => $filename) {
-        if (in_array($name, $loaded)) {
-            continue;
-        }
-
-        array_push($loaded, $name);
-
-        $url_js = ui_get_full_url($filename);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
-    }
-
-    /*
-     * End load JS
      */
 
     /*
@@ -1879,6 +1857,47 @@ function ui_process_page_head($string, $bitfield)
 
     /*
      * End load JQuery
+     */
+
+    /*
+     * Load JS
+     */
+
+    if (empty($config['js'])) {
+        $config['js'] = [];
+        // If it's empty, false or not init set array to empty just in case.
+    }
+
+    // Pandora specific JavaScript should go first.
+    $config['js'] = array_merge(['pandora' => 'include/javascript/pandora.js'], $config['js']);
+    // Load base64 javascript library.
+    $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
+    // Load webchat javascript library.
+    $config['js']['webchat'] = 'include/javascript/webchat.js';
+    // Load qrcode library.
+    $config['js']['qrcode'] = 'include/javascript/qrcode.js';
+    // Load intro.js library (for bubbles and clippy).
+    $config['js']['intro'] = 'include/javascript/intro.js';
+    $config['js']['clippy'] = 'include/javascript/clippy.js';
+    // Load Underscore.js library.
+    $config['js']['underscore'] = 'include/javascript/underscore-min.js';
+
+    // Load other javascript.
+    // We can't load empty.
+    $loaded = [''];
+    foreach ($config['js'] as $name => $filename) {
+        if (in_array($name, $loaded)) {
+            continue;
+        }
+
+        array_push($loaded, $name);
+
+        $url_js = ui_get_full_url($filename);
+        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+    }
+
+    /*
+     * End load JS
      */
 
     include_once __DIR__.'/graphs/functions_flot.php';
@@ -2585,12 +2604,12 @@ function ui_get_status_images_path()
 /**
  * Prints an image representing a status.
  *
- * @param string  $type          Type.
- * @param string  $title         Title.
- * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options       Options to set image attributes: I.E.: style.
- * @param string  $path          Path of the image, if not provided use the status path.
- * @param boolean $rounded_image Round.
+ * @param string  $type           Type.
+ * @param string  $title          Title.
+ * @param boolean $return         Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options        Options to set image attributes: I.E.: style.
+ * @param string  $path           Path of the image, if not provided use the status path.
+ * @param boolean $image_with_css Don't use an image. Draw an image with css styles.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2600,37 +2619,8 @@ function ui_print_status_image(
     $return=false,
     $options=false,
     $path=false,
-    $rounded_image=false
+    $image_with_css=false
 ) {
-    // This is for the List of Modules in Agent View.
-    if ($rounded_image === true) {
-        switch ($type) {
-            case 'module_ok.png':
-                $type = 'module_ok_rounded.png';
-            break;
-
-            case 'module_critical.png':
-                $type = 'module_critical_rounded.png';
-            break;
-
-            case 'module_warning.png':
-                $type = 'module_warning_rounded.png';
-            break;
-
-            case 'module_no_data.png':
-                $type = 'module_no_data_rounded.png';
-            break;
-
-            case 'module_unknown.png':
-                $type = 'module_unknown_rounded.png';
-            break;
-
-            default:
-                $type = $type;
-            break;
-        }
-    }
-
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
         $imagepath = $imagepath_array[0];
@@ -2638,35 +2628,112 @@ function ui_print_status_image(
         $imagepath = $path;
     }
 
-    $imagepath .= '/'.$type;
-
-    if ($options === false) {
-        $options = [];
+    if ($imagepath == 'images/status_sets/default') {
+        $image_with_css = true;
     }
 
-    $options['title'] = $title;
+    $imagepath .= '/'.$type;
 
-    return html_print_image($imagepath, $return, $options, false, false, false, true);
+    if ($image_with_css === true) {
+        $shape_status = get_shape_status_set($type);
+        return ui_print_status_sets($type, $title, $return, $shape_status);
+    } else {
+        if ($options === false) {
+            $options = [];
+        }
+
+        $options['title'] = $title;
+
+        return html_print_image($imagepath, $return, $options, false, false, false, true);
+    }
+}
+
+
+/**
+ * Get the shape of an image by assigning it a CSS class. Prints an image with CSS representing a status.
+ *
+ * @param string $type Module/Agent/Alert status.
+ *
+ * @return array With CSS class.
+ */
+function get_shape_status_set($type)
+{
+    switch ($type) {
+        // Small rectangles.
+        case STATUS_ALERT_NOT_FIRED:
+        case STATUS_ALERT_FIRED:
+        case STATUS_ALERT_DISABLED:
+            $return = ['class' => 'status_small_rectangles'];
+        break;
+
+        // Rounded rectangles.
+        case STATUS_MODULE_OK:
+        case STATUS_AGENT_OK:
+        case STATUS_MODULE_NO_DATA:
+        case STATUS_AGENT_NO_DATA:
+        case STATUS_MODULE_CRITICAL:
+        case STATUS_AGENT_CRITICAL:
+        case STATUS_MODULE_WARNING:
+        case STATUS_AGENT_WARNING:
+        case STATUS_MODULE_UNKNOWN:
+        case STATUS_AGENT_UNKNOWN:
+        case STATUS_AGENT_DOWN:
+            $return = ['class' => 'status_rounded_rectangles'];
+        break;
+
+        // Small squares.
+        case STATUS_SERVER_OK:
+        case STATUS_SERVER_DOWN:
+            $return = ['class' => 'status_small_squares'];
+        break;
+
+        // Balls.
+        case STATUS_AGENT_CRITICAL_BALL:
+        case STATUS_AGENT_WARNING_BALL:
+        case STATUS_AGENT_DOWN_BALL:
+        case STATUS_AGENT_UNKNOWN_BALL:
+        case STATUS_AGENT_OK_BALL:
+        case STATUS_AGENT_NO_DATA_BALL:
+        case STATUS_AGENT_NO_MONITORS_BALL:
+            $return = ['class' => 'status_balls'];
+        break;
+
+        // Small Balls.
+        case STATUS_MODULE_OK_BALL:
+        case STATUS_MODULE_CRITICAL_BALL:
+        case STATUS_MODULE_WARNING_BALL:
+        case STATUS_MODULE_NO_DATA_BALL:
+        case STATUS_MODULE_UNKNOWN_BALL:
+        case STATUS_ALERT_FIRED_BALL:
+        case STATUS_ALERT_NOT_FIRED_BALL:
+        case STATUS_ALERT_DISABLED_BALL:
+            $return = ['class' => 'status_small_balls'];
+        break;
+
+        default:
+            // Ignored.
+        break;
+    }
+
+    return $return;
 }
 
 
 /**
  * Prints an image representing a status.
  *
- * @param string  $status        Module status.
- * @param string  $title         Title.
- * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options       Options to set image attributes: I.E.: style.
- * @param boolean $rounded_image Round.
+ * @param string  $status  Module status.
+ * @param string  $title   Title.
+ * @param boolean $return  Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options Options to set image attributes: I.E.: style.
  *
  * @return string HTML.
  */
-function ui_print_module_status(
+function ui_print_status_sets(
     $status,
     $title='',
     $return=false,
-    $options=false,
-    $rounded_image=false
+    $options=false
 ) {
     global $config;
 
@@ -2674,21 +2741,26 @@ function ui_print_module_status(
         $options = [];
     }
 
-    $options['style'] .= 'width: 50px;';
-    $options['style'] .= 'height: 2em;';
-    $options['style'] .= 'display: inline-block;';
-
-    include_once __DIR__.'/functions_modules.php';
-    $options['style'] .= 'background: '.modules_get_color_status($status).';';
-
-    if ($rounded_image === true) {
-        $options['style'] .= 'border-radius: 5px;';
+    if (isset($options['style'])) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+    } else {
+        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
     }
 
-    $options['title'] = $title;
-    $options['data-title'] = $title;
-    $options['data-use_title_for_force_title'] = 1;
-    $options['class'] = 'forced_title';
+    if (isset($options['class'])) {
+        $options['class'] = $options['class'];
+    }
+
+    if ($title != '') {
+        $options['title'] = $title;
+        $options['data-title'] = $title;
+        $options['data-use_title_for_force_title'] = 1;
+        if (isset($options['class'])) {
+            $options['class'] .= ' forced_title';
+        } else {
+            $options['class'] = 'forced_title';
+        }
+    }
 
     $output = '<div ';
     foreach ($options as $k => $v) {
@@ -2717,6 +2789,15 @@ function ui_print_module_status(
  * @param string  $color    Color.
  * @param boolean $return   Return or paint (if false).
  * @param boolean $text     Text to be displayed,by default progress %.
+ * @param array   $ajax     Ajax: [ 'page' => 'page', 'data' => 'data' ] Sample:
+ *   [
+ *       'page'     => 'operation/agentes/ver_agente', Target page.
+ *       'interval' => 100 / $agent["intervalo"], Ask every interval seconds.
+ *       'data'     => [ Data to be sent to target page.
+ *           'id_agente'       => $id_agente,
+ *           'refresh_contact' => 1,
+ *       ],
+ *   ].
  *
  * @return string HTML code.
  */
@@ -2724,9 +2805,10 @@ function ui_progress(
     $progress,
     $width='100%',
     $height='2.5',
-    $color='#80ba27',
+    $color='#82b92e',
     $return=true,
-    $text=''
+    $text='',
+    $ajax=false
 ) {
     if (!$progress) {
         $progress = 0;
@@ -2745,12 +2827,524 @@ function ui_progress(
     }
 
     ui_require_css_file('progress');
-    $output .= '<div class="progress_main" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
-    $output .= '<span class="progress_text" style="font-size:'.($height - 0.5).'em;">'.$text.'</span>';
-    $output .= '<div class="progress" style="width: '.$progress.'%; background: '.$color.'"></div>';
-    $output .= '</div>';
+    $output .= '<span class="progress_main" data-label="'.$text;
+    $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
+    $output .= '<span class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
+    $output .= '</span>';
+
+    if ($ajax !== false && is_array($ajax)) {
+        $output .= '<script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(() => {
+                last = $(".progress_main").attr("data-label").split(" ")[0]*1;
+                width = $(".progress").width() / $(".progress").parent().width() * 100;
+                width_interval = '.$ajax['interval'].';
+                if (last % 10 == 0) {
+                    $.post({
+                        url: "'.ui_get_full_url('ajax.php').'",
+                        data: {';
+        if (is_array($ajax['data'])) {
+            foreach ($ajax['data'] as $token => $value) {
+                $output .= '
+                            '.$token.':"'.$value.'",';
+            }
+        }
+
+        $output .= '
+                            page: "'.$ajax['page'].'"
+                        },
+                        success: function(data) {
+                            try {
+                                val = JSON.parse(data);
+                                $(".progress_main").attr("data-label", val["last_contact"]+" s");
+                                $(".progress").width(val["progress"]+"%");
+                            } catch (e) {
+                                console.error(e);
+                                $(".progress_text").attr("data-label", (last -1) + " s");
+                                if (width < 100) {
+                                    $(".progress").width((width+width_interval) + "%");
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    $(".progress_main").attr("data-label", (last -1) + " s");
+                    if (width < 100) {
+                        $(".progress").width((width+width_interval) + "%");
+                    }
+                }
+            }, 1000);
+    });
+    </script>';
+    }
 
     if (!$return) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Generate needed code to print a datatables jquery plugin.
+ *
+ * @param array $parameters All desired data using following format:
+ * [
+ *   'print' => true (by default printed)
+ *   'id' => datatable id.
+ *   'class' => datatable class.
+ *   'style' => datatable style.
+ *   'order' => [
+ *      'field' => column name
+ *      'direction' => asc or desc
+ *    ],
+ *   'default_pagination' => integer, default pagination is set to block_size
+ *   'ajax_url' => 'include/ajax.php'  ajax_url.
+ *   'ajax_data' => [ operation => 1 ] extra info to be sent.
+ *   'ajax_postprocess' => a javscript function to postprocess data received
+ *                         by ajax call. It is applied foreach row and must
+ *                         use following format:
+ * * [code]
+ * * function (item) {
+ * *       // Process received item, for instance, name:
+ * *       tmp = '<span class=label>' + item.name + '</span>';
+ * *       item.name = tmp;
+ * *   }
+ * * [/code]
+ *   'columns_names' => [
+ *      'column1'  :: Used as th text. Direct text entry. It could be array:
+ *      OR
+ *      [
+ *        'id' => th id.
+ *        'class' => th class.
+ *        'style' => th style.
+ *        'text' => 'column1'.
+ *      ]
+ *   ],
+ *   'columns' => [
+ *      'column1',
+ *      'column2',
+ *      ...
+ *   ],
+ *   'no_sortable_columns' => [ indexes ] 1,2... -1 etc. Avoid sorting.
+ *   'form' => [
+ *      'html' => 'html code' a directly defined inputs in HTML.
+ *      'extra_buttons' => [
+ *          [
+ *              'id' => button id,
+ *              'class' => button class,
+ *              'style' => button style,
+ *              'text' => button text,
+ *              'onclick' => button onclick,
+ *          ]
+ *      ],
+ *      'search_button_class' => search button class.
+ *      'class' => form class.
+ *      'id' => form id.
+ *      'style' => form style.
+ *      'js' => optional extra actions onsubmit.
+ *      'inputs' => [
+ *          'label' => Input label.
+ *          'type' => Input type.
+ *          'value' => Input value.
+ *          'name' => Input name.
+ *          'id' => Input id.
+ *          'options' => [
+ *             'option1'
+ *             'option2'
+ *             ...
+ *          ]
+ *      ]
+ *   ],
+ *   'extra_html' => HTML content to be placed after 'filter' section.
+ *   'drawCallback' => function to be called after draw. Sample in:
+ *            https://datatables.net/examples/advanced_init/row_grouping.html
+ * ]
+ * End.
+ *
+ * @return string HTML code with datatable.
+ * @throws Exception On error.
+ */
+function ui_print_datatable(array $parameters)
+{
+    global $config;
+
+    if (isset($parameters['id'])) {
+        $table_id = $parameters['id'];
+        $form_id = 'form_'.$parameters['id'];
+    } else {
+        $table_id = uniqid('datatable_');
+        $form_id = uniqid('datatable_filter_');
+    }
+
+    if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
+        throw new Exception('[ui_print_datatable]: You must define columns for datatable');
+    }
+
+    if (!isset($parameters['ajax_url'])) {
+        throw new Exception('[ui_print_datatable]: Parameter ajax_url is required');
+    }
+
+    if (!isset($parameters['default_pagination'])) {
+        $parameters['default_pagination'] = $config['block_size'];
+    }
+
+    $no_sortable_columns = [];
+    if (isset($parameters['no_sortable_columns'])) {
+        $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
+    }
+
+    if (!is_array($parameters['order'])) {
+        $order = '0, "asc"';
+    } else {
+        if (!isset($parameters['order']['direction'])) {
+            $direction = 'asc';
+        }
+
+        if (!isset($parameters['order']['field'])) {
+            $order = 0;
+        } else {
+            $order = array_search(
+                $parameters['order']['field'],
+                $parameters['columns']
+            );
+
+            if ($order === false) {
+                $order = 0;
+            }
+        }
+
+        $order .= ', "'.$parameters['order']['direction'].'"';
+    }
+
+    if (!isset($parameters['ajax_data'])) {
+        $parameters['ajax_data'] = '';
+    }
+
+    $search_button_class = 'sub filter';
+    if (isset($parameters['search_button_class'])) {
+        $search_button_class = $parameters['search_button_class'];
+    }
+
+    if (isset($parameters['pagination_options'])) {
+        $pagination_options = $parameters['pagination_options'];
+    } else {
+        $pagination_options = [
+            [
+                $parameters['default_pagination'],
+                10,
+                25,
+                100,
+                200,
+                500,
+                1000,
+                -1,
+            ],
+            [
+                $parameters['default_pagination'],
+                10,
+                25,
+                100,
+                200,
+                500,
+                1000,
+                'All',
+            ],
+        ];
+    }
+
+    if (!is_array($parameters['datacolumns'])) {
+        $parameters['datacolumns'] = $parameters['columns'];
+    }
+
+    // Datatable filter.
+    if (isset($parameters['form']) && is_array($parameters['form'])) {
+        if (isset($parameters['form']['id'])) {
+            $form_id = $parameters['form']['id'];
+        }
+
+        if (isset($parameters['form']['class'])) {
+            $form_class = $parameters['form']['class'];
+        } else {
+            $form_class = '';
+        }
+
+        if (isset($parameters['form']['style'])) {
+            $form_style = $parameters['form']['style'];
+        } else {
+            $form_style = '';
+        }
+
+        if (isset($parameters['form']['js'])) {
+            $form_js = $parameters['form']['js'];
+        } else {
+            $form_js = '';
+        }
+
+        $filter = '<form class="'.$form_class.'" ';
+        $filter .= ' id="'.$form_id.'" ';
+        $filter .= ' style="'.$form_style.'" ';
+        $filter .= ' onsubmit="'.$form_js.';return false;">';
+
+        if (isset($parameters['form']['html'])) {
+            $filter .= $parameters['form']['html'];
+        }
+
+        $filter .= '<ul class="datatable_filter content">';
+
+        foreach ($parameters['form']['inputs'] as $input) {
+            $filter .= '<li>';
+            $filter .= '<label>'.$input['label'].'</label>';
+            if ($input['type'] != 'select') {
+                $filter .= '<input type="'.$input['type'].'" ';
+                $filter .= ' style="'.$input['style'].'" ';
+                $filter .= ' class="'.$input['class'].'" ';
+                $filter .= ' value="'.$input['value'].'" ';
+                $filter .= ' name="'.$input['name'].'" id="'.$input['id'].'" />';
+            } else {
+                // Select.
+                $filter .= '<select class="'.$input['class'].'"';
+                $filter .= ' style="'.$input['style'].'" ';
+                $filter .= ' name="'.$input['name'].'" ';
+                $filter .= 'id="'.$input['id'].'">';
+
+                foreach ($input['options'] as $key => $opt) {
+                    if (is_array($opt)) {
+                        $filter .= '<option value="'.$opt['value'].'"';
+                        if ($opt['selected']) {
+                            $filter .= ' selected="yes" >';
+                        }
+
+                        $filter .= __($opt['text']).'</option>';
+                    } else {
+                        $filter .= '<option value="'.$key.'">'.$opt.'</option>';
+                    }
+                }
+
+                $filter .= '</select>';
+            }
+
+            $filter .= '</li>';
+        }
+
+        $filter .= '<li>';
+        // Search button.
+        $filter .= '<input type="submit" class="'.$search_button_class.'" ';
+        $filter .= ' id="'.$form_id.'_search_bt" value="'.__('Filter').'"/>';
+
+        // Extra buttons.
+        if (is_array($parameters['form']['extra_buttons'])) {
+            foreach ($parameters['form']['extra_buttons'] as $button) {
+                $filter .= '<button id="'.$button['id'].'" ';
+                $filter .= ' class="'.$button['class'].'" ';
+                $filter .= ' style="'.$button['style'].'" ';
+                $filter .= ' onclick="'.$button['onclick'].'" >';
+                $filter .= $button['text'];
+                $filter .= '</button>';
+            }
+        }
+
+        $filter .= '</li>';
+
+        $filter .= '</ul><div style="clear:both"></div></form>';
+        $filter = ui_toggle(
+            $filter,
+            __('Filter'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    } else if (isset($parameters['form_html'])) {
+        $filter = ui_toggle(
+            $parameters['form_html'],
+            __('Filter'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    }
+
+    // Extra html.
+    $extra = '';
+    if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
+        $extra = $parameters['extra_html'];
+    }
+
+    // Base table.
+    $table = '<table id="'.$table_id.'" ';
+    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'style="'.$parameters['style'].'">';
+    $table .= '<thead><tr>';
+
+    if (isset($parameters['column_names'])
+        && is_array($parameters['column_names'])
+    ) {
+        $names = $parameters['column_names'];
+    } else {
+        $names = $parameters['columns'];
+    }
+
+    foreach ($names as $column) {
+        if (is_array($column)) {
+            $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
+            $table .= ' style="'.$column['style'].'">'.__($column['text']);
+            $table .= $column['extra'];
+            $table .= '</th>';
+        } else {
+            $table .= '<th>'.__($column).'</th>';
+        }
+    }
+
+    $table .= '</tr></thead>';
+    $table .= '</table>';
+
+    $pagination_class = 'pandora_pagination';
+    if (!empty($parameters['pagination_class'])) {
+        $pagination_class = $parameters['pagination_class'];
+    }
+
+    // Javascript controller.
+    $js = '<script type="text/javascript">
+    $(document).ready(function(){
+        $.fn.dataTable.ext.errMode = "none";
+        $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
+        dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
+            ';
+    if (isset($parameters['drawCallback'])) {
+        $js .= 'drawCallback: function(settings) {
+                    '.$parameters['drawCallback'].'
+                },';
+    }
+
+    $js .= '
+            processing: true,
+            serverSide: true,
+            paging: true,
+            pageLength: '.$parameters['default_pagination'].',
+            searching: false,
+            responsive: true,
+            dom: "plfrtiBp",
+            buttons: [
+                {
+                    extend: "csv",
+                    text : "'.__('Export current page to CSV').'",
+                    exportOptions : {
+                        modifier : {
+                            // DataTables core
+                            order : "current",
+                            page : "All",
+                            search : "applied"
+                        }
+                    }
+                }
+            ],
+            lengthMenu: '.json_encode($pagination_options).',
+            ajax: {
+                url: "'.ui_get_full_url('ajax.php').'",
+                type: "POST",
+                dataSrc: function (json) {
+                    if (json.error) {
+                        console.log(json.error);
+                        $("#error-'.$table_id.'").html(json.error);
+                        $("#error-'.$table_id.'").dialog({
+                            title: "Filter failed",
+                            width: 630,
+                            resizable: true,
+                            draggable: true,
+                            modal: false,
+                            closeOnEscape: true,
+                            buttons: {
+                                "Ok" : function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        }).parent().addClass("ui-state-error");
+                    } else {';
+    if (isset($parameters['ajax_postprocess'])) {
+        $js .= '
+                    if (json.data) {
+                        json.data.forEach(function(item) {
+                            '.$parameters['ajax_postprocess'].'
+                        });
+                    } else {
+                        json.data = {};
+                    }';
+    }
+
+    $js .= '
+                        return json.data;
+                    }
+                },
+                data: function (data) {
+                    inputs = $("#'.$form_id.' :input");
+
+                    values = {};
+                    inputs.each(function() {
+                        values[this.name] = $(this).val();
+                    })
+
+                    $.extend(data, {
+                        filter: values,'."\n";
+
+    if (is_array($parameters['ajax_data'])) {
+        foreach ($parameters['ajax_data'] as $k => $v) {
+            $js .= $k.':'.json_encode($v).",\n";
+        }
+    }
+
+    $js .= 'page: "'.$parameters['ajax_url'].'"
+                    });
+
+                    return data;
+                }
+            },
+            "columnDefs": [
+                { className: "no-class", targets: "_all" },
+                { bSortable: false, targets: '.$no_sortable_columns.' }
+            ],
+            columns: [';
+
+    foreach ($parameters['datacolumns'] as $data) {
+        if (is_array($data)) {
+            $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
+        } else {
+            $js .= '{data : "'.$data.'",className: "no-class"},';
+        }
+    }
+
+            $js .= '
+            ],
+            order: [[ '.$order.' ]]
+        });
+
+        $("#'.$form_id.'_search_bt").click(function (){
+            dt_'.$table_id.'.draw().page(0)
+        });
+    });
+</script>';
+
+    // Order.
+    $err_msg = '<div id="error-'.$table_id.'"></div>';
+    $output = $err_msg.$filter.$extra.$table.$js;
+
+    ui_require_css_file('datatables.min', 'include/styles/js/');
+    ui_require_javascript_file('datatables.min');
+    ui_require_javascript_file('buttons.dataTables.min');
+    ui_require_javascript_file('dataTables.buttons.min');
+    ui_require_javascript_file('buttons.html5.min');
+    ui_require_javascript_file('buttons.print.min');
+
+    $output = $include.$output;
+
+    // Print datatable if needed.
+    if (!(isset($parameters['print']) && $parameters['print'] === false)) {
         echo $output;
     }
 
@@ -2919,12 +3513,15 @@ function ui_print_event_priority(
 /**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string  $code           Html code.
- * @param string  $name           Name of the link.
- * @param string  $title          Title of the link.
- * @param boolean $hidden_default If the div will be hidden by default (default: true).
- * @param boolean $return         Whether to return an output string or echo now (default: true).
- * @param string  $toggle_class   Toggle class.
+ * @param string  $code            Html code.
+ * @param string  $name            Name of the link.
+ * @param string  $title           Title of the link.
+ * @param string  $id              Block id.
+ * @param boolean $hidden_default  If the div will be hidden by default (default: true).
+ * @param boolean $return          Whether to return an output string or echo now (default: true).
+ * @param string  $toggle_class    Toggle class.
+ * @param string  $container_class Container class.
+ * @param string  $main_class      Main object class.
  *
  * @return string HTML.
  */
@@ -2932,10 +3529,12 @@ function ui_toggle(
     $code,
     $name,
     $title='',
+    $id='',
     $hidden_default=true,
     $return=false,
     $toggle_class='',
-    $container_class='white-box-content'
+    $container_class='white-box-content',
+    $main_class='box-shadow white_table_graph'
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -2952,7 +3551,7 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '<div class="box-shadow white_table_graph">';
+    $output = '<div class="'.$main_class.'" id="'.$id.'">';
     $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,
@@ -3295,11 +3894,11 @@ function ui_print_page_header(
 
     if ($godmode == true) {
         $type = 'view';
-        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
+        $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator';
     } else {
         $type = 'view';
-        $type2 = (empty($breadcrumbs)) ? 'menu_tab_frame_view' : 'menu_tab_frame_view_bc';
+        $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator_view';
     }
 
@@ -4364,7 +4963,7 @@ function ui_print_agent_autocomplete_input($parameters)
 		function '.$javascript_on_blur_function_name.'() {
 			input_value = $("#'.$input_id.'").val();
 			
-			if (input_value.length == 0) {
+			if (input_value.length < 2) {
 				if (('.((int) $print_hidden_input_idagent).')
 					|| ('.((int) $use_hidden_input_idagent).')) {
 					$("#'.$hidden_input_idagent_id.'").val(0);
@@ -4415,7 +5014,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				url: action="'.$javascript_ajax_page.'",
 				dataType: "json",
 				success: function (data) {
-						if (data.length == 0) {
+						if (data.length < 2) {
 							//Set icon
 							$("#'.$input_id.'")
 								.css("background",

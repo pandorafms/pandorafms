@@ -289,7 +289,7 @@ function grafico_modulo_sparse_data(
         }
     }
 
-    if ($array_data === false || (!$params['graph_combined']
+    if ($array_data === false && (!$params['graph_combined']
         && !isset($array_data['sum1']['data'][0][1]) && !$params['baseline'])
     ) {
         return false;
@@ -2235,6 +2235,7 @@ function combined_graph_summatory_average(
                         $data_array_pop[$key_reverse] = array_pop(
                             $data_array_reverse[$key_reverse]
                         );
+                        $count_data_array_reverse--;
                     }
                 }
 
@@ -2343,14 +2344,21 @@ function graphic_agentaccess(
     $date = get_system_time();
     $datelimit = ($date - $period);
     $data_array = [];
+    $interval = agents_get_interval($id_agent);
 
     $data = db_get_all_rows_sql(
-        "SELECT count(*) as data, min(utimestamp) as utimestamp
-        FROM tagent_access
-        WHERE id_agent = $id_agent
-        AND utimestamp > $datelimit
-        AND utimestamp < $date
-        GROUP by ROUND(utimestamp / 1800)"
+        sprintf(
+            'SELECT utimestamp, count(*) as data
+             FROM tagent_access
+             WHERE id_agent = %d
+             AND utimestamp > %d
+             AND utimestamp < %d
+             GROUP BY ROUND(utimestamp/%d)',
+            $id_agent,
+            $datelimit,
+            $date,
+            $interval
+        )
     );
 
     if (isset($data) && is_array($data)) {
@@ -2532,13 +2540,13 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     }
 
     // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
-    $colors[__('Critical')] = COL_CRITICAL;
-    $colors[__('Warning')] = COL_WARNING;
-    $colors[__('Normal')] = COL_NORMAL;
-    $colors[__('Unknown')] = COL_UNKNOWN;
+    $colors['Critical'] = COL_CRITICAL;
+    $colors['Warning'] = COL_WARNING;
+    $colors['Normal'] = COL_NORMAL;
+    $colors['Unknown'] = COL_UNKNOWN;
 
     if ($show_not_init) {
-        $colors[__('Not init')] = COL_NOTINIT;
+        $colors['Not init'] = COL_NOTINIT;
     }
 
     if (array_sum($data) == 0) {

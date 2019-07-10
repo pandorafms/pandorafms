@@ -19,8 +19,8 @@ if (isset($config['homedir'])) {
 
 ui_require_css_file('login');
 
-require_once $homedir.'include/functions_ui.php';
-require_once $homedir.'include/functions.php';
+require_once __DIR__.'/../include/functions_ui.php';
+require_once __DIR__.'/../include/functions.php';
 require_once __DIR__.'/../include/functions_html.php';
 
 
@@ -518,6 +518,7 @@ if ($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' 
 ui_require_css_file('dialog');
 ui_require_css_file('jquery-ui.min', 'include/styles/js/');
 ui_require_jquery_file('jquery-ui.min');
+ui_require_jquery_file('jquery-ui_custom');
 ?>
 
 <?php

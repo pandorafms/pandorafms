@@ -45,6 +45,9 @@
                     .parent()
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
+                $('.check_delete').each(function(){
+                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+                });
             }
             else{
                 $('[id^=checkbox-massive_report_check]')
@@ -771,30 +774,27 @@ switch ($action) {
             $table->head[1] = __('Description');
             $table->head[2] = __('HTML');
             $table->head[3] = __('XML');
-            $table->size[0] = '20%';
-            $table->size[1] = '30%';
+            $table->size[0] = '60%';
+            $table->size[1] = '20%';
             $table->size[2] = '2%';
-            $table->headstyle[2] = 'min-width: 35px;';
+            $table->headstyle[2] = 'min-width: 35px;text-align: center;';
             $table->size[3] = '2%';
-            $table->headstyle[3] = 'min-width: 35px;';
+            $table->headstyle[3] = 'min-width: 35px;text-align: center;';
             $table->size[4] = '2%';
-            $table->headstyle[4] = 'min-width: 35px;';
-            $table->size[5] = '2%';
-            $table->headstyle[5] = 'min-width: 35px;';
-            $table->size[6] = '2%';
-            $table->headstyle[6] = 'min-width: 35px;';
-            $table->size[7] = '5%';
-            $table->headstyle['csv'] = 'min-width: 65px;';
-            $table->style[7] = 'text-align: center;';
-
-            $table->headstyle[9] = 'min-width: 100px;';
-            $table->style[9] = 'text-align: center;';
+            $table->headstyle[4] = 'min-width: 35px;text-align: center;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
-            if (enterprise_hook('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
+            if (enterprise_hook('load_custom_reporting_1', [$table]) !== ENTERPRISE_NOT_HOOK) {
                 $next = 7;
             }
+
+            $table->size[$next] = '2%';
+            $table->style[$next] = 'text-align: center;';
+
+            $table->headstyle[($next + 2)] = 'min-width: 100px;';
+            $table->style[($next + 2)] = 'text-align: center;';
+
 
             // Admin options only for RM flag.
             if (check_acl($config['id_user'], 0, 'RM')) {
@@ -1345,6 +1345,8 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+
                         $label = get_parameter('label', '');
 
                         // Add macros name.
@@ -1438,6 +1440,14 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
                                 );
 
                                 $good_format = true;
@@ -1900,8 +1910,8 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
                                 $style['event_filter_search'] = $event_filter_search;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2007,6 +2017,7 @@ switch ($action) {
                         );
                         $name_it = (string) get_parameter('name');
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -2395,6 +2406,16 @@ switch ($action) {
 
                         $values['current_month'] = get_parameter('current_month');
 
+                        $values['failover_mode'] = get_parameter(
+                            'failover_mode',
+                            0
+                        );
+
+                        $values['failover_type'] = get_parameter(
+                            'failover_type',
+                            REPORT_FAILOVER_TYPE_NORMAL
+                        );
+
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
@@ -2418,6 +2439,7 @@ switch ($action) {
                             case 'event_report_agent':
                             case 'event_report_group':
                             case 'event_report_module':
+
                                 $show_summary_group = get_parameter(
                                     'show_summary_group',
                                     0
@@ -2473,22 +2495,11 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
-
-                                switch ($values['type']) {
-                                    case 'event_report_group':
-                                    case 'event_report_agent':
-                                        $style['event_filter_search'] = $event_filter_search;
-                                        if ($label != '') {
-                                            $style['label'] = $label;
-                                        } else {
-                                            $style['label'] = '';
-                                        }
-                                    break;
-
-                                    default:
-                                        // Default.
-                                    break;
+                                $style['event_filter_search'] = $event_filter_search;
+                                if ($label != '') {
+                                    $style['label'] = $label;
+                                } else {
+                                    $style['label'] = '';
                                 }
                             break;
 

@@ -359,14 +359,23 @@ if (! isset($config['id_user'])) {
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            include_once ENTERPRISE_DIR.'/include/auth/saml.php';
+            $saml_configured = include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/include/auth/saml.php';
+
+            if (!$saml_configured) {
+                include_once 'general/noaccesssaml.php';
+            }
 
             $saml_user_id = saml_process_user_login();
+
+            if (!$saml_user_id) {
+                include_once 'general/noaccesssaml.php';
+            }
+
 
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {
                 include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+                $as = new SimpleSAML_Auth_Simple($config['saml_source']);
                 $as->logout();
             }
         } else {
@@ -868,7 +877,7 @@ if (isset($_GET['bye'])) {
 
     if ($config['auth'] == 'saml') {
         include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+        $as = new SimpleSAML_Auth_Simple($config['saml_source']);
         $as->logout();
     }
 
@@ -1189,18 +1198,20 @@ echo '</div>';
 
 if ($config['pure'] == 0) {
     echo '</div>';
-    // container div
+    // Container div.
+    echo '</div>';
     echo '<div style="clear:both"></div>';
+
     echo '<div id="foot">';
     include 'general/footer.php';
-    echo '</div>';
 }
 
-// Clippy function
+// Clippy function.
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
 while (@ob_end_flush()) {
+    // Dump.
 }
 
 db_print_database_debug();
@@ -1212,14 +1223,16 @@ echo "\n<!-- Page generated in $run_time seconds -->\n";
 // Values from PHP to be recovered from JAVASCRIPT
 require 'include/php_to_js_values.php';
 
-
 ?>
 
 <script type="text/javascript" language="javascript">
 
     // When there are less than 5 rows, all rows must be white
-    if($('table.info_table tr').length < 5){
-        $('table.info_table tbody > tr').css('background-color', '#fff');
+   var theme = "<?php echo $config['style']; ?>";
+   if(theme === 'pandora'){
+        if($('table.info_table tr').length < 5){
+            $('table.info_table tbody > tr').css('background-color', '#fff');
+        }
     }
 
     // When the user scrolls down 400px from the top of the document, show the button.

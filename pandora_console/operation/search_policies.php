@@ -84,7 +84,6 @@ if (!$policies || !$searchpolicies) {
 
     $totalPolicies = count($policies);
     echo '<br />';
-    ui_pagination($totalPolicies);
     html_print_table($table);
     unset($table);
     ui_pagination($totalPolicies);

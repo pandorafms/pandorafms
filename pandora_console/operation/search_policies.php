@@ -16,7 +16,7 @@ global $config;
 enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/enterprise/include/functions_groups.php';
 
-$searchpolicies = check_acl($config['id_user'], 0, 'UM');
+$searchpolicies = check_acl($config['id_user'], 0, 'AW');
 
 if (!$policies || !$searchpolicies) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";

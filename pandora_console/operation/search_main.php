@@ -20,7 +20,7 @@ $searchGraphs = check_acl($config['id_user'], 0, 'RR');
 $searchMaps = check_acl($config['id_user'], 0, 'RR');
 $searchReports = check_acl($config['id_user'], 0, 'RR');
 $searchUsers = check_acl($config['id_user'], 0, 'UM');
-$searchPolicies = check_acl($config['id_user'], 0, 'UM');
+$searchPolicies = check_acl($config['id_user'], 0, 'AW');
 $searchHelps = true;
 
 echo '<br><div style="margin:auto; width:90%; padding: 10px;">';

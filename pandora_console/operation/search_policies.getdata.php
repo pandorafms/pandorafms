@@ -16,7 +16,7 @@ global $config;
 enterprise_include_once('include/functions_policies.php');
 
 
-$searchpolicies = check_acl($config['id'], 0, 'UM');
+$searchpolicies = check_acl($config['id'], 0, 'AW');
 
 $selectpolicieIDUp = '';
 $selectpolicieIDDown = '';

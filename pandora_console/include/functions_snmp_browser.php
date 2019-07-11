@@ -173,7 +173,6 @@ function snmp_browser_get_html_tree(
             $last_array,
             $sufix,
             $checked,
-            $return,
             $descriptive_ids,
             $previous_id
         );

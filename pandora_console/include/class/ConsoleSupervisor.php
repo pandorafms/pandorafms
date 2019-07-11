@@ -1976,7 +1976,7 @@ class ConsoleSupervisor
             'id_user',
             $config['id_user']
         );
-        if (license_free() === true
+        if (!$config['disabled_newsletter']
             && $newsletter != 1
             && $login === false
         ) {

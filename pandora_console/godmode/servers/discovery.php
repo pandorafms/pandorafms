@@ -42,7 +42,19 @@ function get_wiz_class($str)
         return 'ConsoleTasks';
 
         default:
-            // Ignore.
+            // Main, show header.
+            ui_print_page_header(
+                __('Discovery'),
+                '',
+                false,
+                '',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                ''
+            );
         return null;
     }
 }

@@ -800,6 +800,7 @@ class HostDevices extends Wizard
                     }).change();';
 
                 $this->printFormAsGrid($form);
+                $this->printGoBackButton($this->url.'&page='.($this->page - 1));
             }
         }
 
@@ -892,6 +893,7 @@ class HostDevices extends Wizard
             ];
 
             $this->printFormAsList($form);
+            $this->printGoBackButton($this->url.'&mode=netscan&task='.$this->task['id_rt'].'&page='.($this->page - 1));
         }
 
         if ($this->page == 2) {

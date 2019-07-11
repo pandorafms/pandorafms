@@ -335,6 +335,7 @@ class Wizard
             ],
             'inputs' => [
                 [
+                    'class'     => 'w100p',
                     'arguments' => [
                         'name'       => 'submit',
                         'label'      => __('Go back'),

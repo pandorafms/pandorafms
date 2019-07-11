@@ -70,7 +70,7 @@ if (is_ajax()) {
         if ($id_agente > 0) {
             $last_contact = db_get_value_sql(
                 sprintf(
-                    'SELECT intervalo - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto)))
+                    'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
                      FROM `tagente`
                      WHERE id_agente = %d ',
                     $id_agente

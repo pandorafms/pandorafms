@@ -190,7 +190,7 @@ sub data_consumer ($$) {
         my %cnf_extra;
         
         my $r = enterprise_hook('discovery_generate_extra_cnf',[$pa_config, $dbh, $task, \%cnf_extra]);
-        if (isset($r) && $r eq 'ERR') {
+        if (defined($r) && $r eq 'ERR') {
             # Could not generate extra cnf, skip this task.
             return;
         }

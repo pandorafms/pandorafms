@@ -374,13 +374,24 @@ class Wizard
 
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            if ($input['wrapper']) {
+                $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
+                $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
+            } else {
+                $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            }
+
             $output .= '<ul class="wizard">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);
             }
 
-            $output .= '</ul></li>';
+            // Close block.
+            if ($input['wrapper']) {
+                $output .= '</ul></'.$input['wrapper'].'>';
+            } else {
+                $output .= '</ul></li>';
+            }
         } else {
             if ($input['arguments']['type'] != 'hidden') {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
@@ -577,6 +588,7 @@ class Wizard
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];
+        $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
@@ -624,6 +636,9 @@ class Wizard
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
 
         if ($return === false) {
             echo $output;
@@ -649,6 +664,7 @@ class Wizard
         $rows = $data['rows'];
 
         $js = $data['js'];
+        $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
@@ -675,45 +691,47 @@ class Wizard
 
         $first_block_printed = false;
 
-        foreach ($rows as $row) {
-            if ($row['new_form_block'] == true) {
-                if ($first_block_printed === true) {
-                    // If first form block has been placed, then close it before starting a new one.
-                    $output .= '</div>';
-                    $output .= '<div class="white_box" style="margin-top: 30px;">';
-                } else {
-                    $output .= '<div class="white_box">';
+        if (is_array($rows)) {
+            foreach ($rows as $row) {
+                if ($row['new_form_block'] == true) {
+                    if ($first_block_printed === true) {
+                        // If first form block has been placed, then close it before starting a new one.
+                        $output .= '</div>';
+                        $output .= '<div class="white_box" style="margin-top: 30px;">';
+                    } else {
+                        $output .= '<div class="white_box">';
+                    }
+
+                    $first_block_printed = true;
                 }
 
-                $first_block_printed = true;
-            }
+                $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
 
-            $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
+                foreach ($row['columns'] as $column) {
+                    $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
+                    $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
+                    $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
+                    $extra_styles = isset($column['style']) ? $column['style'] : '';
 
-            foreach ($row['columns'] as $column) {
-                $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
-                $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
-                $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
-                $extra_styles = isset($column['style']) ? $column['style'] : '';
+                    $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
 
-                $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
-
-                foreach ($column['inputs'] as $input) {
-                    if (is_array($input)) {
-                        if ($input['arguments']['type'] != 'submit') {
-                            $output .= $this->printBlockAsGrid($input, true);
+                    foreach ($column['inputs'] as $input) {
+                        if (is_array($input)) {
+                            if ($input['arguments']['type'] != 'submit') {
+                                $output .= $this->printBlockAsGrid($input, true);
+                            } else {
+                                $output_submit .= $this->printBlockAsGrid($input, true);
+                            }
                         } else {
-                            $output_submit .= $this->printBlockAsGrid($input, true);
+                            $output .= $input;
                         }
-                    } else {
-                        $output .= $input;
                     }
+
+                    $output .= '</div>';
                 }
 
                 $output .= '</div>';
             }
-
-            $output .= '</div>';
         }
 
         $output .= '</div>';
@@ -721,6 +739,9 @@ class Wizard
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
 
         if ($return === false) {
             echo $output;
@@ -744,6 +765,7 @@ class Wizard
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];
+        $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
@@ -781,6 +803,9 @@ class Wizard
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
 
         if ($return === false) {
             echo $output;

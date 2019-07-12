@@ -56,5 +56,8 @@ export interface ItemMeta {
   isFromCache: boolean;
   isFetching: boolean;
   isUpdating: boolean;
+  isSelected: boolean;
+  isBeingMoved: boolean;
+  isBeingResized: boolean;
   editMode: boolean;
 }

@@ -284,7 +284,10 @@ export function itemMetaDecoder(data: UnknownObject): ItemMeta | never {
     editMode: parseBoolean(data.editMode),
     isFromCache: parseBoolean(data.isFromCache),
     isFetching: false,
-    isUpdating: false
+    isUpdating: false,
+    isBeingMoved: false,
+    isBeingResized: false,
+    isSelected: false
   };
 }
 
@@ -428,14 +431,17 @@ function getOffset(el: HTMLElement | null) {
  *
  * @param element Element to move.
  * @param onMoved Function to execute when the element moves.
+ * @param altContainer Alternative element to contain the moved element.
  *
  * @return A function which will clean the event handlers when executed.
  */
 export function addMovementListener(
   element: HTMLElement,
-  onMoved: (x: Position["x"], y: Position["y"]) => void
+  onMoved: (x: Position["x"], y: Position["y"]) => void,
+  altContainer?: HTMLElement
 ): Function {
-  const container = element.parentElement as HTMLElement;
+  const container = altContainer || (element.parentElement as HTMLElement);
+
   // Store the initial draggable state.
   const isDraggable = element.draggable;
   // Init the coordinates.
@@ -746,4 +752,8 @@ export function addResizementListener(
     resizeDraggable.remove();
     handleEnd();
   };
+}
+
+export function t(text: string): string {
+  return text;
 }

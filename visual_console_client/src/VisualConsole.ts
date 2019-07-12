@@ -203,9 +203,9 @@ export default class VisualConsole {
     [key: string]: Line;
   } = {};
   // Event manager for click events.
-  private readonly clickEventManager = new TypedEvent<
-    ItemClickEvent<ItemProps>
-  >();
+  private readonly clickEventManager = new TypedEvent<ItemClickEvent>();
+  // Event manager for double click events.
+  private readonly dblClickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for move events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
   // Event manager for resize events.
@@ -217,9 +217,18 @@ export default class VisualConsole {
    * React to a click on an element.
    * @param e Event object.
    */
-  private handleElementClick: (e: ItemClickEvent<ItemProps>) => void = e => {
+  private handleElementClick: (e: ItemClickEvent) => void = e => {
     this.clickEventManager.emit(e);
     // console.log(`Clicked element #${e.data.id}`, e);
+  };
+
+  /**
+   * React to a double click on an element.
+   * @param e Event object.
+   */
+  private handleElementDblClick: (e: ItemClickEvent) => void = e => {
+    this.dblClickEventManager.emit(e);
+    // console.log(`Double clicked element #${e.data.id}`, e);
   };
 
   /**
@@ -308,6 +317,7 @@ export default class VisualConsole {
         this.elementIds.push(itemInstance.props.id);
         // Item event handlers.
         itemInstance.onClick(this.handleElementClick);
+        itemInstance.onDblClick(this.handleElementDblClick);
         itemInstance.onMoved(this.handleElementMovement);
         itemInstance.onResized(this.handleElementResizement);
         itemInstance.onRemove(this.handleElementRemove);
@@ -685,15 +695,29 @@ export default class VisualConsole {
    * Add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
    */
-  public onItemClick(
-    listener: Listener<ItemClickEvent<ItemProps>>
-  ): Disposable {
+  public onItemClick(listener: Listener<ItemClickEvent>): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
      * call them when the item should be cleared.
      */
     const disposable = this.clickEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * Add an event handler to the double click of the linked visual console elements.
+   * @param listener Function which is going to be executed when a linked console is double clicked.
+   */
+  public onItemDblClick(listener: Listener<ItemClickEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.dblClickEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;
@@ -749,5 +773,70 @@ export default class VisualConsole {
       item.meta = { ...item.meta, editMode: false };
     });
     this.containerRef.classList.remove("is-editing");
+  }
+
+  /**
+   * Select an item.
+   * @param itemId Item Id.
+   * @param unique To remove the selection of other items or not.
+   */
+  public selectItem(itemId: number, unique: boolean = false): void {
+    if (unique) {
+      this.elementIds.forEach(currentItemId => {
+        const meta = this.elementsById[currentItemId].meta;
+
+        if (currentItemId !== itemId && meta.isSelected) {
+          this.elementsById[currentItemId].meta = {
+            ...meta,
+            isSelected: false
+          };
+        } else if (currentItemId === itemId && !meta.isSelected) {
+          this.elementsById[currentItemId].meta = {
+            ...meta,
+            isSelected: true
+          };
+        }
+      });
+    } else if (this.elementsById[itemId]) {
+      this.elementsById[itemId].meta = {
+        ...this.elementsById[itemId].meta,
+        isSelected: true
+      };
+    }
+  }
+
+  /**
+   * Unselect an item.
+   * @param itemId Item Id.
+   */
+  public unselectItem(itemId: number): void {
+    if (this.elementsById[itemId]) {
+      const meta = this.elementsById[itemId].meta;
+
+      if (meta.isSelected) {
+        this.elementsById[itemId].meta = {
+          ...meta,
+          isSelected: false
+        };
+      }
+    }
+  }
+
+  /**
+   * Unselect all items.
+   */
+  public unselectItems(): void {
+    this.elementIds.forEach(itemId => {
+      if (this.elementsById[itemId]) {
+        const meta = this.elementsById[itemId].meta;
+
+        if (meta.isSelected) {
+          this.elementsById[itemId].meta = {
+            ...meta,
+            isSelected: false
+          };
+        }
+      }
+    });
   }
 }

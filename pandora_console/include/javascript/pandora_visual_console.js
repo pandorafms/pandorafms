@@ -124,19 +124,57 @@ function createVisualConsole(
     visualConsole = new VisualConsole(container, props, items);
     // VC Item clicked.
     visualConsole.onItemClick(function(e) {
-      // Override the link to another VC if it isn't on remote console.
-      if (
-        e.data &&
-        e.data.linkedLayoutId != null &&
-        e.data.linkedLayoutId > 0 &&
-        e.data.link != null &&
-        e.data.link.length > 0 &&
-        (e.data.linkedLayoutAgentId == null || e.data.linkedLayoutAgentId === 0)
+      var data = e.item.props || {};
+      var meta = e.item.meta || {};
+
+      if (meta.editMode) {
+        // Item selection.
+        if (meta.isSelected) {
+          visualConsole.unselectItem(data.id);
+        } else {
+          // Unselect the rest of the elements if the
+          visualConsole.selectItem(data.id, !e.nativeEvent.metaKey);
+        }
+      } else if (
+        !meta.editMode &&
+        data.linkedLayoutId != null &&
+        data.linkedLayoutId > 0 &&
+        data.link != null &&
+        data.link.length > 0 &&
+        (data.linkedLayoutAgentId == null || data.linkedLayoutAgentId === 0)
       ) {
+        // Override the link to another VC if it isn't on remote console.
         // Stop the current link behavior.
         e.nativeEvent.preventDefault();
         // Fetch and update the old VC with the new.
-        updateVisualConsole(e.data.linkedLayoutId, updateInterval);
+        updateVisualConsole(data.linkedLayoutId, updateInterval);
+      }
+    });
+    // VC Item double clicked.
+    visualConsole.onItemDblClick(function(e) {
+      e.nativeEvent.preventDefault();
+      e.nativeEvent.stopPropagation();
+
+      var item = e.item || {};
+      var props = item.props || {};
+      var meta = item.meta || {};
+
+      if (meta.editMode) {
+        // Item selection.
+        visualConsole.selectItem(props.id, true);
+
+        var formContainer = item.getFormContainer();
+        var formElement = formContainer.getFormElement();
+        formContainer.onSubmit(function(e) {
+          // TODO: Send the update.
+          console.log("Form submit", e.data);
+          $(formElement).dialog("close");
+        });
+
+        $(formElement).dialog({
+          title: formContainer.title
+        });
+        // TODO: Add submit and reset button.
       }
     });
     // VC Item moved.

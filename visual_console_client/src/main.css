@@ -32,3 +32,10 @@
   background: url(./resize-handle.svg);
   cursor: se-resize;
 }
+
+.visual-console-item.is-editing.is-selected {
+  border: 2px dashed #2b2b2b;
+  transform: translateX(-2px) translateY(-2px);
+  cursor: move;
+  user-select: none;
+}

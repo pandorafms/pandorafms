@@ -16,9 +16,11 @@ import {
   humanTime,
   addMovementListener,
   debounce,
-  addResizementListener
+  addResizementListener,
+  t
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
+import { FormContainer, InputGroup } from "./Form";
 
 // Enum: https://www.typescriptlang.org/docs/handbook/enums.html.
 export const enum ItemType {
@@ -58,10 +60,8 @@ export interface ItemProps extends Position, Size {
   aclGroupId: number | null;
 }
 
-// FIXME: Fix type compatibility.
-export interface ItemClickEvent<Props extends ItemProps> {
-  // data: Props;
-  data: AnyObject;
+export interface ItemClickEvent {
+  item: VisualConsoleItem<ItemProps>;
   nativeEvent: Event;
 }
 
@@ -81,6 +81,41 @@ export interface ItemResizedEvent {
   item: VisualConsoleItem<ItemProps>;
   prevSize: Size;
   newSize: Size;
+}
+
+// TODO: Document
+class PositionInputGroup extends InputGroup<ItemProps> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const positionLabel = document.createElement("label");
+    positionLabel.textContent = t("Position");
+
+    const positionInputX = document.createElement("input");
+    positionInputX.type = "number";
+    positionInputX.min = "0";
+    positionInputX.required = true;
+    positionInputX.value = `${this.currentData.x || this.initialData.x || 0}`;
+    positionInputX.addEventListener("change", e =>
+      this.updateData({
+        x: parseIntOr((e.target as HTMLInputElement).value, 0)
+      })
+    );
+
+    const positionInputY = document.createElement("input");
+    positionInputY.type = "number";
+    positionInputY.min = "0";
+    positionInputY.required = true;
+    positionInputY.value = `${this.currentData.y || this.initialData.y || 0}`;
+    positionInputY.addEventListener("change", e =>
+      this.updateData({
+        y: parseIntOr((e.target as HTMLInputElement).value, 0)
+      })
+    );
+
+    positionLabel.appendChild(positionInputX);
+    positionLabel.appendChild(positionInputY);
+
+    return positionLabel;
+  }
 }
 
 /**
@@ -147,7 +182,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // Reference to the DOM element which will contain the view of the item which extends this class.
   protected childElementRef: HTMLElement = document.createElement("div");
   // Event manager for click events.
-  private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
+  private readonly clickEventManager = new TypedEvent<ItemClickEvent>();
+  // Event manager for double click events.
+  private readonly dblClickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for moved events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
   // Event manager for resized events.
@@ -164,6 +201,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private debouncedMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
+      // Update the metadata information.
+      // Don't use the .meta property cause we don't need DOM updates.
+      this._metadata.isBeingMoved = false;
+
       const prevPosition = {
         x: this.props.x,
         y: this.props.y
@@ -197,6 +238,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.removeMovement = addMovementListener(
       element,
       (x: Position["x"], y: Position["y"]) => {
+        // Update the metadata information.
+        // Don't use the .meta property cause we don't need DOM updates.
+        this._metadata.isBeingMoved = true;
         // Move the DOM element.
         this.moveElement(x, y);
         // Run the save function.
@@ -219,6 +263,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private debouncedResizementSave = debounce(
     500, // ms.
     (width: Size["width"], height: Size["height"]) => {
+      // Update the metadata information.
+      // Don't use the .meta property cause we don't need DOM updates.
+      this._metadata.isBeingResized = false;
+
       const prevSize = {
         width: this.props.width,
         height: this.props.height
@@ -252,6 +300,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.removeResizement = addResizementListener(
       element,
       (width: Size["width"], height: Size["height"]) => {
+        // Update the metadata information.
+        // Don't use the .meta property cause we don't need DOM updates.
+        this._metadata.isBeingResized = true;
+
         // The label it's outside the item's size, so we need
         // to get rid of its size to get the real size of the
         // item's content.
@@ -353,13 +405,27 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     box.style.zIndex = this.props.isOnTop ? "2" : "1";
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
-    // Init the click listener.
+
+    // Init the click listeners.
+    box.addEventListener("dblclick", e => {
+      if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {
+        this.dblClickEventManager.emit({
+          item: this,
+          nativeEvent: e
+        });
+      }
+    });
     box.addEventListener("click", e => {
       if (this.meta.editMode) {
         e.preventDefault();
         e.stopPropagation();
-      } else {
-        this.clickEventManager.emit({ data: this.props, nativeEvent: e });
+      }
+
+      if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {
+        this.clickEventManager.emit({
+          item: this,
+          nativeEvent: e
+        });
       }
     });
 
@@ -376,6 +442,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
     if (this.meta.isUpdating) {
       box.classList.add("is-updating");
+    }
+    if (this.meta.isSelected) {
+      box.classList.add("is-selected");
     }
 
     return box;
@@ -643,6 +712,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.classList.remove("is-updating");
       }
     }
+    if (!prevMeta || prevMeta.isSelected !== this.meta.isSelected) {
+      if (this.meta.isSelected) {
+        this.elementRef.classList.add("is-selected");
+      } else {
+        this.elementRef.classList.remove("is-selected");
+      }
+    }
   }
 
   /**
@@ -801,17 +877,42 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
   }
 
+  // TODO: Document
+  public getFormContainer(): FormContainer {
+    return new FormContainer(
+      t("Item"),
+      [new PositionInputGroup("position", this.props)],
+      ["position"]
+    );
+  }
+
   /**
    * To add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
    */
-  public onClick(listener: Listener<ItemClickEvent<Props>>): Disposable {
+  public onClick(listener: Listener<ItemClickEvent>): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
      * call them when the item should be cleared.
      */
     const disposable = this.clickEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to the double click of the linked visual console elements.
+   * @param listener Function which is going to be executed when a linked console is double clicked.
+   */
+  public onDblClick(listener: Listener<ItemClickEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.dblClickEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

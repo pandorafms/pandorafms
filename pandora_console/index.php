@@ -149,7 +149,7 @@ if (isset($config['error'])) {
 
 // If metaconsole activated, redirect to it.
 if (is_metaconsole()) {
-    header('Location: '.ui_get_full_url('index.php'));
+    header('Location: '.ui_get_full_url(ENTERPRISE_DIR.'/meta/index.php'));
     // Always exit after sending location headers.
     exit;
 }

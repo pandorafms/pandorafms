@@ -56,8 +56,6 @@ function credentials_get_all(
 
     global $config;
 
-    $user_is_admin = users_is_admin();
-
     if (!is_array($filter)) {
         error_log('[credential_get_all] Filter must be an array.');
         throw new Exception('[credential_get_all] Filter must be an array.');

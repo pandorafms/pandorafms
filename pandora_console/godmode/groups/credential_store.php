@@ -369,7 +369,7 @@ echo '</div>';
             text = err.message;
             failed = 1;
         }
-        if (!failed && data['error']) {
+        if (!failed && data['error'] != undefined) {
             title =  "<?php echo __('Failed'); ?>";
             text = data['error'];
             failed = 1;

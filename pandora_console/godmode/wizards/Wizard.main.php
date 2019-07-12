@@ -592,7 +592,7 @@ class Wizard
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {

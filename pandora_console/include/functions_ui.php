@@ -3799,6 +3799,9 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         if (ui_forced_public_url()) {
             $proxy = true;
             $fullurl = $config['public_url'];
+            if ($url == 'index.php' && is_metaconsole()) {
+                $fullurl .= ENTERPRISE_DIR.'/meta/index.php';
+            } 
         } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {

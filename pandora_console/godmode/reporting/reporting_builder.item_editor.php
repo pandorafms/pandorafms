@@ -865,7 +865,18 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_input_text('name', $name, '', 80, 100);
+                html_print_input_text(
+                    'name',
+                    $name,
+                    '',
+                    80,
+                    100,
+                    false,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
                 ?>
             </td>
         </tr>
@@ -923,7 +934,18 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                echo html_print_input_text('label', $label, '', 50, 255, true);
+                echo html_print_input_text(
+                    'label',
+                    $label,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
                 ?>
             </td>
         </tr>

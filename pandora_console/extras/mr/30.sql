@@ -10,4 +10,6 @@ ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEF
 
 ALTER TABLE `tmodule_relationship` ADD COLUMN `type` ENUM('direct', 'failover') DEFAULT 'direct';
 
+ALTER TABLE `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
+
 COMMIT;

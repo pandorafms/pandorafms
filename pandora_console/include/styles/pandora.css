@@ -5791,7 +5791,6 @@ div#status_pie {
   grid-template-columns: 50px auto;
 }
 
-
 /*
  * ---------------------------------------------------------------------
  * - IMAGES FOR STATUS. This replaces the images of /images/status_sets/default/ 
@@ -5834,7 +5833,6 @@ div#status_pie {
  * ---------------------------------------------------------------------
  */
 
-
 /* Table for show more info in events and config menu in modules graphs. (This class exists in events.css too) */
 .table_modal_alternate {
   border-spacing: 0;
@@ -5863,3 +5861,7 @@ table.table_modal_alternate tr td:first-child {
   padding-left: 20px;
 }
 /* END - Table for show more info in events and config menu in modules graphs */
+
+.fullwidth {
+  width: 100%;
+}

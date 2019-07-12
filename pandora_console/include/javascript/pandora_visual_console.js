@@ -191,8 +191,13 @@ function createVisualConsole(
         height: e.newSize.height,
         type: e.item.props.type
       };
-      var taskId = "visual-console-item-resize-" + id;
 
+      visualConsole.elementsById[id].meta = {
+        ...visualConsole.elementsById[id].meta,
+        isUpdating: true
+      };
+
+      var taskId = "visual-console-item-resize-" + id;
       // Persist the new size.
       asyncTaskManager
         .add(taskId, function(done) {
@@ -209,6 +214,11 @@ function createVisualConsole(
                   "[API]",
                   error ? error.message : "Invalid response"
                 );
+
+                visualConsole.elementsById[id].meta = {
+                  ...visualConsole.elementsById[id].meta,
+                  isUpdating: false
+                };
 
                 // Resize the element to its initial Size.
                 e.item.resize(e.prevSize.width, e.prevSize.height);
@@ -228,21 +238,22 @@ function createVisualConsole(
                         "[API]",
                         error ? error.message : "Invalid response"
                       );
+
+                      visualConsole.elementsById[id].meta = {
+                        ...visualConsole.elementsById[id].meta,
+                        isUpdating: false
+                      };
                     }
 
                     if (typeof data === "string") {
                       data = JSON.parse(data);
                     }
+                    visualConsole.updateElement(data);
 
                     visualConsole.elementsById[id].meta = {
                       ...visualConsole.elementsById[id].meta,
-                      isUpdating: true
+                      isUpdating: false
                     };
-
-                    // visualConsole.elementsById[id].elementRef.innerHTML +=
-                    //   "<div class = holas>";
-
-                    visualConsole.updateElement(data);
 
                     done();
                   });

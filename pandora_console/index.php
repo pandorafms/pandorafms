@@ -385,24 +385,30 @@ if (! isset($config['id_user'])) {
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            include_once ENTERPRISE_DIR.'/include/auth/saml.php';
+            $saml_configured = include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/include/auth/saml.php';
+
+            if (!$saml_configured) {
+                include_once 'general/noaccesssaml.php';
+            }
 
             $saml_user_id = saml_process_user_login();
+
+            if (!$saml_user_id) {
+                include_once 'general/noaccesssaml.php';
+            }
+
 
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {
                 include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+                $as = new SimpleSAML_Auth_Simple($config['saml_source']);
                 $as->logout();
             }
         } else {
-            // Function process_user_login is a virtual function which should be
-            // defined in each auth file. It accepts username and password. The
-            // rest should be internal to the auth file. The auth file can set
-            // $config["auth_error"] to an informative error output or reference
-            // their internal error messages to it process_user_login should
-            // return false in case of errors or invalid login, the nickname
-            // if correct.
+            // process_user_login is a virtual function which should be defined in each auth file.
+            // It accepts username and password. The rest should be internal to the auth file.
+            // The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
+            // process_user_login should return false in case of errors or invalid login, the nickname if correct
             $nick_in_db = process_user_login($nick, $pass);
 
             $expired_pass = false;

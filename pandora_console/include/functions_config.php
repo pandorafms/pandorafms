@@ -403,6 +403,10 @@ function config_update_config()
                             $error_update[] = __('Enable Update Manager');
                         }
 
+                        if (!config_update_value('disabled_newsletter', get_parameter('disabled_newsletter'))) {
+                            $error_update[] = __('Disabled newsletter');
+                        }
+
                         if (!config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'))) {
                             $error_update[] = __('Ipam Ocuppied Manager Critical');
                         }
@@ -658,6 +662,42 @@ function config_update_config()
 
                     if (!config_update_value('saml_path', get_parameter('saml_path'))) {
                         $error_update[] = __('Saml path');
+                    }
+
+                    if (!config_update_value('saml_source', get_parameter('saml_source'))) {
+                        $error_update[] = __('Saml source');
+                    }
+
+                    if (!config_update_value('saml_user_id', get_parameter('saml_user_id'))) {
+                        $error_update[] = __('Saml user id parameter');
+                    }
+
+                    if (!config_update_value('saml_mail', get_parameter('saml_mail'))) {
+                        $error_update[] = __('Saml mail parameter');
+                    }
+
+                    if (!config_update_value('saml_group_name', get_parameter('saml_group_name'))) {
+                        $error_update[] = __('Saml group name parameter');
+                    }
+
+                    if (!config_update_value('saml_attr_type', (bool) get_parameter('saml_attr_type'))) {
+                        $error_update[] = __('Saml attr type parameter');
+                    }
+
+                    if (!config_update_value('saml_profiles_and_tags', get_parameter('saml_profiles_and_tags'))) {
+                        $error_update[] = __('Saml profiles and tags parameter');
+                    }
+
+                    if (!config_update_value('saml_profile', get_parameter('saml_profile'))) {
+                        $error_update[] = __('Saml profile parameters');
+                    }
+
+                    if (!config_update_value('saml_tag', get_parameter('saml_tag'))) {
+                        $error_update[] = __('Saml tag parameter');
+                    }
+
+                    if (!config_update_value('saml_profile_tag_separator', get_parameter('saml_profile_tag_separator'))) {
+                        $error_update[] = __('Saml profile and tag separator');
                     }
 
                     if (!config_update_value('double_auth_enabled', get_parameter('double_auth_enabled'))) {
@@ -1695,6 +1735,10 @@ function config_process_config()
         config_update_value('enable_update_manager', 1);
     }
 
+    if (!isset($config['disabled_newsletter'])) {
+        config_update_value('disabled_newsletter', 0);
+    }
+
     if (!isset($config['ipam_ocuppied_critical_treshold'])) {
         config_update_value('ipam_ocuppied_critical_treshold', 90);
     }
@@ -2372,6 +2416,42 @@ function config_process_config()
         config_update_value('saml_path', '/opt/');
     }
 
+    if (!isset($config['saml_source'])) {
+        config_update_value('saml_source', '');
+    }
+
+    if (!isset($config['saml_user_id'])) {
+        config_update_value('saml_user_id', '');
+    }
+
+    if (!isset($config['saml_mail'])) {
+        config_update_value('saml_mail', '');
+    }
+
+    if (!isset($config['saml_group_name'])) {
+        config_update_value('saml_group_name', '');
+    }
+
+    if (!isset($config['saml_attr_type'])) {
+        config_update_value('saml_attr_type', false);
+    }
+
+    if (!isset($config['saml_profiles_and_tags'])) {
+        config_update_value('saml_profiles_and_tags', '');
+    }
+
+    if (!isset($config['saml_profile'])) {
+        config_update_value('saml_profile', '');
+    }
+
+    if (!isset($config['saml_tag'])) {
+        config_update_value('saml_tag', '');
+    }
+
+    if (!isset($config['saml_profile_tag_separator'])) {
+        config_update_value('saml_profile_tag_separator', '');
+    }
+
     if (!isset($config['autoupdate'])) {
         config_update_value('autoupdate', 1);
     }
@@ -2887,7 +2967,17 @@ function config_prepare_session()
 
     // Reset the expiration time upon page load //session_name() is default name of session PHPSESSID.
     if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+        $update_cookie = true;
+        if (is_ajax()) {
+            // Avoid session upadte while processing ajax responses - notifications.
+            if (get_parameter('check_new_notifications', false)) {
+                $update_cookie = false;
+            }
+        }
+
+        if ($update_cookie === true) {
+            setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+        }
     }
 
     ini_set('post_max_size', $config['max_file_size']);

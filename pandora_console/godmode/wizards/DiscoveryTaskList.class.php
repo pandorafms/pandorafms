@@ -501,41 +501,60 @@ class DiscoveryTaskList extends Wizard
                     $data[5] = __('Pending');
                 }
 
-                if ($task['id_recon_script'] == 0) {
-                    // Internal discovery task.
-                    switch ($task['type']) {
-                        case DISCOVERY_CLOUD_AWS_RDS:
-                            // Discovery Applications MySQL.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Cloud RDS')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.Cloud.Aws.RDS');
-                        break;
+                switch ($task['type']) {
+                    case DISCOVERY_CLOUD_AZURE_COMPUTE:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/plugin.png',
+                            true,
+                            ['title' => __('Discovery Cloud Azure Compute')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Cloud.Azure.Compute');
+                    break;
 
-                        case DISCOVERY_APP_MYSQL:
-                            // Discovery Applications MySQL.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Applications MySQL')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.App.MySQL');
-                        break;
+                    case DISCOVERY_CLOUD_AWS_EC2:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/plugin.png',
+                            true,
+                            ['title' => __('Discovery Cloud AWS EC2')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Cloud.AWS.EC2');
+                    break;
 
-                        case DISCOVERY_APP_ORACLE:
-                            // Discovery Applications Oracle.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Applications Oracle')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.App.Oracle');
-                        break;
+                    case DISCOVERY_CLOUD_AWS_RDS:
+                        // Discovery Cloud RDS.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Cloud RDS')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Cloud.Aws.RDS');
+                    break;
 
-                        case DISCOVERY_HOSTDEVICES:
-                        default:
+                    case DISCOVERY_APP_MYSQL:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications MySQL')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.MySQL');
+                    break;
+
+                    case DISCOVERY_APP_ORACLE:
+                        // Discovery Applications Oracle.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications Oracle')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.Oracle');
+                    break;
+
+                    case DISCOVERY_HOSTDEVICES:
+                    default:
+                        if ($task['id_recon_script'] == 0) {
                             // Discovery NetScan.
                             $data[6] = html_print_image(
                                 'images/network.png',
@@ -550,15 +569,15 @@ class DiscoveryTaskList extends Wizard
                             } else {
                                 $data[6] .= __('Discovery.NetScan');
                             }
-                        break;
-                    }
-                } else {
-                    // APP recon task.
-                    $data[6] = html_print_image(
-                        'images/plugin.png',
-                        true
-                    ).'&nbsp;&nbsp;';
-                    $data[6] .= $recon_script_name;
+                        } else {
+                            // APP or external script recon task.
+                            $data[6] = html_print_image(
+                                'images/plugin.png',
+                                true
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= $recon_script_name;
+                        }
+                    break;
                 }
 
                 if ($task['status'] <= 0 || $task['status'] > 100) {
@@ -699,7 +718,16 @@ class DiscoveryTaskList extends Wizard
         if ($script !== false) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_CLOUD_AWS:
-                return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
+                    switch ($task['type']) {
+                        case DISCOVERY_CLOUD_AWS_EC2:
+                        return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
+
+                        case DISCOVERY_CLOUD_AZURE_COMPUTE:
+                        return 'wiz=cloud&mode=azure&ki='.$task['auth_strings'].'&sub=compute&page=0';
+
+                        default:
+                        return 'wiz=cloud';
+                    }
 
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';

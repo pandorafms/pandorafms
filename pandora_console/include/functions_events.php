@@ -1687,7 +1687,7 @@ function events_change_status(
         $ack_user = $config['id_user'];
     } else {
         $acl_utimestamp = 0;
-        $ack_user = '';
+        $ack_user = $config['id_user'];
     }
 
     switch ($new_status) {
@@ -4398,6 +4398,8 @@ function events_page_general($event)
         $data[1] = $user_owner;
     }
 
+    $table_general->cellclass[3][1] = 'general_owner';
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -4464,6 +4466,8 @@ function events_page_general($event)
     } else {
         $data[1] = '<i>'.__('N/A').'</i>';
     }
+
+    $table_general->cellclass[7][1] = 'general_status';
 
     $table_general->data[] = $data;
 

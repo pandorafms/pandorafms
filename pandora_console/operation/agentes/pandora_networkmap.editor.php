@@ -401,7 +401,7 @@ if ($not_found) {
             __('Update networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub upd"'
         );
     }
 

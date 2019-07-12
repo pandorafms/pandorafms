@@ -10654,7 +10654,8 @@ function reporting_get_agentmodule_data_min($id_agent_module, $period=0, $date=0
 function reporting_get_agentmodule_data_sum(
     $id_agent_module,
     $period=0,
-    $date=0
+    $date=0,
+    $uncompressed_module=true
 ) {
     global $config;
 
@@ -10680,7 +10681,10 @@ function reporting_get_agentmodule_data_sum(
         $id_module_type
     );
     $module_interval = modules_get_interval($id_agent_module);
-    $uncompressed_module = is_module_uncompressed($module_name);
+    // Check if module must be compressed
+    if (!$uncompressed_module) {
+        $uncompressed_module = is_module_uncompressed($module_name);
+    }
 
     // Wrong module type
     if (is_module_data_string($module_name)) {
@@ -10735,7 +10739,9 @@ function reporting_get_agentmodule_data_sum(
             break;
         }
 
-        if (!$module_inc) {
+        if ($uncompressed_module) {
+            $total += $data['datos'];
+        } else if (!$module_inc) {
             foreach ($data['data'] as $val) {
                 if (is_numeric($val['datos'])) {
                     $partial_total += $val['datos'];

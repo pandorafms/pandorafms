@@ -1862,6 +1862,11 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
+                        if ($values['type'] = 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
+                        }
+
+
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
@@ -2398,6 +2403,10 @@ switch ($action) {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {
                             $values['id_agent'] = get_parameter('group');
+                        }
+
+                        if ($values['type'] = 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
                         }
 
                         $values['header_definition'] = get_parameter('header');

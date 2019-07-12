@@ -427,6 +427,7 @@ switch ($action) {
                     );
                     $idAgentModule = $item['id_agent_module'];
                     $period = $item['period'];
+                    $uncompressed_module = $item['uncompressed_module'];
                 break;
 
                 case 'historical_data':
@@ -2769,6 +2770,23 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <tr id="row_uncompressed_module" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Uncompress module').ui_print_help_tip(
+                __('Use uncompressed module data.'),
+                true
+            );
+            ?>
+            </td>
+            <td style="">
+            <?php
+            html_print_checkbox('uncompressed_module', 1, false, false, false, '', false);
+            ?>
+            </td>
+        </tr>
+
     </tbody>
 </table>
 
@@ -4498,6 +4516,7 @@ function chooseType() {
     $('#row_select_fields').hide();
     $("#row_select_fields2").hide();
     $("#row_select_fields3").hide();
+    $("#row_uncompressed_module").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -4706,6 +4725,7 @@ function chooseType() {
             $("#row_module").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            $("#row_uncompressed_module").show();
             break;
 
         case 'historical_data':

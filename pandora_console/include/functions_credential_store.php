@@ -72,6 +72,10 @@ function credentials_get_all(
         throw new Exception('[credential_get_all] Fields must be an array or "count".');
     }
 
+    if (isset($filter['product']) && !empty($filter['product'])) {
+        $sql_filters[] = sprintf(' AND cs.product = "%s"', $filter['product']);
+    }
+
     if (isset($filter['free_search']) && !empty($filter['free_search'])) {
         $sql_filters[] = vsprintf(
             ' AND (lower(cs.username) like lower("%%%s%%")
@@ -163,7 +167,7 @@ function credentials_get_all(
          %s
          %s',
         join(',', $fields),
-        join(',', $sql_filters),
+        join(' ', $sql_filters),
         $order_by,
         $pagination
     );
@@ -292,8 +296,8 @@ function print_inputs($values=null)
             'script'      => 'calculate_inputs()',
             'fields'      => [
                 // 'CUSTOM' => __('Custom'),
-                'AWS' => __('Aws'),
-                // 'AZURE'  => __('Azure'),
+                'AWS'   => __('Aws'),
+                'AZURE' => __('Azure'),
                 // 'GOOGLE' => __('Google'),
             ],
             'selected'    => $values['product'],
@@ -319,7 +323,7 @@ function print_inputs($values=null)
 
         case 'AZURE':
             $user_label = __('Account ID');
-            $pass_label = __('Password');
+            $pass_label = __('Application secret');
             $extra_1_label = __('Tenant or domain name');
             $extra_2_label = __('Subscription id');
         break;
@@ -358,7 +362,7 @@ function print_inputs($values=null)
                 'label'       => $extra_1_label,
                 'name'        => 'extra_1',
                 'input_class' => 'flex-row',
-                'type'        => 'password',
+                'type'        => 'text',
                 'value'       => $values['extra_1'],
                 'return'      => true,
             ]
@@ -371,7 +375,7 @@ function print_inputs($values=null)
                 'label'       => $extra_2_label,
                 'name'        => 'extra_2',
                 'input_class' => 'flex-row',
-                'type'        => 'password',
+                'type'        => 'text',
                 'value'       => $values['extra_2'],
                 'return'      => true,
                 'display'     => $extra2,

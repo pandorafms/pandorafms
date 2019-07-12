@@ -1139,12 +1139,15 @@ if ($get_extended_event) {
 
     $dialog_page = get_parameter('dialog_page', 'general');
     $filter = get_parameter('filter', []);
+    $similar_ids = get_parameter('similar_ids', $event_id);
     $group_rep = $filter['group_rep'];
     $event_rep = $event['event_rep'];
     $timestamp_first = $event['min_timestamp'];
     $timestamp_last = $event['max_timestamp'];
     $server_id = $event['server_id'];
     $comments = $event['comments'];
+
+    $event['similar_ids'] = $similar_ids;
 
     if (!isset($comments)) {
         $comments = $event['user_comment'];

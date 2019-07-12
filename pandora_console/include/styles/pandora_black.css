@@ -394,3 +394,8 @@ ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
 div#box_online * {
   color: #000;
 }
+
+/* discovery.css */
+#text_wizard {
+  color: #555;
+}

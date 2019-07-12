@@ -354,54 +354,70 @@ function servers_get_performance()
         }
     }
 
-    $info_servers = servers_get_info();
+    $info_servers = array_reduce(
+        servers_get_info(),
+        function ($carry, $item) {
+            $carry[$item['server_type']] = $item;
+            return $carry;
+        }
+    );
     foreach ($interval_avgs as $id_modulo => $ia) {
+        $module_lag = 0;
         switch ($id_modulo) {
             case MODULE_DATA:
+                $module_lag = $info_servers[SERVER_TYPE_DATA]['module_lag'];
                 $data['avg_interval_local_modules'] = $ia['avg_interval'];
                 $data['local_modules_rate'] = servers_get_rate(
-                    ($data['avg_interval_local_modules'] - $info_servers[$id_modulo]['module_lag']),
-                    $data['total_local_modules']
+                    $data['avg_interval_local_modules'],
+                    ($data['total_local_modules'] - $module_lag)
                 );
             break;
 
             case MODULE_NETWORK:
+                $module_lag = $info_servers[SERVER_TYPE_NETWORK]['module_lag'];
+                $module_lag += $info_servers[SERVER_TYPE_SNMP]['module_lag'];
+                $module_lag += $info_servers[SERVER_TYPE_ENTERPRISE_ICMP]['module_lag'];
+                $module_lag += $info_servers[SERVER_TYPE_ENTERPRISE_SNMP]['module_lag'];
                 $data['avg_interval_network_modules'] = $ia['avg_interval'];
                 $data['network_modules_rate'] = servers_get_rate(
-                    ($data['avg_interval_network_modules'] - $info_servers[$id_modulo]['module_lag']),
-                    $data['total_network_modules']
+                    $data['avg_interval_network_modules'],
+                    ($data['total_network_modules'] - $module_lag)
                 );
             break;
 
             case MODULE_PLUGIN:
+                $module_lag = $info_servers[SERVER_TYPE_PLUGIN]['module_lag'];
                 $data['avg_interval_plugin_modules'] = $ia['avg_interval'];
                 $data['plugin_modules_rate'] = servers_get_rate(
-                    ($data['avg_interval_plugin_modules'] - $info_servers[$id_modulo]['module_lag']),
-                    $data['total_plugin_modules']
+                    $data['avg_interval_plugin_modules'],
+                    ($data['total_plugin_modules'] - $module_lag)
                 );
             break;
 
             case MODULE_PREDICTION:
+                $module_lag = $info_servers[SERVER_TYPE_PREDICTION]['module_lag'];
                 $data['avg_interval_prediction_modules'] = $ia['avg_interval'];
                 $data['prediction_modules_rate'] = servers_get_rate(
-                    ($data['avg_interval_prediction_modules'] - $info_servers[$id_modulo]['module_lag']),
-                    $data['total_prediction_modules']
+                    $data['avg_interval_prediction_modules'],
+                    ($data['total_prediction_modules'] - $module_lag)
                 );
             break;
 
             case MODULE_WMI:
+                $module_lag = $info_servers[SERVER_TYPE_WMI]['module_lag'];
                 $data['avg_interval_wmi_modules'] = $ia['avg_interval'];
                 $data['wmi_modules_rate'] = servers_get_rate(
-                    ($data['avg_interval_wmi_modules'] - $info_servers[$id_modulo]['module_lag']),
-                    $data['total_wmi_modules']
+                    $data['avg_interval_wmi_modules'],
+                    ($data['total_wmi_modules'] - $module_lag)
                 );
             break;
 
             case MODULE_WEB:
+                $module_lag = $info_servers[SERVER_TYPE_WEB]['module_lag'];
                 $data['avg_interval_web_modules'] = $ia['avg_interval'];
                 $data['web_modules_rate'] = servers_get_rate(
-                    ($data['avg_interval_web_modules'] - $info_servers[$id_modulo]['module_lag']),
-                    $data['total_web_modules']
+                    $data['avg_interval_web_modules'],
+                    ($data['total_web_modules'] - $module_lag)
                 );
             break;
 
@@ -429,13 +445,35 @@ function servers_get_performance()
         $data['avg_interval_total_modules'] = (array_sum($data['avg_interval_total_modules']) / count($data['avg_interval_total_modules']));
     }
 
+    $total_modules_lag = 0;
+    foreach ($info_servers as $key => $value) {
+        switch ($key) {
+            case SERVER_TYPE_DATA:
+            case SERVER_TYPE_NETWORK:
+            case SERVER_TYPE_SNMP:
+            case SERVER_TYPE_ENTERPRISE_ICMP:
+            case SERVER_TYPE_ENTERPRISE_SNMP:
+            case SERVER_TYPE_PLUGIN:
+            case SERVER_TYPE_PREDICTION:
+            case SERVER_TYPE_WMI:
+            case SERVER_TYPE_WEB:
+                $total_modules_lag += $value['module_lag'];
+            break;
+
+            default:
+                // Not possible.
+            break;
+        }
+    }
+
     $data['remote_modules_rate'] = servers_get_rate(
         $data['avg_interval_remote_modules'],
         $data['total_remote_modules']
     );
+
     $data['total_modules_rate'] = servers_get_rate(
         $data['avg_interval_total_modules'],
-        $data['total_modules']
+        ($data['total_modules'] - $total_modules_lag)
     );
 
     return ($data);

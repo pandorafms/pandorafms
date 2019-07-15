@@ -199,7 +199,7 @@ if ($update_agents) {
             }
 
             // Update the configuration files.
-            if ($old_interval_value != $values['intervalo']) {
+            if ($result && ($old_interval_value != $values['intervalo'])) {
                 enterprise_hook(
                     'config_agents_update_config_token',
                     [

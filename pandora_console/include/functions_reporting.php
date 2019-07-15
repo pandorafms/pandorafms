@@ -4879,7 +4879,8 @@ function reporting_value($report, $content, $type, $pdf=false)
             $value = reporting_get_agentmodule_data_sum(
                 $content['id_agent_module'],
                 $content['period'],
-                $report['datetime']
+                $report['datetime'],
+                $content['uncompressed_module']
             );
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
@@ -10648,6 +10649,7 @@ function reporting_get_agentmodule_data_min($id_agent_module, $period=0, $date=0
  * @param int Agent module id to get the sumatory.
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
+ * @param boolean Show uncompressed data from module
  *
  * @return float The sumatory of the module values in the interval.
  */
@@ -10694,7 +10696,7 @@ function reporting_get_agentmodule_data_sum(
     // Incremental modules are treated differently
     $module_inc = is_module_inc($module_name);
 
-    if ($uncompressed_module) {
+    if (!$uncompressed_module) {
         // Get module data
         $interval_data = db_get_all_rows_sql(
             '
@@ -10739,7 +10741,7 @@ function reporting_get_agentmodule_data_sum(
             break;
         }
 
-        if ($uncompressed_module) {
+        if (!$uncompressed_module) {
             $total += $data['datos'];
         } else if (!$module_inc) {
             foreach ($data['data'] as $val) {

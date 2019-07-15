@@ -153,6 +153,7 @@ $checks_in_ok_status = true;
 $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
+$uncompressed_module = true;
 
 switch ($action) {
     case 'new':
@@ -810,7 +811,6 @@ switch ($action) {
         }
     break;
 }
-
 
 $urlForm = $config['homeurl'].'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action='.$actionParameter.'&id_report='.$idReport;
 
@@ -2782,7 +2782,7 @@ $class = 'databox filters';
             </td>
             <td style="">
             <?php
-            html_print_checkbox('uncompressed_module', 1, false, false, false, '', false);
+            html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
             ?>
             </td>
         </tr>

@@ -1162,6 +1162,19 @@ ui_require_jquery_file('bgiframe');
     }
 
     $(document).ready (function() {
+
+        var previous_primary_group_select;
+        $("#grupo").on('focus', function () {
+            previous_primary_group_select = this.value;
+        }).change(function() {
+            if ($("#secondary_groups_selected option[value="+$("#grupo").val()+"]").length) {
+                alert("<?php echo __('Secondary group cannot be primary too.'); ?>");
+                $("#grupo").val(previous_primary_group_select);
+            } else {
+                previous_primary_group_select = this.value;
+            }
+        });
+
         $("select#id_os").pandoraSelectOS ();
 
         var checked = $("#checkbox-cascade_protection").is(":checked");

@@ -56,15 +56,7 @@ my $TaskSem :shared;
 use constant {
     OS_OTHER => 10,
     OS_ROUTER => 17,
-    OS_SWITCH => 18,
-    DISCOVERY_HOSTDEVICES => 0,
-    DISCOVERY_HOSTDEVICES_CUSTOM => 1,
-    DISCOVERY_CLOUD_AWS => 2,
-    DISCOVERY_APP_VMWARE => 3,
-    DISCOVERY_APP_MYSQL => 4,
-    DISCOVERY_APP_ORACLE => 5,
-    DISCOVERY_CLOUD_AWS_EC2 => 6,
-    DISCOVERY_CLOUD_AWS_RDS => 7
+    OS_SWITCH => 18
 };
 
 ########################################################################################
@@ -196,49 +188,11 @@ sub data_consumer ($$) {
         my $main_event = pandora_event($pa_config, "[Discovery] Execution summary",$task->{'id_group'}, 0, 0, 0, 0, 'system', 0, $dbh);
 
         my %cnf_extra;
-        if ($task->{'type'} == DISCOVERY_CLOUD_AWS_EC2
-        || $task->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
-            # auth_strings stores the crential identifier to be used.
-            my $key = pandora_get_credential($dbh, $task->{'auth_strings'});
-
-            if (ref($key) eq "HASH") {
-				$cnf_extra{'aws_access_key_id'} = $key->{'username'};
-				$cnf_extra{'aws_secret_access_key'} = $key->{'password'};
-            } else {
-                # Invalid credential.
-                return;
-            }
-
-            $cnf_extra{'cloud_util_path'} = pandora_get_config_value($dbh, 'cloud_util_path');
-
-            # Pass credentials by file due Perl limitations. We cannot update ENV here.
-            $cnf_extra{'creds_file'} = $pa_config->{'temporal'} . '/tmp_discovery.' . md5($task->{'id_rt'} . $task->{'name'} . time());
-            eval {
-                open(my $__file_cfg, '> '. $cnf_extra{'creds_file'}) or die($!);
-                print $__file_cfg $cnf_extra{'aws_access_key_id'} . "\n";
-                print $__file_cfg $cnf_extra{'aws_secret_access_key'} . "\n";
-                close($__file_cfg);
-                set_file_permissions(
-                    $pa_config,
-                    $cnf_extra{'creds_file'},
-                    "0600"
-                );
-            };
-            if ($@) {
-                logger(
-                    $pa_config,
-                    'Cannot instantiate configuration file for task: ' . safe_output($task->{'name'}),
-                    5
-                );
-                # A server restart will override ENV definition (see run)
-                logger(
-                    $pa_config,
-                    'Cannot execute Discovery task: ' . safe_output($task->{'name'}) . '. Please restart the server.',
-                    1
-                );
-                # Skip this task.
-                return;
-            }
+        
+        my $r = enterprise_hook('discovery_generate_extra_cnf',[$pa_config, $dbh, $task, \%cnf_extra]);
+        if (defined($r) && $r eq 'ERR') {
+            # Could not generate extra cnf, skip this task.
+            return;
         }
 
         my $recon = new PandoraFMS::Recon::Base(

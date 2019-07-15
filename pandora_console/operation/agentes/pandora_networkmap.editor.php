@@ -383,14 +383,14 @@ if ($not_found) {
 
     html_print_table($table);
 
-    echo "<div style='width: ".$table->width."; text-align: right;'>";
+    echo "<div style='width: ".$table->width."; text-align: right; margin-top:20px;'>";
     if ($new_networkmap) {
         html_print_input_hidden('save_networkmap', 1);
         html_print_submit_button(
             __('Save networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub next"'
         );
     }
 
@@ -401,7 +401,7 @@ if ($not_found) {
             __('Update networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub upd"'
         );
     }
 

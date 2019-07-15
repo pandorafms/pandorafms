@@ -266,6 +266,14 @@ function config_update_config()
                         $error_update[] = __('Public URL');
                     }
 
+                    if (!config_update_value('force_public_url', get_parameter_switch('force_public_url'))) {
+                        $error_update[] = __('Force use Public URL');
+                    }
+
+                    if (!config_update_value('public_url_exclusions', get_parameter('public_url_exclusions'))) {
+                        $error_update[] = __('Public URL host exclusions');
+                    }
+
                     if (!config_update_value('referer_security', get_parameter('referer_security'))) {
                         $error_update[] = __('Referer security');
                     }
@@ -393,6 +401,10 @@ function config_update_config()
 
                         if (!config_update_value('enable_update_manager', get_parameter('enable_update_manager'))) {
                             $error_update[] = __('Enable Update Manager');
+                        }
+
+                        if (!config_update_value('disabled_newsletter', get_parameter('disabled_newsletter'))) {
+                            $error_update[] = __('Disabled newsletter');
                         }
 
                         if (!config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'))) {
@@ -1721,6 +1733,10 @@ function config_process_config()
 
     if (!isset($config['enable_update_manager'])) {
         config_update_value('enable_update_manager', 1);
+    }
+
+    if (!isset($config['disabled_newsletter'])) {
+        config_update_value('disabled_newsletter', 0);
     }
 
     if (!isset($config['ipam_ocuppied_critical_treshold'])) {

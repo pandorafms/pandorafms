@@ -24,9 +24,23 @@ $menu_godmode['class'] = 'godmode';
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $sub = [];
-    $sub['godmode/servers/discovery']['text'] = __('Discovery');
-    $sub['godmode/servers/discovery']['id'] = 'Discovery';
-    $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
+    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Discovery Main');
+    $sub['godmode/servers/discovery&wiz=main']['id'] = 'Discovery';
+
+    $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
+    $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';
+
+    $sub['godmode/servers/discovery&wiz=app']['text'] = __('Applications');
+    $sub['godmode/servers/discovery&wiz=app']['id'] = 'app';
+
+    $sub['godmode/servers/discovery&wiz=cloud']['text'] = __('Cloud');
+    $sub['godmode/servers/discovery&wiz=cloud']['id'] = 'cloud';
+
+    $sub['godmode/servers/discovery&wiz=ctask']['text'] = __('Console task');
+    $sub['godmode/servers/discovery&wiz=ctask']['id'] = 'ctask';
+
+    $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
+    $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
 
     // Add to menu.
     $menu_godmode['discovery']['text'] = __('Discovery');
@@ -208,7 +222,7 @@ if (!empty($sub)) {
 }
 
 
-if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, 'RR')) {
+if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'PM')) {
     // Servers
     $menu_godmode['gservers']['text'] = __('Servers');
     $menu_godmode['gservers']['sec2'] = 'godmode/servers/modificar_server';
@@ -418,9 +432,11 @@ if (is_array($config['extensions'])) {
     $sub['godmode/extensions']['type'] = 'direct';
     $sub['godmode/extensions']['subtype'] = 'nolink';
 
-    $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
-    if ($menu_godmode['gextensions']['sub'] != null) {
-        $menu_godmode['gextensions']['sub'] = $submenu;
+    if (is_array($menu_godmode['gextensions']['sub'])) {
+        $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
+        if ($menu_godmode['gextensions']['sub'] != null) {
+            $menu_godmode['gextensions']['sub'] = $submenu;
+        }
     }
 }
 
@@ -456,19 +472,6 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';
     $sub['godmode/update_manager/update_manager&tab=setup']['text'] = __('Update Manager options');
     $sub['godmode/update_manager/update_manager&tab=setup']['id'] = 'Options';
-
-    if (license_free() && is_user_admin($config['id_user'])) {
-        include_once 'include/functions_update_manager.php';
-        // If there are unread messages, display the notification icon
-        $number_total_messages;
-        $number_unread_messages = update_manager_get_unread_messages();
-        if ($number_unread_messages > 0) {
-            $menu_godmode['messages']['notification'] = $number_unread_messages;
-        }
-
-        $sub['godmode/update_manager/update_manager&tab=messages']['text'] = __('Messages');
-        $sub['godmode/update_manager/update_manager&tab=messages']['id'] = 'Messages';
-    }
 
     $menu_godmode['messages']['sub'] = $sub;
 }

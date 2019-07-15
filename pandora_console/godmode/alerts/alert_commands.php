@@ -84,9 +84,7 @@ if (is_ajax()) {
                 // If the field is the number one, print the help message.
                 if ($i == 1) {
                     // If our context is snmpconsole, show snmp_alert helps.
-                    if ((isset($_SERVER['HTTP_REFERER'])) && ( preg_match('/snmp_alert/', $_SERVER['HTTP_REFERER']) > 0 )) {
-                        $fdesc .= ui_print_help_icon('snmp_alert_field1', true);
-                    } else {
+                    if ((!isset($_SERVER['HTTP_REFERER'])) && ( preg_match('/snmp_alert/', $_SERVER['HTTP_REFERER']) > 0 )) {
                         $fdesc .= ui_print_help_icon('alert_config', true);
                     }
                 }
@@ -270,7 +268,13 @@ if ($update_command) {
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
-    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert commands'), 'images/gm_alerts.png', false, 'alerts_config', true);
+    ui_print_page_header(
+        __('Alerts').' &raquo; '.__('Alert commands'),
+        'images/gm_alerts.png',
+        false,
+        'alerts_command_tab',
+        true
+    );
 }
 
 if ($create_command) {

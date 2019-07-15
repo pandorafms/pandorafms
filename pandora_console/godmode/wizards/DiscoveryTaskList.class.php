@@ -361,50 +361,61 @@ class DiscoveryTaskList extends Wizard
                 $recon_tasks = [];
             }
 
-                $url_ajax = $config['homeurl'].'ajax.php';
+            $url_ajax = $config['homeurl'].'ajax.php';
 
-                $table = new StdClass();
-                $table->cellpadding = 0;
-                $table->cellspacing = 0;
-                $table->width = '100%';
-                $table->class = 'info_table';
-                $table->head = [];
-                $table->data = [];
-                $table->align = [];
-                $table->headstyle = [];
+            $table = new StdClass();
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
+            $table->width = '100%';
+            $table->class = 'info_table';
+            $table->head = [];
+            $table->data = [];
+            $table->align = [];
+            $table->headstyle = [];
             for ($i = 0; $i < 9; $i++) {
                 $table->headstyle[$i] = 'text-align: left;';
             }
 
-                $table->head[0] = __('Force');
-                $table->align[0] = 'left';
+            // Status.
+            $table->headstyle[5] .= 'min-width: 100px; width: 100px;';
+            // Task type.
+            $table->headstyle[6] .= 'min-width: 200px; width: 150px;';
+            // Progress.
+            $table->headstyle[7] .= 'min-width: 150px; width: 150px;';
+            // Updated at.
+            $table->headstyle[8] .= 'min-width: 150px; width: 150px;';
+            // Operations.
+            $table->headstyle[9] .= 'min-width: 150px; width: 150px;';
 
-                $table->head[1] = __('Task name');
-                $table->align[1] = 'left';
+            $table->head[0] = __('Force');
+            $table->align[0] = 'left';
 
-                $table->head[2] = __('Server name');
-                $table->align[2] = 'left';
+            $table->head[1] = __('Task name');
+            $table->align[1] = 'left';
 
-                $table->head[3] = __('Interval');
-                $table->align[3] = 'left';
+            $table->head[2] = __('Server name');
+            $table->align[2] = 'left';
 
-                $table->head[4] = __('Network');
-                $table->align[4] = 'left';
+            $table->head[3] = __('Interval');
+            $table->align[3] = 'left';
 
-                $table->head[5] = __('Status');
-                $table->align[5] = 'left';
+            $table->head[4] = __('Network');
+            $table->align[4] = 'left';
 
-                $table->head[6] = __('Task type');
-                $table->align[6] = 'left';
+            $table->head[5] = __('Status');
+            $table->align[5] = 'left';
 
-                $table->head[7] = __('Progress');
-                $table->align[7] = 'left';
+            $table->head[6] = __('Task type');
+            $table->align[6] = 'left';
 
-                $table->head[8] = __('Updated at');
-                $table->align[8] = 'left';
+            $table->head[7] = __('Progress');
+            $table->align[7] = 'left';
 
-                $table->head[9] = __('Operations');
-                $table->align[9] = 'left';
+            $table->head[8] = __('Updated at');
+            $table->align[8] = 'left';
+
+            $table->head[9] = __('Operations');
+            $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
                 $data = [];
@@ -490,41 +501,60 @@ class DiscoveryTaskList extends Wizard
                     $data[5] = __('Pending');
                 }
 
-                if ($task['id_recon_script'] == 0) {
-                    // Internal discovery task.
-                    switch ($task['type']) {
-                        case DISCOVERY_CLOUD_AWS_RDS:
-                            // Discovery Applications MySQL.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Cloud RDS')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.Cloud.Aws.RDS');
-                        break;
+                switch ($task['type']) {
+                    case DISCOVERY_CLOUD_AZURE_COMPUTE:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/plugin.png',
+                            true,
+                            ['title' => __('Discovery Cloud Azure Compute')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Cloud.Azure.Compute');
+                    break;
 
-                        case DISCOVERY_APP_MYSQL:
-                            // Discovery Applications MySQL.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Applications MySQL')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.App.MySQL');
-                        break;
+                    case DISCOVERY_CLOUD_AWS_EC2:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/plugin.png',
+                            true,
+                            ['title' => __('Discovery Cloud AWS EC2')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Cloud.AWS.EC2');
+                    break;
 
-                        case DISCOVERY_APP_ORACLE:
-                            // Discovery Applications Oracle.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Applications Oracle')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.App.Oracle');
-                        break;
+                    case DISCOVERY_CLOUD_AWS_RDS:
+                        // Discovery Cloud RDS.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Cloud RDS')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Cloud.Aws.RDS');
+                    break;
 
-                        case DISCOVERY_HOSTDEVICES:
-                        default:
+                    case DISCOVERY_APP_MYSQL:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications MySQL')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.MySQL');
+                    break;
+
+                    case DISCOVERY_APP_ORACLE:
+                        // Discovery Applications Oracle.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications Oracle')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.Oracle');
+                    break;
+
+                    case DISCOVERY_HOSTDEVICES:
+                    default:
+                        if ($task['id_recon_script'] == 0) {
                             // Discovery NetScan.
                             $data[6] = html_print_image(
                                 'images/network.png',
@@ -539,27 +569,21 @@ class DiscoveryTaskList extends Wizard
                             } else {
                                 $data[6] .= __('Discovery.NetScan');
                             }
-                        break;
-                    }
-                } else {
-                    // APP recon task.
-                    $data[6] = html_print_image(
-                        'images/plugin.png',
-                        true
-                    ).'&nbsp;&nbsp;';
-                    $data[6] .= $recon_script_name;
+                        } else {
+                            // APP or external script recon task.
+                            $data[6] = html_print_image(
+                                'images/plugin.png',
+                                true
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= $recon_script_name;
+                        }
+                    break;
                 }
 
                 if ($task['status'] <= 0 || $task['status'] > 100) {
                     $data[7] = '-';
                 } else {
-                    $data[7] = progress_bar(
-                        $task['status'],
-                        100,
-                        20,
-                        __('Progress').':'.$task['status'].'%',
-                        1
-                    );
+                    $data[7] = ui_progress($task['status'], '100%', 1.5);
                 }
 
                 if ($task['utimestamp'] > 0) {
@@ -646,13 +670,15 @@ class DiscoveryTaskList extends Wizard
                 array_push($table->data, $data);
             }
 
-                echo '<h2>'.__('Server tasks').'</h2>';
             if (empty($table->data)) {
-                echo '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
-                return false;
+                $content = '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
+                $return = false;
             } else {
-                html_print_table($table);
+                $content = html_print_table($table, true);
+                $return = true;
             }
+
+            ui_toggle($content, __('Server Tasks'), '', '', false);
 
             // Div neccesary for modal map task.
             echo '<div id="map_task" style="display:none"></div>';
@@ -660,6 +686,8 @@ class DiscoveryTaskList extends Wizard
             unset($table);
 
             ui_require_javascript_file('pandora_taskList');
+
+            return $return;
         }
 
         return true;
@@ -690,7 +718,16 @@ class DiscoveryTaskList extends Wizard
         if ($script !== false) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_CLOUD_AWS:
-                return 'wiz=cloud&mode=amazonws&page=1';
+                    switch ($task['type']) {
+                        case DISCOVERY_CLOUD_AWS_EC2:
+                        return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
+
+                        case DISCOVERY_CLOUD_AZURE_COMPUTE:
+                        return 'wiz=cloud&mode=azure&ki='.$task['auth_strings'].'&sub=compute&page=0';
+
+                        default:
+                        return 'wiz=cloud';
+                    }
 
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';
@@ -713,10 +750,10 @@ class DiscoveryTaskList extends Wizard
 
             case DISCOVERY_CLOUD_AWS:
             case DISCOVERY_CLOUD_AWS_EC2:
-            return 'wiz=cloud&mode=amazonws&page=1';
+            return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
 
             case DISCOVERY_CLOUD_AWS_RDS:
-            return 'wiz=cloud&mode=amazonws&sub=rds&page=0';
+            return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=rds&page=0';
 
             default:
                 if ($task['description'] == 'console_task') {

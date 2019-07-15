@@ -49,8 +49,15 @@ if ($config['realtimestats'] == 0) {
         $updated_info = '';
 }
 
-// Header
-ui_print_page_header(__('Tactical view'), '', false, '', false, $updated_time);
+// Header.
+ui_print_page_header(
+    __('Tactical view'),
+    '',
+    false,
+    'tactical_view',
+    false,
+    $updated_time
+);
 
 // Currently this function makes loading this page is impossible. Change
 // and create new function.
@@ -109,13 +116,13 @@ if (!empty($all_data)) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 30em; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
 $table = new stdClass();
 $table->width = '100%';
-$table->class = '';
+$table->class = 'info_table no-td-borders td-bg-white';
 $table->cellpadding = 2;
 $table->cellspacing = 2;
 $table->border = 0;
@@ -123,7 +130,6 @@ $table->head = [];
 $table->data = [];
 $table->style = [];
 
-$table->head[0] = '<span>'.__('Report of State').'</span>';
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
 $status = '<table class="status_tactical">';
 foreach ($stats as $stat) {
@@ -159,7 +165,13 @@ if ($is_admin) {
     $table->rowclass[] = '';
 }
 
-html_print_table($table);
+ui_toggle(
+    html_print_table($table, true),
+    __('Report of State'),
+    '',
+    '',
+    false
+);
 
 echo '</td>';
 // Left column
@@ -180,7 +192,13 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     }
 
     $events = events_print_event_table($event_filter, 10, '100%', true, false, true);
-    ui_toggle($events, __('Latest events'), false, false);
+    ui_toggle(
+        $events,
+        __('Latest events'),
+        '',
+        '',
+        false
+    );
 }
 
 // ---------------------------------------------------------------------
@@ -198,7 +216,15 @@ $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-t
     $out .= '<fieldset class="databox tactical_set" id="graphic_event_group">
 			<legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
     $out .= '</td></tr></table>';
-echo $out;
+
+
+ui_toggle(
+    $out,
+    __('Event graphs'),
+    '',
+    '',
+    false
+);
 
 echo '</td>';
 echo '</tr></table>';
@@ -226,4 +252,4 @@ echo '</tr></table>';
             }
         });
     });
-</script>    
+</script>

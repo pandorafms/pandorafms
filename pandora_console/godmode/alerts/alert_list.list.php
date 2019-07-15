@@ -438,11 +438,11 @@ if (! $id_agente) {
     $table->style = [];
     $table->style[0] = 'font-weight: bold;';
     $table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
-    $table->size[0] = '4%';
-    $table->size[1] = '8%';
-    $table->size[2] = '8%';
-    $table->size[3] = '4%';
-    $table->size[4] = '4%';
+    $table->headstyle[0] = 'width: 100%; min-width: 12em;';
+    $table->headstyle[1] = 'min-width: 15em;';
+    $table->headstyle[2] = 'min-width: 20em;';
+    $table->headstyle[3] = 'min-width: 1em;';
+    $table->headstyle[4] = 'min-width: 15em;';
 
     /*
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -450,16 +450,11 @@ if (! $id_agente) {
     }*/
 } else {
     $table->head[0] = __('Module').ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
-    // Different sizes or the layout screws up
-    $table->size[0] = '0%';
-    $table->size[1] = '10%';
-    $table->size[2] = '30%';
-    /*
-        if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-        $table->size[4] = '25%';
-    }  */
-    $table->size[3] = '1%';
-    $table->size[4] = '1%';
+    $table->headstyle[0] = 'width: 100%; min-width: 15em;';
+    $table->headstyle[1] = 'min-width: 15em;';
+    $table->headstyle[2] = 'min-width: 20em;';
+    $table->headstyle[3] = 'min-width: 1em;';
+    $table->headstyle[4] = 'min-width: 15em;';
 }
 
 $table->head[1] = __('Template').ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
@@ -700,20 +695,41 @@ foreach ($simple_alerts as $alert) {
                     $data[2] .= '</tr>';
                     $data[2] .= '<tr class="datos">';
                         $data[2] .= '<td class="datos" style="font-weight:bold;padding:6px;">';
-                            $data[2] .= __('Number of alerts match from').'&nbsp;'.ui_print_help_icon('alert-matches', true, ui_get_full_url(false, false, false, false));
+                            $data[2] .= __('Number of alerts match from');
                         $data[2] .= '</td>';
                         $data[2] .= '<td class="datos">';
-                            $data[2] .= html_print_input_text('fires_min', 0, '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'fires_min',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                             $data[2] .= ' '.__('to').' ';
-                            $data[2] .= html_print_input_text('fires_max', 0, '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'fires_max',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                         $data[2] .= '</td>';
                     $data[2] .= '</tr>';
                     $data[2] .= '<tr class="datos2">';
                         $data[2] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
-                            $data[2] .= __('Threshold').'&nbsp;'.ui_print_help_icon('action_threshold', true, ui_get_full_url(false, false, false, false));
+                            $data[2] .= __('Threshold');
                         $data[2] .= '</td>';
                         $data[2] .= '<td class="datos2">';
-                            $data[2] .= html_print_input_text('module_action_threshold', '', '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'module_action_threshold',
+                                '',
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                         $data[2] .= '</td>';
                     $data[2] .= '</tr>';
                 $data[2] .= '</table>';

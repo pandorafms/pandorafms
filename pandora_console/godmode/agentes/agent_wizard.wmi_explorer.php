@@ -317,7 +317,6 @@ $table->data[0][0] = '<b>'.__('Target IP').'</b>';
 $table->data[0][1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
 
 $table->data[0][2] = '<b>'.__('Namespace').'</b>';
-$table->data[0][2] .= ui_print_help_icon('wminamespace', true);
 $table->data[0][3] = html_print_input_text('tcp_send', $tcp_send, '', 15, 60, true);
 
 $table->data[1][0] = '<b>'.__('Username').'</b>';

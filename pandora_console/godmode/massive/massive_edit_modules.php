@@ -388,6 +388,11 @@ $table->data['form_modules_4'][1] = html_print_select(
     true
 );
 
+$table->rowstyle['form_modules_filter'] = 'vertical-align: top;';
+$table->rowclass['form_modules_filter'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_filter'][0] = __('Filter Modules');
+$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
+
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
 $table->data['form_modules_2'][0] = __('Modules');
@@ -695,7 +700,7 @@ $table->data['edit1'][1] = '<table width="100%">';
                 true
             );
 
-            $table->data['edit3'][0] = __('Post process').ui_print_help_icon('postprocess', true);
+            $table->data['edit3'][0] = __('Post process');
 
             $table->data['edit3'][1] = html_print_extended_select_for_post_process(
                 'post_process',
@@ -846,10 +851,6 @@ $table->data['edit1'][1] = '<table width="100%">';
 
             // FF stands for Flip-flop.
             $table->data['edit7'][0] = __('FF threshold').' ';
-            $table->data['edit7'][0] .= ui_print_help_icon(
-                'ff_threshold',
-                true
-            );
 
             $table->colspan['edit7'][1] = 3;
             $table->data['edit7'][1] = __('Mode').' ';
@@ -1060,26 +1061,26 @@ $table->data['edit1'][1] = '<table width="100%">';
                 true
             );
 
-            $table->data['edit22'][0] = __('Web checks').ui_print_help_icon('web_checks', true);
+            $table->data['edit22'][0] = __('Web checks');
             ;
             $table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter_text" cols="65" rows="15"></textarea>';
 
             $table->data['edit16'][2] = __('Port');
             $table->data['edit16'][3] = html_print_input_text('tcp_port', '', '', 5, 20, true);
 
-            $table->data['edit17'][0] = __('TCP send').' '.ui_print_help_icon('tcp_send', true);
+            $table->data['edit17'][0] = __('TCP send');
             $table->data['edit17'][1] = html_print_textarea('tcp_send2', 2, 65, '', '', true);
 
             $table->data['edit17'][2] = __('TCP receive');
             $table->data['edit17'][3] = html_print_textarea('tcp_rcv', 2, 65, '', '', true);
 
-            $table->data['edit18'][0] = __('WMI query').ui_print_help_icon('wmiquery', true);
+            $table->data['edit18'][0] = __('WMI query');
             $table->data['edit18'][1] = html_print_input_text('wmi_query', '', '', 35, 255, true);
 
             $table->data['edit18'][2] = __('Key string');
             $table->data['edit18'][3] = html_print_input_text('key_string', '', '', 20, 60, true);
 
-            $table->data['edit19'][0] = __('Field number').ui_print_help_icon('wmifield', true);
+            $table->data['edit19'][0] = __('Field number');
             $table->data['edit19'][1] = html_print_input_text('field_number', '', '', 5, 15, true);
 
             $table->data['edit20'][0] = __('Plugin').ui_print_help_icon('plugin_macros', true);
@@ -1251,6 +1252,9 @@ $(document).ready (function () {
                 });
                 $("#module_loading").hide ();
                 $("#module_name").removeAttr ("disabled");
+                //Filter modules. Call the function when the select is fully loaded.
+                var textNoData = "<?php echo __('None'); ?>";
+                filterByText($('#module_name'), $("#text-filter_modules"), textNoData);
             },
             "json"
         );

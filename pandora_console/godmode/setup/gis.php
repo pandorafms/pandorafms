@@ -28,8 +28,14 @@ require_once 'include/functions_gis.php';
 
 ui_require_javascript_file('openlayers.pandora');
 
-// Header
-ui_print_page_header(__('Map conections GIS'), '', false, 'setup_gis_index', true);
+// Header.
+ui_print_page_header(
+    __('Map conections GIS'),
+    '',
+    false,
+    '',
+    true
+);
 
 $action = get_parameter('action');
 

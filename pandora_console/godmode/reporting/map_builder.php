@@ -15,7 +15,7 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
-// ACL for the general permission
+// ACL for the general permission.
 $vconsoles_read = check_acl($config['id_user'], 0, 'VR');
 $vconsoles_write = check_acl($config['id_user'], 0, 'VW');
 $vconsoles_manage = check_acl($config['id_user'], 0, 'VM');
@@ -61,7 +61,7 @@ $buttons['visual_console_favorite'] = [
     'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image('images/list.png', true, ['title' => __('Visual Favourite Console')]).'</a>',
 ];
 
-if ($is_enterprise && $vconsoles_manage) {
+if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template'] = [
         'active' => false,
         'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image('images/templates.png', true, ['title' => __('Visual Console Template')]).'</a>',
@@ -84,7 +84,7 @@ if (!$is_metaconsole) {
         __('Reporting').' &raquo; '.__('Visual Console'),
         'images/op_reporting.png',
         false,
-        'map_builder',
+        'map_builder_intro',
         false,
         $buttons
     );

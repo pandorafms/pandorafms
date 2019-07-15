@@ -45,6 +45,9 @@
                     .parent()
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
+                $('.check_delete').each(function(){
+                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+                });
             }
             else{
                 $('[id^=checkbox-massive_report_check]')
@@ -480,6 +483,7 @@ switch ($action) {
         }
 
         $subsection = '';
+        $helpers = '';
         switch ($activeTab) {
             case 'main':
                 $buttons['list_reports']['active'] = true;
@@ -487,10 +491,14 @@ switch ($action) {
             break;
 
             default:
-                $subsection = reporting_enterprise_add_subsection_main(
+                $data_tab = reporting_enterprise_add_subsection_main(
                     $activeTab,
                     $buttons
                 );
+
+                $subsection = $data_tab['subsection'];
+                $buttons = $data_tab['buttons'];
+                $helpers = $data_tab['helpers'];
             break;
         }
 
@@ -755,6 +763,9 @@ switch ($action) {
 
             $table->head = [];
             $table->align = [];
+            $table->headstyle = [];
+            $table->style = [];
+
             $table->align[2] = 'left';
             $table->align[3] = 'left';
             $table->align[4] = 'left';
@@ -763,24 +774,32 @@ switch ($action) {
             $table->head[1] = __('Description');
             $table->head[2] = __('HTML');
             $table->head[3] = __('XML');
-            $table->size[0] = '20%';
-            $table->size[1] = '30%';
+            $table->size[0] = '50%';
+            $table->size[1] = '20%';
             $table->size[2] = '2%';
+            $table->headstyle[2] = 'min-width: 35px;text-align: left;';
             $table->size[3] = '2%';
+            $table->headstyle[3] = 'min-width: 35px;text-align: left;';
             $table->size[4] = '2%';
-            $table->size[5] = '2%';
-            $table->size[6] = '2%';
-            $table->size['csv'] = '5%';
+            $table->headstyle[4] = 'min-width: 35px;text-align: left;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
-            if (enterprise_hook('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
+            if (enterprise_hook('load_custom_reporting_1', [$table]) !== ENTERPRISE_NOT_HOOK) {
                 $next = 7;
             }
+
+            $table->size[$next] = '2%';
+            $table->style[$next] = 'text-align: left;';
+
+            $table->headstyle[($next + 2)] = 'min-width: 130px; text-align:right;';
+            $table->style[($next + 2)] = 'text-align: right;';
+
 
             // Admin options only for RM flag.
             if (check_acl($config['id_user'], 0, 'RM')) {
                 $table->head[$next] = __('Private');
+                $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
                 $table->size[$next] = '2%';
                 if (defined('METACONSOLE')) {
                     $table->align[$next] = '';
@@ -790,7 +809,9 @@ switch ($action) {
 
                 $next++;
                 $table->head[$next] = __('Group');
-                $table->size[$next] = '15%';
+                $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
+                $table->size[$next] = '2%';
+                $table->align[$next] = 'left';
 
                 $next++;
                 $op_column = false;
@@ -808,8 +829,7 @@ switch ($action) {
 
                 // $table->size = array ();
                 $table->size[$next] = '10%';
-                $table->align[$next] = 'left';
-                $table->headstyle[$next] = 'text-align:left;';
+                $table->align[$next] = 'right';
             }
 
             $columnview = false;
@@ -991,7 +1011,6 @@ switch ($action) {
                         $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
                         $table->size = [];
                         // $table->size[$next] = '80px';
-                        $table->style[$next] = 'text-align:left;';
                     }
 
                     if ($edit) {
@@ -1329,6 +1348,8 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+
                         $label = get_parameter('label', '');
 
                         // Add macros name.
@@ -1422,6 +1443,14 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
                                 );
 
                                 $good_format = true;
@@ -1884,8 +1913,8 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
                                 $style['event_filter_search'] = $event_filter_search;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -1991,6 +2020,7 @@ switch ($action) {
                         );
                         $name_it = (string) get_parameter('name');
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -2379,6 +2409,16 @@ switch ($action) {
 
                         $values['current_month'] = get_parameter('current_month');
 
+                        $values['failover_mode'] = get_parameter(
+                            'failover_mode',
+                            0
+                        );
+
+                        $values['failover_type'] = get_parameter(
+                            'failover_type',
+                            REPORT_FAILOVER_TYPE_NORMAL
+                        );
+
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
@@ -2402,6 +2442,7 @@ switch ($action) {
                             case 'event_report_agent':
                             case 'event_report_group':
                             case 'event_report_module':
+
                                 $show_summary_group = get_parameter(
                                     'show_summary_group',
                                     0
@@ -2457,22 +2498,11 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
-
-                                switch ($values['type']) {
-                                    case 'event_report_group':
-                                    case 'event_report_agent':
-                                        $style['event_filter_search'] = $event_filter_search;
-                                        if ($label != '') {
-                                            $style['label'] = $label;
-                                        } else {
-                                            $style['label'] = '';
-                                        }
-                                    break;
-
-                                    default:
-                                        // Default.
-                                    break;
+                                $style['event_filter_search'] = $event_filter_search;
+                                if ($label != '') {
+                                    $style['label'] = $label;
+                                } else {
+                                    $style['label'] = '';
                                 }
                             break;
 
@@ -2909,6 +2939,7 @@ switch ($action) {
             $buttons = reporting_enterprise_add_main_Tabs($buttons);
 
             $subsection = '';
+            $helpers = '';
             switch ($activeTab) {
                 case 'main':
                     $buttons['list_reports']['active'] = true;
@@ -2916,10 +2947,14 @@ switch ($action) {
                 break;
 
                 default:
-                    $subsection = reporting_enterprise_add_subsection_main(
+                    $data_tab = reporting_enterprise_add_subsection_main(
                         $activeTab,
                         $buttons
                     );
+
+                    $subsection = $data_tab['subsection'];
+                    $buttons = $data_tab['buttons'];
+                    $helpers = $data_tab['helper'];
                 break;
             }
 
@@ -3027,11 +3062,21 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
     // Print header.
     ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
 } else {
+    switch ($activeTab) {
+        case 'main':
+            $helpers = '';
+        break;
+
+        default:
+            $helpers = 'reporting_'.$activeTab.'_tab';
+        break;
+    }
+
     ui_print_page_header(
         $textReportName,
         'images/op_reporting.png',
         false,
-        'reporting_'.$activeTab.'_tab',
+        $helpers,
         false,
         $buttons,
         false,

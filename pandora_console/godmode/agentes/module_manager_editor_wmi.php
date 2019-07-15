@@ -42,7 +42,7 @@ if (empty($update_module_id)) {
 }
 
 $data = [];
-$data[0] = __('Target IP');
+$data[0] = __('Target IP').' '.ui_print_help_icon('wmi_module_tab', true);
 $data[1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
 $data[2] = __('Namespace').ui_print_help_tip(__('Optional. WMI namespace. If unsure leave blank.'), true);
 $data[3] = html_print_input_text(
@@ -60,7 +60,7 @@ $data[3] = html_print_input_text(
 push_table_simple($data, 'target_ip');
 
 $data = [];
-$data[0] = __('Username').ui_print_help_icon('column_macros', true);
+$data[0] = __('Username');
 $data[1] = html_print_input_text(
     'plugin_user',
     $plugin_user,
@@ -73,7 +73,7 @@ $data[1] = html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$data[2] = __('Password').ui_print_help_icon('column_macros', true);
+$data[2] = __('Password');
 $data[3] = html_print_input_password(
     'plugin_pass',
     $plugin_pass,
@@ -83,15 +83,14 @@ $data[3] = html_print_input_password(
     true,
     $disabledBecauseInPolicy,
     false,
-    '',
-    $classdisabledBecauseInPolicy
+    $classdisabledBecauseInPolicy,
+    'new-password'
 );
 
 push_table_simple($data, 'user_pass');
 
 $data = [];
 $data[0] = __('WMI query');
-$data[0] .= ui_print_help_icon('wmiquery', true);
 $data[1] = html_print_input_text(
     'snmp_oid',
     $snmp_oid,

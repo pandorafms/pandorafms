@@ -84,7 +84,7 @@ if ($get_extended_info == 1) {
     $table->head = [];
     $table->cellspacing = 2;
     $table->cellpadding = 2;
-    $table->class = 'events_show_more_table';
+    $table->class = 'table_modal_alternate';
 
     $output = [];
     $output[] = '<b>'.__('Timestamp').'</b>';

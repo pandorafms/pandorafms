@@ -114,10 +114,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 28),
+('MR', 30),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '735'),
+('current_package_enterprise', '737'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
@@ -270,7 +270,6 @@ INSERT INTO `ttipo_modulo` VALUES
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(24,'log4x',0,'Log4x','mod_log4x.png'),
 (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
 (30,'web_data',9,'Remote HTTP module to check latency','mod_web_data.png'),
 (31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
@@ -1303,7 +1302,7 @@ INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `
   ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
-  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_logo_pandora.png", 86400, 1, 1, 0),
   ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
 
 -- 
@@ -1314,4 +1313,8 @@ INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_ma
 
 INSERT INTO `tnotification_source_group` SELECT `id`,0 FROM `tnotification_source` WHERE `description`="Message";
 
+INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `also_mail`) VALUES
+  ((SELECT `id` FROM `tnotification_source` WHERE `description`="Official&#x20;communication"), "admin", 1, 0);
+
+UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20;status' OR `description` = 'Official&#x20;communication';
   

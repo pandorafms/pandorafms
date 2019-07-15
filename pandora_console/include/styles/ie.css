@@ -20,7 +20,7 @@
   background: none;
 }
 .title .toggle {
-  background: transparent url(images/toggle.png) no-repeat scroll !important;
+  background: transparent url(images/toggle.png) no-repeat scroll;
 }
 
 .title a {
@@ -70,7 +70,7 @@ div#foot {
   box-shadow: 0px 0px 15px #000000;
 }
 div#foot a {
-  color: #333 !important;
+  color: #333;
 }
 
 div#foot a.white:after {

@@ -13,16 +13,38 @@
   display: flex;
   -webkit-box-orient: initial;
   -webkit-box-direction: initial;
-  -ms-flex-direction: initial;
-  flex-direction: initial;
+      -ms-flex-direction: initial;
+          flex-direction: initial;
   justify-items: center;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+     -moz-user-select: text;
+      -ms-user-select: text;
+          user-select: text;
+}
+
+.visual-console-item.is-editing {
+  border: 2px dashed #b2b2b2;
+  -webkit-transform: translateX(-2px) translateY(-2px);
+          transform: translateX(-2px) translateY(-2px);
+  cursor: move;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.visual-console-item.is-editing > .resize-draggable {
+  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
+  background: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIAoJeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiAKCXhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE1cHgiIGhlaWdodD0iMTVweCIgdmlld0JveD0iMCAwIDE1IDE1IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNSAxNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8bGluZSBmaWxsPSJub25lIiBzdHJva2U9IiNCMkIyQjIiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHgxPSIwLjU2MiIgeTE9IjM2LjMxNyIgeDI9IjE0LjIzMSIgeTI9IjIyLjY0OCIvPgoJPGxpbmUgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjQjJCMkIyIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiB4MT0iNC45NzEiIHkxPSIzNi41OTUiIHgyPSIxNC40MDkiIHkyPSIyNy4xNTUiLz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjEwLjAxNyIgeTE9IjM2LjQzMyIgeDI9IjE0LjIzMSIgeTI9IjMyLjIxOCIvPgoJPGcgaWQ9ImpHRWVLbl8xXyI+CgoJCTxpbWFnZSBvdmVyZmxvdz0idmlzaWJsZSIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM3IiBpZD0iakdFZUtuIiB4bGluazpocmVmPSJkYXRhOmltYWdlL2pwZWc7YmFzZTY0LC85ai80QUFRU2taSlJnQUJBZ0VBU0FCSUFBRC83QUFSUkhWamEza0FBUUFFQUFBQUhnQUEvKzRBSVVGa2IySmxBR1RBQUFBQUFRTUEKRUFNQ0F3WUFBQUdSQUFBQnN3QUFBZ0wvMndDRUFCQUxDd3NNQ3hBTURCQVhEdzBQRnhzVUVCQVVHeDhYRnhjWEZ4OGVGeG9hR2hvWApIaDRqSlNjbEl4NHZMek16THk5QVFFQkFRRUJBUUVCQVFFQkFRRUFCRVE4UEVSTVJGUklTRlJRUkZCRVVHaFFXRmhRYUpob2FIQm9hCkpqQWpIaDRlSGlNd0t5NG5KeWN1S3pVMU1EQTFOVUJBUDBCQVFFQkFRRUJBUUVCQVFQL0NBQkVJQUNZQUx3TUJJZ0FDRVFFREVRSC8KeEFCNUFBRUJBUUVCQUFBQUFBQUFBQUFBQUFBQUFRUUNCZ0VCQUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQVFRREFBQUFBQUFBQUFBQQpBQUFBQVFBeEFnTVFNQklSQUFFQkJnVUZBUUFBQUFBQUFBQUFBQUVDQUJFaFFXRURFQ0J4a1JJd01ZRXlFd1FTQVFBQUFBQUFBQUFBCkFBQUFBQUFBQURELzJnQU1Bd0VBQWhFREVRQUFBUGZBUzV6VFpUa0dQclVMWlFBQUQvL2FBQWdCQWdBQkJRRFQvOW9BQ0FFREFBRUYKQU5QLzJnQUlBUUVBQVFVQXpKZzJTUUJDMmQwdzJiWlN2Vk5jNW9NdUF1UXVBdVJwLzlvQUNBRUNBZ1kvQUIvLzJnQUlBUU1DQmo4QQpILy9hQUFnQkFRRUdQd0RFNlpYbUFZcXR3c0pCSEk5MUdsTXFudlQrZTM3UUwxa1MwYjdYQndBRHJWb1FDUlhHZTVhZTVhZTVhZms5CkgvL1oiIHRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIDEgLTQ2Ljg3NSAtOS44OTA2KSI+CgkJPC9pbWFnZT4KCTwvZz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjEzLjQ4MyIgeTE9IjAuNjQ0IiB4Mj0iMC44MjgiIHkyPSIxMy4zMDEiLz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjEzLjczNCIgeTE9IjUuMTQxIiB4Mj0iNS4zMjUiIHkyPSIxMy41NDkiLz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjE0LjIzMSIgeTE9IjkuMzg4IiB4Mj0iOS44MDYiIHkyPSIxMy44MTMiLz4KPC9zdmc+Cg==);
+  cursor: se-resize;
 }
 
 @font-face {
@@ -38,17 +60,17 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   justify-items: center;
   -ms-flex-line-pack: center;
-  align-content: center;
+      align-content: center;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .visual-console-item .digital-clock > span {
@@ -78,17 +100,18 @@
 
 .visual-console-item .analogic-clock .hour-hand {
   -webkit-animation: rotate-hour 43200s infinite linear;
-  animation: rotate-hour 43200s infinite linear;
+          animation: rotate-hour 43200s infinite linear;
 }
 
 .visual-console-item .analogic-clock .minute-hand {
   -webkit-animation: rotate-minute 3600s infinite linear;
-  animation: rotate-minute 3600s infinite linear;
+          animation: rotate-minute 3600s infinite linear;
 }
 
 .visual-console-item .analogic-clock .second-hand {
   -webkit-animation: rotate-second 60s infinite linear;
-  animation: rotate-second 60s infinite linear;
+          animation: rotate-second 60s infinite linear;
 }
+
 
 /*# sourceMappingURL=vc.main.css.map*/

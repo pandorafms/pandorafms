@@ -1,17 +1,33 @@
 <?php
+/**
+ * Module management.
+ *
+ * @category   Ajax library.
+ * @package    Pandora FMS
+ * @subpackage Modules.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
+// Begin.
 if (check_login()) {
-    // Pandora FMS- http://pandorafms.com
-    // ==================================================
-    // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-    // Please see http://pandorafms.org for full contribution list
-    // This program is free software; you can redistribute it and/or
-    // modify it under the terms of the  GNU Lesser General Public License
-    // as published by the Free Software Foundation; version 2
-    // This program is distributed in the hope that it will be useful,
-    // but WITHOUT ANY WARRANTY; without even the implied warranty of
-    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    // GNU General Public License for more details.
     global $config;
 
     include_once $config['homedir'].'/include/functions_agents.php';
@@ -76,7 +92,7 @@ if (check_login()) {
         $id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
         $filter = '%'.get_parameter('q', '').'%';
         $other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
-        // TODO TAGS agents_get_modules
+        // TODO TAGS agents_get_modules.
         $modules = agents_get_modules(
             $id_agents,
             false,
@@ -96,7 +112,7 @@ if (check_login()) {
     }
 
     if ($get_module_detail) {
-        // This script is included manually to be included after jquery and avoid error
+        // This script is included manually to be included after jquery and avoid error.
         ui_include_time_picker();
         ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
@@ -307,7 +323,7 @@ if (check_login()) {
         if (empty($module_data)) {
             $result = [];
         } else {
-            // Paginate the result
+            // Paginate the result.
             $result = array_slice($module_data, $offset, $block_size);
         }
 
@@ -366,21 +382,26 @@ if (check_login()) {
                     $data[] = html_print_result_div($row[$attr[0]]);
                 } else if ($is_web_content_string) {
                     // Fixed the goliat sends the strings from web
-                    // without HTML entities
+                    // without HTML entities.
                     $data[] = io_safe_input($row[$attr[0]]);
                 } else {
-                    // Fixed the data from Selenium Plugin
+                    // Fixed the data from Selenium Plugin.
                     if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
                         $data[] = html_print_result_div($row[$attr[0]]);
                     } else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type'])) {
                         switch ($row['module_type']) {
                             case 15:
                                 $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
+                                // System Uptime:
+                                // In case of System Uptime module, shows data in format "Days hours minutes seconds" if and only if
+                                // selected module unit is "_timeticks_"
+                                // Take notice that selected unit may not be postrocess unit
                                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                    if ($post_process > 0) {
-                                        $data[] = human_milliseconds_to_string(($row['data'] / $post_process));
+                                        $data_macro = modules_get_unit_macro($row[$attr[0]], $unit);
+                                    if ($data_macro) {
+                                        $data[] = $data_macro;
                                     } else {
-                                        $data[] = human_milliseconds_to_string($row['data']);
+                                        $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
                                     }
                                 } else {
                                     $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
@@ -451,11 +472,17 @@ if (check_login()) {
         $result = false;
         $id_module_a = (int) get_parameter('id_module_a');
         $id_module_b = (int) get_parameter('id_module_b');
+        $type = (string) get_parameter('relation_type');
 
         if ($id_module_a < 1) {
             $name_module_a = get_parameter('name_module_a', '');
             if ($name_module_a) {
-                $id_module_a = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_a);
+                $id_module_a = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_a
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -465,7 +492,12 @@ if (check_login()) {
         if ($id_module_b < 1) {
             $name_module_b = get_parameter('name_module_b', '');
             if ($name_module_b) {
-                $id_module_b = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_b);
+                $id_module_b = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_b
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -473,7 +505,7 @@ if (check_login()) {
         }
 
         if ($id_module_a > 0 && $id_module_b > 0) {
-            $result = modules_add_relation($id_module_a, $id_module_b);
+            $result = modules_add_relation($id_module_a, $id_module_b, $type);
         }
 
         echo json_encode($result);
@@ -523,7 +555,8 @@ if (check_login()) {
         $agent_w = check_acl($config['id_user'], 0, 'AW');
         $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 
-        $id_agente = $id_agent = (int) get_parameter('id_agente', 0);
+        $id_agent = (int) get_parameter('id_agente', 0);
+        $id_agente = $id_agent;
         $show_notinit = (int) get_parameter('show_notinit', 0);
         $cluster_list = (int) get_parameter('cluster_list', 0);
         $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent;
@@ -549,6 +582,7 @@ if (check_login()) {
             case 'type':
                 switch ($sort) {
                     case 'up':
+                    default:
                         $selectTypeUp = $selected;
                         $order[] = [
                             'field' => 'tagente_modulo.id_modulo',
@@ -583,6 +617,10 @@ if (check_login()) {
                             'order' => 'DESC',
                         ];
                     break;
+
+                    default:
+                        // Ignore.
+                    break;
                 }
             break;
 
@@ -603,6 +641,10 @@ if (check_login()) {
                             'order' => '',
                         ];
                     break;
+
+                    default:
+                        // Ignore.
+                    break;
                 }
             break;
 
@@ -622,6 +664,10 @@ if (check_login()) {
                             'field' => 'tagente_estado.utimestamp',
                             'order' => 'DESC',
                         ];
+                    break;
+
+                    default:
+                        // Ignore.
                     break;
                 }
             break;
@@ -645,7 +691,8 @@ if (check_login()) {
             break;
         }
 
-        // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
+        // Fix: for tag functionality groups have to be all user_groups
+        // (propagate ACL funct!).
         $groups = users_get_groups($config['id_user'], $access);
 
         $tags_join = '';
@@ -669,7 +716,7 @@ if (check_login()) {
 
         $status_filter_sql = '1 = 1';
         if ($status_filter_monitor == AGENT_MODULE_STATUS_NOT_NORMAL) {
-            // Not normal
+            // Not normal.
             $status_filter_sql = ' tagente_estado.estado <> 0';
         } else if ($status_filter_monitor != -1) {
             $status_filter_sql = 'tagente_estado.estado = '.$status_filter_monitor;
@@ -693,7 +740,7 @@ if (check_login()) {
         }
 
         // Count monitors/modules
-        // Build the order sql
+        // Build the order sql.
         $first = true;
         foreach ($order as $ord) {
             if ($first) {
@@ -769,6 +816,7 @@ if (check_login()) {
 
         $table = new stdClass();
         $table->width = '100%';
+        $table->styleTable = 'border: 0;border-radius: 0;';
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->class = 'info_table';
@@ -791,19 +839,29 @@ if (check_login()) {
         $table->head[6] = __('Thresholds');
         $table->head[7] = __('Data');
         $table->head[8] = __('Graph');
-        $table->headstyle[8] = 'min-width: 60px';
         $table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-        $table->align = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-        ];
+        $table->align = [];
+        $table->align[0] = 'center';
+        $table->align[1] = 'left';
+        $table->align[2] = 'left';
+        $table->align[3] = 'left';
+        $table->align[4] = 'left';
+        $table->align[5] = 'left';
+        $table->align[6] = 'center';
+        $table->align[7] = 'left';
+        $table->align[8] = 'center';
+        $table->align[9] = 'right';
+
+        $table->headstyle[2] = 'min-width: 85px';
+        $table->headstyle[3] = 'min-width: 130px';
+        $table->size[3] = '30%';
+        $table->style[3] = 'max-width: 28em;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;';
+        $table->size[4] = '30%';
+        $table->headstyle[5] = 'min-width: 85px';
+        $table->headstyle[6] = 'min-width: 125px; text-align: center;';
+        $table->headstyle[7] = 'min-width: 125px;';
+        $table->headstyle[8] = 'min-width: 100px; text-align: center;';
+        $table->headstyle[9] = 'min-width: 120px; text-align: right;';
 
         $last_modulegroup = 0;
         $rowIndex = 0;
@@ -842,14 +900,14 @@ if (check_login()) {
                     $last_modulegroup = $module['id_module_group'];
                 }
 
-                // End of title of group
+                // End of title of group.
             }
 
             $data = [];
             if (($module['id_modulo'] != 1) && ($module['id_tipo_modulo'] != 100)) {
                 if ($agent_w) {
                     if ($module['flag'] == 0) {
-                        $data[0] = '<a href="index.php?'.'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$id_agente.'&amp;'.'id_agente_modulo='.$module['id_agente_modulo'].'&amp;'.'flag=1&amp;'.'refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
+                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
                     } else {
                         $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['border' => '0', 'title' => __('Refresh')]).'</a>';
                     }
@@ -936,12 +994,12 @@ if (check_login()) {
                 }
             }
 
-            // Adds tag context information
+            // Adds tag context information.
             if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
                 $data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/tag_red.png', true, ['id' => 'tag-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
-            // Adds relations context information
+            // Adds relations context information.
             if (modules_relation_exists($module['id_agente_modulo'])) {
                 $data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
@@ -973,121 +1031,84 @@ if (check_login()) {
                 }
             }
 
-            if ($module['id_tipo_modulo'] == 24) {
-                // log4x
-                switch ($module['datos']) {
-                    case 10:
-                        $salida = 'TRACE';
-                        $style = 'font-weight:bold; color:darkgreen;';
-                    break;
+            if (is_numeric($module['datos']) && !modules_is_string_type($module['id_tipo_modulo'])) {
+                if ($config['render_proc']) {
+                    switch ($module['id_tipo_modulo']) {
+                        case 2:
+                        case 6:
+                        case 9:
+                        case 18:
+                        case 21:
+                        case 31:
+                            if ($module['datos'] >= 1) {
+                                $salida = $config['render_proc_ok'];
+                            } else {
+                                $salida = $config['render_proc_fail'];
+                            }
+                        break;
 
-                    case 20:
-                        $salida = 'DEBUG';
-                        $style = 'font-weight:bold; color:darkgreen;';
-                    break;
-
-                    case 30:
-                        $salida = 'INFO';
-                        $style = 'font-weight:bold; color:darkgreen;';
-                    break;
-
-                    case 40:
-                        $salida = 'WARN';
-                        $style = 'font-weight:bold; color:darkorange;';
-                    break;
-
-                    case 50:
-                        $salida = 'ERROR';
-                        $style = 'font-weight:bold; color:red;';
-                    break;
-
-                    case 60:
-                        $salida = 'FATAL';
-                        $style = 'font-weight:bold; color:red;';
-                    break;
-                }
-
-                $salida = "<span style='$style'>$salida</span>";
-            } else {
-                if (is_numeric($module['datos']) && !modules_is_string_type($module['id_tipo_modulo'])) {
-                    if ($config['render_proc']) {
-                        switch ($module['id_tipo_modulo']) {
-                            case 2:
-                            case 6:
-                            case 9:
-                            case 18:
-                            case 21:
-                            case 31:
-                                if ($module['datos'] >= 1) {
-                                    $salida = $config['render_proc_ok'];
-                                } else {
-                                    $salida = $config['render_proc_fail'];
-                                }
-                            break;
-
-                            default:
-                                switch ($module['id_tipo_modulo']) {
-                                    case 15:
-                                        $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                                        if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                            if ($module['post_process'] > 0) {
-                                                $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
-                                            } else {
-                                                $salida = human_milliseconds_to_string($module['datos']);
-                                            }
+                        default:
+                            switch ($module['id_tipo_modulo']) {
+                                case 15:
+                                    $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+                                    if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                                        if ($module['post_process'] > 0) {
+                                            $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
                                         } else {
-                                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                                            $salida = human_milliseconds_to_string($module['datos']);
                                         }
-                                    break;
-
-                                    default:
-                                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                                    break;
-                                }
-                            break;
-                        }
-                    } else {
-                        switch ($module['id_tipo_modulo']) {
-                            case 15:
-                                $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                                if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                    if ($module['post_process'] > 0) {
-                                        $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
                                     } else {
-                                        $salida = human_milliseconds_to_string($module['datos']);
+                                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
                                     }
-                                } else {
+                                break;
+
+                                default:
                                     $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                                }
-                            break;
-
-                            default:
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                            break;
-                        }
-                    }
-
-                    // Show units ONLY in numeric data types
-                    if (isset($module['unit'])) {
-                        $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
-                        if ($data_macro) {
-                            $salida = $data_macro;
-                        } else {
-                            $salida .= '&nbsp;'.'<i>'.io_safe_output($module['unit']).'</i>';
-                        }
+                                break;
+                            }
+                        break;
                     }
                 } else {
+                    switch ($module['id_tipo_modulo']) {
+                        case 15:
+                            $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+                            if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                                if ($module['post_process'] > 0) {
+                                    $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
+                                } else {
+                                    $salida = human_milliseconds_to_string($module['datos']);
+                                }
+                            } else {
+                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                            }
+                        break;
+
+                        default:
+                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                        break;
+                    }
+                }
+
+                // Show units ONLY in numeric data types
+                if (isset($module['unit'])) {
                     $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
                     if ($data_macro) {
                         $salida = $data_macro;
                     } else {
-                        $salida = ui_print_module_string_value(
-                            $module['datos'],
-                            $module['id_agente_modulo'],
-                            $module['current_interval'],
-                            $module['module_name']
-                        );
+                        $salida .= '&nbsp;<i>'.io_safe_output($module['unit']).'</i>';
                     }
+                }
+            } else {
+                $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
+                if ($data_macro) {
+                    $salida = $data_macro;
+                } else {
+                    $salida = ui_print_module_string_value(
+                        $module['datos'],
+                        $module['id_agente_modulo'],
+                        $module['current_interval'],
+                        $module['module_name']
+                    );
                 }
             }
 
@@ -1120,17 +1141,17 @@ if (check_login()) {
                     $draw_events = 0;
                 }
 
-                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;'.'id='.$module['id_agente_modulo'].'&amp;'.'label='.rawurlencode(
+                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;label='.rawurlencode(
                     urlencode(
                         base64_encode($module['nombre'])
                     )
-                ).'&amp;'.'refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 650)";
+                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
                 if (!is_snapshot_data($module['datos'])) {
                     $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
                 }
 
                 $server_name = '';
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', '.'"'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.modules_get_agentmodule_name($module['id_agente_modulo'])."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.modules_get_agentmodule_name($module['id_agente_modulo'])."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
             }
 
             if ($module['estado'] == 3) {
@@ -1177,7 +1198,7 @@ if (check_login()) {
                 ui_print_info_message([ 'no_close' => true, 'message' => __('This agent doesn\'t have any active monitors.') ]);
             }
         } else {
-            $url = 'index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$id_agente.'&'.'refr=&filter_monitors=1&'.'status_filter_monitor='.$status_filter_monitor.'&'.'status_text_monitor='.$status_text_monitor.'&'.'status_module_group='.$status_module_group;
+            $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.'&status_text_monitor='.$status_text_monitor.'&status_module_group='.$status_module_group;
 
             if ($paginate_module) {
                 ui_pagination(
@@ -1230,5 +1251,3 @@ if (check_login()) {
         return;
     }
 }
-
-

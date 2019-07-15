@@ -82,9 +82,22 @@ function include_javascript_dependencies_flot_graph($return=false)
 }
 
 
-//
-// AREA GRAPHS ////////
-//
+/**
+ * Function create container for print charts.
+ *
+ * @param integer $agent_module_id     Id module.
+ * @param array   $array_data          Data.
+ * @param array   $legend              Legend.
+ * @param array   $series_type         Series.
+ * @param array   $color               Color.
+ * @param array   $date_array          Date.
+ * @param array   $data_module_graph   Data module.
+ * @param array   $params              Params.
+ * @param string  $water_mark          Water.
+ * @param array   $array_events_alerts Events array.
+ *
+ * @return string Return graphs.
+ */
 function flot_area_graph(
     $agent_module_id,
     $array_data,
@@ -99,8 +112,7 @@ function flot_area_graph(
 ) {
     global $config;
 
-    // include_javascript_dependencies_flot_graph();
-    // Get a unique identifier to graph
+    // Get a unique identifier to graph.
     $graph_id = uniqid('graph_');
 
     $background_style = '';
@@ -126,19 +138,26 @@ function flot_area_graph(
         break;
     }
 
-    $padding_vconsole = $params['dashboard'] ? 'padding: 1px 0px 10px 10px;' : '';
+    $padding_vconsole = ($params['dashboard']) ? 'padding: 1px 0px 10px 10px;' : '';
 
-    // Parent layer
+    // Parent layer.
     $return = "<div class='parent_graph' style='width: ".($params['width']).';'.$background_style.$padding_vconsole."'>";
+
+    if (empty($params['title']) === false) {
+        $return .= '<p style="text-align:center;">'.$params['title'].'</p>';
+    }
+
     // Set some containers to legend, graph, timestamp tooltip, etc.
     if ($params['show_legend']) {
-        $return .= "<p id='legend_$graph_id' style='text-align:left;'></p>";
+        $return .= '<p id="legend_'.$graph_id.'" style="text-align:left;"></p>';
     }
 
     if (isset($params['graph_combined']) && $params['graph_combined']
         && (!isset($params['from_interface']) || !$params['from_interface'])
     ) {
-        if (isset($params['threshold_data']) && is_array($params['threshold_data'])) {
+        if (isset($params['threshold_data'])
+            && is_array($params['threshold_data'])
+        ) {
             $yellow_threshold = $params['threshold_data']['yellow_threshold'];
             $red_threshold    = $params['threshold_data']['red_threshold'];
             $yellow_up        = $params['threshold_data']['yellow_up'];
@@ -154,7 +173,7 @@ function flot_area_graph(
     } else if (!isset($params['combined']) || !$params['combined']) {
         $yellow_threshold = $data_module_graph['w_min'];
         $red_threshold    = $data_module_graph['c_min'];
-        // Get other required module datas to draw warning and critical
+        // Get other required module datas to draw warning and critical.
         if ($agent_module_id == 0) {
             $yellow_up      = 0;
             $red_up         = 0;
@@ -166,8 +185,12 @@ function flot_area_graph(
             $yellow_inverse = !($data_module_graph['w_inv'] == 0);
             $red_inverse    = !($data_module_graph['c_inv'] == 0);
         }
-    } else if (isset($params['from_interface']) && $params['from_interface']) {
-        if (isset($params['threshold_data']) && is_array($params['threshold_data'])) {
+    } else if (isset($params['from_interface'])
+        && $params['from_interface']
+    ) {
+        if (isset($params['threshold_data'])
+            && is_array($params['threshold_data'])
+        ) {
             $yellow_threshold = $params['threshold_data']['yellow_threshold'];
             $red_threshold    = $params['threshold_data']['red_threshold'];
             $yellow_up        = $params['threshold_data']['yellow_up'];
@@ -200,7 +223,11 @@ function flot_area_graph(
         );
     }
 
-    $return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
+    $return .= html_print_input_hidden(
+        'line_width_graph',
+        $config['custom_graph_width'],
+        true
+    );
     $return .= "<div id='timestamp_$graph_id'
 					class='timestamp_graph'
 					style='	font-size:".$params['font_size']."pt;
@@ -239,20 +266,27 @@ function flot_area_graph(
         $series_type_unique['data_'.$graph_id.'_'.$k] = $v;
     }
 
-    // Store data series in javascript format
+    // Store data series in javascript format.
     $extra_width = (int) ($params['width'] / 3);
     $return .= "<div id='extra_$graph_id'
-					style='font-size: ".$params['font_size'].'pt;
-					display:none; position:absolute; overflow: auto;
-					max-height: '.($params['height'] + 50).'px;
-					width: '.$extra_width."px;
-					background:#fff; padding: 2px 2px 2px 2px;
-					border: solid #000 1px;'></div>";
+        style='font-size: ".$params['font_size'].'pt;
+        display:none; position:absolute; overflow: auto;
+        max-height: '.($params['height'] + 50).'px;
+        width: '.$extra_width."px;
+        background:#fff; padding: 2px 2px 2px 2px;
+        border: solid #000 1px;'></div>";
 
-    // Trick to get translated string from javascript
+    // Trick to get translated string from javascript.
     $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
-    $values              = json_encode($array_data);
+    // To use the js document ready event or not. Default true.
+    $document_ready = true;
+    if (isset($params['document_ready']) === true) {
+        $document_ready = $params['document_ready'];
+    }
+
+    $values = json_encode($array_data);
+
     $legend              = json_encode($legend);
     $series_type         = json_encode($series_type);
     $color               = json_encode($color);
@@ -261,18 +295,37 @@ function flot_area_graph(
     $params              = json_encode($params);
     $array_events_alerts = json_encode($array_events_alerts);
 
-    // Javascript code
+    // Javascript code.
     if ($font_size == '') {
         $font_size = '\'\'';
     }
 
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
-    $return .= 'pandoraFlotArea('."'$graph_id', \n"."JSON.parse('$values'), \n"."JSON.parse('$legend'), \n"."JSON.parse('$series_type'), \n"."JSON.parse('$color'), \n"."'$watermark', \n"."JSON.parse('$date_array'), \n"."JSON.parse('$data_module_graph'), \n"."JSON.parse('$params'), \n"."JSON.parse('$array_events_alerts')".');';
-    $return .= '});';
+
+    if ($document_ready === true) {
+        $return .= '$(document).ready( function () {';
+    }
+
+    $return .= "pandoraFlotArea(\n";
+    $return .= "'".$graph_id."', \n";
+    $return .= $values.", \n";
+    $return .= $legend.", \n";
+    $return .= $series_type.", \n";
+    $return .= $color.", \n";
+    $return .= $watermark.", \n";
+    $return .= $date_array.", \n";
+    $return .= $data_module_graph.", \n";
+    $return .= $params.", \n";
+    $return .= $array_events_alerts."\n";
+    $return .= ');';
+
+    if ($document_ready === true) {
+        $return .= '});';
+    }
+
     $return .= '</script>';
 
-    // Parent layer
+    // Parent layer.
     $return .= '</div>';
 
     return $return;
@@ -400,11 +453,9 @@ function flot_pie_chart(
     include_javascript_dependencies_flot_graph();
 
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
 		'$series', '$width', $font_size, $water_mark, '$separator',
 		'$legend_position', '$height', '$colors', ".json_encode($hide_labels).')';
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -480,11 +531,9 @@ function flot_custom_pie_chart(
     $colors = implode($separator, $temp_colors);
 
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotPieCustom('$graph_id', '$values', '$labels',
 			'$width', $font_size, '$fontpath', $water_mark,
 			'$separator', '$legend_position', '$height', '$colors','$legend','$background_color')";
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -580,10 +629,8 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 
     // Javascript code
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
 		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -673,7 +720,6 @@ function flot_vcolumn_chart($graph_data, $width, $height, $color, $legend, $long
 
     // Javascript code
     $return .= "<script type='text/javascript'>";
-    $return .= '$(document).ready( function () {';
     if ($from_ux) {
         if ($from_wux) {
             $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
@@ -684,7 +730,6 @@ function flot_vcolumn_chart($graph_data, $width, $height, $color, $legend, $long
         $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
     }
 
-    $return .= '});';
     $return .= '</script>';
 
     return $return;
@@ -859,9 +904,7 @@ function flot_slicesbar_graph(
     // Javascript code
     $return .= "<script type='text/javascript'>";
     $return .= "//<![CDATA[\n";
-    $return .= '$(document).ready( function () {';
     $return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$labels','$legend','$acumulate_data',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive, '$show')";
-    $return .= '});';
     $return .= "\n//]]>";
     $return .= '</script>';
 

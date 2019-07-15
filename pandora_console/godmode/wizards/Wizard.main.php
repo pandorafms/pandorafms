@@ -625,22 +625,182 @@ class Wizard
 
 
     /**
+     * Print a block of inputs with grid format.
+     *
+     * @param array   $input  Definition of target block to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML content.
+     */
+    public function printBlockAsGrid(array $input, bool $return=false)
+    {
+        $output = '';
+        if ($input['hidden'] == 1) {
+            $class = ' hidden';
+        } else {
+            $class = '';
+        }
+
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
+        if (is_array($input['block_content']) === true) {
+            // Print independent block of inputs.
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<ul class="wizard">';
+            foreach ($input['block_content'] as $input) {
+                $output .= $this->printBlockAsGrid($input, $return);
+            }
+
+            $output .= '</ul></li>';
+        } else {
+            if ($input['arguments']['type'] != 'hidden') {
+                if ($input['arguments']['inline'] != 'true') {
+                    $output .= '<div class="edit_discovery_input">';
+                } else {
+                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
+                    if (!isset($input['extra'])) {
+                        $output .= '<div style="width: 50%;">';
+                    }
+
+                    if (isset($input['extra'])) {
+                        $output .= '<div style="display: flex; margin-right:10px;">';
+                    }
+                }
+
+                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
+                    $output .= '<div style="margin-right:10px;">';
+                }
+
+                $output .= '<div class="label_select">';
+                $output .= $input['label'];
+                $output .= '</div>';
+
+                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
+                    $output .= '</div>';
+                }
+
+                if ($input['arguments']['inline'] == 'true' && !isset($input['extra'])) {
+                    $output .= '</div>';
+                }
+
+                if ($input['arguments']['type'] == 'text' || $input['arguments']['type'] == 'text_extended') {
+                    $output .= '<div class="discovery_text_input">';
+                    $output .= $this->printInput($input['arguments']);
+                    $output .= '</div>';
+                } else if ($input['arguments']['inline'] == 'true') {
+                    if (isset($input['extra'])) {
+                        $output .= '<div style="">';
+                        $output .= '<div style="float: left;">';
+                    } else {
+                        $output .= '<div style="width:50%;">';
+                        $output .= '<div style="float: right;">';
+                    }
+
+                    $output .= $this->printInput($input['arguments']);
+                    $output .= '</div>';
+                    $output .= '</div>';
+
+                    if (isset($input['extra'])) {
+                        $output .= '</div>';
+                    }
+                } else {
+                    $output .= $this->printInput($input['arguments']);
+                }
+
+                // Allow dynamic content.
+                $output .= $input['extra'];
+                $output .= '</div>';
+            } else {
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+            }
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Print a block of inputs as a list element.
+     *
+     * @param array   $input  Definition of target block to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML content.
+     */
+    public function printBlockAsList(array $input, bool $return=false)
+    {
+        $output = '';
+        if ($input['hidden'] == 1) {
+            $class = ' hidden';
+        } else {
+            $class = '';
+        }
+
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
+        if (is_array($input['block_content']) === true) {
+            // Print independent block of inputs.
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<ul class="wizard">';
+            foreach ($input['block_content'] as $input) {
+                $output .= $this->printBlockAsList($input, $return);
+            }
+
+            $output .= '</ul></li>';
+        } else {
+            if ($input['arguments']['type'] != 'hidden') {
+                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+                $output .= '<label>'.$input['label'].'</label>';
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+                $output .= '</li>';
+            } else {
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+            }
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
+    }
+
+
+    /**
      * Print a form.
      *
-     * @param array   $data   Definition of target form to be printed.
-     * @param boolean $return Return as string or direct output.
+     * @param array   $data            Definition of target form to be printed.
+     * @param boolean $return          Return as string or direct output.
+     * @param boolean $print_white_box Print a white box.
      *
      * @return string HTML code.
      */
-    public function printForm(array $data, bool $return=false, bool $print_white_box=false)
-    {
+    public function printForm(
+        array $data,
+        bool $return=false,
+        bool $print_white_box=false
+    ) {
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {
@@ -695,6 +855,163 @@ class Wizard
 
 
     /**
+     * Print a form as a grid of inputs.
+     *
+     * @param array   $data   Definition of target form to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML code.
+     */
+    public function printFormAsGrid(array $data, bool $return=false)
+    {
+        $form = $data['form'];
+
+        $rows = $data['rows'];
+
+        $js = $data['js'];
+        $cb_function = $data['cb_function'];
+        $cb_args = $data['cb_args'];
+
+        $output_head = '<form class="discovery" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head .= '" '.$form['extra'].'>';
+
+        if ($return === false) {
+            echo $output_head;
+        }
+
+        try {
+            if (isset($cb_function) === true) {
+                call_user_func_array(
+                    $cb_function,
+                    (isset($cb_args) === true) ? $cb_args : []
+                );
+            }
+        } catch (Exception $e) {
+            error_log('Error executing wizard callback: ', $e->getMessage());
+        }
+
+        $output_submit = '';
+        $output = '';
+
+        $first_block_printed = false;
+
+        foreach ($rows as $row) {
+            if ($row['new_form_block'] == true) {
+                if ($first_block_printed === true) {
+                    // If first form block has been placed, then close it before starting a new one.
+                    $output .= '</div>';
+                    $output .= '<div class="white_box" style="margin-top: 30px;">';
+                } else {
+                    $output .= '<div class="white_box">';
+                }
+
+                $first_block_printed = true;
+            }
+
+            $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
+
+            foreach ($row['columns'] as $column) {
+                $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
+                $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
+                $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
+                $extra_styles = isset($column['style']) ? $column['style'] : '';
+
+                $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
+
+                foreach ($column['inputs'] as $input) {
+                    if (is_array($input)) {
+                        if ($input['arguments']['type'] != 'submit') {
+                            $output .= $this->printBlockAsGrid($input, true);
+                        } else {
+                            $output_submit .= $this->printBlockAsGrid($input, true);
+                        }
+                    } else {
+                        $output .= $input;
+                    }
+                }
+
+                $output .= '</div>';
+            }
+
+            $output .= '</div>';
+        }
+
+        $output .= '</div>';
+
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= '</form>';
+        $output .= '<script>'.$js.'</script>';
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output_head.$output;
+
+    }
+
+
+    /**
+     * Print a form as a list.
+     *
+     * @param array   $data   Definition of target form to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML code.
+     */
+    public function printFormAsList(array $data, bool $return=false)
+    {
+        $form = $data['form'];
+        $inputs = $data['inputs'];
+        $js = $data['js'];
+        $cb_function = $data['cb_function'];
+        $cb_args = $data['cb_args'];
+
+        $output_head = '<form class="discovery" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head .= '" '.$form['extra'].'>';
+
+        if ($return === false) {
+            echo $output_head;
+        }
+
+        try {
+            if (isset($cb_function) === true) {
+                call_user_func_array(
+                    $cb_function,
+                    (isset($cb_args) === true) ? $cb_args : []
+                );
+            }
+        } catch (Exception $e) {
+            error_log('Error executing wizard callback: ', $e->getMessage());
+        }
+
+        $output = '<div class="white_box">';
+        $output .= '<ul class="wizard">';
+
+        foreach ($inputs as $input) {
+            if ($input['arguments']['type'] != 'submit') {
+                $output .= $this->printBlockAsList($input, true);
+            } else {
+                $output_submit .= $this->printBlockAsList($input, true);
+            }
+        }
+
+        $output .= '</ul>';
+        $output .= '</div>';
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= '</form>';
+        $output .= '<script>'.$js.'</script>';
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output_head.$output;
+
+    }
+
+
+    /**
      * Print a big button element (huge image, big text and link).
      *
      * @param array $data Element data (link, image...).
@@ -731,7 +1048,7 @@ class Wizard
      */
     public static function printBigButtonsList($list_data)
     {
-        echo '<ul>';
+        echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
     }

@@ -165,7 +165,7 @@ ui_print_page_header(
     __('Map').' &raquo; '.__('Map').'&nbsp;'.$map['map_name'],
     'images/op_gis.png',
     false,
-    '',
+    'render_view_tab',
     false,
     $buttons
 );

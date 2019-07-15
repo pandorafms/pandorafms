@@ -139,8 +139,9 @@ function get_logs_size($file)
 function get_status_logs($path)
 {
     $status_server_log = '';
-    $size_server_log = get_logs_size($path);
-    if ($size_server_log <= 1048576) {
+    $size_server_log = number_format(get_logs_size($path));
+    $size_server_log = (0 + str_replace(',', '', $size_server_log));
+    if ($size_server_log <= 10485760) {
         $status_server_log = "<a style ='color: green;text-decoration: none;'>Normal Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have less than 10 MB of logs</a>";
     } else {
         $status_server_log = "<a class= 'content' style= 'color: red;text-decoration: none;'>Warning Status</a><a style ='text-decoration: none;'>&nbsp&nbsp You have more than 10 MB of logs</a>";
@@ -295,7 +296,7 @@ $key_buffer_size_min_rec_value = 256;
 $read_buffer_size_min_rec_value = 32;
 $read_rnd_buffer_size_min_rec_value = 32;
 $query_cache_min_res_unit_min_rec_value = 2;
-$innodb_file_per_table_min_rec_value = 0;
+$innodb_file_per_table_min_rec_value = 1;
 
 
 function status_fragmentation_tables($tables_fragmentation_max_rec_value, $tables_fragmentation)
@@ -345,17 +346,23 @@ if ($console_mode == 1) {
         include '../include/config.php';
     }
 
-    // Not from console, this is a web session
-    if ((!isset($config['id_user'])) or (!check_acl($config['id_user'], 0, 'PM'))) {
+    // Not from console, this is a web session.
+    if ((!isset($config['id_user'])) || (!check_acl($config['id_user'], 0, 'PM'))) {
         echo "<h2>You don't have privileges to use diagnostic tool</h2>";
         echo '<p>Please login with an administrator account before try to use this tool</p>';
         exit;
     }
 
-    // Header
-    ui_print_page_header(__('Pandora FMS Diagnostic tool'), '', false, '', true);
+    // Header.
+    ui_print_page_header(
+        __('Pandora FMS Diagnostic tool'),
+        '',
+        false,
+        'diagnostic_tool_tab',
+        true
+    );
 
-    echo "<table width='1000px' border='0' style='border:0px;' class='databox data' cellpadding='4' cellspacing='4'>";
+    echo "<table id='diagnostic_info' width='1000px' border='0' style='border:0px;' class='databox data' cellpadding='4' cellspacing='4'>";
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__('Pandora status info').'</th></tr>';
 }
 
@@ -678,7 +685,7 @@ render_info_data(
     $read_rnd_buffer_size = (db_get_value_sql('SELECT @@read_rnd_buffer_size') / 1024);
     $query_cache_min_res_unit = (db_get_value_sql('SELECT @@query_cache_min_res_unit') / 1024);
     $innodb_file_per_table = db_get_value_sql('SELECT @@innodb_file_per_table');
-    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__('MySQL Performance metrics').'</th></tr>';
+    echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__('MySQL Performance metrics').' '.ui_print_help_icon('performance_metrics_tab', true).'</th></tr>';
 
     render_row(status_values($innodb_log_file_size_min_rec_value, $innodb_log_file_size), 'InnoDB log file size ', 'InnoDB log file size ');
     render_row(status_values($innodb_log_buffer_size_min_rec_value, $innodb_log_buffer_size), 'InnoDB log buffer size ', 'InnoDB log buffer size ');

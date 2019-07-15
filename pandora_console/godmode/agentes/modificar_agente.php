@@ -118,7 +118,7 @@ if ($enable_agent) {
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 0];
         enterprise_hook('agent_update_from_cache', [$enable_agent, $values, $server_name]);
-
+        config_agents_update_config_token($enable_agent, 'standby', 0);
         db_pandora_audit('Agent management', 'Enable  '.$alias);
     } else {
         db_pandora_audit('Agent management', 'Fail to enable '.$alias);
@@ -140,6 +140,7 @@ if ($disable_agent) {
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 1];
         enterprise_hook('agent_update_from_cache', [$disable_agent, $values, $server_name]);
+        config_agents_update_config_token($disable_agent, 'standby', 1);
 
         db_pandora_audit('Agent management', 'Disable  '.$alias);
     } else {
@@ -162,7 +163,7 @@ echo '<td>';
 
 echo __('Group').'&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
+if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
     $return_all_group = false;
 } else {
     $return_all_group = true;
@@ -679,7 +680,7 @@ if ($agents !== false) {
     }
 
     echo '</table>';
-    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
     echo "<table width='100%'><tr><td align='right'>";
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);

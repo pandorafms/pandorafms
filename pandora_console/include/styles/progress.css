@@ -1,0 +1,23 @@
+.progress_main {
+  height: 2.5em;
+  border: 1px solid #82b92e;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+}
+.progress_main:before {
+  content: attr(data-label);
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  margin-top: 0.2em;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+.progress {
+  width: 0%;
+  background: #82b92e;
+  height: 100%;
+  float: left;
+}

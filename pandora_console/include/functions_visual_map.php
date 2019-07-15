@@ -1966,7 +1966,7 @@ function visual_map_print_item(
                             echo '</tr>';
                             echo "<tr style='background-color:whitesmoke;height:90%;'>";
                                 echo '<td>';
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#e63c52;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
                                     echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
                                     echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
                                     echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
@@ -4271,7 +4271,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'static_graph':
             case STATIC_GRAPH:
-                $text = __('Static graph').' - '.$image;
+                $text = __('Static Image').' - '.$image;
             break;
 
             case 'simple_value':

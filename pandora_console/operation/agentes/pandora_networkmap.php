@@ -634,7 +634,7 @@ switch ($tab) {
             __('Networkmap'),
             'images/op_network.png',
             false,
-            'network_map_enterprise',
+            'network_map_enterprise_list',
             false
         );
 

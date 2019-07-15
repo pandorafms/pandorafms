@@ -694,6 +694,20 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
+-- Table `tcredential_store`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcredential_store` (
+	`identifier` varchar(100) NOT NULL,
+	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`username` text,
+	`password` text,
+	`extra_1` text,
+	`extra_2` text,
+	PRIMARY KEY (`identifier`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
 -- Table `tincidencia`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tincidencia` (
@@ -806,6 +820,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
+	`type` ENUM('direct', 'failover') DEFAULT 'direct',
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`)
 		ON DELETE CASCADE,
@@ -1146,6 +1161,9 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`autorefresh_white_list` text not null default '',
 	`time_autorefresh` int(5) unsigned NOT NULL default '30',
 	`default_custom_view` int(10) unsigned NULL default '0',
+	`ehorus_user_level_user` VARCHAR(60),
+	`ehorus_user_level_pass` VARCHAR(45),
+	`ehorus_user_level_enabled` TINYINT(1),
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1435,6 +1453,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1447,6 +1467,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
 	`id` INTEGER UNSIGNED NOT NULL auto_increment,
 	`id_report_content` INTEGER UNSIGNED NOT NULL,
 	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL,
 	`sla_max` double(18,2) NOT NULL default 0,
 	`sla_min` double(18,2) NOT NULL default 0,
 	`sla_limit` double(18,2) NOT NULL default 0,
@@ -1534,7 +1555,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
-	
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2975,6 +2996,8 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3216,6 +3239,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
+	KEY `id_tagente_idx` (`id_tagente`),
 	KEY `disabled` (`disabled`),
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3566,3 +3590,24 @@ CREATE TABLE `tuser_task_scheduled` (
 	`id_grupo` int(10) unsigned NOT NULL default 0,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tvisual_console_items_cache`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `vc_id` INTEGER UNSIGNED NOT NULL,
+    `vc_item_id` INTEGER UNSIGNED NOT NULL,
+    `user_id` VARCHAR(60) DEFAULT NULL,
+    `data` TEXT NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`expiration` INTEGER UNSIGNED NOT NULL COMMENT 'Seconds to expire',
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`vc_id`) REFERENCES `tlayout`(`id`)
+        ON DELETE CASCADE,
+    FOREIGN KEY(`vc_item_id`) REFERENCES `tlayout_data`(`id`)
+        ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `tusuario`(`id_user`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;

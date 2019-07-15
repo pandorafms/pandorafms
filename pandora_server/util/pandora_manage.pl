@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.734 PS190517";
+my $version = "7.0NG.736 PS190715";
 
 # save program name for logging
 my $progname = basename($0);
@@ -3801,9 +3801,8 @@ sub cli_get_agent_group() {
 				else {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
 					my $group_name = get_group_name ($dbh_metaconsole, $id_group);
-					my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
 					$agent_name = safe_output($agent_name);
-					print "[INFO] Server: $metaconsole_name Agent: $agent_name Name Group: $group_name\n\n";
+					print "[INFO] Agent: $agent_name Name Group: $group_name\n\n";
 				}
 			}
 		}
@@ -3843,7 +3842,6 @@ sub cli_get_agent_group_id() {
 			foreach my $server (@servers_id) {
 				my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 				
-				my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
 				my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
 				
 				if ($id_agent == -1) {
@@ -3852,7 +3850,7 @@ sub cli_get_agent_group_id() {
 				else {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
 					$agent_name = safe_output($agent_name);
-					print "Server: $metaconsole_name Agent: $agent_name ID Group: $id_group\n\n";
+					print "Agent: $agent_name ID Group: $id_group\n\n";
 				}
 			}
 		}

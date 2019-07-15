@@ -26,6 +26,13 @@ final class Group extends Item
      */
     protected static $useHtmlOutput = true;
 
+    /**
+     * Enable the cache index by user id.
+     *
+     * @var boolean
+     */
+    protected static $indexCacheByUser = true;
+
 
     /**
      * Returns a valid representation of the model.
@@ -348,7 +355,7 @@ final class Group extends Item
                 'color: #FFF;',
                 'font-size: 12px;',
                 'display: inline;',
-                'background-color: #FC4444;',
+                'background-color: #e63c52;',
                 'position: relative;',
                 'height: 80%;',
                 'width: 9.4%;',
@@ -382,7 +389,7 @@ final class Group extends Item
         $html .= '<td>';
 
         // Critical.
-        $html .= '<div style="'.$valueStyle.'background-color: #FC4444;">';
+        $html .= '<div style="'.$valueStyle.'background-color: #e63c52;">';
         $html .= \number_format($agentStats['critical'], 2).'%';
         $html .= '</div>';
         $html .= '<div style="'.$nameStyle.'">'.__('Critical').'</div>';

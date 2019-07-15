@@ -125,7 +125,7 @@ echo '<form '.'action="index.php?'.'sec=gmassive&'.'sec2=godmode/massive/massive
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend>';
-echo '<span>'.__('Source').ui_print_help_icon('manageconfig', true).'</span>';
+echo '<span>'.__('Source');
 echo '</legend>';
 html_print_table($table);
 echo '</fieldset>';
@@ -176,6 +176,9 @@ $table->data['operations'][1] .= '<span class="with_alerts'.(empty($alerts) ? ' 
 $table->data['operations'][1] .= html_print_checkbox('copy_alerts', 1, true, true);
 $table->data['operations'][1] .= html_print_label(__('Copy alerts'), 'checkbox-copy_alerts', true);
 $table->data['operations'][1] .= '</span>';
+
+$table->data['form_modules_filter'][0] = __('Filter Modules');
+$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
 
 $table->data[1][0] = __('Modules');
 $table->data[1][1] = '<span class="with_modules'.(empty($modules) ? ' invisible' : '').'">';
@@ -302,6 +305,8 @@ echo '<h3 class="error invisible" id="message">&nbsp;</h3>';
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');
 ?>
+
+<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var module_alerts;
@@ -478,6 +483,9 @@ $(document).ready (function () {
                         }
                         $("#fieldset_targets").show ();
                         $("#target_modules, #target_alerts").enable ();
+                        //Filter modules. Call the function when the select is fully loaded.
+                        var textNoData = "<?php echo __('None'); ?>";
+                        filterByText($('#target_modules'), $("#text-filter_modules"), textNoData);
                     },
                     "json"
                 );

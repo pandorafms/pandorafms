@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.734 PS190517";
+my $version = "7.0NG.736 PS190715";
 
 # Pandora server configuration
 my %conf;
@@ -446,6 +446,10 @@ sub pandora_purgedb ($$) {
 		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
 		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
 	}
+
+	# Delete old cache data
+	log_message ('PURGE', "Deleting old cache data.");
+	db_do ($dbh, "DELETE FROM `tvisual_console_elements_cache` WHERE (UNIX_TIMESTAMP(`created_at`) + `expiration`) < UNIX_TIMESTAMP()");
 }
 
 ###############################################################################

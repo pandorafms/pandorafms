@@ -128,7 +128,7 @@ $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
 $data = [];
-$data[0] = __('SNMP community').ui_print_help_icon('column_macros', true);
+$data[0] = __('SNMP community');
 $adopt = false;
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
     $adopt = policies_is_module_adopt($id_agent_module);
@@ -233,7 +233,7 @@ push_table_simple($data, 'snmp_2');
 
 // Advanced stuff
 $data = [];
-$data[0] = __('TCP send').' '.ui_print_help_icon('tcp_send', true);
+$data[0] = __('TCP send');
 $data[1] = html_print_textarea('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true, $largeclassdisabledBecauseInPolicy);
 $table_simple->colspan['tcp_send'][1] = 3;
 
@@ -277,7 +277,7 @@ if (!isset($id_agent_module)) {
 }
 
 $data = [];
-$data[0] = __('Auth user').ui_print_help_icon('column_macros', true);
+$data[0] = __('Auth user');
 $data[1] = html_print_input_text(
     'snmp3_auth_user',
     $snmp3_auth_user,
@@ -290,7 +290,7 @@ $data[1] = html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$data[2] = __('Auth password').ui_print_help_icon('column_macros', true).ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
+$data[2] = __('Auth password').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_auth_pass',
     $snmp3_auth_pass,
@@ -312,7 +312,7 @@ push_table_simple($data, 'field_snmpv3_row1');
 $data = [];
 $data[0] = __('Privacy method');
 $data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
-$data[2] = __('Privacy pass').ui_print_help_icon('column_macros', true).ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
+$data[2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_privacy_pass',
     $snmp3_privacy_pass,
@@ -506,45 +506,5 @@ $(document).ready (function () {
     });
 });
 
-// Show the SNMP browser window
-function snmpBrowserWindow () {
-    
-    // Keep elements in the form and the SNMP browser synced
-    $('#text-target_ip').val($('#text-ip_target').val());
-    $('#text-community').val($('#text-snmp_community').val());
-    $('#snmp_browser_version').val($('#snmp_version').val());
-    $('#text-snmp3_browser_auth_user').val($('#text-snmp3_auth_user').val());
-    $('#snmp3_browser_security_level').val($('#snmp3_security_level').val());
-    $('#snmp3_browser_auth_method').val($('#snmp3_auth_method').val());
-    $('#password-snmp3_browser_auth_pass').val($('#password-snmp3_auth_pass').val());
-    $('#snmp3_browser_privacy_method').val($('#snmp3_privacy_method').val());
-    $('#password-snmp3_browser_privacy_pass').val($('#password-snmp3_privacy_pass').val());
-    
-    $("#snmp_browser_container").show().dialog ({
-        title: '',
-        resizable: true,
-        draggable: true,
-        modal: true,
-        overlay: {
-            opacity: 0.5,
-            background: "black"
-        },
-        width: 920,
-        height: 500
-    });
-}
-
-// Set the form OID to the value selected in the SNMP browser
-function setOID () {
-    
-    if($('#snmp_browser_version').val() == '3'){
-        $('#text-snmp_oid').val($('#table1-0-1').text());
-    } else {
-        $('#text-snmp_oid').val($('#snmp_selected_oid').text());
-    }
-    
-    // Close the SNMP browser
-    $('.ui-dialog-titlebar-close').trigger('click');
-}
 
 </script>

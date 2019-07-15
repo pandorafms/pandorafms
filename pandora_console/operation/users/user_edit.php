@@ -80,16 +80,39 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['firstname'] = get_parameter('newsletter_reminder', $user_info['first_name']);
+    $upd_info['middlename'] = get_parameter_switch('newsletter_reminder', $user_info['middlename']);
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
         $upd_info['block_size'] = 0;
+    }
+
+    if ($upd_info['middlename'] == 1) {
+        // User wants to enable newsletter reminders.
+        if ($user_info['middlename'] > 0) {
+            // User has already registered!. No sense.
+            $upd_info['middlename'] = $user_info['middlename'];
+        } else {
+            // Force subscription reminder.
+            $upd_info['middlename'] = 0;
+        }
+    }
+
+    if ($upd_info['middlename'] == 0 || $upd_info['middlename'] == 0) {
+        // Switch is ON. user had not registered.
+        $newsletter_reminder_value = 1;
+    } else if ($upd_info['middlename'] < 1) {
+        // Switch is OFF. User do not want to register.
+        $newsletter_reminder_value = 0;
+    } else if ($upd_info['middlename'] > 0) {
+        // Switc is OFF. User is already registered!
+        $newsletter_reminder_value = 0;
     }
 
     $upd_info['section'] = get_parameter('section', $user_info['section']);
     $upd_info['data_section'] = get_parameter('data_section', '');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
+
 
     // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
@@ -100,6 +123,11 @@ if (isset($_GET['modified']) && !$view_mode) {
     }
 
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
+    $upd_info['ehorus_user_level_user'] = get_parameter('ehorus_user_level_user');
+    $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
+    $upd_info['ehorus_user_level_enabled'] = get_parameter('ehorus_user_level_enabled', 0);
+
+
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 
@@ -396,21 +424,27 @@ if (check_acl($config['id_user'], 0, 'ER')) {
         null,
         true
     ).'</div>';
-} else if (license_free()) {
+}
+
+if (!$config['disabled_newsletter']) {
     $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-    if ($user_info['middlename']) {
-        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span></div>';
+    if ($user_info['middlename'] > 0) {
+        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
     } else {
         $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
+        $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
+        $newsletter_reminder .= html_print_switch(
+            [
+                'name'     => 'newsletter_reminder',
+                'value'    => $newsletter_reminder_value,
+                'disabled' => false,
+            ]
+        );
     }
 
-    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-    if ($user_info['firstname'] != 0) {
-        $user_info['firstname'] = 1;
-    }
-
-    $newsletter_reminder .= html_print_checkbox_switch('newsletter_reminder', 1, $user_info['firstname'], true).'</div>';
+    $newsletter_reminder .= '</div>';
 }
+
 
 
 $autorefresh_list_out = [];
@@ -583,7 +617,11 @@ foreach ($timezones as $timezone_name => $tz) {
     }
 }
 
-echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+if (is_metaconsole()) {
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+} else {
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+}
 
     echo '<div id="user_form">
             <div class="user_edit_first_row">
@@ -596,6 +634,8 @@ echo '<form name="user_mod" method="post" action="'.ui_get_full_url().'&amp;modi
             <div class="user_edit_second_row white_box">
                 <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
                 <div class="edit_user_timezone">'.$timezone;
+
+
 
 if (!is_metaconsole()) {
     echo '<div id="timezone-picker">
@@ -612,7 +652,61 @@ if (!is_metaconsole()) {
             </div>    
         </div>';
 
-    echo '<div class="edit_user_button">';
+if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
+    // eHorus user remote login
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->id = 'ehorus-remote-setup';
+    $table_remote->class = 'white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
+
+
+    // Title
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
+    $table_remote->data['ehorus_user_level_conf'] = $row;
+
+    // Enable/disable eHorus for this user
+    $row = [];
+    $row['name'] = __('eHorus user acces enabled');
+    $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
+    $table_remote->data['ehorus_user_level_enabled'] = $row;
+
+    // User.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 30, 100, true);
+    $table_remote->data['ehorus_user_level_user'] = $row;
+
+    // Pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['ehorus_user_level_pass'] = $row;
+
+    // Test.
+    $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
+    $ehorus_host = db_get_value('value', 'tconfig', 'token', 'ehorus_hostname');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
+    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
+    $table_remote->data['ehorus_test'] = $row;
+
+    echo '<div class="ehorus_user_conf">';
+
+    html_print_table($table_remote);
+     echo '</div>';
+}
+
+
+echo '<div class="edit_user_button">';
 if (!$config['user_can_update_info']) {
     echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 } else {
@@ -621,8 +715,7 @@ if (!$config['user_can_update_info']) {
 }
 
     echo '</div>';
-
-echo '</form>';
+    echo '</form>';
 
 echo '<div id="edit_user_profiles" class="white_box">';
 if (!defined('METACONSOLE')) {
@@ -721,13 +814,13 @@ if (!defined('METACONSOLE')) {
             });
         });
     </script>
-
     <?php
     // Include OpenLayers and timezone user map library.
     echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
     echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
     // Closes no meta condition.
 }
+
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -1052,4 +1145,83 @@ function show_double_auth_deactivation () {
         })
         .show();
 }
+
+function ehorus_connection_test(host, port) {
+        var user = $('input#text-ehorus_user_level_user').val();
+        var pass = $('input#password-ehorus_user_level_pass').val();
+    
+        debugger;
+        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
+        var notFoundMessage = '<?php echo __('User not found'); ?>';
+        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
+        
+        var hideLoadingImage = function () {
+            $('#test-ehorus-spinner').hide();
+        }
+        var showLoadingImage = function () {
+            $('#test-ehorus-spinner').show();
+        }
+        var hideSuccessImage = function () {
+            $('#test-ehorus-success').hide();
+        }
+        var showSuccessImage = function () {
+            $('#test-ehorus-success').show();
+        }
+        var hideFailureImage = function () {
+            $('#test-ehorus-failure').hide();
+        }
+        var showFailureImage = function () {
+            $('#test-ehorus-failure').show();
+        }
+        var hideMessage = function () {
+            $('#test-ehorus-message').hide();
+        }
+        var showMessage = function () {
+            $('#test-ehorus-message').show();
+        }
+        var changeTestMessage = function (message) {
+            $('#test-ehorus-message').text(message);
+        }
+        
+        hideSuccessImage();
+        hideFailureImage();
+        hideMessage();
+        showLoadingImage();
+
+        $.ajax({
+            url: 'https://' + host + ':' + port + '/login',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                user: user,
+                pass: pass
+            }
+        })
+        .done(function(data, textStatus, xhr) {
+            showSuccessImage();
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+            showFailureImage();
+            
+            if (xhr.status === 400) {
+                changeTestMessage(badRequestMessage);
+            }
+            else if (xhr.status === 401 || xhr.status === 403) {
+                changeTestMessage(invalidPassMessage);
+            }
+            else if (xhr.status === 404) {
+                changeTestMessage(notFoundMessage);
+            }
+            else if (errorThrown === 'timeout') {
+                changeTestMessage(timeoutMessage);
+            }
+            else {
+                changeTestMessage(errorThrown);
+            }
+            showMessage();
+        })
+        .always(function(xhr, textStatus) {
+            hideLoadingImage();
+        });
+    }
 </script>

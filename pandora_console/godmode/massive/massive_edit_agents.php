@@ -170,6 +170,8 @@ if ($update_agents) {
     $n_edited = 0;
     $result = false;
     foreach ($id_agents as $id_agent) {
+        $old_interval_value = db_get_value_filter('intervalo', 'tagente', ['id_agente' => $id_agent]);
+
         if (!empty($values)) {
             $group_old = false;
             $disabled_old = false;
@@ -194,6 +196,18 @@ if ($update_agents) {
                 $server_name['server_name'] = db_get_sql('SELECT server_name FROM tagente WHERE id_agente ='.$id_agent);
                 // Force an update of the agent cache.
                 $result_metaconsole = agent_update_from_cache($id_agent, $values, $server_name);
+            }
+
+            // Update the configuration files.
+            if ($old_interval_value != $values['intervalo']) {
+                enterprise_hook(
+                    'config_agents_update_config_token',
+                    [
+                        $id_agent,
+                        'interval',
+                        $values['intervalo'],
+                    ]
+                );
             }
 
             if ($disabled_old !== false && $disabled_old != $values['disabled']) {

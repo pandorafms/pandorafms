@@ -601,6 +601,9 @@ syslog_threads 2
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
 
+# Sync Server
+#syncserver
+
 # Port tentacle server
 #sync_port 41121
 
@@ -619,7 +622,7 @@ syslog_max 65535
 # Sync timeout
 #sync_timeout 10
 
-# Address 
+# Address
 # sync_address
 
 # Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch

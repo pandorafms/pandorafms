@@ -196,7 +196,7 @@ function forgetPreviousEvents() {
     var agents = $("#id_agents").val();
 
     jQuery.post ("../../ajax.php",
-        {"page" : "operation/events/events",
+        {"page" : "include/ajax/events",
             "get_events_fired": 1,
             "id_group": group,
             "agents[]" : agents,
@@ -222,7 +222,7 @@ function check_event() {
     
     if (running) {
         jQuery.post ("../../ajax.php",
-            {"page" : "operation/events/events",
+            {"page" : "include/ajax/events",
                 "get_events_fired": 1,
                 "id_group": group,
                 "agents[]" : agents,

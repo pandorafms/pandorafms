@@ -555,8 +555,8 @@ echo '</div>';
             success: function(data) {
                 $('#form_new').html(data);
                 $('#id_group').val(0);
-                // By default AWS.
-                $('#product').val('AWS');
+                // By default CUSTOM.
+                $('#product').val('CUSTOM');
                 calculate_inputs();
 
                 $('#product').on('change', function() {

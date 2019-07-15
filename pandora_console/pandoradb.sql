@@ -830,7 +830,7 @@ CREATE TABLE `ttask_credentials` (
 CREATE TABLE `tdeployment_hosts` (
   `id` SERIAL,
   `id_cs` VARCHAR(100),
-  `ip` VARCHAR(100) NOT NULL,
+  `ip` VARCHAR(100) NOT NULL UNIQUE,
   `id_os` INT(10) UNSIGNED DEFAULT 0,
   `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',

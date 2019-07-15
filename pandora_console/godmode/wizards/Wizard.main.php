@@ -381,7 +381,7 @@ class Wizard
                 $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             }
 
-            $output .= '<ul class="wizard">';
+            $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);
             }
@@ -439,7 +439,7 @@ class Wizard
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
-            $output .= '<ul class="wizard">';
+            $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlockAsGrid($input, $return);
             }
@@ -542,7 +542,7 @@ class Wizard
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
-            $output .= '<ul class="wizard">';
+            $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlockAsList($input, $return);
             }

@@ -1587,6 +1587,8 @@ button.config,
 button.filter,
 button.cancel,
 button.default,
+button.deploy,
+input.deploy,
 input.next,
 input.upd,
 input.ok,
@@ -1707,7 +1709,10 @@ button.spinn,
 input.spinn {
   background-image: url(../../images/spinner_green.gif);
 }
-
+button.deploy,
+input.deploy {
+  background-image: url(../../images/input_deploy.png);
+}
 /*#table-add-item select, #table-add-sla select {
 	width: 180px;
 }*/
@@ -5791,7 +5796,6 @@ div#status_pie {
   grid-template-columns: 50px auto;
 }
 
-
 /*
  * ---------------------------------------------------------------------
  * - IMAGES FOR STATUS. This replaces the images of /images/status_sets/default/ 
@@ -5833,7 +5837,6 @@ div#status_pie {
  * - END - IMAGES FOR STATUS. Don't delete this
  * ---------------------------------------------------------------------
  */
-
 
 /* Table for show more info in events and config menu in modules graphs. (This class exists in events.css too) */
 .table_modal_alternate {

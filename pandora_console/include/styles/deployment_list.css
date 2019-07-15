@@ -22,3 +22,8 @@ form.modal ul.wizard li {
 form.modal ul.wizard li * {
   flex: 1;
 }
+
+ul.wizard li.flex-indep {
+  flex: 1;
+  margin: 0;
+}

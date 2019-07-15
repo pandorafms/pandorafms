@@ -1460,7 +1460,7 @@ class ConsoleSupervisor
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PHP.VERSION');
+            $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
         }
 
     }

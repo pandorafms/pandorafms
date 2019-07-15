@@ -4865,7 +4865,7 @@ function events_get_count_events_by_agent(
 		COUNT(*) AS count
 		FROM %s t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) %s 
+			AND id_grupo IN (%s) 
 		GROUP BY id_agente',
         $tagente,
         $tevento,

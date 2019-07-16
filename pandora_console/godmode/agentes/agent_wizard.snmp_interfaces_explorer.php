@@ -23,7 +23,6 @@ $idAgent = (int) get_parameter('id_agente', 0);
 $ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 
 check_login();
-
 $ip_target = (string) get_parameter('ip_target', $ipAgent);
 $use_agent = get_parameter('use_agent');
 $snmp_community = (string) get_parameter('snmp_community', 'public');
@@ -469,6 +468,9 @@ if (enterprise_installed()) {
         if ($row['server_type'] != 13) {
             $s_type = ' (Standard)';
         } else {
+            // Check if satellite server has remote configuration enabled
+            $satellite_remote = config_agents_has_remote_configuration($id_agent);
+            $id_satellite = $row['id_server'];
             $s_type = ' (Satellite)';
         }
 
@@ -477,7 +479,17 @@ if (enterprise_installed()) {
 }
 
 $table->data[1][2] = '<b>'.__('Server to execute command').'</b>';
-$table->data[1][3] = html_print_select($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
+$table->data[1][2] .= '<span id=satellite_remote_tip>'.ui_print_help_tip(__('In order to use remote executions you need to enable remote execution in satellite server'), true, 'images/tip_help.png', false, 'display:').'</span>';
+$table->data[1][4] = html_print_select(
+    $servers_to_exec,
+    'server_to_exec',
+    $server_to_exec,
+    'satellite_remote_warn('.$id_satellite.','.$satellite_remote.')
+',
+    '',
+    '',
+    true
+);
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
@@ -624,8 +636,12 @@ ui_require_jquery_file('bgiframe');
 /* <![CDATA[ */
 
 $(document).ready (function () {
+
+
     var inputActive = true;
 
+    $('#server_to_exec option').trigger('change');
+    
     $(document).data('text_for_module', $("#none_text").html());
 
     $("#id_snmp").change(snmp_changed_by_multiple_snmp);
@@ -705,6 +721,21 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
             $('#module').removeAttr('disabled');
         },
         "json");
+}
+
+
+function satellite_remote_warn(id_satellite, remote)
+{
+    if(!remote)
+    {
+        $('#server_to_exec option[value='+id_satellite+']').prop('disabled', true);
+        $('#satellite_remote_tip').removeAttr("style").show();
+    }
+    else
+    {
+        $('#satellite_remote_tip').removeAttr("style").hide();
+    }
+
 }
 
 /* ]]> */

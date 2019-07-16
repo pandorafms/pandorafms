@@ -869,7 +869,7 @@ function pandoraFlotSlicebar(
 
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
@@ -1938,6 +1938,8 @@ function pandoraFlotArea(
   switch (type) {
     case "line":
     case 2:
+      stacked = null;
+      filled_s = false;
       break;
     case 3:
       stacked = "stack";
@@ -2789,14 +2791,16 @@ function pandoraFlotArea(
     if (short_data) {
       formatted = number_format(v, force_integer, "", short_data);
     } else {
-      // It is an integer
+      // It is an integer.
       if (v - Math.floor(v) == 0) {
         formatted = number_format(v, force_integer, "", 2);
       }
     }
 
-    // Get only two decimals
-    formatted = round_with_decimals(formatted, 100);
+    // Get only two decimals.
+    if (typeof formatted != "string") {
+      formatted = Math.round(formatted * 100) / 100;
+    }
     return formatted;
   }
 

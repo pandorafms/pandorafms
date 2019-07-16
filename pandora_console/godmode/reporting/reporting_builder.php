@@ -774,14 +774,14 @@ switch ($action) {
             $table->head[1] = __('Description');
             $table->head[2] = __('HTML');
             $table->head[3] = __('XML');
-            $table->size[0] = '60%';
+            $table->size[0] = '50%';
             $table->size[1] = '20%';
             $table->size[2] = '2%';
-            $table->headstyle[2] = 'min-width: 35px;text-align: center;';
+            $table->headstyle[2] = 'min-width: 35px;text-align: left;';
             $table->size[3] = '2%';
-            $table->headstyle[3] = 'min-width: 35px;text-align: center;';
+            $table->headstyle[3] = 'min-width: 35px;text-align: left;';
             $table->size[4] = '2%';
-            $table->headstyle[4] = 'min-width: 35px;text-align: center;';
+            $table->headstyle[4] = 'min-width: 35px;text-align: left;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
@@ -790,15 +790,16 @@ switch ($action) {
             }
 
             $table->size[$next] = '2%';
-            $table->style[$next] = 'text-align: center;';
+            $table->style[$next] = 'text-align: left;';
 
-            $table->headstyle[($next + 2)] = 'min-width: 100px;';
-            $table->style[($next + 2)] = 'text-align: center;';
+            $table->headstyle[($next + 2)] = 'min-width: 130px; text-align:right;';
+            $table->style[($next + 2)] = 'text-align: right;';
 
 
             // Admin options only for RM flag.
             if (check_acl($config['id_user'], 0, 'RM')) {
                 $table->head[$next] = __('Private');
+                $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
                 $table->size[$next] = '2%';
                 if (defined('METACONSOLE')) {
                     $table->align[$next] = '';
@@ -808,7 +809,9 @@ switch ($action) {
 
                 $next++;
                 $table->head[$next] = __('Group');
-                $table->size[$next] = '15%';
+                $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
+                $table->size[$next] = '2%';
+                $table->align[$next] = 'left';
 
                 $next++;
                 $op_column = false;
@@ -826,7 +829,7 @@ switch ($action) {
 
                 // $table->size = array ();
                 $table->size[$next] = '10%';
-                $table->align[$next] = 'left';
+                $table->align[$next] = 'right';
             }
 
             $columnview = false;
@@ -1440,6 +1443,14 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
                                 );
 
                                 $good_format = true;
@@ -2397,6 +2408,16 @@ switch ($action) {
                         $values['line_separator'] = get_parameter('line');
 
                         $values['current_month'] = get_parameter('current_month');
+
+                        $values['failover_mode'] = get_parameter(
+                            'failover_mode',
+                            0
+                        );
+
+                        $values['failover_type'] = get_parameter(
+                            'failover_type',
+                            REPORT_FAILOVER_TYPE_NORMAL
+                        );
 
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(

@@ -107,9 +107,15 @@ function html_do_report_info($report)
 {
     global $config;
 
+    if ($config['style'] === 'pandora_black') {
+        $background_color = '#222';
+    } else {
+        $background_color = '#f5f5f5';
+    }
+
     $date_today = date($config['date_format']);
 
-    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: #f5f5f5;margin-top:20px;margin-bottom:20px;"><table>
+    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: '.$background_color.';margin-top:20px;margin-bottom:20px;"><table>
             <tr>
                 <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
             </tr>
@@ -3252,53 +3258,111 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
     $tables_chart = '';
 
-    $table1 = new stdClass();
-    $table1->width = '99%';
-    $table1->data = [];
-    $table1->size = [];
-    $table1->size[0] = '10%';
-    $table1->size[1] = '80%';
-    $table1->size[2] = '5%';
-    $table1->size[3] = '5%';
-    foreach ($item['charts'] as $chart) {
-        $checks_resume = '';
-        $sla_value = '';
-        if (reporting_sla_is_not_init_from_array($chart)) {
-            $color = COL_NOTINIT;
-            $sla_value = __('Not init');
-        } else if (reporting_sla_is_ignored_from_array($chart)) {
-            $color = COL_IGNORED;
-            $sla_value = __('No data');
-        } else {
-            switch ($chart['sla_status']) {
-                case REPORT_STATUS_ERR:
-                    $color = COL_CRITICAL;
-                break;
+    if (isset($item['failed']) === true && empty($item['failed']) === false) {
+        $tables_chart .= $item['failed'];
+    } else {
+        foreach ($item['charts'] as $k_chart => $chart) {
+            $checks_resume = '';
+            $sla_value = '';
+            if (reporting_sla_is_not_init_from_array($chart)) {
+                $color = COL_NOTINIT;
+                $sla_value = __('Not init');
+            } else if (reporting_sla_is_ignored_from_array($chart)) {
+                $color = COL_IGNORED;
+                $sla_value = __('No data');
+            } else {
+                switch ($chart['sla_status']) {
+                    case REPORT_STATUS_ERR:
+                        $color = COL_CRITICAL;
+                    break;
 
-                case REPORT_STATUS_OK:
-                    $color = COL_NORMAL;
-                break;
+                    case REPORT_STATUS_OK:
+                        $color = COL_NORMAL;
+                    break;
 
-                default:
-                    $color = COL_UNKNOWN;
-                break;
+                    default:
+                        $color = COL_UNKNOWN;
+                    break;
+                }
+
+                $sla_value = sla_truncate(
+                    $chart['sla_value'],
+                    $config['graph_precision']
+                ).'%';
+                $checks_resume = '('.$chart['checks_ok'].'/'.$chart['checks_total'].')';
             }
 
-            $sla_value = sla_truncate(
-                $chart['sla_value'],
-                $config['graph_precision']
-            ).'%';
-            $checks_resume = '('.$chart['checks_ok'].'/'.$chart['checks_total'].')';
-        }
+            // Check failover availability report.
+            if ($item['data'][$k_chart]['failover'] === '') {
+                $table1 = new stdClass();
+                $table1->width = '99%';
+                $table1->data = [];
+                $table1->size = [];
+                $table1->size[0] = '10%';
+                $table1->size[1] = '80%';
+                $table1->size[2] = '5%';
+                $table1->size[3] = '5%';
+                $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
+                $table1->data[0][1] = $chart['chart'];
+                $table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
+                $table1->data[0][3] = $checks_resume;
+                $tables_chart .= html_print_table(
+                    $table1,
+                    true
+                );
+            } else {
+                if ($item['data'][$k_chart]['failover'] === 'primary'
+                    || $item['failover_type'] == REPORT_FAILOVER_TYPE_SIMPLE
+                ) {
+                    $table1 = new stdClass();
+                    $table1->width = '99%';
+                    $table1->data = [];
+                    $table1->size = [];
+                    $table1->size[0] = '10%';
+                    $table1->size[1] = '80%';
+                    $table1->size[2] = '5%';
+                    $table1->size[3] = '5%';
+                }
 
-        $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
-        $table1->data[0][1] = $chart['chart'];
-        $table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
-        $table1->data[0][3] = $checks_resume;
-        $tables_chart .= html_print_table(
-            $table1,
-            true
-        );
+                $title = '';
+                $checks_resume_text = $checks_resume;
+                $sla_value_text = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
+                switch ($item['data'][$k_chart]['failover']) {
+                    case 'primary':
+                        $title = '<b>'.__('Primary').'</b>';
+                        $title .= '<br />'.$chart['agent'];
+                        $title .= '<br />'.$chart['module'];
+                    break;
+
+                    case (preg_match('/failover.*/', $item['data'][$k_chart]['failover']) ? true : false):
+                        $title = '<b>'.__('Failover').'</b>';
+                        $title .= '<br />'.$chart['agent'];
+                        $title .= '<br />'.$chart['module'];
+                    break;
+
+                    case 'result':
+                    default:
+                        $title = '<b>'.__('Result').'</b>';
+                        $sla_value_text = "<span style = 'font: bold 3em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';
+                        $checks_resume_text = '<span style = "font-size: 12pt;">';
+                        $checks_resume_text .= $checks_resume;
+                        $checks_resume_text .= '</span>';
+                    break;
+                }
+
+                $table1->data[$item['data'][$k_chart]['failover']][0] = $title;
+                $table1->data[$item['data'][$k_chart]['failover']][1] = $chart['chart'];
+                $table1->data[$item['data'][$k_chart]['failover']][2] = $sla_value_text;
+                $table1->data[$item['data'][$k_chart]['failover']][3] = $checks_resume_text;
+
+                if ($item['data'][$k_chart]['failover'] === 'result') {
+                    $tables_chart .= html_print_table(
+                        $table1,
+                        true
+                    );
+                }
+            }
+        }
     }
 
     if ($item['type'] == 'availability_graph') {
@@ -3496,7 +3560,8 @@ function reporting_html_general($table, $item, $pdf=0)
                 $table1->head = array_merge([__('Agent')], $list_modules);
                 foreach ($item['data'] as $agent => $modules) {
                     $row = [];
-                    $row['agent'] = $agent;
+                    $alias = agents_get_alias_by_name($agent);
+                    $row['agent'] = $alias;
                     $table1->style['agent'] = 'text-align: center;';
                     foreach ($list_modules as $name) {
                         $table1->style[$name] = 'text-align: center;';

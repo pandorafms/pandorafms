@@ -1,18 +1,37 @@
 <?php
+/**
+ * Event RSS exporter.
+ *
+ * @category   Event RSS export
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-ini_set('display_errors', 0);
-// Don't display other errors, messes up XML
+// Load global vars.
+global $config;
+
+// Don't display other errors, messes up XML.
+ini_set('display_errors', E_ALL);
+
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
 require_once '../../include/functions_db.php';
@@ -22,65 +41,115 @@ require_once '../../include/functions_users.php';
 require_once '../../include/functions_tags.php';
 require_once '../../include/functions_groups.php';
 
-$ipOrigin = $_SERVER['REMOTE_ADDR'];
 
-// Uncoment this to activate ACL on RSS Events
-if (!isInACL($ipOrigin)) {
-    rss_error_handler(
-        null,
-        null,
-        null,
-        null,
-        __('Your IP is not into the IP list with API access.')
-    );
-
-    exit;
+/**
+ * Generates an xml entry.
+ *
+ * @param string $key   Key.
+ * @param string $value Value.
+ *
+ * @return string XML entry.
+ */
+function xml_entry($key, $value)
+{
+    $output = '<'.xml_entities($key).'>';
+    $output .= '<![CDATA['.io_safe_output($value).']]>';
+    $output .= '</'.xml_entities($key).'>';
+    return $output."\n";
 }
 
-// Check user credentials
-$user = get_parameter('user');
-$hashup = get_parameter('hashup');
 
-$pss = get_user_info($user);
-$hashup2 = md5($user.$pss['password']);
+/**
+ * Escape entities for XML.
+ *
+ * @param string $str String.
+ *
+ * @return string Escaped string.
+ */
+function xml_entities($str)
+{
+    if (!is_string($str)) {
+        return '';
+    }
 
-if ($hashup != $hashup2) {
-    rss_error_handler(
-        null,
-        null,
-        null,
-        null,
-        __('The URL of your feed has bad hash.')
-    );
+    if (preg_match_all('/(&[^;]+;)/', $str, $matches) != 0) {
+        $matches = $matches[0];
 
-    exit;
+        foreach ($matches as $entity) {
+            $char = html_entity_decode($entity, (ENT_COMPAT | ENT_HTML401), 'UTF-8');
+
+            $html_entity_numeric = '&#'.uniord($char).';';
+
+            $str = str_replace($entity, $html_entity_numeric, $str);
+        }
+    }
+
+    return $str;
 }
 
-header('Content-Type: application/xml; charset=UTF-8');
-// Send header before starting to output
+
+/**
+ * Undocumented function.
+ *
+ * @param string $u U.
+ *
+ * @return integer Ord.
+ */
+function uniord($u)
+{
+    $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
+    $k1 = ord(substr($k, 0, 1));
+    $k2 = ord(substr($k, 1, 1));
+
+    return ($k2 * 256 + $k1);
+}
+
+
+/**
+ * Generate RSS header.
+ *
+ * @param integer $lastbuild Date, last build.
+ *
+ * @return string RSS header.
+ */
+function rss_header($lastbuild=0)
+{
+    $selfurl = ui_get_full_url('?'.$_SERVER['QUERY_STRING'], false, true);
+
+    // ' <?php ' -- Fixes highlighters thinking that the closing tag is PHP
+    $rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'."\n";
+    $rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
+    $rss_feed .= '<channel>'."\n";
+    $rss_feed .= '<title>'.io_safe_output(get_product_name()).' Events Feed</title>'."\n";
+    $rss_feed .= '<description>Latest events on '.get_product_name().'</description>'."\n";
+    $rss_feed .= '<lastBuildDate>'.date(DATE_RFC822, $lastbuild).'</lastBuildDate>'."\n";
+    // Last build date is the last event - that way readers won't mark it as having new posts.
+    $rss_feed .= '<link>'.$url.'</link>'."\n";
+    // Link back to the main Pandora page.
+    $rss_feed .= '<atom:link href="'.xml_entities(io_safe_input($selfurl)).'" rel="self" type="application/rss+xml" />'."\n";
+
+    return $rss_feed;
+}
+
+
+/**
+ * RSS error handler.
+ *
+ * @param string $errno                   Errno.
+ * @param string $errstr                  Errstr.
+ * @param string $errfile                 Errfile.
+ * @param string $errline                 Errline.
+ * @param string $error_human_description Error_human_description.
+ *
+ * @return void
+ */
 function rss_error_handler($errno, $errstr, $errfile, $errline, $error_human_description=null)
 {
     $url = ui_get_full_url(false);
     $selfurl = ui_get_full_url('?'.$_SERVER['QUERY_STRING'], false, true);
 
-    $rss_feed = '<?xml version="1.0" encoding="utf-8" ?>';
-    // ' Fixes certain highlighters freaking out on the PHP closing tag
-    $rss_feed .= "\n";
-    $rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
-    $rss_feed .= "\n";
-    $rss_feed .= '<channel>';
-    $rss_feed .= "\n";
-    $rss_feed .= '<title>'.get_product_name().' RSS Feed</title>';
-    $rss_feed .= "\n";
-    $rss_feed .= '<description>Latest events on '.get_product_name().'</description>';
-    $rss_feed .= "\n";
-    $rss_feed .= '<lastBuildDate>'.date(DATE_RFC822, 0).'</lastBuildDate>';
-    $rss_feed .= "\n";
-    $rss_feed .= '<link>'.$url.'</link>';
-    // Link back to the main Pandora page
-    $rss_feed .= "\n";
-    $rss_feed .= '<atom:link href="'.xml_entities(io_safe_input($selfurl)).'" rel="self" type="application/rss+xml" />';
-    // Alternative for Atom feeds. It's the same.
+    // ' Fixes certain highlighters freaking out on the PHP closing tag.
+    $rss_feed = rss_header(0);
     $rss_feed .= "\n";
     $rss_feed .= '<item>';
     $rss_feed .= "\n";
@@ -104,169 +173,206 @@ function rss_error_handler($errno, $errstr, $errfile, $errline, $error_human_des
     $rss_feed .= "\n";
     $rss_feed .= '</rss>';
 
-    exit($rss_feed);
-    // Exit by displaying the feed
+    echo $rss_feed;
 }
 
 
+// Errors output as RSS.
 set_error_handler('rss_error_handler', E_ERROR);
-// Errors output as RSS
-$id_group = get_parameter('id_group', 0);
-// group
-$event_type = get_parameter('event_type', '');
-// 0 all
-$severity = (int) get_parameter('severity', -1);
-// -1 all
-$status = (int) get_parameter('status', 0);
-// -1 all, 0 only red, 1 only green
-$id_agent = (int) get_parameter('id_agent', -1);
 
-$id_event = (int) get_parameter('id_event', -1);
-// This will allow to select only 1 event (eg. RSS)
-$event_view_hr = (int) get_parameter('event_view_hr', 0);
-$id_user_ack = get_parameter('id_user_ack', 0);
-$search = io_safe_output(preg_replace('/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/', '&', rawurldecode(get_parameter('search'))));
-$text_agent = (string) get_parameter('text_agent', __('All'));
+// Send header before starting to output.
+header('Content-Type: application/xml; charset=UTF-8');
 
-$tag_with_json = base64_decode(get_parameter('tag_with', ''));
-$tag_with_json_clean = io_safe_output($tag_with_json);
-$tag_with_base64 = base64_encode($tag_with_json_clean);
-$tag_with = json_decode($tag_with_json_clean, true);
-if (empty($tag_with)) {
-    $tag_with = [];
+$ipOrigin = $_SERVER['REMOTE_ADDR'];
+
+// Uncoment this to activate ACL on RSS Events.
+if (!isInACL($ipOrigin)) {
+    rss_error_handler(
+        null,
+        null,
+        null,
+        null,
+        __('Your IP is not into the IP list with API access.')
+    );
+
+    exit;
 }
 
-$tag_with = array_diff($tag_with, [0 => 0]);
+// Check user credentials.
+$user = get_parameter('user');
+$hashup = get_parameter('hashup');
 
-$tag_without_json = base64_decode(get_parameter('tag_without', ''));
-$tag_without_json_clean = io_safe_output($tag_without_json);
-$tag_without_base64 = base64_encode($tag_without_json_clean);
-$tag_without = json_decode($tag_without_json_clean, true);
-if (empty($tag_without)) {
-    $tag_without = [];
+$pss = get_user_info($user);
+$hashup2 = md5($user.$pss['password']);
+
+if ($hashup != $hashup2) {
+    rss_error_handler(
+        null,
+        null,
+        null,
+        null,
+        __('The URL of your feed has bad hash.')
+    );
+
+    exit;
 }
 
-$tag_without = array_diff($tag_without, [0 => 0]);
-
-$filter_only_alert = (int) get_parameter('filter_only_alert', -1);
-
-//
-// Build the condition of the events query
-$sql_post = '';
-$meta = false;
-
-$id_user = $user;
-
-require 'events.build_query.php';
-
-// Now $sql_post have all the where condition
-//
-$sql = 'SELECT *
-	FROM tevento te LEFT JOIN tagent_secondary_group tasg
-		ON te.id_grupo = tasg.id_group
-	WHERE 1=1 '.$sql_post.'
-	ORDER BY utimestamp DESC';
-
-$result = db_get_all_rows_sql($sql);
-
-$url = ui_get_full_url(false);
-$selfurl = ui_get_full_url('?'.$_SERVER['QUERY_STRING'], false, true);
-
-if (empty($result)) {
-    $lastbuild = 0;
-    // Last build in 1970
-} else {
-    $lastbuild = (int) $result[0]['utimestamp'];
+$reset_session = false;
+if (empty($config['id_user'])) {
+    $config['id_user'] = $user;
+    $reset_session = true;
 }
 
-$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'."\n";
-// ' <?php ' -- Fixes highlighters thinking that the closing tag is PHP
-$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
-$rss_feed .= '<channel>'."\n";
-$rss_feed .= '<title>'.get_product_name().' RSS Feed</title>'."\n";
-$rss_feed .= '<description>Latest events on '.get_product_name().'</description>'."\n";
-$rss_feed .= '<lastBuildDate>'.date(DATE_RFC822, $lastbuild).'</lastBuildDate>'."\n";
-// Last build date is the last event - that way readers won't mark it as having new posts
-$rss_feed .= '<link>'.$url.'</link>'."\n";
-// Link back to the main Pandora page
-$rss_feed .= '<atom:link href="'.xml_entities(io_safe_input($selfurl)).'" rel="self" type="application/rss+xml" />'."\n";
-;
-// Alternative for Atom feeds. It's the same.
-if (empty($result)) {
-    $result = [];
-    $rss_feed .= '<item><guid>'.xml_entities(io_safe_input($url.'/index.php?sec=eventos&sec2=operation/events/events')).'</guid><title>No results</title>';
-    $rss_feed .= '<description>There are no results. Click on the link to see all Pending events</description>';
-    $rss_feed .= '<link>'.xml_entities(io_safe_input($url.'/index.php?sec=eventos&sec2=operation/events/events')).'</link></item>'."\n";
-}
+$column_names = [
+    'id_evento',
+    'evento',
+    'timestamp',
+    'estado',
+    'event_type',
+    'utimestamp',
+    'id_agente',
+    'agent_name',
+    'id_usuario',
+    'id_grupo',
+    'id_agentmodule',
+    'id_alert_am',
+    'criticity',
+    'user_comment',
+    'tags',
+    'source',
+    'id_extra',
+    'critical_instructions',
+    'warning_instructions',
+    'unknown_instructions',
+    'owner_user',
+    'ack_utimestamp',
+    'custom_data',
+    'data',
+    'module_status',
+];
 
-foreach ($result as $row) {
-    if (!check_acl($user, $row['id_grupo'], 'ER')) {
-        continue;
+$fields = [
+    'te.id_evento',
+    'te.evento',
+    'te.timestamp',
+    'te.estado',
+    'te.event_type',
+    'te.utimestamp',
+    'te.id_agente',
+    'ta.alias as agent_name',
+    'te.id_usuario',
+    'te.id_grupo',
+    'te.id_agentmodule',
+    'am.nombre as module_name',
+    'te.id_alert_am',
+    'te.criticity',
+    'te.user_comment',
+    'te.tags',
+    'te.source',
+    'te.id_extra',
+    'te.critical_instructions',
+    'te.warning_instructions',
+    'te.unknown_instructions',
+    'te.owner_user',
+    'te.ack_utimestamp',
+    'te.custom_data',
+    'te.data',
+    'te.module_status',
+    'tg.nombre as group_name',
+];
+
+
+try {
+    $fb64 = get_parameter('fb64', null);
+    $plain_filter = base64_decode($fb64);
+    $filter = json_decode($plain_filter, true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        throw new Exception('Invalid filter. ['.$plain_filter.']');
     }
 
-    if ($row['event_type'] == 'system') {
-        $agent_name = __('System');
-    } else if ($row['id_agente'] > 0) {
-        // Agent name
-        $agent_name = agents_get_alias($row['id_agente']);
-    } else {
-        $agent_name = __('Alert').__('SNMP');
+    // Dump events.
+    $limit = get_parameter('limit', 20);
+    $offset = get_parameter('offset', 0);
+    $events = events_get_all(
+        $fields,
+        $filter,
+        $offset,
+        $limit,
+        'desc',
+        'timestamp',
+        $filter['history']
+    );
+
+    $last_timestamp = 0;
+    if (is_array($events)) {
+        $last_timestamp = $events[0]['utimestamp'];
     }
 
-    // This is mandatory
-    $rss_feed .= '<item><guid>';
-    $rss_feed .= xml_entities(io_safe_input($url.'/index.php?sec=eventos&sec2=operation/events/events&id_event='.$row['id_evento']));
-    $rss_feed .= '</guid><title>';
-    $rss_feed .= xml_entities($agent_name);
-    $rss_feed .= '</title><description>';
-    $rss_feed .= xml_entities($row['evento']);
-    if ($row['estado'] == 1) {
-        $rss_feed .= xml_entities(io_safe_input('<br /><br />'.'Validated by '.$row['id_usuario']));
-    }
+    // Dump headers.
+    $rss = rss_header($last_timestamp);
+    $url = ui_get_full_url(false);
 
-    $rss_feed .= '</description><link>';
-    $rss_feed .= xml_entities(io_safe_input($url.'/index.php?sec=eventos&sec2=operation/events/events&id_event='.$row['id_evento']));
-    $rss_feed .= '</link>';
+    if (is_array($events)) {
+        foreach ($events as $row) {
+            $rss .= '<item>';
+            $rss .= xml_entry('title', $row['evento']);
+            if (!empty($row['id_agente'])) {
+                $rss .= xml_entry('link', $url.'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agente']);
+            }
 
-    // The rest is optional
-    $rss_feed .= '<pubDate>'.date(DATE_RFC822, $row['utimestamp']).'</pubDate>';
+            $rss .= xml_entry('comments', $row['']);
+            $rss .= xml_entry('pubDate', $row['timestamp']);
+            $rss .= xml_entry('category', $row['source']);
+            foreach ($column_names as $val) {
+                $key = $val;
+                if ($val == 'id_grupo') {
+                    $key = 'group_name';
+                } else if ($val == 'id_agentmodule') {
+                    $key = 'module_name';
+                }
 
-    // This is mandatory again
-    $rss_feed .= '</item>'."\n";
-}
+                switch ($key) {
+                    case 'module_status':
+                        $value = events_translate_module_status(
+                            $row[$key]
+                        );
+                    break;
 
-$rss_feed .= "</channel>\n</rss>\n";
+                    case 'event_type':
+                        $value = events_translate_event_type(
+                            $row[$key]
+                        );
+                    break;
 
-echo $rss_feed;
+                    case 'criticity':
+                        $value = events_translate_event_criticity(
+                            $row[$key]
+                        );
+                    break;
 
+                    default:
+                        $value = $row[$key];
+                    break;
+                }
 
-function xml_entities($str)
-{
-    if (!is_string($str)) {
-        return '';
-    }
+                $rss .= xml_entry($key, $value);
+            }
 
-    if (preg_match_all('/(&[^;]+;)/', $str, $matches) != 0) {
-        $matches = $matches[0];
-
-        foreach ($matches as $entity) {
-            $char = html_entity_decode($entity, (ENT_COMPAT | ENT_HTML401), 'UTF-8');
-
-            $html_entity_numeric = '&#'.uniord($char).';';
-
-            $str = str_replace($entity, $html_entity_numeric, $str);
+            $rss .= '</item>';
         }
+    } else {
+        $rss .= '<item><guid>'.xml_entities(io_safe_input($url.'/index.php?sec=eventos&sec2=operation/events/events')).'</guid><title>No results</title>';
+        $rss .= '<description>There are no results. Click on the link to see all Pending events</description>';
+        $rss .= '<link>'.xml_entities(io_safe_input($url.'/index.php?sec=eventos&sec2=operation/events/events')).'</link></item>'."\n";
     }
 
-    return $str;
+    $rss .= "</channel>\n</rss>\n";
+
+    echo $rss;
+} catch (Exception $e) {
+    echo rss_error_handler(200, 'Controlled error', '', '', $e->getMessage());
 }
 
-
-function uniord($u)
-{
-    $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
-    $k1 = ord(substr($k, 0, 1));
-    $k2 = ord(substr($k, 1, 1));
-
-    return ($k2 * 256 + $k1);
+if ($reset_session) {
+    unset($config['id_user']);
 }

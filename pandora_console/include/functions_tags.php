@@ -745,7 +745,8 @@ function tags_get_acl_tags(
     $meta=false,
     $childrens_ids=[],
     $force_group_and_tag=false,
-    $id_grupo_table_pretag=''
+    $id_grupo_table_pretag='',
+    $alt_id_grupo_table_pretag=''
 ) {
     global $config;
 
@@ -820,7 +821,8 @@ function tags_get_acl_tags(
                 $meta,
                 $force_group_and_tag,
                 false,
-                $id_grupo_table_pretag
+                $id_grupo_table_pretag,
+                $alt_id_grupo_table_pretag
             );
 
             if (!empty($condition)) {
@@ -917,7 +919,8 @@ function tags_get_acl_tags_event_condition(
     $meta=false,
     $force_group_and_tag=false,
     $force_equal=false,
-    $id_grupo_table_pretag=''
+    $id_grupo_table_pretag='',
+    $alt_id_grupo_table_pretag=''
 ) {
     global $config;
     $condition = [];
@@ -935,7 +938,7 @@ function tags_get_acl_tags_event_condition(
 
         // Group condition (The module belongs to an agent of the group X)
         // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));.
-        $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id.' OR id_group = '.$group_id.')';
+        $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id.' OR '.$alt_id_grupo_table_pretag.'id_group = '.$group_id.')';
 
         // Tags condition (The module has at least one of the restricted tags).
         $tags_condition = '';
@@ -971,7 +974,7 @@ function tags_get_acl_tags_event_condition(
         }
 
         $in_group = implode(',', $without_tags);
-        $condition .= sprintf('('.$id_grupo_table_pretag.'id_grupo IN (%s) OR id_group IN (%s))', $in_group, $in_group);
+        $condition .= sprintf('('.$id_grupo_table_pretag.'id_grupo IN (%s) OR '.$alt_id_grupo_table_pretag.'id_group IN (%s))', $in_group, $in_group);
     }
 
     $condition = !empty($condition) ? "($condition)" : '';

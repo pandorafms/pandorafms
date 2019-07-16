@@ -70,7 +70,7 @@ if (is_ajax()) {
         $table->head[0] = __('Agent');
         $table->head[1] = __('Module');
         foreach ($modules as $mod) {
-            $agent_name = '<a href="'.$config['homeurl'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$mod['id_agente'].'">'.modules_get_agentmodule_agent_name(
+            $agent_name = '<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$mod['id_agente']).'">'.modules_get_agentmodule_agent_alias(
                 $mod['id_agente_modulo']
             ).'</a>';
 
@@ -280,7 +280,7 @@ if (($create != '') || ($view != '')) {
     } else {
         if ($create != '') {
             ui_print_page_header(
-                __('Plugin creation'),
+                __('Plugin registration'),
                 'images/gm_servers.png',
                 false,
                 'plugin_definition',
@@ -1215,4 +1215,3 @@ ui_require_javascript_file('pandora_modules');
     
     
 </script>
-

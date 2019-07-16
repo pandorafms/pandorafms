@@ -211,7 +211,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" disabled="true" value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -787,7 +787,7 @@ $table_adv_options = '
                 '.$adv_secondary_groups_right.'
             </div>
         </div>
-<div class="adv_right" >
+<div class="agent_av_opt_right" >
         '.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
 
 if ($new_agent) {
@@ -798,7 +798,7 @@ if ($new_agent) {
 $table_adv_options .= '</div>';
 
 $table_adv_options .= '
-        <div class="adv_left" >
+        <div class="agent_av_opt_left" >
         '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
         </div>';
 
@@ -1172,6 +1172,19 @@ ui_require_jquery_file('bgiframe');
     }
 
     $(document).ready (function() {
+
+        var previous_primary_group_select;
+        $("#grupo").on('focus', function () {
+            previous_primary_group_select = this.value;
+        }).change(function() {
+            if ($("#secondary_groups_selected option[value="+$("#grupo").val()+"]").length) {
+                alert("<?php echo __('Secondary group cannot be primary too.'); ?>");
+                $("#grupo").val(previous_primary_group_select);
+            } else {
+                previous_primary_group_select = this.value;
+            }
+        });
+
         $("select#id_os").pandoraSelectOS ();
 
         var checked = $("#checkbox-cascade_protection").is(":checked");
@@ -1220,7 +1233,7 @@ ui_require_jquery_file('bgiframe');
             128,
             128
         );
-        $("#text-agente").prop('disabled', true);
+        $("#text-agente").prop('readonly', true);
 
     });
 </script>

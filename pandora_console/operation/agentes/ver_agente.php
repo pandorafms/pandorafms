@@ -68,15 +68,16 @@ if (is_ajax()) {
     if ($refresh_contact) {
         $id_agente = get_parameter('id_agente', 0);
         if ($id_agente > 0) {
-            $d = db_get_row(
-                'tagente',
-                'id_agente',
-                $id_agente
+            $last_contact = db_get_value_sql(
+                sprintf(
+                    'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
+                     FROM `tagente`
+                     WHERE id_agente = %d ',
+                    $id_agente
+                )
             );
 
             $progress = agents_get_next_contact($id_agente);
-            $last_contact = floor(($d['intervalo'] * (100 - $progress) / 100));
-
             if ($progress < 0 || $progress > 100) {
                 $progress = 100;
             }

@@ -690,7 +690,7 @@ if ($config['menu_type'] == 'classic') {
                         layout: '%M%nn%M:%S%nn%S',
                         labels: ['', '', '', '', '', '', ''],
                         onExpiry: function () {
-                            dt_events.draw(true);
+                            dt_events.draw(false);
                         }
                     });
                 }

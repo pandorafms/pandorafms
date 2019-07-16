@@ -730,9 +730,26 @@ if ($config['menu_type'] == 'classic') {
                         values[this.name] = $(this).val();
                     })
 
-                    var newValue = btoa(JSON.stringify(values));
-                    $(document).attr("location", href+'&fb64=' + newValue + '&refr=' + this.value);
+                    var newValue = btoa(JSON.stringify(values));           
+                    <?php
+                    // Check if the url has the parameter fb64.
+                    if ($_GET['fb64']) {
+                        $fb64 = $_GET['fb64'];
+                        ?>
+                            var fb64 = '<?php echo $fb64; ?>';  
+                            // Check if the filters have changed.
+                            if(fb64 !== newValue){
+                                href = href.replace(fb64, newValue);
+                            } 
 
+                            $(document).attr("location", href+ '&refr=' + this.value);
+                        <?php
+                    } else {
+                        ?>
+                            $(document).attr("location", href+'&fb64=' + newValue + '&refr=' + this.value);
+                        <?php
+                    }
+                    ?>
                 } else {
                     $(document).attr ("location", href + this.value);
                 }

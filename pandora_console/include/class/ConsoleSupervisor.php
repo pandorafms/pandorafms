@@ -1263,6 +1263,7 @@ class ConsoleSupervisor
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
         $PHPmemory_limit_min = config_return_in_bytes('500M');
+        $PHPSerialize_precision = ini_get('serialize_precision');
 
         // PhantomJS status.
         $result_ejecution = exec($config['phantomjs_bin'].'/phantomjs --version');
@@ -1438,6 +1439,30 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.PHP.VERSION');
         }
+
+        if ($PHPSerialize_precision != -1) {
+            $url = 'https://www.php.net/manual/en/ini.core.php#ini.serialize-precision';
+            if ($config['language'] == 'es') {
+                $url = 'https://www.php.net/manual/es/ini.core.php#ini.serialize-precision';
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PHP.SERIALIZE_PRECISION',
+                    'title'   => sprintf(
+                        __("Not recommended '%s' value in PHP configuration"),
+                        'serialze_precision'
+                    ),                    'message' => sprintf(
+                        __('Recommended value is: %s'),
+                        sprintf('-1')
+                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
+        }
+
     }
 
 

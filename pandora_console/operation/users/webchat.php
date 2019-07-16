@@ -115,6 +115,7 @@ echo "<div style='width:100%'>".html_print_button(
             //Enter key.
             if (e.keyCode == 13) {
                 send_message();
+                check_users();
             }
         });
         

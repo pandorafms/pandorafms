@@ -1634,6 +1634,41 @@ sub app_scan($) {
 
 }
 
+
+##########################################################################
+# Perform a deployment scan.
+##########################################################################
+sub deploy_scan($) {
+	my $self = shift;
+	my ($progress, $step);
+
+	my $type = '';
+
+	# Initialize deployer object.
+	my $deployer = PandoraFMS::Recon::Util::enterprise_new(
+		'PandoraFMS::Recon::Deployer',
+		[
+			task_data => $self->{'task_data'},
+			parent => $self
+		]
+
+	);
+
+	if (!$deployer) {
+		# Failed to initialize, check Cloud credentials or anything.
+		call('message', 'Unable to initialize PandoraFMS::Recon::Deployer', 3);
+	} else {
+		# Let deployer object manage scan.
+		$deployer->scan();
+	}
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+}
+
+
 ##########################################################################
 # Perform a network scan.
 ##########################################################################
@@ -1654,6 +1689,10 @@ sub scan($) {
 		if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
 			# Cloud scan.
 			return $self->cloud_scan();
+		}
+
+		if($self->{'task_data'}->{'type'} == DISCOVERY_DEPLOY_AGENTS) {
+			return $self->deploy_scan();
 		}
 	}
 

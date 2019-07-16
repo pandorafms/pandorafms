@@ -552,6 +552,17 @@ class DiscoveryTaskList extends Wizard
                         $data[6] .= __('Discovery.App.Oracle');
                     break;
 
+                    case DISCOVERY_DEPLOY_AGENTS:
+                        // Internal deployment task.
+                        $no_operations = true;
+                        $data[6] = html_print_image(
+                            'images/deploy.png',
+                            true,
+                            ['title' => __('Agent deployment')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Agent.Deployment');
+                    break;
+
                     case DISCOVERY_HOSTDEVICES:
                     default:
                         if ($task['id_recon_script'] == 0) {
@@ -595,71 +606,75 @@ class DiscoveryTaskList extends Wizard
                     $data[8] = __('Not executed yet');
                 }
 
-                if ($task['disabled'] != 2) {
-                    $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
-                    $data[9] .= html_print_image(
-                        'images/eye.png',
-                        true
-                    );
-                    $data[9] .= '</a>';
-                }
-
-                if ($task['disabled'] != 2 && $task['utimestamp'] > 0
-                    && $task['type'] != DISCOVERY_APP_MYSQL
-                    && $task['type'] != DISCOVERY_APP_ORACLE
-                    && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
-                ) {
-                    $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
-                    $data[9] .= html_print_image(
-                        'images/dynamic_network_icon.png',
-                        true
-                    );
-                    $data[9] .= '</a>';
-                }
-
-                if (check_acl(
-                    $config['id_user'],
-                    $task['id_group'],
-                    'PM'
-                )
-                ) {
-                    if ($ipam === true) {
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            sprintf(
-                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
-                                $tipam_task_id
-                            )
-                        ).'">'.html_print_image(
-                            'images/config.png',
+                if (!$no_operations) {
+                    if ($task['disabled'] != 2) {
+                        $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] .= html_print_image(
+                            'images/eye.png',
                             true
-                        ).'</a>';
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
-                        ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                            'images/cross.png',
+                        );
+                        $data[9] .= '</a>';
+                    }
+
+                    if ($task['disabled'] != 2 && $task['utimestamp'] > 0
+                        && $task['type'] != DISCOVERY_APP_MYSQL
+                        && $task['type'] != DISCOVERY_APP_ORACLE
+                        && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                    ) {
+                        $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] .= html_print_image(
+                            'images/dynamic_network_icon.png',
                             true
-                        ).'</a>';
+                        );
+                        $data[9] .= '</a>';
+                    }
+
+                    if (check_acl(
+                        $config['id_user'],
+                        $task['id_group'],
+                        'PM'
+                    )
+                    ) {
+                        if ($ipam === true) {
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                sprintf(
+                                    'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
+                                    $tipam_task_id
+                                )
+                            ).'">'.html_print_image(
+                                'images/config.png',
+                                true
+                            ).'</a>';
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
+                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                'images/cross.png',
+                                true
+                            ).'</a>';
+                        } else {
+                            // Check if is a H&D, Cloud or Application or IPAM.
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                sprintf(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
+                                    $this->getTargetWiz($task, $recon_script_data),
+                                    $task['id_rt']
+                                )
+                            ).'">'.html_print_image(
+                                'images/config.png',
+                                true
+                            ).'</a>';
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
+                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                'images/cross.png',
+                                true
+                            ).'</a>';
+                        }
                     } else {
-                        // Check if is a H&D, Cloud or Application or IPAM.
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            sprintf(
-                                'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
-                                $this->getTargetWiz($task, $recon_script_data),
-                                $task['id_rt']
-                            )
-                        ).'">'.html_print_image(
-                            'images/config.png',
-                            true
-                        ).'</a>';
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
-                        ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                            'images/cross.png',
-                            true
-                        ).'</a>';
+                        $data[9] = '';
                     }
                 } else {
-                    $data[9] = '';
+                    $data[9] = '-';
                 }
 
                 $table->cellclass[][9] = 'action_buttons';

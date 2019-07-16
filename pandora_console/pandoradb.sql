@@ -836,7 +836,7 @@ CREATE TABLE `tdeployment_hosts` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `current_agent_version` VARCHAR(100) DEFAULT '',
   `desired_agent_version` VARCHAR(100) DEFAULT '',
-  `deployed` bigint(20) unsigned COMMENT "When it was deployed",
+  `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
   `last_err` text,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store` (`identifier`)

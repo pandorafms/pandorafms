@@ -601,14 +601,17 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
-   * Clasic and protected version of the setter of the `meta` property.
+   * Classic version of the setter of the `meta` property.
    * Useful to override it from children classes.
    * @param newProps
    */
-  protected setMeta(newMetadata: ItemMeta) {
+  public setMeta(newMetadata: Partial<ItemMeta>): void {
     const prevMetadata = this._metadata;
     // Update the internal meta.
-    this._metadata = newMetadata;
+    this._metadata = {
+      ...prevMetadata,
+      ...newMetadata
+    };
 
     // From this point, things which rely on this.props can access to the changes.
 

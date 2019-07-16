@@ -731,11 +731,9 @@ if ($config['menu_type'] == 'classic') {
                     })
 
                     var newValue = btoa(JSON.stringify(values));
-                    console.log(newValue);
                     $(document).attr("location", href+'&fb64=' + newValue + '&refr=' + this.value);
 
                 } else {
-                    console.log('recargo');
                     $(document).attr ("location", href + this.value);
                 }
         });

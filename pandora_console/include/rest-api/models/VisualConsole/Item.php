@@ -1629,14 +1629,10 @@ class Item extends CachedModel
      */
     public function save(array $data=[]): bool
     {
-        if (empty($data)) {
-            return false;
-        }
-
         $dataModelEncode = $this->encode($this->toArray());
         $dataEncode = $this->encode($data);
 
-        $save = \array_merge($dataModelEncode, $dataEncode);
+        $save = array_merge($dataModelEncode, $dataEncode);
 
         if (!empty($save)) {
             if (empty($save['id'])) {
@@ -1650,6 +1646,7 @@ class Item extends CachedModel
                 $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
                 // Invalidate the item's cache.
                 if ($result !== false && $result > 0) {
+                    // TODO: Invalidate the cache with the function clearCachedData.
                     db_process_sql_delete(
                         'tvisual_console_elements_cache',
                         [

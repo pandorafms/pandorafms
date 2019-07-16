@@ -159,19 +159,86 @@ function createVisualConsole(
       var props = item.props || {};
       var meta = item.meta || {};
 
-      if (meta.editMode) {
+      if (meta.editMode && !meta.isUpdating) {
         // Item selection.
         visualConsole.selectItem(props.id, true);
 
         var formContainer = item.getFormContainer();
         var formElement = formContainer.getFormElement();
+        var $formElement = jQuery(formElement);
+
         formContainer.onSubmit(function(e) {
-          // TODO: Send the update.
+          // Send the update.
+          var id = props.id;
+          var data = e.data;
+          var taskId = "visual-console-item-update-" + id;
+
+          // Show updating state.
+          item.setMeta({ isUpdating: true });
+
+          // Persist the new data.
+          asyncTaskManager
+            .add(taskId, function(done) {
+              var abortable = updateVisualConsoleItem(
+                baseUrl,
+                visualConsole.props.id,
+                id,
+                data,
+                function(error, data) {
+                  // Hide updating state.
+                  item.setMeta({ isUpdating: false });
+
+                  // if (!error && !data) return;
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    // TODO: Recover from error.
+
+                    done();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (e) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      // TODO: Recover from error.
+
+                      done();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  visualConsole.updateElement(data);
+
+                  done();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
           console.log("Form submit", e.data);
-          $(formElement).dialog("close");
+          $formElement.dialog("close");
         });
 
-        $(formElement).dialog({
+        $formElement.dialog({
           title: formContainer.title
         });
         // TODO: Add submit and reset button.
@@ -185,7 +252,7 @@ function createVisualConsole(
         y: e.newPosition.y,
         type: e.item.props.type
       };
-      var taskId = "visual-console-item-move-" + id;
+      var taskId = "visual-console-item-update-" + id;
 
       // Persist the new position.
       asyncTaskManager
@@ -221,21 +288,18 @@ function createVisualConsole(
         })
         .init();
     });
+
     // VC Item resized.
     visualConsole.onItemResized(function(e) {
-      var id = e.item.props.id;
+      var item = e.item;
+      var id = item.props.id;
       var data = {
         width: e.newSize.width,
         height: e.newSize.height,
-        type: e.item.props.type
+        type: item.props.type
       };
 
-      visualConsole.elementsById[id].meta = {
-        ...visualConsole.elementsById[id].meta,
-        isUpdating: true
-      };
-
-      var taskId = "visual-console-item-resize-" + id;
+      var taskId = "visual-console-item-update-" + id;
       // Persist the new size.
       asyncTaskManager
         .add(taskId, function(done) {
@@ -253,56 +317,33 @@ function createVisualConsole(
                   error ? error.message : "Invalid response"
                 );
 
-                visualConsole.elementsById[id].meta = {
-                  ...visualConsole.elementsById[id].meta,
-                  isUpdating: false
-                };
-
                 // Resize the element to its initial Size.
-                e.item.resize(e.prevSize.width, e.prevSize.height);
+                item.resize(e.prevSize.width, e.prevSize.height);
+
+                done();
+                return; // Stop task execution.
               }
 
-              var taskItem = "update-item-resize-" + id;
-              asyncTaskManager
-                .add(taskItem, function(done) {
-                  var abortable = getVisualConsoleItem(baseUrl, id, function(
-                    error,
-                    data
-                  ) {
-                    if (error || !data) {
-                      console.log(
-                        "[ERROR]",
-                        "[VISUAL-CONSOLE-CLIENT]",
-                        "[API]",
-                        error ? error.message : "Invalid response"
-                      );
+              if (typeof data === "string") {
+                try {
+                  data = JSON.parse(data);
+                } catch (e) {
+                  console.log(
+                    "[ERROR]",
+                    "[VISUAL-CONSOLE-CLIENT]",
+                    "[API]",
+                    error ? error.message : "Invalid response"
+                  );
 
-                      visualConsole.elementsById[id].meta = {
-                        ...visualConsole.elementsById[id].meta,
-                        isUpdating: false
-                      };
-                    }
+                  // Resize the element to its initial Size.
+                  item.resize(e.prevSize.width, e.prevSize.height);
 
-                    if (typeof data === "string") {
-                      data = JSON.parse(data);
-                    }
-                    visualConsole.updateElement(data);
+                  done();
+                  return; // Stop task execution.
+                }
+              }
 
-                    visualConsole.elementsById[id].meta = {
-                      ...visualConsole.elementsById[id].meta,
-                      isUpdating: false
-                    };
-
-                    done();
-                  });
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
+              visualConsole.updateElement(data);
 
               done();
             }
@@ -515,12 +556,13 @@ function updateVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
 /**
  * Fetch a Visual Console's structure and its items.
  * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcId Identifier of the Visual Console.
  * @param {number} vcItemId Identifier of the Visual Console's item.
  * @param {function} callback Function to be executed on request success or fail.
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function getVisualConsoleItem(baseUrl, vcItemId, callback) {
+function getVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var jqXHR = null;
@@ -564,7 +606,8 @@ function getVisualConsoleItem(baseUrl, vcItemId, callback) {
       {
         page: "include/rest-api/index",
         getVisualConsoleItem: 1,
-        itemId: vcItemId
+        visualConsoleId: vcId,
+        visualConsoleItemId: vcItemId
       },
       "json"
     )

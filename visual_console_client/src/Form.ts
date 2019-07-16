@@ -1,5 +1,6 @@
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { AnyObject } from "./lib/types";
+import { t } from "./lib";
 
 // TODO: Document
 export abstract class InputGroup<Data extends {} = {}> {
@@ -155,8 +156,11 @@ export class FormContainer {
     return this;
   }
 
-  public getFormElement(): HTMLFormElement {
+  public getFormElement(
+    type: "creation" | "update" = "update"
+  ): HTMLFormElement {
     const form = document.createElement("form");
+    form.className = "visual-console-item-edition";
     form.addEventListener("submit", e => {
       e.preventDefault();
       this.submitEventManager.emit({
@@ -173,11 +177,23 @@ export class FormContainer {
       });
     });
 
+    const formContent = document.createElement("div");
+    formContent.className = "input-groups";
+
     this.enabledInputGroupNames.forEach(name => {
       if (this.inputGroupsByName[name]) {
-        form.appendChild(this.inputGroupsByName[name].element);
+        formContent.appendChild(this.inputGroupsByName[name].element);
       }
     });
+
+    // Add buttons.
+    const submitBtn = document.createElement("input");
+    submitBtn.className = "sub upd";
+    submitBtn.type = "submit";
+    submitBtn.value = type === "creation" ? t("Create") : t("Update");
+
+    form.appendChild(formContent);
+    form.appendChild(submitBtn);
 
     return form;
   }

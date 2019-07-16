@@ -16,58 +16,99 @@ $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 
-// Check groups can access user.
-$aclUserGroups = [];
-if (!users_can_manage_group_all('AR')) {
-    $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
-}
-
 ob_clean();
 
+// Retrieve the visual console.
+$visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
+$visualConsoleData = $visualConsole->toArray();
+$vcGroupId = $visualConsoleData['groupId'];
+
+// ACL.
+$aclRead = check_acl($config['id_user'], $vcGroupId, 'VR');
+$aclWrite = check_acl($config['id_user'], $vcGroupId, 'VW');
+$aclManage = check_acl($config['id_user'], $vcGroupId, 'VM');
+
+if (!$aclRead && !$aclWrite && !$aclManage) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access visual console without group access'
+    );
+    http_response_code(403);
+    return;
+}
+
 if ($getVisualConsole === true) {
-    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
-    $visualConsoleData = $visualConsole->toArray();
-    $groupId = $visualConsoleData['groupId'];
+    echo $visualConsole;
+    return;
+} else if ($getVisualConsoleItems === true) {
+    // Check groups can access user.
+    $aclUserGroups = [];
+    if (!users_can_manage_group_all('AR')) {
+        $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
+    }
+
+    $vcItems = VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups);
+    echo '['.implode($vcItems, ',').']';
+    return;
+} else if ($getVisualConsoleItem === true
+    || $updateVisualConsoleItem === true
+) {
+    $itemId = (int) get_parameter('visualConsoleItemId');
+
+    try {
+        $item = VisualConsole::getItemFromDB($itemId);
+    } catch (Throwable $e) {
+        // Bad params.
+        http_response_code(409);
+        return;
+    }
+
+    $itemData = $item->toArray();
+    $itemType = $itemData['type'];
+    $itemAclGroupId = $itemData['aclGroupId'];
 
     // ACL.
-    $aclRead = check_acl($config['id_user'], $groupId, 'VR');
-    $aclWrite = check_acl($config['id_user'], $groupId, 'VW');
-    $aclManage = check_acl($config['id_user'], $groupId, 'VM');
+    $aclRead = check_acl($config['id_user'], $itemAclGroupId, 'VR');
+    $aclWrite = check_acl($config['id_user'], $itemAclGroupId, 'VW');
+    $aclManage = check_acl($config['id_user'], $itemAclGroupId, 'VM');
 
     if (!$aclRead && !$aclWrite && !$aclManage) {
         db_pandora_audit(
             'ACL Violation',
             'Trying to access visual console without group access'
         );
-        exit;
+        http_response_code(403);
+        return;
     }
 
-    echo $visualConsole;
-} else if ($getVisualConsoleItems === true) {
-    $vcItems = VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups);
-    echo '['.implode($vcItems, ',').']';
-} else if ($updateVisualConsoleItem === true) {
-    $visualConsoleId = (integer) get_parameter('visualConsoleId');
-    $visualConsoleItemId = (integer) get_parameter('visualConsoleItemId');
-    $data = get_parameter('data');
+    // Check also the group Id for the group item.
+    if ($itemType === GROUP_ITEM) {
+        $itemGroupId = $itemData['aclGroupId'];
+        // ACL.
+        $aclRead = check_acl($config['id_user'], $itemGroupId, 'VR');
+        $aclWrite = check_acl($config['id_user'], $itemGroupId, 'VW');
+        $aclManage = check_acl($config['id_user'], $itemGroupId, 'VM');
 
-    $class = VisualConsole::getItemClass($data['type']);
-    unset($data['type']);
+        if (!$aclRead && !$aclWrite && !$aclManage) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access visual console without group access'
+            );
+            http_response_code(403);
+            return;
+        }
+    }
 
-    $item_data = [];
-    $item_data['id'] = $visualConsoleItemId;
-    $item_data['id_layout'] = $visualConsoleId;
+    if ($getVisualConsoleItem === true) {
+        echo $item;
+        return;
+    } else if ($updateVisualConsoleItem === true) {
+        $data = get_parameter('data');
+        $result = $item->save($data);
 
-    $updateItem = $class::fromDB($item_data);
-    $result = $updateItem->save($data);
-
-    echo json_encode($result);
-} else if ($getVisualConsoleItem === true) {
-    $itemId = (integer) get_parameter('itemId');
-
-    $item = VisualConsole::getItemFromDB($itemId);
-
-    echo $item;
+        echo $item;
+        return;
+    }
 }
 
 exit;

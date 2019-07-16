@@ -280,6 +280,11 @@ export default class VisualConsole {
     this.clearRelations(e.data.id);
   };
 
+  // TODO: Document
+  private handleContainerClick: (e: MouseEvent) => void = () => {
+    this.unselectItems();
+  };
+
   public constructor(
     container: HTMLElement,
     props: AnyObject,
@@ -330,6 +335,8 @@ export default class VisualConsole {
 
     // Create lines.
     this.buildRelations();
+
+    this.containerRef.addEventListener("click", this.handleContainerClick);
   }
 
   /**

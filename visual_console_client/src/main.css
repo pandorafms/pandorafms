@@ -74,3 +74,13 @@
   opacity: 0.7;
   background: rgb(212, 215, 218);
 }
+
+form.visual-console-item-edition > .input-groups {
+  margin-bottom: 50px;
+}
+
+form.visual-console-item-edition > input[type="submit"] {
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+}

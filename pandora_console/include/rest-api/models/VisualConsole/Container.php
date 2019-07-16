@@ -407,18 +407,15 @@ final class Container extends Model
 
 
     /**
-     * Obtain an items which belong to the Visual Console.
+     * Obtain an item which belong to the Visual Console.
      *
-     * @param integer $itemId       Identifier of the Item.
-     * @param array   $groupsFilter Groups can access user.
+     * @param integer $itemId Identifier of the Item.
      *
-     * @return array A list of items.
+     * @return Item Item.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    public static function getItemFromDB(
-        int $itemId,
-        array $groupsFilter=[]
-    ): Object {
+    public static function getItemFromDB(int $itemId): Item
+    {
         // Default filter.
         $filter = ['id' => $itemId];
         $fields = [

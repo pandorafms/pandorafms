@@ -501,6 +501,11 @@ $table->data['form_agents_4'][1] = html_print_select(
     true
 );
 
+$table->rowstyle['form_agents_filter'] = 'vertical-align: top;';
+$table->rowclass['form_agents_filter'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_filter'][0] = __('Filter Agents');
+$table->data['form_agents_filter'][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
+
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
 $table->data['form_agents_3'][0] = __('Agents');
@@ -763,6 +768,9 @@ $(document).ready (function () {
                             .html (value["alias"]);
                         $("#id_agents").append (option);
                     });
+                    //Filter agents. Call the function when the select is fully loaded.
+                    var textNoData = "<?php echo __('None'); ?>";
+                    filterByText($('#id_agents'), $("#text-filter_agents"), textNoData);
                 },
                 "json"
             );

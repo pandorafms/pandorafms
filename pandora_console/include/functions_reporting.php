@@ -300,35 +300,35 @@ function reporting_make_reporting_data(
                 if (!metaconsole_load_external_db($connection)) {
                     continue;
                 }
-
-                $items_label['agent_description'] = agents_get_description(
-                    $content['id_agent']
-                );
-                $items_label['agent_group'] = agents_get_agent_group(
-                    $content['id_agent']
-                );
-                $items_label['agent_address'] = agents_get_address(
-                    $content['id_agent']
-                );
-                $items_label['agent_alias'] = agents_get_alias(
-                    $content['id_agent']
-                );
-
-                $modules = agents_get_modules(
-                    $agent_value,
-                    [
-                        'id_agente_modulo',
-                        'nombre',
-                        'descripcion',
-                    ],
-                    [
-                        'id_agente_modulo' => $content['id_agent_module'],
-                    ]
-                );
-
-                $items_label['module_name'] = $modules[$content['id_agent_module']]['nombre'];
-                $items_label['module_description'] = $modules[$content['id_agent_module']]['descripcion'];
             }
+
+            $items_label['agent_description'] = agents_get_description(
+                $content['id_agent']
+            );
+            $items_label['agent_group'] = agents_get_agent_group(
+                $content['id_agent']
+            );
+            $items_label['agent_address'] = agents_get_address(
+                $content['id_agent']
+            );
+            $items_label['agent_alias'] = agents_get_alias(
+                $content['id_agent']
+            );
+
+            $modules = agents_get_modules(
+                $agent_value,
+                [
+                    'id_agente_modulo',
+                    'nombre',
+                    'descripcion',
+                ],
+                [
+                    'id_agente_modulo' => $content['id_agent_module'],
+                ]
+            );
+
+            $items_label['module_name'] = $modules[$content['id_agent_module']]['nombre'];
+            $items_label['module_description'] = $modules[$content['id_agent_module']]['descripcion'];
 
             if (is_array($content['id_agent'])
                 && count($content['id_agent']) != 1

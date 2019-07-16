@@ -5324,6 +5324,10 @@ table.info_table.policy_sub_table {
   margin-bottom: 4px;
 }
 
+.agent_options input[readonly] {
+  color: #848484;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - CLASSES FOR THE NEW TOGGLES                     								-

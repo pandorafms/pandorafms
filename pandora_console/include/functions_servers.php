@@ -61,11 +61,12 @@ function servers_get_server($id_server, $filter=false, $fields=false)
  */
 function servers_get_names()
 {
-    $all_servers = @db_get_all_rows_filter(
-        'tserver',
-        false,
-        ['DISTINCT(name) as name']
+    $all_servers = db_get_all_rows_sql(
+        'SELECT DISTINCT(`name`) as name
+        FROM tserver
+        WHERE server_type <> 13'
     );
+
     if ($all_servers === false) {
         return [];
     }

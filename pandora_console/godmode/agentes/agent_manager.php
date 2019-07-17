@@ -372,13 +372,13 @@ $table_server = '<div class="label_select"><p class="input_label">'.__('Server')
 $table_server .= '<div class="label_select_parent">';
 if ($new_agent) {
     // Set first server by default.
-    $servers_get_names = servers_get_names();
+    $servers_get_names = $servers;
     $array_keys_servers_get_names = array_keys($servers_get_names);
     $server_name = reset($array_keys_servers_get_names);
 }
 
 $table_server .= html_print_select(
-    servers_get_names(),
+    $servers,
     'server_name',
     $server_name,
     '',

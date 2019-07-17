@@ -418,6 +418,7 @@ class DiscoveryTaskList extends Wizard
             $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
+                $no_operations = false;
                 $data = [];
                 $server_name = servers_get_name($task['id_recon_server']);
 

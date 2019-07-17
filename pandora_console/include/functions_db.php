@@ -520,7 +520,6 @@ function db_get_sql($sql, $field=0, $search_history_db=false)
  * Get all the result rows using an SQL statement.
  *
  * @param string SQL statement to execute.
-    global $config;
  * @param bool If want to search in history database also
  * @param bool If want to use cache (true by default)
  *

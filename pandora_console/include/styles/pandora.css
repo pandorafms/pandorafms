@@ -235,11 +235,12 @@ pre {
   font-family: courier, serif;
 }
 fieldset {
-  background-color: #f9faf9;
+  background-color: #fff;
   border: 1px solid #e2e2e2;
   padding: 0.5em;
   margin-bottom: 20px;
   position: relative;
+  border-radius: 5px;
 }
 fieldset legend {
   font-size: 1.1em;
@@ -5328,6 +5329,10 @@ table.info_table.policy_sub_table {
   margin-bottom: 4px;
 }
 
+.agent_options input[readonly] {
+  color: #848484;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - CLASSES FOR THE NEW TOGGLES                     								-
@@ -5866,3 +5871,7 @@ table.table_modal_alternate tr td:first-child {
   padding-left: 20px;
 }
 /* END - Table for show more info in events and config menu in modules graphs */
+
+.fullwidth {
+  width: 100%;
+}

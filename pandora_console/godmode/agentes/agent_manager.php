@@ -77,6 +77,7 @@ if (is_ajax()) {
     }
 
     $get_modules_json_for_multiple_snmp = (bool) get_parameter('get_modules_json_for_multiple_snmp', 0);
+    $get_common_modules = (bool) get_parameter('get_common_modules', 1);
     if ($get_modules_json_for_multiple_snmp) {
         include_once 'include/graphs/functions_utils.php';
 
@@ -100,7 +101,16 @@ if (is_ajax()) {
             if ($out === false) {
                 $out = $oid_snmp;
             } else {
-                $out = array_intersect($out, $oid_snmp);
+                $commons = array_intersect($out, $oid_snmp);
+                if ($get_common_modules) {
+                    // Common modules is selected (default)
+                    $out = $commons;
+                } else {
+                    // All modules is selected
+                    $array1 = array_diff($out, $oid_snmp);
+                    $array2 = array_diff($oid_snmp, $out);
+                    $out = array_merge($commons, $array1, $array2);
+                }
             }
 
             $oid_snmp = [];
@@ -201,7 +211,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" disabled="true" value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -372,13 +382,13 @@ $table_server = '<div class="label_select"><p class="input_label">'.__('Server')
 $table_server .= '<div class="label_select_parent">';
 if ($new_agent) {
     // Set first server by default.
-    $servers_get_names = servers_get_names();
+    $servers_get_names = $servers;
     $array_keys_servers_get_names = array_keys($servers_get_names);
     $server_name = reset($array_keys_servers_get_names);
 }
 
 $table_server .= html_print_select(
-    servers_get_names(),
+    $servers,
     'server_name',
     $server_name,
     '',
@@ -1164,6 +1174,19 @@ ui_require_jquery_file('bgiframe');
     }
 
     $(document).ready (function() {
+
+        var previous_primary_group_select;
+        $("#grupo").on('focus', function () {
+            previous_primary_group_select = this.value;
+        }).change(function() {
+            if ($("#secondary_groups_selected option[value="+$("#grupo").val()+"]").length) {
+                alert("<?php echo __('Secondary group cannot be primary too.'); ?>");
+                $("#grupo").val(previous_primary_group_select);
+            } else {
+                previous_primary_group_select = this.value;
+            }
+        });
+
         $("select#id_os").pandoraSelectOS ();
 
         var checked = $("#checkbox-cascade_protection").is(":checked");
@@ -1212,7 +1235,7 @@ ui_require_jquery_file('bgiframe');
             128,
             128
         );
-        $("#text-agente").prop('disabled', true);
+        $("#text-agente").prop('readonly', true);
 
     });
 </script>

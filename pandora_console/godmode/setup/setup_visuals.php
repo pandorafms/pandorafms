@@ -1505,7 +1505,7 @@ $(document).ready (function () {
             .prop('checked');
         display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().parent().attr('id'));
     });
-    $(".databox.filters").css('margin-bottom','-10px');
+    $(".databox.filters").css('margin-bottom','0px');
 });
 
 // Change the favicon preview when is changed

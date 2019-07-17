@@ -25,13 +25,17 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
+enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
+enterprise_include_once('meta/include/functions_events_meta.php');
 
 
 /**
@@ -4852,10 +4856,6 @@ function events_get_count_events_by_agent(
 
     $tagente = 'tagente';
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tagente = 'tmetaconsole_agent';
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT id_agente,
@@ -4865,7 +4865,7 @@ function events_get_count_events_by_agent(
 		COUNT(*) AS count
 		FROM %s t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) %s 
+			AND id_grupo IN (%s) 
 		GROUP BY id_agente',
         $tagente,
         $tevento,
@@ -5032,9 +5032,6 @@ function events_get_count_events_validated_by_user(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT id_usuario,
@@ -5210,9 +5207,6 @@ function events_get_count_events_by_criticity(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT criticity,
@@ -5418,9 +5412,6 @@ function events_get_count_events_validated(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf('SELECT estado, COUNT(*) AS count FROM %s WHERE %s %s GROUP BY estado', $tevento, $sql_filter, $sql_where);
 

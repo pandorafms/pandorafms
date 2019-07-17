@@ -141,6 +141,15 @@ function html_do_report_info($report)
 }
 
 
+/**
+ * Print html report.
+ *
+ * @param array   $report      Info.
+ * @param boolean $mini        Type.
+ * @param integer $report_info Show info.
+ *
+ * @return array
+ */
 function reporting_html_print_report($report, $mini=false, $report_info=1)
 {
     if ($report_info == 1) {
@@ -161,7 +170,38 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         $table->rowstyle = [];
 
         if (isset($item['label']) && $item['label'] != '') {
-            $label = reporting_label_macro($item, $item['label']);
+            $id_agent = $item['id_agent'];
+            $id_agent_module = $item['id_agent_module'];
+
+            // Add macros name.
+            $agent_description = agents_get_description($id_agent);
+            $agent_group = agents_get_agent_group($id_agent);
+            $agent_address = agents_get_address($id_agent);
+            $agent_alias = agents_get_alias($id_agent);
+            $module_name = modules_get_agentmodule_name(
+                $id_agent_module
+            );
+
+            $module_description = modules_get_agentmodule_descripcion(
+                $id_agent_module
+            );
+
+            $items_label = [
+                'type'               => $item['type'],
+                'id_agent'           => $id_agent,
+                'id_agent_module'    => $id_agent_module,
+                'agent_description'  => $agent_description,
+                'agent_group'        => $agent_group,
+                'agent_address'      => $agent_address,
+                'agent_alias'        => $agent_alias,
+                'module_name'        => $module_name,
+                'module_description' => $module_description,
+            ];
+
+            $label = reporting_label_macro(
+                $items_label,
+                $item['label']
+            );
         } else {
             $label = '';
         }
@@ -180,7 +220,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
         $table->data['description_row']['description'] = $item['description'];
 
-        if ($item['type'] == 'event_report_agent' || $item['type'] == 'event_report_group' || $item['type'] == 'event_report_module') {
+        if ($item['type'] == 'event_report_agent'
+            || $item['type'] == 'event_report_group'
+            || $item['type'] == 'event_report_module'
+        ) {
             $table->data['count_row']['count'] = 'Total events: '.$item['total_events'];
         }
 
@@ -759,7 +802,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->size[10] = '2%';
             $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
             $table1->size[11] = '15%';
-            $table1->data[0][11] = '<span>'.__('Ignore time').'</span>';
+            $table1->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
 
             if ($pdf === 0) {
                 $table->colspan['legend']['cell'] = 2;
@@ -3399,7 +3442,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table2->size[10] = '2%';
         $table2->data[0][10] = '<img src ="'.$src.$hack_metaconsole.'images/square_light_gray.png">';
         $table2->size[11] = '15%';
-        $table2->data[0][11] = '<span>'.__('Ignore time').'</span>';
+        $table2->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
     }
 
     if ($pdf !== 0) {

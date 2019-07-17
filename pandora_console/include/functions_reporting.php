@@ -251,12 +251,16 @@ function reporting_make_reporting_data(
                     if ($metaconsole_on && $server_name != '') {
                         $connection = metaconsole_get_connection($server_name);
                         if (!metaconsole_load_external_db($connection)) {
-                            // ui_print_error_message ("Error connecting to ".$server_name);
                             continue;
                         }
                     }
 
-                    array_push($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
+                    array_push(
+                        $agents_to_macro,
+                        modules_get_agentmodule_agent(
+                            $graph_item['id_agent_module']
+                        )
+                    );
                     if ($metaconsole_on) {
                         // Restore db connection.
                         metaconsole_restore_db();
@@ -296,33 +300,54 @@ function reporting_make_reporting_data(
                 if (!metaconsole_load_external_db($connection)) {
                     continue;
                 }
+            }
 
-                $items_label['agent_description'] = agents_get_description($content['id_agent']);
-                $items_label['agent_group'] = agents_get_agent_group($content['id_agent']);
-                $items_label['agent_address'] = agents_get_address($content['id_agent']);
+            $items_label['agent_description'] = agents_get_description(
+                $content['id_agent']
+            );
+            $items_label['agent_group'] = agents_get_agent_group(
+                $content['id_agent']
+            );
+            $items_label['agent_address'] = agents_get_address(
+                $content['id_agent']
+            );
+            $items_label['agent_alias'] = agents_get_alias(
+                $content['id_agent']
+            );
 
-                $modules = agents_get_modules(
-                    $agent_value,
-                    [
-                        'id_agente_modulo',
-                        'nombre',
-                        'descripcion',
-                    ],
-                    [
-                        'id_agente_modulo' => $content['id_agent_module'],
-                    ]
+            $modules = agents_get_modules(
+                $agent_value,
+                [
+                    'id_agente_modulo',
+                    'nombre',
+                    'descripcion',
+                ],
+                [
+                    'id_agente_modulo' => $content['id_agent_module'],
+                ]
+            );
+
+            $items_label['module_name'] = $modules[$content['id_agent_module']]['nombre'];
+            $items_label['module_description'] = $modules[$content['id_agent_module']]['descripcion'];
+
+            if (is_array($content['id_agent'])
+                && count($content['id_agent']) != 1
+            ) {
+                $content['style']['name_label'] = str_replace(
+                    '_agent_',
+                    count($content['id_agent']).__(' agents'),
+                    $content['style']['name_label']
                 );
-
-                $items_label['module_name'] = $modules[$content['id_agent_module']]['nombre'];
-                $items_label['module_description'] = $modules[$content['id_agent_module']]['descripcion'];
             }
 
-            if (is_array($content['id_agent']) && count($content['id_agent']) != 1) {
-                $content['style']['name_label'] = str_replace('_agent_', count($content['id_agent']).__(' agents'), $content['style']['name_label']);
-            }
-
-            if (is_array($content['id_agent_module']) && count($content['id_agent_module']) != 1) {
-                $content['style']['name_label'] = str_replace('_module_', count($content['id_agent_module']).__(' modules'), $content['style']['name_label']);
+            if (is_array($content['id_agent_module'])
+                && count($content['id_agent_module']) != 1
+            ) {
+                $content['style']['name_label'] = str_replace(
+                    '_module_',
+                    count($content['id_agent_module']).__(' modules'),
+                    $content['style']['name_label']
+                );
             }
 
             if ($metaconsole_on) {
@@ -330,7 +355,10 @@ function reporting_make_reporting_data(
                 metaconsole_restore_db();
             }
 
-            $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
+            $content['name'] = reporting_label_macro(
+                $items_label,
+                $content['style']['name_label']
+            );
         }
 
         switch (reporting_get_type($content)) {
@@ -1926,6 +1954,18 @@ function reporting_event_report_group(
 }
 
 
+/**
+ * Events for module reports.
+ *
+ * @param array   $report             Report info.
+ * @param array   $content            Content info.
+ * @param string  $type               Type retun report.
+ * @param integer $force_width_chart  Width chart.
+ * @param integer $force_height_chart Height chart.
+ * @param integer $pdf                If pdf report.
+ *
+ * @return array
+ */
 function reporting_event_report_module(
     $report,
     $content,
@@ -1954,12 +1994,42 @@ function reporting_event_report_module(
         metaconsole_connect(null, $id_server);
     }
 
-    $return['title'] = $content['name'];
-    $return['subtitle'] = agents_get_alias($content['id_agent']).' - '.io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
 
+    $items_label = [
+        'type'               => $content['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+    $return['title'] = $content['name'];
+    $return['subtitle'] = $agent_alias.' - '.io_safe_output($module_name);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+
     if ($return['label'] != '') {
-        $return['label'] = reporting_label_macro($content, $return['label']);
+        $return['label'] = reporting_label_macro(
+            $items_label,
+            $return['label']
+        );
     }
 
     if (is_metaconsole()) {
@@ -1973,15 +2043,24 @@ function reporting_event_report_module(
     $event_filter = $content['style'];
     $return['show_summary_group'] = $event_filter['show_summary_group'];
     // Filter.
-    $show_summary_group         = $event_filter['show_summary_group'];
-    $filter_event_severity      = json_decode($event_filter['filter_event_severity'], true);
-    $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
-    $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
+    $show_summary_group = $event_filter['show_summary_group'];
+    $filter_event_severity = json_decode(
+        $event_filter['filter_event_severity'],
+        true
+    );
+    $filter_event_type = json_decode(
+        $event_filter['filter_event_type'],
+        true
+    );
+    $filter_event_status = json_decode(
+        $event_filter['filter_event_status'],
+        true
+    );
     $filter_event_filter_search = $event_filter['event_filter_search'];
 
     // Graphs.
-    $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
-    $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
+    $event_graph_by_user_validator = $event_filter['event_graph_by_user_validator'];
+    $event_graph_by_criticity = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
 
     $server_name = $content['server_name'];
@@ -2819,8 +2898,42 @@ function reporting_event_report_agent(
         $history = true;
     }
 
+    $id_server = false;
+    if (is_metaconsole()) {
+        $id_server = metaconsole_get_id_server($content['server_name']);
+        metaconsole_connect(null, $id_server);
+    }
+
+    $id_agent = $content['id_agent'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+
+    $items_label = [
+        'type'              => $return['type'],
+        'id_agent'          => $id_agent,
+        'agent_description' => $agent_description,
+        'agent_group'       => $agent_group,
+        'agent_address'     => $agent_address,
+        'agent_alias'       => $agent_alias,
+    ];
+
+    if ($config['metaconsole']) {
+        metaconsole_restore_db();
+    }
+
+    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($label != '') {
+        $label = reporting_label_macro(
+            $items_label,
+            $label
+        );
+    }
+
+    $return['label'] = $label;
     $return['title'] = $content['name'];
-    $return['subtitle'] = io_safe_output(agents_get_alias($content['id_agent']));
+    $return['subtitle'] = io_safe_output($agent_alias);
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -2882,13 +2995,6 @@ function reporting_event_report_agent(
     } else {
         $metaconsole_dbtable = false;
     }
-
-    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-    if ($label != '') {
-        $label = reporting_label_macro($content, $label);
-    }
-
-    $return['label'] = $label;
 
     if ($event_graph_by_user_validator) {
         $data_graph = events_get_count_events_validated_by_user(
@@ -2969,10 +3075,6 @@ function reporting_event_report_agent(
         );
     }
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
     // Total events.
     if ($return['data'] != '') {
         $return['total_events'] = count($return['data']);
@@ -2984,6 +3086,14 @@ function reporting_event_report_agent(
 }
 
 
+/**
+ * Show historical data.
+ *
+ * @param array $report  Data report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
 function reporting_historical_data($report, $content)
 {
     global $config;
@@ -2995,21 +3105,46 @@ function reporting_historical_data($report, $content)
         $content['name'] = __('Historical data');
     }
 
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
     );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_alias($content['id_agent_module'])
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = io_safe_output(agents_get_alias($id_agent));
+    $module_name = io_safe_output(
+        modules_get_agentmodule_name(
+            $id_agent_module
+        )
+    );
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
     );
 
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
     $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($return['label'] != '') {
-        $return['label'] = reporting_label_macro($content, $return['label']);
+        $return['label'] = reporting_label_macro(
+            $items_label,
+            $return['label']
+        );
     }
 
     $return['keys'] = [
@@ -3065,6 +3200,14 @@ function reporting_historical_data($report, $content)
 }
 
 
+/**
+ * Show data serialized.
+ *
+ * @param array $report  Data report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
 function reporting_database_serialized($report, $content)
 {
     global $config;
@@ -3075,15 +3218,43 @@ function reporting_database_serialized($report, $content)
         $content['name'] = __('Database Serialized');
     }
 
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
-    );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_alias($content['id_agent_module'])
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+        $server = metaconsole_get_connection_by_id($id_meta);
+        metaconsole_connect($server);
+    }
+
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
     );
 
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
     $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -3093,33 +3264,21 @@ function reporting_database_serialized($report, $content)
     }
 
     $return['keys'] = $keys;
-
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
-    );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_name($content['id_agent_module'])
-    );
-
-    $return['agent_name'] = $agent_name;
+    $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
-
-    if ($config['metaconsole']) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-    }
 
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($return['label'] != '') {
-        $return['label'] = reporting_label_macro($content, $return['label']);
+        $return['label'] = reporting_label_macro(
+            $items_label,
+            $return['label']
+        );
     }
 
     $datelimit = ($report['datetime'] - $content['period']);
     $search_in_history_db = db_search_in_history_db($datelimit);
 
-    // This query gets information from the default and the historic database
+    // This query gets information from the default and the historic database.
     $result = db_get_all_rows_sql(
         'SELECT *
         FROM tagente_datos
@@ -3129,9 +3288,9 @@ function reporting_database_serialized($report, $content)
         $search_in_history_db
     );
 
-    // Adds string data if there is no numeric data
-    if ((count($result) < 0) or (!$result)) {
-        // This query gets information from the default and the historic database
+    // Adds string data if there is no numeric data.
+    if ((count($result) < 0) || (!$result)) {
+        // This query gets information from the default and the historic database.
         $result = db_get_all_rows_sql(
             'SELECT *
             FROM tagente_datos_string
@@ -3151,13 +3310,16 @@ function reporting_database_serialized($report, $content)
         $date = date($config['date_format'], $row['utimestamp']);
         $serialized_data = $row['datos'];
 
-        // Cut line by line
+        // Cut line by line.
         if (empty($content['line_separator'])
             || empty($serialized_data)
         ) {
             $rowsUnserialize = [$row['datos']];
         } else {
-            $rowsUnserialize = explode($content['line_separator'], $serialized_data);
+            $rowsUnserialize = explode(
+                $content['line_separator'],
+                $serialized_data
+            );
         }
 
         foreach ($rowsUnserialize as $rowUnser) {
@@ -3173,7 +3335,10 @@ function reporting_database_serialized($report, $content)
                     $row['data'][][$keys[0]] = $rowUnser;
                 }
             } else {
-                $columnsUnserialize = explode($content['column_separator'], $rowUnser);
+                $columnsUnserialize = explode(
+                    $content['column_separator'],
+                    $rowUnser
+                );
 
                 $i = 0;
                 $temp_row = [];
@@ -3639,6 +3804,14 @@ function reporting_alert_report_group($report, $content)
 }
 
 
+/**
+ * Report alert agent.
+ *
+ * @param array $report  Info report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
 function reporting_alert_report_agent($report, $content)
 {
     global $config;
@@ -3656,16 +3829,33 @@ function reporting_alert_report_agent($report, $content)
         metaconsole_connect($server);
     }
 
-    $agent_name = agents_get_alias($content['id_agent']);
+    $id_agent = $content['id_agent'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+
+    $items_label = [
+        'type'              => $return['type'],
+        'id_agent'          => $id_agent,
+        'id_agent_module'   => $id_agent_module,
+        'agent_description' => $agent_description,
+        'agent_group'       => $agent_group,
+        'agent_address'     => $agent_address,
+        'agent_alias'       => $agent_alias,
+    ];
 
     $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name;
+    $return['subtitle'] = $agent_alias;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($return['label'] != '') {
-        $return['label'] = reporting_label_macro($content, $return['label']);
+        $return['label'] = reporting_label_macro(
+            $items_label,
+            $return['label']
+        );
     }
 
     $module_list = agents_get_modules($content['id_agent']);
@@ -3673,10 +3863,10 @@ function reporting_alert_report_agent($report, $content)
     $data = [];
     foreach ($module_list as $id => $module_name) {
         $data_row = [];
-        $data_row['agent']  = $agent_name;
+        $data_row['agent']  = $agent_alias;
         $data_row['module'] = $module_name;
 
-        // Alerts over $id_agent_module
+        // Alerts over $id_agent_module.
         $alerts = alerts_get_effective_alert_actions($id);
 
         if ($alerts === false) {
@@ -3770,6 +3960,14 @@ function reporting_alert_report_agent($report, $content)
 }
 
 
+/**
+ * Alert report module.
+ *
+ * @param array $report  Info report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
 function reporting_alert_report_module($report, $content)
 {
     global $config;
@@ -3787,36 +3985,56 @@ function reporting_alert_report_module($report, $content)
         metaconsole_connect($server);
     }
 
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
     );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_alias($content['id_agent_module'])
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
     );
 
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
     $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($return['label'] != '') {
-        $return['label'] = reporting_label_macro($content, $return['label']);
+        $return['label'] = reporting_label_macro(
+            $items_label,
+            $return['label']
+        );
     }
 
     $data_row = [];
 
-    $data_row['agent'] = io_safe_output(
-        agents_get_alias(
-            agents_get_agent_id_by_module_id($content['id_agent_module'])
-        )
-    );
+    $data_row['agent'] = io_safe_output($agent_alias);
     $data_row['module'] = db_get_value_filter(
         'nombre',
         'tagente_modulo',
         ['id_agente_modulo' => $content['id_agent_module']]
     );
 
-    // Alerts over $id_agent_module
+    // Alerts over $id_agent_module.
     $alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
 
     $ntemplates = 0;
@@ -3945,7 +4163,7 @@ function reporting_sql_graph(
         }
     }
 
-    // Get chart
+    // Get chart.
     reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
 
     if (!empty($force_width_chart)) {
@@ -3983,6 +4201,14 @@ function reporting_sql_graph(
 }
 
 
+/**
+ * Monitor report module.
+ *
+ * @param array $report  Info report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
 function reporting_monitor_report($report, $content)
 {
     global $config;
@@ -3993,48 +4219,67 @@ function reporting_monitor_report($report, $content)
         $content['name'] = __('Monitor Report');
     }
 
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
-    );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_alias($content['id_agent_module'])
-    );
-
-    $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
-
-    if ($config['metaconsole']) {
+    if (is_metaconsole()) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
 
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
     }
 
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+    $return['title'] = $content['name'];
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($return['label'] != '') {
-        $return['label'] = reporting_label_macro($content, $return['label']);
+        $return['label'] = reporting_label_macro(
+            $items_label,
+            $return['label']
+        );
     }
 
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
-    );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_name($content['id_agent_module'])
-    );
-
-    $return['agent_name'] = $agent_name;
+    $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
 
-    // All values (except id module and report time) by default
+    // All values (except id module and report time) by default.
     $report = reporting_advanced_sla(
         $content['id_agent_module'],
         ($report['datetime'] - $content['period']),
         $report['datetime']
     );
 
-    if ($report['time_total'] === $report['time_unknown'] || empty($content['id_agent_module'])) {
+    if ($report['time_total'] === $report['time_unknown']
+        || empty($content['id_agent_module'])
+    ) {
         $return['data']['unknown'] = 1;
     } else {
         $return['data']['ok']['value'] = $report['SLA'];
@@ -7572,6 +7817,17 @@ function reporting_custom_graph(
 }
 
 
+/**
+ * Simple graph report.
+ *
+ * @param array   $report             Info report.
+ * @param array   $content            Content report.
+ * @param string  $type               Type report.
+ * @param integer $force_width_chart  Width chart.
+ * @param integer $force_height_chart Height chart.
+ *
+ * @return array
+ */
 function reporting_simple_graph(
     $report,
     $content,
@@ -7581,13 +7837,6 @@ function reporting_simple_graph(
 ) {
     global $config;
 
-    if ($config['metaconsole']) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-    }
-
     $return = [];
     $return['type'] = 'simple_graph';
 
@@ -7595,27 +7844,58 @@ function reporting_simple_graph(
         $content['name'] = __('Simple graph');
     }
 
-    $module_name = io_safe_output(
-        modules_get_agentmodule_name($content['id_agent_module'])
+    if ($config['metaconsole']) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+
+        $server = metaconsole_get_connection_by_id($id_meta);
+        metaconsole_connect($server);
+    }
+
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
     );
-    $agent_name = io_safe_output(
-        modules_get_agentmodule_agent_alias($content['id_agent_module'])
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
     );
 
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    if ($label != '') {
+        $label = reporting_label_macro(
+            $items_label,
+            $label
+        );
+    }
+
     $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['agent_name'] = $agent_name;
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
+    $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text(
         $report,
         $content
     );
-
-    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-    if ($label != '') {
-        $label = reporting_label_macro($content, $label);
-    }
 
     if (isset($content['style']['fullscale'])) {
         $fullscale = (bool) $content['style']['fullscale'];
@@ -7624,7 +7904,14 @@ function reporting_simple_graph(
     $return['chart'] = '';
 
     // Get chart.
-    reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
+    reporting_set_conf_charts(
+        $width,
+        $height,
+        $only_image,
+        $type,
+        $content,
+        $ttl
+    );
 
     if (!empty($force_width_chart)) {
         $width = $force_width_chart;
@@ -7650,7 +7937,12 @@ function reporting_simple_graph(
                 'pure'            => false,
                 'date'            => $report['datetime'],
                 'only_image'      => $only_image,
-                'homeurl'         => ui_get_full_url(false, false, false, false),
+                'homeurl'         => ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ),
                 'ttl'             => $ttl,
                 'compare'         => $time_compare_overlapped,
                 'show_unknown'    => true,
@@ -7661,7 +7953,6 @@ function reporting_simple_graph(
             ];
 
             $return['chart'] = grafico_modulo_sparse($params);
-
         break;
 
         case 'data':
@@ -7674,6 +7965,10 @@ function reporting_simple_graph(
             foreach ($data as $d) {
                 $return['chart'][$d['utimestamp']] = $d['data'];
             }
+        break;
+
+        default:
+            // Not Possible.
         break;
     }
 
@@ -11713,149 +12008,72 @@ function reporting_get_agentmodule_sla_working_timestamp($period, $date_end, $wt
 }
 
 
+/**
+ * Convert macros for value.
+ * Item content:
+ *      type
+ *      id_agent
+ *      id_agent_module
+ *      agent_description
+ *      agent_group
+ *      agent_address
+ *      agent_alias
+ *      module_name
+ *      module_description.
+ *
+ * @param array  $item  Data to replace in the macros.
+ * @param string $label String check macros.
+ *
+ * @return string
+ */
 function reporting_label_macro($item, $label)
 {
-    switch ($item['type']) {
-        case 'event_report_agent':
-        case 'alert_report_agent':
-        case 'agent_configuration':
-        case 'event_report_log':
-            if (preg_match('/_agent_/', $label)) {
-                $agent_name = agents_get_alias($item['id_agent']);
-                $label = str_replace('_agent_', $agent_name, $label);
-            }
+    if (preg_match('/_agent_/', $label)) {
+        $label = str_replace(
+            '_agent_',
+            $item['agent_alias'],
+            $label
+        );
+    }
 
-            if (preg_match('/_agentdescription_/', $label)) {
-                if (!is_metaconsole()) {
-                    $agent_name = agents_get_description($item['id_agent']);
-                } else {
-                    $agent_name = $item['agent_description'];
-                }
+    if (preg_match('/_agentdescription_/', $label)) {
+        $label = str_replace(
+            '_agentdescription_',
+            $item['agent_description'],
+            $label
+        );
+    }
 
-                $label = str_replace('_agentdescription_', $agent_name, $label);
-            }
+    if (preg_match('/_agentgroup_/', $label)) {
+        $label = str_replace(
+            '_agentgroup_',
+            $item['agent_group'],
+            $label
+        );
+    }
 
-            if (preg_match('/_agentgroup_/', $label)) {
-                if (!is_metaconsole()) {
-                    $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
-                } else {
-                    $agent_name = $item['agent_group'];
-                }
+    if (preg_match('/_address_/', $label)) {
+        $label = str_replace(
+            '_address_',
+            $item['agent_address'],
+            $label
+        );
+    }
 
-                $label = str_replace('_agentgroup_', $agent_name, $label);
-            }
+    if (preg_match('/_module_/', $label)) {
+        $label = str_replace(
+            '_module_',
+            $item['module_name'],
+            $label
+        );
+    }
 
-            if (preg_match('/_address_/', $label)) {
-                if (!is_metaconsole()) {
-                    $agent_name = agents_get_address($item['id_agent']);
-                } else {
-                    $agent_name = $item['agent_address'];
-                }
-
-                $label = str_replace('_address_', $agent_name, $label);
-            }
-        break;
-
-        case 'simple_graph':
-        case 'module_histogram_graph':
-        case 'custom_graph':
-        case 'simple_baseline_graph':
-        case 'event_report_module':
-        case 'alert_report_module':
-        case 'historical_data':
-        case 'sumatory':
-        case 'database_serialized':
-        case 'monitor_report':
-        case 'min_value':
-        case 'max_value':
-        case 'avg_value':
-        case 'projection_graph':
-        case 'prediction_date':
-        case 'TTRT':
-        case 'TTO':
-        case 'MTBF':
-        case 'MTTR':
-        case 'automatic_graph':
-            if (preg_match('/_agent_/', $label)) {
-                if (isset($item['agents']) && count($item['agents']) > 1) {
-                    $agent_name = count($item['agents']).__(' agents');
-                } else {
-                    $agent_name = agents_get_alias($item['id_agent']);
-                }
-
-                $label = str_replace('_agent_', $agent_name, $label);
-            }
-
-            if (preg_match('/_agentdescription_/', $label)) {
-                if (count($item['agents']) > 1) {
-                    $agent_name = '';
-                } else {
-                    if (!is_metaconsole()) {
-                        $agent_name = agents_get_description($item['id_agent']);
-                    } else {
-                        $agent_name = $item['agent_description'];
-                    }
-                }
-
-                $label = str_replace('_agentdescription_', $agent_name, $label);
-            }
-
-            if (preg_match('/_agentgroup_/', $label)) {
-                if (count($item['agents']) > 1) {
-                    $agent_name = '';
-                } else {
-                    if (!is_metaconsole()) {
-                        $agent_name = groups_get_name(agents_get_agent_group($item['id_agent']), true);
-                    } else {
-                        $agent_name = $item['agent_group'];
-                    }
-                }
-
-                $label = str_replace('_agentgroup_', $agent_name, $label);
-            }
-
-            if (preg_match('/_address_/', $label)) {
-                if (count($item['agents']) > 1) {
-                    $agent_name = '';
-                } else {
-                    if (!is_metaconsole()) {
-                        $agent_name = agents_get_address($item['id_agent']);
-                    } else {
-                        $agent_name = $item['agent_address'];
-                    }
-                }
-
-                $label = str_replace('_address_', $agent_name, $label);
-            }
-
-            if (preg_match('/_module_/', $label)) {
-                if ($item['modules'] > 1) {
-                    $module_name = $item['modules'].__(' modules');
-                } else {
-                    if (!is_metaconsole()) {
-                        $module_name = modules_get_agentmodule_name($item['id_agent_module']);
-                    } else {
-                        $module_name = $item['module_name'];
-                    }
-                }
-
-                $label = str_replace('_module_', $module_name, $label);
-            }
-
-            if (preg_match('/_moduledescription_/', $label)) {
-                if ($item['modules'] > 1) {
-                    $module_description = '';
-                } else {
-                    if (!is_metaconsole()) {
-                        $module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
-                    } else {
-                        $module_description = $item['module_description'];
-                    }
-                }
-
-                $label = str_replace('_moduledescription_', $module_description, $label);
-            }
-        break;
+    if (preg_match('/_moduledescription_/', $label)) {
+        $label = str_replace(
+            '_moduledescription_',
+            $item['module_description'],
+            $label
+        );
     }
 
     return $label;

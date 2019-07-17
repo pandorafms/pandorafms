@@ -5866,3 +5866,7 @@ table.table_modal_alternate tr td:first-child {
   padding-left: 20px;
 }
 /* END - Table for show more info in events and config menu in modules graphs */
+
+.fullwidth {
+  width: 100%;
+}

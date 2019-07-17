@@ -724,7 +724,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`type` varchar(30) default 'simple_graph',
 	`period` int(11) NOT NULL default 0,
 	`order` int (11) NOT NULL default 0,
-	`description` mediumtext, 
+	`description` mediumtext,
 	`text_agent` text,
 	`text` TEXT,
 	`external_source` Text,
@@ -1446,6 +1446,7 @@ ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1
 ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
+ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`

@@ -1344,6 +1344,16 @@ switch ($action) {
                 switch ($action) {
                     case 'update':
                         $values = [];
+                        $server_name = get_parameter('server_id');
+                        if (is_metaconsole() && $server_name != '') {
+                            $id_meta = metaconsole_get_id_server($server_name);
+                            $connection = metaconsole_get_connection_by_id(
+                                $id_meta
+                            );
+                            metaconsole_connect($connection);
+                            $values['server_name'] = $connection['server_name'];
+                        }
+
                         $values['id_report'] = $idReport;
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
@@ -1352,14 +1362,36 @@ switch ($action) {
 
                         $label = get_parameter('label', '');
 
+                        $id_agent = get_parameter('id_agent');
+                        $id_agent_module = get_parameter('id_agent_module');
+
                         // Add macros name.
-                        $items_label = [];
-                        $items_label['type'] = get_parameter('type');
-                        $items_label['id_agent'] = get_parameter('id_agent');
-                        $items_label['id_agent_module'] = get_parameter(
-                            'id_agent_module'
-                        );
                         $name_it = (string) get_parameter('name');
+
+                        $agent_description = agents_get_description($id_agent);
+                        $agent_group = agents_get_agent_group($id_agent);
+                        $agent_address = agents_get_address($id_agent);
+                        $agent_alias = agents_get_alias($id_agent);
+                        $module_name = modules_get_agentmodule_name(
+                            $id_agent_module
+                        );
+
+                        $module_description = modules_get_agentmodule_descripcion(
+                            $id_agent_module
+                        );
+
+                        $items_label = [
+                            'type'               => get_parameter('type'),
+                            'id_agent'           => $id_agent,
+                            'id_agent_module'    => $id_agent_module,
+                            'agent_description'  => $agent_description,
+                            'agent_group'        => $agent_group,
+                            'agent_address'      => $agent_address,
+                            'agent_alias'        => $agent_alias,
+                            'module_name'        => $module_name,
+                            'module_description' => $module_description,
+                        ];
+
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -1715,13 +1747,6 @@ switch ($action) {
                         );
                         $values['id_group'] = get_parameter('combo_group');
                         $values['server_name'] = get_parameter('server_name');
-                        $server_id = (int) get_parameter('server_id');
-                        if ($server_id != 0) {
-                            $connection = metaconsole_get_connection_by_id(
-                                $server_id
-                            );
-                            $values['server_name'] = $connection['server_name'];
-                        }
 
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
@@ -1978,22 +2003,11 @@ switch ($action) {
 
                         $values['style'] = io_safe_input(json_encode($style));
 
+                        if (is_metaconsole()) {
+                            metaconsole_restore_db();
+                        }
+
                         if ($good_format) {
-                            switch ($config['dbtype']) {
-                                case 'oracle':
-                                    if (isset($values['type'])) {
-                                        $values[db_escape_key_identifier(
-                                            'type'
-                                        )] = $values['type'];
-                                        unset($values['type']);
-                                    }
-                                break;
-
-                                default:
-                                    // Default.
-                                break;
-                            }
-
                             $resultOperationDB = db_process_sql_update(
                                 'treport_content',
                                 $values,
@@ -2006,21 +2020,62 @@ switch ($action) {
 
                     case 'save':
                         $values = [];
+
+                        $values['server_name'] = get_parameter('server_name');
+                        $server_id = (int) get_parameter('server_id');
+                        if ($server_id != 0) {
+                            $connection = metaconsole_get_connection_by_id(
+                                $server_id
+                            );
+                            metaconsole_connect($connection);
+                            $values['server_name'] = $connection['server_name'];
+                        }
+
                         $values['id_report'] = $idReport;
                         $values['type'] = get_parameter('type', null);
                         $values['description'] = get_parameter('description');
                         $label = get_parameter('label', '');
 
-                        // Add macros name.
-                        $items_label = [];
-                        $items_label['type'] = get_parameter('type');
-                        $items_label['id_agent'] = get_parameter('id_agent');
-                        $items_label['id_agent_module'] = get_parameter(
-                            'id_agent_module'
-                        );
-                        $name_it = (string) get_parameter('name');
                         $values['recursion'] = get_parameter('recursion', null);
-                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+                        $values['show_extended_events'] = get_parameter(
+                            'include_extended_events',
+                            null
+                        );
+
+                        $id_agent = get_parameter('id_agent');
+                        $id_agent_module = get_parameter('id_agent_module');
+
+                        // Add macros name.
+                        $name_it = (string) get_parameter('name');
+
+                        $agent_description = agents_get_description($id_agent);
+                        $agent_group = agents_get_agent_group($id_agent);
+                        $agent_address = agents_get_address($id_agent);
+                        $agent_alias = agents_get_alias($id_agent);
+                        $module_name = modules_get_agentmodule_name(
+                            $id_agent_module
+                        );
+
+                        $module_description = modules_get_agentmodule_descripcion(
+                            $id_agent_module
+                        );
+
+                        if (is_metaconsole()) {
+                            metaconsole_restore_db();
+                        }
+
+                        $items_label = [
+                            'type'               => get_parameter('type'),
+                            'id_agent'           => $id_agent,
+                            'id_agent_module'    => $id_agent_module,
+                            'agent_description'  => $agent_description,
+                            'agent_group'        => $agent_group,
+                            'agent_address'      => $agent_address,
+                            'agent_alias'        => $agent_alias,
+                            'module_name'        => $module_name,
+                            'module_description' => $module_description,
+                        ];
+
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -2223,18 +2278,6 @@ switch ($action) {
                                 );
                                 $good_format = true;
                             break;
-                        }
-
-
-
-                        $values['server_name'] = get_parameter('server_name');
-                        $server_id = (int) get_parameter('server_id');
-                        if ($server_id != 0) {
-                            $connection = metaconsole_get_connection_by_id(
-                                $server_id
-                            );
-
-                            $values['server_name'] = $connection['server_name'];
                         }
 
                         if ($values['server_name'] == '') {

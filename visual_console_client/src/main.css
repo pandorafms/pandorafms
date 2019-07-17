@@ -36,6 +36,10 @@
   cursor: se-resize;
 }
 
+.visual-console-item.is-editing svg {
+  pointer-events: none;
+}
+
 .visual-console-spinner,
 .visual-console-spinner :after {
   display: block;

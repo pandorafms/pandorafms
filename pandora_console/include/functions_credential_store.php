@@ -331,6 +331,8 @@ function print_inputs($values=null)
         case 'CUSTOM':
             $user_label = __('Account ID');
             $pass_label = __('Password');
+            $extra1 = false;
+            $extra2 = false;
         default:
             // Use defaults.
         break;

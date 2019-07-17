@@ -156,11 +156,30 @@ class HostDevices extends Wizard
                         ),
                         'label' => __('Discovery'),
                     ],
+                    [
+                        'link'     => ui_get_full_url(
+                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
+                        ),
+                        'label'    => __('Host & Devices'),
+                        'selected' => true,
+                    ],
                 ],
                 true
             );
 
-            ui_print_page_header(__('Host & devices'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            ui_print_page_header(
+                __('Host & devices'),
+                '',
+                false,
+                '',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                '',
+                $this->printHeader(true)
+            );
 
             $this->printBigButtonsList($buttons);
             return;

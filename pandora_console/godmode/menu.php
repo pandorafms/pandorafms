@@ -129,6 +129,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/modules/manage_network_templates']['id'] = 'Module templates';
     enterprise_hook('inventory_submenu');
     enterprise_hook('autoconfiguration_menu');
+    enterprise_hook('agent_repository_menu');
 }
 
 if (check_acl($config['id_user'], 0, 'AW')) {

@@ -1469,6 +1469,11 @@ echo "<div id='event_response_command_window' title='".__('Parameters')."'></div
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display: none"></div>';
 echo '<div id="save-modal-filter" style="display: none"></div>';
+
+if ($_GET['refr'] || $do_refresh === true) {
+    $autorefresh_draw = true;
+}
+
 ?>
 <script type="text/javascript">
 var loading = 0;
@@ -1548,6 +1553,21 @@ function process_datatables_callback(table, settings) {
 
         })
     }
+
+    var autorefresh_draw = '<?php echo $autorefresh_draw; ?>';
+    if (autorefresh_draw == true){
+        $("#refrcounter").countdown('change', {
+            until: countdown_repeat()
+        });
+
+        function countdown_repeat() {
+            var until_time = new Date();
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            return until_time;
+        }
+
+    }
+
 }
 
 function process_datatables_item(item) {

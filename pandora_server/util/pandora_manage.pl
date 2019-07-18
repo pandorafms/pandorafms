@@ -306,10 +306,66 @@ sub pandora_enable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
 	if ($group == 0){
-			db_do ($dbh, "UPDATE tagente SET disabled = 0");
+		# Extraigo todos los nombres de los agentes de pandora si es para all = 0
+		# my @agents = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		my @agents = glob($conf->{incomingdir}.'/conf/*');
+
+		#my %remote_agents = map  {
+		#	if ( $_ =~ /.*\/(.*?)\.conf$/) {
+		#		$1 => 1
+		#	} else {
+		#		undef
+		#	}
+		#}  @agents;
+
+		use Data::Dumper;
+
+		foreach my $route_agent (@agents) {
+			print Dumper('++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+			# Leo el conf de cada agente
+			#my $conf_txt = enterprise_hook('read_agent_conf_file',[$conf, $remote_agent]);
+
+			#my $agent_conf_file = $pa_config->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($remote_agent))).'.conf';
+
+			# If the module is not local, do nothing
+			if(!defined($route_agent) || !(-f $route_agent)){
+				next;
+			}
+
+			if ($route_agent =~ /.srv./) {
+				next;
+			}
+
+			my $conf_file_txt = read_file($route_agent);
+			if(!$conf_file_txt) {
+				next;
+			}
+
+			my $validate_conf = enterprise_hook('validate_readed_conf_file',[$conf_file_txt]);
+			print Dumper($validate_conf);
+			if (!$validate_conf) {
+				next;
+			}
+
+			print Dumper($conf_file_txt);
+
+			print Dumper('-----------------------------------------------------------');
+
+		#	# De los agentes que existan
+		#	# checheo el campo disabled se lo pongo a 0 con expresion regular imagino
+		#	my $content = $conf_txt
+
+		#	# Escribo el conf
+		#	write_agent_conf_file($pa_config, $agent_name, $content);
+		}
+
+		# actualizo la bbdd
+		db_do ($dbh, "UPDATE tagente SET disabled = 0");
 	}
 	else {
-			db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
+		# my @remote_agents = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+		db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
 	}
     exit;
 }

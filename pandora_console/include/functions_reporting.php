@@ -5309,7 +5309,7 @@ function reporting_sql($report, $content)
         $sql = io_safe_output($content['external_source']);
     }
 
-    // Check if exist timeform macro
+    // Check if exist sql macro
     $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.

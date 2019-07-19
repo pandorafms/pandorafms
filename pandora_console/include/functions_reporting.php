@@ -5309,6 +5309,9 @@ function reporting_sql($report, $content)
         $sql = io_safe_output($content['external_source']);
     }
 
+    // Check if exist timeform macro
+    $sql = reporting_sql_macro($report, $sql);
+
     // Do a security check on SQL coming from the user.
     $sql = check_sql($sql);
 
@@ -12077,6 +12080,29 @@ function reporting_label_macro($item, $label)
     }
 
     return $label;
+}
+
+
+/**
+ * Convert macro in sql string to value
+ *
+ * @param  array  $report
+ * @param  string $sql
+ * @return $ql
+ */
+
+
+function reporting_sql_macro($report, $sql)
+{
+    if (preg_match('/_timefrom/', $sql)) {
+        $sql = str_replace(
+            '_timefrom_',
+            $report['datetime'],
+            $sql
+        );
+    }
+
+    return $sql;
 }
 
 

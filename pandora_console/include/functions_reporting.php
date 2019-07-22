@@ -12086,13 +12086,14 @@ function reporting_label_macro($item, $label)
 /**
  * Convert macro in sql string to value
  *
- * @param  array  $report
- * @param  string $sql
- * @return $ql
+ * @param array  $report
+ * @param string $sql
+ *
+ * @return string
  */
 function reporting_sql_macro(array $report, string $sql): string
 {
-    if (preg_match('/_timefrom_/', $sql)) {
+    if (preg_match('/_timefrom/', $sql)) {
         $sql = str_replace(
             '_timefrom_',
             $report['datetime'],

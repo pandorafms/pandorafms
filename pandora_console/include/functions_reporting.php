@@ -12093,7 +12093,7 @@ function reporting_label_macro($item, $label)
  */
 function reporting_sql_macro(array $report, string $sql): string
 {
-    if (preg_match('/_timefrom/', $sql)) {
+    if (preg_match('/_timefrom_/', $sql)) {
         $sql = str_replace(
             '_timefrom_',
             $report['datetime'],

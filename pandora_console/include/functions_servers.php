@@ -737,7 +737,7 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/syslog.png',
                     true,
-                    ['title' => __('Syslog server')]
+                    ['title' => __('Log server')]
                 );
                 $server['type'] = 'syslog';
                 $id_modulo = 0;
@@ -1221,7 +1221,7 @@ function servers_get_server_string_name(int $server)
         return __('Discovery server');
 
         case SERVER_TYPE_SYSLOG:
-        return __('Syslog server');
+        return __('Log server');
 
         case SERVER_TYPE_WUX:
         return __('WUX server');

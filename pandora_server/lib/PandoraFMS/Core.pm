@@ -1596,6 +1596,31 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
 	my $mark_for_update = 0;
 	
+	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
+	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
+	$agent_status->{'datos'} = "" unless defined($agent_status->{'datos'});
+	
+	# Do we have to save module data?
+	if ($agent_status->{'last_try'} !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+		logger($pa_config, "Invalid last try timestamp '" . $agent_status->{'last_try'} . "' for agent '" . $agent->{'nombre'} . "' not found while processing module '" . $module->{'nombre'} . "'.", 3);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
+		return;
+	}
+	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
+	
+	# Received stale data. Save module data if needed and return.
+	if ($pa_config->{'dataserver_lifo'} == 1 && $utimestamp <= $agent_status->{'utimestamp'}) {
+		logger($pa_config, "Received stale data from agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
+		
+		# Save module data. Async and log4x modules are not compressed.
+		if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
+			save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
+		}
+
+		return;
+	}
+
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
 	
@@ -1744,23 +1769,6 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$mark_for_update = 1;
 	}
 		
-	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
-	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
-	
-	# Do we have to save module data?
-	if ($agent_status->{'last_try'} !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
-		logger($pa_config, "Invalid last try timestamp '" . $agent_status->{'last_try'} . "' for agent '" . $agent->{'nombre'} . "' not found while processing module '" . $module->{'nombre'} . "'.", 3);
-		pandora_update_module_on_error ($pa_config, $module, $dbh);
-		return;
-	}
-	
-	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-
-	if (!defined($agent_status->{'datos'})){
-		$agent_status->{'datos'} = "";
-	}
-
-	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	# Never update tagente_estado when processing out-of-order data.
 	if ($utimestamp >= $last_try) {

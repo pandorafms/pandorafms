@@ -149,14 +149,8 @@ sub data_producer ($) {
 		next if ($file !~ /^(.*)[\._]\d+\.data$/);
 		my $agent_name = $1;
 
-		$AgentSem->down ();
-		if (defined ($Agents{$agent_name})) {
-			$AgentSem->up ();
-			next;
-		}
-		$Agents{$agent_name} = 1;
-		$AgentSem->up ();
-
+		next if (agent_lock($pa_config, $agent_name) == 0);
+			
 		push (@tasks, $file);
 	}
 
@@ -181,9 +175,7 @@ sub data_consumer ($$) {
 
 	# Double check that the file exists
 	if (! -f $file_name) {
-		$AgentSem->down ();
-		delete ($Agents{$agent_name});
-		$AgentSem->up ();
+		agent_unlock($pa_config, $agent_name);
 		return;
 	}
 
@@ -213,9 +205,7 @@ sub data_consumer ($$) {
 
 		# Double check that the file exists
 		if (! -f $file_name) {
-			$AgentSem->down ();
-			delete ($Agents{$agent_name});
-			$AgentSem->up ();
+			agent_unlock($pa_config, $agent_name);
 			return;
 		}
 
@@ -231,17 +221,13 @@ sub data_consumer ($$) {
 		} else {
 			process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		}
-		$AgentSem->down ();
-		delete ($Agents{$agent_name});
-		$AgentSem->up ();
+		agent_unlock($pa_config, $agent_name);
 		return;	
 	}
 
 	rename($file_name, $file_name . '_BADXML');
 	pandora_event ($pa_config, "Unable to process XML data file '$file_name': $xml_err", 0, 0, 0, 0, 0, 'error', 0, $dbh);
-	$AgentSem->down ();
-	delete ($Agents{$agent_name});
-	$AgentSem->up ();
+	agent_unlock($pa_config, $agent_name);
 }
 
 ###############################################################################
@@ -1057,6 +1043,38 @@ sub process_xml_matrix_network {
 	}
 
 	return;
+}
+
+##########################################################################
+# Get a lock on the given agent. Return 1 on success, 0 otherwise.
+##########################################################################
+sub agent_lock {
+	my ($pa_config, $agent_name) = @_;
+
+	return 1 if ($pa_config->{'dataserver_lifo'} == 1);
+
+	$AgentSem->down ();
+	if (defined ($Agents{$agent_name})) {
+		$AgentSem->up ();
+		return 0;
+	}
+	$Agents{$agent_name} = 1;
+	$AgentSem->up ();
+
+	return 1;
+}
+
+##########################################################################
+# Remove the lock on the given agent.
+##########################################################################
+sub agent_unlock {
+	my ($pa_config, $agent_name) = @_;
+
+	return if ($pa_config->{'dataserver_lifo'} == 1);
+
+	$AgentSem->down ();
+	delete ($Agents{$agent_name});
+	$AgentSem->up ();
 }
 
 1;

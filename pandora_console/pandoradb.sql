@@ -825,27 +825,6 @@ CREATE TABLE `ttask_credentials` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
--- Table `tdeployment_hosts`
--- ----------------------------------------------------------------------
-CREATE TABLE `tdeployment_hosts` (
-  `id` SERIAL,
-  `id_cs` VARCHAR(100),
-  `ip` VARCHAR(100) NOT NULL UNIQUE,
-  `id_os` INT(10) UNSIGNED DEFAULT 0,
-  `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
-  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
-  `current_agent_version` VARCHAR(100) DEFAULT '',
-  `desired_agent_version` VARCHAR(100) DEFAULT '',
-  `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
-  `last_err` text,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store` (`identifier`)
-    ON UPDATE CASCADE ON DELETE SET NULL,
-  FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
-		ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
@@ -3657,9 +3636,32 @@ CREATE TABLE `tagent_repository` (
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
   `uploaded_by` VARCHAR(100) DEFAULT '',
-  `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
+  `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
     ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tdeployment_hosts`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdeployment_hosts` (
+  `id` SERIAL,
+  `id_cs` VARCHAR(100),
+  `ip` VARCHAR(100) NOT NULL UNIQUE,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `current_agent_version` VARCHAR(100) DEFAULT '' COMMENT "String latest installed agent",
+  `target_agent_version_id` BIGINT UNSIGNED,
+  `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store`(`identifier`)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
+    ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

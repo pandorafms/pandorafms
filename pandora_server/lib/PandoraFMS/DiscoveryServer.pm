@@ -237,6 +237,12 @@ sub data_consumer ($$) {
         && -f $cnf_extra{'creds_file'}) {
 			unlink($cnf_extra{'creds_file'});
 		}
+
+
+        # Clean one shot tasks
+        if ($task->{'type'} eq DISCOVERY_DEPLOY_AGENTS) {
+            db_delete_limit($dbh, ' trecon_task ', ' id_rt = ? ', 1, $task->{'id_rt'});   
+        }
     };
     if ($@) {
         logger(

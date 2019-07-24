@@ -227,6 +227,7 @@ sub data_consumer ($$) {
             server_id => $server_id,
             %{$pa_config},
             task_data => $task,
+            public_url => PandoraFMS::Config::pandora_get_tconfig_token($dbh, 'public_url', ''),
             %cnf_extra
         );
 

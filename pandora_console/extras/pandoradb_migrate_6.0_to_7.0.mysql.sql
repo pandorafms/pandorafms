@@ -2265,6 +2265,7 @@ CREATE TABLE `tdeployment_hosts` (
   `current_agent_version` VARCHAR(100) DEFAULT '' COMMENT "String latest installed agent",
   `target_agent_version_id` BIGINT UNSIGNED,
   `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
+  `server_ip` varchar(100) default NULL COMMENT "Where to point target agent",
   `last_err` text,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store`(`identifier`)

@@ -82,9 +82,8 @@ function createVisualConsole(
                 // Emit the VC update event.
                 if (onUpdate) onUpdate(prevProps, visualConsole.props);
               } catch (ignored) {} // eslint-disable-line no-empty
-
-              done();
             }
+            done();
           }
         );
 
@@ -141,7 +140,8 @@ function createVisualConsole(
         data.linkedLayoutId > 0 &&
         data.link != null &&
         data.link.length > 0 &&
-        (data.linkedLayoutAgentId == null || data.linkedLayoutAgentId === 0)
+        (data.linkedLayoutAgentId == null || data.linkedLayoutAgentId === 0) &&
+        e.nativeEvent.metaKey === false
       ) {
         // Override the link to another VC if it isn't on remote console.
         // Stop the current link behavior.
@@ -164,6 +164,9 @@ function createVisualConsole(
         visualConsole.selectItem(props.id, true);
 
         var formContainer = item.getFormContainer();
+        // var formContainer = VisualConsole.items[props.type].getFormContainer(
+        //   props
+        // );
         var formElement = formContainer.getFormElement();
         var $formElement = jQuery(formElement);
 
@@ -532,8 +535,8 @@ function updateVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
 
   // Visual Console container request.
   jqXHR = jQuery
-    // .get(apiPath + "/visual-consoles/" + vcId, null, "json")
-    .get(
+    // .post(apiPath + "/visual-consoles/" + vcId, null, "json")
+    .post(
       apiPath,
       {
         page: "include/rest-api/index",

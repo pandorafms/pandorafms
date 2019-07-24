@@ -254,7 +254,7 @@ final class Container extends Model
         $backgroundImage = static::extractBackgroundImage($row);
 
         if ($backgroundUrl === null && $backgroundImage !== null) {
-            $row['backgroundURL'] = ui_get_full_url(
+            $row['backgroundURL'] = \ui_get_full_url(
                 'images/console/background/'.$backgroundImage,
                 false,
                 false,

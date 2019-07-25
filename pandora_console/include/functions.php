@@ -2873,7 +2873,7 @@ function print_audit_csv($data)
 
     echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.date($config['date_format'], $line['utimestamp']).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;

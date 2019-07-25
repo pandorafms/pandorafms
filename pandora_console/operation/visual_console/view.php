@@ -164,7 +164,28 @@ if ($pure === false) {
     echo html_print_checkbox_switch('edit-mode', 1, false, true);
     echo '</span>';
     echo '</div>';
+    echo '<div id ="prueba" class="visual-console-edit-controls" style="visibility:hidden">';
+    html_print_button(
+        'delete_item',
+        'button_toolbox2',
+        false,
+        '',
+        'class="sub visual_editor_button_toolbox delete_item delete_min"',
+        false,
+        true
+    );
+    html_print_button(
+        'copy_item',
+        'button_toolbox2',
+        true,
+        "click_button_toolbox('copy_item');",
+        'class="sub visual_editor_button_toolbox copy_item delete_min"',
+        false,
+        true
+    );
+    echo '</div>';
     echo '<br />';
+    // sub visual_editor_button_toolbox delete_item delete_min
 }
 
 echo '<div id="visual-console-container"></div>';
@@ -340,9 +361,11 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
+            $('#prueba').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
+            $('#prueba').css('visibility', 'hidden');
         }
     });
 
@@ -361,5 +384,18 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
                 window.history.replaceState({}, document.title, href);
             }
         }
+    });
+
+    // $(".visual-console-item, .is-editing").bind("click", function(event) {
+    //     console.log('jejejeje');
+    // });
+
+    // $("#visual-console-container, .is-editing").bind("click", function(event) {
+    //     // $(".visual-console-item, .is-editing").unbind("click");
+    //     // console.log('jijijiji');
+    // });
+
+    $('#button-button_toolbox2').click(function (event){
+        visualConsoleManager.visualConsole.deleteItem();
     });
 </script>

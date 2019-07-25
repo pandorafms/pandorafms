@@ -66,9 +66,9 @@ export interface ItemClickEvent {
 }
 
 // FIXME: Fix type compatibility.
-export interface ItemRemoveEvent<Props extends ItemProps> {
+export interface ItemRemoveEvent {
   // data: Props;
-  data: AnyObject;
+  item: VisualConsoleItem<ItemProps>;
 }
 
 export interface ItemMovedEvent {
@@ -190,9 +190,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // Event manager for resized events.
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // Event manager for remove events.
-  private readonly removeEventManager = new TypedEvent<
-    ItemRemoveEvent<Props>
-  >();
+  private readonly removeEventManager = new TypedEvent<ItemRemoveEvent>();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -746,7 +744,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   public remove(): void {
     // Call the remove event.
-    this.removeEventManager.emit({ data: this.props });
+    this.removeEventManager.emit({ item: this });
     // Event listeners.
     this.disposables.forEach(disposable => {
       try {
@@ -974,7 +972,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To add an event handler to the removal of the item.
    * @param listener Function which is going to be executed when a item is removed.
    */
-  public onRemove(listener: Listener<ItemRemoveEvent<Props>>): Disposable {
+  public onRemove(listener: Listener<ItemRemoveEvent>): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to

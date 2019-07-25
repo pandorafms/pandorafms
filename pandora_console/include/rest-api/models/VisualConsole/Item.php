@@ -1667,4 +1667,31 @@ class Item extends CachedModel
     }
 
 
+    /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        $result = db_process_sql_delete(
+            'tlayout_data',
+            ['id' => $itemId]
+        );
+
+        if ($result) {
+            db_process_sql_delete(
+                'tvisual_console_elements_cache',
+                ['vc_item_id' => $itemId]
+            );
+        }
+
+        return (bool) $result;
+    }
+
+
 }

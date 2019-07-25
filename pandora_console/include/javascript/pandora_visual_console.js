@@ -133,7 +133,11 @@ function createVisualConsole(
           visualConsole.unselectItem(data.id);
         } else {
           // Unselect the rest of the elements if the
-          visualConsole.selectItem(data.id, !e.nativeEvent.metaKey);
+          var isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+          visualConsole.selectItem(
+            data.id,
+            isMac ? !e.nativeEvent.metaKey : !e.nativeEvent.ctrlKey
+          );
         }
       } else if (
         !meta.editMode &&
@@ -356,6 +360,52 @@ function createVisualConsole(
           };
         })
         .init();
+    });
+
+    // VC Item remove.
+    visualConsole.onItemRemove(function(e) {
+      var id = e.item.props.id;
+      var data = {
+        type: e.item.props.type
+      };
+      var taskId = "visual-console-item-update-" + id;
+
+      // Persist the new position.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = removeVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            data,
+            function(error, data) {
+              // if (!error && !data) return;
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // Move the element to its initial position.
+                // e.item.move(e.prevPosition.x, e.prevPosition.y);
+              }
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
+      // console.log(visualConsole.containerRef);
+      // console.log(e.item.elementRef);
+      // Add the item to the DOM.
     });
 
     if (updateInterval != null && updateInterval > 0) {
@@ -608,6 +658,74 @@ function getVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
         getVisualConsoleItem: 1,
         visualConsoleId: vcId,
         visualConsoleItemId: vcItemId
+      },
+      "json"
+    )
+    .done(handleSuccess)
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
+/**
+ * Fetch a Visual Console's structure and its items.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcId Identifier of the Visual Console.
+ * @param {number} vcItemId Identifier of the Visual Console's item.
+ * @param {function} callback Function to be executed on request success or fail.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function removeVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
+  // var apiPath = baseUrl + "/include/rest-api";
+  var apiPath = baseUrl + "/ajax.php";
+  var jqXHR = null;
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
+      jqXHR.abort(textStatus);
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Function which handle success case.
+  var handleSuccess = function(data) {
+    callback(null, data);
+  };
+
+  // Visual Console container request.
+  jqXHR = jQuery
+    // .get(apiPath + "/visual-consoles/" + vcId, null, "json")
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        removeVisualConsoleItem: 1,
+        visualConsoleId: vcId,
+        visualConsoleItemId: vcItemId,
+        data: data
       },
       "json"
     )

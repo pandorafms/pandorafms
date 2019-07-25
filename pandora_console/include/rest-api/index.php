@@ -15,6 +15,7 @@ $getVisualConsole = (bool) get_parameter('getVisualConsole');
 $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
+$removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
 
 ob_clean();
 
@@ -109,6 +110,13 @@ if ($getVisualConsole === true) {
         echo $item;
         return;
     }
+} else if ($removeVisualConsoleItem === true) {
+    $itemId = (int) get_parameter('visualConsoleItemId');
+    $data = get_parameter('data');
+    $class = VisualConsole::getItemClass((int) $data['type']);
+    $result = $class::delete($itemId);
+    echo $result;
+    return;
 }
 
 exit;

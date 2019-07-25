@@ -83,6 +83,13 @@ sub new ($$;$) {
 		push(@XML::Parser::Expat::Encoding_Path, $config->{'enc_dir'});
 	}
 
+	if ($config->{'autocreate_group'} > 0 && !defined(get_group_name ($dbh, $config->{'autocreate_group'}))) {
+		my $msg = "Group id " . $config->{'autocreate_group'} . " does not exist (check autocreate_group config token).";
+		logger($config, $msg, 3);
+		print_message($config, $msg, 1);
+		pandora_event ($config, $msg, 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	}
+
 	bless $self, $class;
 	return $self;
 }
@@ -327,33 +334,10 @@ sub process_xml_data ($$$$$) {
 		
 		# Get OS, group and description
 		my $os = pandora_get_os ($dbh, $data->{'os_name'});
-		$group_id = $pa_config->{'autocreate_group'};
-		if (! defined (get_group_name ($dbh, $group_id))) {
-			if (defined ($data->{'group_id'}) && $data->{'group_id'} ne '') {
-				$group_id = $data->{'group_id'};
-				if (! defined (get_group_name ($dbh, $group_id))) {
-					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': group ID '" . $group_id . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
-					logger($pa_config, "Group ID " . $group_id . " does not exist.", 3);
-					return;
-				}
-			} elsif (defined ($data->{'group'}) && $data->{'group'} ne '') {
-				$group_id = get_group_id ($dbh, $data->{'group'});
-				if (! defined (get_group_name ($dbh, $group_id))) {
-					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': group '" . safe_output($data->{'group'}) . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
-					logger($pa_config, "Group " . $data->{'group'} . " does not exist.", 3);
-					return;
-				}
-			} else {
-					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': autocreate_group $group_id does not exist. Edit the server configuration file and change it.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
-					logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token).", 3);
-					return;
-			}
-		}
-
-		# Check the group password.
-		my $rc = enterprise_hook('check_group_password', [$dbh, $group_id, $data->{'group_password'}]);
-		if (defined($rc) && $rc != 1) {
-			logger($pa_config, "Agent $agent_name did not send a valid password for group id $group_id.", 10);
+		$group_id = pandora_get_agent_group($pa_config, $dbh, $agent_name, $data->{'group'}, $data->{'group_password'});
+		if ($group_id <= 0) {
+			pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': No valid group found.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+			logger($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': No valid group found.", 3);
 			return;
 		}
 

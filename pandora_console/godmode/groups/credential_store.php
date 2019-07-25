@@ -588,9 +588,6 @@ echo '</div>';
                             text: 'OK',
                             click: function(e) {
                                 var values = {};
-
-                                console.log($('#form_new'));
-
                                 $('#form_new :input').each(function() {
                                     values[this.name] = btoa($(this).val());
                                 });

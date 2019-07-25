@@ -1210,12 +1210,12 @@ function events_get_all(
 
     $server_join = '';
     if (is_metaconsole()) {
-        $server_join = ' LEFT JOIN tmetaconsole_setup ts
-            ON ts.id = te.server_id';
+        $server_join = ' INNER JOIN tmetaconsole_setup ts
+            ON ts.id = te.server_id AND ts.server_name = ta.server_name';
         if (!empty($filter['server_id'])) {
             $server_join = sprintf(
-                ' LEFT JOIN tmetaconsole_setup ts
-                  ON ts.id = te.server_id AND ts.id= %d',
+                ' INNER JOIN tmetaconsole_setup ts
+                  ON ts.id = te.server_id AND ts.server_name = ta.server_name AND ts.id= %d',
                 $filter['server_id']
             );
         }

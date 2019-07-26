@@ -2221,20 +2221,6 @@ CREATE TABLE IF NOT EXISTS `tcredential_store` (
 -- ---------------------------------------------------------------------
 ALTER TABLE `treport_content_sla_combined` ADD `id_agent_module_failover` int(10) unsigned NOT NULL;
 
--- ----------------------------------------------------------------------
--- Table `ttask_credentials`
--- ----------------------------------------------------------------------
-CREATE TABLE `ttask_credentials` (
-  `id_rt` int(10) unsigned NOT NULL,
-  `identifier` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_rt`,`identifier`),
-  KEY `identifier` (`identifier`),
-  FOREIGN KEY (`id_rt`) REFERENCES `trecon_task` (`id_rt`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`identifier`) REFERENCES `tcredential_store` (`identifier`)
-    ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- ---------------------------------------------------------------------
 -- Table `tagent_repository`
 -- ---------------------------------------------------------------------

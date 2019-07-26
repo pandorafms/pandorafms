@@ -811,20 +811,6 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
--- Table `ttask_credentials`
--- ----------------------------------------------------------------------
-CREATE TABLE `ttask_credentials` (
-  `id_rt` int(10) unsigned NOT NULL,
-  `identifier` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_rt`,`identifier`),
-  KEY `identifier` (`identifier`),
-  FOREIGN KEY (`id_rt`) REFERENCES `trecon_task` (`id_rt`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`identifier`) REFERENCES `tcredential_store` (`identifier`)
-    ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_relationship` (

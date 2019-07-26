@@ -12,17 +12,6 @@ ALTER TABLE `tmodule_relationship` ADD COLUMN `type` ENUM('direct', 'failover') 
 
 ALTER TABLE `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
 
-CREATE TABLE `ttask_credentials` (
-  `id_rt` int(10) unsigned NOT NULL,
-  `identifier` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_rt`,`identifier`),
-  KEY `identifier` (`identifier`),
-  FOREIGN KEY (`id_rt`) REFERENCES `trecon_task` (`id_rt`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`identifier`) REFERENCES `tcredential_store` (`identifier`)
-    ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `tagent_repository` (
   `id` SERIAL,
   `id_os` INT(10) UNSIGNED DEFAULT 0,

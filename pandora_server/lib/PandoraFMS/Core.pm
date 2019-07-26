@@ -184,6 +184,7 @@ our @EXPORT = qw(
 	pandora_execute_action
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
+	pandora_get_agent_group
 	pandora_get_config_value
 	pandora_get_credential
 	pandora_get_module_tags
@@ -3190,9 +3191,9 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
 	if (!defined($group_id)) {
-		$group_id = $pa_config->{'autocreate_group'};
-		if (! defined (get_group_name ($dbh, $group_id))) {
-			logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token)", 3);
+		$group_id = pandora_get_agent_group($pa_config, $dbh, $agent_name);
+		if ($group_id <= 0) {
+			logger($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': No valid group found.", 3);
 			return;
 		}
 	}
@@ -3440,6 +3441,47 @@ sub pandora_extended_event($$$$) {
 		time(),
 		safe_input($description)
 	);
+}
+
+##########################################################################
+# Returns a valid group ID to place an agent on success, -1 on error.
+##########################################################################
+sub pandora_get_agent_group {
+	my ($pa_config, $dbh, $agent_name, $agent_group, $agent_group_password) = @_;
+
+	my $group_id;
+	my @groups = $pa_config->{'autocreate_group_force'} == 1 ? ($pa_config->{'autocreate_group'}, $agent_group) : ($agent_group, $pa_config->{'autocreate_group'});
+	foreach my $group (@groups) {
+		next unless defined($group);
+
+		# Does the group exist?
+		if ($group eq $pa_config->{'autocreate_group'}) {
+			next if ($group <= 0);
+			$group_id = $group;
+			if (!defined(get_group_name ($dbh, $group_id))) {
+				logger($pa_config, "Group ID " . $group_id . " does not exist.", 10);
+				next;
+			}
+		} else {
+			next if ($group eq '');
+			$group_id = get_group_id ($dbh, $group);
+			if ($group_id <= 0) {
+				logger($pa_config, "Group " . $group . " does not exist.", 10);
+				next;
+			}
+		}
+
+		# Check the group password.
+		my $rc = enterprise_hook('check_group_password', [$dbh, $group_id, $agent_group_password]);
+		if (defined($rc) && $rc != 1) {
+			logger($pa_config, "Agent " . safe_output($agent_name) . " did not send a valid password for group ID $group_id.", 10);
+			next;
+		}
+
+		return $group_id;
+	}
+
+	return -1;
 }
 
 ##########################################################################

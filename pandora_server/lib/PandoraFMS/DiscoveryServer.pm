@@ -354,9 +354,10 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 
     # Use xprobe2 if available
     if (-e $self->{pa_config}->{xprobe2}) {
-            my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
-            return OS_OTHER if ($? != 0);
+        my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
+        if ($? == 0) {
             return pandora_get_os($self->{'dbh'}, $output);
+        }
     }
     
     # Use nmap by default

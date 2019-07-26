@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.736";
-my $pandora_build = "190725";
+my $pandora_build = "190726";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -333,6 +333,7 @@ sub pandora_load_config {
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
 	$pa_config->{'autocreate_group'} = -1;
+	$pa_config->{'autocreate_group_force'} = 1;
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)
@@ -810,6 +811,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^autocreate_group\s+([0-9*]*)/i) {
 			$pa_config->{'autocreate_group'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^autocreate_group_force\s+([0-1])/i) {
+			$pa_config->{'autocreate_group_force'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^discovery_threads\s+([0-9]*)/i) {
 			$pa_config->{'discovery_threads'}= clean_blank($1);

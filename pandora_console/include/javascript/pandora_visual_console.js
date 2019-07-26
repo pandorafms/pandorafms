@@ -379,7 +379,6 @@ function createVisualConsole(
             id,
             data,
             function(error, data) {
-              // if (!error && !data) return;
               if (error || !data) {
                 console.log(
                   "[ERROR]",
@@ -388,8 +387,17 @@ function createVisualConsole(
                   error ? error.message : "Invalid response"
                 );
 
-                // Move the element to its initial position.
-                // e.item.move(e.prevPosition.x, e.prevPosition.y);
+                // Add the item to the list.
+                visualConsole.elementsById[e.item.props.id] = e.item;
+                visualConsole.elementIds.push(e.item.props.id);
+                // Item event handlers.
+                e.item.onClick(visualConsole.handleElementClick);
+                e.item.onDblClick(visualConsole.handleElementDblClick);
+                e.item.onMoved(visualConsole.handleElementMovement);
+                e.item.onResized(visualConsole.handleElementResizement);
+                e.item.onRemove(visualConsole.handleElementRemove);
+                // Add the item to the DOM.
+                visualConsole.containerRef.append(e.item.elementRef);
               }
 
               done();
@@ -403,9 +411,6 @@ function createVisualConsole(
           };
         })
         .init();
-      // console.log(visualConsole.containerRef);
-      // console.log(e.item.elementRef);
-      // Add the item to the DOM.
     });
 
     if (updateInterval != null && updateInterval > 0) {

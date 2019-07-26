@@ -112,6 +112,15 @@ if ($getVisualConsole === true) {
     }
 } else if ($removeVisualConsoleItem === true) {
     $itemId = (int) get_parameter('visualConsoleItemId');
+
+    try {
+        $item = VisualConsole::getItemFromDB($itemId);
+    } catch (\Throwable $th) {
+        // There is no item in the database.
+        echo true;
+        return;
+    }
+
     $data = get_parameter('data');
     $class = VisualConsole::getItemClass((int) $data['type']);
     $result = $class::delete($itemId);

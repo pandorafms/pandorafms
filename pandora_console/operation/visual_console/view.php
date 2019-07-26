@@ -164,11 +164,11 @@ if ($pure === false) {
     echo html_print_checkbox_switch('edit-mode', 1, false, true);
     echo '</span>';
     echo '</div>';
-    echo '<div id ="prueba" class="visual-console-edit-controls" style="visibility:hidden">';
+    echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
     html_print_button(
         'delete_item',
         'button_toolbox2',
-        false,
+        true,
         '',
         'class="sub visual_editor_button_toolbox delete_item delete_min"',
         false,
@@ -361,11 +361,11 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         if ($(this).prop('checked')) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
-            $('#prueba').css('visibility', '');
+            $('#edit-controls').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
-            $('#prueba').css('visibility', 'hidden');
+            $('#edit-controls').css('visibility', 'hidden');
         }
     });
 
@@ -386,14 +386,10 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         }
     });
 
-    // $(".visual-console-item, .is-editing").bind("click", function(event) {
-    //     console.log('jejejeje');
-    // });
-
-    // $("#visual-console-container, .is-editing").bind("click", function(event) {
-    //     // $(".visual-console-item, .is-editing").unbind("click");
-    //     // console.log('jijijiji');
-    // });
+    $(".visual-console-item, .is-editing").bind("click", function(event) {
+        var prueba = event.currentTarget;
+        console.log(prueba);
+    });
 
     $('#button-button_toolbox2').click(function (event){
         visualConsoleManager.visualConsole.deleteItem();

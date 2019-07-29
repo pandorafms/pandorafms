@@ -84,7 +84,7 @@ if ($getVisualConsole === true) {
 
     // Check also the group Id for the group item.
     if ($itemType === GROUP_ITEM) {
-        $itemGroupId = $itemData['aclGroupId'];
+        $itemGroupId = $itemData['groupId'];
         // ACL.
         $aclRead = check_acl($config['id_user'], $itemGroupId, 'VR');
         $aclWrite = check_acl($config['id_user'], $itemGroupId, 'VW');

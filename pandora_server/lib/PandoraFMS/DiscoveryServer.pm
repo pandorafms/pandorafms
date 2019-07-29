@@ -65,7 +65,8 @@ use constant {
 sub new ($$$$$$) {
     my ($class, $config, $dbh) = @_;
     
-    return undef unless $config->{'reconserver'} == 1 || $config->{'discoveryserver'} == 1;
+    return undef unless (defined($config->{'reconserver'}) && $config->{'reconserver'} == 1)
+     || (defined($config->{'discoveryserver'}) && $config->{'discoveryserver'} == 1);
     
     if (! -e $config->{'nmap'}) {
         logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);

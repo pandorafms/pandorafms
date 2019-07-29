@@ -31,6 +31,7 @@ sed -i "s/^remote_config.*$/remote_config $REMOTE_CONF/g" /etc/pandora/pandora_a
 sed -i "s/^group.*$/group $AGROUP/g" /etc/pandora/pandora_agent.conf\n \
 sed -i "s/^debug.*$/debug $DEBUG/g" /etc/pandora/pandora_agent.conf\n \
 sed -i "s/^#agent_name.*$/agent_name $NAME/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^#agent_alias.*$/agent_alias $NAME/g" /etc/pandora/pandora_agent.conf\n \
 if [ $TIMEZONE != "" ]; then\n \
 \tln -sfn /usr/share/zoneinfo/$TIMEZONE /etc/localtime\n \
 fi\n \

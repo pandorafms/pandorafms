@@ -174,6 +174,16 @@ function createVisualConsole(
         var formElement = formContainer.getFormElement();
         var $formElement = jQuery(formElement);
 
+        formContainer.onInputGroupDataRequested(function(e) {
+          var identifier = e.identifier;
+          var params = e.params;
+          var done = e.done;
+
+          switch (identifier) {
+            default:
+              done(new Error("identifier not found"));
+          }
+        });
         formContainer.onSubmit(function(e) {
           // Send the update.
           var id = props.id;

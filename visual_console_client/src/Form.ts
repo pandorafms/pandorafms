@@ -2,12 +2,22 @@ import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { AnyObject } from "./lib/types";
 import { t } from "./lib";
 
+interface InputGroupDataRequestedEvent<T> {
+  identifier: string;
+  params: AnyObject;
+  done: (error: Error | null, data?: T | null) => void;
+}
+
 // TODO: Document
 export abstract class InputGroup<Data extends {} = {}> {
   private _name: string = "";
   private _element?: HTMLElement;
   public initialData: Data;
   protected currentData: Partial<Data> = {};
+  // Event manager for data requests.
+  private readonly dataRequestedEventManager = new TypedEvent<
+    InputGroupDataRequestedEvent<Partial<Data>>
+  >();
 
   public constructor(name: string, initialData: Data) {
     this.name = name;
@@ -58,6 +68,20 @@ export abstract class InputGroup<Data extends {} = {}> {
     // TODO: Update item.
   }
 
+  protected requestData(
+    identifier: string,
+    params: AnyObject,
+    done: (error: Error | null, data?: Partial<Data> | null) => void
+  ): void {
+    this.dataRequestedEventManager.emit({ identifier, params, done });
+  }
+
+  public onDataRequested(
+    listener: Listener<InputGroupDataRequestedEvent<Partial<Data>>>
+  ): Disposable {
+    return this.dataRequestedEventManager.on(listener);
+  }
+
   protected abstract createContent(): HTMLElement | HTMLElement[];
 
   // public abstract get isValid(): boolean;
@@ -75,6 +99,11 @@ export class FormContainer {
   private enabledInputGroupNames: string[] = [];
   // Event manager for submit events.
   private readonly submitEventManager = new TypedEvent<SubmitFormEvent>();
+  // Event manager for item data requests.
+  private readonly itemDataRequestedEventManager = new TypedEvent<
+    InputGroupDataRequestedEvent<Partial<{}>>
+  >();
+  private handleItemDataRequested = this.itemDataRequestedEventManager.emit;
 
   public constructor(
     title: string,
@@ -85,6 +114,8 @@ export class FormContainer {
 
     if (inputGroups.length > 0) {
       this.inputGroupsByName = inputGroups.reduce((prevVal, inputGroup) => {
+        // Add event handlers.
+        inputGroup.onDataRequested(this.handleItemDataRequested);
         prevVal[inputGroup.name] = inputGroup;
         return prevVal;
       }, this.inputGroupsByName);
@@ -108,6 +139,8 @@ export class FormContainer {
     inputGroup: InputGroup,
     index: number | null = null
   ): FormContainer {
+    // Add event handlers.
+    inputGroup.onDataRequested(this.handleItemDataRequested);
     this.inputGroupsByName[inputGroup.name] = inputGroup;
 
     // Remove the current stored name if exist.
@@ -217,5 +250,11 @@ export class FormContainer {
 
   public onSubmit(listener: Listener<SubmitFormEvent>): Disposable {
     return this.submitEventManager.on(listener);
+  }
+
+  public onInputGroupDataRequested(
+    listener: Listener<InputGroupDataRequestedEvent<Partial<{}>>>
+  ): Disposable {
+    return this.itemDataRequestedEventManager.on(listener);
   }
 }

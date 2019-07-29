@@ -10,6 +10,8 @@ import {
   ItemMeta
 } from "./types";
 
+import helpTipIcon from "./help-tip.png";
+
 /**
  * Return a number or a default value from a raw value.
  * @param value Raw value from which we will try to extract a valid number.
@@ -463,13 +465,9 @@ export function addMovementListener(
   let borderFix = Number.parseInt(borderWidth) * 2;
 
   // Will run onMoved 32ms after its last execution.
-  const debouncedMovement = debounce(32, (x: Position["x"], y: Position["y"]) =>
-    onMoved(x, y)
-  );
+  const debouncedMovement = debounce(32, onMoved);
   // Will run onMoved one time max every 16ms.
-  const throttledMovement = throttle(16, (x: Position["x"], y: Position["y"]) =>
-    onMoved(x, y)
-  );
+  const throttledMovement = throttle(16, onMoved);
 
   const handleMove = (e: MouseEvent) => {
     // Calculate the new element coordinates.
@@ -641,15 +639,9 @@ export function addResizementListener(
   let borderFix = Number.parseInt(borderWidth);
 
   // Will run onResized 32ms after its last execution.
-  const debouncedResizement = debounce(
-    32,
-    (width: Size["width"], height: Size["height"]) => onResized(width, height)
-  );
+  const debouncedResizement = debounce(32, onResized);
   // Will run onResized one time max every 16ms.
-  const throttledResizement = throttle(
-    16,
-    (width: Size["width"], height: Size["height"]) => onResized(width, height)
-  );
+  const throttledResizement = throttle(16, onResized);
 
   const handleResize = (e: MouseEvent) => {
     // Calculate the new element coordinates.
@@ -754,6 +746,22 @@ export function addResizementListener(
   };
 }
 
+// TODO: Document and code
 export function t(text: string): string {
   return text;
+}
+
+export function helpTip(text: string): HTMLElement {
+  const container = document.createElement("a");
+  container.className = "tip";
+  const icon = document.createElement("img");
+  icon.src = helpTipIcon;
+  icon.className = "forced_title";
+  icon.setAttribute("alt", text);
+  icon.setAttribute("data-title", text);
+  icon.setAttribute("data-use_title_for_force_title", "1");
+
+  container.appendChild(icon);
+
+  return container;
 }

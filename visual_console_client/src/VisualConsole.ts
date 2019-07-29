@@ -314,24 +314,7 @@ export default class VisualConsole {
     });
 
     // Initialize the items.
-    items.forEach(item => {
-      try {
-        const itemInstance = itemInstanceFrom(item);
-        // Add the item to the list.
-        this.elementsById[itemInstance.props.id] = itemInstance;
-        this.elementIds.push(itemInstance.props.id);
-        // Item event handlers.
-        itemInstance.onClick(this.handleElementClick);
-        itemInstance.onDblClick(this.handleElementDblClick);
-        itemInstance.onMoved(this.handleElementMovement);
-        itemInstance.onResized(this.handleElementResizement);
-        itemInstance.onRemove(this.handleElementRemove);
-        // Add the item to the DOM.
-        this.containerRef.append(itemInstance.elementRef);
-      } catch (error) {
-        console.log("Error creating a new element:", error.message);
-      }
-    });
+    items.forEach(item => this.addElement(item, this));
 
     // Create lines.
     this.buildRelations();
@@ -348,6 +331,29 @@ export default class VisualConsole {
     return this.elementIds
       .map(id => this.elementsById[id])
       .filter(_ => _ != null) as Item<ItemProps>[];
+  }
+
+  /**
+   * To create a new element add it to the DOM.
+   * @param item. Raw representation of the item's data.
+   */
+  public addElement(item: AnyObject, context: this = this): void {
+    try {
+      const itemInstance = itemInstanceFrom(item);
+      // Add the item to the list.
+      context.elementsById[itemInstance.props.id] = itemInstance;
+      context.elementIds.push(itemInstance.props.id);
+      // Item event handlers.
+      itemInstance.onClick(context.handleElementClick);
+      itemInstance.onDblClick(context.handleElementDblClick);
+      itemInstance.onMoved(context.handleElementMovement);
+      itemInstance.onResized(context.handleElementResizement);
+      itemInstance.onRemove(context.handleElementRemove);
+      // Add the item to the DOM.
+      context.containerRef.append(itemInstance.elementRef);
+    } catch (error) {
+      console.log("Error creating a new element:", error.message);
+    }
   }
 
   /**
@@ -376,18 +382,7 @@ export default class VisualConsole {
       if (item.id) {
         if (this.elementsById[item.id] == null) {
           // New item.
-          try {
-            const itemInstance = itemInstanceFrom(item);
-            // Add the item to the list.
-            this.elementsById[itemInstance.props.id] = itemInstance;
-            // Item event handlers.
-            itemInstance.onClick(this.handleElementClick);
-            itemInstance.onRemove(this.handleElementRemove);
-            // Add the item to the DOM.
-            this.containerRef.append(itemInstance.elementRef);
-          } catch (error) {
-            console.log("Error creating a new element:", error.message);
-          }
+          this.addElement(item);
         } else {
           // Update item.
           try {
@@ -519,6 +514,8 @@ export default class VisualConsole {
     this.elementIds = [];
     // Clear relations.
     this.clearRelations();
+    // Remove the click event listener.
+    this.containerRef.removeEventListener("click", this.handleContainerClick);
     // Clean container.
     this.containerRef.innerHTML = "";
   }
@@ -526,7 +523,7 @@ export default class VisualConsole {
   /**
    * Create line elements which connect the elements with their parents.
    */
-  private buildRelations(): void {
+  public buildRelations(): void {
     // Clear relations.
     this.clearRelations();
     // Add relations.
@@ -846,4 +843,29 @@ export default class VisualConsole {
       }
     });
   }
+
+  // TODO: Document.
+  public static items = {
+    [ItemType.STATIC_GRAPH]: StaticGraph,
+    [ItemType.MODULE_GRAPH]: ModuleGraph,
+    [ItemType.SIMPLE_VALUE]: SimpleValue,
+    [ItemType.SIMPLE_VALUE_MAX]: SimpleValue,
+    [ItemType.SIMPLE_VALUE_MIN]: SimpleValue,
+    [ItemType.SIMPLE_VALUE_AVG]: SimpleValue,
+    [ItemType.PERCENTILE_BAR]: Percentile,
+    [ItemType.PERCENTILE_BUBBLE]: Percentile,
+    [ItemType.CIRCULAR_PROGRESS_BAR]: Percentile,
+    [ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR]: Percentile,
+    [ItemType.LABEL]: Label,
+    [ItemType.ICON]: Icon,
+    [ItemType.SERVICE]: Service,
+    [ItemType.GROUP_ITEM]: Group,
+    [ItemType.BOX_ITEM]: Box,
+    [ItemType.LINE_ITEM]: Line,
+    [ItemType.AUTO_SLA_GRAPH]: EventsHistory,
+    [ItemType.DONUT_GRAPH]: DonutGraph,
+    [ItemType.BARS_GRAPH]: BarsGraph,
+    [ItemType.CLOCK]: Clock,
+    [ItemType.COLOR_CLOUD]: ColorCloud
+  };
 }

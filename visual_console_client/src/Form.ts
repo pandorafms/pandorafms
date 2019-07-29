@@ -147,7 +147,7 @@ export class FormContainer {
   }
 
   public removeInputGroup(inputGroupName: string): FormContainer {
-    // delete this.inputGroupsByName[inputGroupName];
+    delete this.inputGroupsByName[inputGroupName];
     // Remove the current stored name.
     this.enabledInputGroupNames = this.enabledInputGroupNames.filter(
       name => name === inputGroupName

@@ -17,7 +17,8 @@ import {
   addMovementListener,
   debounce,
   addResizementListener,
-  t
+  t,
+  helpTip
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { FormContainer, InputGroup } from "./Form";
@@ -84,7 +85,76 @@ export interface ItemResizedEvent {
 }
 
 // TODO: Document
-class PositionInputGroup extends InputGroup<ItemProps> {
+class LinkInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const linkLabel = document.createElement("label");
+    linkLabel.textContent = t("Link enabled");
+
+    const linkInputChkbx = document.createElement("input");
+    linkInputChkbx.id = "checkbox-switch";
+    linkInputChkbx.className = "checkbox-switch";
+    linkInputChkbx.type = "checkbox";
+    linkInputChkbx.name = "checkbox-enable-link";
+    linkInputChkbx.value = "1";
+    linkInputChkbx.checked =
+      this.currentData.isLinkEnabled || this.initialData.isLinkEnabled || false;
+    linkInputChkbx.addEventListener("change", e =>
+      this.updateData({
+        isLinkEnabled: (e.target as HTMLInputElement).checked
+      })
+    );
+
+    const linkInputLabel = document.createElement("label");
+    linkInputLabel.className = "label-switch";
+    linkInputLabel.htmlFor = "checkbox-switch";
+
+    linkLabel.appendChild(linkInputChkbx);
+    linkLabel.appendChild(linkInputLabel);
+
+    return linkLabel;
+  }
+}
+
+// TODO: Document
+class OnTopInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const onTopLabel = document.createElement("label");
+    onTopLabel.textContent = t("Show on top");
+
+    const onTopInputChkbx = document.createElement("input");
+    onTopInputChkbx.id = "checkbox-switch";
+    onTopInputChkbx.className = "checkbox-switch";
+    onTopInputChkbx.type = "checkbox";
+    onTopInputChkbx.name = "checkbox-show-on-top";
+    onTopInputChkbx.value = "1";
+    onTopInputChkbx.checked =
+      this.currentData.isOnTop || this.initialData.isOnTop || false;
+    onTopInputChkbx.addEventListener("change", e =>
+      this.updateData({
+        isOnTop: (e.target as HTMLInputElement).checked
+      })
+    );
+
+    const onTopInputLabel = document.createElement("label");
+    onTopInputLabel.className = "label-switch";
+    onTopInputLabel.htmlFor = "checkbox-switch";
+
+    onTopLabel.appendChild(
+      helpTip(
+        t(
+          "It allows the element to be superimposed to the rest of items of the visual console"
+        )
+      )
+    );
+    onTopLabel.appendChild(onTopInputChkbx);
+    onTopLabel.appendChild(onTopInputLabel);
+
+    return onTopLabel;
+  }
+}
+
+// TODO: Document
+class PositionInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
     const positionLabel = document.createElement("label");
     positionLabel.textContent = t("Position");
@@ -118,8 +188,54 @@ class PositionInputGroup extends InputGroup<ItemProps> {
   }
 }
 
+// TODO: Document
+class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const sizeLabel = document.createElement("label");
+    sizeLabel.textContent = t("Size");
+
+    const sizeInputWidth = document.createElement("input");
+    sizeInputWidth.type = "number";
+    sizeInputWidth.min = "0";
+    sizeInputWidth.required = true;
+    sizeInputWidth.value = `${this.currentData.width ||
+      this.initialData.width ||
+      0}`;
+    sizeInputWidth.addEventListener("change", e =>
+      this.updateData({
+        width: parseIntOr((e.target as HTMLInputElement).value, 0)
+      })
+    );
+
+    const sizeInputHeight = document.createElement("input");
+    sizeInputHeight.type = "number";
+    sizeInputHeight.min = "0";
+    sizeInputHeight.required = true;
+    sizeInputHeight.value = `${this.currentData.height ||
+      this.initialData.height ||
+      0}`;
+    sizeInputHeight.addEventListener("change", e =>
+      this.updateData({
+        height: parseIntOr((e.target as HTMLInputElement).value, 0)
+      })
+    );
+
+    sizeLabel.appendChild(
+      helpTip(
+        t(
+          "In order to use the original image file size, set width and height to 0."
+        )
+      )
+    );
+    sizeLabel.appendChild(sizeInputWidth);
+    sizeLabel.appendChild(sizeInputHeight);
+
+    return sizeLabel;
+  }
+}
+
 /**
- * Extract a valid enum value from a raw label positi9on value.
+ * Extract a valid enum value from a raw label position value.
  * @param labelPosition Raw value.
  */
 const parseLabelPosition = (
@@ -380,7 +496,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.childElementRef = this.createDomElement();
 
     // Insert the elements into the container.
-    this.elementRef.append(this.childElementRef, this.labelElementRef);
+    this.elementRef.appendChild(this.childElementRef);
+    this.elementRef.appendChild(this.labelElementRef);
 
     // Resize element.
     this.resizeElement(this.itemProps.width, this.itemProps.height);
@@ -468,8 +585,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       const cell = document.createElement("td");
 
       cell.innerHTML = label;
-      row.append(cell);
-      table.append(emptyRow1, row, emptyRow2);
+      row.appendChild(cell);
+      table.appendChild(emptyRow1);
+      table.appendChild(row);
+      table.appendChild(emptyRow2);
       table.style.textAlign = "center";
 
       // Change the table size depending on its position.
@@ -491,7 +610,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       }
 
       // element.innerHTML = this.props.label;
-      element.append(table);
+      element.appendChild(table);
     }
 
     return element;
@@ -897,15 +1016,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
   }
 
-  // TODO: Document
-  public getFormContainer(): FormContainer {
-    return new FormContainer(
-      t("Item"),
-      [new PositionInputGroup("position", this.props)],
-      ["position"]
-    );
-  }
-
   /**
    * To add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
@@ -984,6 +1094,25 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.disposables.push(disposable);
 
     return disposable;
+  }
+
+  // TODO: Document
+  public getFormContainer(): FormContainer {
+    return VisualConsoleItem.getFormContainer(this.props);
+  }
+
+  // TODO: Document
+  public static getFormContainer(props: Partial<ItemProps>): FormContainer {
+    return new FormContainer(
+      t("Item"),
+      [
+        new PositionInputGroup("position", props),
+        new SizeInputGroup("size", props),
+        new LinkInputGroup("link", props),
+        new OnTopInputGroup("show-on-top", props)
+      ],
+      ["position", "size", "link", "show-on-top"]
+    );
   }
 }
 

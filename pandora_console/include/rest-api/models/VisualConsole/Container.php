@@ -124,6 +124,21 @@ final class Container extends Model
 
 
     /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        return true;
+    }
+
+
+    /**
      * Extract a group Id value.
      *
      * @param array $data Unknown input data structure.

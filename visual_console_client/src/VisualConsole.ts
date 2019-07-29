@@ -210,6 +210,8 @@ export default class VisualConsole {
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
   // Event manager for resize events.
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
+  // Event manager for remove events.
+  private readonly removeEventManager = new TypedEvent<ItemRemoveEvent>();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -273,11 +275,12 @@ export default class VisualConsole {
    * Clear some element references.
    * @param e Event object.
    */
-  private handleElementRemove: (e: ItemRemoveEvent<ItemProps>) => void = e => {
+  private handleElementRemove: (e: ItemRemoveEvent) => void = e => {
     // Remove the element from the list and its relations.
-    this.elementIds = this.elementIds.filter(id => id !== e.data.id);
-    delete this.elementsById[e.data.id];
-    this.clearRelations(e.data.id);
+    this.elementIds = this.elementIds.filter(id => id !== e.item.props.id);
+    delete this.elementsById[e.item.props.id];
+    this.clearRelations(e.item.props.id);
+    this.removeEventManager.emit(e);
   };
 
   // TODO: Document
@@ -760,6 +763,22 @@ export default class VisualConsole {
   }
 
   /**
+   * Add an event handler to the resizement of the visual console elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onItemRemove(listener: Listener<ItemRemoveEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.removeEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
    * Enable the edition mode.
    */
   public enableEditMode(): void {
@@ -777,6 +796,17 @@ export default class VisualConsole {
       item.meta = { ...item.meta, editMode: false };
     });
     this.containerRef.classList.remove("is-editing");
+  }
+
+  /**
+   * delete item.
+   */
+  public deleteItem(): void {
+    this.elements.forEach(item => {
+      if (item.meta.isSelected === true) {
+        item.remove();
+      }
+    });
   }
 
   /**

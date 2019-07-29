@@ -17,21 +17,24 @@ RUN cd /tmp/pandora_agent/unix \
 	&& ./pandora_agent_installer --install
 
 # Set default variables
-ENV SERV_DEST '127.0.0.1'
-ENV REMOTE_CONF '0'
-ENV AGROUP 'Servers'
+ENV SERVER_IP '127.0.0.1'
+ENV REMOTE_CONFIG '0'
+ENV GROUP 'Servers'
 ENV DEBUG '0'
-ENV NAME 'agent_docker'
+ENV AGENT_NAME 'agent_docker'
+ENV AGENT_ALIAS 'agent_docker'
 ENV TIMEZONE 'UTC'
+ENV SECONDARY_GROUPS ''
 
 # Create the entrypoint script.
 RUN echo -e '#/bin/bash\n \
-sed -i "s/^server_ip.*$/server_ip $SERV_DEST/g" /etc/pandora/pandora_agent.conf\n \
-sed -i "s/^remote_config.*$/remote_config $REMOTE_CONF/g" /etc/pandora/pandora_agent.conf\n \
-sed -i "s/^group.*$/group $AGROUP/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^server_ip.*$/server_ip $SERVER_IP/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^remote_config.*$/remote_config $REMOTE_CONFIG/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^group.*$/group $GROUP/g" /etc/pandora/pandora_agent.conf\n \
 sed -i "s/^debug.*$/debug $DEBUG/g" /etc/pandora/pandora_agent.conf\n \
-sed -i "s/^#agent_name.*$/agent_name $NAME/g" /etc/pandora/pandora_agent.conf\n \
-sed -i "s/^#agent_alias.*$/agent_alias $NAME/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^#agent_name.*$/agent_name $AGENT_NAME/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^#agent_alias.*$/agent_alias $AGENT_ALIAS/g" /etc/pandora/pandora_agent.conf\n \
+sed -i "s/^# secondary_groups.*$/secondary_groups $SECONDARY_GROUPS/g" /etc/pandora/pandora_agent.conf\n \
 if [ $TIMEZONE != "" ]; then\n \
 \tln -sfn /usr/share/zoneinfo/$TIMEZONE /etc/localtime\n \
 fi\n \

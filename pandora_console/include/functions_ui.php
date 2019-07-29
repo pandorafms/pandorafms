@@ -48,18 +48,16 @@ if (isset($config['homedir'])) {
  */
 function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
 {
-    $return = io_safe_output($text);
-
     if (array_search('[url]', $allowed_tags) !== false) {
         // If link hasn't http, add it.
-        if (preg_match('/https?:\/\//', $return)) {
+        if (preg_match('/https?:\/\//', $text)) {
             $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="$1">$2</a>';
         } else {
             $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="http://$1">$2</a>';
         }
 
         // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes
-        $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $return);
+        $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $text);
     }
 
     return $return;

@@ -218,15 +218,15 @@ class TreeService extends Tree
                     break;
 
                     case '1':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
                     break;
 
                     case '2':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
                     break;
 
                     case '4':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_down_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
                     break;
 
                     default:

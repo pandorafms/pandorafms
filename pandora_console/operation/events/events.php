@@ -278,7 +278,12 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
-                        $tmp->evento = io_safe_output($tmp->evento);
+                        if (strlen($tmp->evento) >= 255) {
+                            $tmp->evento = io_safe_output(substr($tmp->evento, 0, 253).'...)');
+                        } else {
+                            $tmp->evento = io_safe_output($tmp->evento);
+                        }
+
                         if ($tmp->module_name) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }

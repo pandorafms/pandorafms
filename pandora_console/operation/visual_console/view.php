@@ -167,7 +167,7 @@ if ($pure === false) {
     echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
     html_print_button(
         'delete_item',
-        'button_toolbox2',
+        'button_delete',
         true,
         '',
         'class="sub visual_editor_button_toolbox delete_item delete_min"',
@@ -176,9 +176,9 @@ if ($pure === false) {
     );
     html_print_button(
         'copy_item',
-        'button_toolbox2',
+        'button_copy',
         true,
-        "click_button_toolbox('copy_item');",
+        '',
         'class="sub visual_editor_button_toolbox copy_item delete_min"',
         false,
         true
@@ -386,12 +386,26 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         }
     });
 
-    $(".visual-console-item, .is-editing").bind("click", function(event) {
-        var prueba = event.currentTarget;
-        console.log(prueba);
+    visualConsoleManager.visualConsole.onItemSelectionChanged(function (e) {
+        if (e.selected === true) {
+            $('#button-button_delete').prop('disabled', false);
+            $('#button-button_copy').prop('disabled', false);
+        } else {
+            $('#button-button_delete').prop('disabled', true);
+            $('#button-button_copy').prop('disabled', true);
+        }
     });
 
-    $('#button-button_toolbox2').click(function (event){
-        visualConsoleManager.visualConsole.deleteItem();
+    $('#button-button_delete').click(function (event){
+        // visualConsoleManager.visualConsole.deleteItem();
+        visualConsoleManager.visualConsole.elements.forEach(item => {
+            if (item.meta.isSelected === true) {
+                visualConsoleManager.deleteItem(item);
+            }
+        });
+    });
+
+    $('#button-button_copy').click(function (event){
+        
     });
 </script>

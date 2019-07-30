@@ -375,57 +375,6 @@ function createVisualConsole(
         .init();
     });
 
-    // VC Item remove.
-    visualConsole.onItemRemove(function(e) {
-      var id = e.item.props.id;
-      var data = {
-        type: e.item.props.type
-      };
-      var taskId = "visual-console-item-update-" + id;
-
-      // Persist the new position.
-      asyncTaskManager
-        .add(taskId, function(done) {
-          var abortable = removeVisualConsoleItem(
-            baseUrl,
-            visualConsole.props.id,
-            id,
-            data,
-            function(error, data) {
-              if (error || !data) {
-                console.log(
-                  "[ERROR]",
-                  "[VISUAL-CONSOLE-CLIENT]",
-                  "[API]",
-                  error ? error.message : "Invalid response"
-                );
-
-                // Add the item to the list.
-                visualConsole.elementsById[e.item.props.id] = e.item;
-                visualConsole.elementIds.push(e.item.props.id);
-                // Item event handlers.
-                e.item.onClick(visualConsole.handleElementClick);
-                e.item.onDblClick(visualConsole.handleElementDblClick);
-                e.item.onMoved(visualConsole.handleElementMovement);
-                e.item.onResized(visualConsole.handleElementResizement);
-                e.item.onRemove(visualConsole.handleElementRemove);
-                // Add the item to the DOM.
-                visualConsole.containerRef.append(e.item.elementRef);
-              }
-
-              done();
-            }
-          );
-
-          return {
-            cancel: function() {
-              abortable.abort();
-            }
-          };
-        })
-        .init();
-    });
-
     if (updateInterval != null && updateInterval > 0) {
       // Start an interval to update the Visual Console.
       updateVisualConsole(props.id, updateInterval, updateInterval);
@@ -448,6 +397,48 @@ function createVisualConsole(
         asyncTaskManager.cancel("visual-console");
         asyncTaskManager.cancel("visual-console-start");
       }
+    },
+    deleteItem: function(item) {
+      var aux = item;
+      var id = item.props.id;
+
+      item.remove();
+
+      var taskId = "visual-console-item-update-" + id;
+
+      // Persist the new position.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = removeVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            function(error, data) {
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // Add the item to the list.
+                var itemRetrieved = aux.props;
+                itemRetrieved["receivedAt"] = new Date();
+                visualConsole.addElement(itemRetrieved);
+              }
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
     }
   };
 }
@@ -697,7 +688,7 @@ function getVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function removeVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
+function removeVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var jqXHR = null;
@@ -742,8 +733,7 @@ function removeVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
         page: "include/rest-api/index",
         removeVisualConsoleItem: 1,
         visualConsoleId: vcId,
-        visualConsoleItemId: vcItemId,
-        data: data
+        visualConsoleItemId: vcItemId
       },
       "json"
     )

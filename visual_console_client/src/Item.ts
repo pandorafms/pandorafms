@@ -84,6 +84,10 @@ export interface ItemResizedEvent {
   newSize: Size;
 }
 
+export interface ItemSelectionChangedEvent {
+  selected: boolean;
+}
+
 // TODO: Document
 class LinkInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
@@ -307,6 +311,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // Event manager for remove events.
   private readonly removeEventManager = new TypedEvent<ItemRemoveEvent>();
+  // Event manager for selection change events.
+  private readonly selectionChangedEventManager = new TypedEvent<
+    ItemSelectionChangedEvent
+  >();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -730,6 +738,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       ...newMetadata
     };
 
+    if (
+      typeof newMetadata.isSelected !== "undefined" &&
+      prevMetadata.isSelected !== newMetadata.isSelected
+    ) {
+      this.selectionChangedEventManager.emit({
+        selected: newMetadata.isSelected
+      });
+    }
+
     // From this point, things which rely on this.props can access to the changes.
 
     // Check if we should re-render.
@@ -1089,6 +1106,24 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * call them when the item should be cleared.
      */
     const disposable = this.removeEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to item selection.
+   * @param listener Function which is going to be executed when a item is removed.
+   */
+  public onSeletionChanged(
+    listener: Listener<ItemSelectionChangedEvent>
+  ): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.selectionChangedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

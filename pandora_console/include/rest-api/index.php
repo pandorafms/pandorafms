@@ -121,9 +121,24 @@ if ($getVisualConsole === true) {
         return;
     }
 
+    $itemData = $item->toArray();
+    $itemAclGroupId = $itemData['aclGroupId'];
+
+    $aclWrite = check_acl($config['id_user'], $itemAclGroupId, 'VW');
+    $aclManage = check_acl($config['id_user'], $itemAclGroupId, 'VM');
+
+    // ACL.
+    if (!$aclWrite && !$aclManage) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to delete visual console item without group access'
+        );
+        http_response_code(403);
+        return;
+    }
+
     $data = get_parameter('data');
-    $class = VisualConsole::getItemClass((int) $data['type']);
-    $result = $class::delete($itemId);
+    $result = $item::delete($itemId);
     echo $result;
     return;
 }

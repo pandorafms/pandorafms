@@ -12,7 +12,8 @@ import Item, {
   ItemClickEvent,
   ItemRemoveEvent,
   ItemMovedEvent,
-  ItemResizedEvent
+  ItemResizedEvent,
+  ItemSelectionChangedEvent
 } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
@@ -211,7 +212,9 @@ export default class VisualConsole {
   // Event manager for resize events.
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // Event manager for remove events.
-  private readonly removeEventManager = new TypedEvent<ItemRemoveEvent>();
+  private readonly selectionChangedEventManager = new TypedEvent<
+    ItemSelectionChangedEvent
+  >();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
 
@@ -280,7 +283,21 @@ export default class VisualConsole {
     this.elementIds = this.elementIds.filter(id => id !== e.item.props.id);
     delete this.elementsById[e.item.props.id];
     this.clearRelations(e.item.props.id);
-    this.removeEventManager.emit(e);
+  };
+
+  /**
+   * React to element selection change
+   * @param e Event object.
+   */
+  private handleElementSelectionChanged: (
+    e: ItemSelectionChangedEvent
+  ) => void = e => {
+    if (this.elements.filter(item => item.meta.isSelected == true).length > 0) {
+      e.selected = true;
+    } else {
+      e.selected = false;
+    }
+    this.selectionChangedEventManager.emit(e);
   };
 
   // TODO: Document
@@ -352,6 +369,8 @@ export default class VisualConsole {
       itemInstance.onMoved(context.handleElementMovement);
       itemInstance.onResized(context.handleElementResizement);
       itemInstance.onRemove(context.handleElementRemove);
+      itemInstance.onSeletionChanged(context.handleElementSelectionChanged);
+
       // Add the item to the DOM.
       context.containerRef.append(itemInstance.elementRef);
     } catch (error) {
@@ -763,16 +782,18 @@ export default class VisualConsole {
   }
 
   /**
-   * Add an event handler to the resizement of the visual console elements.
+   * Add an event handler to the elements selection change of the visual console .
    * @param listener Function which is going to be executed when a linked console is moved.
    */
-  public onItemRemove(listener: Listener<ItemRemoveEvent>): Disposable {
+  public onItemSelectionChanged(
+    listener: Listener<ItemSelectionChangedEvent>
+  ): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
      * call them when the item should be cleared.
      */
-    const disposable = this.removeEventManager.on(listener);
+    const disposable = this.selectionChangedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;
@@ -796,17 +817,6 @@ export default class VisualConsole {
       item.meta = { ...item.meta, editMode: false };
     });
     this.containerRef.classList.remove("is-editing");
-  }
-
-  /**
-   * delete item.
-   */
-  public deleteItem(): void {
-    this.elements.forEach(item => {
-      if (item.meta.isSelected === true) {
-        item.remove();
-      }
-    });
   }
 
   /**

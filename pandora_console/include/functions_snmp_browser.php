@@ -96,7 +96,6 @@ function snmp_browser_get_html_tree(
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
-
         // Display the branch.
         $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
 
@@ -174,7 +173,6 @@ function snmp_browser_get_html_tree(
             $last_array,
             $sufix,
             $checked,
-            $return,
             $descriptive_ids,
             $previous_id
         );
@@ -225,7 +223,6 @@ function snmp_browser_print_tree(
         $last_array,
         $sufix,
         $checked,
-        $return,
         $descriptive_ids,
         $previous_id
     );

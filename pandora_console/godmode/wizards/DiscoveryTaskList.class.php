@@ -418,6 +418,7 @@ class DiscoveryTaskList extends Wizard
             $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
+                $no_operations = false;
                 $data = [];
                 $server_name = servers_get_name($task['id_recon_server']);
 
@@ -501,41 +502,71 @@ class DiscoveryTaskList extends Wizard
                     $data[5] = __('Pending');
                 }
 
-                if ($task['id_recon_script'] == 0) {
-                    // Internal discovery task.
-                    switch ($task['type']) {
-                        case DISCOVERY_CLOUD_AWS_RDS:
-                            // Discovery Applications MySQL.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Cloud RDS')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.Cloud.Aws.RDS');
-                        break;
+                switch ($task['type']) {
+                    case DISCOVERY_CLOUD_AZURE_COMPUTE:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/plugin.png',
+                            true,
+                            ['title' => __('Discovery Cloud Azure Compute')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Cloud.Azure.Compute');
+                    break;
 
-                        case DISCOVERY_APP_MYSQL:
-                            // Discovery Applications MySQL.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Applications MySQL')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.App.MySQL');
-                        break;
+                    case DISCOVERY_CLOUD_AWS_EC2:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/plugin.png',
+                            true,
+                            ['title' => __('Discovery Cloud AWS EC2')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Cloud.AWS.EC2');
+                    break;
 
-                        case DISCOVERY_APP_ORACLE:
-                            // Discovery Applications Oracle.
-                            $data[6] = html_print_image(
-                                'images/network.png',
-                                true,
-                                ['title' => __('Discovery Applications Oracle')]
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.App.Oracle');
-                        break;
+                    case DISCOVERY_CLOUD_AWS_RDS:
+                        // Discovery Cloud RDS.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Cloud RDS')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Cloud.Aws.RDS');
+                    break;
 
-                        case DISCOVERY_HOSTDEVICES:
-                        default:
+                    case DISCOVERY_APP_MYSQL:
+                        // Discovery Applications MySQL.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications MySQL')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.MySQL');
+                    break;
+
+                    case DISCOVERY_APP_ORACLE:
+                        // Discovery Applications Oracle.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications Oracle')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.Oracle');
+                    break;
+
+                    case DISCOVERY_DEPLOY_AGENTS:
+                        // Internal deployment task.
+                        $no_operations = true;
+                        $data[6] = html_print_image(
+                            'images/deploy.png',
+                            true,
+                            ['title' => __('Agent deployment')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Agent.Deployment');
+                    break;
+
+                    case DISCOVERY_HOSTDEVICES:
+                    default:
+                        if ($task['id_recon_script'] == 0) {
                             // Discovery NetScan.
                             $data[6] = html_print_image(
                                 'images/network.png',
@@ -550,15 +581,15 @@ class DiscoveryTaskList extends Wizard
                             } else {
                                 $data[6] .= __('Discovery.NetScan');
                             }
-                        break;
-                    }
-                } else {
-                    // APP recon task.
-                    $data[6] = html_print_image(
-                        'images/plugin.png',
-                        true
-                    ).'&nbsp;&nbsp;';
-                    $data[6] .= $recon_script_name;
+                        } else {
+                            // APP or external script recon task.
+                            $data[6] = html_print_image(
+                                'images/plugin.png',
+                                true
+                            ).'&nbsp;&nbsp;';
+                            $data[6] .= $recon_script_name;
+                        }
+                    break;
                 }
 
                 if ($task['status'] <= 0 || $task['status'] > 100) {
@@ -576,71 +607,75 @@ class DiscoveryTaskList extends Wizard
                     $data[8] = __('Not executed yet');
                 }
 
-                if ($task['disabled'] != 2) {
-                    $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
-                    $data[9] .= html_print_image(
-                        'images/eye.png',
-                        true
-                    );
-                    $data[9] .= '</a>';
-                }
-
-                if ($task['disabled'] != 2 && $task['utimestamp'] > 0
-                    && $task['type'] != DISCOVERY_APP_MYSQL
-                    && $task['type'] != DISCOVERY_APP_ORACLE
-                    && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
-                ) {
-                    $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
-                    $data[9] .= html_print_image(
-                        'images/dynamic_network_icon.png',
-                        true
-                    );
-                    $data[9] .= '</a>';
-                }
-
-                if (check_acl(
-                    $config['id_user'],
-                    $task['id_group'],
-                    'PM'
-                )
-                ) {
-                    if ($ipam === true) {
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            sprintf(
-                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
-                                $tipam_task_id
-                            )
-                        ).'">'.html_print_image(
-                            'images/config.png',
+                if (!$no_operations) {
+                    if ($task['disabled'] != 2) {
+                        $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] .= html_print_image(
+                            'images/eye.png',
                             true
-                        ).'</a>';
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
-                        ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                            'images/cross.png',
+                        );
+                        $data[9] .= '</a>';
+                    }
+
+                    if ($task['disabled'] != 2 && $task['utimestamp'] > 0
+                        && $task['type'] != DISCOVERY_APP_MYSQL
+                        && $task['type'] != DISCOVERY_APP_ORACLE
+                        && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                    ) {
+                        $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] .= html_print_image(
+                            'images/dynamic_network_icon.png',
                             true
-                        ).'</a>';
+                        );
+                        $data[9] .= '</a>';
+                    }
+
+                    if (check_acl(
+                        $config['id_user'],
+                        $task['id_group'],
+                        'PM'
+                    )
+                    ) {
+                        if ($ipam === true) {
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                sprintf(
+                                    'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
+                                    $tipam_task_id
+                                )
+                            ).'">'.html_print_image(
+                                'images/config.png',
+                                true
+                            ).'</a>';
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
+                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                'images/cross.png',
+                                true
+                            ).'</a>';
+                        } else {
+                            // Check if is a H&D, Cloud or Application or IPAM.
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                sprintf(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
+                                    $this->getTargetWiz($task, $recon_script_data),
+                                    $task['id_rt']
+                                )
+                            ).'">'.html_print_image(
+                                'images/config.png',
+                                true
+                            ).'</a>';
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
+                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                'images/cross.png',
+                                true
+                            ).'</a>';
+                        }
                     } else {
-                        // Check if is a H&D, Cloud or Application or IPAM.
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            sprintf(
-                                'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
-                                $this->getTargetWiz($task, $recon_script_data),
-                                $task['id_rt']
-                            )
-                        ).'">'.html_print_image(
-                            'images/config.png',
-                            true
-                        ).'</a>';
-                        $data[9] .= '<a href="'.ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
-                        ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                            'images/cross.png',
-                            true
-                        ).'</a>';
+                        $data[9] = '';
                     }
                 } else {
-                    $data[9] = '';
+                    $data[9] = '-';
                 }
 
                 $table->cellclass[][9] = 'action_buttons';
@@ -699,7 +734,16 @@ class DiscoveryTaskList extends Wizard
         if ($script !== false) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_CLOUD_AWS:
-                return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
+                    switch ($task['type']) {
+                        case DISCOVERY_CLOUD_AWS_EC2:
+                        return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&page=1';
+
+                        case DISCOVERY_CLOUD_AZURE_COMPUTE:
+                        return 'wiz=cloud&mode=azure&ki='.$task['auth_strings'].'&sub=compute&page=0';
+
+                        default:
+                        return 'wiz=cloud';
+                    }
 
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';

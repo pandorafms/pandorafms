@@ -304,6 +304,11 @@ fsnmp /usr/bin/pandorafsnmp
 
 autocreate_group 10
 
+# If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
+# If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).
+
+autocreate_group_force 1
+
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable (for security purposes, for example).
 
@@ -601,6 +606,9 @@ syslog_threads 2
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
 
+# Sync Server
+#syncserver
+
 # Port tentacle server
 #sync_port 41121
 
@@ -619,7 +627,7 @@ syslog_max 65535
 # Sync timeout
 #sync_timeout 10
 
-# Address 
+# Address
 # sync_address
 
 # Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch

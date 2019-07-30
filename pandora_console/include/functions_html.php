@@ -77,8 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre>'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info.'</pre>';
-        echo '<pre>';
+        echo '<pre style="z-index: 10000; background: #fff; padding: 1em;">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -3071,11 +3070,13 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
 /**
  * Print input using functions html lib.
  *
- * @param array $data Input definition.
+ * @param array   $data       Input definition.
+ * @param string  $wrapper    Wrapper 'div' or 'li'.
+ * @param boolean $input_only Return or print only input or also label.
  *
  * @return string HTML code for desired input.
  */
-function html_print_input($data)
+function html_print_input($data, $wrapper='div', $input_only=false)
 {
     if (is_array($data) === false) {
         return '';
@@ -3083,8 +3084,8 @@ function html_print_input($data)
 
     $output = '';
 
-    if ($data['label']) {
-        $output = '<div id="div-'.$data['name'].'" ';
+    if ($data['label'] && $input_only === false) {
+        $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
         $output .= '<label class="'.$data['label_class'].'">';
         $output .= $data['label'];
@@ -3169,17 +3170,6 @@ function html_print_input($data)
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
-            );
-        break;
-
-        case 'image':
-            $output .= html_print_input_image(
-                $data['name'],
-                $data['src'],
-                $data['value'],
-                ((isset($data['style']) === true) ? $data['style'] : ''),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['options']) === true) ? $data['options'] : false)
             );
         break;
 
@@ -3287,13 +3277,13 @@ function html_print_input($data)
         break;
 
         case 'submit':
-            $output .= '<div class="action-buttons" style="width: 100%">'.html_print_submit_button(
+            $output .= '<'.$wrapper.' class="action-buttons" style="width: 100%">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false)
-            ).'</div>';
+            ).'</'.$wrapper.'>';
         break;
 
         case 'checkbox':
@@ -3336,20 +3326,33 @@ function html_print_input($data)
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['class']) === true) ? $data['class'] : '')
             );
+        break;
+
+        case 'button':
+            $output .= html_print_button(
+                ((isset($data['label']) === true) ? $data['label'] : 'OK'),
+                ((isset($data['name']) === true) ? $data['name'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['imageButton']) === true) ? $data['imageButton'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : '')
+            );
+        break;
 
         default:
             // Ignore.
         break;
     }
 
-    if ($data['label']) {
-        $output .= '</div>';
+    if ($data['label'] && $input_only === false) {
+        $output .= '</'.$wrapper.'>';
         if (!$data['return']) {
-            echo '</div>';
+            echo '</'.$wrapper.'>';
         }
     }
 
     return $output;
 }
-
-

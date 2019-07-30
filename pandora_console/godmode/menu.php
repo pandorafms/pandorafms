@@ -24,9 +24,24 @@ $menu_godmode['class'] = 'godmode';
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $sub = [];
-    $sub['godmode/servers/discovery']['text'] = __('Discovery');
-    $sub['godmode/servers/discovery']['id'] = 'Discovery';
-    $sub['godmode/servers/discovery']['subsecs'] = ['godmode/servers/discovery'];
+    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Main');
+    $sub['godmode/servers/discovery&wiz=main']['id'] = 'Discovery';
+
+    $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
+    $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';
+
+    $sub2 = [];
+    $sub2['godmode/servers/discovery&wiz=hd&mode=netscan']['text'] = __('Network scan');
+    enterprise_hook('hostdevices_submenu');
+    $sub2['godmode/servers/discovery&wiz=hd&mode=customnetscan']['text'] = __('Custom network scan');
+    $sub2['godmode/servers/discovery&wiz=hd&mode=managenetscanscripts']['text'] = __('Manage scan scripts');
+    $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
+    $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
+    $sub['godmode/servers/discovery&wiz=hd']['sub2'] = $sub2;
+
+    enterprise_hook('applications_menu');
+    enterprise_hook('cloud_menu');
+    enterprise_hook('console_task_menu');
 
     // Add to menu.
     $menu_godmode['discovery']['text'] = __('Discovery');
@@ -114,6 +129,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/modules/manage_network_templates']['id'] = 'Module templates';
     enterprise_hook('inventory_submenu');
     enterprise_hook('autoconfiguration_menu');
+    enterprise_hook('agent_repository_menu');
 }
 
 if (check_acl($config['id_user'], 0, 'AW')) {

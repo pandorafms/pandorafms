@@ -334,6 +334,50 @@ if (is_ajax()) {
     exit;
 }
 
+/*
+ * Load user default form.
+ */
+
+$user_filter = db_get_row_sql(
+    sprintf(
+        'SELECT f.id_filter, f.id_name
+         FROM tevent_filter f
+         INNER JOIN tusuario u
+             ON u.default_event_filter=f.id_filter
+         WHERE u.id_user = "%s" ',
+        $config['id_user']
+    )
+);
+if ($user_filter !== false) {
+    $filter = events_get_event_filter($user_filter['id_filter']);
+    if ($filter !== false) {
+        $id_group = $filter['id_group'];
+        $event_type = $filter['event_type'];
+        $severity = $filter['severity'];
+        $status = $filter['status'];
+        $search = $filter['search'];
+        $text_agent = $filter['text_agent'];
+        $id_agent = $filter['id_agent'];
+        $id_agent_module = $filter['id_agent_module'];
+        $pagination = $filter['pagination'];
+        $event_view_hr = $filter['event_view_hr'];
+        $id_user_ack = $filter['id_user_ack'];
+        $group_rep = $filter['group_rep'];
+        $tag_with = json_decode(io_safe_output($filter['tag_with']));
+        $tag_without = json_decode(io_safe_output($filter['tag_without']));
+
+        $tag_with_base64 = base64_encode(json_encode($tag_with));
+        $tag_without_base64 = base64_encode(json_encode($tag_without));
+
+        $filter_only_alert = $filter['filter_only_alert'];
+        $id_group_filter = $filter['id_group_filter'];
+        $date_from = $filter['date_from'];
+        $date_to = $filter['date_to'];
+        $source = $filter['source'];
+        $id_extra = $filter['id_extra'];
+        $user_comment = $filter['user_comment'];
+    }
+}
 
 // TAGS.
 // Get the tags where the user have permissions in Events reading tasks.
@@ -733,47 +777,6 @@ if (is_metaconsole() !== true) {
         } else {
             $readonly = true;
         }
-    }
-}
-
-/*
- * Load user default form.
- */
-
-$user_filter = db_get_row_sql(
-    sprintf(
-        'SELECT f.id_filter, f.id_name
-         FROM tevent_filter f
-         INNER JOIN tusuario u
-             ON u.default_event_filter=f.id_filter
-         WHERE u.id_user = "%s" ',
-        $config['id_user']
-    )
-);
-if ($user_filter !== false) {
-    $filter = events_get_event_filter($user_filter['id_filter']);
-    if ($filter !== false) {
-        $id_group = $filter['id_group'];
-        $event_type = $filter['event_type'];
-        $severity = $filter['severity'];
-        $status = $filter['status'];
-        $search = $filter['search'];
-        $text_agent = $filter['text_agent'];
-        $id_agent = $filter['id_agent'];
-        $id_agent_module = $filter['id_agent_module'];
-        $pagination = $filter['pagination'];
-        $event_view_hr = $filter['event_view_hr'];
-        $id_user_ack = $filter['id_user_ack'];
-        $group_rep = $filter['group_rep'];
-        $tag_with = $filter['tag_with'];
-        $tag_without = $filter['tag_without'];
-        $filter_only_alert = $filter['filter_only_alert'];
-        $id_group_filter = $filter['id_group_filter'];
-        $date_from = $filter['date_from'];
-        $date_to = $filter['date_to'];
-        $source = $filter['source'];
-        $id_extra = $filter['id_extra'];
-        $user_comment = $filter['user_comment'];
     }
 }
 
@@ -1466,6 +1469,11 @@ echo "<div id='event_response_command_window' title='".__('Parameters')."'></div
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display: none"></div>';
 echo '<div id="save-modal-filter" style="display: none"></div>';
+
+if ($_GET['refr'] || $do_refresh === true) {
+    $autorefresh_draw = true;
+}
+
 ?>
 <script type="text/javascript">
 var loading = 0;
@@ -1545,6 +1553,21 @@ function process_datatables_callback(table, settings) {
 
         })
     }
+
+    var autorefresh_draw = '<?php echo $autorefresh_draw; ?>';
+    if (autorefresh_draw == true){
+        $("#refrcounter").countdown('change', {
+            until: countdown_repeat()
+        });
+
+        function countdown_repeat() {
+            var until_time = new Date();
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            return until_time;
+        }
+
+    }
+
 }
 
 function process_datatables_item(item) {

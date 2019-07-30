@@ -122,7 +122,6 @@ if (is_ajax()) {
     exit();
 }
 
-
 ui_require_css_file('register');
 
 $initial = isset($config['initial_wizard']) !== true
@@ -150,25 +149,26 @@ if ($initial && users_is_admin()) {
     );
 }
 
-if ($registration && users_is_admin()) {
-    // Prepare registration wizard, not launch. leave control to flow.
-    registration_wiz_modal(
-        false,
-        // Launch only if not being launch from 'initial'.
-        !$initial,
-        (($show_newsletter === true) ? 'force_run_newsletter()' : null)
-    );
-} else {
-    if ($show_newsletter) {
-        // Show newsletter wizard for current user.
-        newsletter_wiz_modal(
+if (!$config['disabled_newsletter']) {
+    if ($registration && users_is_admin()) {
+        // Prepare registration wizard, not launch. leave control to flow.
+        registration_wiz_modal(
             false,
-            // Launch only if not being call from 'registration'.
-            !$registration && !$initial
+            // Launch only if not being launch from 'initial'.
+            !$initial,
+            (($show_newsletter === true) ? 'force_run_newsletter()' : null)
         );
+    } else {
+        if ($show_newsletter) {
+            // Show newsletter wizard for current user.
+            newsletter_wiz_modal(
+                false,
+                // Launch only if not being call from 'registration'.
+                !$registration && !$initial
+            );
+        }
     }
 }
-
 
 $newsletter = null;
 

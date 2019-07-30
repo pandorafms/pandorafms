@@ -159,6 +159,16 @@ $table_styles->data[$row][1] = html_print_select(
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'status_set_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
+// Divs to show icon status Colours (Default)
+$icon_unknown_ball = ui_print_status_image(STATUS_AGENT_UNKNOWN_BALL, '', true);
+$icon_unknown = ui_print_status_image(STATUS_AGENT_UNKNOWN, '', true);
+$icon_ok_ball = ui_print_status_image(STATUS_AGENT_OK_BALL, '', true);
+$icon_ok = ui_print_status_image(STATUS_AGENT_OK, '', true);
+$icon_warning_ball = ui_print_status_image(STATUS_AGENT_WARNING_BALL, '', true);
+$icon_warning = ui_print_status_image(STATUS_AGENT_WARNING, '', true);
+$icon_bad_ball = ui_print_status_image(STATUS_AGENT_CRITICAL_BALL, '', true);
+$icon_bad = ui_print_status_image(STATUS_AGENT_CRITICAL, '', true);
+// End - Divs to show icon status Colours (Default)
 $table_styles->data[$row][0] = __('Login background').ui_print_help_tip(__('You can place your custom images into the folder images/backgrounds/'), true);
 $backgrounds_list_jpg = list_files('images/backgrounds', 'jpg', 1, 0);
 $backgrounds_list_gif = list_files('images/backgrounds', 'gif', 1, 0);
@@ -1495,7 +1505,7 @@ $(document).ready (function () {
             .prop('checked');
         display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().parent().attr('id'));
     });
-    $(".databox.filters").css('margin-bottom','-10px');
+    $(".databox.filters").css('margin-bottom','0px');
 });
 
 // Change the favicon preview when is changed
@@ -1634,6 +1644,17 @@ $("#button-status_set_preview").click (function (e) {
     $icon_warning = $("<img src=\"" + icon_path + "agent_warning.png\">");
     $icon_bad_ball = $("<img src=\"" + icon_path + "agent_critical_ball.png\">");
     $icon_bad = $("<img src=\"" + icon_path + "agent_critical.png\">");
+
+    if(icon_dir == 'default'){
+        $icon_unknown_ball = '<?php echo $icon_unknown_ball; ?>';
+        $icon_unknown = '<?php echo $icon_unknown; ?>';
+        $icon_ok_ball = '<?php echo $icon_ok_ball; ?>';
+        $icon_ok = '<?php echo $icon_ok; ?>';
+        $icon_warning_ball = '<?php echo $icon_warning_ball; ?>';
+        $icon_warning = '<?php echo $icon_warning; ?>';
+        $icon_bad_ball = '<?php echo $icon_bad_ball; ?>';
+        $icon_bad = '<?php echo $icon_bad; ?>';
+    }
 
     try {
         $dialog

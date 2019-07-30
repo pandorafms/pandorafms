@@ -1,4 +1,6 @@
 /**
+ * Exclude css from visual styles
+ *
  * Extension to manage a list of gateways and the node address where they should
  * point to.
  *

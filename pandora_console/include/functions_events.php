@@ -25,13 +25,17 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
+enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
+enterprise_include_once('meta/include/functions_events_meta.php');
 
 
 /**
@@ -1206,12 +1210,12 @@ function events_get_all(
 
     $server_join = '';
     if (is_metaconsole()) {
-        $server_join = ' LEFT JOIN tmetaconsole_setup ts
-            ON ts.id = te.server_id';
+        $server_join = ' INNER JOIN tmetaconsole_setup ts
+            ON ts.id = te.server_id AND ts.server_name = ta.server_name';
         if (!empty($filter['server_id'])) {
             $server_join = sprintf(
-                ' LEFT JOIN tmetaconsole_setup ts
-                  ON ts.id = te.server_id AND ts.id= %d',
+                ' INNER JOIN tmetaconsole_setup ts
+                  ON ts.id = te.server_id AND ts.server_name = ta.server_name AND ts.id= %d',
                 $filter['server_id']
             );
         }
@@ -1687,7 +1691,7 @@ function events_change_status(
         $ack_user = $config['id_user'];
     } else {
         $acl_utimestamp = 0;
-        $ack_user = '';
+        $ack_user = $config['id_user'];
     }
 
     switch ($new_status) {
@@ -4398,6 +4402,8 @@ function events_page_general($event)
         $data[1] = $user_owner;
     }
 
+    $table_general->cellclass[3][1] = 'general_owner';
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -4464,6 +4470,8 @@ function events_page_general($event)
     } else {
         $data[1] = '<i>'.__('N/A').'</i>';
     }
+
+    $table_general->cellclass[7][1] = 'general_status';
 
     $table_general->data[] = $data;
 
@@ -4848,10 +4856,6 @@ function events_get_count_events_by_agent(
 
     $tagente = 'tagente';
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tagente = 'tmetaconsole_agent';
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT id_agente,
@@ -4861,7 +4865,7 @@ function events_get_count_events_by_agent(
 		COUNT(*) AS count
 		FROM %s t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) %s 
+			AND id_grupo IN (%s) 
 		GROUP BY id_agente',
         $tagente,
         $tevento,
@@ -5028,9 +5032,6 @@ function events_get_count_events_validated_by_user(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT id_usuario,
@@ -5206,9 +5207,6 @@ function events_get_count_events_by_criticity(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT criticity,
@@ -5414,9 +5412,6 @@ function events_get_count_events_validated(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf('SELECT estado, COUNT(*) AS count FROM %s WHERE %s %s GROUP BY estado', $tevento, $sql_filter, $sql_where);
 

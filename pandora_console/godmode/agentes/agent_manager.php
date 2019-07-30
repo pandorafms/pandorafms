@@ -524,8 +524,10 @@ if (enterprise_installed()) {
         );
         $safe_mode_modules = [];
         $safe_mode_modules[0] = __('Any');
-        foreach ($sql_modules as $m) {
-            $safe_mode_modules[$m['id_module']] = $m['name'];
+        if (is_array($sql_modules)) {
+            foreach ($sql_modules as $m) {
+                $safe_mode_modules[$m['id_module']] = $m['name'];
+            }
         }
 
         $table_adv_safe = '<div class="label_select_simple label_simple_items"><p class="input_label input_label_simple">'.__('Safe operation mode').': '.ui_print_help_tip(

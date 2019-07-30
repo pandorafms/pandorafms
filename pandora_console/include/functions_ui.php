@@ -3094,38 +3094,7 @@ function ui_print_datatable(array $parameters)
         $filter .= '<ul class="datatable_filter content">';
 
         foreach ($parameters['form']['inputs'] as $input) {
-            $filter .= '<li>';
-            $filter .= '<label>'.$input['label'].'</label>';
-            if ($input['type'] != 'select') {
-                $filter .= '<input type="'.$input['type'].'" ';
-                $filter .= ' style="'.$input['style'].'" ';
-                $filter .= ' class="'.$input['class'].'" ';
-                $filter .= ' value="'.$input['value'].'" ';
-                $filter .= ' name="'.$input['name'].'" id="'.$input['id'].'" />';
-            } else {
-                // Select.
-                $filter .= '<select class="'.$input['class'].'"';
-                $filter .= ' style="'.$input['style'].'" ';
-                $filter .= ' name="'.$input['name'].'" ';
-                $filter .= 'id="'.$input['id'].'">';
-
-                foreach ($input['options'] as $key => $opt) {
-                    if (is_array($opt)) {
-                        $filter .= '<option value="'.$opt['value'].'"';
-                        if ($opt['selected']) {
-                            $filter .= ' selected="yes" >';
-                        }
-
-                        $filter .= __($opt['text']).'</option>';
-                    } else {
-                        $filter .= '<option value="'.$key.'">'.$opt.'</option>';
-                    }
-                }
-
-                $filter .= '</select>';
-            }
-
-            $filter .= '</li>';
+            $filter .= html_print_input(($input + ['return' => true]), 'li');
         }
 
         $filter .= '<li>';
@@ -3801,7 +3770,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $fullurl = $config['public_url'];
             if ($url == 'index.php' && is_metaconsole()) {
                 $fullurl .= '/'.ENTERPRISE_DIR.'/meta';
-            } 
+            }
         } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {

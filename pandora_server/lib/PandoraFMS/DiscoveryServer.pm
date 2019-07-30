@@ -65,7 +65,8 @@ use constant {
 sub new ($$$$$$) {
     my ($class, $config, $dbh) = @_;
     
-    return undef unless $config->{'reconserver'} == 1 || $config->{'discoveryserver'} == 1;
+    return undef unless (defined($config->{'reconserver'}) && $config->{'reconserver'} == 1)
+     || (defined($config->{'discoveryserver'}) && $config->{'discoveryserver'} == 1);
     
     if (! -e $config->{'nmap'}) {
         logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);
@@ -227,6 +228,7 @@ sub data_consumer ($$) {
             server_id => $server_id,
             %{$pa_config},
             task_data => $task,
+            public_url => PandoraFMS::Config::pandora_get_tconfig_token($dbh, 'public_url', ''),
             %cnf_extra
         );
 
@@ -237,6 +239,12 @@ sub data_consumer ($$) {
         && -f $cnf_extra{'creds_file'}) {
 			unlink($cnf_extra{'creds_file'});
 		}
+
+
+        # Clean one shot tasks
+        if ($task->{'type'} eq DISCOVERY_DEPLOY_AGENTS) {
+            db_delete_limit($dbh, ' trecon_task ', ' id_rt = ? ', 1, $task->{'id_rt'});   
+        }
     };
     if ($@) {
         logger(
@@ -347,9 +355,10 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 
     # Use xprobe2 if available
     if (-e $self->{pa_config}->{xprobe2}) {
-            my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
-            return OS_OTHER if ($? != 0);
+        my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
+        if ($? == 0) {
             return pandora_get_os($self->{'dbh'}, $output);
+        }
     }
     
     # Use nmap by default

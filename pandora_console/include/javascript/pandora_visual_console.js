@@ -168,22 +168,36 @@ function createVisualConsole(
         visualConsole.selectItem(props.id, true);
 
         var formContainer = item.getFormContainer();
-        // var formContainer = VisualConsole.items[props.type].getFormContainer(
-        //   props
-        // );
-        var formElement = formContainer.getFormElement();
-        var $formElement = jQuery(formElement);
-
         formContainer.onInputGroupDataRequested(function(e) {
           var identifier = e.identifier;
           var params = e.params;
           var done = e.done;
 
           switch (identifier) {
+            case "parent":
+              var options = visualConsole.elements
+                .filter(function(item) {
+                  return item.props.id !== params.id;
+                })
+                .map(function(item) {
+                  return {
+                    value: item.props.id,
+                    text: VisualConsole.itemDescriptiveName(item)
+                  };
+                });
+
+              done(null, options);
+              break;
             default:
               done(new Error("identifier not found"));
           }
         });
+        // var formContainer = VisualConsole.items[props.type].getFormContainer(
+        //   props
+        // );
+        var formElement = formContainer.getFormElement();
+        var $formElement = jQuery(formElement);
+
         formContainer.onSubmit(function(e) {
           // Send the update.
           var id = props.id;

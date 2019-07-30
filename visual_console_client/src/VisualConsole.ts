@@ -1,10 +1,12 @@
-import { AnyObject, Size, Position } from "./lib/types";
+import { AnyObject, Size, Position, WithModuleProps } from "./lib/types";
 import {
   parseBoolean,
   sizePropsDecoder,
   parseIntOr,
   notEmptyStringOr,
-  itemMetaDecoder
+  itemMetaDecoder,
+  t,
+  ellipsize
 } from "./lib";
 import Item, {
   ItemType,
@@ -908,4 +910,75 @@ export default class VisualConsole {
     [ItemType.CLOCK]: Clock,
     [ItemType.COLOR_CLOUD]: ColorCloud
   };
+
+  /**
+   * Relying type item and srcimg and agent and module
+   * name convert name item representative.
+   *
+   * @param item Instance item from extract name.
+   *
+   * @return Name item.
+   */
+  public static itemDescriptiveName(item: Item<ItemProps>): string {
+    let text: string;
+    switch (item.props.type) {
+      case ItemType.STATIC_GRAPH:
+        text = `${t("Static graph")} - ${(item as StaticGraph).props.imageSrc}`;
+        break;
+      case ItemType.MODULE_GRAPH:
+        text = t("Module graph");
+        break;
+      case ItemType.CLOCK:
+        text = t("Clock");
+        break;
+      case ItemType.BARS_GRAPH:
+        text = t("Bars graph");
+        break;
+      case ItemType.AUTO_SLA_GRAPH:
+        text = t("Auto SLA Graph");
+        break;
+      case ItemType.PERCENTILE_BAR:
+        text = t("Percentile bar");
+        break;
+      case ItemType.CIRCULAR_PROGRESS_BAR:
+        text = t("Circular progress bar");
+        break;
+      case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+        text = t("Circular progress bar (interior)");
+        break;
+      case ItemType.SIMPLE_VALUE:
+        text = t("Simple Value");
+        break;
+      case ItemType.LABEL:
+        text = t("Label");
+        break;
+      case ItemType.GROUP_ITEM:
+        text = t("Group");
+        break;
+      case ItemType.COLOR_CLOUD:
+        text = t("Color cloud");
+        break;
+      case ItemType.ICON:
+        text = `${t("Icon")} - ${(item as Icon).props.imageSrc}`;
+        break;
+      default:
+        text = t("Item");
+        break;
+    }
+
+    const linkedAgentAndModuleProps = item.props as Partial<WithModuleProps>;
+    if (
+      linkedAgentAndModuleProps.agentAlias != null &&
+      linkedAgentAndModuleProps.moduleName != null
+    ) {
+      text += ` (${ellipsize(
+        linkedAgentAndModuleProps.agentAlias,
+        18
+      )} - ${ellipsize(linkedAgentAndModuleProps.moduleName, 25)})`;
+    } else if (linkedAgentAndModuleProps.agentAlias != null) {
+      text += ` (${ellipsize(linkedAgentAndModuleProps.agentAlias, 25)})`;
+    }
+
+    return text;
+  }
 }

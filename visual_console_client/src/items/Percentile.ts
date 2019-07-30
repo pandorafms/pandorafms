@@ -347,7 +347,7 @@ class ValueColorInputGroup extends InputGroup<Partial<PercentileProps>> {
 /**
  * Class to add item to the percentile item form
  * This item consists of a label and a color type input.
- * label is stored in the unit property
+ * label is stored in the label property
  */
 class LabelPercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
@@ -358,13 +358,13 @@ class LabelPercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
     labelPercentileInput.type = "text";
     labelPercentileInput.required = true;
 
-    labelPercentileInput.value = `${this.currentData.unit ||
-      this.currentData.unit ||
+    labelPercentileInput.value = `${this.currentData.label ||
+      this.currentData.label ||
       ""} `;
 
     labelPercentileInput.addEventListener("change", e => {
       this.updateData({
-        unit: (e.target as HTMLInputElement).value
+        label: (e.target as HTMLInputElement).value
       });
     });
 

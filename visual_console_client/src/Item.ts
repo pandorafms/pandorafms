@@ -22,6 +22,7 @@ import {
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { FormContainer, InputGroup } from "./Form";
+import { isObject } from "util";
 
 // Enum: https://www.typescriptlang.org/docs/handbook/enums.html.
 export const enum ItemType {
@@ -235,6 +236,51 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
     sizeLabel.appendChild(sizeInputHeight);
 
     return sizeLabel;
+  }
+}
+
+/**
+ * Class to add item to the static Graph item form
+ * This item consists of a label and a color type select.
+ * Show Last Value is stored in the showLastValueTooltip property
+ */
+class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const parentLabel = document.createElement("label");
+    parentLabel.textContent = t("Parent");
+
+    const parentSelect = document.createElement("select");
+    parentSelect.required = true;
+
+    this.requestData("parent", { id: this.initialData.id }, (error, data) => {
+      const optionElement = document.createElement("option");
+      optionElement.value = "0";
+      optionElement.textContent = t("None");
+      parentSelect.appendChild(optionElement);
+
+      if (data instanceof Array) {
+        data.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option.value;
+          optionElement.textContent = option.text;
+          parentSelect.appendChild(optionElement);
+        });
+      }
+
+      parentSelect.addEventListener("change", event => {
+        this.updateData({
+          parentId: parseIntOr((event.target as HTMLSelectElement).value, 0)
+        });
+      });
+
+      parentSelect.value = `${this.currentData.parentId ||
+        this.initialData.parentId ||
+        0}`;
+    });
+
+    parentLabel.appendChild(parentSelect);
+
+    return parentLabel;
   }
 }
 
@@ -1137,9 +1183,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new PositionInputGroup("position", this.props),
         new SizeInputGroup("size", this.props),
         new LinkInputGroup("link", this.props),
-        new OnTopInputGroup("show-on-top", this.props)
+        new OnTopInputGroup("show-on-top", this.props),
+        new ParentInputGroup("parent", this.props)
       ],
-      ["position", "size", "link", "show-on-top"]
+      ["position", "size", "link", "show-on-top", "parent"]
     );
 
     //return VisualConsoleItem.getFormContainer(this.props);
@@ -1153,9 +1200,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new PositionInputGroup("position", props),
         new SizeInputGroup("size", props),
         new LinkInputGroup("link", props),
-        new OnTopInputGroup("show-on-top", props)
+        new OnTopInputGroup("show-on-top", props),
+        new ParentInputGroup("parent", props)
       ],
-      ["position", "size", "link", "show-on-top"]
+      ["position", "size", "link", "show-on-top", "parent"]
     );
   }
 }

@@ -836,6 +836,10 @@ class Item extends CachedModel
      */
     protected static function fetchAgentDataFromDB(array $itemData): array
     {
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
+
         $agentData = [];
 
         // We should add the metaconsole Id if we can.
@@ -887,7 +891,7 @@ class Item extends CachedModel
         $agentData['agentDescription'] = $agent['comentarios'];
         $agentData['agentAddress'] = $agent['direccion'];
 
-        return $agentData;
+        return \io_safe_output($agentData);
     }
 
 
@@ -903,6 +907,10 @@ class Item extends CachedModel
      */
     protected static function fetchModuleDataFromDB(array $itemData): array
     {
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
+
         // Load side libraries.
         if (\is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
@@ -961,7 +969,7 @@ class Item extends CachedModel
         $moduleData['moduleName'] = $moduleName['nombre'];
         $moduleData['moduleDescription'] = $moduleName['descripcion'];
 
-        return $moduleData;
+        return \io_safe_output($moduleData);
     }
 
 

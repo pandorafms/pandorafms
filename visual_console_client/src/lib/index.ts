@@ -765,3 +765,19 @@ export function helpTip(text: string): HTMLElement {
 
   return container;
 }
+
+/**
+ * Cuts the text if their length is greater than the selected max length
+ * and applies the selected ellipse to the result text.
+ * @param {string} str Text to cut
+ * @param {number} max Maximum length after cutting the text
+ * @param {string} ellipse String to be added to the cutted text
+ * @returns {string} Full text or text cutted with the ellipse
+ */
+export function ellipsize(
+  str: string,
+  max: number = 140,
+  ellipse: string = "…"
+): string {
+  return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
+}

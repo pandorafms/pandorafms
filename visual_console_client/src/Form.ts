@@ -1,11 +1,11 @@
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
-import { AnyObject } from "./lib/types";
+import { AnyObject, UnknownObject } from "./lib/types";
 import { t } from "./lib";
 
-interface InputGroupDataRequestedEvent<T> {
+interface InputGroupDataRequestedEvent {
   identifier: string;
-  params: AnyObject;
-  done: (error: Error | null, data?: T | null) => void;
+  params: UnknownObject;
+  done: (error: Error | null, data?: unknown) => void;
 }
 
 // TODO: Document
@@ -16,7 +16,7 @@ export abstract class InputGroup<Data extends {} = {}> {
   protected currentData: Partial<Data> = {};
   // Event manager for data requests.
   private readonly dataRequestedEventManager = new TypedEvent<
-    InputGroupDataRequestedEvent<Partial<Data>>
+    InputGroupDataRequestedEvent
   >();
 
   public constructor(name: string, initialData: Data) {
@@ -70,14 +70,14 @@ export abstract class InputGroup<Data extends {} = {}> {
 
   protected requestData(
     identifier: string,
-    params: AnyObject,
-    done: (error: Error | null, data?: Partial<Data> | null) => void
+    params: UnknownObject,
+    done: (error: Error | null, data?: unknown) => void
   ): void {
     this.dataRequestedEventManager.emit({ identifier, params, done });
   }
 
   public onDataRequested(
-    listener: Listener<InputGroupDataRequestedEvent<Partial<Data>>>
+    listener: Listener<InputGroupDataRequestedEvent>
   ): Disposable {
     return this.dataRequestedEventManager.on(listener);
   }
@@ -101,7 +101,7 @@ export class FormContainer {
   private readonly submitEventManager = new TypedEvent<SubmitFormEvent>();
   // Event manager for item data requests.
   private readonly itemDataRequestedEventManager = new TypedEvent<
-    InputGroupDataRequestedEvent<Partial<{}>>
+    InputGroupDataRequestedEvent
   >();
   private handleItemDataRequested = this.itemDataRequestedEventManager.emit;
 
@@ -253,7 +253,7 @@ export class FormContainer {
   }
 
   public onInputGroupDataRequested(
-    listener: Listener<InputGroupDataRequestedEvent<Partial<{}>>>
+    listener: Listener<InputGroupDataRequestedEvent>
   ): Disposable {
     return this.itemDataRequestedEventManager.on(listener);
   }

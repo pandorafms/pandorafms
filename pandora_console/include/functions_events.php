@@ -217,7 +217,7 @@ function events_get_all_fields()
  *
  * @return string Traduction.
  */
-function events_get_column_name($field)
+function events_get_column_name($field, $table_alias=false)
 {
     switch ($field) {
         case 'id_evento':
@@ -293,7 +293,11 @@ function events_get_column_name($field)
         return __('Options');
 
         case 'mini_severity':
-        return 'S';
+            if ($table_alias === true) {
+                return 'S';
+            } else {
+                return __('Severity mini');
+            }
 
         default:
         return __($field);
@@ -308,7 +312,7 @@ function events_get_column_name($field)
  *
  * @return array Names array.
  */
-function events_get_column_names($fields)
+function events_get_column_names($fields, $table_alias=false)
 {
     if (!isset($fields) || !is_array($fields)) {
         return [];
@@ -318,14 +322,14 @@ function events_get_column_names($fields)
     foreach ($fields as $f) {
         if (is_array($f)) {
             $name = [];
-            $name['text'] = events_get_column_name($f['text']);
+            $name['text'] = events_get_column_name($f['text'], $table_alias);
             $name['class'] = $f['class'];
             $name['style'] = $f['style'];
             $name['extra'] = $f['extra'];
             $name['id'] = $f['id'];
             $names[] = $name;
         } else {
-            $names[] = events_get_column_name($f);
+            $names[] = events_get_column_name($f, $table_alias);
         }
     }
 

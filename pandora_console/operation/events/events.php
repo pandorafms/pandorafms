@@ -1258,7 +1258,7 @@ try {
     );
 
     // Get column names.
-    $column_names = events_get_column_names($fields);
+    $column_names = events_get_column_names($fields, true);
 
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';

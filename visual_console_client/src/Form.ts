@@ -145,7 +145,7 @@ export class FormContainer {
 
     // Remove the current stored name if exist.
     this.enabledInputGroupNames = this.enabledInputGroupNames.filter(
-      name => name === inputGroup.name
+      name => name !== inputGroup.name
     );
 
     if (index !== null) {
@@ -183,7 +183,7 @@ export class FormContainer {
     delete this.inputGroupsByName[inputGroupName];
     // Remove the current stored name.
     this.enabledInputGroupNames = this.enabledInputGroupNames.filter(
-      name => name === inputGroupName
+      name => name !== inputGroupName
     );
 
     return this;

@@ -7,9 +7,11 @@ import {
 import {
   modulePropsDecoder,
   linkedVCPropsDecoder,
-  notEmptyStringOr
+  notEmptyStringOr,
+  t
 } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import { InputGroup, FormContainer } from "../Form";
 
 export type StaticGraphProps = {
   type: ItemType.STATIC_GRAPH;
@@ -65,6 +67,53 @@ export function staticGraphPropsDecoder(
   };
 }
 
+/**
+ * Class to add item to the static Graph item form
+ * This item consists of a label and a color type select.
+ * Show Last Value is stored in the showLastValueTooltip property
+ */
+class ShowLastValueInputGroup extends InputGroup<Partial<StaticGraphProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const showLastValueLabel = document.createElement("label");
+    showLastValueLabel.textContent = t("Show Last Value");
+
+    const options: {
+      value: StaticGraphProps["showLastValueTooltip"];
+      text: string;
+    }[] = [
+      { value: "default", text: t("Hide last value on boolean modules") },
+      { value: "disabled", text: t("Disabled") },
+      { value: "enabled", text: t("Enabled") }
+    ];
+
+    const showLastValueSelect = document.createElement("select");
+    showLastValueSelect.required = true;
+    showLastValueSelect.value =
+      this.currentData.showLastValueTooltip ||
+      this.initialData.showLastValueTooltip ||
+      "default";
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      showLastValueSelect.appendChild(optionElement);
+    });
+
+    showLastValueSelect.addEventListener("change", event => {
+      this.updateData({
+        showLastValueTooltip: parseShowLastValueTooltip(
+          (event.target as HTMLSelectElement).value
+        )
+      });
+    });
+
+    showLastValueLabel.appendChild(showLastValueSelect);
+
+    return showLastValueLabel;
+  }
+}
+
 export default class StaticGraph extends Item<StaticGraphProps> {
   protected createDomElement(): HTMLElement {
     const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
@@ -85,5 +134,18 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     }
 
     return element;
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * ShowLastValueInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new ShowLastValueInputGroup("show-last-value", this.props)
+    );
+    return formContainer;
   }
 }

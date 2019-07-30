@@ -10,9 +10,11 @@ import {
   modulePropsDecoder,
   notEmptyStringOr,
   parseIntOr,
-  parseFloatOr
+  parseFloatOr,
+  t
 } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import { InputGroup, FormContainer } from "../Form";
 
 export type PercentileProps = {
   type: ItemType.PERCENTILE_BAR;
@@ -97,6 +99,279 @@ export function percentilePropsDecoder(
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a numeric type input.
+ * Diameter is stored in the width property
+ */
+class DiameterInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const diameterLabel = document.createElement("label");
+    diameterLabel.textContent = t("Diameter");
+
+    const diameterInput = document.createElement("input");
+    diameterInput.type = "number";
+    diameterInput.required = true;
+
+    diameterInput.value = `${this.currentData.width || this.initialData.width}`;
+
+    diameterInput.addEventListener("change", e => {
+      this.updateData({
+        width: parseIntOr((e.target as HTMLInputElement).value, 0)
+      });
+    });
+
+    diameterLabel.appendChild(diameterInput);
+
+    return diameterLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a numeric type input.
+ * Minvalue is stored in the minValue property
+ */
+class MinValueInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const minValueLabel = document.createElement("label");
+    minValueLabel.textContent = t("Min Value");
+
+    const minValueInput = document.createElement("input");
+    minValueInput.type = "number";
+    minValueInput.required = true;
+
+    minValueInput.value = `${this.currentData.minValue ||
+      this.initialData.minValue ||
+      0}`;
+
+    minValueInput.addEventListener("change", e => {
+      this.updateData({
+        minValue: parseIntOr((e.target as HTMLInputElement).value, 0)
+      });
+    });
+
+    minValueLabel.appendChild(minValueInput);
+
+    return minValueLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a numeric type input.
+ * Maxvalue is stored in the maxValue property
+ */
+class MaxValueInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const maxValueLabel = document.createElement("label");
+    maxValueLabel.textContent = t("Max Value");
+
+    const maxValueInput = document.createElement("input");
+    maxValueInput.type = "number";
+    maxValueInput.required = true;
+
+    maxValueInput.value = `${this.currentData.maxValue ||
+      this.currentData.minValue ||
+      0}`;
+
+    maxValueInput.addEventListener("change", e => {
+      this.updateData({
+        maxValue: parseIntOr((e.target as HTMLInputElement).value, 0)
+      });
+    });
+
+    maxValueLabel.appendChild(maxValueInput);
+
+    return maxValueLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a select.
+ * options for select: progress-bar, bubble, circular-progress-bar,
+ * circular-progress-bar-alt.
+ * Type is stored in the percentileType property
+ */
+class TypePercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const typeLabel = document.createElement("label");
+    typeLabel.textContent = t("Max Value");
+
+    const options: {
+      value: PercentileProps["percentileType"];
+      text: string;
+    }[] = [
+      { value: "progress-bar", text: t("Percentile") },
+      { value: "bubble", text: t("Bubble") },
+      {
+        value: "circular-progress-bar",
+        text: t("Circular porgress bar")
+      },
+      {
+        value: "circular-progress-bar-alt",
+        text: t("Circular progress bar (interior)")
+      }
+    ];
+
+    const typeSelect = document.createElement("select");
+    typeSelect.required = true;
+
+    typeSelect.value =
+      this.currentData.percentileType ||
+      this.initialData.percentileType ||
+      "progress-bar";
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      typeSelect.appendChild(optionElement);
+    });
+
+    typeSelect.addEventListener("change", event => {
+      this.updateData({
+        percentileType: extractPercentileType(
+          (event.target as HTMLSelectElement).value
+        )
+      });
+    });
+
+    typeLabel.appendChild(typeSelect);
+
+    return typeLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a select.
+ * options for select: percent, value
+ * Type value is stored in the valueType property
+ */
+class ValueToShowInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const valueToShowLabel = document.createElement("label");
+    valueToShowLabel.textContent = t("Value to show");
+
+    const options: { value: PercentileProps["valueType"]; text: string }[] = [
+      { value: "percent", text: t("Percent") },
+      { value: "value", text: t("Value") }
+    ];
+
+    const valueToShowInput = document.createElement("select");
+    valueToShowInput.required = true;
+    valueToShowInput.value =
+      this.currentData.valueType || this.initialData.valueType || "percent";
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      valueToShowInput.appendChild(optionElement);
+    });
+
+    valueToShowInput.addEventListener("change", event => {
+      this.updateData({
+        valueType: extractValueType((event.target as HTMLSelectElement).value)
+      });
+    });
+
+    valueToShowLabel.appendChild(valueToShowInput);
+
+    return valueToShowLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a color type input.
+ * Element color is stored in the color property
+ */
+class ElementColorInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const elementColorLabel = document.createElement("label");
+    elementColorLabel.textContent = t("Element color");
+
+    const elementColorInput = document.createElement("input");
+    elementColorInput.type = "color";
+    elementColorInput.required = true;
+
+    elementColorInput.value = `${this.currentData.color ||
+      this.currentData.color}`;
+
+    elementColorInput.addEventListener("change", e => {
+      this.updateData({
+        color: (e.target as HTMLInputElement).value
+      });
+    });
+
+    elementColorLabel.appendChild(elementColorInput);
+
+    return elementColorLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a color type input.
+ * Value color is stored in the labelColor property
+ */
+class ValueColorInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const valueColorLabel = document.createElement("label");
+    valueColorLabel.textContent = t("Value color");
+
+    const valueColorInput = document.createElement("input");
+    valueColorInput.type = "color";
+    valueColorInput.required = true;
+
+    valueColorInput.value = `${this.currentData.labelColor ||
+      this.currentData.labelColor}`;
+
+    valueColorInput.addEventListener("change", e => {
+      this.updateData({
+        labelColor: (e.target as HTMLInputElement).value
+      });
+    });
+
+    valueColorLabel.appendChild(valueColorInput);
+
+    return valueColorLabel;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a color type input.
+ * label is stored in the unit property
+ */
+class LabelPercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const labelPercentileLabel = document.createElement("label");
+    labelPercentileLabel.textContent = t("Label");
+
+    const labelPercentileInput = document.createElement("input");
+    labelPercentileInput.type = "text";
+    labelPercentileInput.required = true;
+
+    labelPercentileInput.value = `${this.currentData.unit ||
+      this.currentData.unit ||
+      ""} `;
+
+    labelPercentileInput.addEventListener("change", e => {
+      this.updateData({
+        unit: (e.target as HTMLInputElement).value
+      });
+    });
+
+    labelPercentileLabel.appendChild(labelPercentileInput);
+
+    return labelPercentileLabel;
+  }
 }
 
 const svgNS = "http://www.w3.org/2000/svg";
@@ -270,5 +545,53 @@ export default class Percentile extends Item<PercentileProps> {
     if (value <= minValue) return 0;
     else if (value >= maxValue) return 100;
     else return Math.trunc(((value - minValue) / (maxValue - minValue)) * 100);
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * DiameterInputGroup,
+   * MinValueInputGroup,
+   * MaxValueInputGroup,
+   * TypePercentileInputGroup,
+   * ValueToShowInputGroup,
+   * ElementColorInputGroup,
+   * ValueColorInputGroup,
+   * LabelPercentileInputGroup
+   * are removed:
+   * inputgrouplabel
+   * size
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    // Delete items groups.
+    formContainer.removeInputGroup("size");
+    // TODO: Remove inputGroup label this item.
+    //formContainer.removeInputGroup("label");
+
+    // Add new items gropus.
+    formContainer.addInputGroup(new DiameterInputGroup("diameter", this.props));
+    formContainer.addInputGroup(
+      new MinValueInputGroup("min-value", this.props)
+    );
+    formContainer.addInputGroup(
+      new MaxValueInputGroup("max-value", this.props)
+    );
+    formContainer.addInputGroup(
+      new TypePercentileInputGroup("type", this.props)
+    );
+    formContainer.addInputGroup(
+      new ValueToShowInputGroup("value-to-show", this.props)
+    );
+    formContainer.addInputGroup(
+      new ElementColorInputGroup("element-color", this.props)
+    );
+    formContainer.addInputGroup(
+      new ValueColorInputGroup("value-color", this.props)
+    );
+    formContainer.addInputGroup(
+      new LabelPercentileInputGroup("label-percentile", this.props)
+    );
+    return formContainer;
   }
 }

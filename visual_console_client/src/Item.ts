@@ -1096,7 +1096,18 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
   // TODO: Document
   public getFormContainer(): FormContainer {
-    return VisualConsoleItem.getFormContainer(this.props);
+    return new FormContainer(
+      t("Item"),
+      [
+        new PositionInputGroup("position", this.props),
+        new SizeInputGroup("size", this.props),
+        new LinkInputGroup("link", this.props),
+        new OnTopInputGroup("show-on-top", this.props)
+      ],
+      ["position", "size", "link", "show-on-top"]
+    );
+
+    //return VisualConsoleItem.getFormContainer(this.props);
   }
 
   // TODO: Document

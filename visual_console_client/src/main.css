@@ -40,13 +40,15 @@
   pointer-events: none;
 }
 
-.visual-console-spinner,
-.visual-console-spinner :after {
-  display: block;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+@keyframes spinner-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(1turn);
+  }
 }
+
 .visual-console-spinner {
   background-color: transparent;
   margin: 0px auto;
@@ -60,13 +62,19 @@
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
-@keyframes spinner-loading {
-  0% {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(1turn);
-  }
+
+.visual-console-spinner,
+.visual-console-spinner :after {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.visual-console-spinner.small,
+.visual-console-spinner.small :after {
+  width: 12px;
+  height: 12px;
 }
 
 .div-visual-console-spinner {

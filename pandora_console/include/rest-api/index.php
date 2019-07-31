@@ -2,6 +2,7 @@
 
 global $config;
 
+
 if (!is_ajax()) {
     return;
 }
@@ -16,6 +17,7 @@ $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
+$getGroupsVisualConsoleItem = (bool) get_parameter('getGroupsVisualConsoleItem');
 
 ob_clean();
 
@@ -140,6 +142,26 @@ if ($getVisualConsole === true) {
     $data = get_parameter('data');
     $result = $item::delete($itemId);
     echo $result;
+    return;
+} else if ($getGroupsVisualConsoleItem === true) {
+    $data = users_get_groups_for_select(
+        $config['id_user'],
+        'AR',
+        true,
+        true
+    );
+
+    $result = array_map(
+        function ($id) use ($data) {
+            return [
+                'value' => $id,
+                'text'  => $data[$id],
+            ];
+        },
+        array_keys($data)
+    );
+
+    echo json_encode($result);
     return;
 }
 

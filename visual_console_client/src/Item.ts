@@ -240,9 +240,9 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
 }
 
 /**
- * Class to add item to the static Graph item form
+ * Class to add item to the general items form
  * This item consists of a label and a color type select.
- * Show Last Value is stored in the showLastValueTooltip property
+ * Parent is stored in the parentId property
  */
 class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
@@ -281,6 +281,62 @@ class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
     parentLabel.appendChild(parentSelect);
 
     return parentLabel;
+  }
+}
+
+/**
+ * Class to add item to the general items form
+ * This item consists of a label and a color type select.
+ * Parent is stored in the parentId property
+ */
+class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const aclGroupLabel = document.createElement("label");
+    aclGroupLabel.textContent = t("Restrict access to group");
+
+    const divSpinner = document.createElement("div");
+    divSpinner.className = "visual-console-spinner small";
+    aclGroupLabel.appendChild(divSpinner);
+
+    this.requestData("acl-group", {}, (error, data) => {
+      // Remove Spinner.
+      divSpinner.remove();
+      if (error) {
+        const errorSelect = document.createElement("img");
+        errorSelect.src = "";
+        errorSelect.alt = "image-error";
+        aclGroupLabel.appendChild(errorSelect);
+      }
+
+      if (data instanceof Array) {
+        const aclGroupSelect = document.createElement("select");
+        aclGroupSelect.required = true;
+
+        data.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option.value;
+          // Dangerous because injection sql.
+          // Use textContent for innerHTML.
+          // Here it is used to show the depth of the groups.
+          optionElement.innerHTML = option.text;
+          aclGroupSelect.appendChild(optionElement);
+        });
+
+        aclGroupSelect.addEventListener("change", event => {
+          this.updateData({
+            aclGroupId: parseIntOr((event.target as HTMLSelectElement).value, 0)
+          });
+        });
+
+        aclGroupSelect.value = `${this.currentData.aclGroupId ||
+          this.initialData.aclGroupId ||
+          0}`;
+
+        aclGroupLabel.appendChild(aclGroupSelect);
+      }
+    });
+
+    return aclGroupLabel;
   }
 }
 
@@ -1184,9 +1240,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new SizeInputGroup("size", this.props),
         new LinkInputGroup("link", this.props),
         new OnTopInputGroup("show-on-top", this.props),
-        new ParentInputGroup("parent", this.props)
+        new ParentInputGroup("parent", this.props),
+        new AclGroupInputGroup("acl-group", this.props)
       ],
-      ["position", "size", "link", "show-on-top", "parent"]
+      ["position", "size", "link", "show-on-top", "parent", "acl-group"]
     );
 
     //return VisualConsoleItem.getFormContainer(this.props);
@@ -1201,9 +1258,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new SizeInputGroup("size", props),
         new LinkInputGroup("link", props),
         new OnTopInputGroup("show-on-top", props),
-        new ParentInputGroup("parent", props)
+        new ParentInputGroup("parent", props),
+        new AclGroupInputGroup("acl-group", props)
       ],
-      ["position", "size", "link", "show-on-top", "parent"]
+      ["position", "size", "link", "show-on-top", "parent", "acl-group"]
     );
   }
 }

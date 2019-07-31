@@ -379,6 +379,10 @@ eventserver 0
 
 event_window 3600
 
+# If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
+
+event_inhibit_alerts 0
+
 # Enable (1) or disable (0) Pandora FMS Enterprise ICMP Server (PANDORA FMS ENTERPRISE ONLY).
 # You need nmap 5.20 or higher in order to use this !
 

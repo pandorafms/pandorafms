@@ -1225,6 +1225,8 @@ ALTER TABLE `talert_commands` ADD COLUMN `fields_hidden` text;
 
 UPDATE `talert_actions` SET `field4` = 'text/html', `field4_recovery` = 'text/html' WHERE id = 1;
 
+DELETE FROM `talert_commands` WHERE `id` = 11;
+
 -- ---------------------------------------------------------------------
 -- Table `tmap`
 -- ---------------------------------------------------------------------
@@ -1249,6 +1251,10 @@ UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.ph
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '737');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
+DELETE FROM `tconfig` WHERE `token` LIKE 'integria_enabled';
+DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
+DELETE FROM `tconfig` WHERE `token` LIKE 'integria_inventory';
+DELETE FROM `tconfig` WHERE `token` LIKE 'integria_url';
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`

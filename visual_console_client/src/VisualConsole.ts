@@ -359,7 +359,7 @@ export default class VisualConsole {
    * To create a new element add it to the DOM.
    * @param item. Raw representation of the item's data.
    */
-  public addElement(item: AnyObject, context: this = this): void {
+  public addElement(item: AnyObject, context: this = this) {
     try {
       const itemInstance = itemInstanceFrom(item);
       // Add the item to the list.
@@ -375,9 +375,11 @@ export default class VisualConsole {
 
       // Add the item to the DOM.
       context.containerRef.append(itemInstance.elementRef);
+      return itemInstance;
     } catch (error) {
       console.log("Error creating a new element:", error.message);
     }
+    return;
   }
 
   /**

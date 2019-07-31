@@ -405,4 +405,24 @@ final class Line extends Model
     }
 
 
+    /**
+     * Delete a line in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        $result = db_process_sql_delete(
+            'tlayout_data',
+            ['id' => $itemId]
+        );
+
+        return (bool) $result;
+    }
+
+
 }

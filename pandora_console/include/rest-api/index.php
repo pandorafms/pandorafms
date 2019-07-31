@@ -17,6 +17,7 @@ $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
+$copyVisualConsoleItem = (bool) get_parameter('copyVisualConsoleItem');
 $getGroupsVisualConsoleItem = (bool) get_parameter('getGroupsVisualConsoleItem');
 
 ob_clean();
@@ -107,6 +108,7 @@ if ($getVisualConsole === true) {
         return;
     } else if ($updateVisualConsoleItem === true) {
         $data = get_parameter('data');
+        $data['id'] = $itemId;
         $result = $item->save($data);
 
         echo $item;
@@ -141,6 +143,29 @@ if ($getVisualConsole === true) {
 
     $data = get_parameter('data');
     $result = $item::delete($itemId);
+    echo $result;
+    return;
+} else if ($copyVisualConsoleItem === true) {
+    $itemId = (int) get_parameter('visualConsoleItemId');
+
+    // Get a copy of the item.
+    $item = VisualConsole::getItemFromDB($itemId);
+    $data = $item->toArray();
+    $data['id_layout'] = $visualConsoleId;
+    $data['x'] = ($data['x'] + 20);
+    $data['y'] = ($data['y'] + 20);
+    unset($data['id']);
+
+    $class = VisualConsole::getItemClass((int) $data['type']);
+    try {
+        // Save the new item.
+        $result = $class::save($data);
+    } catch (\Throwable $th) {
+        // There is no item in the database.
+        echo false;
+        return;
+    }
+
     echo $result;
     return;
 } else if ($getGroupsVisualConsoleItem === true) {

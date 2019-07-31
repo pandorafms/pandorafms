@@ -1635,22 +1635,24 @@ class Item extends CachedModel
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[]): int
     {
-        $dataModelEncode = $this->encode($this->toArray());
-        $dataEncode = $this->encode($data);
-
-        $save = array_merge($dataModelEncode, $dataEncode);
-
-        if (!empty($save)) {
-            if (empty($save['id'])) {
+        if (!empty($data)) {
+            if (empty($data['id'])) {
                 // Insert.
+                $save = static::encode($data);
                 $result = \db_process_sql_insert('tlayout_data', $save);
                 if ($result) {
                     $item = static::fromDB(['id' => $result]);
+                    $item->setData($item->toArray());
                 }
             } else {
                 // Update.
+                $dataModelEncode = $this->encode($this->toArray());
+                $dataEncode = $this->encode($data);
+
+                $save = array_merge($dataModelEncode, $dataEncode);
+
                 $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
                 // Invalidate the item's cache.
                 if ($result !== false && $result > 0) {
@@ -1671,7 +1673,7 @@ class Item extends CachedModel
             }
         }
 
-        return (bool) $result;
+        return $result;
     }
 
 

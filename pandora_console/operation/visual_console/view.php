@@ -185,7 +185,6 @@ if ($pure === false) {
     );
     echo '</div>';
     echo '<br />';
-    // sub visual_editor_button_toolbox delete_item delete_min
 }
 
 echo '<div id="visual-console-container"></div>';

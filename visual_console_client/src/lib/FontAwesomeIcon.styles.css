@@ -1,0 +1,37 @@
+/* Styles for the solid icons */
+
+.fa {
+  display: inline-block;
+  margin: 0;
+}
+
+.fa.medium,
+.fa.medium > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.fa.fa-small,
+.fa.fa-small > svg {
+  width: 12px;
+  height: 12px;
+}
+
+.fa.fa-large,
+.fa.fa-large > svg {
+  width: 36px;
+  height: 36px;
+}
+
+.fa-spin {
+  animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

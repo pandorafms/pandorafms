@@ -397,7 +397,6 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     });
 
     $('#button-button_delete').click(function (event){
-        // visualConsoleManager.visualConsole.deleteItem();
         visualConsoleManager.visualConsole.elements.forEach(item => {
             if (item.meta.isSelected === true) {
                 visualConsoleManager.deleteItem(item);
@@ -406,6 +405,10 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     });
 
     $('#button-button_copy').click(function (event){
-        
+        visualConsoleManager.visualConsole.elements.forEach(item => {
+            if (item.meta.isSelected === true) {
+                visualConsoleManager.copyItem(item);
+            }
+        });
     });
 </script>

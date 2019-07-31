@@ -470,7 +470,6 @@ function createVisualConsole(
 
       var taskId = "visual-console-item-update-" + id;
 
-      // Persist the new position.
       asyncTaskManager
         .add(taskId, function(done) {
           var abortable = removeVisualConsoleItem(
@@ -489,8 +488,60 @@ function createVisualConsole(
                 // Add the item to the list.
                 var itemRetrieved = aux.props;
                 itemRetrieved["receivedAt"] = new Date();
-                visualConsole.addElement(itemRetrieved);
+                var newItem = visualConsole.addElement(itemRetrieved);
+                newItem.setMeta({ editMode: true });
               }
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
+    },
+    copyItem: function(item) {
+      var id = item.props.id;
+      item.setMeta({ isUpdating: true });
+
+      var taskId = "visual-console-item-update-" + id;
+
+      // Persist the new position.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = copyVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            function(error, data) {
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                item.setMeta({ isUpdating: false });
+
+                done();
+                return; // Stop task execution.
+              }
+
+              item.setMeta({ isUpdating: false });
+
+              var itemRetrieved = item.props;
+              itemRetrieved["x"] = itemRetrieved["x"] + 20;
+              itemRetrieved["y"] = itemRetrieved["y"] + 20;
+              itemRetrieved["receivedAt"] = new Date();
+              itemRetrieved["id"] = data;
+
+              var newItem = visualConsole.addElement(itemRetrieved);
+              newItem.setMeta({ editMode: true });
 
               done();
             }
@@ -812,6 +863,7 @@ function removeVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
 /**
  * Fetch groups access user.
  * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcId Identifier of the Visual Console.
  * @param {function} callback Function to be executed on request success or fail.
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
@@ -859,6 +911,71 @@ function getGroupsVisualConsoleItem(baseUrl, vcId, callback) {
         page: "include/rest-api/index",
         getGroupsVisualConsoleItem: 1,
         visualConsoleId: vcId
+      },
+      "json"
+    )
+    .done(handleSuccess)
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
+/**
+ * Copy an item.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcId Identifier of the Visual Console.
+ * @param {number} vcItemId Identifier of the Visual Console's item.
+ * @param {function} callback Function to be executed on request success or fail.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function copyVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
+  var apiPath = baseUrl + "/ajax.php";
+  var jqXHR = null;
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
+      jqXHR.abort(textStatus);
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Function which handle success case.
+  var handleSuccess = function(data) {
+    callback(null, data);
+  };
+
+  // Visual Console container request.
+  jqXHR = jQuery
+    .post(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        copyVisualConsoleItem: 1,
+        visualConsoleId: vcId,
+        visualConsoleItemId: vcItemId
       },
       "json"
     )

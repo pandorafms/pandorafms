@@ -440,28 +440,6 @@ final class Container extends Model
             'id_layout',
         ];
 
-        // Override the filter if the groups filter is not empty.
-        if (count($groupsFilter) > 0) {
-            // Filter group for elements groups.
-            $filter = [];
-            $filter[] = \db_format_array_where_clause_sql(
-                [
-                    'id'            => $itemId,
-                    'element_group' => $groupsFilter,
-                ]
-            );
-
-            // Filter groups for type groups.
-            // Only true condition if type is GROUP_ITEM.
-            $filter[] = '('.\db_format_array_where_clause_sql(
-                [
-                    'id'       => $itemId,
-                    'type'     => GROUP_ITEM,
-                    'id_group' => $groupsFilter,
-                ]
-            ).')';
-        }
-
         $row = \db_get_row_filter(
             'tlayout_data',
             $filter,

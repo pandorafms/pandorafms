@@ -3768,14 +3768,22 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         if (ui_forced_public_url()) {
             $proxy = true;
             $fullurl = $config['public_url'];
+            if (substr($fullurl, -1) != '/') {
+                $fullurl .= '/';
+            }
+
             if ($url == 'index.php' && is_metaconsole()) {
-                $fullurl .= '/'.ENTERPRISE_DIR.'/meta';
+                $fullurl .= ENTERPRISE_DIR.'/meta';
             }
         } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
             // Forced to use public url when being forwarder by a reverse proxy.
             $fullurl = $config['public_url'];
+            if (substr($fullurl, -1) != '/') {
+                $fullurl .= '/';
+            }
+
             $proxy = true;
         } else {
             $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];

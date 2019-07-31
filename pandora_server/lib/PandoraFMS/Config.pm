@@ -494,6 +494,8 @@ sub pandora_load_config {
 
 	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
 
+	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0 737
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -916,6 +918,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_file\s+(.*)/i) {
 			$pa_config->{'event_file'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_inhibit_alerts\s+([0-1])/i) {
+			$pa_config->{'event_inhibit_alerts'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^text_going_down_normal\s+(.*)/i) {
 			$pa_config->{'text_going_down_normal'} = safe_input ($1);

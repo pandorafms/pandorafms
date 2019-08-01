@@ -12,7 +12,7 @@ interface InputGroupDataRequestedEvent {
 export abstract class InputGroup<Data extends {} = {}> {
   private _name: string = "";
   private _element?: HTMLElement;
-  public initialData: Data;
+  public readonly initialData: Data;
   protected currentData: Partial<Data> = {};
   // Event manager for data requests.
   private readonly dataRequestedEventManager = new TypedEvent<

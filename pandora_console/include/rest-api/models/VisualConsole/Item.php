@@ -158,8 +158,14 @@ class Item extends CachedModel
 
         // The item uses HTML output.
         if (static::$useHtmlOutput === true) {
-            if (static::notEmptyStringOr(static::issetInArray($data, ['encodedHtml']), null) === null
-                && static::notEmptyStringOr(static::issetInArray($data, ['html']), null) === null
+            if (static::notEmptyStringOr(
+                static::issetInArray($data, ['encodedHtml']),
+                null
+            ) === null
+                && static::notEmptyStringOr(
+                    static::issetInArray($data, ['html']),
+                    null
+                ) === null
             ) {
                 throw new \InvalidArgumentException(
                     'the html property is required and should be a not empty string'
@@ -288,7 +294,14 @@ class Item extends CachedModel
     private static function extractParentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['parentId', 'parent_item', 'parentItem']),
+            static::issetInArray(
+                $data,
+                [
+                    'parentId',
+                    'parent_item',
+                    'parentItem',
+                ]
+            ),
             null
         );
     }
@@ -319,7 +332,14 @@ class Item extends CachedModel
     private static function extractIsLinkEnabled(array $data): bool
     {
         return static::parseBool(
-            static::issetInArray($data, ['isLinkEnabled', 'enable_link', 'enableLink'])
+            static::issetInArray(
+                $data,
+                [
+                    'isLinkEnabled',
+                    'enable_link',
+                    'enableLink',
+                ]
+            )
         );
     }
 
@@ -376,7 +396,16 @@ class Item extends CachedModel
     private static function extractAgentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['agentId', 'id_agent', 'id_agente', 'idAgent', 'idAgente']),
+            static::issetInArray(
+                $data,
+                [
+                    'agentId',
+                    'id_agent',
+                    'id_agente',
+                    'idAgent',
+                    'idAgente',
+                ]
+            ),
             null
         );
     }
@@ -392,7 +421,14 @@ class Item extends CachedModel
     private static function extractIdCustomGraph(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['id_custom_graph', 'idCustomGraph', 'customGraphId']),
+            static::issetInArray(
+                $data,
+                [
+                    'id_custom_graph',
+                    'idCustomGraph',
+                    'customGraphId',
+                ]
+            ),
             null
         );
     }
@@ -490,7 +526,13 @@ class Item extends CachedModel
 
         // The agent description should be a valid string or a null value.
         $agentData['agentDescription'] = static::notEmptyStringOr(
-            static::issetInArray($data, ['agentDescription', 'agent_description']),
+            static::issetInArray(
+                $data,
+                [
+                    'agentDescription',
+                    'agent_description',
+                ]
+            ),
             null
         );
 
@@ -547,7 +589,13 @@ class Item extends CachedModel
 
         // The module description should be a valid string or a null value.
         $moduleData['moduleDescription'] = static::notEmptyStringOr(
-            static::issetInArray($data, ['moduleDescription', 'module_description']),
+            static::issetInArray(
+                $data,
+                [
+                    'moduleDescription',
+                    'module_description',
+                ]
+            ),
             null
         );
 
@@ -563,21 +611,19 @@ class Item extends CachedModel
      * @return array Data structure of the linked visual console info.
      *
      * @example [
-     *   'metaconsoleId'          => 2,
      *   'linkedLayoutId'         => 12,
-     *   'linkedLayoutAgentId'    => 48,
+     *   'linkedLayoutNodeId'     => 2,
      *   'linkedLayoutStatusType' => 'default',
      * ]
      * @example [
      *   'linkedLayoutId'               => 11,
-     *   'linkedLayoutAgentId'          => null,
+     *   'linkedLayoutNodeId'           => null,
      *   'linkedLayoutStatusType'       => 'weight',
      *   'linkedLayoutStatusTypeWeight' => 80,
      * ]
      * @example [
-     *   'metaconsoleId'                           => 2,
      *   'linkedLayoutId'                          => 10,
-     *   'linkedLayoutAgentId'                     => 48,
+     *   'linkedLayoutNodeId'                      => 2,
      *   'linkedLayoutStatusType'                  => 'service',
      *   'linkedLayoutStatusTypeWarningThreshold'  => 50,
      *   'linkedLayoutStatusTypeCriticalThreshold' => 80,
@@ -587,25 +633,18 @@ class Item extends CachedModel
     {
         $vcData = [];
 
-        // We should add the metaconsole Id if we can. If not,
-        // it doesn't have to be into the structure.
-        $metaconsoleId = static::extractMetaconsoleId($data);
-        if ($metaconsoleId !== null) {
-            $vcData['metaconsoleId'] = $metaconsoleId;
-        }
-
         // The linked vc Id should be a valid int or a null value.
         $vcData['linkedLayoutId'] = static::parseIntOr(
             static::issetInArray($data, ['linkedLayoutId', 'id_layout_linked']),
             null
         );
 
-        // The linked vc agent Id should be a valid int or a null value.
-        $vcData['linkedLayoutAgentId'] = static::parseIntOr(
+        // The linked vc's remote node Id should be a valid int or a null value.
+        $vcData['linkedLayoutNodeId'] = static::parseIntOr(
             static::issetInArray(
                 $data,
                 [
-                    'linkedLayoutAgentId',
+                    'linkedLayoutNodeId',
                     'linked_layout_node_id',
                 ]
             ),
@@ -1006,9 +1045,9 @@ class Item extends CachedModel
             // Linked Visual Console.
             $vcId = $linkedVisualConsole['linkedLayoutId'];
             // The layout can be from another node.
-            $linkedLayoutAgentId = $linkedVisualConsole['linkedLayoutAgentId'];
+            $linkedLayoutNodeId = $linkedVisualConsole['linkedLayoutNodeId'];
 
-            if (empty($linkedLayoutAgentId) === true && \is_metaconsole()) {
+            if (empty($linkedLayoutNodeId) === true && \is_metaconsole()) {
                 /*
                  * A Visual Console from this console.
                  * We are in a metaconsole.
@@ -1023,7 +1062,7 @@ class Item extends CachedModel
                         'pure'         => (int) $config['pure'],
                     ]
                 );
-            } else if (empty($linkedLayoutAgentId) === true
+            } else if (empty($linkedLayoutNodeId) === true
                 && !\is_metaconsole()
             ) {
                 /*
@@ -1047,7 +1086,7 @@ class Item extends CachedModel
 
                 try {
                     $node = \metaconsole_get_connection_by_id(
-                        $linkedLayoutAgentId
+                        $linkedLayoutNodeId
                     );
                     return \ui_meta_get_node_url(
                         $node,
@@ -1300,7 +1339,14 @@ class Item extends CachedModel
         }
 
         $id_layout_linked = static::parseIntOr(
-            static::issetInArray($data, ['linkedLayoutId', 'id_layout_linked', 'idLayoutLinked']),
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutId',
+                    'id_layout_linked',
+                    'idLayoutLinked',
+                ]
+            ),
             null
         );
         if ($id_layout_linked !== null) {
@@ -1312,7 +1358,14 @@ class Item extends CachedModel
             $result['parent_item'] = $parent_item;
         }
 
-        $enable_link = static::issetInArray($data, ['isLinkEnabled', 'enable_link', 'enableLink']);
+        $enable_link = static::issetInArray(
+            $data,
+            [
+                'isLinkEnabled',
+                'enable_link',
+                'enableLink',
+            ]
+        );
         if ($enable_link !== null) {
             $result['enable_link'] = static::parseBool($enable_link);
         }
@@ -1360,7 +1413,13 @@ class Item extends CachedModel
             $result['fill_color'] = $fill_color;
         }
 
-        $show_statistics = static::issetInArray($data, ['showStatistics', 'show_statistics']);
+        $show_statistics = static::issetInArray(
+            $data,
+            [
+                'showStatistics',
+                'show_statistics',
+            ]
+        );
         if ($show_statistics !== null) {
             $result['show_statistics'] = static::parseBool($show_statistics);
         }
@@ -1369,7 +1428,7 @@ class Item extends CachedModel
             static::issetInArray(
                 $data,
                 [
-                    'linkedLayoutAgentId',
+                    'linkedLayoutNodeId',
                     'linked_layout_node_id',
                 ]
             ),
@@ -1380,7 +1439,13 @@ class Item extends CachedModel
         }
 
         $linked_layout_status_type = static::notEmptyStringOr(
-            static::issetInArray($data, ['linkedLayoutStatusType', 'linked_layout_status_type']),
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusType',
+                    'linked_layout_status_type',
+                ]
+            ),
             null
         );
         if ($linked_layout_status_type !== null) {
@@ -1388,7 +1453,13 @@ class Item extends CachedModel
         }
 
         $id_layout_linked_weight = static::parseIntOr(
-            static::issetInArray($data, ['linkedLayoutStatusTypeWeight', 'id_layout_linked_weight']),
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusTypeWeight',
+                    'id_layout_linked_weight',
+                ]
+            ),
             null
         );
         if ($id_layout_linked_weight !== null) {
@@ -1431,13 +1502,27 @@ class Item extends CachedModel
             $result['element_group'] = $element_group;
         }
 
-        $show_on_top = static::issetInArray($data, ['isOnTop', 'show_on_top', 'showOnTop']);
+        $show_on_top = static::issetInArray(
+            $data,
+            [
+                'isOnTop',
+                'show_on_top',
+                'showOnTop',
+            ]
+        );
         if ($show_on_top !== null) {
             $result['show_on_top'] = static::parseBool($show_on_top);
         }
 
         $clock_animation = static::notEmptyStringOr(
-            static::issetInArray($data, ['clockType', 'clock_animation', 'clockAnimation']),
+            static::issetInArray(
+                $data,
+                [
+                    'clockType',
+                    'clock_animation',
+                    'clockAnimation',
+                ]
+            ),
             null
         );
         if ($clock_animation !== null) {
@@ -1445,7 +1530,14 @@ class Item extends CachedModel
         }
 
         $time_format = static::notEmptyStringOr(
-            static::issetInArray($data, ['clockFormat', 'time_format', 'timeFormat']),
+            static::issetInArray(
+                $data,
+                [
+                    'clockFormat',
+                    'time_format',
+                    'timeFormat',
+                ]
+            ),
             null
         );
         if ($time_format !== null) {
@@ -1453,7 +1545,15 @@ class Item extends CachedModel
         }
 
         $timezone = static::notEmptyStringOr(
-            static::issetInArray($data, ['timezone', 'timeZone', 'time_zone', 'clockTimezone']),
+            static::issetInArray(
+                $data,
+                [
+                    'timezone',
+                    'timeZone',
+                    'time_zone',
+                    'clockTimezone',
+                ]
+            ),
             null
         );
         if ($timezone !== null) {
@@ -1469,7 +1569,13 @@ class Item extends CachedModel
         }
 
         $cache_expiration = static::parseIntOr(
-            static::issetInArray($data, ['cache_expiration', 'cacheExpiration']),
+            static::issetInArray(
+                $data,
+                [
+                    'cache_expiration',
+                    'cacheExpiration',
+                ]
+            ),
             null
         );
         if ($cache_expiration !== null) {
@@ -1554,7 +1660,16 @@ class Item extends CachedModel
     protected static function getImageSrc(array $data)
     {
         $imageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['image', 'imageSrc', 'backgroundColor', 'backgroundType', 'valueType']),
+            static::issetInArray(
+                $data,
+                [
+                    'image',
+                    'imageSrc',
+                    'backgroundColor',
+                    'backgroundType',
+                    'valueType',
+                ]
+            ),
             null
         );
 
@@ -1588,7 +1703,14 @@ class Item extends CachedModel
     private static function getTypeGraph(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['typeGraph', 'type_graph', 'graphType']),
+            static::issetInArray(
+                $data,
+                [
+                    'typeGraph',
+                    'type_graph',
+                    'graphType',
+                ]
+            ),
             null
         );
     }
@@ -1604,7 +1726,16 @@ class Item extends CachedModel
     private static function getBorderColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['borderColor', 'border_color', 'gridColor', 'color', 'legendBackgroundColor']),
+            static::issetInArray(
+                $data,
+                [
+                    'borderColor',
+                    'border_color',
+                    'gridColor',
+                    'color',
+                    'legendBackgroundColor',
+                ]
+            ),
             null
         );
     }
@@ -1620,7 +1751,14 @@ class Item extends CachedModel
     private static function getFillColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['fillColor', 'fill_color', 'labelColor']),
+            static::issetInArray(
+                $data,
+                [
+                    'fillColor',
+                    'fill_color',
+                    'labelColor',
+                ]
+            ),
             null
         );
     }
@@ -1637,8 +1775,8 @@ class Item extends CachedModel
      */
     public function save(array $data=[]): int
     {
-        if (!empty($data)) {
-            if (empty($data['id'])) {
+        if (empty($data) === false) {
+            if (empty($data['id']) === true) {
                 // Insert.
                 $save = static::encode($data);
                 $result = \db_process_sql_insert('tlayout_data', $save);
@@ -1653,7 +1791,11 @@ class Item extends CachedModel
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 
-                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+                $result = \db_process_sql_update(
+                    'tlayout_data',
+                    $save,
+                    ['id' => $save['id']]
+                );
                 // Invalidate the item's cache.
                 if ($result !== false && $result > 0) {
                     // TODO: Invalidate the cache with the function clearCachedData.
@@ -1694,6 +1836,7 @@ class Item extends CachedModel
         );
 
         if ($result) {
+            // TODO: Invalidate the cache with the function clearCachedData.
             db_process_sql_delete(
                 'tvisual_console_elements_cache',
                 ['vc_item_id' => $itemId]

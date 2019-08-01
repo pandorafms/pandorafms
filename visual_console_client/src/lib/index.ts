@@ -208,13 +208,6 @@ export function modulePropsDecoder(data: AnyObject): WithModuleProps {
 export function linkedVCPropsDecoder(
   data: AnyObject
 ): LinkedVisualConsoleProps | never {
-  // Object destructuring: http://es6-features.org/#ObjectMatchingShorthandNotation
-  const {
-    metaconsoleId,
-    linkedLayoutId: id,
-    linkedLayoutAgentId: agentId
-  } = data;
-
   let linkedLayoutStatusProps: LinkedVisualConsolePropsStatus = {
     linkedLayoutStatusType: "default"
   };
@@ -253,18 +246,11 @@ export function linkedVCPropsDecoder(
     }
   }
 
-  const linkedLayoutBaseProps = {
-    linkedLayoutId: parseIntOr(id, null),
-    linkedLayoutAgentId: parseIntOr(agentId, null),
+  return {
+    linkedLayoutId: parseIntOr(data.linkedLayoutId, null),
+    linkedLayoutNodeId: parseIntOr(data.linkedLayoutNodeId, null),
     ...linkedLayoutStatusProps // Object spread: http://es6-features.org/#SpreadOperator
   };
-
-  return metaconsoleId != null
-    ? {
-        metaconsoleId,
-        ...linkedLayoutBaseProps // Object spread: http://es6-features.org/#SpreadOperator
-      }
-    : linkedLayoutBaseProps;
 }
 
 /**

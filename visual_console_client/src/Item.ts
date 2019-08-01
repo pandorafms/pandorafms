@@ -22,7 +22,12 @@ import {
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { FormContainer, InputGroup } from "./Form";
-import { isObject } from "util";
+
+import {
+  faCircleNotch,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
+import fontAwesomeIcon from "./lib/FontAwesomeIcon";
 
 // Enum: https://www.typescriptlang.org/docs/handbook/enums.html.
 export const enum ItemType {
@@ -294,18 +299,23 @@ class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
     const aclGroupLabel = document.createElement("label");
     aclGroupLabel.textContent = t("Restrict access to group");
 
-    const divSpinner = document.createElement("div");
-    divSpinner.className = "visual-console-spinner small";
-    aclGroupLabel.appendChild(divSpinner);
+    const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
+      size: "small",
+      spin: true
+    });
+    aclGroupLabel.appendChild(spinner);
 
     this.requestData("acl-group", {}, (error, data) => {
       // Remove Spinner.
-      divSpinner.remove();
+      spinner.remove();
+
       if (error) {
-        const errorSelect = document.createElement("img");
-        errorSelect.src = "";
-        errorSelect.alt = "image-error";
-        aclGroupLabel.appendChild(errorSelect);
+        aclGroupLabel.appendChild(
+          fontAwesomeIcon(faExclamationCircle, t("Error"), {
+            size: "small",
+            color: "#e63c52"
+          })
+        );
       }
 
       if (data instanceof Array) {

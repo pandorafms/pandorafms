@@ -3,22 +3,26 @@ import "./FontAwesomeIcon.styles.css";
 
 const svgNS = "http://www.w3.org/2000/svg";
 
+interface ExtraProps {
+  size?: "small" | "medium" | "large";
+  color?: string;
+  spin?: boolean;
+  pulse?: boolean;
+}
+
 const fontAwesomeIcon = (
   iconDefinition: IconDefinition,
-  {
-    size,
-    color,
-    spin
-  }: {
-    size?: "small" | "medium" | "large";
-    color?: string;
-    spin?: boolean;
-  }
+  title: string,
+  { size, color, spin, pulse }: ExtraProps
 ): HTMLElement => {
   const container = document.createElement("figure");
+  container.title = title;
   container.className = `fa fa-${iconDefinition.iconName}`;
+
   if (size) container.classList.add(`fa-${size}`);
+
   if (spin) container.classList.add("fa-spin");
+  else if (pulse) container.classList.add("fa-pulse");
 
   const icon = document.createElementNS(svgNS, "svg");
   // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/

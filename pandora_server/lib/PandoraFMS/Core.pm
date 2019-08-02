@@ -138,7 +138,8 @@ if (!$@) {
 	# Force best option available.
 	$XML::Simple::PREFERRED_PARSER='XML::SAX::ExpatXS';
 } else {
-	# Let ParserDetails.ini command parser.
+	# Use classic parser.
+	$XML::Simple::PREFERRED_PARSER='XML::Parser';
 }
 
 # Default lib dir for RPM and DEB packages

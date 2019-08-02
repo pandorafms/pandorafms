@@ -130,7 +130,16 @@ use Text::ParseWords;
 # due a bug processing some XML with blank spaces.
 # See http://www.perlmonks.org/?node_id=706838
 
-$XML::Simple::PREFERRED_PARSER='XML::Parser';
+eval {
+	local $SIG{__DIE__};
+	eval "use XML::SAX::ExpatXS;1" or die "XML::SAX::ExpatXS not available";
+};
+if (!$@) {
+	# Force best option available.
+	$XML::Simple::PREFERRED_PARSER='XML::SAX::ExpatXS';
+} else {
+	# Let ParserDetails.ini command parser.
+}
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';

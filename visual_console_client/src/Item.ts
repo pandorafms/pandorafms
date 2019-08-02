@@ -3,7 +3,8 @@ import {
   Size,
   AnyObject,
   WithModuleProps,
-  ItemMeta
+  ItemMeta,
+  LinkedVisualConsoleProps
 } from "./lib/types";
 import {
   sizePropsDecoder,
@@ -292,7 +293,7 @@ class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
 /**
  * Class to add item to the general items form
  * This item consists of a label and a color type select.
- * Parent is stored in the parentId property
+ * Acl is stored in the aclGroupId property
  */
 class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
@@ -348,6 +349,410 @@ class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
 
     return aclGroupLabel;
   }
+}
+
+/**
+ * Class to add item to the general items form
+ * This item consists of a label and a color type select.
+ * Parent is stored in the parentId property
+ */
+export class LinkConsoleInputGroup extends InputGroup<
+  Partial<ItemProps & LinkedVisualConsoleProps>
+> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    // Create div container.
+    const container = document.createElement("div");
+    const lvcTypeContainer = document.createElement("div");
+
+    // Create Principal element label - select.
+    const linkConsoleLabel = document.createElement("label");
+    linkConsoleLabel.textContent = t("Linked visual console	");
+
+    // Create element Spinner.
+    const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
+      size: "small",
+      spin: true
+    });
+    linkConsoleLabel.appendChild(spinner);
+
+    // Init request
+    this.requestData("link-console", {}, (error, data) => {
+      // Remove Spinner.
+      spinner.remove();
+
+      // Check errors.
+      if (error) {
+        // Add img error.
+        linkConsoleLabel.appendChild(
+          fontAwesomeIcon(faExclamationCircle, t("Error"), {
+            size: "small",
+            color: "#e63c52"
+          })
+        );
+      }
+
+      // Check data is array
+      if (data instanceof Array) {
+        // Create principal element select
+        const linkConsoleSelect = document.createElement("select");
+        linkConsoleSelect.required = true;
+
+        // Default option principal select.
+        const defaultOptionElement = document.createElement("option");
+        defaultOptionElement.value = "0";
+        defaultOptionElement.textContent = t("none");
+        linkConsoleSelect.appendChild(defaultOptionElement);
+
+        // Create other options for principal select.
+        data.forEach(option => {
+          let id = option.id;
+          // Check if metaconsole save id|nodeID.
+          if (option.nodeId) {
+            id = `${option.id}|${option.nodeId}`;
+          }
+
+          // Create option
+          const optionElement = document.createElement("option");
+          optionElement.value = id;
+          optionElement.textContent = option.name;
+          linkConsoleSelect.appendChild(optionElement);
+        });
+
+        // Set values.
+        // Principal values .
+        // Convert current data to string if meta id|idNode or only id if node.
+        let currentValue: string | undefined;
+        if (typeof this.currentData.linkedLayoutId !== "undefined") {
+          currentValue =
+            typeof this.currentData.linkedLayoutNodeId !== "undefined" &&
+            this.currentData.linkedLayoutNodeId !== 0
+              ? `${this.currentData.linkedLayoutId}|${
+                  this.currentData.linkedLayoutNodeId
+                }`
+              : `${this.currentData.linkedLayoutId}`;
+        }
+
+        // Convert Initial data to string if meta id|idNode or only id if node.
+        let initialValue: string | undefined;
+        if (typeof this.initialData.linkedLayoutId !== "undefined") {
+          initialValue =
+            typeof this.initialData.linkedLayoutNodeId !== "undefined" &&
+            this.initialData.linkedLayoutNodeId !== 0
+              ? `${this.initialData.linkedLayoutId}|${
+                  this.initialData.linkedLayoutNodeId
+                }`
+              : `${this.initialData.linkedLayoutId}`;
+        }
+
+        linkConsoleSelect.value = `${currentValue || initialValue || 0}`;
+
+        // Listener event change select principal.
+        linkConsoleSelect.addEventListener("change", event => {
+          // Convert value to insert data.
+          const linkedLayoutExtract = (event.target as HTMLSelectElement).value.split(
+            "|"
+          );
+
+          let linkedLayoutNodeId = 0;
+          let linkedLayoutId = 0;
+          if (linkedLayoutExtract instanceof Array) {
+            linkedLayoutId = parseIntOr(linkedLayoutExtract[0], 0);
+            linkedLayoutNodeId = parseIntOr(linkedLayoutExtract[1], 0);
+          }
+
+          // Update data element.
+          this.updateData({
+            linkedLayoutId: linkedLayoutId,
+            linkedLayoutNodeId: linkedLayoutNodeId,
+            linkedLayoutStatusType: "default"
+          });
+
+          // Add containerType to container.
+          lvcTypeContainer.childNodes.forEach(n => n.remove());
+          lvcTypeContainer.appendChild(
+            this.getLinkedVisualConsoleTypeSelector(linkedLayoutId)
+          );
+        });
+
+        // Add principal select to label.
+        linkConsoleLabel.appendChild(linkConsoleSelect);
+
+        // Add weight warning field.
+        container.appendChild(linkConsoleLabel);
+
+        // Add containerType to container.
+        lvcTypeContainer.appendChild(
+          this.getLinkedVisualConsoleTypeSelector(
+            parseIntOr(this.initialData.linkedLayoutId, 0)
+          )
+        );
+        container.appendChild(lvcTypeContainer);
+      }
+    });
+
+    return container;
+  }
+
+  private getLinkedVisualConsoleTypeSelector = (
+    linkedLayoutId: number
+  ): HTMLElement => {
+    // Create div container Type.
+    const containerType = document.createElement("div");
+
+    const lvcTypeContainerChild = document.createElement("div");
+
+    // Check id visual console for show label type.
+    if (linkedLayoutId === 0) return containerType;
+
+    // Select type link console appears when selecting a visual console
+    // from the main select.
+    // Label type link.
+    const typeLinkConsoleLabel = document.createElement("label");
+    typeLinkConsoleLabel.textContent = t(
+      "Type of the status calculation of the linked visual console"
+    );
+
+    // Select type link.
+    const typeLinkConsoleSelect = document.createElement("select");
+    typeLinkConsoleSelect.required = false;
+
+    // Array types for Linked. default | weight | service.
+    const arrayTypeLinked = [
+      { value: "default", text: t("By default") },
+      { value: "weight", text: t("By status weight") },
+      { value: "service", text: t("By critical elements") }
+    ];
+
+    // Create options select type link.
+    arrayTypeLinked.forEach(option => {
+      const typeOptionElement = document.createElement("option");
+      typeOptionElement.value = option.value;
+      typeOptionElement.textContent = option.text;
+      typeLinkConsoleSelect.appendChild(typeOptionElement);
+    });
+
+    // Set values undef is default.
+    let value: LinkedVisualConsoleProps["linkedLayoutStatusType"];
+    value =
+      typeof this.currentData.linkedLayoutStatusType === "undefined"
+        ? typeof this.initialData.linkedLayoutStatusType === "undefined"
+          ? "default"
+          : this.initialData.linkedLayoutStatusType
+        : this.currentData.linkedLayoutStatusType;
+
+    typeLinkConsoleSelect.value = value;
+
+    // Add select type link.
+    typeLinkConsoleLabel.appendChild(typeLinkConsoleSelect);
+
+    // Add type link.
+    containerType.appendChild(typeLinkConsoleLabel);
+
+    switch (value) {
+      case "weight":
+        // Add Chil container with weight.
+        lvcTypeContainerChild.appendChild(
+          this.getLinkedVisualConsoleTypeWeihtInput()
+        );
+        break;
+      case "service":
+        // Add Chil container with weight.
+        lvcTypeContainerChild.appendChild(
+          this.getLinkedVisualConsoleTypeServiceInput()
+        );
+        break;
+      default:
+        break;
+    }
+
+    // Add types.
+    containerType.appendChild(lvcTypeContainerChild);
+
+    // Listener event change select type link.
+    typeLinkConsoleSelect.addEventListener("change", event => {
+      // Convert value to insert data.
+      let value = (event.target as HTMLSelectElement).value;
+      let linkedLayoutStatusType: LinkedVisualConsoleProps["linkedLayoutStatusType"] =
+        value !== "weight" && value !== "service" ? "default" : value;
+
+      lvcTypeContainerChild.childNodes.forEach(n => n.remove());
+
+      switch (linkedLayoutStatusType) {
+        case "weight":
+          // Update data element.
+          this.updateData({
+            linkedLayoutStatusType,
+            linkedLayoutStatusTypeWeight: 0
+          });
+
+          // Add Chil container with weight.
+          lvcTypeContainerChild.appendChild(
+            this.getLinkedVisualConsoleTypeWeihtInput()
+          );
+          break;
+        case "service":
+          // Update data element.
+          this.updateData({
+            linkedLayoutStatusType,
+            linkedLayoutStatusTypeWarningThreshold: 0,
+            linkedLayoutStatusTypeCriticalThreshold: 0
+          });
+
+          // Add Chil container with weight.
+          lvcTypeContainerChild.appendChild(
+            this.getLinkedVisualConsoleTypeServiceInput()
+          );
+          break;
+        default:
+          // Update data element.
+          this.updateData({
+            linkedLayoutStatusType
+          });
+          break;
+      }
+    });
+
+    return containerType;
+  };
+
+  private getLinkedVisualConsoleTypeWeihtInput = (): HTMLElement => {
+    // Crete div container child type.
+    const containerChildType = document.createElement("div");
+
+    // Input selected type = weight.
+    // from the select type.
+    // Label.
+    const weightLabel = document.createElement("label");
+    weightLabel.textContent = t("Linked visual console weight");
+
+    // Input.
+    const weightInput = document.createElement("input");
+    weightInput.type = "number";
+    weightInput.min = "0";
+    weightInput.required = true;
+
+    let currentValueWeight: number | undefined;
+    if (this.currentData.linkedLayoutStatusType === "weight") {
+      currentValueWeight = this.currentData.linkedLayoutStatusTypeWeight;
+    }
+
+    let initialValueWeight: number | undefined;
+    if (this.initialData.linkedLayoutStatusType === "weight") {
+      initialValueWeight = this.initialData.linkedLayoutStatusTypeWeight;
+    }
+
+    weightInput.value = `${currentValueWeight || initialValueWeight || 0}`;
+
+    weightInput.addEventListener("change", e =>
+      this.updateData({
+        linkedLayoutStatusTypeWeight: parseIntOr(
+          (e.target as HTMLInputElement).value,
+          0
+        )
+      })
+    );
+
+    // Add input weight.
+    weightLabel.appendChild(weightInput);
+
+    // Add label weight.
+    containerChildType.appendChild(weightLabel);
+
+    return containerChildType;
+  };
+
+  private getLinkedVisualConsoleTypeServiceInput = (): HTMLElement => {
+    // Crete div container child type.
+    const containerChildType = document.createElement("div");
+
+    // Input selected type = services.
+    // from the select type.
+    // Label.
+    const criticalWeightLabel = document.createElement("label");
+    criticalWeightLabel.textContent = t("Critical weight");
+
+    //Input.
+    const criticalWeightInput = document.createElement("input");
+    criticalWeightInput.type = "number";
+    criticalWeightInput.min = "0";
+    criticalWeightInput.required = true;
+
+    let currentValueCritical: number | undefined;
+    if (this.currentData.linkedLayoutStatusType === "service") {
+      currentValueCritical = this.currentData
+        .linkedLayoutStatusTypeCriticalThreshold;
+    }
+
+    let initialValueCritical: number | undefined;
+    if (this.initialData.linkedLayoutStatusType === "service") {
+      initialValueCritical = this.initialData
+        .linkedLayoutStatusTypeCriticalThreshold;
+    }
+
+    criticalWeightInput.value = `${currentValueCritical ||
+      initialValueCritical ||
+      0}`;
+
+    criticalWeightInput.addEventListener("change", e =>
+      this.updateData({
+        linkedLayoutStatusTypeCriticalThreshold: parseIntOr(
+          (e.target as HTMLInputElement).value,
+          0
+        )
+      })
+    );
+
+    // Input selected type = services.
+    // from the select type.
+    // Label.
+    const warningWeightLabel = document.createElement("label");
+    warningWeightLabel.textContent = t("Warning weight");
+
+    //Input.
+    const warningWeightInput = document.createElement("input");
+    warningWeightInput.type = "number";
+    warningWeightInput.min = "0";
+    warningWeightInput.required = true;
+
+    let currentValueWarning: number | undefined;
+    if (this.currentData.linkedLayoutStatusType === "service") {
+      currentValueWarning = this.currentData
+        .linkedLayoutStatusTypeWarningThreshold;
+    }
+
+    let initialValueWarning: number | undefined;
+    if (this.initialData.linkedLayoutStatusType === "service") {
+      initialValueWarning = this.initialData
+        .linkedLayoutStatusTypeWarningThreshold;
+    }
+
+    warningWeightInput.value = `${currentValueWarning ||
+      initialValueWarning ||
+      0}`;
+
+    warningWeightInput.addEventListener("change", e =>
+      this.updateData({
+        linkedLayoutStatusTypeWarningThreshold: parseIntOr(
+          (e.target as HTMLInputElement).value,
+          0
+        )
+      })
+    );
+
+    // Add input weight warning.
+    warningWeightLabel.appendChild(warningWeightInput);
+
+    // Add label warning field.
+    containerChildType.appendChild(warningWeightLabel);
+
+    // Add input crital weight.
+    criticalWeightLabel.appendChild(criticalWeightInput);
+
+    // Add label weight critical.
+    containerChildType.appendChild(criticalWeightLabel);
+
+    return containerChildType;
+  };
 }
 
 /**

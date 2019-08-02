@@ -7,7 +7,13 @@ import {
   decodeBase64,
   parseBoolean
 } from "../lib";
-import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../Item";
+import Item, {
+  ItemProps,
+  itemBasePropsDecoder,
+  ItemType,
+  LinkConsoleInputGroup
+} from "../Item";
+import { FormContainer } from "../Form";
 
 export type GroupProps = {
   type: ItemType.GROUP_ITEM;
@@ -76,5 +82,18 @@ export default class Group extends Item<GroupProps> {
     }
 
     return element;
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * LinkConsoleInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props)
+    );
+    return formContainer;
   }
 }

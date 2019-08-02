@@ -9,7 +9,13 @@ import {
   decodeBase64,
   stringIsEmpty
 } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  LinkConsoleInputGroup
+} from "../Item";
+import { FormContainer } from "../Form";
 
 export type DonutGraphProps = {
   type: ItemType.DONUT_GRAPH;
@@ -74,5 +80,18 @@ export default class DonutGraph extends Item<DonutGraphProps> {
         eval(scripts[i].innerHTML.trim());
       }
     }
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * LinkConsoleInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props)
+    );
+    return formContainer;
   }
 }

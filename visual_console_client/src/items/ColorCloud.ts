@@ -4,7 +4,13 @@ import {
   AnyObject
 } from "../lib/types";
 import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
-import Item, { itemBasePropsDecoder, ItemType, ItemProps } from "../Item";
+import Item, {
+  itemBasePropsDecoder,
+  ItemType,
+  ItemProps,
+  LinkConsoleInputGroup
+} from "../Item";
+import { FormContainer } from "../Form";
 
 export type ColorCloudProps = {
   type: ItemType.COLOR_CLOUD;
@@ -100,5 +106,18 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     svg.append(defs, circle);
 
     return svg;
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * LinkConsoleInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props)
+    );
+    return formContainer;
   }
 }

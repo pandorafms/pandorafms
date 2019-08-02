@@ -19,6 +19,7 @@ $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
 $copyVisualConsoleItem = (bool) get_parameter('copyVisualConsoleItem');
 $getGroupsVisualConsoleItem = (bool) get_parameter('getGroupsVisualConsoleItem');
+$getAllVisualConsole = (bool) get_parameter('getAllVisualConsole');
 
 ob_clean();
 
@@ -187,6 +188,58 @@ if ($getVisualConsole === true) {
     );
 
     echo json_encode($result);
+    return;
+} else if ($getAllVisualConsole === true) {
+    // Extract all VC except own.
+    $result = db_get_all_rows_filter(
+        'tlayout',
+        'id != '.(int) $visualConsole,
+        [
+            'id',
+            'name',
+        ]
+    );
+
+    // Extract all VC for each node.
+    if (is_metaconsole() === true) {
+        enterprise_include_once('include/functions_metaconsole.php');
+        $meta_servers = metaconsole_get_servers();
+        foreach ($meta_servers as $server) {
+            if (metaconsole_load_external_db($server) !== NOERR) {
+                metaconsole_restore_db();
+                continue;
+            }
+
+            $node_visual_maps = db_get_all_rows_filter(
+                'tlayout',
+                [],
+                [
+                    'id',
+                    'name',
+                ]
+            );
+
+            if (isset($node_visual_maps) === true
+                && is_array($node_visual_maps) === true
+            ) {
+                foreach ($node_visual_maps as $node_visual_map) {
+                    // Add nodeID.
+                    $node_visual_map['nodeId'] = (int) $server['id'];
+
+                    // Name = vc_name - (node).
+                    $node_visual_map['name'] = $node_visual_map['name'];
+                    $node_visual_map['name'] .= ' - (';
+                    $node_visual_map['name'] .= $server['server_name'].')';
+
+                    $result[] = $node_visual_map;
+                }
+            }
+
+            metaconsole_restore_db();
+        }
+    }
+
+    echo json_encode(io_safe_output($result));
     return;
 }
 

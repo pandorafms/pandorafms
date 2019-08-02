@@ -238,6 +238,56 @@ function createVisualConsole(
                 })
                 .init();
               break;
+            case "link-console":
+              asyncTaskManager
+                .add(identifier + "-" + params.id, function(doneAsyncTask) {
+                  var abortable = getAllVisualConsole(
+                    baseUrl,
+                    visualConsole.props.id,
+                    function(error, data) {
+                      if (error || !data) {
+                        console.log(
+                          "[ERROR]",
+                          "[VISUAL-CONSOLE-CLIENT]",
+                          "[API]",
+                          error ? error.message : "Invalid response"
+                        );
+
+                        done(error);
+                        doneAsyncTask();
+                        return;
+                      }
+
+                      if (typeof data === "string") {
+                        try {
+                          data = JSON.parse(data);
+                        } catch (error) {
+                          console.log(
+                            "[ERROR]",
+                            "[VISUAL-CONSOLE-CLIENT]",
+                            "[API]",
+                            error ? error.message : "Invalid response"
+                          );
+
+                          done(error);
+                          doneAsyncTask();
+                          return; // Stop task execution.
+                        }
+                      }
+
+                      done(null, data);
+                      doneAsyncTask();
+                    }
+                  );
+
+                  return {
+                    cancel: function() {
+                      abortable.abort();
+                    }
+                  };
+                })
+                .init();
+              break;
             default:
               done(new Error("identifier not found"));
           }
@@ -910,6 +960,69 @@ function getGroupsVisualConsoleItem(baseUrl, vcId, callback) {
       {
         page: "include/rest-api/index",
         getGroupsVisualConsoleItem: 1,
+        visualConsoleId: vcId
+      },
+      "json"
+    )
+    .done(handleSuccess)
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
+/**
+ * Fetch groups access user.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {number} vcId Identifier of the Visual Console.
+ * @param {function} callback Function to be executed on request success or fail.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function getAllVisualConsole(baseUrl, vcId, callback) {
+  var apiPath = baseUrl + "/ajax.php";
+  var jqXHR = null;
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
+      jqXHR.abort(textStatus);
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Function which handle success case.
+  var handleSuccess = function(data) {
+    callback(null, data);
+  };
+
+  // Visual Console container request.
+  jqXHR = jQuery
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        getAllVisualConsole: 1,
         visualConsoleId: vcId
       },
       "json"

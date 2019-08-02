@@ -1,6 +1,12 @@
 import { LinkedVisualConsoleProps, AnyObject } from "../lib/types";
 import { linkedVCPropsDecoder } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  LinkConsoleInputGroup
+} from "../Item";
+import { FormContainer } from "../Form";
 
 export type IconProps = {
   type: ItemType.ICON;
@@ -39,5 +45,18 @@ export default class Icon extends Item<IconProps> {
     element.style.backgroundPosition = "center";
 
     return element;
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * LinkConsoleInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props)
+    );
+    return formContainer;
   }
 }

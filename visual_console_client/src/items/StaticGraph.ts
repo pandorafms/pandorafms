@@ -10,7 +10,12 @@ import {
   notEmptyStringOr,
   t
 } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  LinkConsoleInputGroup
+} from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
 export type StaticGraphProps = {
@@ -140,11 +145,15 @@ export default class StaticGraph extends Item<StaticGraphProps> {
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
    * ShowLastValueInputGroup
+   * LinkConsoleInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
       new ShowLastValueInputGroup("show-last-value", this.props)
+    );
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props)
     );
     return formContainer;
   }

@@ -13,7 +13,12 @@ import {
   parseFloatOr,
   t
 } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  LinkConsoleInputGroup
+} from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
 export type PercentileProps = {
@@ -174,7 +179,7 @@ class MaxValueInputGroup extends InputGroup<Partial<PercentileProps>> {
     maxValueInput.required = true;
 
     maxValueInput.value = `${this.currentData.maxValue ||
-      this.currentData.minValue ||
+      this.initialData.maxValue ||
       0}`;
 
     maxValueInput.addEventListener("change", e => {
@@ -301,7 +306,7 @@ class ElementColorInputGroup extends InputGroup<Partial<PercentileProps>> {
     elementColorInput.required = true;
 
     elementColorInput.value = `${this.currentData.color ||
-      this.currentData.color}`;
+      this.initialData.color}`;
 
     elementColorInput.addEventListener("change", e => {
       this.updateData({
@@ -330,7 +335,7 @@ class ValueColorInputGroup extends InputGroup<Partial<PercentileProps>> {
     valueColorInput.required = true;
 
     valueColorInput.value = `${this.currentData.labelColor ||
-      this.currentData.labelColor}`;
+      this.initialData.labelColor}`;
 
     valueColorInput.addEventListener("change", e => {
       this.updateData({
@@ -359,7 +364,7 @@ class LabelPercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
     labelPercentileInput.required = true;
 
     labelPercentileInput.value = `${this.currentData.label ||
-      this.currentData.label ||
+      this.initialData.label ||
       ""} `;
 
     labelPercentileInput.addEventListener("change", e => {
@@ -558,6 +563,7 @@ export default class Percentile extends Item<PercentileProps> {
    * ElementColorInputGroup,
    * ValueColorInputGroup,
    * LabelPercentileInputGroup
+   * LinkConsoleInputGroup
    * are removed:
    * inputgrouplabel
    * size
@@ -591,6 +597,9 @@ export default class Percentile extends Item<PercentileProps> {
     );
     formContainer.addInputGroup(
       new LabelPercentileInputGroup("label-percentile", this.props)
+    );
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props)
     );
     return formContainer;
   }

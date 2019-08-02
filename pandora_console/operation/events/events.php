@@ -1260,6 +1260,9 @@ try {
     // Get column names.
     $column_names = events_get_column_names($fields, true);
 
+    // First column name has a padding
+    $column_names[0]['style'] = 'padding-left: 1em !important;';
+
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
 

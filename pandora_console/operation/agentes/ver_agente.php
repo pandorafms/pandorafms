@@ -1559,8 +1559,11 @@ switch ($tab) {
         include 'estado_monitores.php';
         echo "<a name='alerts'></a>";
         include 'alerts_status.php';
-        echo "<a name='events'></a>";
-        include 'status_events.php';
+        // Check permissions to read events
+        if (check_acl($config['id_user'], 0, 'ER')) {
+            echo "<a name='events'></a>";
+            include 'status_events.php';
+        }
     break;
 
     case 'data_view':

@@ -2842,7 +2842,7 @@ function config_process_config()
         }
     }
 
-    // Integria
+    // Integria.
     if (!isset($config['integria_enabled'])) {
         config_update_value('integria_enabled', 0);
     }

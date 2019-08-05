@@ -130,7 +130,17 @@ use Text::ParseWords;
 # due a bug processing some XML with blank spaces.
 # See http://www.perlmonks.org/?node_id=706838
 
-$XML::Simple::PREFERRED_PARSER='XML::Parser';
+eval {
+	local $SIG{__DIE__};
+	eval "use XML::SAX::ExpatXS;1" or die "XML::SAX::ExpatXS not available";
+};
+if (!$@) {
+	# Force best option available.
+	$XML::Simple::PREFERRED_PARSER='XML::SAX::ExpatXS';
+} else {
+	# Use classic parser.
+	$XML::Simple::PREFERRED_PARSER='XML::Parser';
+}
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -725,6 +735,15 @@ Execute the given alert.
 sub pandora_execute_alert ($$$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $forced_alert, $extra_macros) = @_;
+	
+	# 'in-process' events can inhibit alers too.
+	if ($pa_config->{'event_inhibit_alerts'} == 1 && $alert_mode != RECOVERED_ALERT) {
+		my $status = get_db_value($dbh, 'SELECT estado FROM tevento WHERE id_alert_am = ? ORDER BY utimestamp DESC LIMIT 1', $alert->{'id_template_module'});
+		if (defined($status) && $status == 2) {
+			logger ($pa_config, "Alert '" . safe_output($alert->{'name'}) . "' inhibited by in-process events.", 10);
+			return;
+		}
+	}
 	
 	# Alerts in stand-by are not executed
 	if ($alert->{'standby'} == 1) {

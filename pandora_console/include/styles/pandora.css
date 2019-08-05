@@ -437,8 +437,17 @@ select:-internal-list-box {
  * - GLOBAL STYLES                           									-
  * ---------------------------------------------------------------------
  */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.truncate:hover {
+  white-space: pre-wrap;
+}
 .w120px {
   width: 120px;
+  max-width: 120px;
 }
 .mw120px {
   min-width: 120px;
@@ -1588,6 +1597,8 @@ button.config,
 button.filter,
 button.cancel,
 button.default,
+button.deploy,
+input.deploy,
 input.next,
 input.upd,
 input.ok,
@@ -1708,7 +1719,10 @@ button.spinn,
 input.spinn {
   background-image: url(../../images/spinner_green.gif);
 }
-
+button.deploy,
+input.deploy {
+  background-image: url(../../images/input_deploy.png);
+}
 /*#table-add-item select, #table-add-sla select {
 	width: 180px;
 }*/

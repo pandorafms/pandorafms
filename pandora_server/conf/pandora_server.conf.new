@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.736
+# Version 7.0NG.737
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -428,6 +428,10 @@ eventserver 0
 # Event Server event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
+
+# If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
+
+event_inhibit_alerts 0
 
 # Enable (1) or disable (0) Pandora FMS Enterprise ICMP Server (PANDORA FMS ENTERPRISE ONLY).
 # You need nmap 5.20 or higher in order to use this !

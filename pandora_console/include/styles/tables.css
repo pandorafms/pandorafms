@@ -122,6 +122,7 @@
   letter-spacing: 0.3pt;
   color: #000;
   background-color: #fff;
+  cursor: pointer;
 }
 
 .info_table tr th {
@@ -345,4 +346,9 @@ a.pandora_pagination.current:hover {
   background-position-x: left;
   background-position-y: center;
   cursor: pointer;
+}
+
+.info_table tr th.sorting_asc,
+.info_table tr th.sorting_desc {
+  padding-left: 15px;
 }

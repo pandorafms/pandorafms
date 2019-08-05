@@ -19,7 +19,8 @@ import {
   debounce,
   addResizementListener,
   t,
-  helpTip
+  helpTip,
+  periodSelector
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { FormContainer, InputGroup } from "./Form";
@@ -66,6 +67,7 @@ export interface ItemProps extends Position, Size {
   isOnTop: boolean;
   parentId: number | null;
   aclGroupId: number | null;
+  cacheExpiration: number | null;
 }
 
 export interface ItemClickEvent {
@@ -352,6 +354,33 @@ class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
     });
 
     return aclGroupLabel;
+  }
+}
+
+// TODO: Document
+class CacheExpirationInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const periodLabel = document.createElement("label");
+    periodLabel.textContent = t("Cache expiration");
+
+    const periodControl = periodSelector(
+      this.currentData.cacheExpiration || this.initialData.cacheExpiration || 0,
+      { text: t("No cache"), value: 0 },
+      [
+        { text: t("10 seconds"), value: 10 },
+        { text: t("30 seconds"), value: 30 },
+        { text: t("60 seconds"), value: 60 },
+        { text: t("5 minutes"), value: 300 },
+        { text: t("15 minutes"), value: 900 },
+        { text: t("30 minutes"), value: 1800 },
+        { text: t("1 hour"), value: 3600 }
+      ],
+      value => this.updateData({ cacheExpiration: value })
+    );
+
+    periodLabel.appendChild(periodControl);
+
+    return periodLabel;
   }
 }
 
@@ -910,6 +939,7 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     isOnTop: parseBoolean(data.isOnTop),
     parentId: parseIntOr(data.parentId, null),
     aclGroupId: parseIntOr(data.aclGroupId, null),
+    cacheExpiration: parseIntOr(data.cacheExpiration, null),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -1766,9 +1796,18 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new LinkInputGroup("link", this.props),
         new OnTopInputGroup("show-on-top", this.props),
         new ParentInputGroup("parent", this.props),
-        new AclGroupInputGroup("acl-group", this.props)
+        new AclGroupInputGroup("acl-group", this.props),
+        new CacheExpirationInputGroup("cache-expiration", this.props)
       ],
-      ["position", "size", "link", "show-on-top", "parent", "acl-group"]
+      [
+        "position",
+        "size",
+        "link",
+        "show-on-top",
+        "parent",
+        "acl-group",
+        "cache-expiration"
+      ]
     );
 
     //return VisualConsoleItem.getFormContainer(this.props);
@@ -1784,9 +1823,18 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new LinkInputGroup("link", props),
         new OnTopInputGroup("show-on-top", props),
         new ParentInputGroup("parent", props),
-        new AclGroupInputGroup("acl-group", props)
+        new AclGroupInputGroup("acl-group", props),
+        new CacheExpirationInputGroup("cache-expiration", props)
       ],
-      ["position", "size", "link", "show-on-top", "parent", "acl-group"]
+      [
+        "position",
+        "size",
+        "link",
+        "show-on-top",
+        "parent",
+        "acl-group",
+        "cache-expiration"
+      ]
     );
   }
 }

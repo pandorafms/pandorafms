@@ -11,6 +11,8 @@ import {
 } from "./types";
 
 import helpTipIcon from "./help-tip.png";
+import fontAwesomeIcon from "./FontAwesomeIcon";
+import { faPencilAlt, faListAlt } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * Return a number or a default value from a raw value.
@@ -752,13 +754,199 @@ export function helpTip(text: string): HTMLElement {
   return container;
 }
 
+interface PeriodSelectorOption {
+  value: number;
+  text: string;
+}
+export function periodSelector(
+  selectedValue: PeriodSelectorOption["value"] | null,
+  emptyOption: PeriodSelectorOption | null,
+  options: PeriodSelectorOption[],
+  onChange: (value: PeriodSelectorOption["value"]) => void
+): HTMLElement {
+  if (selectedValue === null) selectedValue = 0;
+  const initialValue = emptyOption ? emptyOption.value : 0;
+  let currentValue: number =
+    selectedValue != null ? selectedValue : initialValue;
+  // Main container.
+  const container = document.createElement("div");
+  // Container for the period selector.
+  const periodsContainer = document.createElement("div");
+  const selectPeriods = document.createElement("select");
+  const useManualPeriodsBtn = document.createElement("a");
+  // Container for the custom period input.
+  const manualPeriodsContainer = document.createElement("div");
+  const inputTimeValue = document.createElement("input");
+  const unitsSelect = document.createElement("select");
+  const usePeriodsBtn = document.createElement("a");
+  // Units to multiply the custom period input.
+  const unitOptions: { value: string; text: string }[] = [
+    { value: "1", text: t("Seconds").toLowerCase() },
+    { value: "60", text: t("Minutes").toLowerCase() },
+    { value: "3600", text: t("Hours").toLowerCase() },
+    { value: "86400", text: t("Days").toLowerCase() },
+    { value: "604800", text: t("Weeks").toLowerCase() },
+    { value: `${86400 * 30}`, text: t("Months").toLowerCase() },
+    { value: `${86400 * 30 * 12}`, text: t("Years").toLowerCase() }
+  ];
+
+  // Will be executed every time the value changes.
+  const handleChange = (value: number) => {
+    currentValue = value;
+    onChange(currentValue);
+  };
+  // Will return the first period option smaller than the value.
+  const findPeriodsOption = (value: number) =>
+    options
+      .sort((a, b) => (a.value < b.value ? 1 : -1))
+      .find(optionVal => value >= optionVal.value);
+  // Will return the first multiple of the value using the custom input multipliers.
+  const findManualPeriodsOptionValue = (value: number) =>
+    unitOptions
+      .map(unitOption => Number.parseInt(unitOption.value))
+      .sort((a, b) => (a < b ? 1 : -1))
+      .find(optionVal => value % optionVal === 0);
+  // Will find and set a valid option for the period selector.
+  const setPeriodsValue = (value: number) => {
+    let option = findPeriodsOption(value);
+    selectPeriods.value = `${option ? option.value : initialValue}`;
+  };
+  // Will transform the value to show the perfect fit for the custom input period.
+  const setManualPeriodsValue = (value: number) => {
+    const optionVal = findManualPeriodsOptionValue(value);
+    if (optionVal) {
+      inputTimeValue.value = `${value / optionVal}`;
+      unitsSelect.value = `${optionVal}`;
+    } else {
+      inputTimeValue.value = `${value}`;
+      unitsSelect.value = "1";
+    }
+  };
+
+  // Will modify the value to show the perfect fit for this element and show its container.
+  const showPeriods = () => {
+    let option = findPeriodsOption(currentValue);
+    const newValue = option ? option.value : initialValue;
+    selectPeriods.value = `${newValue}`;
+
+    if (newValue !== currentValue) handleChange(newValue);
+
+    container.replaceChild(periodsContainer, manualPeriodsContainer);
+  };
+  // Will modify the value to show the perfect fit for this element and show its container.
+  const showManualPeriods = () => {
+    const optionVal = findManualPeriodsOptionValue(currentValue);
+
+    if (optionVal) {
+      inputTimeValue.value = `${currentValue / optionVal}`;
+      unitsSelect.value = `${optionVal}`;
+    } else {
+      inputTimeValue.value = `${currentValue}`;
+      unitsSelect.value = "1";
+    }
+
+    container.replaceChild(manualPeriodsContainer, periodsContainer);
+  };
+
+  // Append the elements
+
+  periodsContainer.appendChild(selectPeriods);
+  periodsContainer.appendChild(useManualPeriodsBtn);
+
+  manualPeriodsContainer.appendChild(inputTimeValue);
+  manualPeriodsContainer.appendChild(unitsSelect);
+  manualPeriodsContainer.appendChild(usePeriodsBtn);
+
+  if (
+    options.find(option => option.value === selectedValue) ||
+    (emptyOption && emptyOption.value === selectedValue)
+  ) {
+    // Start with the custom periods select.
+    container.appendChild(periodsContainer);
+  } else {
+    // Start with the manual time input
+    container.appendChild(manualPeriodsContainer);
+  }
+
+  // Set and fill the elements.
+
+  // Periods selector.
+
+  selectPeriods.addEventListener("change", (e: Event) =>
+    handleChange(
+      parseIntOr((e.target as HTMLSelectElement).value, initialValue)
+    )
+  );
+  if (emptyOption) {
+    const optionElem = document.createElement("option");
+    optionElem.value = `${emptyOption.value}`;
+    optionElem.text = emptyOption.text;
+    selectPeriods.appendChild(optionElem);
+  }
+  options.forEach(option => {
+    const optionElem = document.createElement("option");
+    optionElem.value = `${option.value}`;
+    optionElem.text = option.text;
+    selectPeriods.appendChild(optionElem);
+  });
+
+  setPeriodsValue(selectedValue);
+
+  useManualPeriodsBtn.appendChild(
+    fontAwesomeIcon(faPencilAlt, t("Show manual period input"), {
+      size: "small"
+    })
+  );
+  useManualPeriodsBtn.addEventListener("click", e => {
+    e.preventDefault();
+    showManualPeriods();
+  });
+
+  // Manual periods input.
+
+  inputTimeValue.type = "number";
+  inputTimeValue.min = "0";
+  inputTimeValue.required = true;
+  inputTimeValue.addEventListener("change", (e: Event) =>
+    handleChange(
+      parseIntOr((e.target as HTMLSelectElement).value, 0) *
+        parseIntOr(unitsSelect.value, 1)
+    )
+  );
+  // Select for time units.
+  unitsSelect.addEventListener("change", (e: Event) =>
+    handleChange(
+      parseIntOr(inputTimeValue.value, 0) *
+        parseIntOr((e.target as HTMLSelectElement).value, 1)
+    )
+  );
+  unitOptions.forEach(option => {
+    const optionElem = document.createElement("option");
+    optionElem.value = `${option.value}`;
+    optionElem.text = option.text;
+    unitsSelect.appendChild(optionElem);
+  });
+
+  setManualPeriodsValue(selectedValue);
+
+  usePeriodsBtn.appendChild(
+    fontAwesomeIcon(faListAlt, t("Show periods selector"), { size: "small" })
+  );
+  usePeriodsBtn.addEventListener("click", e => {
+    e.preventDefault();
+    showPeriods();
+  });
+
+  return container;
+}
+
 /**
  * Cuts the text if their length is greater than the selected max length
  * and applies the selected ellipse to the result text.
- * @param {string} str Text to cut
- * @param {number} max Maximum length after cutting the text
- * @param {string} ellipse String to be added to the cutted text
- * @returns {string} Full text or text cutted with the ellipse
+ * @param str Text to cut
+ * @param max Maximum length after cutting the text
+ * @param ellipse String to be added to the cutted text
+ * @returns Full text or text cutted with the ellipse
  */
 export function ellipsize(
   str: string,

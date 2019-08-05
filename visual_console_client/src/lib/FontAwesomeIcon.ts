@@ -13,7 +13,7 @@ interface ExtraProps {
 const fontAwesomeIcon = (
   iconDefinition: IconDefinition,
   title: string,
-  { size, color, spin, pulse }: ExtraProps
+  { size, color, spin, pulse }: ExtraProps = {}
 ): HTMLElement => {
   const container = document.createElement("figure");
   container.title = title;

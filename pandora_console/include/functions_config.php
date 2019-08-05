@@ -1434,6 +1434,28 @@ function config_update_config()
                     }
                 break;
 
+                case 'integria':
+                    if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
+                        $error_update[] = __('Enable Integria');
+                    }
+
+                    if (!config_update_value('integria_user', (string) get_parameter('integria_user', $config['integria_user']))) {
+                        $error_update[] = __('Integria user');
+                    }
+
+                    if (!config_update_value('integria_pass', io_input_password((string) get_parameter('integria_pass', $config['integria_pass'])))) {
+                        $error_update[] = __('Integria password');
+                    }
+
+                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                        $error_update[] = __('integria API hostname');
+                    }
+
+                    if (!config_update_value('integria_req_timeout', (int) get_parameter('integria_req_timeout', $config['integria_req_timeout']))) {
+                        $error_update[] = __('Integria request timeout');
+                    }
+                break;
+
                 default:
                     // Ignore.
                 break;
@@ -2818,6 +2840,19 @@ function config_process_config()
         if (!isset($config['metaconsole_deploy_plugin_server'])) {
             config_update_value('metaconsole_deploy_plugin_server', 0);
         }
+    }
+
+    // Integria
+    if (!isset($config['integria_enabled'])) {
+        config_update_value('integria_enabled', 0);
+    }
+
+    if (!isset($config['integria_req_timeout'])) {
+        config_update_value('integria_req_timeout', 5);
+    }
+
+    if (!isset($config['integria_hostname'])) {
+        config_update_value('integria_hostname', '');
     }
 
     // Finally, check if any value was overwritten in a form.

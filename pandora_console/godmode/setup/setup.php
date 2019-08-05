@@ -228,6 +228,10 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
     break;
 
+    case 'integria':
+        include_once $config['homedir'].'/godmode/setup/setup_integria.php';
+    break;
+
     case 'notifications':
         include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
     break;

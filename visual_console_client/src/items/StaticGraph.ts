@@ -14,7 +14,8 @@ import Item, {
   ItemType,
   ItemProps,
   itemBasePropsDecoder,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  ImageInputGroup
 } from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
@@ -149,6 +150,9 @@ export default class StaticGraph extends Item<StaticGraphProps> {
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new ImageInputGroup("image-console", this.props)
+    );
     formContainer.addInputGroup(
       new ShowLastValueInputGroup("show-last-value", this.props)
     );

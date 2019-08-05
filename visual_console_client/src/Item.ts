@@ -95,6 +95,10 @@ export interface ItemSelectionChangedEvent {
   selected: boolean;
 }
 
+export interface ImageInputGroupProps {
+  imageSrc: string | null;
+}
+
 // TODO: Document
 class LinkInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
@@ -753,6 +757,112 @@ export class LinkConsoleInputGroup extends InputGroup<
 
     return containerChildType;
   };
+}
+
+/**
+ * Class to add item to the static Graph item form
+ * This item consists of a label and a color type select.
+ * Show Last Value is stored in the showLastValueTooltip property
+ */
+export class ImageInputGroup extends InputGroup<Partial<ImageInputGroupProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const imageLabel = document.createElement("label");
+    imageLabel.textContent = t("Image");
+
+    const divImage = document.createElement("div");
+
+    const imageTypes = ["", "_bad", "_ok", "_warning"];
+
+    // Create element Spinner.
+    const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
+      size: "small",
+      spin: true
+    });
+    imageLabel.appendChild(spinner);
+
+    // Init request
+    this.requestData("image-console", {}, (error, data) => {
+      // Remove Spinner.
+      spinner.remove();
+
+      // Check errors.
+      if (error) {
+        // Add img error.
+        imageLabel.appendChild(
+          fontAwesomeIcon(faExclamationCircle, t("Error"), {
+            size: "small",
+            color: "#e63c52"
+          })
+        );
+      }
+
+      if (data instanceof Array) {
+        const labelSelect = document.createElement("select");
+        labelSelect.required = true;
+
+        data.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option.name;
+          optionElement.textContent = option.name;
+          labelSelect.appendChild(optionElement);
+        });
+
+        labelSelect.addEventListener("change", event => {
+          const imageSrc = (event.target as HTMLSelectElement).value;
+          this.updateData({ imageSrc });
+
+          if (imageSrc != null) {
+            const imageItem = data.find(item => item.name === imageSrc);
+
+            if (imageItem) {
+              const deleteImg = divImage.querySelectorAll(".img-vc-elements");
+              deleteImg.forEach(value => {
+                divImage.removeChild(value);
+              });
+
+              imageTypes.forEach(value => {
+                const imagePaint = document.createElement("img");
+                imagePaint.alt = t("Image VC");
+                imagePaint.style.width = "40px";
+                imagePaint.style.height = "40px";
+                imagePaint.className = "img-vc-elements";
+                imagePaint.src = `${imageItem.src}${value}.png`;
+                divImage.appendChild(imagePaint);
+              });
+            }
+          }
+        });
+
+        const valueImage = `${this.currentData.imageSrc ||
+          this.initialData.imageSrc ||
+          null}`;
+
+        labelSelect.value = valueImage;
+
+        imageLabel.appendChild(labelSelect);
+
+        if (valueImage != null) {
+          const imageItem = data.find(item => item.name === valueImage);
+
+          if (imageItem) {
+            imageTypes.forEach(value => {
+              const imagePaint = document.createElement("img");
+              imagePaint.alt = t("Image VC");
+              imagePaint.style.width = "40px";
+              imagePaint.style.height = "40px";
+              imagePaint.className = "img-vc-elements";
+              imagePaint.src = `${imageItem.src}${value}.png`;
+              divImage.appendChild(imagePaint);
+            });
+          }
+
+          imageLabel.appendChild(divImage);
+        }
+      }
+    });
+
+    return imageLabel;
+  }
 }
 
 /**

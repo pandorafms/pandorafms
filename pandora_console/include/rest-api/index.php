@@ -20,6 +20,7 @@ $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
 $copyVisualConsoleItem = (bool) get_parameter('copyVisualConsoleItem');
 $getGroupsVisualConsoleItem = (bool) get_parameter('getGroupsVisualConsoleItem');
 $getAllVisualConsole = (bool) get_parameter('getAllVisualConsole');
+$getImagesVisualConsole = (bool) get_parameter('getImagesVisualConsole');
 
 ob_clean();
 
@@ -236,6 +237,49 @@ if ($getVisualConsole === true) {
             }
 
             metaconsole_restore_db();
+        }
+    }
+
+    echo json_encode(io_safe_output($result));
+    return;
+} else if ($getImagesVisualConsole) {
+    $result = [];
+
+    // Extract images.
+    $all_images = list_files(
+        $config['homedir'].'/images/console/icons/',
+        'png',
+        1,
+        0
+    );
+
+    if (isset($all_images) === true && is_array($all_images) === true) {
+        $base_url = ui_get_full_url(
+            '/images/console/icons/',
+            false,
+            false,
+            false
+        );
+
+        foreach ($all_images as $image_file) {
+            $image_file = substr($image_file, 0, (strlen($image_file) - 4));
+
+            if (strpos($image_file, '_bad') !== false) {
+                continue;
+            }
+
+            if (strpos($image_file, '_ok') !== false) {
+                continue;
+            }
+
+            if (strpos($image_file, '_warning') !== false) {
+                continue;
+            }
+
+            $result[] = [
+                'name' => $image_file,
+                'src'  => $base_url.$image_file,
+            ];
         }
     }
 

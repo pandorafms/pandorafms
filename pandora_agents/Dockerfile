@@ -40,7 +40,7 @@ if [ $TIMEZONE != "" ]; then\n \
 fi\n \
 /etc/init.d/pandora_agent_daemon start\n \
 rm -f $0\n \
-bash' \
+tail -f /var/log/pandora/pandora_agent.log' \
 >> /entrypoint.sh && \
 chmod +x /entrypoint.sh
 

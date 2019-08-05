@@ -187,18 +187,19 @@ class Item extends CachedModel
     protected function decode(array $data): array
     {
         $decodedData = [
-            'id'            => (int) $data['id'],
-            'type'          => (int) $data['type'],
-            'label'         => static::extractLabel($data),
-            'labelPosition' => static::extractLabelPosition($data),
-            'isLinkEnabled' => static::extractIsLinkEnabled($data),
-            'isOnTop'       => static::extractIsOnTop($data),
-            'parentId'      => static::extractParentId($data),
-            'aclGroupId'    => static::extractAclGroupId($data),
-            'width'         => (int) $data['width'],
-            'height'        => (int) $data['height'],
-            'x'             => static::extractX($data),
-            'y'             => static::extractY($data),
+            'id'              => (int) $data['id'],
+            'type'            => (int) $data['type'],
+            'label'           => static::extractLabel($data),
+            'labelPosition'   => static::extractLabelPosition($data),
+            'isLinkEnabled'   => static::extractIsLinkEnabled($data),
+            'isOnTop'         => static::extractIsOnTop($data),
+            'parentId'        => static::extractParentId($data),
+            'aclGroupId'      => static::extractAclGroupId($data),
+            'width'           => (int) $data['width'],
+            'height'          => (int) $data['height'],
+            'x'               => static::extractX($data),
+            'y'               => static::extractY($data),
+            'cacheExpiration' => static::extractCacheExpiration($data),
         ];
 
         if (static::$useLinkedModule === true) {
@@ -427,6 +428,28 @@ class Item extends CachedModel
                     'id_custom_graph',
                     'idCustomGraph',
                     'customGraphId',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
+     * Extract the cache expiration value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Cache expiration time.
+     */
+    private static function extractCacheExpiration(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'cacheExpiration',
+                    'cache_expiration',
                 ]
             ),
             null
@@ -1254,6 +1277,9 @@ class Item extends CachedModel
 
 
     /**
+     * TODO: CRITICAL. This function contains values which belong to its
+     * subclasses. This function should be overrided there to add them.
+     *
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.
@@ -1568,18 +1594,9 @@ class Item extends CachedModel
             $result['show_last_value'] = $show_last_value;
         }
 
-        $cache_expiration = static::parseIntOr(
-            static::issetInArray(
-                $data,
-                [
-                    'cache_expiration',
-                    'cacheExpiration',
-                ]
-            ),
-            null
-        );
-        if ($cache_expiration !== null) {
-            $result['cache_expiration'] = $cache_expiration;
+        $cacheExpiration = static::extractCacheExpiration($data);
+        if ($cacheExpiration !== null) {
+            $result['cache_expiration'] = $cacheExpiration;
         }
 
         return $result;

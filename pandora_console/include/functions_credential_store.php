@@ -56,8 +56,6 @@ function credentials_get_all(
 
     global $config;
 
-    $user_is_admin = users_is_admin();
-
     if (!is_array($filter)) {
         error_log('[credential_get_all] Filter must be an array.');
         throw new Exception('[credential_get_all] Filter must be an array.');
@@ -295,9 +293,9 @@ function print_inputs($values=null)
             'type'        => 'select',
             'script'      => 'calculate_inputs()',
             'fields'      => [
-                // 'CUSTOM' => __('Custom'),
-                'AWS'   => __('Aws'),
-                'AZURE' => __('Azure'),
+                'CUSTOM' => __('Custom'),
+                'AWS'    => __('Aws'),
+                'AZURE'  => __('Azure'),
                 // 'GOOGLE' => __('Google'),
             ],
             'selected'    => $values['product'],
@@ -331,6 +329,10 @@ function print_inputs($values=null)
         case 'GOOGLE':
             // Need further investigation.
         case 'CUSTOM':
+            $user_label = __('Account ID');
+            $pass_label = __('Password');
+            $extra1 = false;
+            $extra2 = false;
         default:
             // Use defaults.
         break;

@@ -14,6 +14,7 @@ RUN yum -y install \
 
 # Install Pandora FMS agent
 RUN cd /tmp/pandora_agent/unix \
+	&& chmod +x pandora_agent_installer \
 	&& ./pandora_agent_installer --install
 
 # Set default variables

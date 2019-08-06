@@ -443,6 +443,14 @@ ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modific
 
 if ($agents !== false) {
     // Urls to sort the table.
+    // Agent name size and description for Chinese and Japanese languages ​​are adjusted
+    $agent_font_size = '7';
+    $description_font_size = '6.5';
+    if ($config['language'] == 'ja' || $config['language'] == 'zh_CN') {
+        $agent_font_size = '15';
+        $description_font_size = '11';
+    }
+
     $url_up_agente = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled';
     $url_down_agente = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled';
     $url_up_remote = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=up&disabled=$disabled';
@@ -529,7 +537,7 @@ if ($agents !== false) {
         } else {
             echo '<a alt ='.$agent['nombre']." href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
-			id_agente=".$agent['id_agente']."'>".'<span style="font-size: 7pt" title="'.$agent['nombre'].'">'.$agent['alias'].'</span>'.'</a>';
+			id_agente=".$agent['id_agente']."'>".'<span style="font-size: '.$agent_font_size.'pt" title="'.$agent['nombre'].'">'.$agent['alias'].'</span>'.'</a>';
         }
 
         echo '</strong>';
@@ -629,7 +637,7 @@ if ($agents !== false) {
         // Group icon and name
         echo "<td class='$tdcolor' align='left' valign='middle'>".ui_print_group_icon($agent['id_grupo'], true).'</td>';
         // Description
-        echo "<td class='".$tdcolor."f9'>".ui_print_truncate_text($agent['comentarios'], 'description', true, true, true, '[&hellip;]', 'font-size: 6.5pt;').'</td>';
+        echo "<td class='".$tdcolor."f9'>".ui_print_truncate_text($agent['comentarios'], 'description', true, true, true, '[&hellip;]', 'font-size: '.$description_font_size.'pt;').'</td>';
         // Action
         // When there is only one element in page it's necesary go back page.
         if ((count($agents) == 1) && ($offset >= $config['block_size'])) {

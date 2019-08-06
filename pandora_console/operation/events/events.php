@@ -278,8 +278,13 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
+                        $tmp->hint = '';
                         if (strlen($tmp->evento) >= 255) {
-                            $tmp->evento = io_safe_output(substr($tmp->evento, 0, 253).'...)');
+                            $tmp->hint = io_safe_output(chunk_split(substr($tmp->evento, 0, 600), 80, '<br>').'(...)');
+                            $tmp->evento = io_safe_output(substr($tmp->evento, 0, 253).'(...)');
+                            if (strpos($tmp->evento, ' ') === false) {
+                                $tmp->evento = substr($tmp->evento, 0, 80).'(...)';
+                            }
                         } else {
                             $tmp->evento = io_safe_output($tmp->evento);
                         }
@@ -1636,6 +1641,9 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
+    if(item.hint !== ''){
+        evn += '&nbsp;<img src="images/tip_help.png" data-title="'+item.hint+'" data-use_title_for_force_title="1" class="forced_title" alt="'+item.hint+'">';
+    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;

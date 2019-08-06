@@ -253,7 +253,7 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
 
 /**
  * Class to add item to the general items form
- * This item consists of a label and a color type select.
+ * This item consists of a label and a Parent select.
  * Parent is stored in the parentId property
  */
 class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
@@ -298,7 +298,7 @@ class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
 
 /**
  * Class to add item to the general items form
- * This item consists of a label and a color type select.
+ * This item consists of a label and a Acl Group type select.
  * Acl is stored in the aclGroupId property
  */
 class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
@@ -386,7 +386,7 @@ class CacheExpirationInputGroup extends InputGroup<Partial<ItemProps>> {
 
 /**
  * Class to add item to the general items form
- * This item consists of a label and a color type select.
+ * This item consists of a label and a Link console type select.
  * Parent is stored in the parentId property
  */
 export class LinkConsoleInputGroup extends InputGroup<
@@ -424,18 +424,18 @@ export class LinkConsoleInputGroup extends InputGroup<
         );
       }
 
+      // Create principal element select
+      const linkConsoleSelect = document.createElement("select");
+      linkConsoleSelect.required = true;
+
+      // Default option principal select.
+      const defaultOptionElement = document.createElement("option");
+      defaultOptionElement.value = "0";
+      defaultOptionElement.textContent = t("none");
+      linkConsoleSelect.appendChild(defaultOptionElement);
+
       // Check data is array
       if (data instanceof Array) {
-        // Create principal element select
-        const linkConsoleSelect = document.createElement("select");
-        linkConsoleSelect.required = true;
-
-        // Default option principal select.
-        const defaultOptionElement = document.createElement("option");
-        defaultOptionElement.value = "0";
-        defaultOptionElement.textContent = t("none");
-        linkConsoleSelect.appendChild(defaultOptionElement);
-
         // Create other options for principal select.
         data.forEach(option => {
           let id = option.id;
@@ -520,6 +520,10 @@ export class LinkConsoleInputGroup extends InputGroup<
           )
         );
         container.appendChild(lvcTypeContainer);
+      } else {
+        // Add principal select to label.
+        linkConsoleLabel.appendChild(linkConsoleSelect);
+        container.appendChild(linkConsoleLabel);
       }
     });
 
@@ -790,7 +794,7 @@ export class LinkConsoleInputGroup extends InputGroup<
 
 /**
  * Class to add item to the static Graph item form
- * This item consists of a label and a color type select.
+ * This item consists of a label and a Image select.
  * Show Last Value is stored in the showLastValueTooltip property
  */
 export class ImageInputGroup extends InputGroup<Partial<ImageInputGroupProps>> {

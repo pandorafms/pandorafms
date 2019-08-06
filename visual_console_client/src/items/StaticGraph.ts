@@ -75,7 +75,7 @@ export function staticGraphPropsDecoder(
 
 /**
  * Class to add item to the static Graph item form
- * This item consists of a label and a color type select.
+ * This item consists of a label and a Show last value select.
  * Show Last Value is stored in the showLastValueTooltip property
  */
 class ShowLastValueInputGroup extends InputGroup<Partial<StaticGraphProps>> {
@@ -145,6 +145,7 @@ export default class StaticGraph extends Item<StaticGraphProps> {
   /**
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
+   * ImageInputGroup
    * ShowLastValueInputGroup
    * LinkConsoleInputGroup
    */
@@ -154,11 +155,12 @@ export default class StaticGraph extends Item<StaticGraphProps> {
       new ImageInputGroup("image-console", this.props)
     );
     formContainer.addInputGroup(
-      new ShowLastValueInputGroup("show-last-value", this.props)
-    );
-    formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)
     );
+    formContainer.addInputGroup(
+      new ShowLastValueInputGroup("show-last-value", this.props)
+    );
+
     return formContainer;
   }
 }

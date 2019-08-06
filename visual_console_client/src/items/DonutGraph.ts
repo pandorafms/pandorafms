@@ -7,7 +7,8 @@ import {
   linkedVCPropsDecoder,
   modulePropsDecoder,
   decodeBase64,
-  stringIsEmpty
+  stringIsEmpty,
+  t
 } from "../lib";
 import Item, {
   ItemType,
@@ -15,11 +16,12 @@ import Item, {
   itemBasePropsDecoder,
   LinkConsoleInputGroup
 } from "../Item";
-import { FormContainer } from "../Form";
+import { FormContainer, InputGroup } from "../Form";
 
 export type DonutGraphProps = {
   type: ItemType.DONUT_GRAPH;
   html: string;
+  legendBackgroundColor: string;
 } & ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
@@ -46,9 +48,44 @@ export function donutGraphPropsDecoder(
     html: !stringIsEmpty(data.html)
       ? data.html
       : decodeBase64(data.encodedHtml),
+    legendBackgroundColor: stringIsEmpty(data.legendBackgroundColor)
+      ? "#000000"
+      : data.legendBackgroundColor,
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
+}
+
+/**
+ * Class to add item to the DonutsGraph item form
+ * This item consists of a label and a color type input.
+ * Element color is stored in the legendBackgroundColor property
+ */
+class LegendBackgroundColorInputGroup extends InputGroup<
+  Partial<DonutGraphProps>
+> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const legendBackgroundLabel = document.createElement("label");
+    legendBackgroundLabel.textContent = t("Resume data color");
+
+    const legendBackgroundInput = document.createElement("input");
+    legendBackgroundInput.type = "color";
+    legendBackgroundInput.required = true;
+
+    legendBackgroundInput.value = `${this.currentData.legendBackgroundColor ||
+      this.initialData.legendBackgroundColor ||
+      "#000000"}`;
+
+    legendBackgroundInput.addEventListener("change", e => {
+      this.updateData({
+        legendBackgroundColor: (e.target as HTMLInputElement).value
+      });
+    });
+
+    legendBackgroundLabel.appendChild(legendBackgroundInput);
+
+    return legendBackgroundLabel;
+  }
 }
 
 export default class DonutGraph extends Item<DonutGraphProps> {
@@ -91,6 +128,9 @@ export default class DonutGraph extends Item<DonutGraphProps> {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)
+    );
+    formContainer.addInputGroup(
+      new LegendBackgroundColorInputGroup("legend-background-color", this.props)
     );
     return formContainer;
   }

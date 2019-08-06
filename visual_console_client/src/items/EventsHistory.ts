@@ -3,9 +3,11 @@ import {
   modulePropsDecoder,
   parseIntOr,
   decodeBase64,
-  stringIsEmpty
+  stringIsEmpty,
+  t
 } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import { InputGroup, FormContainer } from "../Form";
 
 export type EventsHistoryProps = {
   type: ItemType.AUTO_SLA_GRAPH;
@@ -13,6 +15,53 @@ export type EventsHistoryProps = {
   html: string;
 } & ItemProps &
   WithModuleProps;
+
+/**
+ * Class to add item to the Event History item form
+ * This item consists of a label and select time.
+ * Show time is stored in the maxTime property.
+ */
+class MaxTimeInputGroup extends InputGroup<Partial<EventsHistoryProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const maxTimeLabel = document.createElement("label");
+    maxTimeLabel.textContent = t("Max. Time");
+
+    const options: {
+      value: string;
+      text: string;
+    }[] = [
+      { value: "86400", text: "24h" },
+      { value: "43200", text: "12h" },
+      { value: "28800", text: "8h" },
+      { value: "7200", text: "2h" },
+      { value: "3600", text: "1h" }
+    ];
+
+    const maxTimeSelect = document.createElement("select");
+    maxTimeSelect.required = true;
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      maxTimeSelect.appendChild(optionElement);
+    });
+
+    maxTimeSelect.value = `${this.currentData.maxTime ||
+      this.initialData.maxTime ||
+      "86400"}`;
+
+    maxTimeSelect.addEventListener("change", event => {
+      this.updateData({
+        maxTime: parseIntOr((event.target as HTMLSelectElement).value, 0)
+      });
+    });
+
+    maxTimeLabel.appendChild(maxTimeSelect);
+
+    return maxTimeLabel;
+  }
+}
 
 /**
  * Build a valid typed object from a raw object.
@@ -74,5 +123,17 @@ export default class EventsHistory extends Item<EventsHistoryProps> {
         eval(scripts[i].innerHTML.trim());
       }
     }
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * MaxTimeInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(new MaxTimeInputGroup("max-time", this.props));
+
+    return formContainer;
   }
 }

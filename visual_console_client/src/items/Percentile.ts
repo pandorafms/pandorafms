@@ -204,7 +204,7 @@ class MaxValueInputGroup extends InputGroup<Partial<PercentileProps>> {
 class TypePercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
     const typeLabel = document.createElement("label");
-    typeLabel.textContent = t("Max Value");
+    typeLabel.textContent = t("Type");
 
     const options: {
       value: PercentileProps["percentileType"];
@@ -225,17 +225,17 @@ class TypePercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
     const typeSelect = document.createElement("select");
     typeSelect.required = true;
 
-    typeSelect.value =
-      this.currentData.percentileType ||
-      this.initialData.percentileType ||
-      "progress-bar";
-
     options.forEach(option => {
       const optionElement = document.createElement("option");
       optionElement.value = option.value;
       optionElement.textContent = option.text;
       typeSelect.appendChild(optionElement);
     });
+
+    typeSelect.value =
+      this.currentData.percentileType ||
+      this.initialData.percentileType ||
+      "progress-bar";
 
     typeSelect.addEventListener("change", event => {
       this.updateData({

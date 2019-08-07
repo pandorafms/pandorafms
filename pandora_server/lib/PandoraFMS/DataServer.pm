@@ -193,12 +193,15 @@ sub data_consumer ($$) {
 
 	for (0..1) {
 		eval {
+			local $SIG{__DIE__};
 			threads->yield;
 			# XML::SAX::ExpatXS is not thread safe.
 			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
 				$XMLinSem->down();
 			}
+
 			$xml_data = XMLin ($file_name, forcearray => 'module');
+
 			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
 				$XMLinSem->up();
 			}
@@ -206,11 +209,16 @@ sub data_consumer ($$) {
 	
 		# Invalid XML
 		if ($@ || ref($xml_data) ne 'HASH') {
+			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+				$XMLinSem->up();
+			}
 			if ($@) {
 				$xml_err = $@;
 			} else {
 				$xml_err = "Invalid XML format.";
 			}
+
+			logger($pa_config, "Failed to parse $file_name $xml_err", 3);
 			sleep (2);
 			next;
 		}

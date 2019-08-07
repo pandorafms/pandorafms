@@ -11759,12 +11759,23 @@ function api_get_netflow_get_summary($discard_1, $discard_2, $params)
 function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnType='string')
 {
     global $config;
+
+    if (!check_acl($config['id_user'], 0, 'EW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $table_events = 'tevento';
+    if (is_metaconsole()) {
+        $table_events = 'tmetaconsole_event';
+    }
+
     $data['type'] = 'string';
-    $check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
+    $check_id = db_get_value('id_evento', $table_events, 'id_evento', $id);
 
     if ($check_id) {
         // event exists
-        $status = db_get_value('estado', 'tevento', 'id_evento', $id);
+        $status = db_get_value('estado', $table_events, 'id_evento', $id);
         if ($status == 1) {
             // event already validated
             $data['data'] = 'Event already validated';
@@ -11778,7 +11789,7 @@ function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnTy
                 'estado'         => 1,
             ];
 
-            $result = db_process_sql_update('tevento', $values, ['id_evento' => $id]);
+            $result = db_process_sql_update($table_events, $values, ['id_evento' => $id]);
 
             if ($result === false) {
                 $data['data'] = 'Error validating event';

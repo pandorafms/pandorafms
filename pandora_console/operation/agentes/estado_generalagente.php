@@ -432,7 +432,7 @@ if (!empty($addresses)) {
     // $data_opcional = [];
     $data_opcional[] = '<b>'.__('Other IP addresses').'</b>';
     if (!empty($addresses)) {
-        $data_opcional[] = '<div style="overflow-y: scroll;">'.implode('<br>', $addresses).'</div>';
+        $data_opcional[] = '<div style="overflow-y: scroll; max-height:50px;">'.implode('<br>', $addresses).'</div>';
     }
 }
 

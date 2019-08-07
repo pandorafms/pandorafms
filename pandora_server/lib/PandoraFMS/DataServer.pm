@@ -177,6 +177,7 @@ sub data_consumer ($$) {
 	my $agent_name = $1;		
 	my $file_name = $pa_config->{'incomingdir'};
 	my $xml_err;
+	my $error;
 	
 	# Fix path
 	$file_name .= "/" unless (substr ($file_name, -1, 1) eq '/');	
@@ -208,10 +209,15 @@ sub data_consumer ($$) {
 		};
 	
 		# Invalid XML
-		if ($@ || ref($xml_data) ne 'HASH') {
+		if ($@) {
+			$error = 1;
 			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
 				$XMLinSem->up();
 			}
+		}
+
+		if ($error || ref($xml_data) ne 'HASH') {
+			
 			if ($@) {
 				$xml_err = $@;
 			} else {

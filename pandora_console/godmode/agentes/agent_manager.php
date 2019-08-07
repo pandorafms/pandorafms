@@ -208,7 +208,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').': '.ui_print_help_tip(__("The agent's name must be the same as the one defined at the console"), true).'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
     $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 70%;">';
 
     if ($id_agente) {
         $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';

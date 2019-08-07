@@ -36,7 +36,7 @@
   cursor: se-resize;
 }
 
-.visual-console-item.is-editing svg {
+.visual-console-item.is-editing :first-child {
   pointer-events: none;
 }
 

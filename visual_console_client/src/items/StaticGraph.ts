@@ -125,7 +125,8 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
     const element = document.createElement("div");
     element.className = "static-graph";
-    element.style.background = `url(${imgSrc}) no-repeat`;
+    element.style.backgroundImage = `url(${imgSrc})`;
+    element.style.backgroundRepeat = "no-repeat";
     element.style.backgroundSize = "contain";
     element.style.backgroundPosition = "center";
 
@@ -143,6 +144,15 @@ export default class StaticGraph extends Item<StaticGraphProps> {
   }
 
   /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
+    element.style.backgroundImage = `url(${imgSrc})`;
+  }
+
+  /**
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
    * ImageInputGroup
@@ -152,7 +162,11 @@ export default class StaticGraph extends Item<StaticGraphProps> {
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
-      new ImageInputGroup("image-console", this.props)
+      new ImageInputGroup("image-console", {
+        ...this.props,
+        imageKey: "imageSrc",
+        showStatusImg: true
+      })
     );
     formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)

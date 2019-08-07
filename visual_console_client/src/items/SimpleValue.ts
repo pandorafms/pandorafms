@@ -102,6 +102,8 @@ class ProcessInputGroup extends InputGroup<Partial<SimpleValueProps>> {
     const valueProcess =
       this.currentData.processValue || this.initialData.processValue || "none";
 
+    processSelect.value = valueProcess;
+
     switch (valueProcess) {
       case "avg":
       case "max":
@@ -112,8 +114,6 @@ class ProcessInputGroup extends InputGroup<Partial<SimpleValueProps>> {
       default:
         break;
     }
-
-    processSelect.value = valueProcess;
 
     processSelect.addEventListener("change", event => {
       const value = (event.target as HTMLSelectElement).value;

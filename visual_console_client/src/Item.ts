@@ -97,10 +97,6 @@ export interface ItemSelectionChangedEvent {
   selected: boolean;
 }
 
-export interface ImageInputGroupProps {
-  imageSrc: string | null;
-}
-
 // TODO: Document
 class LinkInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
@@ -792,19 +788,28 @@ export class LinkConsoleInputGroup extends InputGroup<
   };
 }
 
+interface ImageInputGroupProps {
+  imageSrc: string | null;
+  image: string | null;
+}
+
 /**
  * Class to add item to the static Graph item form
  * This item consists of a label and a Image select.
  * Show Last Value is stored in the showLastValueTooltip property
  */
-export class ImageInputGroup extends InputGroup<Partial<ImageInputGroupProps>> {
+export class ImageInputGroup extends InputGroup<
+  Partial<ImageInputGroupProps> & {
+    imageKey: keyof ImageInputGroupProps;
+    showStatusImg?: boolean;
+  }
+> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const imageKey = this.initialData.imageKey;
     const imageLabel = document.createElement("label");
     imageLabel.textContent = t("Image");
 
     const divImage = document.createElement("div");
-
-    const imageTypes = ["", "_bad", "_ok", "_warning"];
 
     // Create element Spinner.
     const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
@@ -842,32 +847,16 @@ export class ImageInputGroup extends InputGroup<Partial<ImageInputGroupProps>> {
 
         labelSelect.addEventListener("change", event => {
           const imageSrc = (event.target as HTMLSelectElement).value;
-          this.updateData({ imageSrc });
+          this.updateData({ [imageKey]: imageSrc });
 
           if (imageSrc != null) {
             const imageItem = data.find(item => item.name === imageSrc);
-
-            if (imageItem) {
-              const deleteImg = divImage.querySelectorAll(".img-vc-elements");
-              deleteImg.forEach(value => {
-                divImage.removeChild(value);
-              });
-
-              imageTypes.forEach(value => {
-                const imagePaint = document.createElement("img");
-                imagePaint.alt = t("Image VC");
-                imagePaint.style.width = "40px";
-                imagePaint.style.height = "40px";
-                imagePaint.className = "img-vc-elements";
-                imagePaint.src = `${imageItem.src}${value}.png`;
-                divImage.appendChild(imagePaint);
-              });
-            }
+            this.getImage(imageItem, divImage);
           }
         });
 
-        const valueImage = `${this.currentData.imageSrc ||
-          this.initialData.imageSrc ||
+        const valueImage = `${this.currentData[imageKey] ||
+          this.initialData[imageKey] ||
           null}`;
 
         labelSelect.value = valueImage;
@@ -876,25 +865,47 @@ export class ImageInputGroup extends InputGroup<Partial<ImageInputGroupProps>> {
 
         if (valueImage != null) {
           const imageItem = data.find(item => item.name === valueImage);
-
-          if (imageItem) {
-            imageTypes.forEach(value => {
-              const imagePaint = document.createElement("img");
-              imagePaint.alt = t("Image VC");
-              imagePaint.style.width = "40px";
-              imagePaint.style.height = "40px";
-              imagePaint.className = "img-vc-elements";
-              imagePaint.src = `${imageItem.src}${value}.png`;
-              divImage.appendChild(imagePaint);
-            });
-          }
-
-          imageLabel.appendChild(divImage);
+          imageLabel.appendChild(this.getImage(imageItem, divImage));
         }
       }
     });
 
     return imageLabel;
+  }
+
+  private getImage(
+    imageItem: HTMLImageElement,
+    divImage: HTMLElement
+  ): HTMLElement {
+    if (imageItem) {
+      const deleteImg = divImage.querySelectorAll(".img-vc-elements");
+      deleteImg.forEach(value => {
+        divImage.removeChild(value);
+      });
+
+      if (this.initialData.showStatusImg) {
+        const imageTypes = ["", "_bad", "_ok", "_warning"];
+        imageTypes.forEach(value => {
+          const imagePaint = document.createElement("img");
+          imagePaint.alt = t("Image VC");
+          imagePaint.style.width = "40px";
+          imagePaint.style.height = "40px";
+          imagePaint.className = "img-vc-elements";
+          imagePaint.src = `${imageItem.src}${value}.png`;
+          divImage.appendChild(imagePaint);
+        });
+      } else {
+        const imagePaint = document.createElement("img");
+        imagePaint.alt = t("Image VC");
+        imagePaint.style.width = "40px";
+        imagePaint.style.height = "40px";
+        imagePaint.className = "img-vc-elements";
+        imagePaint.src = `${imageItem.src}.png`;
+        divImage.appendChild(imagePaint);
+      }
+    }
+
+    return divImage;
   }
 }
 

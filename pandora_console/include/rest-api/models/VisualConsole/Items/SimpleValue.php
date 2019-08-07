@@ -53,6 +53,70 @@ final class SimpleValue extends Item
 
 
     /**
+     * Extract a Process value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'none' or 'avg' or 'max' or 'min'.
+     * 'none' by default.
+     */
+    private static function encodeProcessValue(array $data)
+    {
+        $return = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                ['processValue']
+            ),
+            null
+        );
+
+        if ($return !== null) {
+            switch ($return) {
+                case 'avg':
+                    $return = SIMPLE_VALUE_AVG;
+                break;
+
+                case 'max':
+                    $return = SIMPLE_VALUE_MAX;
+                break;
+
+                case 'min':
+                    $return = SIMPLE_VALUE_MIN;
+                break;
+
+                default:
+                case 'none':
+                    $return = SIMPLE_VALUE;
+                break;
+            }
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+        $process_value = static::encodeProcessValue($data);
+        if ($process_value !== null) {
+            $return['type'] = $process_value;
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -72,10 +136,6 @@ final class SimpleValue extends Item
         if ($return['processValue'] !== 'none') {
             $return['period'] = static::extractPeriod($data);
         }
-
-        // Clear the size, as this element always have a dynamic size.
-        $return['width'] = 0;
-        $return['height'] = 0;
 
         return $return;
     }

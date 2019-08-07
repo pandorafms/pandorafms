@@ -58,6 +58,7 @@ my %Agents :shared;
 my $Sem :shared;
 my $TaskSem :shared;
 my $AgentSem :shared;
+my $XMLinSem :shared;
 
 ########################################################################################
 # Data Server class constructor.
@@ -74,6 +75,7 @@ sub new ($$;$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	$AgentSem = Thread::Semaphore->new (1);
+	$XMLinSem = Thread::Semaphore->new (1);
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
@@ -192,8 +194,14 @@ sub data_consumer ($$) {
 	for (0..1) {
 		eval {
 			threads->yield;
-
+			# XML::SAX::ExpatXS is not thread safe.
+			if ($XML::Simple::PREFERRED_PARSER == 'XML::SAX::ExpatXS') {
+				$XMLinSem->down();
+			}
 			$xml_data = XMLin ($file_name, forcearray => 'module');
+			if ($XML::Simple::PREFERRED_PARSER == 'XML::SAX::ExpatXS') {
+				$XMLinSem->up();
+			}
 		};
 	
 		# Invalid XML

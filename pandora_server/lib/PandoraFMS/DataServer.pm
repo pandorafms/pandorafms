@@ -195,11 +195,11 @@ sub data_consumer ($$) {
 		eval {
 			threads->yield;
 			# XML::SAX::ExpatXS is not thread safe.
-			if ($XML::Simple::PREFERRED_PARSER == 'XML::SAX::ExpatXS') {
+			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
 				$XMLinSem->down();
 			}
 			$xml_data = XMLin ($file_name, forcearray => 'module');
-			if ($XML::Simple::PREFERRED_PARSER == 'XML::SAX::ExpatXS') {
+			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
 				$XMLinSem->up();
 			}
 		};

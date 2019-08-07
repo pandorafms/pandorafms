@@ -1739,7 +1739,7 @@ function graphic_combined_module(
 
                 $search_in_history_db = db_search_in_history_db($datelimit);
 
-                $temp[$module] = modules_get_agentmodule($module);
+                $temp[$module] = io_safe_output(modules_get_agentmodule($module));
                 $query_last_value = sprintf(
                     '
                     SELECT datos

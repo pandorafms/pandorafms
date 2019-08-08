@@ -28,6 +28,25 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+hd(get_parameter('update_config', 0));
+
+if (get_parameter('update_config', 0) == 1) {
+    // Try to retrieve event response 'Create incident in IntegriaIMS from event' to check if it exists.
+    $row = db_get_row_filter('tevent_response', ['name' => 'Create incident in IntegriaIMS from event']);
+
+    if ($config['integria_enabled'] == 1) {
+        if ($row === false) {
+            // Create 'Create incident in IntegriaIMS from event' event response only when user enables IntegriaIMS integration and it does not exist in database.
+            db_process_sql_insert('tevent_response', ['name' => 'Create incident in IntegriaIMS from event', 'description' => 'Create an incident in IntegriaIMS from an event', 'target' => 'index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&from_event=_event_id_', 'type' => 'url', 'id_group' => '0', 'modal_width' => '0', 'modal_height' => '0', 'new_window' => '1', 'params' => '', 'server_to_exec' => '0']);
+        }
+    } else {
+        if ($row != false) {
+            // Delete 'Create incident in IntegriaIMS from event' event response if it does exist and IntegriaIMS integration is disabled
+            db_process_sql_delete('tevent_response', ['name' => 'Create incident in IntegriaIMS from event']);
+        }
+    }
+}
+
 // Enable table.
 $table_enable = new StdClass();
 $table_enable->data = [];
@@ -173,7 +192,6 @@ if(!$('input:checkbox[name="integria_enabled"]').is(':checked'))
 
     $('input:checkbox[name="integria_enabled"]').change(handleEnable);
 
-//aqui
     var handleTest = function (event) {
         var user = $('input#text-integria_user').val();
         var pass = $('input#password-integria_pass').val();
@@ -217,16 +235,12 @@ if(!$('input:checkbox[name="integria_enabled"]').is(':checked'))
         hideFailureImage();
         hideMessage();
         showLoadingImage();
-       
+       console.log(host);
         $.ajax({
-            url: 'https://' + host + '/login',
+            url: 'http://' + host,
             type: 'POST',
             dataType: 'json',
-            timeout: timeout ? timeout * 1000 : 0,
-            data: {
-                user: user,
-                pass: pass
-            }
+            timeout: timeout ? timeout * 1000 : 0
         })
         .done(function(data, textStatus, xhr) {
             showSuccessImage();

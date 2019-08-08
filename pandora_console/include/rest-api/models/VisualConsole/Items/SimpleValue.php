@@ -239,7 +239,7 @@ final class SimpleValue extends Item
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_visual_map.php';
-        if (is_metaconsole()) {
+        if (\is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
@@ -284,7 +284,7 @@ final class SimpleValue extends Item
 
         // Some modules are image based. Extract the base64 image if needed.
         $matches = [];
-        if (\preg_match('/src=\"(data:image.*)"/', $value, $matches) === 1) {
+        if (preg_match('/src=\"(data:image.*)"/', $value, $matches) === 1) {
             $data['valueType'] = 'image';
             $data['value'] = $matches[1];
         } else {

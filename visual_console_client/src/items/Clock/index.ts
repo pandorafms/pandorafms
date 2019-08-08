@@ -88,6 +88,212 @@ export function clockPropsDecoder(data: AnyObject): ClockProps | never {
   };
 }
 
+/**
+ * Class to add item to the clock item form
+ * This item consists of a label and a select.
+ * options for select: analogic, digital.
+ * Type is stored in the clock_animation property
+ */
+class ClockTypeInputGroup extends InputGroup<Partial<ClockProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const label = document.createElement("label");
+    label.textContent = t("Clock animation");
+
+    const options: {
+      value: ClockProps["clockType"];
+      text: string;
+    }[] = [
+      { value: "analogic", text: t("Simple analogic") },
+      { value: "digital", text: t("Simple digital") }
+    ];
+
+    const typeSelect = document.createElement("select");
+    typeSelect.required = true;
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      typeSelect.appendChild(optionElement);
+    });
+
+    typeSelect.value =
+      this.currentData.clockType || this.initialData.clockType || "analogic";
+
+    typeSelect.addEventListener("change", event => {
+      this.updateData({
+        clockType: parseClockType((event.target as HTMLSelectElement).value)
+      });
+    });
+
+    label.appendChild(typeSelect);
+
+    return label;
+  }
+}
+
+/**
+ * Class to add item to the clock item form
+ * This item consists of a label and a select.
+ * options for select: analogic, digital.
+ * Type is stored in the clock_animation property
+ */
+class ClockFormatInputGroup extends InputGroup<Partial<ClockProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const label = document.createElement("label");
+    label.textContent = t("Time format");
+
+    const options: {
+      value: ClockProps["clockFormat"];
+      text: string;
+    }[] = [
+      { value: "time", text: t("Only time") },
+      { value: "datetime", text: t("Time and date") }
+    ];
+
+    const typeSelect = document.createElement("select");
+    typeSelect.required = true;
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      typeSelect.appendChild(optionElement);
+    });
+
+    typeSelect.value =
+      this.currentData.clockFormat || this.initialData.clockFormat || "time";
+
+    typeSelect.addEventListener("change", event => {
+      this.updateData({
+        clockFormat: parseClockFormat((event.target as HTMLSelectElement).value)
+      });
+    });
+
+    label.appendChild(typeSelect);
+
+    return label;
+  }
+}
+
+/**
+ * Class to add item to the percentile item form
+ * This item consists of a label and a numeric type input.
+ * Diameter is stored in the width property
+ */
+class WidthInputGroup extends InputGroup<Partial<ClockProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const widthLabel = document.createElement("label");
+    widthLabel.textContent = t("Width");
+
+    const widthInput = document.createElement("input");
+    widthInput.type = "number";
+    widthInput.required = true;
+
+    widthInput.value = `${this.currentData.width || this.initialData.width}`;
+
+    widthInput.addEventListener("change", e => {
+      this.updateData({
+        width: parseIntOr((e.target as HTMLInputElement).value, 0)
+      });
+    });
+
+    widthLabel.appendChild(widthInput);
+
+    return widthLabel;
+  }
+}
+
+/**
+ * Class to add item to the clock item form
+ * This item consists of a label and two select.
+ * options for select: analogic, digital.
+ * Type is stored in the clock_animation property
+ */
+class ClockTimezoneInputGroup extends InputGroup<Partial<ClockProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const label = document.createElement("label");
+    label.textContent = t("Time zone");
+
+    const options: {
+      value: ClockProps["clockTimezone"];
+      text: string;
+    }[] = [
+      { value: "Africa", text: t("Africa") },
+      { value: "America", text: t("America") },
+      { value: "Antarctica", text: t("Antarctica") },
+      { value: "Arctic", text: t("Arctic") },
+      { value: "Asia", text: t("Asia") },
+      { value: "Atlantic", text: t("Atlantic") },
+      { value: "Australia", text: t("Australia") },
+      { value: "Europe", text: t("Europe") },
+      { value: "Indian", text: t("Indian") },
+      { value: "Pacific", text: t("Pacific") },
+      { value: "UTC", text: t("UTC") }
+    ];
+
+    const zoneSelect = document.createElement("select");
+    zoneSelect.required = true;
+
+    options.forEach(option => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      zoneSelect.appendChild(optionElement);
+    });
+
+    var timezone =
+      this.currentData.clockTimezone ||
+      this.initialData.clockTimezone ||
+      "Europe/Madrid";
+
+    const [zone, city = ""] = timezone.split("/");
+
+    zoneSelect.value = zone;
+
+    zoneSelect.addEventListener("change", event => {
+      // this.updateData({
+      //   clockTimezone: parseClockFormat(
+      //     (event.target as HTMLSelectElement).value
+      //   )
+      // });
+    });
+
+    label.appendChild(zoneSelect);
+
+    return label;
+  }
+}
+
+/**
+ * Class to add item to the clock item form
+ * This item consists of a label and a color type input.
+ * Element color is stored in the color property
+ */
+class FIllColorInputGroup extends InputGroup<Partial<ClockProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const fillcolorLabel = document.createElement("label");
+    fillcolorLabel.textContent = t("Fill color");
+
+    const fillColorInput = document.createElement("input");
+    fillColorInput.type = "color";
+    fillColorInput.required = true;
+
+    fillColorInput.value = `${this.currentData.color ||
+      this.initialData.color}`;
+
+    fillColorInput.addEventListener("change", e => {
+      this.updateData({
+        color: (e.target as HTMLInputElement).value
+      });
+    });
+
+    fillcolorLabel.appendChild(fillColorInput);
+
+    return fillcolorLabel;
+  }
+}
+
 export default class Clock extends Item<ClockProps> {
   public static readonly TICK_INTERVAL = 1000; // In ms.
   private intervalRef: number | null = null;
@@ -658,211 +864,5 @@ export default class Clock extends Item<ClockProps> {
     );
 
     return formContainer;
-  }
-}
-
-/**
- * Class to add item to the clock item form
- * This item consists of a label and a select.
- * options for select: analogic, digital.
- * Type is stored in the clock_animation property
- */
-class ClockTypeInputGroup extends InputGroup<Partial<ClockProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const label = document.createElement("label");
-    label.textContent = t("Clock animation");
-
-    const options: {
-      value: ClockProps["clockType"];
-      text: string;
-    }[] = [
-      { value: "analogic", text: t("Simple analogic") },
-      { value: "digital", text: t("Simple digital") }
-    ];
-
-    const typeSelect = document.createElement("select");
-    typeSelect.required = true;
-
-    options.forEach(option => {
-      const optionElement = document.createElement("option");
-      optionElement.value = option.value;
-      optionElement.textContent = option.text;
-      typeSelect.appendChild(optionElement);
-    });
-
-    typeSelect.value =
-      this.currentData.clockType || this.initialData.clockType || "analogic";
-
-    typeSelect.addEventListener("change", event => {
-      this.updateData({
-        clockType: parseClockType((event.target as HTMLSelectElement).value)
-      });
-    });
-
-    label.appendChild(typeSelect);
-
-    return label;
-  }
-}
-
-/**
- * Class to add item to the clock item form
- * This item consists of a label and a select.
- * options for select: analogic, digital.
- * Type is stored in the clock_animation property
- */
-class ClockFormatInputGroup extends InputGroup<Partial<ClockProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const label = document.createElement("label");
-    label.textContent = t("Time format");
-
-    const options: {
-      value: ClockProps["clockFormat"];
-      text: string;
-    }[] = [
-      { value: "time", text: t("Only time") },
-      { value: "datetime", text: t("Time and date") }
-    ];
-
-    const typeSelect = document.createElement("select");
-    typeSelect.required = true;
-
-    options.forEach(option => {
-      const optionElement = document.createElement("option");
-      optionElement.value = option.value;
-      optionElement.textContent = option.text;
-      typeSelect.appendChild(optionElement);
-    });
-
-    typeSelect.value =
-      this.currentData.clockFormat || this.initialData.clockFormat || "time";
-
-    typeSelect.addEventListener("change", event => {
-      this.updateData({
-        clockFormat: parseClockFormat((event.target as HTMLSelectElement).value)
-      });
-    });
-
-    label.appendChild(typeSelect);
-
-    return label;
-  }
-}
-
-/**
- * Class to add item to the percentile item form
- * This item consists of a label and a numeric type input.
- * Diameter is stored in the width property
- */
-class WidthInputGroup extends InputGroup<Partial<ClockProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const widthLabel = document.createElement("label");
-    widthLabel.textContent = t("Width");
-
-    const widthInput = document.createElement("input");
-    widthInput.type = "number";
-    widthInput.required = true;
-
-    widthInput.value = `${this.currentData.width || this.initialData.width}`;
-
-    widthInput.addEventListener("change", e => {
-      this.updateData({
-        width: parseIntOr((e.target as HTMLInputElement).value, 0)
-      });
-    });
-
-    widthLabel.appendChild(widthInput);
-
-    return widthLabel;
-  }
-}
-
-/**
- * Class to add item to the clock item form
- * This item consists of a label and two select.
- * options for select: analogic, digital.
- * Type is stored in the clock_animation property
- */
-class ClockTimezoneInputGroup extends InputGroup<Partial<ClockProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const label = document.createElement("label");
-    label.textContent = t("Time zone");
-
-    const options: {
-      value: ClockProps["clockTimezone"];
-      text: string;
-    }[] = [
-      { value: "Africa", text: t("Africa") },
-      { value: "America", text: t("America") },
-      { value: "Antarctica", text: t("Antarctica") },
-      { value: "Arctic", text: t("Arctic") },
-      { value: "Asia", text: t("Asia") },
-      { value: "Atlantic", text: t("Atlantic") },
-      { value: "Australia", text: t("Australia") },
-      { value: "Europe", text: t("Europe") },
-      { value: "Indian", text: t("Indian") },
-      { value: "Pacific", text: t("Pacific") },
-      { value: "UTC", text: t("UTC") }
-    ];
-
-    const zoneSelect = document.createElement("select");
-    zoneSelect.required = true;
-
-    options.forEach(option => {
-      const optionElement = document.createElement("option");
-      optionElement.value = option.value;
-      optionElement.textContent = option.text;
-      zoneSelect.appendChild(optionElement);
-    });
-
-    var timezone =
-      this.currentData.clockTimezone ||
-      this.initialData.clockTimezone ||
-      "Europe/Madrid";
-
-    const [zone, city = ""] = timezone.split("/");
-
-    zoneSelect.value = zone;
-
-    zoneSelect.addEventListener("change", event => {
-      // this.updateData({
-      //   clockTimezone: parseClockFormat(
-      //     (event.target as HTMLSelectElement).value
-      //   )
-      // });
-    });
-
-    label.appendChild(zoneSelect);
-
-    return label;
-  }
-}
-
-/**
- * Class to add item to the clock item form
- * This item consists of a label and a color type input.
- * Element color is stored in the color property
- */
-class FIllColorInputGroup extends InputGroup<Partial<ClockProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const fillcolorLabel = document.createElement("label");
-    fillcolorLabel.textContent = t("Fill color");
-
-    const fillColorInput = document.createElement("input");
-    fillColorInput.type = "color";
-    fillColorInput.required = true;
-
-    fillColorInput.value = `${this.currentData.color ||
-      this.initialData.color}`;
-
-    fillColorInput.addEventListener("change", e => {
-      this.updateData({
-        color: (e.target as HTMLInputElement).value
-      });
-    });
-
-    fillcolorLabel.appendChild(fillColorInput);
-
-    return fillcolorLabel;
   }
 }

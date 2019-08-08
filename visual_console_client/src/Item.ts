@@ -1787,7 +1787,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To add an event handler to item selection.
    * @param listener Function which is going to be executed when a item is removed.
    */
-  public onSeletionChanged(
+  public onSelectionChanged(
     listener: Listener<ItemSelectionChangedEvent>
   ): Disposable {
     /*

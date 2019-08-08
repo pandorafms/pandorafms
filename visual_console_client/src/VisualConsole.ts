@@ -371,7 +371,7 @@ export default class VisualConsole {
       itemInstance.onMoved(context.handleElementMovement);
       itemInstance.onResized(context.handleElementResizement);
       itemInstance.onRemove(context.handleElementRemove);
-      itemInstance.onSeletionChanged(context.handleElementSelectionChanged);
+      itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
 
       // Add the item to the DOM.
       context.containerRef.append(itemInstance.elementRef);

@@ -65,7 +65,7 @@ if ($getVisualConsole === true) {
         $item = VisualConsole::getItemFromDB($itemId);
     } catch (Throwable $e) {
         // Bad params.
-        http_response_code(409);
+        http_response_code(400);
         return;
     }
 
@@ -123,7 +123,7 @@ if ($getVisualConsole === true) {
         $item = VisualConsole::getItemFromDB($itemId);
     } catch (\Throwable $th) {
         // There is no item in the database.
-        echo true;
+        http_response_code(404);
         return;
     }
 

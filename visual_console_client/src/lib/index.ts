@@ -538,6 +538,9 @@ export function addMovementListener(
     document.body.style.userSelect = "auto";
   };
   const handleStart = (e: MouseEvent) => {
+    // Avoid starting the movement on right click.
+    if (e.button === 2) return;
+
     e.stopPropagation();
 
     // Disable the drag temporarily.

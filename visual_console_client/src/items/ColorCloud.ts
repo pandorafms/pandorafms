@@ -3,18 +3,26 @@ import {
   LinkedVisualConsoleProps,
   AnyObject
 } from "../lib/types";
-import { modulePropsDecoder, linkedVCPropsDecoder } from "../lib";
+import { modulePropsDecoder, linkedVCPropsDecoder, t } from "../lib";
 import Item, {
   itemBasePropsDecoder,
   ItemType,
   ItemProps,
   LinkConsoleInputGroup
 } from "../Item";
-import { FormContainer } from "../Form";
+import { FormContainer, InputGroup } from "../Form";
+import fontAwesomeIcon from "../lib/FontAwesomeIcon";
+import { faTrashAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 
 export type ColorCloudProps = {
   type: ItemType.COLOR_CLOUD;
   color: string;
+  defaultColor: string;
+  colorRanges: {
+    color: string;
+    fromValue: number;
+    toValue: number;
+  }[];
   // TODO: Add the rest of the color cloud values?
 } & ItemProps &
   WithModuleProps &
@@ -41,9 +49,290 @@ export function colorCloudPropsDecoder(
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.COLOR_CLOUD,
     color: data.color,
+    defaultColor: data.defaultColor,
+    colorRanges: data.colorRanges,
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
+}
+
+/**
+ * Class to add item to the Color cloud item form
+ * This item consists of a label and a color type input color.
+ * Element default color is stored in the color property
+ */
+class ColorInputGroup extends InputGroup<Partial<ColorCloudProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const ColorLabel = document.createElement("label");
+    ColorLabel.textContent = t("Default color");
+
+    const ColorInput = document.createElement("input");
+    ColorInput.type = "color";
+    ColorInput.required = true;
+
+    ColorInput.value = `${this.currentData.defaultColor ||
+      this.initialData.defaultColor ||
+      "#000000"}`;
+
+    ColorInput.addEventListener("change", e => {
+      this.updateData({
+        defaultColor: (e.target as HTMLInputElement).value
+      });
+    });
+
+    ColorLabel.appendChild(ColorInput);
+
+    return ColorLabel;
+  }
+}
+
+type ColorRanges = ColorCloudProps["colorRanges"];
+type ColorRange = ColorRanges[0];
+
+class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const rangesLabel = this.createLabel("Ranges");
+    const rangesControlsContainer = document.createElement("div");
+    const createdRangesContainer = document.createElement("div");
+
+    rangesControlsContainer.appendChild(createdRangesContainer);
+    rangesLabel.appendChild(rangesControlsContainer);
+
+    const colorRanges =
+      this.currentData.colorRanges || this.initialData.colorRanges || [];
+
+    let buildRanges: (ranges: ColorRanges) => void;
+
+    const handleRangeUpdatePartial = (index: number) => (
+      range: ColorRange
+    ): void => {
+      const colorRanges =
+        this.currentData.colorRanges || this.initialData.colorRanges || [];
+      this.updateData({
+        colorRanges: [
+          ...colorRanges.slice(0, index),
+          range,
+          ...colorRanges.slice(index)
+        ]
+      });
+    };
+
+    const handleDelete = (index: number) => () => {
+      const colorRanges =
+        this.currentData.colorRanges || this.initialData.colorRanges || [];
+      const newRanges = [
+        ...colorRanges.slice(0, index),
+        ...colorRanges.slice(index + 1)
+      ];
+
+      this.updateData({
+        colorRanges: newRanges
+      });
+      buildRanges(newRanges);
+    };
+
+    const handleCreate = (range: ColorRange): void => {
+      const colorRanges =
+        this.currentData.colorRanges || this.initialData.colorRanges || [];
+      const newRanges = [...colorRanges, range];
+      this.updateData({
+        colorRanges: newRanges
+      });
+      buildRanges(newRanges);
+    };
+
+    buildRanges = ranges => {
+      createdRangesContainer.innerHTML = "";
+      console.log(ranges);
+      ranges.forEach((colorRange, index) =>
+        createdRangesContainer.appendChild(
+          this.rangeContainer(
+            colorRange,
+            handleRangeUpdatePartial(index),
+            handleDelete(index)
+          )
+        )
+      );
+    };
+
+    buildRanges(colorRanges);
+
+    rangesControlsContainer.appendChild(
+      this.initialRangeContainer(handleCreate)
+    );
+
+    return rangesLabel;
+  }
+
+  private initialRangeContainer(onCreate: (range: ColorRange) => void) {
+    // TODO: Document
+    const initialState = { color: "#fff" };
+    const state: Partial<ColorRange> = initialState;
+
+    const handleFromValue = (value: ColorRange["fromValue"]): void => {
+      state.fromValue = value;
+    };
+    const handleToValue = (value: ColorRange["toValue"]): void => {
+      state.toValue = value;
+    };
+    const handleColor = (value: ColorRange["color"]): void => {
+      state.color = value;
+    };
+
+    // User defined type guard.
+    // Docs: https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
+    const isValid = (range: Partial<ColorRange>): range is ColorRange =>
+      typeof range.color !== "undefined" &&
+      typeof range.toValue !== "undefined" &&
+      typeof range.fromValue !== "undefined";
+
+    const handleCreate = () => {
+      if (isValid(state)) onCreate(state);
+    };
+
+    const rangesContainer = document.createElement("div");
+
+    // Div From value.
+    const rangesContainerFromValue = document.createElement("div");
+    const rangesLabelFromValue = this.createLabel("From Value");
+    const rangesInputFromValue = this.createInputNumber(null, handleFromValue);
+    rangesContainerFromValue.appendChild(rangesLabelFromValue);
+    rangesContainerFromValue.appendChild(rangesInputFromValue);
+    rangesContainer.appendChild(rangesContainerFromValue);
+
+    // Div To Value.
+    const rangesDivContainerToValue = document.createElement("div");
+    const rangesLabelToValue = this.createLabel("To Value");
+    const rangesInputToValue = this.createInputNumber(null, handleToValue);
+    rangesContainerFromValue.appendChild(rangesLabelToValue);
+    rangesContainerFromValue.appendChild(rangesInputToValue);
+    rangesContainer.appendChild(rangesDivContainerToValue);
+
+    // Div Color.
+    const rangesDivContainerColor = document.createElement("div");
+    const rangesLabelColor = this.createLabel("Color");
+    const rangesInputColor = this.createInputColor(
+      initialState.color,
+      handleColor
+    );
+    rangesContainerFromValue.appendChild(rangesLabelColor);
+    rangesContainerFromValue.appendChild(rangesInputColor);
+    rangesContainer.appendChild(rangesDivContainerColor);
+
+    // Button delete.
+    const createBtn = document.createElement("a");
+    createBtn.appendChild(
+      fontAwesomeIcon(faPlusCircle, t("Create color range"))
+    );
+    createBtn.addEventListener("click", handleCreate);
+
+    rangesContainer.appendChild(createBtn);
+
+    return rangesContainer;
+  }
+
+  private rangeContainer(
+    colorRange: ColorRange,
+    onUpdate: (range: ColorRange) => void,
+    onDelete: () => void
+  ): HTMLDivElement {
+    // TODO: Document
+    const state = { ...colorRange };
+
+    const handleFromValue = (value: ColorRange["fromValue"]): void => {
+      state.fromValue = value;
+      onUpdate({ ...state });
+    };
+    const handleToValue = (value: ColorRange["toValue"]): void => {
+      state.toValue = value;
+      onUpdate({ ...state });
+    };
+    const handleColor = (value: ColorRange["color"]): void => {
+      state.color = value;
+      onUpdate({ ...state });
+    };
+
+    const rangesContainer = document.createElement("div");
+
+    // Div From value.
+    const rangesContainerFromValue = document.createElement("div");
+    const rangesLabelFromValue = this.createLabel("From Value");
+    const rangesInputFromValue = this.createInputNumber(
+      colorRange.fromValue,
+      handleFromValue
+    );
+    rangesContainerFromValue.appendChild(rangesLabelFromValue);
+    rangesContainerFromValue.appendChild(rangesInputFromValue);
+    rangesContainer.appendChild(rangesContainerFromValue);
+
+    // Div To Value.
+    const rangesDivContainerToValue = document.createElement("div");
+    const rangesLabelToValue = this.createLabel("To Value");
+    const rangesInputToValue = this.createInputNumber(
+      colorRange.toValue,
+      handleToValue
+    );
+    rangesContainerFromValue.appendChild(rangesLabelToValue);
+    rangesContainerFromValue.appendChild(rangesInputToValue);
+    rangesContainer.appendChild(rangesDivContainerToValue);
+
+    // Div Color.
+    const rangesDivContainerColor = document.createElement("div");
+    const rangesLabelColor = this.createLabel("Color");
+    const rangesInputColor = this.createInputColor(
+      colorRange.color,
+      handleColor
+    );
+    rangesContainerFromValue.appendChild(rangesLabelColor);
+    rangesContainerFromValue.appendChild(rangesInputColor);
+    rangesContainer.appendChild(rangesDivContainerColor);
+
+    // Button delete.
+    const deleteBtn = document.createElement("a");
+    deleteBtn.appendChild(fontAwesomeIcon(faTrashAlt, t("Delete color range")));
+    deleteBtn.addEventListener("click", onDelete);
+
+    rangesContainer.appendChild(deleteBtn);
+
+    return rangesContainer;
+  }
+
+  private createLabel(text: string): HTMLLabelElement {
+    const label = document.createElement("label");
+    label.textContent = t(text);
+    return label;
+  }
+
+  private createInputNumber(
+    value: number | null,
+    onUpdate: (value: number) => void
+  ): HTMLInputElement {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.required = true;
+    if (value !== null) input.value = `${value}`;
+    input.addEventListener("change", e => {
+      const value = parseInt((e.target as HTMLInputElement).value);
+      if (!isNaN(value)) onUpdate(value);
+    });
+
+    return input;
+  }
+
+  private createInputColor(
+    value: string | null,
+    onUpdate: (value: string) => void
+  ): HTMLInputElement {
+    const input = document.createElement("input");
+    input.type = "color";
+    input.required = true;
+    if (value !== null) input.value = value;
+    input.addEventListener("change", e =>
+      onUpdate((e.target as HTMLInputElement).value)
+    );
+
+    return input;
+  }
 }
 
 const svgNS = "http://www.w3.org/2000/svg";
@@ -112,11 +401,17 @@ export default class ColorCloud extends Item<ColorCloudProps> {
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
    * LinkConsoleInputGroup
+   * ColorInputGroup
+   * RangesInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)
+    );
+    formContainer.addInputGroup(new ColorInputGroup("color-cloud", this.props));
+    formContainer.addInputGroup(
+      new RangesInputGroup("ranges-cloud", this.props)
     );
     return formContainer;
   }

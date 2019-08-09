@@ -1816,7 +1816,7 @@ class Item extends CachedModel
                 // Invalidate the item's cache.
                 if ($result !== false && $result > 0) {
                     // TODO: Invalidate the cache with the function clearCachedData.
-                    db_process_sql_delete(
+                    \db_process_sql_delete(
                         'tvisual_console_elements_cache',
                         [
                             'vc_item_id' => (int) $save['id'],

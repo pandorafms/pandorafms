@@ -318,19 +318,9 @@ export default class VisualConsole {
     // Force the first render.
     this.render();
 
-    // Sort by isOnTop, id ASC
+    // Sort by id ASC
     items = items.sort(function(a, b) {
-      if (
-        a.isOnTop == null ||
-        b.isOnTop == null ||
-        a.id == null ||
-        b.id == null
-      ) {
-        return 0;
-      }
-
-      if (a.isOnTop && !b.isOnTop) return 1;
-      else if (!a.isOnTop && b.isOnTop) return -1;
+      if (a.id == null || b.id == null) return 0;
       else if (a.id > b.id) return 1;
       else return -1;
     });

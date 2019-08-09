@@ -110,10 +110,13 @@ if ($getVisualConsole === true) {
         return;
     } else if ($updateVisualConsoleItem === true) {
         $data = get_parameter('data');
-        $data['id'] = $itemId;
-        $result = $item->save($data);
+        if ($data) {
+            $data['id'] = $itemId;
+            $result = $item->save($data);
 
-        echo $item;
+            echo $item;
+        }
+
         return;
     }
 } else if ($removeVisualConsoleItem === true) {

@@ -1251,6 +1251,7 @@ UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.ph
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '737');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
+UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_enabled';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_inventory';

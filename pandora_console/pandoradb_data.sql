@@ -1320,7 +1320,7 @@ VALUES
     (1, 'Demo&#x20;visual console', 0, 'fondo.jpg', 1080, 1920, 'white', 0);
 
 -- 
--- Dumping data for table `tlayout_data`
+-- Dumping data for table `tlayout`
 -- 
 INSERT INTO `tlayout_data`
 VALUES

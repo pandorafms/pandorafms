@@ -2678,6 +2678,7 @@ function get_shape_status_set($type)
         case STATUS_MODULE_UNKNOWN:
         case STATUS_AGENT_UNKNOWN:
         case STATUS_AGENT_DOWN:
+        case STATUS_AGENT_NO_MONITORS:
             $return = ['class' => 'status_rounded_rectangles'];
         break;
 

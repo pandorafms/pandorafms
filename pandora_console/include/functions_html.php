@@ -1570,6 +1570,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeypress',
         'onkeydown',
         'onkeyup',
+        'class',
     ];
 
     foreach ($attrs as $attribute) {
@@ -3152,7 +3153,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : '')
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off')
             );
         break;
 

@@ -1,15 +1,25 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+ * Manage database HA cluster.
+ *
+ * @category   Manager
+ * @package    Pandora FMS
+ * @subpackage Database HA cluster
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2012 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
+
 global $config;
 
 check_login();
@@ -24,8 +34,6 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 }
 
 ui_require_css_file('firts_task');
-?>
-<?php
 ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clusters defined yet.') ]);
 ?>
 
@@ -44,8 +52,9 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clus
     </p>
         
         <?php
-        if (check_acl($config['id_user'], 0, 'AW')) {
+        if (check_acl($config['id_user'], 0, 'PM')) {
             echo "<div id='create_master_window'></div>";
+            echo "<div id='msg'></div>";
             ?>
             <input style="margin-bottom:20px;" onclick="show_create_ha_cluster();" type="submit" class="button_task" value="<?php echo __('Add new node'); ?>" />
             <?php
@@ -53,35 +62,3 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clus
         ?>
     </div>
 </div>
-<script type="text/javascript">
-    function show_create_ha_cluster() {
-        var params = {};
-        params["dialog_master"] = 1;
-        params["page"] = "enterprise/include/ajax/HA_cluster.ajax";
-        jQuery.ajax ({
-            data: params,
-            dataType: "html",
-            type: "POST",
-            url: "ajax.php",
-            success: function (data) {
-                $("#create_master_window").dialog ({
-                    title: '<?php echo __('Add master node'); ?>',
-                    resizable: true,
-                    draggable: true,
-                    modal: true,
-                    close: function() {
-                        
-                    },
-                    overlay: {
-                        opacity: 0.5,
-                        background: "black"
-                    },
-                    width: 800,
-                    height: 600
-                }).empty()
-                .html(data)
-                .show ();
-            }
-        });
-    }
-</script>

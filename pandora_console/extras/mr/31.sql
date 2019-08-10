@@ -18,4 +18,6 @@ ALTER TABLE `tdatabase` MODIFY `os_port` INT UNSIGNED NOT NULL;
 ALTER TABLE `tdatabase` ADD COLUMN `ssh_key` TEXT;
 ALTER TABLE `tdatabase` ADD COLUMN `ssh_pubkey` TEXT;
 
+UPDATE `tdatabase` set `label`=`host`;
+
 COMMIT;

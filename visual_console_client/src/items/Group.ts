@@ -5,15 +5,17 @@ import {
   notEmptyStringOr,
   stringIsEmpty,
   decodeBase64,
-  parseBoolean
+  parseBoolean,
+  t
 } from "../lib";
 import Item, {
   ItemProps,
   itemBasePropsDecoder,
   ItemType,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  ImageInputGroup
 } from "../Item";
-import { FormContainer } from "../Form";
+import { FormContainer, InputGroup } from "../Form";
 
 export type GroupProps = {
   type: ItemType.GROUP_ITEM;
@@ -66,6 +68,39 @@ export function groupPropsDecoder(data: AnyObject): GroupProps | never {
   };
 }
 
+// TODO: Document
+class ShowStatisticsInputGroup extends InputGroup<Partial<GroupProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const showStatisticsLabel = document.createElement("label");
+    showStatisticsLabel.textContent = t("Show statistics");
+
+    const showStatisticsInputChkbx = document.createElement("input");
+    showStatisticsInputChkbx.id = "checkbox-switch";
+    showStatisticsInputChkbx.className = "checkbox-switch";
+    showStatisticsInputChkbx.type = "checkbox";
+    showStatisticsInputChkbx.name = "checkbox-enable-link";
+    showStatisticsInputChkbx.value = "1";
+    showStatisticsInputChkbx.checked =
+      this.currentData.showStatistics ||
+      this.initialData.showStatistics ||
+      false;
+    showStatisticsInputChkbx.addEventListener("change", e =>
+      this.updateData({
+        showStatistics: (e.target as HTMLInputElement).checked
+      })
+    );
+
+    const linkInputLabel = document.createElement("label");
+    linkInputLabel.className = "label-switch";
+    linkInputLabel.htmlFor = "checkbox-switch";
+
+    showStatisticsLabel.appendChild(showStatisticsInputChkbx);
+    showStatisticsLabel.appendChild(linkInputLabel);
+
+    return showStatisticsLabel;
+  }
+}
+
 export default class Group extends Item<GroupProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
@@ -73,7 +108,8 @@ export default class Group extends Item<GroupProps> {
 
     if (!this.props.showStatistics && this.props.statusImageSrc !== null) {
       // Icon with status.
-      element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
+      element.style.backgroundImage = `url(${this.props.statusImageSrc})`;
+      element.style.backgroundRepeat = "no-repeat";
       element.style.backgroundSize = "contain";
       element.style.backgroundPosition = "center";
     } else if (this.props.showStatistics && this.props.html != null) {
@@ -85,14 +121,44 @@ export default class Group extends Item<GroupProps> {
   }
 
   /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (!this.props.showStatistics && this.props.statusImageSrc !== null) {
+      // Icon with status.
+      element.style.backgroundImage = `url(${this.props.statusImageSrc})`;
+      element.style.backgroundRepeat = "no-repeat";
+      element.style.backgroundSize = "contain";
+      element.style.backgroundPosition = "center";
+      element.innerHTML = "";
+    } else if (this.props.showStatistics && this.props.html != null) {
+      // Stats table.
+      element.innerHTML = this.props.html;
+    }
+  }
+
+  /**
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
    * LinkConsoleInputGroup
+   * ImageInputGroup
+   * ShowStatisticsInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)
+    );
+    formContainer.addInputGroup(
+      new ImageInputGroup("image-console", {
+        ...this.props,
+        imageKey: "imageSrc",
+        showStatusImg: true
+      })
+    );
+    formContainer.addInputGroup(
+      new ShowStatisticsInputGroup("show-statistic", this.props)
     );
     return formContainer;
   }

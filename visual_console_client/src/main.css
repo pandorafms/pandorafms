@@ -13,6 +13,11 @@
   justify-items: center;
   align-items: center;
   user-select: text;
+  z-index: 1;
+}
+
+.visual-console-item.is-on-top {
+  z-index: 2;
 }
 
 .visual-console-item.is-editing {

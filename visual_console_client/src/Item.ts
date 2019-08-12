@@ -1197,7 +1197,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
 
     box.className = "visual-console-item";
-    box.style.zIndex = this.props.isOnTop ? "2" : "1";
+    if (this.props.isOnTop) {
+      box.classList.add("is-on-top");
+    }
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
 
@@ -1469,6 +1471,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // Change label position.
     if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
       this.changeLabelPosition(this.props.labelPosition);
+    }
+    //Change z-index class is-on-top
+    if (!prevProps || prevProps.isOnTop !== this.props.isOnTop) {
+      if (this.props.isOnTop) {
+        this.elementRef.classList.add("is-on-top");
+      } else {
+        this.elementRef.classList.remove("is-on-top");
+      }
     }
     // Change link.
     if (

@@ -29,6 +29,50 @@ final class ColorCloud extends Item
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $defaultColor = null;
+        if (isset($data['defaultColor']) === true) {
+            $defaultColor = static::extractDefaultColor($data);
+        }
+
+        $colorRanges = null;
+        if (isset($data['colorRanges']) === true) {
+            $colorRanges = static::extractColorRanges($data);
+        }
+
+        if (empty($data['id']) === true) {
+            $return['label'] = json_encode(
+                [
+                    'default_color' => $defaultColor,
+                    'color_ranges'  => $colorRanges,
+                ]
+            );
+        } else {
+            $prevData = $this->toArray();
+            $return['label'] = json_encode(
+                [
+                    'default_color' => ($defaultColor !== null) ? $defaultColor : $prevData['defaultColor'],
+                    'color_ranges'  => ($colorRanges !== null) ? $colorRanges : $prevData['colorRanges'],
+                ]
+            );
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.

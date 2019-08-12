@@ -544,9 +544,9 @@ function menu_add_extras(&$menu)
     $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
     $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
     $menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
-    $menu_extra['estado']['sub']['snmpconsole']['sub2']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
+    $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 
-    $menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
+    $menu_extra['estado']['sub']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
 

@@ -405,10 +405,15 @@ export function debounce<T>(delay: number, fn: (...args: T[]) => void) {
  * Retrieve the offset of an element relative to the page.
  * @param el Node used to calculate the offset.
  */
-function getOffset(el: HTMLElement | null) {
+function getOffset(el: HTMLElement | null, parent?: HTMLElement) {
   let x = 0;
   let y = 0;
-  while (el && !Number.isNaN(el.offsetLeft) && !Number.isNaN(el.offsetTop)) {
+  while (
+    el &&
+    !Number.isNaN(el.offsetLeft) &&
+    !Number.isNaN(el.offsetTop) &&
+    el !== parent
+  ) {
     x += el.offsetLeft - el.scrollLeft;
     y += el.offsetTop - el.scrollTop;
     el = el.offsetParent as HTMLElement | null;
@@ -548,8 +553,10 @@ export function addMovementListener(
 
     // Store the difference between the cursor and
     // the initial coordinates of the element.
-    lastX = element.offsetLeft;
-    lastY = element.offsetTop;
+    const elementOffset = getOffset(element, container);
+    lastX = elementOffset.left;
+    lastY = elementOffset.top;
+
     // Store the mouse position.
     lastMouseX = e.pageX;
     lastMouseY = e.pageY;

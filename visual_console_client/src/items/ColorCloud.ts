@@ -8,7 +8,8 @@ import Item, {
   itemBasePropsDecoder,
   ItemType,
   ItemProps,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  AgentModuleInputGroup
 } from "../Item";
 import { FormContainer, InputGroup } from "../Form";
 import fontAwesomeIcon from "../lib/FontAwesomeIcon";
@@ -112,7 +113,7 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
         colorRanges: [
           ...colorRanges.slice(0, index),
           range,
-          ...colorRanges.slice(index)
+          ...colorRanges.slice(index + 1)
         ]
       });
     };
@@ -125,9 +126,7 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
         ...colorRanges.slice(index + 1)
       ];
 
-      this.updateData({
-        colorRanges: newRanges
-      });
+      this.updateData({ colorRanges: newRanges });
       buildRanges(newRanges);
     };
 
@@ -135,9 +134,7 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
       const colorRanges =
         this.currentData.colorRanges || this.initialData.colorRanges || [];
       const newRanges = [...colorRanges, range];
-      this.updateData({
-        colorRanges: newRanges
-      });
+      this.updateData({ colorRanges: newRanges });
       buildRanges(newRanges);
     };
 
@@ -166,8 +163,9 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
 
   private initialRangeContainer(onCreate: (range: ColorRange) => void) {
     // TODO: Document
-    const initialState = { color: "#fff" };
-    const state: Partial<ColorRange> = initialState;
+    const initialState = { color: "#ffffff" };
+
+    let state: Partial<ColorRange> = { ...initialState };
 
     const handleFromValue = (value: ColorRange["fromValue"]): void => {
       state.fromValue = value;
@@ -185,10 +183,6 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
       typeof range.color !== "undefined" &&
       typeof range.toValue !== "undefined" &&
       typeof range.fromValue !== "undefined";
-
-    const handleCreate = () => {
-      if (isValid(state)) onCreate(state);
-    };
 
     const rangesContainer = document.createElement("div");
 
@@ -224,6 +218,16 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
     createBtn.appendChild(
       fontAwesomeIcon(faPlusCircle, t("Create color range"))
     );
+
+    const handleCreate = () => {
+      if (isValid(state)) onCreate(state);
+      state = initialState;
+      console.log(state);
+      rangesInputFromValue.value = `${state.fromValue || ""}`;
+      rangesInputToValue.value = `${state.toValue || ""}`;
+      rangesInputColor.value = `${state.color}`;
+    };
+
     createBtn.addEventListener("click", handleCreate);
 
     rangesContainer.appendChild(createBtn);
@@ -309,7 +313,6 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
   ): HTMLInputElement {
     const input = document.createElement("input");
     input.type = "number";
-    input.required = true;
     if (value !== null) input.value = `${value}`;
     input.addEventListener("change", e => {
       const value = parseInt((e.target as HTMLInputElement).value);
@@ -325,7 +328,6 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
   ): HTMLInputElement {
     const input = document.createElement("input");
     input.type = "color";
-    input.required = true;
     if (value !== null) input.value = value;
     input.addEventListener("change", e =>
       onUpdate((e.target as HTMLInputElement).value)
@@ -412,6 +414,9 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     formContainer.addInputGroup(new ColorInputGroup("color-cloud", this.props));
     formContainer.addInputGroup(
       new RangesInputGroup("ranges-cloud", this.props)
+    );
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-aoutocomplete", this.props)
     );
     return formContainer;
   }

@@ -28,6 +28,38 @@ final class ColorCloud extends Item
     protected static $useLinkedModule = true;
 
 
+     /**
+      * Encode the ranges color value.
+      *
+      * @param array $data Unknown input data structure.
+      *
+      * @return array Ranges color.
+      */
+    private static function encodeColorRanges(array $data): array
+    {
+        $colorRangeArray = [];
+        if (isset($data['colorRanges']) === true) {
+            foreach ($data['colorRanges'] as $colorRange) {
+                if (\is_numeric($colorRange['fromValue']) === true
+                    && \is_numeric($colorRange['toValue']) === true
+                    && static::notEmptyStringOr(
+                        $colorRange['color'],
+                        null
+                    ) !== null
+                ) {
+                    $colorRangeArray[] = [
+                        'color'      => $colorRange['color'],
+                        'from_value' => (float) $colorRange['fromValue'],
+                        'to_value'   => (float) $colorRange['toValue'],
+                    ];
+                }
+            }
+        }
+
+        return $colorRangeArray;
+    }
+
+
     /**
      * Return a valid representation of a record in database.
      *
@@ -48,7 +80,7 @@ final class ColorCloud extends Item
 
         $colorRanges = null;
         if (isset($data['colorRanges']) === true) {
-            $colorRanges = static::extractColorRanges($data);
+            $colorRanges = static::encodeColorRanges($data);
         }
 
         if (empty($data['id']) === true) {
@@ -60,10 +92,11 @@ final class ColorCloud extends Item
             );
         } else {
             $prevData = $this->toArray();
+
             $return['label'] = json_encode(
                 [
                     'default_color' => ($defaultColor !== null) ? $defaultColor : $prevData['defaultColor'],
-                    'color_ranges'  => ($colorRanges !== null) ? $colorRanges : $prevData['colorRanges'],
+                    'color_ranges'  => ($colorRanges !== null && (count($colorRanges) > 0)) ? $colorRanges : $prevData['colorRanges'],
                 ]
             );
         }

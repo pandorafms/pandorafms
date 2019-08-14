@@ -4,7 +4,8 @@ import {
   AnyObject,
   WithModuleProps,
   ItemMeta,
-  LinkedVisualConsoleProps
+  LinkedVisualConsoleProps,
+  WithAgentProps
 } from "./lib/types";
 import {
   sizePropsDecoder,
@@ -906,6 +907,89 @@ export class ImageInputGroup extends InputGroup<
     }
 
     return divImage;
+  }
+}
+
+/**
+ * Class to add item to the general items form
+ * This item consists of a label and agent select.
+ * Agent and module is stored in the  property
+ */
+export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    /*
+      metaconsoleId?: number | null;
+      agentId: number | null;
+      agentName: string | null;
+      agentAlias: string | null;
+      agentDescription: string | null;
+      agentAddress: string | null;
+    */
+
+    const agentLabel = document.createElement("label");
+    agentLabel.textContent = t("Agent");
+
+    const agentInput = document.createElement("input");
+    agentInput.type = "text";
+    agentInput.required = true;
+
+    const imgeAgent = "";
+    agentInput.style.backgroundImage = `url(${imgeAgent})`;
+
+    //agentInput.value = `${this.currentData.width ||
+    //  this.initialData.width ||
+    //  0}`;
+
+    agentInput.addEventListener("change", e => {
+      const value = (e.target as HTMLInputElement).value;
+      if (value != null) {
+        this.autocompleteAgentInput(value);
+      }
+    });
+
+    agentLabel.appendChild(agentInput);
+
+    return agentLabel;
+  }
+
+  private autocompleteAgentInput(name: string): void {
+    console.log("rrrr");
+
+    /*
+    const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
+      size: "small",
+      spin: true
+    });
+    agentLabel.appendChild(spinner);
+    */
+
+    this.requestData("autocomplete-agent", {}, (error, data) => {
+      // Remove Spinner.
+      //spinner.remove();
+
+      console.log("fffff");
+      console.log(data);
+      console.log(error);
+
+      if (error) {
+        /*
+        agentLabel.appendChild(
+          fontAwesomeIcon(faExclamationCircle, t("Error"), {
+            size: "small",
+            color: "#e63c52"
+          })
+        );
+        */
+      }
+
+      if (data instanceof Array) {
+        /*
+        this.updateData({
+          width: parseIntOr((e.target as HTMLInputElement).value, 0)
+        })
+        */
+      }
+    });
   }
 }
 

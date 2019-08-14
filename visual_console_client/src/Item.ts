@@ -979,8 +979,16 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private readonly dblClickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for moved events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
+  // Event manager for stopped movement events.
+  private readonly movementFinishedEventManager = new TypedEvent<
+    ItemMovedEvent
+  >();
   // Event manager for resized events.
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
+  // Event manager for resize finished events.
+  private readonly resizeFinishedEventManager = new TypedEvent<
+    ItemResizedEvent
+  >();
   // Event manager for remove events.
   private readonly removeEventManager = new TypedEvent<ItemRemoveEvent>();
   // Event manager for selection change events.
@@ -1013,7 +1021,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       // Save the new position to the props.
       this.move(x, y);
       // Emit the movement event.
-      this.movedEventManager.emit({
+      this.movementFinishedEventManager.emit({
         item: this,
         prevPosition: prevPosition,
         newPosition: newPosition
@@ -1032,11 +1040,25 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.removeMovement = addMovementListener(
       element,
       (x: Position["x"], y: Position["y"]) => {
+        const prevPosition = {
+          x: this.props.x,
+          y: this.props.y
+        };
+        const newPosition = { x, y };
+
+        if (!this.positionChanged(prevPosition, newPosition)) return;
+
         // Update the metadata information.
         // Don't use the .meta property cause we don't need DOM updates.
         this._metadata.isBeingMoved = true;
         // Move the DOM element.
         this.moveElement(x, y);
+        // Emit the movement event.
+        this.movedEventManager.emit({
+          item: this,
+          prevPosition: prevPosition,
+          newPosition: newPosition
+        });
         // Run the save function.
         this.debouncedMovementSave(x, y);
       }
@@ -1065,17 +1087,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         width: this.props.width,
         height: this.props.height
       };
-      const newSize = {
-        width: width,
-        height: height
-      };
+      const newSize = { width, height };
 
       if (!this.sizeChanged(prevSize, newSize)) return;
 
       // Save the new position to the props.
       this.resize(width, height);
-      // Emit the resizement event.
-      this.resizedEventManager.emit({
+
+      // Emit the resize finished event.
+      this.resizeFinishedEventManager.emit({
         item: this,
         prevSize: prevSize,
         newSize: newSize
@@ -1119,8 +1139,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
           }
         }
 
+        const prevSize = {
+          width: this.props.width,
+          height: this.props.height
+        };
+        const newSize = { width, height };
+
+        if (!this.sizeChanged(prevSize, newSize)) return;
+
         // Move the DOM element.
         this.resizeElement(width, height);
+        // Emit the resizement event.
+        this.resizedEventManager.emit({
+          item: this,
+          prevSize,
+          newSize
+        });
         // Run the save function.
         this.debouncedResizementSave(width, height);
       }
@@ -1762,6 +1796,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
+   * To add an event handler to the movement stopped of visual console elements.
+   * @param listener Function which is going to be executed when a linked console's movement is finished.
+   */
+  public onMovementFinished(listener: Listener<ItemMovedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.movementFinishedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
    * To add an event handler to the resizement of visual console elements.
    * @param listener Function which is going to be executed when a linked console is moved.
    */
@@ -1772,6 +1822,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
      * call them when the item should be cleared.
      */
     const disposable = this.resizedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to the resizement finish of visual console elements.
+   * @param listener Function which is going to be executed when a linked console is finished resizing.
+   */
+  public onResizeFinished(listener: Listener<ItemResizedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.resizeFinishedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

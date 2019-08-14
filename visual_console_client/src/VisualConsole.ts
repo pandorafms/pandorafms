@@ -263,8 +263,16 @@ export default class VisualConsole {
       }
     });
 
-    this.movedEventManager.emit(e);
     // console.log(`Moved element #${e.item.props.id}`, e);
+  };
+
+  /**
+   * React to a movement finished on an element.
+   * @param e Event object.
+   */
+  private handleElementMovementFinished: (e: ItemMovedEvent) => void = e => {
+    this.movedEventManager.emit(e);
+    // console.log(`Movement finished for element #${e.item.props.id}`, e);
   };
 
   /**
@@ -272,8 +280,45 @@ export default class VisualConsole {
    * @param e Event object.
    */
   private handleElementResizement: (e: ItemResizedEvent) => void = e => {
-    this.resizedEventManager.emit(e);
+    // Move their relation lines.
+    const item = e.item;
+    const props = item.props;
+    const itemId = props.id;
+    const relations = this.getItemRelations(itemId);
+
+    const position = {
+      x: props.x,
+      y: props.y
+    };
+
+    relations.forEach(relation => {
+      if (relation.parentId === itemId) {
+        // Move the line start.
+        relation.line.props = {
+          ...relation.line.props,
+          startPosition: this.getVisualCenter(position, item)
+        };
+      } else if (relation.childId === itemId) {
+        // Move the line end.
+        relation.line.props = {
+          ...relation.line.props,
+          endPosition: this.getVisualCenter(position, item)
+        };
+      }
+    });
+
     // console.log(`Resized element #${e.item.props.id}`, e);
+  };
+
+  /**
+   * React to a finished resizement on an element.
+   * @param e Event object.
+   */
+  private handleElementResizementFinished: (
+    e: ItemResizedEvent
+  ) => void = e => {
+    this.resizedEventManager.emit(e);
+    // console.log(`Resize  fonished for element #${e.item.props.id}`, e);
   };
 
   /**
@@ -359,7 +404,9 @@ export default class VisualConsole {
       itemInstance.onClick(context.handleElementClick);
       itemInstance.onDblClick(context.handleElementDblClick);
       itemInstance.onMoved(context.handleElementMovement);
+      itemInstance.onMovementFinished(context.handleElementMovementFinished);
       itemInstance.onResized(context.handleElementResizement);
+      itemInstance.onResizeFinished(context.handleElementResizementFinished);
       itemInstance.onRemove(context.handleElementRemove);
       itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
 

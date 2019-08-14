@@ -23,7 +23,7 @@ import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
 import Group, { groupPropsDecoder } from "./items/Group";
 import Clock, { clockPropsDecoder } from "./items/Clock";
 import Box, { boxPropsDecoder } from "./items/Box";
-import Line, { linePropsDecoder } from "./items/Line";
+import Line, { linePropsDecoder, LineMovedEvent } from "./items/Line";
 import Label, { labelPropsDecoder } from "./items/Label";
 import SimpleValue, { simpleValuePropsDecoder } from "./items/SimpleValue";
 import EventsHistory, {
@@ -211,6 +211,8 @@ export default class VisualConsole {
   private readonly dblClickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for move events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
+  // Event manager for line move events.
+  private readonly lineMovedEventManager = new TypedEvent<LineMovedEvent>();
   // Event manager for resize events.
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
   // Event manager for remove events.
@@ -272,6 +274,17 @@ export default class VisualConsole {
    */
   private handleElementMovementFinished: (e: ItemMovedEvent) => void = e => {
     this.movedEventManager.emit(e);
+    // console.log(`Movement finished for element #${e.item.props.id}`, e);
+  };
+
+  /**
+   * React to a line movement.
+   * @param e Event object.
+   */
+  private handleLineElementMovementFinished: (
+    e: LineMovedEvent
+  ) => void = e => {
+    this.lineMovedEventManager.emit(e);
     // console.log(`Movement finished for element #${e.item.props.id}`, e);
   };
 
@@ -403,12 +416,19 @@ export default class VisualConsole {
       // Item event handlers.
       itemInstance.onClick(context.handleElementClick);
       itemInstance.onDblClick(context.handleElementDblClick);
-      itemInstance.onMoved(context.handleElementMovement);
-      itemInstance.onMovementFinished(context.handleElementMovementFinished);
-      itemInstance.onResized(context.handleElementResizement);
-      itemInstance.onResizeFinished(context.handleElementResizementFinished);
       itemInstance.onRemove(context.handleElementRemove);
       itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
+
+      if (itemInstance instanceof Line) {
+        itemInstance.onLineMovementFinished(
+          context.handleLineElementMovementFinished
+        );
+      } else {
+        itemInstance.onMoved(context.handleElementMovement);
+        itemInstance.onMovementFinished(context.handleElementMovementFinished);
+        itemInstance.onResized(context.handleElementResizement);
+        itemInstance.onResizeFinished(context.handleElementResizementFinished);
+      }
 
       // Add the item to the DOM.
       context.containerRef.append(itemInstance.elementRef);
@@ -801,6 +821,22 @@ export default class VisualConsole {
      * call them when the item should be cleared.
      */
     const disposable = this.movedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * Add an event handler to the movement of the visual console line elements.
+   * @param listener Function which is going to be executed when a linked console is moved.
+   */
+  public onLineMoved(listener: Listener<LineMovedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.lineMovedEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;

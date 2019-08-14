@@ -469,6 +469,50 @@ function createVisualConsole(
         })
         .init();
     });
+    // VC Line Item moved.
+    visualConsole.onLineMoved(function(e) {
+      var id = e.item.props.id;
+      var data = {
+        startX: e.startPosition.x,
+        startY: e.startPosition.y,
+        endX: e.endPosition.x,
+        endY: e.endPosition.y
+      };
+      var taskId = "visual-console-item-update-" + id;
+
+      // Persist the new position.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = updateVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            data,
+            function(error, data) {
+              // if (!error && !data) return;
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // TODO: Move the element to its initial position.
+              }
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
+    });
 
     // VC Item resized.
     visualConsole.onItemResized(function(e) {

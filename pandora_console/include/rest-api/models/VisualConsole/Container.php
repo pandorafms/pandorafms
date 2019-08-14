@@ -426,10 +426,10 @@ final class Container extends Model
      *
      * @param integer $itemId Identifier of the Item.
      *
-     * @return Item Item.
+     * @return Model Item or Line.
      * @throws \Exception When the data cannot be retrieved from the DB.
      */
-    public static function getItemFromDB(int $itemId): Item
+    public static function getItemFromDB(int $itemId): Model
     {
         // Default filter.
         $filter = ['id' => $itemId];

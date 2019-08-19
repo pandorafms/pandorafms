@@ -607,9 +607,9 @@ if ($pure) {
 
     // Countdown.
     echo '<li class="nomn">';
-    echo '<div class="vc-refr">';
-    echo '<div class="vc-countdown"></div>';
-    echo '<div id="vc-refr-form">';
+    echo '<div class="vc-refrttt">';
+    echo '<div class="vc-countdownttt"><span id="refrcounter"></span></div>';
+    echo '<div id="vc-refr-formttt">';
     echo __('Refresh').':';
     echo html_print_select(
         get_refresh_time_array(),
@@ -2129,6 +2129,10 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+
+    let refresco = <?php echo get_parameter('refr', 0); ?>;
+    $('#refresh option[value='+refresco+']').attr('selected', 'selected');
+
     /* Filter to a href */
     $('.events_link').on('click', function(e) {
         e.preventDefault();
@@ -2143,6 +2147,7 @@ $(document).ready( function() {
 
         var url = e.currentTarget.href;
         url += 'fb64=' + btoa(JSON.stringify(values));
+        url += '&refr=' + '<?php echo $config['refr']; ?>';
         document.location = url;
 
     });
@@ -2279,6 +2284,60 @@ $(document).ready( function() {
         click_button_remove_tag("without");
     });
     
+
+    //Autorefresh in fullscreen
+    var pure = '<?php echo $pure; ?>';
+    if(pure == 1){
+        var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
+        var until_time='';
+
+        // If autorefresh is disabled, don't show the countdown   
+        var refresh_time = '<?php echo $_GET['refr']; ?>'; 
+        if(refresh_time == '' || refresh_time == 0){
+            $('#refrcounter').toggle();
+        }
+
+        function events_refresh() {
+            until_time = new Date();
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+
+            $("#refrcounter").countdown ({
+                until: until_time,
+                layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>)',
+                labels: ['', '', '', '', '', '', ''],
+                onExpiry: function () {
+                    dt_events.draw(false);
+                }
+            });
+        }
+        // Start the countdown when page is loaded (first time).
+        events_refresh();
+        // Repeat countdown according to refresh_interval.
+        setInterval(events_refresh, refresh_interval);
+
+
+        $("select#refresh").change (function () {
+            var href = window.location.href;
+
+            inputs = $("#events_form :input");
+            values = {};
+            inputs.each(function() {
+                values[this.name] = $(this).val();
+            })
+
+            var newValue = btoa(JSON.stringify(values));           
+            var fb64 = '<?php echo $fb64; ?>';  
+            // Check if the filters have changed.
+            if(fb64 !== newValue){
+                href = href.replace(fb64, newValue);
+            } 
+                
+            href = href.replace('refr='+refresh_time, 'refr='+this.value);
+
+            $(document).attr("location", href);
+        });
+    }
+
 });
 
 

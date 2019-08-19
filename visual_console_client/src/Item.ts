@@ -21,7 +21,8 @@ import {
   addResizementListener,
   t,
   helpTip,
-  periodSelector
+  periodSelector,
+  autocompleteInput
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { FormContainer, InputGroup } from "./Form";
@@ -910,6 +911,15 @@ export class ImageInputGroup extends InputGroup<
   }
 }
 
+interface AgentAutocompleteData {
+  metaconsoleId?: number | null;
+  agentId: number;
+  agentName: string | null;
+  agentAlias: string | null;
+  agentDescription: string | null;
+  agentAddress: string | null;
+}
+
 /**
  * Class to add item to the general items form
  * This item consists of a label and agent select.
@@ -917,79 +927,143 @@ export class ImageInputGroup extends InputGroup<
  */
 export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
-    /*
-      metaconsoleId?: number | null;
-      agentId: number | null;
-      agentName: string | null;
-      agentAlias: string | null;
-      agentDescription: string | null;
-      agentAddress: string | null;
-    */
-
     const agentLabel = document.createElement("label");
     agentLabel.textContent = t("Agent");
 
     const agentInput = document.createElement("input");
     agentInput.type = "text";
     agentInput.required = true;
+    agentInput.className = "autocomplete-agent";
 
-    const imgeAgent = "";
-    agentInput.style.backgroundImage = `url(${imgeAgent})`;
+    //const imgeAgent = "";
+    //agentInput.style.backgroundImage = `url(${imgeAgent})`;
 
     //agentInput.value = `${this.currentData.width ||
     //  this.initialData.width ||
     //  0}`;
 
-    agentInput.addEventListener("change", e => {
-      const value = (e.target as HTMLInputElement).value;
-      if (value != null) {
-        this.autocompleteAgentInput(value);
-      }
-    });
+    const handleDataRequested = (
+      value: string,
+      done: (data: AgentAutocompleteData[]) => void
+    ) => {
+      this.requestData("autocomplete-agent", { value }, (error, data) => {
+        if (error) {
+          done([]);
+          return;
+        }
 
-    agentLabel.appendChild(agentInput);
+        if (data instanceof Array) {
+          done(
+            data.reduce((prev: AgentAutocompleteData[], current: AnyObject) => {
+              if (typeof current === "object" && current !== null) {
+                const agentId = parseIntOr(current.id, null);
+                if (agentId !== null) {
+                  prev.push({
+                    agentId,
+                    agentName: notEmptyStringOr(current.name, null),
+                    agentAlias: notEmptyStringOr(current.alias, null),
+                    agentAddress: notEmptyStringOr(current.ip, null),
+                    agentDescription: notEmptyStringOr(
+                      current.agentDescription,
+                      null
+                    ),
+                    metaconsoleId: parseIntOr(current.metaconsoleId, null)
+                  });
+                }
+              }
+              return prev;
+            }, [])
+          );
+        }
+      });
+    };
+
+    const renderListItem = (item: AgentAutocompleteData) => {
+      const listItem = document.createElement("div");
+      listItem.textContent = item.agentAddress
+        ? `${item.agentAlias} - ${item.agentAddress}`
+        : item.agentAlias;
+      return listItem;
+    };
+
+    const handleSelected = (item: AgentAutocompleteData): string => {
+      this.updateData({ agentId: item.agentId });
+
+      const selectedItem = item.agentAddress
+        ? `${item.agentAlias} - ${item.agentAddress}`
+        : item.agentAlias;
+
+      return `${selectedItem || ""}`;
+    };
+
+    agentLabel.appendChild(
+      autocompleteInput("", handleDataRequested, renderListItem, handleSelected)
+    );
 
     return agentLabel;
   }
 
-  private autocompleteAgentInput(name: string): void {
-    console.log("rrrr");
+  private agentModuleInput(item: AgentAutocompleteData): HTMLElement {
+    const agentModuleLabel = document.createElement("label");
+    agentModuleLabel.textContent = t("Module");
 
-    /*
+    // Create element Spinner.
     const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
       size: "small",
       spin: true
     });
-    agentLabel.appendChild(spinner);
-    */
+    agentModuleLabel.appendChild(spinner);
 
-    this.requestData("autocomplete-agent", {}, (error, data) => {
+    // Init request
+    this.requestData("autocomplete-module", {}, (error, data) => {
       // Remove Spinner.
-      //spinner.remove();
+      spinner.remove();
 
-      console.log("fffff");
-      console.log(data);
-      console.log(error);
-
+      // Check errors.
       if (error) {
-        /*
-        agentLabel.appendChild(
+        // Add img error.
+        agentModuleLabel.appendChild(
           fontAwesomeIcon(faExclamationCircle, t("Error"), {
             size: "small",
             color: "#e63c52"
           })
         );
-        */
       }
 
       if (data instanceof Array) {
+        const agentModuleSelect = document.createElement("select");
+        agentModuleSelect.required = true;
+
+        data.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option.name;
+          optionElement.textContent = option.name;
+          agentModuleSelect.appendChild(optionElement);
+        });
+
         /*
-        this.updateData({
-          width: parseIntOr((e.target as HTMLInputElement).value, 0)
-        })
+        labelSelect.addEventListener("change", event => {
+          const imageSrc = (event.target as HTMLSelectElement).value;
+          this.updateData({ [imageKey]: imageSrc });
+
+          if (imageSrc != null) {
+            const imageItem = data.find(item => item.name === imageSrc);
+            this.getImage(imageItem, divImage);
+          }
+        });
+
+        const valueImage = `${this.currentData[imageKey] ||
+          this.initialData[imageKey] ||
+          null}`;
+
+          labelSelect.value = valueImage;
         */
+
+        agentModuleLabel.appendChild(agentModuleSelect);
       }
     });
+
+    return agentModuleLabel;
   }
 }
 

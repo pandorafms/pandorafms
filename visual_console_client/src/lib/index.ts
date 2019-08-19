@@ -13,6 +13,7 @@ import {
 import helpTipIcon from "./help-tip.png";
 import fontAwesomeIcon from "./FontAwesomeIcon";
 import { faPencilAlt, faListAlt } from "@fortawesome/free-solid-svg-icons";
+import "./autocomplete.css";
 
 /**
  * Return a number or a default value from a raw value.
@@ -964,4 +965,51 @@ export function ellipsize(
   ellipse: string = "…"
 ): string {
   return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
+}
+
+// TODO: Document
+export function autocompleteInput<T>(
+  initialValue: string | null,
+  onDataRequested: (value: string, done: (data: T[]) => void) => void,
+  renderListElement: (data: T) => HTMLElement,
+  onSelected: (data: T) => string
+): HTMLElement {
+  const container = document.createElement("div");
+  container.classList.add("autocomplete");
+
+  const input = document.createElement("input");
+  input.type = "text";
+
+  const list = document.createElement("div");
+  list.classList.add("autocomplete-items");
+
+  const cleanList = () => {
+    list.innerHTML = "";
+  };
+
+  input.addEventListener("keyup", e => {
+    const value = (e.target as HTMLInputElement).value;
+    if (value) {
+      onDataRequested(value, data => {
+        cleanList();
+        if (data instanceof Array) {
+          data.forEach(item => {
+            const listElement = renderListElement(item);
+            listElement.addEventListener("click", () => {
+              input.value = onSelected(item);
+              cleanList();
+            });
+            list.appendChild(listElement);
+          });
+        }
+      });
+    } else {
+      cleanList();
+    }
+  });
+
+  container.appendChild(input);
+  container.appendChild(list);
+
+  return container;
 }

@@ -140,7 +140,6 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
 
     buildRanges = ranges => {
       createdRangesContainer.innerHTML = "";
-      console.log(ranges);
       ranges.forEach((colorRange, index) =>
         createdRangesContainer.appendChild(
           this.rangeContainer(

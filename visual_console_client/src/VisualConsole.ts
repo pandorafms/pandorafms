@@ -414,8 +414,6 @@ export default class VisualConsole {
       context.elementsById[itemInstance.props.id] = itemInstance;
       context.elementIds.push(itemInstance.props.id);
       // Item event handlers.
-      itemInstance.onClick(context.handleElementClick);
-      itemInstance.onDblClick(context.handleElementDblClick);
       itemInstance.onRemove(context.handleElementRemove);
       itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
 
@@ -424,6 +422,8 @@ export default class VisualConsole {
           context.handleLineElementMovementFinished
         );
       } else {
+        itemInstance.onClick(context.handleElementClick);
+        itemInstance.onDblClick(context.handleElementDblClick);
         itemInstance.onMoved(context.handleElementMovement);
         itemInstance.onMovementFinished(context.handleElementMovementFinished);
         itemInstance.onResized(context.handleElementResizement);

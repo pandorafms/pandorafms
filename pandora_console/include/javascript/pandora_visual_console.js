@@ -339,12 +339,16 @@ function createVisualConsole(
                 .init();
               break;
             case "autocomplete-agent":
-              //XXX
               asyncTaskManager
                 .add(identifier + "-" + params.id, function(doneAsyncTask) {
+                  console.log("prarms.agentName: " + params.value);
+                  var dataObject = {
+                    value: params.value
+                  };
                   var abortable = autocompleteAgentsVisualConsole(
                     baseUrl,
                     visualConsole.props.id,
+                    dataObject,
                     function(error, data) {
                       if (error || !data) {
                         console.log(
@@ -932,14 +936,7 @@ function updateVisualConsoleItem(baseUrl, vcId, vcItemId, data, callback) {
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function autocompleteAgentsVisualConsole(
-  baseUrl,
-  vcId,
-  vcItemId,
-  data,
-  callback
-) {
-  //XXX
+function autocompleteAgentsVisualConsole(baseUrl, vcId, data, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var jqXHR = null;
@@ -983,7 +980,6 @@ function autocompleteAgentsVisualConsole(
         page: "include/rest-api/index",
         autocompleteAgentsVisualConsole: 1,
         visualConsoleId: vcId,
-        visualConsoleItemId: vcItemId,
         data: data
       },
       "json"

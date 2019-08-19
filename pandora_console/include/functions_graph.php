@@ -3252,7 +3252,7 @@ function graph_events_validated($width=300, $height=200, $extra_filters=[], $met
         $config['fontpath'],
         $config['font_size'],
         1,
-        false,
+        'bottom',
         $colors
     );
 }
@@ -3553,7 +3553,9 @@ function grafico_eventos_usuario($width, $height)
         '',
         $water_mark,
         $config['fontpath'],
-        $config['font_size']
+        $config['font_size'],
+        1,
+        'bottom'
     );
 }
 

@@ -607,9 +607,9 @@ if ($pure) {
 
     // Countdown.
     echo '<li class="nomn">';
-    echo '<div class="vc-refrttt">';
-    echo '<div class="vc-countdownttt"><span id="refrcounter"></span></div>';
-    echo '<div id="vc-refr-formttt">';
+    echo '<div class="events-refr">';
+    echo '<div class="events-countdown"><span id="refrcounter"></span></div>';
+    echo '<div id="events-refr-form">';
     echo __('Refresh').':';
     echo html_print_select(
         get_refresh_time_array(),

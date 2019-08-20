@@ -3165,7 +3165,7 @@ function events_get_event_filter_select($manage=true)
     } else {
         $user_groups = users_get_groups(
             $config['id_user'],
-            'EW',
+            'ER',
             users_can_manage_group_all(),
             true
         );

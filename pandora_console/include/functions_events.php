@@ -4160,7 +4160,7 @@ function events_page_details($event, $server='')
 
     $data = [];
     $data[0] = __('Instructions');
-    $data[1] = events_display_instructions($event['event_type'], $event, true);
+    $data[1] = html_entity_decode(events_display_instructions($event['event_type'], $event, true));
     $table_details->data[] = $data;
 
     $data = [];

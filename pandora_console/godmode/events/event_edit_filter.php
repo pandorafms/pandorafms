@@ -273,6 +273,7 @@ $table->data[2][1] = html_print_select_groups(
     '',
     true
 );
+
 $types = get_event_types();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types['not_normal'] = __('Not normal');

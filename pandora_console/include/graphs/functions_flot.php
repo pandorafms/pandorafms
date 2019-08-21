@@ -24,7 +24,7 @@ function include_javascript_dependencies_flot_graph($return=false)
         $is_include_javascript = true;
 
         $metaconsole_hack = '';
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole()) {
             $metaconsole_hack = '../../';
         }
 

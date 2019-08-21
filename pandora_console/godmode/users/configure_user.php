@@ -575,6 +575,10 @@ if ($delete_profile) {
     );
 }
 
+if ($values) {
+    $user_info = $values;
+}
+
 $table = new stdClass();
 $table->id = 'user_configuration_table';
 $table->width = '100%';

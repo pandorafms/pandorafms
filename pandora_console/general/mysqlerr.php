@@ -77,7 +77,23 @@
 }
 
 #opacity{
-background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
+    background:black;
+    opacity:0.1;
+    left:0px;
+    top:0px;
+    width:100%;
+    height:100%;
+    position: fixed;
+    z-index: 1;
+}
+
+img.modalclose {
+    text-align: right;
+    float: right;
+    padding-right: 11px;
+    padding-top: 11px;
+    vertical-align: middle;
+    cursor:pointer;
 }
 
 </style>
@@ -88,8 +104,9 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
     
     <div class='modalheade'>
         <span class='modalheadertex'>
-            <?php echo __('Database error'); ?>
+            <?php echo __('Database error'); ?>        
         </span>
+        <img class='modalclose' src='<?php echo $config['homeurl']; ?>images/icono_cerrar.png'>  
     </div>
 
     <div class='modalconten'>
@@ -101,7 +118,7 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
         </div>
     </div>
     <a href='https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration' target='_blank'>
-    <div class='modalwikibutto cerrar'>
+    <div class='modalwikibutto'>
         <span class='modalwikibuttontex'> <?php echo __('Documentation'); ?></span>
     </div>
     </a>
@@ -111,3 +128,12 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
     
 </body>
 </html>
+
+<script>
+
+    $(".modalclose").click(function(){
+        $('div#alert_messages_na').toggle();
+        $('div#opacity').toggle();
+    });
+
+</script>

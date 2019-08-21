@@ -177,6 +177,9 @@ $table->data['operations'][1] .= html_print_checkbox('copy_alerts', 1, true, tru
 $table->data['operations'][1] .= html_print_label(__('Copy alerts'), 'checkbox-copy_alerts', true);
 $table->data['operations'][1] .= '</span>';
 
+$table->data['form_modules_filter'][0] = __('Filter Modules');
+$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
+
 $table->data[1][0] = __('Modules');
 $table->data[1][1] = '<span class="with_modules'.(empty($modules) ? ' invisible' : '').'">';
 $table->data[1][1] .= html_print_select(
@@ -270,6 +273,9 @@ $table->data[1][1] = html_print_select(
     true
 );
 
+$table->data['form_agents_filter'][0] = __('Filter Agents');
+$table->data['form_agents_filter'][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
+
 $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="destiny_agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
@@ -302,6 +308,8 @@ echo '<h3 class="error invisible" id="message">&nbsp;</h3>';
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');
 ?>
+
+<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var module_alerts;
@@ -349,6 +357,11 @@ $(document).ready (function () {
             /* Hide source agent */
             var selected_agent = $("#source_id_agent").val();
             $("#destiny_id_agent option[value='" + selected_agent + "']").remove();
+        },
+        callbackAfter:function() {
+            //Filter agents. Call the function when the select is fully loaded.
+            var textNoData = "<?php echo __('None'); ?>";
+            filterByText($('#destiny_id_agent'), $("#text-filter_agents"), textNoData);
         }
     });
     
@@ -450,13 +463,14 @@ $(document).ready (function () {
                             $("#fieldset_destiny").hide ();
                             
                             $("span.without_modules, span.without_alerts").show ();
-                            $("span.with_modules, span.with_alerts, #target_table-operations").hide ();
+                            $("span.with_modules, span.with_alerts, #target_table-operations, #target_table-form_modules_filter").hide ();
                         }
                         else {
                             if (no_modules) {
                                 $("span.without_modules").show ();
                                 $("span.with_modules").hide ();
                                 $("#checkbox-copy_modules").uncheck ();
+                                $("#target_table-form_modules_filter").hide ();
                             }
                             else {
                                 $("span.without_modules").hide ();
@@ -474,10 +488,13 @@ $(document).ready (function () {
                                 $("span.with_alerts").show ();
                                 $("#checkbox-copy_alerts").check ();
                             }
-                            $("#fieldset_destiny, #target_table-operations").show ();
+                            $("#fieldset_destiny, #target_table-operations, #target_table-form_modules_filter").show ();
                         }
                         $("#fieldset_targets").show ();
                         $("#target_modules, #target_alerts").enable ();
+                        //Filter modules. Call the function when the select is fully loaded.
+                        var textNoData = "<?php echo __('None'); ?>";
+                        filterByText($('#target_modules'), $("#text-filter_modules"), textNoData);
                     },
                     "json"
                 );

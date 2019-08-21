@@ -472,11 +472,17 @@ if (check_login()) {
         $result = false;
         $id_module_a = (int) get_parameter('id_module_a');
         $id_module_b = (int) get_parameter('id_module_b');
+        $type = (string) get_parameter('relation_type');
 
         if ($id_module_a < 1) {
             $name_module_a = get_parameter('name_module_a', '');
             if ($name_module_a) {
-                $id_module_a = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_a);
+                $id_module_a = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_a
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -486,7 +492,12 @@ if (check_login()) {
         if ($id_module_b < 1) {
             $name_module_b = get_parameter('name_module_b', '');
             if ($name_module_b) {
-                $id_module_b = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_b);
+                $id_module_b = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_b
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -494,7 +505,7 @@ if (check_login()) {
         }
 
         if ($id_module_a > 0 && $id_module_b > 0) {
-            $result = modules_add_relation($id_module_a, $id_module_b);
+            $result = modules_add_relation($id_module_a, $id_module_b, $type);
         }
 
         echo json_encode($result);
@@ -1011,7 +1022,7 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_module_status($module['estado'], $title, true, false, true);
+            $data[5] = ui_print_status_image($status, $title, true);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 

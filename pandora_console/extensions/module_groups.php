@@ -270,6 +270,12 @@ function mainModuleGroups()
         $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
 
+        if ($config['style'] === 'pandora_black') {
+            $background_color = '#333';
+        } else {
+            $background_color = '#fff';
+        }
+
         $head[0] = __('Groups');
         $headstyle[0] = 'width: 20%;  font-weight: bolder;';
         foreach ($array_module_group as $key => $value) {
@@ -314,7 +320,7 @@ function mainModuleGroups()
                         $data[$i][$j] .= $array_data[$key][$k]['total_count'];
                         $data[$i][$j] .= '</a></div>';
                     } else {
-                        $data[$i][$j] = "<div style='background:white;".$cell_style."'>";
+                        $data[$i][$j] = "<div style='background:".$background_color.';'.$cell_style."'>";
                         $data[$i][$j] .= 0;
                         $data[$i][$j] .= '</div>';
                     }
@@ -323,7 +329,7 @@ function mainModuleGroups()
                 }
             } else {
                 foreach ($value['gm'] as $k => $v) {
-                    $data[$i][$j] = "<div style='background:white; min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
+                    $data[$i][$j] = "<div style='background:".$background_color."; min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
                     $data[$i][$j] .= 0;
                     $data[$i][$j] .= '</div>';
                     $j++;

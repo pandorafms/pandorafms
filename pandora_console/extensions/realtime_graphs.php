@@ -173,7 +173,7 @@ function pandora_realtime_graphs()
         $table->colspan[2]['snmp_oid'] = 2;
 
         $data['snmp_ver'] = __('Version').'&nbsp;&nbsp;'.html_print_select($snmp_versions, 'snmp_version', $snmp_ver, '', '', 0, true);
-        $data['snmp_ver'] .= '&nbsp;&nbsp;'.html_print_button(__('SNMP walk'), 'snmp_walk', false, 'javascript:realtimeGraphs.snmpBrowserWindow();', 'class="sub next"', true);
+        $data['snmp_ver'] .= '&nbsp;&nbsp;'.html_print_button(__('SNMP walk'), 'snmp_walk', false, 'javascript:snmpBrowserWindow();', 'class="sub next"', true);
         $table->colspan[2]['snmp_ver'] = 2;
 
         $table->data[] = $data;

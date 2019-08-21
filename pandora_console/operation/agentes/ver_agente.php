@@ -70,7 +70,7 @@ if (is_ajax()) {
         if ($id_agente > 0) {
             $last_contact = db_get_value_sql(
                 sprintf(
-                    'SELECT intervalo - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto)))
+                    'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
                      FROM `tagente`
                      WHERE id_agente = %d ',
                     $id_agente
@@ -1559,8 +1559,11 @@ switch ($tab) {
         include 'estado_monitores.php';
         echo "<a name='alerts'></a>";
         include 'alerts_status.php';
-        echo "<a name='events'></a>";
-        include 'status_events.php';
+        // Check permissions to read events
+        if (check_acl($config['id_user'], 0, 'ER')) {
+            echo "<a name='events'></a>";
+            include 'status_events.php';
+        }
     break;
 
     case 'data_view':

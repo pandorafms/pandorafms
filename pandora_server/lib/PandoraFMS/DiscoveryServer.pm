@@ -56,15 +56,7 @@ my $TaskSem :shared;
 use constant {
     OS_OTHER => 10,
     OS_ROUTER => 17,
-    OS_SWITCH => 18,
-    DISCOVERY_HOSTDEVICES => 0,
-    DISCOVERY_HOSTDEVICES_CUSTOM => 1,
-    DISCOVERY_CLOUD_AWS => 2,
-    DISCOVERY_APP_VMWARE => 3,
-    DISCOVERY_APP_MYSQL => 4,
-    DISCOVERY_APP_ORACLE => 5,
-    DISCOVERY_CLOUD_AWS_EC2 => 6,
-    DISCOVERY_CLOUD_AWS_RDS => 7
+    OS_SWITCH => 18
 };
 
 ########################################################################################
@@ -73,7 +65,8 @@ use constant {
 sub new ($$$$$$) {
     my ($class, $config, $dbh) = @_;
     
-    return undef unless $config->{'reconserver'} == 1 || $config->{'discoveryserver'} == 1;
+    return undef unless (defined($config->{'reconserver'}) && $config->{'reconserver'} == 1)
+     || (defined($config->{'discoveryserver'}) && $config->{'discoveryserver'} == 1);
     
     if (! -e $config->{'nmap'}) {
         logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Discovery Server not found.", 1);
@@ -196,49 +189,11 @@ sub data_consumer ($$) {
         my $main_event = pandora_event($pa_config, "[Discovery] Execution summary",$task->{'id_group'}, 0, 0, 0, 0, 'system', 0, $dbh);
 
         my %cnf_extra;
-        if ($task->{'type'} == DISCOVERY_CLOUD_AWS_EC2
-        || $task->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
-            # auth_strings stores the crential identifier to be used.
-            my $key = pandora_get_credential($dbh, $task->{'auth_strings'});
-
-            if (ref($key) eq "HASH") {
-				$cnf_extra{'aws_access_key_id'} = $key->{'username'};
-				$cnf_extra{'aws_secret_access_key'} = $key->{'password'};
-            } else {
-                # Invalid credential.
-                return;
-            }
-
-            $cnf_extra{'cloud_util_path'} = pandora_get_config_value($dbh, 'cloud_util_path');
-
-            # Pass credentials by file due Perl limitations. We cannot update ENV here.
-            $cnf_extra{'creds_file'} = $pa_config->{'temporal'} . '/tmp_discovery.' . md5($task->{'id_rt'} . $task->{'name'} . time());
-            eval {
-                open(my $__file_cfg, '> '. $cnf_extra{'creds_file'}) or die($!);
-                print $__file_cfg $cnf_extra{'aws_access_key_id'} . "\n";
-                print $__file_cfg $cnf_extra{'aws_secret_access_key'} . "\n";
-                close($__file_cfg);
-                set_file_permissions(
-                    $pa_config,
-                    $cnf_extra{'creds_file'},
-                    "0600"
-                );
-            };
-            if ($@) {
-                logger(
-                    $pa_config,
-                    'Cannot instantiate configuration file for task: ' . safe_output($task->{'name'}),
-                    5
-                );
-                # A server restart will override ENV definition (see run)
-                logger(
-                    $pa_config,
-                    'Cannot execute Discovery task: ' . safe_output($task->{'name'}) . '. Please restart the server.',
-                    1
-                );
-                # Skip this task.
-                return;
-            }
+        
+        my $r = enterprise_hook('discovery_generate_extra_cnf',[$pa_config, $dbh, $task, \%cnf_extra]);
+        if (defined($r) && $r eq 'ERR') {
+            # Could not generate extra cnf, skip this task.
+            return;
         }
 
         my $recon = new PandoraFMS::Recon::Base(
@@ -273,6 +228,7 @@ sub data_consumer ($$) {
             server_id => $server_id,
             %{$pa_config},
             task_data => $task,
+            public_url => PandoraFMS::Config::pandora_get_tconfig_token($dbh, 'public_url', ''),
             %cnf_extra
         );
 
@@ -283,6 +239,12 @@ sub data_consumer ($$) {
         && -f $cnf_extra{'creds_file'}) {
 			unlink($cnf_extra{'creds_file'});
 		}
+
+
+        # Clean one shot tasks
+        if ($task->{'type'} eq DISCOVERY_DEPLOY_AGENTS) {
+            db_delete_limit($dbh, ' trecon_task ', ' id_rt = ? ', 1, $task->{'id_rt'});   
+        }
     };
     if ($@) {
         logger(
@@ -393,9 +355,10 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 
     # Use xprobe2 if available
     if (-e $self->{pa_config}->{xprobe2}) {
-            my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
-            return OS_OTHER if ($? != 0);
+        my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
+        if ($? == 0) {
             return pandora_get_os($self->{'dbh'}, $output);
+        }
     }
     
     # Use nmap by default
@@ -490,7 +453,7 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
     }
 
     # Connect the modules if they are not already connected.
-    my $connection_id = get_db_value($self->{'dbh'}, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ?) OR (module_b = ? AND module_a = ?)', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
+    my $connection_id = get_db_value($self->{'dbh'}, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ? AND `type` = "direct") OR (module_b = ? AND module_a = ? AND `type` = "direct")', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
     if (! defined($connection_id)) {
         db_do($self->{'dbh'}, 'INSERT INTO tmodule_relationship (`module_a`, `module_b`, `id_rt`) VALUES(?, ?, ?)', $module_id_1, $module_id_2, $self->{'task_id'});
     }

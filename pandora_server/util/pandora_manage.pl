@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.736 PS190628";
+my $version = "7.0NG.738 PS190821";
 
 # save program name for logging
 my $progname = basename($0);
@@ -284,19 +284,94 @@ sub api_call($$$;$$$$) {
 	return $content;
 }
 
+
+###############################################################################
+# Update token conf file agent
+###############################################################################
+sub update_conf_txt ($$$$) {
+	my ($conf, $agent_name, $token, $value) = @_;
+
+	# Read the conf of each agent.
+	my $conf_file_txt = enterprise_hook(
+		'read_agent_conf_file',
+		[
+			$conf,
+			$agent_name
+		]
+	);
+
+	# Check if there is agent conf.
+	if(!$conf_file_txt){
+		return 0;
+	}
+
+	my $updated = 0;
+	my $txt_content = "";
+
+	my @lines = split /\n/, $conf_file_txt;
+
+	foreach my $line (@lines) {
+		if ($line =~ /^\s*$token\s/ || $line =~ /^#$token\s/ || $line =~ /^#\s$token\s/) {
+			$txt_content .= $token.' '.$value."\n";
+			$updated = 1;
+		} else {
+			$txt_content .= $line."\n";
+		}
+	}
+
+	if ($updated == 0) {
+		$txt_content .= "\n$token $value\n";
+	}
+
+	# Write the conf.
+	my $result = enterprise_hook(
+		'write_agent_conf_file',
+		[
+			$conf,
+			$agent_name,
+			$txt_content
+		]
+	);
+
+	return $result;
+}
+
+
 ###############################################################################
 # Disable a entire group
 ###############################################################################
 sub pandora_disable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
+	my @agents_bd = [];
+	my $result = 0;
+
 	if ($group == 0){
+		# Extract all the names of the pandora agents if it is for all = 0.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		# Update bbdd.
 		db_do ($dbh, "UPDATE tagente SET disabled = 1");
 	}
 	else {
+		# Extract all the names of the pandora agents if it is for group.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+		# Update bbdd.
 		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
 	}
-    exit;
+
+	foreach my $name_agent (@agents_bd) {
+		# Check the standby field I put it to 0.
+		my $new_conf = update_conf_txt(
+			$conf,
+			$name_agent->{'nombre'},
+			'standby',
+			'1'
+		);
+	}
+
+    return $result;
 }
 
 ###############################################################################
@@ -305,13 +380,35 @@ sub pandora_disable_group ($$$) {
 sub pandora_enable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
+	my @agents_bd = [];
+	my $result = 0;
+
 	if ($group == 0){
-			db_do ($dbh, "UPDATE tagente SET disabled = 0");
+		# Extract all the names of the pandora agents if it is for all = 0.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		# Update bbdd.
+		$result = db_do ($dbh, "UPDATE tagente SET disabled = 0");
 	}
 	else {
-			db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
+		# Extract all the names of the pandora agents if it is for group.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+		# Update bbdd.
+		$result = db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
 	}
-    exit;
+
+	foreach my $name_agent (@agents_bd) {
+		# Check the standby field I put it to 0.
+		my $new_conf = update_conf_txt(
+			$conf,
+			$name_agent->{'nombre'},
+			'standby',
+			'0'
+		);
+	}
+
+    return $result;
 }
 
 ##############################################################################

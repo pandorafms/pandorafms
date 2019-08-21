@@ -971,6 +971,8 @@ if (enterprise_installed()) {
         );
     }
 
+    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+
     echo '</div>';
 }
 

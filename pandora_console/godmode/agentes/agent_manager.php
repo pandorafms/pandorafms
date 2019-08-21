@@ -787,7 +787,7 @@ $table->class = 'custom_fields_table';
 
 $table->head = [
     0 => __('Click to display').ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
         true
     ),
 ];

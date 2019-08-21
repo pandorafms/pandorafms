@@ -1382,7 +1382,7 @@ if ($update_module || $create_module) {
     $each_ff = (int) get_parameter('each_ff');
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit_select');
-    if ($unit == 'none') {
+    if ($unit == 'none' || $unit == '') {
         $unit = (string) get_parameter('unit_text');
     }
 

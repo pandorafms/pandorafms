@@ -4444,6 +4444,10 @@ function ui_print_agent_autocomplete_input($parameters)
         $get_only_string_modules = true;
     }
 
+    if (isset($parameters['no_disabled_modules'])) {
+        $no_disabled_modules = $parameters['no_disabled_modules'];
+    }
+
     $spinner_image = html_print_image('images/spinner.gif', true, false, true);
     if (isset($parameters['spinner_image'])) {
         $spinner_image = $parameters['spinner_image'];
@@ -4591,7 +4595,11 @@ function ui_print_agent_autocomplete_input($parameters)
 			if ('.((int) $get_only_string_modules).') {
 				inputs.push ("get_only_string_modules=1");
 			}
-			
+
+            if ('.((int) $no_disabled_modules).') {
+                inputs.push ("disabled=0");
+            }
+
 			if ('.((int) $metaconsole_enabled).') {
 				if (('.((int) $use_input_server).')
 						|| ('.((int) $print_input_server).')) {

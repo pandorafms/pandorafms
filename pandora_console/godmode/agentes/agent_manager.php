@@ -804,20 +804,20 @@ $table_adv_options .= '
         '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
         </div>';
 
-
-echo '<div class="ui_toggle">';
-ui_toggle(
-    $table_adv_options,
-    __('Advanced options'),
-    '',
-    '',
-    true,
-    false,
-    'white_box white_box_opened',
-    'no-border flex'
-);
-echo '</div>';
-
+if (enterprise_installed()) {
+    echo '<div class="ui_toggle">';
+    ui_toggle(
+        $table_adv_options,
+        __('Advanced options'),
+        '',
+        '',
+        true,
+        false,
+        'white_box white_box_opened',
+        'no-border flex'
+    );
+    echo '</div>';
+}
 
 $table = new stdClass();
 $table->width = '100%';
@@ -931,18 +931,48 @@ foreach ($fields as $field) {
     $i += 2;
 }
 
-if (!empty($fields)) {
+if (enterprise_installed()) {
+    if (!empty($fields)) {
+        echo '<div class="ui_toggle">';
+        ui_toggle(
+            html_print_table($table, true),
+            __('Custom fields'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+        echo '</div>';
+    }
+} else {
     echo '<div class="ui_toggle">';
     ui_toggle(
-        html_print_table($table, true),
-        __('Custom fields'),
+        $table_adv_options,
+        __('Advanced options'),
         '',
         '',
         true,
         false,
         'white_box white_box_opened',
-        'no-border'
+        'no-border flex'
     );
+    if (!empty($fields)) {
+        ui_toggle(
+            html_print_table($table, true),
+            __('Custom fields'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    }
+
+    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+
     echo '</div>';
 }
 

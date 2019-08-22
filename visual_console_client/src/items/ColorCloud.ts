@@ -1,7 +1,8 @@
 import {
   WithModuleProps,
   LinkedVisualConsoleProps,
-  AnyObject
+  AnyObject,
+  WithAgentProps
 } from "../lib/types";
 import { modulePropsDecoder, linkedVCPropsDecoder, t } from "../lib";
 import Item, {
@@ -26,6 +27,7 @@ export type ColorCloudProps = {
   }[];
   // TODO: Add the rest of the color cloud values?
 } & ItemProps &
+  WithAgentProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
 

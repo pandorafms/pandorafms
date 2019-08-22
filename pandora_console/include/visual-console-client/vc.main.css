@@ -23,6 +23,11 @@
      -moz-user-select: text;
       -ms-user-select: text;
           user-select: text;
+  z-index: 1;
+}
+
+.visual-console-item.is-on-top {
+  z-index: 2;
 }
 
 .visual-console-item.is-editing {
@@ -50,17 +55,32 @@
   cursor: se-resize;
 }
 
-.visual-console-item.is-editing svg {
+.visual-console-item.is-editing :first-child {
   pointer-events: none;
 }
 
-.visual-console-spinner,
-.visual-console-spinner :after {
-  display: block;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+@-webkit-keyframes spinner-loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(1turn);
+            transform: rotate(1turn);
+  }
 }
+
+@keyframes spinner-loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(1turn);
+            transform: rotate(1turn);
+  }
+}
+
 .visual-console-spinner {
   background-color: transparent;
   margin: 0px auto;
@@ -79,25 +99,19 @@
   -webkit-animation-timing-function: linear;
           animation-timing-function: linear;
 }
-@-webkit-keyframes spinner-loading {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(1turn);
-            transform: rotate(1turn);
-  }
+
+.visual-console-spinner,
+.visual-console-spinner :after {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 }
-@keyframes spinner-loading {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(1turn);
-            transform: rotate(1turn);
-  }
+
+.visual-console-spinner.small,
+.visual-console-spinner.small :after {
+  width: 12px;
+  height: 12px;
 }
 
 .div-visual-console-spinner {
@@ -122,6 +136,101 @@ form.visual-console-item-edition > input[type="submit"] {
   position: absolute;
   bottom: 5px;
   right: 15px;
+}
+
+/* Styles for the solid icons */
+
+.fa {
+  display: inline-block;
+  margin: 0;
+}
+
+.fa,
+.fa > svg,
+.fa.medium,
+.fa.medium > svg {
+  width: 28px;
+  height: 28px;
+}
+
+.fa.fa-small,
+.fa.fa-small > svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fa.fa-large,
+.fa.fa-large > svg {
+  width: 44px;
+  height: 44px;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+          animation: fa-spin 2s infinite linear;
+}
+
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+          animation: fa-spin 1s infinite steps(8);
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autocomplete input {
+  /*background: pink;*/
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  overflow: visible;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
 }
 
 @font-face {

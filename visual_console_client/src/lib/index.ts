@@ -173,7 +173,7 @@ export function sizePropsDecoder(data: AnyObject): Size | never {
  */
 export function agentPropsDecoder(data: AnyObject): WithAgentProps {
   const agentProps: WithAgentProps = {
-    agentId: parseIntOr(data.agent, null),
+    agentId: parseIntOr(data.agentId, null),
     agentName: notEmptyStringOr(data.agentName, null),
     agentAlias: notEmptyStringOr(data.agentAlias, null),
     agentDescription: notEmptyStringOr(data.agentDescription, null),
@@ -979,6 +979,7 @@ export function autocompleteInput<T>(
 
   const input = document.createElement("input");
   input.type = "text";
+  if (initialValue !== null) input.value = initialValue;
 
   const list = document.createElement("div");
   list.classList.add("autocomplete-items");

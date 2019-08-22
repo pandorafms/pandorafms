@@ -925,7 +925,9 @@ interface AgentAutocompleteData {
  * This item consists of a label and agent select.
  * Agent and module is stored in the  property
  */
-export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
+export class AgentModuleInputGroup extends InputGroup<
+  Partial<WithModuleProps>
+> {
   protected createContent(): HTMLElement | HTMLElement[] {
     const agentLabel = document.createElement("label");
     agentLabel.textContent = t("Agent");
@@ -934,19 +936,23 @@ export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
     agentInput.type = "text";
     agentInput.required = true;
     agentInput.className = "autocomplete-agent";
-
-    //const imgeAgent = "";
-    //agentInput.style.backgroundImage = `url(${imgeAgent})`;
-
-    //agentInput.value = `${this.currentData.width ||
-    //  this.initialData.width ||
-    //  0}`;
+    agentInput.value = `${this.currentData.agentId ||
+      this.initialData.agentId ||
+      0}`;
 
     const handleDataRequested = (
       value: string,
       done: (data: AgentAutocompleteData[]) => void
     ) => {
       this.requestData("autocomplete-agent", { value }, (error, data) => {
+        // Remove Item agentModule.
+        const deleteAgentModuleItem = document.getElementById(
+          "select-autocomplete-agent-module"
+        );
+        if (deleteAgentModuleItem) {
+          deleteAgentModuleItem.remove();
+        }
+
         if (error) {
           done([]);
           return;
@@ -993,18 +999,55 @@ export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
         ? `${item.agentAlias} - ${item.agentAddress}`
         : item.agentAlias;
 
+      agentLabel.appendChild(this.agentModuleInput(item));
+
       return `${selectedItem || ""}`;
     };
 
+    const initialAutocompleteInput = this.initialData.agentAddress
+      ? `${this.initialData.agentAlias} - ${this.initialData.agentAddress}`
+      : this.initialData.agentAlias;
+
     agentLabel.appendChild(
-      autocompleteInput("", handleDataRequested, renderListItem, handleSelected)
+      autocompleteInput(
+        notEmptyStringOr(initialAutocompleteInput, null),
+        handleDataRequested,
+        renderListItem,
+        handleSelected
+      )
     );
+
+    const initialAgentId = parseIntOr(this.initialData.agentId, null);
+    if (initialAgentId !== null) {
+      agentLabel.appendChild(
+        this.agentModuleInput({
+          agentId: initialAgentId,
+          agentName: notEmptyStringOr(this.initialData.agentName, null),
+          agentAlias: notEmptyStringOr(this.initialData.agentAlias, null),
+          agentAddress: notEmptyStringOr(this.initialData.agentAddress, null),
+          agentDescription: notEmptyStringOr(
+            this.initialData.agentDescription,
+            null
+          ),
+          metaconsoleId: parseIntOr(this.initialData.metaconsoleId, null)
+        })
+      );
+    }
 
     return agentLabel;
   }
 
   private agentModuleInput(item: AgentAutocompleteData): HTMLElement {
+    // Remove Item agentModule.
+    const deleteAgentModuleItem = document.getElementById(
+      "select-autocomplete-agent-module"
+    );
+    if (deleteAgentModuleItem) {
+      deleteAgentModuleItem.remove();
+    }
+
     const agentModuleLabel = document.createElement("label");
+    agentModuleLabel.id = "select-autocomplete-agent-module";
     agentModuleLabel.textContent = t("Module");
 
     // Create element Spinner.
@@ -1014,8 +1057,8 @@ export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
     });
     agentModuleLabel.appendChild(spinner);
 
-    // Init request
-    this.requestData("autocomplete-module", {}, (error, data) => {
+    // Init request.
+    this.requestData("autocomplete-module", { ...item }, (error, data) => {
       // Remove Spinner.
       spinner.remove();
 
@@ -1036,28 +1079,20 @@ export class AgentModuleInputGroup extends InputGroup<Partial<WithAgentProps>> {
 
         data.forEach(option => {
           const optionElement = document.createElement("option");
-          optionElement.value = option.name;
-          optionElement.textContent = option.name;
+          optionElement.value = option.moduleId;
+          optionElement.textContent = option.moduleName;
           agentModuleSelect.appendChild(optionElement);
         });
 
-        /*
-        labelSelect.addEventListener("change", event => {
-          const imageSrc = (event.target as HTMLSelectElement).value;
-          this.updateData({ [imageKey]: imageSrc });
-
-          if (imageSrc != null) {
-            const imageItem = data.find(item => item.name === imageSrc);
-            this.getImage(imageItem, divImage);
-          }
+        agentModuleSelect.addEventListener("change", event => {
+          this.updateData({
+            moduleId: parseIntOr((event.target as HTMLSelectElement).value, 0)
+          });
         });
 
-        const valueImage = `${this.currentData[imageKey] ||
-          this.initialData[imageKey] ||
-          null}`;
-
-          labelSelect.value = valueImage;
-        */
+        agentModuleSelect.value = `${this.currentData.moduleId ||
+          this.initialData.moduleId ||
+          0}`;
 
         agentModuleLabel.appendChild(agentModuleSelect);
       }

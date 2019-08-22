@@ -22,6 +22,7 @@ $getGroupsVisualConsoleItem = (bool) get_parameter('getGroupsVisualConsoleItem')
 $getAllVisualConsole = (bool) get_parameter('getAllVisualConsole');
 $getImagesVisualConsole = (bool) get_parameter('getImagesVisualConsole');
 $autocompleteAgentsVisualConsole = (bool) get_parameter('autocompleteAgentsVisualConsole');
+$autocompleteModuleVisualConsole = (bool) get_parameter('autocompleteModuleVisualConsole');
 
 ob_clean();
 
@@ -292,278 +293,162 @@ if ($getVisualConsole === true) {
 } else if ($autocompleteAgentsVisualConsole) {
     $params = (array) get_parameter('data', []);
 
+    $string = $params['value'];
 
-    // if ($search_agents && (!is_metaconsole() || $force_local)) {
-        // $id_agent = (int) get_parameter('id_agent');
-       $string = $params['value'];
-        $id_group = (int) get_parameter('id_group', -1);
-
-        $filter = [];
+    // TODO: ACL.
+    $id_group = (int) get_parameter('id_group', -1);
 
     if ($id_group != -1) {
         if ($id_group == 0) {
-            $user_groups = users_get_groups($config['id_user'], 'AR', true);
+            $user_groups = users_get_groups(
+                $config['id_user'],
+                'AR',
+                true
+            );
             $filter['id_grupo'] = array_keys($user_groups);
         } else {
             $filter['id_grupo'] = $id_group;
         }
     }
 
+    $filter = [];
     $filter['disabled'] = 0;
 
-    $data = [];
-    // Get agents for only the alias.
-    $filter_alias = $filter;
-    $filter_alias[] = '(alias LIKE "%'.$string.'%")';
-
-    $agents = agents_get_agents($filter_alias, ['id_agente', 'nombre', 'direccion', 'alias']);
-    if ($agents !== false) {
-        foreach ($agents as $agent) {
-            $data[] = [
-                'id'     => $agent['id_agente'],
-                'name'   => io_safe_output($agent['nombre']),
-                'alias'  => io_safe_output($agent['alias']),
-                'ip'     => io_safe_output($agent['direccion']),
-                'filter' => 'alias',
-            ];
-        }
-    }
-
-    // Get agents for only the name.
-    $filter_alias = $filter;
-    $filter_agents[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
-
-    $agents = agents_get_agents(
-        $filter_agents,
-        [
-            'id_agente',
-            'nombre',
-            'direccion',
-            'alias',
-        ]
+    $filter[] = sprintf(
+        '(alias LIKE "%%%s%%")
+        OR (alias NOT LIKE "%%%s%%"
+            AND nombre COLLATE utf8_general_ci LIKE "%%%s%%")
+        OR (alias NOT LIKE "%%%s%%"
+            AND nombre COLLATE utf8_general_ci NOT LIKE "%%%s%%"
+            AND direccion LIKE "%%%s%%")
+        OR (alias NOT LIKE "%%%s%%"
+            AND nombre COLLATE utf8_general_ci NOT LIKE "%%%s%%"
+            AND direccion NOT LIKE "%%%s%%"
+            AND comentarios LIKE "%%%s%%"
+        )',
+        $string,
+        $string,
+        $string,
+        $string,
+        $string,
+        $string,
+        $string,
+        $string,
+        $string,
+        $string
     );
-    if ($agents !== false) {
-        foreach ($agents as $agent) {
-            $data[] = [
-                'id'     => $agent['id_agente'],
-                'name'   => io_safe_output($agent['nombre']),
-                'alias'  => io_safe_output($agent['alias']),
-                'ip'     => io_safe_output($agent['direccion']),
-                'filter' => 'agent',
-            ];
+
+    $data = [];
+    if (is_metaconsole() === true) {
+        enterprise_include_once('include/functions_metaconsole.php');
+        $metaconsole_connections = metaconsole_get_connection_names();
+        // For all nodes.
+        if (isset($metaconsole_connections) === true
+            && is_array($metaconsole_connections) === true
+        ) {
+            foreach ($metaconsole_connections as $metaconsole) {
+                // Get server connection data.
+                $server_data = metaconsole_get_connection($metaconsole);
+
+                // Establishes connection.
+                if (metaconsole_load_external_db($server_data) !== NOERR) {
+                    continue;
+                }
+
+                $agents = agents_get_agents(
+                    $filter,
+                    [
+                        'id_agente',
+                        'nombre',
+                        'direccion',
+                        'alias',
+                    ]
+                );
+
+                if (isset($agents) === true && is_array($agents) === true) {
+                    foreach ($agents as $agent) {
+                        $data[] = [
+                            'id'              => $agent['id_agente'],
+                            'name'            => io_safe_output(
+                                $agent['nombre']
+                            ),
+                            'alias'           => io_safe_output(
+                                $agent['alias']
+                            ),
+                            'ip'              => io_safe_output(
+                                $agent['direccion']
+                            ),
+                            'filter'          => 'alias',
+                            'metaconsoleId'   => $server_data['id'],
+                            'metaconsoleName' => $metaconsole,
+                        ];
+                    }
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+    } else {
+        $agents = agents_get_agents(
+            $filter_alias,
+            [
+                'id_agente',
+                'nombre',
+                'direccion',
+                'alias',
+            ]
+        );
+        if (isset($agents) === true && is_array($agents) === true) {
+            foreach ($agents as $agent) {
+                $data[] = [
+                    'id'     => $agent['id_agente'],
+                    'name'   => io_safe_output($agent['nombre']),
+                    'alias'  => io_safe_output($agent['alias']),
+                    'ip'     => io_safe_output($agent['direccion']),
+                    'filter' => 'alias',
+                ];
+            }
         }
     }
 
-    // Get agents for only the address.
-    $filter_alias = $filter;
-    $filter_address[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
+    echo json_encode($data);
+    return;
+} else if ($autocompleteModuleVisualConsole) {
+    $data = (array) get_parameter('data', []);
 
-    $agents = agents_get_agents($filter_address, ['id_agente', 'nombre', 'direccion', 'alias']);
-    if ($agents !== false) {
-        foreach ($agents as $agent) {
-            $data[] = [
-                'id'     => $agent['id_agente'],
-                'name'   => io_safe_output($agent['nombre']),
-                'alias'  => io_safe_output($agent['alias']),
-                'ip'     => io_safe_output($agent['direccion']),
-                'filter' => 'address',
-            ];
+    $result = [];
+    if (is_metaconsole()) {
+        enterprise_include_once('include/functions_metaconsole.php');
+        $connection = metaconsole_get_connection_by_id($data['metaconsoleId']);
+        if (metaconsole_connect($connection) !== NOERR) {
+            echo json_encode($result);
+            return;
         }
     }
 
-    // Get agents for only the description.
-    $filter_alias = $filter;
-    $filter_description[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
+    $agent_modules = agents_get_modules(
+        $data['agentId']
+    );
 
-    $agents = agents_get_agents($filter_description, ['id_agente', 'nombre', 'direccion', 'alias']);
-    if ($agents !== false) {
-        foreach ($agents as $agent) {
-            $data[] = [
-                'id'     => $agent['id_agente'],
-                'name'   => io_safe_output($agent['nombre']),
-                'alias'  => io_safe_output($agent['alias']),
-                'ip'     => io_safe_output($agent['direccion']),
-                'filter' => 'description',
-            ];
-        }
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
     }
 
-        echo json_encode($data);
-        return;
-    /*
-        } else if ($search_agents && is_metaconsole()) {
-        $id_agent = (int) get_parameter('id_agent');
-        $string = (string) get_parameter('q');
-        // q is what autocomplete plugin gives
-        $id_group = (int) get_parameter('id_group', -1);
-        $addedItems = html_entity_decode((string) get_parameter('add'));
-        $addedItems = json_decode($addedItems);
-        $all = (string) get_parameter('all', 'all');
+    if (isset($agent_modules) === true && is_array($agent_modules) === true) {
+        $result = array_map(
+            function ($id) use ($agent_modules) {
+                return [
+                    'moduleId'   => $id,
+                    'moduleName' => io_safe_output($agent_modules[$id]),
+                ];
+            },
+            array_keys($agent_modules)
+        );
+    }
 
-        if ($addedItems != null) {
-            foreach ($addedItems as $item) {
-                echo $item."|\n";
-            }
-        }
-
-        $data = [];
-
-        $fields = [
-            'id_tagente AS id_agente',
-            'nombre',
-            'alias',
-            'direccion',
-            'id_tmetaconsole_setup AS id_server',
-        ];
-
-        $filter = [];
-
-        if ($id_group != -1) {
-            if ($id_group == 0) {
-                $user_groups = users_get_groups($config['id_user'], 'AR', true);
-
-                $filter['id_grupo'] = array_keys($user_groups);
-            } else {
-                $filter['id_grupo'] = $id_group;
-            }
-        }
-
-        switch ($all) {
-            case 'enabled':
-                $filter['disabled'] = 0;
-            break;
-        }
-
-        if (!empty($id_agent)) {
-            $filter['id_agente'] = $id_agent;
-        }
-
-        if (!empty($string)) {
-            // Get agents for only the alias.
-            $filter_alias = $filter;
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $filter_alias[] = '(alias COLLATE utf8_general_ci LIKE "%'.$string.'%")';
-                break;
-
-                case 'postgresql':
-                    $filter_alias[] = '(alias LIKE \'%'.$string.'%\')';
-                break;
-
-                case 'oracle':
-                    $filter_alias[] = '(UPPER(alias) LIKE UPPER(\'%'.$string.'%\'))';
-                break;
-            }
-
-            $agents = db_get_all_rows_filter('tmetaconsole_agent', $filter_alias, $fields);
-            if ($agents !== false) {
-                foreach ($agents as $agent) {
-                    $data[] = [
-                        'id'        => $agent['id_agente'],
-                        'name'      => io_safe_output($agent['nombre']),
-                        'alias'     => io_safe_output($agent['alias']),
-                        'ip'        => io_safe_output($agent['direccion']),
-                        'id_server' => $agent['id_server'],
-                        'filter'    => 'alias',
-                    ];
-                }
-            }
-
-            // Get agents for only the name.
-            $filter_agents = $filter;
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $filter_agents[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
-                break;
-
-                case 'postgresql':
-                    $filter_agents[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre LIKE \'%'.$string.'%\')';
-                break;
-
-                case 'oracle':
-                    $filter_agents[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
-                break;
-            }
-
-            $agents = db_get_all_rows_filter('tmetaconsole_agent', $filter_agents, $fields);
-            if ($agents !== false) {
-                foreach ($agents as $agent) {
-                    $data[] = [
-                        'id'        => $agent['id_agente'],
-                        'name'      => io_safe_output($agent['nombre']),
-                        'alias'     => io_safe_output($agent['alias']),
-                        'ip'        => io_safe_output($agent['direccion']),
-                        'id_server' => $agent['id_server'],
-                        'filter'    => 'agent',
-                    ];
-                }
-            }
-
-            // Get agents for only the address
-            $filter_address = $filter;
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $filter_address[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
-                break;
-
-                case 'postgresql':
-                    $filter_address[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion LIKE \'%'.$string.'%\')';
-                break;
-
-                case 'oracle':
-                    $filter_address[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
-                break;
-            }
-
-            $agents = db_get_all_rows_filter('tmetaconsole_agent', $filter_address, $fields);
-            if ($agents !== false) {
-                foreach ($agents as $agent) {
-                    $data[] = [
-                        'id'        => $agent['id_agente'],
-                        'name'      => io_safe_output($agent['nombre']),
-                        'alias'     => io_safe_output($agent['alias']),
-                        'ip'        => io_safe_output($agent['direccion']),
-                        'id_server' => $agent['id_server'],
-                        'filter'    => 'address',
-                    ];
-                }
-            }
-
-            // Get agents for only the description
-            $filter_description = $filter;
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $filter_description[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
-                break;
-
-                case 'postgresql':
-                    $filter_description[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
-                break;
-
-                case 'oracle':
-                    $filter_description[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
-                break;
-            }
-
-            $agents = db_get_all_rows_filter('tmetaconsole_agent', $filter_description, $fields);
-            if ($agents !== false) {
-                foreach ($agents as $agent) {
-                    $data[] = [
-                        'id'        => $agent['id_agente'],
-                        'name'      => io_safe_output($agent['nombre']),
-                        'alias'     => io_safe_output($agent['alias']),
-                        'ip'        => io_safe_output($agent['direccion']),
-                        'id_server' => $agent['id_server'],
-                        'filter'    => 'description',
-                    ];
-                }
-            }
-        }
-
-        echo json_encode($data);
-        return;
-        }
-    */
+    echo json_encode($result);
+    return;
 }
 
 exit;

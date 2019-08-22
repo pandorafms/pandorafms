@@ -2852,6 +2852,8 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
+    $divider = $config['csv_divider'];
+
     if (!$data) {
         echo __('No data found to export');
         return 0;
@@ -2869,9 +2871,9 @@ function print_audit_csv($data)
     // BOM
     print pack('C*', 0xEF, 0xBB, 0xBF);
 
-    echo __('User').';'.__('Action').';'.__('Date').';'.__('Source IP').';'.__('Comments')."\n";
+    echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).';'.io_safe_output($line['accion']).';'.date($config['date_format'], $line['utimestamp']).';'.$line['ip_origen'].';'.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;

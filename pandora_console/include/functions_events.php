@@ -878,9 +878,11 @@ function events_get_all(
     $agent_join_filters = [];
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
+    $conditionMetaconsole = '';
     if (is_metaconsole()) {
         $tagente_table = 'tmetaconsole_agent';
         $tagente_field = 'id_tagente';
+        $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
     }
 
     // Agent alias.
@@ -1214,12 +1216,12 @@ function events_get_all(
 
     $server_join = '';
     if (is_metaconsole()) {
-        $server_join = ' INNER JOIN tmetaconsole_setup ts
-            ON ts.id = te.server_id AND ts.server_name = ta.server_name';
+        $server_join = ' LEFT JOIN tmetaconsole_setup ts
+            ON ts.id = te.server_id';
         if (!empty($filter['server_id'])) {
             $server_join = sprintf(
-                ' INNER JOIN tmetaconsole_setup ts
-                  ON ts.id = te.server_id AND ts.server_name = ta.server_name AND ts.id= %d',
+                ' LEFT JOIN tmetaconsole_setup ts
+                  ON ts.id = te.server_id AND ts.id= %d',
                 $filter['server_id']
             );
         }
@@ -1254,6 +1256,7 @@ function events_get_all(
          %s JOIN %s ta
            ON ta.%s = te.id_agente
            %s
+           %s
          %s JOIN tgrupo tg
            ON te.id_grupo = tg.id_grupo
            %s
@@ -1273,6 +1276,7 @@ function events_get_all(
         $tagente_join,
         $tagente_table,
         $tagente_field,
+        $conditionMetaconsole,
         join(' ', $agent_join_filters),
         $tgrupo_join,
         join(' ', $tgrupo_join_filters),
@@ -3883,7 +3887,7 @@ function events_page_details($event, $server='')
     global $config;
 
     // If server is provided, get the hash parameters.
-    if (!empty($server) && defined('METACONSOLE')) {
+    if (!empty($server) && is_metaconsole()) {
         $hashdata = metaconsole_get_server_hashdata($server);
         $hashstring = '&amp;loginhash=auto&loginhash_data='.$hashdata.'&loginhash_user='.str_rot13($config['id_user']);
         $serverstring = $server['server_url'].'/';
@@ -4184,10 +4188,6 @@ function events_page_details($event, $server='')
     $table_details->data[] = $data;
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
-
-    if (!empty($server) && defined('METACONSOLE')) {
-        metaconsole_restore_db();
-    }
 
     return $details;
 }

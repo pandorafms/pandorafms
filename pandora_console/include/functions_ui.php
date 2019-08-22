@@ -1487,7 +1487,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
     $filename = $path.$name.'.js';
 
     if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).$filename.'"></script>';
+        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
         return null;
     }
 
@@ -1504,7 +1504,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $config['js'][$name] = '../../'.$filename;
     } else {
         $config['js'][$name] = $filename;

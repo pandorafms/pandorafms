@@ -246,6 +246,8 @@ if (is_ajax()) {
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
+                $fields[] = 'te.id_agentmodule';
+                $fields[] = 'te.server_id';
             }
 
             $events = events_get_all(

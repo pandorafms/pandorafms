@@ -1290,12 +1290,14 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
+    if ($meta) {
+        metaconsole_restore_db();
+    }
+
     if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
 
-    // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct
-    // node connection was lost.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
             metaconsole_connect($server);
@@ -1574,7 +1576,6 @@ if ($get_list_events_agents) {
     $date_from = get_parameter('date_from');
     $date_to = get_parameter('date_to');
     $id_user = $config['id_user'];
-    $server_id = get_parameter('server_id');
 
     $returned_sql = events_sql_events_grouped_agents(
         $id_agent,
@@ -1810,4 +1811,3 @@ if ($get_events_fired) {
 
     echo io_json_mb_encode($return);
 }
-

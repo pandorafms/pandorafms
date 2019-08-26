@@ -4010,7 +4010,7 @@ sub on_demand_macro($$$$$$) {
 	} elsif ($macro eq '_moduletags_') {
 		return (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_policy_') {
-		return (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '';
+		return (defined ($module)) ? enterprise_hook('get_policy_name_policy_module_id', [$dbh, $module->{'id_policy_module'}]) : '';
 	} elsif ($macro eq '_email_tag_') {
 		return (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_phone_tag_') {

@@ -2684,7 +2684,7 @@ function can_user_access_node()
 
     $userinfo = get_user_info($config['id_user']);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];
     } else {
         return 1;

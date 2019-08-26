@@ -1794,7 +1794,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_css = ui_get_full_url($filename);
+        $url_css = ui_get_full_url($filename, false, false, false);
         $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
     }
 
@@ -1851,7 +1851,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -1892,7 +1892,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -2841,7 +2841,7 @@ function ui_progress(
                 width_interval = '.$ajax['interval'].';
                 if (last % 10 == 0) {
                     $.post({
-                        url: "'.ui_get_full_url('ajax.php').'",
+                        url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                         data: {';
         if (is_array($ajax['data'])) {
             foreach ($ajax['data'] as $token => $value) {
@@ -3216,7 +3216,7 @@ function ui_print_datatable(array $parameters)
             ],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
-                url: "'.ui_get_full_url('ajax.php').'",
+                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
@@ -3692,7 +3692,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
     $url = htmlspecialchars($url);
 
     if (! $relative) {
-        return ui_get_full_url($url);
+        return ui_get_full_url($url, false, false, false);
     }
 
     return $url;
@@ -4455,7 +4455,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
     // Javascript configurations
     // ------------------------------------------------------------------.
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     // Default value.
     if (isset($parameters['javascript_ajax_page'])) {
         $javascript_ajax_page = $parameters['javascript_ajax_page'];

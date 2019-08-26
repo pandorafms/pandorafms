@@ -67,7 +67,7 @@ $style_period = ($is_period) ? '' : 'display: none;';
 
 // Build the table.
 $table = new stdClass();
-$table->class = 'databox';
+$table->class = 'databox filters';
 $table->styleTable = 'width: 100%';
 
 $table->data['0']['0'] = '<div style="display: flex;">';

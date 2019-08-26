@@ -1870,3 +1870,100 @@ function logo_preview(icon_name, icon_path, incoming_options) {
     // console.log(err);
   }
 }
+
+// Advanced Form control.
+/* global $ */
+/* exported load_modal */
+function load_modal(settings) {
+  var AJAX_RUNNING = 0;
+  var data = new FormData();
+  if (settings.extradata) {
+    settings.extradata.forEach(function(item) {
+      if (item.value != undefined) data.append(item.name, item.value);
+    });
+  }
+  data.append("page", settings.onshow.page);
+  data.append("method", settings.onshow.method);
+
+  var width = 630;
+  if (settings.onshow.width) {
+    width = settings.onshow.width;
+  }
+
+  $.ajax({
+    method: "post",
+    url: settings.url,
+    processData: false,
+    contentType: false,
+    data: data,
+    success: function(data) {
+      settings.target.html(data);
+      settings.target.dialog({
+        resizable: true,
+        draggable: true,
+        modal: true,
+        title: settings.modal.title,
+        width: width,
+        overlay: {
+          opacity: 0.5,
+          background: "black"
+        },
+        buttons: [
+          {
+            class:
+              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+            text: settings.modal.cancel,
+            click: function() {
+              $(this).dialog("close");
+              settings.cleanup();
+            }
+          },
+          {
+            class:
+              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+            text: settings.modal.ok,
+            click: function() {
+              if (AJAX_RUNNING) return;
+              AJAX_RUNNING = 1;
+              var formdata = new FormData();
+              if (settings.extradata) {
+                settings.extradata.forEach(function(item) {
+                  if (item.value != undefined)
+                    formdata.append(item.name, item.value);
+                });
+              }
+              formdata.append("page", settings.onsubmit.page);
+              formdata.append("method", settings.onsubmit.method);
+
+              $("#" + settings.form + " :input").each(function() {
+                if (this.type == "file") {
+                  if ($(this).prop("files")[0]) {
+                    formdata.append(this.name, $(this).prop("files")[0]);
+                  }
+                } else {
+                  formdata.append(this.name, $(this).val());
+                }
+              });
+
+              $.ajax({
+                method: "post",
+                url: settings.url,
+                processData: false,
+                contentType: false,
+                data: formdata,
+                success: function(data) {
+                  settings.ajax_callback(data);
+                  AJAX_RUNNING = 0;
+                }
+              });
+            }
+          }
+        ],
+        closeOnEscape: false,
+        open: function() {
+          $(".ui-dialog-titlebar-close").hide();
+        }
+      });
+    }
+  });
+}

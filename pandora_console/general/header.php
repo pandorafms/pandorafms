@@ -670,21 +670,49 @@ if ($config['menu_type'] == 'classic') {
 
         <?php
         if ($_GET['refr'] || $do_refresh === true) {
+            if ($_GET['sec2'] == 'operation/events/events') {
+                $autorefresh_draw = true;
+            }
             ?>
+
+            var autorefresh_draw = '<?php echo $autorefresh_draw; ?>';
             $("#header_autorefresh").css('padding-right', '5px');
-            var refr_time = <?php echo (int) get_parameter('refr', $config['refr']); ?>;
-            var t = new Date();
-            t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
-            $("#refrcounter").countdown ({
-                until: t, 
-                layout: '%M%nn%M:%S%nn%S',
-                labels: ['', '', '', '', '', '', ''],
-                onExpiry: function () {
+            if(autorefresh_draw == true) { 
+                var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
+                var until_time='';
+
+                function events_refresh() {
+                    until_time = new Date();
+                    until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+
+                    $("#refrcounter").countdown ({
+                        until: until_time, 
+                        layout: '%M%nn%M:%S%nn%S',
+                        labels: ['', '', '', '', '', '', ''],
+                        onExpiry: function () {
+                            dt_events.draw(false);
+                        }
+                    });
+                }
+                // Start the countdown when page is loaded (first time).
+                events_refresh();
+                // Repeat countdown according to refresh_interval.
+                setInterval(events_refresh, refresh_interval);
+            } else {
+                var refr_time = <?php echo (int) get_parameter('refr', $config['refr']); ?>;
+                var t = new Date();
+                t.setTime (t.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>)); 
+                $("#refrcounter").countdown ({
+                    until: t, 
+                    layout: '%M%nn%M:%S%nn%S',
+                    labels: ['', '', '', '', '', '', ''],
+                    onExpiry: function () {
                         href = $("a.autorefresh").attr ("href");
                         href = href + refr_time;
                         $(document).attr ("location", href);
                     }
                 });
+            }
             <?php
         }
         ?>
@@ -694,8 +722,38 @@ if ($config['menu_type'] == 'classic') {
             $("#combo_refr").toggle ();
             $("select#ref").change (function () {
                 href = $("a.autorefresh").attr ("href");
-                $(document).attr ("location", href + this.value);
-            });
+            
+                if(autorefresh_draw == true){
+                    inputs = $("#events_form :input");
+                    values = {};
+                    inputs.each(function() {
+                        values[this.name] = $(this).val();
+                    })
+
+                    var newValue = btoa(JSON.stringify(values));           
+                    <?php
+                    // Check if the url has the parameter fb64.
+                    if ($_GET['fb64']) {
+                        $fb64 = $_GET['fb64'];
+                        ?>
+                            var fb64 = '<?php echo $fb64; ?>';  
+                            // Check if the filters have changed.
+                            if(fb64 !== newValue){
+                                href = href.replace(fb64, newValue);
+                            } 
+
+                            $(document).attr("location", href+ '&refr=' + this.value);
+                        <?php
+                    } else {
+                        ?>
+                            $(document).attr("location", href+'&fb64=' + newValue + '&refr=' + this.value);
+                        <?php
+                    }
+                    ?>
+                } else {
+                    $(document).attr ("location", href + this.value);
+                }
+        });
             
             return false;
         });

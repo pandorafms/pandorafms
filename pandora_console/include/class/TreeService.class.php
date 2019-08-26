@@ -214,26 +214,37 @@ class TreeService extends Tree
             foreach ($data_modules as $key => $module) {
                 switch ($module['estado']) {
                     case '0':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                        $module_status = 'ok';
+                        $module_title = 'NORMAL';
                     break;
 
                     case '1':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                        $module_status = 'critical';
+                        $module_title = 'CRITICAL';
                     break;
 
                     case '2':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                        $module_status = 'warning';
+                        $module_title = 'WARNING';
+                    break;
+
+                    case '3':
+                        $module_status = 'down';
+                        $module_title = 'UNKNOWN';
                     break;
 
                     case '4':
-                        $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                        $module_status = 'no_data';
+                        $module_title = 'NOT INITIALIZED';
                     break;
 
                     default:
-                        // code...
+                        $module_status = 'down';
+                        $module_title = 'UNKNOWN';
                     break;
                 }
 
+                $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_'.$module_status.'_ball.png" data-title="'.$module_title.' status." data-use_title_for_force_title="1" class="forced_title" alt="'.$module_title.' status." />';
                 $data_modules[$key]['showEventsBtn'] = 1;
                 $data_modules[$key]['eventModule'] = $module['id_agente_modulo'];
             }

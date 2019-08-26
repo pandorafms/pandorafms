@@ -444,7 +444,7 @@ function tactical_monitor_fired_alerts($group_array, $strict_user=false, $id_gro
 		WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-			AND times_fired > 0 ";
+			AND times_fired > 0 AND talert_template_modules.disabled = 0";
 
         $count = db_get_sql($sql);
         return $count;
@@ -456,7 +456,7 @@ function tactical_monitor_fired_alerts($group_array, $strict_user=false, $id_gro
 			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-				AND times_fired > 0"
+				AND times_fired > 0 AND talert_template_modules.disabled = 0"
         );
     }
 

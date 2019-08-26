@@ -1487,7 +1487,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
     $filename = $path.$name.'.js';
 
     if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).$filename.'"></script>';
+        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
         return null;
     }
 
@@ -1504,7 +1504,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $config['js'][$name] = '../../'.$filename;
     } else {
         $config['js'][$name] = $filename;
@@ -1755,6 +1755,12 @@ function ui_process_page_head($string, $bitfield)
     // Add the dialog styles CSS.
     $config['css']['dialog'] = 'include/styles/js/introjs.css';
 
+    // If the theme is the default, we don't load it twice.
+    if ($config['style'] !== 'pandora') {
+        // It loads the last of all.
+        $config['css']['theme'] = 'include/styles/'.$config['style'].'.css';
+    }
+
     // If skin's css files exists then add them.
     if ($exists_css) {
         foreach ($skin_styles as $filename => $name) {
@@ -1766,10 +1772,10 @@ function ui_process_page_head($string, $bitfield)
         // User style should go last so it can rewrite common styles.
         $config['css'] = array_merge(
             [
-                'common'         => 'include/styles/common.css',
-                'menu'           => 'include/styles/menu.css',
-                'tables'         => 'include/styles/tables.css',
-                $config['style'] => 'include/styles/'.$config['style'].'.css',
+                'common'  => 'include/styles/common.css',
+                'menu'    => 'include/styles/menu.css',
+                'tables'  => 'include/styles/tables.css',
+                'general' => 'include/styles/pandora.css',
             ],
             $config['css']
         );
@@ -1788,7 +1794,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_css = ui_get_full_url($filename);
+        $url_css = ui_get_full_url($filename, false, false, false);
         $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
     }
 
@@ -1845,7 +1851,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -1886,7 +1892,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -2049,7 +2055,7 @@ function ui_pagination(
     $actual_page = floor($offset / $pagination);
     $ini_page = (floor($actual_page / $block_limit) * $block_limit);
     $end_page = ($ini_page + $block_limit - 1);
-    if ($end_page > $number_of_pages) {
+    if ($end_page >= $number_of_pages) {
         $end_page = ($number_of_pages - 1);
     }
 
@@ -2598,12 +2604,12 @@ function ui_get_status_images_path()
 /**
  * Prints an image representing a status.
  *
- * @param string  $type          Type.
- * @param string  $title         Title.
- * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options       Options to set image attributes: I.E.: style.
- * @param string  $path          Path of the image, if not provided use the status path.
- * @param boolean $rounded_image Round.
+ * @param string  $type           Type.
+ * @param string  $title          Title.
+ * @param boolean $return         Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options        Options to set image attributes: I.E.: style.
+ * @param string  $path           Path of the image, if not provided use the status path.
+ * @param boolean $image_with_css Don't use an image. Draw an image with css styles.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2613,37 +2619,8 @@ function ui_print_status_image(
     $return=false,
     $options=false,
     $path=false,
-    $rounded_image=false
+    $image_with_css=false
 ) {
-    // This is for the List of Modules in Agent View.
-    if ($rounded_image === true) {
-        switch ($type) {
-            case 'module_ok.png':
-                $type = 'module_ok_rounded.png';
-            break;
-
-            case 'module_critical.png':
-                $type = 'module_critical_rounded.png';
-            break;
-
-            case 'module_warning.png':
-                $type = 'module_warning_rounded.png';
-            break;
-
-            case 'module_no_data.png':
-                $type = 'module_no_data_rounded.png';
-            break;
-
-            case 'module_unknown.png':
-                $type = 'module_unknown_rounded.png';
-            break;
-
-            default:
-                $type = $type;
-            break;
-        }
-    }
-
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
         $imagepath = $imagepath_array[0];
@@ -2651,35 +2628,112 @@ function ui_print_status_image(
         $imagepath = $path;
     }
 
-    $imagepath .= '/'.$type;
-
-    if ($options === false) {
-        $options = [];
+    if ($imagepath == 'images/status_sets/default') {
+        $image_with_css = true;
     }
 
-    $options['title'] = $title;
+    $imagepath .= '/'.$type;
 
-    return html_print_image($imagepath, $return, $options, false, false, false, true);
+    if ($image_with_css === true) {
+        $shape_status = get_shape_status_set($type);
+        return ui_print_status_sets($type, $title, $return, $shape_status);
+    } else {
+        if ($options === false) {
+            $options = [];
+        }
+
+        $options['title'] = $title;
+
+        return html_print_image($imagepath, $return, $options, false, false, false, true);
+    }
+}
+
+
+/**
+ * Get the shape of an image by assigning it a CSS class. Prints an image with CSS representing a status.
+ *
+ * @param string $type Module/Agent/Alert status.
+ *
+ * @return array With CSS class.
+ */
+function get_shape_status_set($type)
+{
+    switch ($type) {
+        // Small rectangles.
+        case STATUS_ALERT_NOT_FIRED:
+        case STATUS_ALERT_FIRED:
+        case STATUS_ALERT_DISABLED:
+            $return = ['class' => 'status_small_rectangles'];
+        break;
+
+        // Rounded rectangles.
+        case STATUS_MODULE_OK:
+        case STATUS_AGENT_OK:
+        case STATUS_MODULE_NO_DATA:
+        case STATUS_AGENT_NO_DATA:
+        case STATUS_MODULE_CRITICAL:
+        case STATUS_AGENT_CRITICAL:
+        case STATUS_MODULE_WARNING:
+        case STATUS_AGENT_WARNING:
+        case STATUS_MODULE_UNKNOWN:
+        case STATUS_AGENT_UNKNOWN:
+        case STATUS_AGENT_DOWN:
+            $return = ['class' => 'status_rounded_rectangles'];
+        break;
+
+        // Small squares.
+        case STATUS_SERVER_OK:
+        case STATUS_SERVER_DOWN:
+            $return = ['class' => 'status_small_squares'];
+        break;
+
+        // Balls.
+        case STATUS_AGENT_CRITICAL_BALL:
+        case STATUS_AGENT_WARNING_BALL:
+        case STATUS_AGENT_DOWN_BALL:
+        case STATUS_AGENT_UNKNOWN_BALL:
+        case STATUS_AGENT_OK_BALL:
+        case STATUS_AGENT_NO_DATA_BALL:
+        case STATUS_AGENT_NO_MONITORS_BALL:
+            $return = ['class' => 'status_balls'];
+        break;
+
+        // Small Balls.
+        case STATUS_MODULE_OK_BALL:
+        case STATUS_MODULE_CRITICAL_BALL:
+        case STATUS_MODULE_WARNING_BALL:
+        case STATUS_MODULE_NO_DATA_BALL:
+        case STATUS_MODULE_UNKNOWN_BALL:
+        case STATUS_ALERT_FIRED_BALL:
+        case STATUS_ALERT_NOT_FIRED_BALL:
+        case STATUS_ALERT_DISABLED_BALL:
+            $return = ['class' => 'status_small_balls'];
+        break;
+
+        default:
+            // Ignored.
+        break;
+    }
+
+    return $return;
 }
 
 
 /**
  * Prints an image representing a status.
  *
- * @param string  $status        Module status.
- * @param string  $title         Title.
- * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options       Options to set image attributes: I.E.: style.
- * @param boolean $rounded_image Round.
+ * @param string  $status  Module status.
+ * @param string  $title   Title.
+ * @param boolean $return  Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options Options to set image attributes: I.E.: style.
  *
  * @return string HTML.
  */
-function ui_print_module_status(
+function ui_print_status_sets(
     $status,
     $title='',
     $return=false,
-    $options=false,
-    $rounded_image=false
+    $options=false
 ) {
     global $config;
 
@@ -2687,21 +2741,26 @@ function ui_print_module_status(
         $options = [];
     }
 
-    $options['style'] .= 'width: 50px;';
-    $options['style'] .= 'height: 2em;';
-    $options['style'] .= 'display: inline-block;';
-
-    include_once __DIR__.'/functions_modules.php';
-    $options['style'] .= 'background: '.modules_get_color_status($status).';';
-
-    if ($rounded_image === true) {
-        $options['style'] .= 'border-radius: 5px;';
+    if (isset($options['style'])) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+    } else {
+        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
     }
 
-    $options['title'] = $title;
-    $options['data-title'] = $title;
-    $options['data-use_title_for_force_title'] = 1;
-    $options['class'] = 'forced_title';
+    if (isset($options['class'])) {
+        $options['class'] = $options['class'];
+    }
+
+    if ($title != '') {
+        $options['title'] = $title;
+        $options['data-title'] = $title;
+        $options['data-use_title_for_force_title'] = 1;
+        if (isset($options['class'])) {
+            $options['class'] .= ' forced_title';
+        } else {
+            $options['class'] = 'forced_title';
+        }
+    }
 
     $output = '<div ';
     foreach ($options as $k => $v) {
@@ -2782,7 +2841,7 @@ function ui_progress(
                 width_interval = '.$ajax['interval'].';
                 if (last % 10 == 0) {
                     $.post({
-                        url: "'.ui_get_full_url('ajax.php').'",
+                        url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                         data: {';
         if (is_array($ajax['data'])) {
             foreach ($ajax['data'] as $token => $value) {
@@ -3035,38 +3094,7 @@ function ui_print_datatable(array $parameters)
         $filter .= '<ul class="datatable_filter content">';
 
         foreach ($parameters['form']['inputs'] as $input) {
-            $filter .= '<li>';
-            $filter .= '<label>'.$input['label'].'</label>';
-            if ($input['type'] != 'select') {
-                $filter .= '<input type="'.$input['type'].'" ';
-                $filter .= ' style="'.$input['style'].'" ';
-                $filter .= ' class="'.$input['class'].'" ';
-                $filter .= ' value="'.$input['value'].'" ';
-                $filter .= ' name="'.$input['name'].'" id="'.$input['id'].'" />';
-            } else {
-                // Select.
-                $filter .= '<select class="'.$input['class'].'"';
-                $filter .= ' style="'.$input['style'].'" ';
-                $filter .= ' name="'.$input['name'].'" ';
-                $filter .= 'id="'.$input['id'].'">';
-
-                foreach ($input['options'] as $key => $opt) {
-                    if (is_array($opt)) {
-                        $filter .= '<option value="'.$opt['value'].'"';
-                        if ($opt['selected']) {
-                            $filter .= ' selected="yes" >';
-                        }
-
-                        $filter .= __($opt['text']).'</option>';
-                    } else {
-                        $filter .= '<option value="'.$key.'">'.$opt.'</option>';
-                    }
-                }
-
-                $filter .= '</select>';
-            }
-
-            $filter .= '</li>';
+            $filter .= html_print_input(($input + ['return' => true]), 'li');
         }
 
         $filter .= '<li>';
@@ -3188,7 +3216,7 @@ function ui_print_datatable(array $parameters)
             ],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
-                url: "'.ui_get_full_url('ajax.php').'",
+                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
@@ -3664,10 +3692,28 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
     $url = htmlspecialchars($url);
 
     if (! $relative) {
-        return ui_get_full_url($url);
+        return ui_get_full_url($url, false, false, false);
     }
 
     return $url;
+}
+
+
+/**
+ * Checks if public_url usage is being forced to target 'visitor'.
+ *
+ * @return boolean
+ */
+function ui_forced_public_url()
+{
+    global $config;
+    $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+
+    if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
+        return false;
+    }
+
+    return (bool) $config['force_public_url'];
 }
 
 
@@ -3717,13 +3763,27 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     }
 
     if (!$no_proxy) {
-        // Check if the PandoraFMS runs across the proxy like as
-        // mod_proxy of Apache
-        // and check if public_url is set.
-        if (!empty($config['public_url'])
+        // Check proxy.
+        $proxy = false;
+        if (ui_forced_public_url()) {
+            $proxy = true;
+            $fullurl = $config['public_url'];
+            if (substr($fullurl, -1) != '/') {
+                $fullurl .= '/';
+            }
+
+            if ($url == 'index.php' && is_metaconsole()) {
+                $fullurl .= ENTERPRISE_DIR.'/meta';
+            }
+        } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
+            // Forced to use public url when being forwarder by a reverse proxy.
             $fullurl = $config['public_url'];
+            if (substr($fullurl, -1) != '/') {
+                $fullurl .= '/';
+            }
+
             $proxy = true;
         } else {
             $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
@@ -3754,7 +3814,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $url = $config['homeurl_static'].'/';
         }
 
-        if (defined('METACONSOLE') && $metaconsole_root) {
+        if (is_metaconsole() && $metaconsole_root) {
             $url .= 'enterprise/meta/';
         }
     } else if (!strstr($url, '.php')) {
@@ -3764,7 +3824,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $fullurl .= $config['homeurl_static'].'/';
         }
 
-        if (defined('METACONSOLE') && $metaconsole_root) {
+        if (is_metaconsole() && $metaconsole_root) {
             $fullurl .= 'enterprise/meta/';
         }
     } else {
@@ -3776,7 +3836,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
 
-                if (defined('METACONSOLE') && $metaconsole_root) {
+                if (is_metaconsole() && $metaconsole_root) {
                     $fullurl .= 'enterprise/meta/';
                 }
             }
@@ -4384,6 +4444,10 @@ function ui_print_agent_autocomplete_input($parameters)
         $get_only_string_modules = true;
     }
 
+    if (isset($parameters['no_disabled_modules'])) {
+        $no_disabled_modules = $parameters['no_disabled_modules'];
+    }
+
     $spinner_image = html_print_image('images/spinner.gif', true, false, true);
     if (isset($parameters['spinner_image'])) {
         $spinner_image = $parameters['spinner_image'];
@@ -4391,7 +4455,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
     // Javascript configurations
     // ------------------------------------------------------------------.
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     // Default value.
     if (isset($parameters['javascript_ajax_page'])) {
         $javascript_ajax_page = $parameters['javascript_ajax_page'];
@@ -4531,7 +4595,11 @@ function ui_print_agent_autocomplete_input($parameters)
 			if ('.((int) $get_only_string_modules).') {
 				inputs.push ("get_only_string_modules=1");
 			}
-			
+
+            if ('.((int) $no_disabled_modules).') {
+                inputs.push ("disabled=0");
+            }
+
 			if ('.((int) $metaconsole_enabled).') {
 				if (('.((int) $use_input_server).')
 						|| ('.((int) $print_input_server).')) {

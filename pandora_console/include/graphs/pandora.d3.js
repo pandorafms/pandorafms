@@ -1614,9 +1614,9 @@ function print_phases_donut(recipient, phases) {
       .insert("path")
       .style("fill", function(d) {
         if (d.data.value == 0) {
-          return "#80BA27";
+          return "#82b92e";
         } else {
-          return "#FC4444";
+          return "#e63c52";
         }
       })
       .attr("class", "slice");
@@ -2762,7 +2762,14 @@ function valueToBytes(value) {
   return value.toFixed(2) + shorts[pos] + "B";
 }
 
-function donutNarrowGraph(colores, width, height, total) {
+function donutNarrowGraph(
+  colores,
+  width,
+  height,
+  total,
+  textColor,
+  strokeColor
+) {
   // Default settings
   var donutbody = d3.select("body");
   var data = {};
@@ -2848,8 +2855,7 @@ function donutNarrowGraph(colores, width, height, total) {
           this._current = d;
         })
         .attr("d", arc)
-        .attr("stroke", "white")
-        .style("stroke-width", 2)
+        .attr("stroke", strokeColor)
         .style("fill", function(d) {
           return color(d.data.key);
         });
@@ -2873,9 +2879,7 @@ function donutNarrowGraph(colores, width, height, total) {
         .attr("y", 0 + radius / 10)
         .attr("class", "text-tooltip")
         .style("text-anchor", "middle")
-        .attr("font-weight", "bold")
-        .style("font-family", "Arial, Verdana")
-        //.attr("fill", "#82b92e")
+        .attr("fill", textColor)
         .style("font-size", function(d) {
           if (normal_status) {
             percentage_normal = (normal_status * 100) / total;
@@ -2905,6 +2909,7 @@ function donutNarrowGraph(colores, width, height, total) {
           /* .attr("fill", function(d) {
             return color(obj.data.key);
           })*/
+          .attr("fill", textColor)
           .style("font-size", function(d) {
             percentage = (d[obj.data.key] * 100) / total;
             if (Number.isInteger(percentage)) {

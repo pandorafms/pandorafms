@@ -62,7 +62,7 @@ $style_period = ($is_period) ? '' : 'display: none;';
 
 // Build the table.
 $table = new stdClass();
-$table->class = 'databox';
+$table->class = 'databox filters';
 $table->styleTable = 'width: 100%';
 $table->data['0']['0'] = __('Data to show').'&nbsp;&nbsp;';
 $table->data['0']['0'] .= html_print_select(

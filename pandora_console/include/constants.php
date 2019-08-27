@@ -39,10 +39,11 @@ define('TIME_FORMAT', 'H:i:s');
 define('TIME_FORMAT_JS', 'HH:mm:ss');
 
 // Events state constants.
+define('EVENT_ALL', -1);
 define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
-
+define('EVENT_NO_VALIDATED', 3);
 
 
 // Agents disabled status.
@@ -137,19 +138,19 @@ switch ($config['dbtype']) {
 
 
 // Color constants.
-define('COL_CRITICAL', '#FC4444');
-define('COL_WARNING', '#FAD403');
+define('COL_CRITICAL', '#e63c52');
+define('COL_WARNING', '#f3b200');
 define('COL_WARNING_DARK', '#FFB900');
-define('COL_NORMAL', '#80BA27');
-define('COL_NOTINIT', '#3BA0FF');
+define('COL_NORMAL', '#82b92e');
+define('COL_NOTINIT', '#4a83f3');
 define('COL_UNKNOWN', '#B2B2B2');
 define('COL_DOWNTIME', '#976DB1');
 define('COL_IGNORED', '#DDD');
-define('COL_ALERTFIRED', '#FFA631');
-define('COL_MINOR', '#F099A2');
+define('COL_ALERTFIRED', '#F36201');
+define('COL_MINOR', '#B2B2B2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#E4E4E4');
-define('COL_MAINTENANCE', '#3BA0FF');
+define('COL_MAINTENANCE', '#4a83f3');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');
@@ -526,14 +527,6 @@ define('NODE_MODULE', 1);
 define('NODE_PANDORA', 2);
 define('NODE_GENERIC', 3);
 
-// SAML attributes constants.
-define('SAML_ROLE_AND_TAG', 'eduPersonEntitlement');
-define('SAML_USER_DESC', 'commonName');
-define('SAML_ID_USER_IN_PANDORA', 'eduPersonTargetedId');
-define('SAML_GROUP_IN_PANDORA', 'schacHomeOrganization');
-define('SAML_MAIL_IN_PANDORA', 'mail');
-define('SAML_DEFAULT_PROFILES_AND_TAGS_FORM', 'urn:mace:rediris.es:entitlement:monitoring:');
-
 // Other constants.
 define('STATUS_OK', 0);
 define('STATUS_ERROR', 1);
@@ -589,6 +582,8 @@ define('DISCOVERY_APP_MYSQL', 4);
 define('DISCOVERY_APP_ORACLE', 5);
 define('DISCOVERY_CLOUD_AWS_EC2', 6);
 define('DISCOVERY_CLOUD_AWS_RDS', 7);
+define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
+define('DISCOVERY_DEPLOY_AGENTS', 9);
 
 
 // Discovery types matching definition.
@@ -601,6 +596,7 @@ define('DISCOVERY_SCRIPT_IPAM_RECON', 3);
 define('DISCOVERY_SCRIPT_IPMI_RECON', 4);
 
 // Discovery task descriptions.
+define('CLOUDWIZARD_AZURE_DESCRIPTION', 'Discovery.Cloud.Azure.Compute');
 define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
 define('CLOUDWIZARD_VMWARE_DESCRIPTION', 'Discovery.App.VMware');
 

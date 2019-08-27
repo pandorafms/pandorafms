@@ -1513,29 +1513,30 @@ function agents_get_name($id_agent, $case='none')
  * Get alias of an agent (cached function).
  *
  * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none)
+ * @param string  $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
 function agents_get_alias($id_agent, $case='none')
 {
     global $config;
-    // Prepare cache
+    // Prepare cache.
     static $cache = [];
     if (empty($case)) {
         $case = 'none';
     }
 
-    // Check cache
+    // Check cache.
     if (isset($cache[$case][$id_agent])) {
         return $cache[$case][$id_agent];
     }
 
-    if ($config['dbconnection_cache'] == null && is_metaconsole()) {
-        $alias = (string) db_get_value('alias', 'tmetaconsole_agent', 'id_tagente', (int) $id_agent);
-    } else {
-        $alias = (string) db_get_value('alias', 'tagente', 'id_agente', (int) $id_agent);
-    }
+    $alias = (string) db_get_value(
+        'alias',
+        'tagente',
+        'id_agente',
+        (int) $id_agent
+    );
 
     switch ($case) {
         case 'upper':
@@ -1544,6 +1545,10 @@ function agents_get_alias($id_agent, $case='none')
 
         case 'lower':
             $alias = mb_strtolower($alias, 'UTF-8');
+        break;
+
+        default:
+            // Not posible.
         break;
     }
 
@@ -1554,7 +1559,13 @@ function agents_get_alias($id_agent, $case='none')
 
 function agents_get_alias_by_name($name, $case='none')
 {
-    $alias = (string) db_get_value('alias', 'tagente', 'nombre', $name);
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    } else {
+        $table = 'tagente';
+    }
+
+    $alias = (string) db_get_value('alias', $table, 'nombre', $name);
 
     switch ($case) {
         case 'upper':
@@ -1614,9 +1625,9 @@ function agents_get_interval($id_agent)
  *
  * @param Agent object.
  *
- * @return The interval value and status of last contact
+ * @return The interval value and status of last contact or True /False
  */
-function agents_get_interval_status($agent)
+function agents_get_interval_status($agent, $return_html=true)
 {
     $return = '';
     $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
@@ -1624,9 +1635,18 @@ function agents_get_interval_status($agent)
     $diferencia = ($now - $last_time);
     $time = ui_print_timestamp($last_time, true, ['style' => 'font-size:6.5pt']);
     $min_interval = modules_get_agentmodule_mininterval_no_async($agent['id_agente']);
-    $return = $time;
+    if ($return_html) {
+        $return = $time;
+    } else {
+        $return = true;
+    }
+
     if ($diferencia > ($min_interval['min_interval'] * 2) && $min_interval['num_interval'] > 0) {
-        $return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+        if ($return_html) {
+            $return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+        } else {
+            $return = false;
+        }
     }
 
     return $return;
@@ -3366,4 +3386,47 @@ function agents_get_image_status($status)
     }
 
     return $image_status;
+}
+
+
+/**
+ * Animation GIF to show agent's status.
+ *
+ * @return string HTML code with heartbeat image.
+ */
+function agents_get_status_animation($up=true)
+{
+    global $config;
+
+    // Gif with black background or white background
+    if ($config['style'] === 'pandora_black') {
+        $heartbeat_green = 'images/heartbeat_green_black.gif';
+        $heartbeat_red = 'images/heartbeat_red_black.gif';
+    } else {
+        $heartbeat_green = 'images/heartbeat_green.gif';
+        $heartbeat_red = 'images/heartbeat_red.gif';
+    }
+
+    switch ($up) {
+        case true:
+        default:
+        return html_print_image(
+            $heartbeat_green,
+            true,
+            [
+                'width'  => '170',
+                'height' => '40',
+            ]
+        );
+
+        case false:
+        return html_print_image(
+            $heartbeat_red,
+            true,
+            [
+                'width'  => '170',
+                'height' => '40',
+            ]
+        );
+    }
 }

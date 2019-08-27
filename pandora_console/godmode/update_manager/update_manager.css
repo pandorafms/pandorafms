@@ -34,7 +34,7 @@
   float: none;
 }
 #drop_file a {
-  background-color: #80ba27;
+  background-color: #82b92e;
   border-radius: 2px;
   color: #ffffff;
   cursor: pointer;
@@ -101,7 +101,7 @@
   width: 15px;
 }
 .fileupload_form ul li div {
-  display: block !important;
+  display: block;
 }
 .fileupload_form ul li.working span {
   background-position: 0 -12px;
@@ -183,30 +183,13 @@ div#box_online * {
 
 .update_text a {
   font-size: 11pt;
-  color: #82b92e !important;
+  color: #82b92e;
 }
 
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
-  float: left !important;
+  float: left;
   padding-left: 19px;
   padding-bottom: 5px;
-}
-
-.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
-  background-color: #cecece !important;
-  border: none !important;
-  border-radius: 2px !important;
-  text-transform: uppercase !important;
-  font-weight: bold !important;
-}
-
-.ui-dialog-buttonset > button.success_button.ui-button.ui-corner-all.ui-widget,
-.update_manager_button {
-  background-color: #82b92e !important;
-  color: #fff !important;
-  border-radius: 2px !important;
-  text-transform: uppercase !important;
-  font-weight: bold !important;
 }
 
 a.update_manager_button {
@@ -214,8 +197,8 @@ a.update_manager_button {
   margin-top: 10px;
   display: inline-flex;
   align-items: center;
-  font-size: 16px !important;
-  border-radius: 4px !important;
+  font-size: 16px;
+  border-radius: 4px;
   text-decoration: none;
   font-family: "Open Sans", sans-serif;
 }
@@ -231,7 +214,7 @@ a.update_manager_button:after {
 
 .ui-draggable,
 .ui-draggable .ui-dialog-titlebar {
-  cursor: default !important;
+  cursor: default;
 }
 
 #box_online #pkg_version {
@@ -242,10 +225,10 @@ a.update_manager_button:after {
 
 /* METACONSOLE */
 .box_online_meta {
-  background: none !important;
-  min-height: 400px !important;
+  background: none;
+  min-height: 400px;
   text-align: center;
-  border: none !important;
+  border: none;
 }
 
 div#box_online.box_online_meta * {
@@ -277,7 +260,7 @@ div#box_online.box_online_meta * {
 }
 
 .update_manager_warning p {
-  font-size: 10pt !important;
+  font-size: 10pt;
 }
 
 .update_manager_warning img {
@@ -287,8 +270,8 @@ div#box_online.box_online_meta * {
 
 a.update_manager_button_open {
   padding: 5px 10px;
-  font-size: 16px !important;
-  border-radius: 4px !important;
+  font-size: 16px;
+  border-radius: 4px;
   text-decoration: none;
   border: 1px solid #82b92e;
   color: #82b92e;

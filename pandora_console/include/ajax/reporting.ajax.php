@@ -65,6 +65,7 @@ if ($add_sla) {
     $sla_max = get_parameter('sla_max', 0);
     $sla_min = get_parameter('sla_min', 0);
     $server_id = (int) get_parameter('server_id', 0);
+    $id_module_failover = (int) get_parameter('id_module_failover', 0);
 
     $id_service = (int) get_parameter('id_service');
     if (empty($id_module) && !empty($id_service)) {
@@ -85,12 +86,13 @@ if ($add_sla) {
     $result = db_process_sql_insert(
         'treport_content_sla_combined',
         [
-            'id_report_content' => $id,
-            'id_agent_module'   => $id_module,
-            'sla_max'           => $sla_max,
-            'sla_min'           => $sla_min,
-            'sla_limit'         => $sla_limit,
-            'server_name'       => $connection['server_name'],
+            'id_report_content'        => $id,
+            'id_agent_module'          => $id_module,
+            'id_agent_module_failover' => $id_module_failover,
+            'sla_max'                  => $sla_max,
+            'sla_min'                  => $sla_min,
+            'sla_limit'                => $sla_limit,
+            'server_name'              => $connection['server_name'],
         ]
     );
 

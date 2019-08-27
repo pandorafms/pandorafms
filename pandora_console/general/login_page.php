@@ -376,6 +376,9 @@ if (isset($correct_reset_pass_process)) {
 }
 
 if (isset($login_failed)) {
+    $nick = get_parameter_post('nick');
+    $fails = db_get_value('failed_attempt', 'tusuario', 'id_user', $nick);
+    $attemps = ($config['number_attempts'] - $fails);
     echo '<div id="login_failed" title="'.__('Login failed').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -385,6 +388,9 @@ if (isset($login_failed)) {
                 echo '<div class="text_message_alert">';
                     echo '<h1>'.__('ERROR').'</h1>';
                     echo '<p>'.$config['auth_error'].'</p>';
+                echo '</div>';
+                echo '<div class="text_message_alert">';
+                    echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
                 echo '</div>';
                 echo '<div class="button_message_alert">';
                     html_print_submit_button('Ok', 'hide-login-error', false);
@@ -518,6 +524,7 @@ if ($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' 
 ui_require_css_file('dialog');
 ui_require_css_file('jquery-ui.min', 'include/styles/js/');
 ui_require_jquery_file('jquery-ui.min');
+ui_require_jquery_file('jquery-ui_custom');
 ?>
 
 <?php
@@ -679,5 +686,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $("#final_process_correct").dialog('close');
         });        
     });
+
     /* ]]> */
 </script>

@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/class/CustomNetScan.class.php';
 require_once $config['homedir'].'/include/class/ManageNetScanScripts.class.php';
 
 enterprise_include_once('include/class/CSVImportAgents.class.php');
+enterprise_include_once('include/class/DeploymentCenter.class.php');
 enterprise_include_once('include/functions_hostdevices.php');
 
 /**
@@ -127,6 +128,12 @@ class HostDevices extends Wizard
                     'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
                     'label' => __('Import CSV'),
                 ];
+
+                $buttons[] = [
+                    'url'   => $this->url.'&mode=deploy',
+                    'icon'  => ENTERPRISE_DIR.'/images/wizard/deployment.png',
+                    'label' => __('Agent deployment'),
+                ];
             }
 
             $buttons[] = [
@@ -149,11 +156,30 @@ class HostDevices extends Wizard
                         ),
                         'label' => __('Discovery'),
                     ],
+                    [
+                        'link'     => ui_get_full_url(
+                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
+                        ),
+                        'label'    => __('Host & Devices'),
+                        'selected' => true,
+                    ],
                 ],
                 true
             );
 
-            ui_print_page_header(__('Host & devices'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            ui_print_page_header(
+                __('Host & devices'),
+                '',
+                false,
+                '',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                '',
+                $this->printHeader(true)
+            );
 
             $this->printBigButtonsList($buttons);
             return;
@@ -166,6 +192,14 @@ class HostDevices extends Wizard
                     $this->breadcrum
                 );
                 return $csv_importer->runCSV();
+            }
+
+            if ($mode === 'deploy') {
+                $deployObject = new DeploymentCenter(
+                    $this->page,
+                    $this->breadcrum
+                );
+                return $deployObject->run();
             }
         }
 
@@ -785,6 +819,7 @@ class HostDevices extends Wizard
                     }).change();';
 
                 $this->printFormAsGrid($form);
+                $this->printGoBackButton($this->url.'&page='.($this->page - 1));
             }
         }
 
@@ -877,6 +912,7 @@ class HostDevices extends Wizard
             ];
 
             $this->printFormAsList($form);
+            $this->printGoBackButton($this->url.'&mode=netscan&task='.$this->task['id_rt'].'&page='.($this->page - 1));
         }
 
         if ($this->page == 2) {

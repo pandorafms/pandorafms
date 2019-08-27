@@ -79,10 +79,10 @@ $table->class = 'databox filters';
 $table->style[0][1] = 'text-align: right; vertical-align: top;';
 
 $table->data[0][0] = '<div id="chat_box" style="width: 95%;
-	height: 300px; background: #ffffff; border: 1px inset black;
+	height: 300px; background: #ffffff; border: 1px solid #cbcbcb; border-radius: 5px;
 	overflow: auto; padding: 10px;"></div>';
 $table->data[0][1] = '<h4>'.__('Users Online').'</h4>'.'<div id="userlist_box" style="width: 90% !important; height: 200px !important;
-		height: 300px; background: #ffffff; border: 1px inset black;
+		height: 300px; background: #ffffff; border: 1px solid #cbcbcb; border-radius: 5px;
 		overflow: auto; padding-right: 10px;"></div>';
 $table->data[1][0] = '<b>'.__('Message').'</b> &nbsp;&nbsp;'.html_print_input_text(
     'message_box',
@@ -115,16 +115,16 @@ echo "<div style='width:100%'>".html_print_button(
             //Enter key.
             if (e.keyCode == 13) {
                 send_message();
+                check_users();
             }
         });
         
         init_webchat();
     });
-    
-    $(window).unload(function () {
+    $(window).on("beforeunload",function () {
         exit_webchat();
     });
-    
+
     function init_webchat() {
         send_login_message();
         long_polling_check_messages();

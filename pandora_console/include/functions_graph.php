@@ -1277,12 +1277,34 @@ function graphic_combined_module(
                 array_push($modules, $source['id_agent_module']);
                 array_push($weights, $source['weight']);
                 if ($source['label'] != '' || $params_combined['labels']) {
-                    $item['type'] = 'custom_graph';
-                    $item['id_agent'] = agents_get_module_id(
+                    $id_agent = agents_get_module_id(
                         $source['id_agent_module']
                     );
-                    $item['id_agent_module'] = $source['id_agent_module'];
-                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($item, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
+                    $agent_description = agents_get_description($id_agent);
+                    $agent_group = agents_get_agent_group($id_agent);
+                    $agent_address = agents_get_address($id_agent);
+                    $agent_alias = agents_get_alias($id_agent);
+                    $module_name = modules_get_agentmodule_name(
+                        $source['id_agent_module']
+                    );
+
+                    $module_description = modules_get_agentmodule_descripcion(
+                        $source['id_agent_module']
+                    );
+
+                    $items_label = [
+                        'type'               => 'custom_graph',
+                        'id_agent'           => $id_agent,
+                        'id_agent_module'    => $source['id_agent_module'],
+                        'agent_description'  => $agent_description,
+                        'agent_group'        => $agent_group,
+                        'agent_address'      => $agent_address,
+                        'agent_alias'        => $agent_alias,
+                        'module_name'        => $module_name,
+                        'module_description' => $module_description,
+                    ];
+
+                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($items_label, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
                 }
             }
         }
@@ -2161,7 +2183,7 @@ function graphic_combined_module(
             $graph_values = $temp;
 
             if (!$params['vconsole']) {
-                $width  = 1024;
+                $width  = $width;
                 $height = 500;
             }
 
@@ -2235,7 +2257,6 @@ function combined_graph_summatory_average(
                         $data_array_pop[$key_reverse] = array_pop(
                             $data_array_reverse[$key_reverse]
                         );
-                        $count_data_array_reverse--;
                     }
                 }
 
@@ -2287,6 +2308,7 @@ function combined_graph_summatory_average(
                 }
 
                 $count++;
+                $count_data_array_reverse--;
             }
 
             if ($summatory && isset($array_sum_reverse)
@@ -2344,14 +2366,21 @@ function graphic_agentaccess(
     $date = get_system_time();
     $datelimit = ($date - $period);
     $data_array = [];
+    $interval = agents_get_interval($id_agent);
 
     $data = db_get_all_rows_sql(
-        "SELECT count(*) as data, min(utimestamp) as utimestamp
-        FROM tagent_access
-        WHERE id_agent = $id_agent
-        AND utimestamp > $datelimit
-        AND utimestamp < $date
-        GROUP by ROUND(utimestamp / 1800)"
+        sprintf(
+            'SELECT utimestamp, count(*) as data
+             FROM tagent_access
+             WHERE id_agent = %d
+             AND utimestamp > %d
+             AND utimestamp < %d
+             GROUP BY ROUND(utimestamp/%d)',
+            $id_agent,
+            $datelimit,
+            $date,
+            $interval
+        )
     );
 
     if (isset($data) && is_array($data)) {
@@ -2533,13 +2562,13 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     }
 
     // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
-    $colors[__('Critical')] = COL_CRITICAL;
-    $colors[__('Warning')] = COL_WARNING;
-    $colors[__('Normal')] = COL_NORMAL;
-    $colors[__('Unknown')] = COL_UNKNOWN;
+    $colors['Critical'] = COL_CRITICAL;
+    $colors['Warning'] = COL_WARNING;
+    $colors['Normal'] = COL_NORMAL;
+    $colors['Unknown'] = COL_UNKNOWN;
 
     if ($show_not_init) {
-        $colors[__('Not init')] = COL_NOTINIT;
+        $colors['Not init'] = COL_NOTINIT;
     }
 
     if (array_sum($data) == 0) {
@@ -3223,7 +3252,7 @@ function graph_events_validated($width=300, $height=200, $extra_filters=[], $met
         $config['fontpath'],
         $config['font_size'],
         1,
-        false,
+        'bottom',
         $colors
     );
 }
@@ -3524,7 +3553,9 @@ function grafico_eventos_usuario($width, $height)
         '',
         $water_mark,
         $config['fontpath'],
-        $config['font_size']
+        $config['font_size'],
+        1,
+        'bottom'
     );
 }
 

@@ -1,5 +1,5 @@
 div.fixed-bottom-box {
-  background: #e1e1e1;
+  background: #fff;
 
   border-radius: 10px 10px 0 0;
   -moz-border-radius: 10px 10px 0 0;
@@ -8,6 +8,20 @@ div.fixed-bottom-box {
   -ms-border-radius: 10px 10px 0 0;
   -khtml-border-radius: 10px 10px 0 0;
 }
+
+/* Overrides */
+.left_align {
+  border: 1px solid #e1e1e1;
+}
+.white_table_graph_header {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin: -1px;
+}
+.white-box-content {
+  margin: -1px;
+}
+/* Overrides end */
 
 div.fixed-bottom-box > div.fixed-bottom-box-head {
   height: 30px;

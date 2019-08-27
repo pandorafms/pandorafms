@@ -190,8 +190,8 @@ function d3_bullet_chart(
 			}
 			
 			.bullet { font: 7px sans-serif; }
-			.bullet .marker.s0 { stroke: #FC4444; stroke-width: 2px; }
-			.bullet .marker.s1 { stroke: #FAD403; stroke-width: 2px; }
+			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
+			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }
 			.bullet .tick line { stroke: #666; stroke-width: .5px; }
 			.bullet .range.s0 { fill: #ddd; }
@@ -740,6 +740,8 @@ function print_donut_narrow_graph(
     array $data,
     $data_total
 ) {
+    global $config;
+
     if (empty($data)) {
         return graph_nodata_image($width, $height, 'pie');
     }
@@ -754,10 +756,31 @@ function print_donut_narrow_graph(
 
     $graph_id = uniqid('graph_');
 
+    // This is for "Style template" in visual styles.
+    switch ($config['style']) {
+        case 'pandora':
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+
+        case 'pandora_black':
+            $textColor = '#fff';
+            $strokeColor = '#222';
+        break;
+
+        default:
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+    }
+
+    $textColor = json_encode($textColor);
+    $strokeColor = json_encode($strokeColor);
+
     $out = "<div id='$graph_id'></div>";
     $out .= include_javascript_d3(true);
     $out .= "<script type='text/javascript'>
-						donutNarrowGraph($colors, $width, $height, $data_total)
+						donutNarrowGraph($colors, $width, $height, $data_total, $textColor, $strokeColor)
 						.donutbody(d3.select($graph_id))
 						.data($data)
 						.render();	

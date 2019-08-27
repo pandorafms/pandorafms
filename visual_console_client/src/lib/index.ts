@@ -374,3 +374,376 @@ export function replaceMacros(macros: Macro[], text: string): string {
     text
   );
 }
+
+/**
+ * Create a function which will limit the rate of execution of
+ * the selected function to one time for the selected interval.
+ * @param delay Interval.
+ * @param fn Function to be executed at a limited rate.
+ */
+export function throttle<T, R>(delay: number, fn: (...args: T[]) => R) {
+  let last = 0;
+  return (...args: T[]) => {
+    const now = Date.now();
+    if (now - last < delay) return;
+    last = now;
+    return fn(...args);
+  };
+}
+
+/**
+ * Create a function which will call the selected function only
+ * after the interval time has passed after its last execution.
+ * @param delay Interval.
+ * @param fn Function to be executed after the last call.
+ */
+export function debounce<T>(delay: number, fn: (...args: T[]) => void) {
+  let timerRef: number | null = null;
+  return (...args: T[]) => {
+    if (timerRef !== null) window.clearTimeout(timerRef);
+    timerRef = window.setTimeout(() => {
+      fn(...args);
+      timerRef = null;
+    }, delay);
+  };
+}
+
+/**
+ * Retrieve the offset of an element relative to the page.
+ * @param el Node used to calculate the offset.
+ */
+function getOffset(el: HTMLElement | null) {
+  let x = 0;
+  let y = 0;
+  while (el && !Number.isNaN(el.offsetLeft) && !Number.isNaN(el.offsetTop)) {
+    x += el.offsetLeft - el.scrollLeft;
+    y += el.offsetTop - el.scrollTop;
+    el = el.offsetParent as HTMLElement | null;
+  }
+  return { top: y, left: x };
+}
+
+/**
+ * Add the grab & move functionality to a certain element inside it's container.
+ *
+ * @param element Element to move.
+ * @param onMoved Function to execute when the element moves.
+ *
+ * @return A function which will clean the event handlers when executed.
+ */
+export function addMovementListener(
+  element: HTMLElement,
+  onMoved: (x: Position["x"], y: Position["y"]) => void
+): Function {
+  const container = element.parentElement as HTMLElement;
+  // Store the initial draggable state.
+  const isDraggable = element.draggable;
+  // Init the coordinates.
+  let lastX: Position["x"] = 0;
+  let lastY: Position["y"] = 0;
+  let lastMouseX: Position["x"] = 0;
+  let lastMouseY: Position["y"] = 0;
+  let mouseElementOffsetX: Position["x"] = 0;
+  let mouseElementOffsetY: Position["y"] = 0;
+  // Bounds.
+  let containerBounds = container.getBoundingClientRect();
+  let containerOffset = getOffset(container);
+  let containerTop = containerOffset.top;
+  let containerBottom = containerTop + containerBounds.height;
+  let containerLeft = containerOffset.left;
+  let containerRight = containerLeft + containerBounds.width;
+  let elementBounds = element.getBoundingClientRect();
+  let borderWidth = window.getComputedStyle(element).borderWidth || "0";
+  let borderFix = Number.parseInt(borderWidth) * 2;
+
+  // Will run onMoved 32ms after its last execution.
+  const debouncedMovement = debounce(32, (x: Position["x"], y: Position["y"]) =>
+    onMoved(x, y)
+  );
+  // Will run onMoved one time max every 16ms.
+  const throttledMovement = throttle(16, (x: Position["x"], y: Position["y"]) =>
+    onMoved(x, y)
+  );
+
+  const handleMove = (e: MouseEvent) => {
+    // Calculate the new element coordinates.
+    let x = 0;
+    let y = 0;
+
+    const mouseX = e.pageX;
+    const mouseY = e.pageY;
+    const mouseDeltaX = mouseX - lastMouseX;
+    const mouseDeltaY = mouseY - lastMouseY;
+
+    const minX = 0;
+    const maxX = containerBounds.width - elementBounds.width + borderFix;
+    const minY = 0;
+    const maxY = containerBounds.height - elementBounds.height + borderFix;
+
+    const outOfBoundsLeft =
+      mouseX < containerLeft ||
+      (lastX === 0 &&
+        mouseDeltaX > 0 &&
+        mouseX < containerLeft + mouseElementOffsetX);
+    const outOfBoundsRight =
+      mouseX > containerRight ||
+      mouseDeltaX + lastX + elementBounds.width - borderFix >
+        containerBounds.width ||
+      (lastX === maxX &&
+        mouseDeltaX < 0 &&
+        mouseX > containerLeft + maxX + mouseElementOffsetX);
+    const outOfBoundsTop =
+      mouseY < containerTop ||
+      (lastY === 0 &&
+        mouseDeltaY > 0 &&
+        mouseY < containerTop + mouseElementOffsetY);
+    const outOfBoundsBottom =
+      mouseY > containerBottom ||
+      mouseDeltaY + lastY + elementBounds.height - borderFix >
+        containerBounds.height ||
+      (lastY === maxY &&
+        mouseDeltaY < 0 &&
+        mouseY > containerTop + maxY + mouseElementOffsetY);
+
+    if (outOfBoundsLeft) x = minX;
+    else if (outOfBoundsRight) x = maxX;
+    else x = mouseDeltaX + lastX;
+
+    if (outOfBoundsTop) y = minY;
+    else if (outOfBoundsBottom) y = maxY;
+    else y = mouseDeltaY + lastY;
+
+    if (x < 0) x = minX;
+    if (y < 0) y = minY;
+
+    // Store the last mouse coordinates.
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+
+    if (x === lastX && y === lastY) return;
+
+    // Run the movement events.
+    throttledMovement(x, y);
+    debouncedMovement(x, y);
+
+    // Store the coordinates of the element.
+    lastX = x;
+    lastY = y;
+  };
+  const handleEnd = () => {
+    // Reset the positions.
+    lastX = 0;
+    lastY = 0;
+    lastMouseX = 0;
+    lastMouseY = 0;
+    // Remove the move event.
+    document.removeEventListener("mousemove", handleMove);
+    // Clean itself.
+    document.removeEventListener("mouseup", handleEnd);
+    // Reset the draggable property to its initial state.
+    element.draggable = isDraggable;
+    // Reset the body selection property to a default state.
+    document.body.style.userSelect = "auto";
+  };
+  const handleStart = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    // Disable the drag temporarily.
+    element.draggable = false;
+
+    // Store the difference between the cursor and
+    // the initial coordinates of the element.
+    lastX = element.offsetLeft;
+    lastY = element.offsetTop;
+    // Store the mouse position.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+    // Store the relative position between the mouse and the element.
+    mouseElementOffsetX = e.offsetX;
+    mouseElementOffsetY = e.offsetY;
+
+    // Initialize the bounds.
+    containerBounds = container.getBoundingClientRect();
+    containerOffset = getOffset(container);
+    containerTop = containerOffset.top;
+    containerBottom = containerTop + containerBounds.height;
+    containerLeft = containerOffset.left;
+    containerRight = containerLeft + containerBounds.width;
+    elementBounds = element.getBoundingClientRect();
+    borderWidth = window.getComputedStyle(element).borderWidth || "0";
+    borderFix = Number.parseInt(borderWidth) * 2;
+
+    // Listen to the mouse movement.
+    document.addEventListener("mousemove", handleMove);
+    // Listen to the moment when the mouse click is not pressed anymore.
+    document.addEventListener("mouseup", handleEnd);
+    // Limit the mouse selection of the body.
+    document.body.style.userSelect = "none";
+  };
+
+  // Event to listen the init of the movement.
+  element.addEventListener("mousedown", handleStart);
+
+  // Returns a function to clean the event listeners.
+  return () => {
+    element.removeEventListener("mousedown", handleStart);
+    handleEnd();
+  };
+}
+
+/**
+ * Add the grab & resize functionality to a certain element.
+ *
+ * @param element Element to move.
+ * @param onResized Function to execute when the element is resized.
+ *
+ * @return A function which will clean the event handlers when executed.
+ */
+export function addResizementListener(
+  element: HTMLElement,
+  onResized: (x: Position["x"], y: Position["y"]) => void
+): Function {
+  const minWidth = 15;
+  const minHeight = 15;
+
+  const resizeDraggable = document.createElement("div");
+  resizeDraggable.className = "resize-draggable";
+  element.appendChild(resizeDraggable);
+
+  // Container of the resizable element.
+  const container = element.parentElement as HTMLElement;
+  // Store the initial draggable state.
+  const isDraggable = element.draggable;
+  // Init the coordinates.
+  let lastWidth: Size["width"] = 0;
+  let lastHeight: Size["height"] = 0;
+  let lastMouseX: Position["x"] = 0;
+  let lastMouseY: Position["y"] = 0;
+  let mouseElementOffsetX: Position["x"] = 0;
+  let mouseElementOffsetY: Position["y"] = 0;
+  // Init the bounds.
+  let containerBounds = container.getBoundingClientRect();
+  let containerOffset = getOffset(container);
+  let containerTop = containerOffset.top;
+  let containerBottom = containerTop + containerBounds.height;
+  let containerLeft = containerOffset.left;
+  let containerRight = containerLeft + containerBounds.width;
+  let elementOffset = getOffset(element);
+  let elementTop = elementOffset.top;
+  let elementLeft = elementOffset.left;
+  let borderWidth = window.getComputedStyle(element).borderWidth || "0";
+  let borderFix = Number.parseInt(borderWidth);
+
+  // Will run onResized 32ms after its last execution.
+  const debouncedResizement = debounce(
+    32,
+    (width: Size["width"], height: Size["height"]) => onResized(width, height)
+  );
+  // Will run onResized one time max every 16ms.
+  const throttledResizement = throttle(
+    16,
+    (width: Size["width"], height: Size["height"]) => onResized(width, height)
+  );
+
+  const handleResize = (e: MouseEvent) => {
+    // Calculate the new element coordinates.
+    let width = lastWidth + (e.pageX - lastMouseX);
+    let height = lastHeight + (e.pageY - lastMouseY);
+
+    if (width === lastWidth && height === lastHeight) return;
+
+    if (
+      width < lastWidth &&
+      e.pageX > elementLeft + (lastWidth - mouseElementOffsetX)
+    )
+      return;
+
+    if (width < minWidth) {
+      // Minimum value.
+      width = minWidth;
+    } else if (width + elementLeft - borderFix / 2 >= containerRight) {
+      // Limit the size to the container.
+      width = containerRight - elementLeft;
+    }
+    if (height < minHeight) {
+      // Minimum value.
+      height = minHeight;
+    } else if (height + elementTop - borderFix / 2 >= containerBottom) {
+      // Limit the size to the container.
+      height = containerBottom - elementTop;
+    }
+
+    // Run the movement events.
+    throttledResizement(width, height);
+    debouncedResizement(width, height);
+
+    // Store the coordinates of the element.
+    lastWidth = width;
+    lastHeight = height;
+    // Store the last mouse coordinates.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+  };
+  const handleEnd = () => {
+    // Reset the positions.
+    lastWidth = 0;
+    lastHeight = 0;
+    lastMouseX = 0;
+    lastMouseY = 0;
+    mouseElementOffsetX = 0;
+    mouseElementOffsetY = 0;
+    // Remove the move event.
+    document.removeEventListener("mousemove", handleResize);
+    // Clean itself.
+    document.removeEventListener("mouseup", handleEnd);
+    // Reset the draggable property to its initial state.
+    element.draggable = isDraggable;
+    // Reset the body selection property to a default state.
+    document.body.style.userSelect = "auto";
+  };
+  const handleStart = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    // Disable the drag temporarily.
+    element.draggable = false;
+
+    // Store the difference between the cursor and
+    // the initial coordinates of the element.
+    const { width, height } = element.getBoundingClientRect();
+    lastWidth = width;
+    lastHeight = height;
+    // Store the mouse position.
+    lastMouseX = e.pageX;
+    lastMouseY = e.pageY;
+    // Store the relative position between the mouse and the element.
+    mouseElementOffsetX = e.offsetX;
+    mouseElementOffsetY = e.offsetY;
+
+    // Initialize the bounds.
+    containerBounds = container.getBoundingClientRect();
+    containerOffset = getOffset(container);
+    containerTop = containerOffset.top;
+    containerBottom = containerTop + containerBounds.height;
+    containerLeft = containerOffset.left;
+    containerRight = containerLeft + containerBounds.width;
+    elementOffset = getOffset(element);
+    elementTop = elementOffset.top;
+    elementLeft = elementOffset.left;
+
+    // Listen to the mouse movement.
+    document.addEventListener("mousemove", handleResize);
+    // Listen to the moment when the mouse click is not pressed anymore.
+    document.addEventListener("mouseup", handleEnd);
+    // Limit the mouse selection of the body.
+    document.body.style.userSelect = "none";
+  };
+
+  // Event to listen the init of the movement.
+  resizeDraggable.addEventListener("mousedown", handleStart);
+
+  // Returns a function to clean the event listeners.
+  return () => {
+    resizeDraggable.remove();
+    handleEnd();
+  };
+}

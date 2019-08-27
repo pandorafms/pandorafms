@@ -96,7 +96,6 @@ function snmp_browser_get_html_tree(
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
-
         // Display the branch.
         $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
 
@@ -174,7 +173,6 @@ function snmp_browser_get_html_tree(
             $last_array,
             $sufix,
             $checked,
-            $return,
             $descriptive_ids,
             $previous_id
         );
@@ -225,7 +223,6 @@ function snmp_browser_print_tree(
         $last_array,
         $sufix,
         $checked,
-        $return,
         $descriptive_ids,
         $previous_id
     );
@@ -597,7 +594,7 @@ function snmp_browser_print_oid(
  *
  * @return string The container div.
  */
-function snmp_browser_print_container($return=false, $width='100%', $height='500px', $display='')
+function snmp_browser_print_container($return=false, $width='100%', $height='60%', $display='')
 {
     // Target selection
     $table = new stdClass();
@@ -756,10 +753,10 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
         $output .= '<div id="snmp3_browser_options" style="display: none;">';
     }
 
-    $output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', true, true);
+    $output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', '', true, true);
     $output .= '</div>';
     $output .= '<div style="width: 100%; padding-top: 10px;">';
-    $output .= ui_toggle(html_print_table($table2, true), __('Search options'), '', true, true);
+    $output .= ui_toggle(html_print_table($table2, true), __('Search options'), '', '', true, true);
     $output .= '</div>';
 
     // SNMP tree container
@@ -773,7 +770,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='500
 
     $output .= '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
     $output .= '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">'.html_print_image('images/spinner.gif', true).'</div>';
-    $output .= '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
+    $output .= '<div id="snmp_browser" style="height: 100%; min-height:100px; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
     $output .= '<div class="databox" id="snmp_data" style="margin: 5px;"></div>';
     $output .= '</div>';
     $output .= '</div>';

@@ -4,7 +4,7 @@
 }
 
 .tree-group {
-  margin-left: 16px;
+  margin-left: 19px;
   padding-top: 1px;
 }
 
@@ -22,7 +22,8 @@
   background: 0 0;
 }
 .node-content {
-  height: 16px;
+  height: 26px;
+  font-size: 1.2em;
 }
 
 .node-content > img {
@@ -128,7 +129,7 @@
 
 .tree-node > .node-content > .tree-node-counters > .tree-node-counter {
   font-weight: bold;
-  font-size: 7pt;
+  font-size: 1.2em;
   cursor: default;
 }
 
@@ -136,4 +137,8 @@ div#tree-controller-recipient {
   text-align: left;
   width: 98%;
   margin-top: 10px;
+}
+
+.tree-node > .node-content > div + div:not(.tree-node-counters) {
+  margin-left: 3px;
 }

@@ -1783,12 +1783,14 @@ function alerts_validate_alert_agent_module($id_alert_agent_module, $noACLs=fals
             ['id' => $id]
         );
 
+        $template_name = io_safe_output(db_get_value('name', 'talert_templates', 'id', $alert['id_alert_template']));
+        $module_name = io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $alert['id_agent_module']));
         if ($result > 0) {
             // Update fired alert count on the agent
             db_process_sql(sprintf('UPDATE tagente SET update_alert_count=1 WHERE id_agente = %d', $agent_id));
 
             events_create_event(
-                'Manual validation of alert for '.alerts_get_alert_template_description($alert['id_alert_template']),
+                'Manual validation of alert '.$template_name.' assigned to '.$module_name.'',
                 $group_id,
                 $agent_id,
                 1,
@@ -1914,7 +1916,6 @@ function alerts_get_agents_with_alert_template($id_alert_template, $id_group, $f
     $filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
     $filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
     $filter['id_alert_template'] = $id_alert_template;
-    $filter['tagente_modulo.disabled'] = '<> 1';
     $filter['delete_pending'] = '<> 1';
 
     if (empty($id_agents)) {
@@ -2491,7 +2492,7 @@ function alerts_get_action_escalation($action)
         $escalation[$action['fires_max']] = 1;
     } else if ($action['fires_min'] < $action['fires_max']) {
         for ($i = 1; $i <= $action['fires_max']; $i++) {
-            if ($i <= $action['fires_min']) {
+            if ($i < $action['fires_min']) {
                 $escalation[$i] = 0;
             } else {
                 $escalation[$i] = 1;

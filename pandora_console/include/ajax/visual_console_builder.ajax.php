@@ -1206,6 +1206,8 @@ switch ($action) {
                 switch ($type) {
                     case 'auto_sla_graph':
                         $elementFields['event_max_time_row'] = $elementFields['period'];
+                    break;
+
                     case 'percentile_item':
                     case 'percentile_bar':
                         $elementFields['width_percentile'] = $elementFields['width'];

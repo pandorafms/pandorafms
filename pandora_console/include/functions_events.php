@@ -1220,7 +1220,7 @@ function events_get_all(
             ON ts.id = te.server_id';
         if (!empty($filter['server_id'])) {
             $server_join = sprintf(
-                ' LEFT JOIN tmetaconsole_setup ts
+                ' INNER JOIN tmetaconsole_setup ts
                   ON ts.id = te.server_id AND ts.id= %d',
                 $filter['server_id']
             );

@@ -984,7 +984,7 @@ if (is_metaconsole()) {
         'SELECT id, server_name FROM tmetaconsole_setup',
         'server_id',
         $server_id,
-        'script',
+        '',
         __('All'),
         '0',
         true

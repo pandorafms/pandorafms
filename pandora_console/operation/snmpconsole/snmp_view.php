@@ -756,7 +756,7 @@ $urlPagination = $url_snmp.'&pagination='.$pagination.'&offset='.$offset;
 
 ui_pagination($trapcount, $urlPagination, $offset, $pagination);
 
-echo '<form name="eventtable" method="POST" action="'.$url_snmp.'">';
+echo '<form name="eventtable" method="POST" action="'.$urlPagination.'">';
 
 $table->cellpadding = 0;
 $table->cellspacing = 0;

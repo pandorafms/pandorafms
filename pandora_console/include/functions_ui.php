@@ -535,6 +535,10 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
             date2strftime_format($config['date_format']),
             $unixtime
         );
+    } else if ($prominent == 'compact') {
+        $units = 'tiny';
+        $title = human_time_comparation($unixtime);
+        $data = human_time_comparation($unixtime, $units);
     } else {
         $title = date($config['date_format'], $unixtime);
         $units = 'large';

@@ -1,23 +1,24 @@
 <?php
+/**
+ *  Pandora FMS - http://pandorafms.com
+ *  ==================================================
+ *  Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+ *  Please see http://pandorafms.org for full contribution list
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; version 2
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-$refr = (int) get_parameter('refresh', 0);
-// By default 30 seconds
+
 function mainAgentsModules()
 {
     global $config;
 
-    // Load global vars
+    // Load global vars.
     include_once 'include/config.php';
     include_once 'include/functions_reporting.php';
     include_once $config['homedir'].'/include/functions_agents.php';
@@ -25,7 +26,7 @@ function mainAgentsModules()
     include_once $config['homedir'].'/include/functions_users.php';
 
     check_login();
-    // ACL Check
+    // ACL Check.
     if (! check_acl($config['id_user'], 0, 'AR')) {
         db_pandora_audit(
             'ACL Violation',
@@ -37,7 +38,7 @@ function mainAgentsModules()
 
     // Update network modules for this group
     // Check for Network FLAG change request
-    // Made it a subquery, much faster on both the database and server side
+    // Made it a subquery, much faster on both the database and server side.
     if (isset($_GET['update_netgroup'])) {
         $group = get_parameter_get('update_netgroup', 0);
         if (check_acl($config['id_user'], $group, 'AW')) {
@@ -62,7 +63,7 @@ function mainAgentsModules()
 
     $modulegroup = get_parameter('modulegroup', 0);
     $refr = (int) get_parameter('refresh', 0);
-    // By default 30 seconds
+    // By default 30 seconds.
     $recursion = get_parameter('recursion', 0);
     $group_id = (int) get_parameter('group_id', 0);
     $offset = (int) get_parameter('offset', 0);
@@ -79,7 +80,8 @@ function mainAgentsModules()
     $full_modules_selected = explode(';', get_parameter('full_modules_selected', 0));
     $full_agents_id = explode(';', get_parameter('full_agents_id', 0));
 
-    if ($save_serialize && $update_item == '') {
+    // In full screen there is no pagination neither filters.
+    if (( ($config['pure'] == 0 && $save_serialize) && $update_item == '' ) || ( ($config['pure'] == 1 && $save_serialize == 0) && $update_item == '' )) {
         $unserialize_modules_selected  = unserialize_in_temp($config['id_user'].'_agent_module', true, 1);
         $unserialize_agents_id         = unserialize_in_temp($config['id_user'].'_agents', true, 1);
         if ($unserialize_modules_selected) {
@@ -102,7 +104,6 @@ function mainAgentsModules()
         serialize_in_temp($agents_id, $config['id_user'].'_agents', 1);
     }
 
-    // if($agents_id != -1) $agents_id = null;
     if ($config['pure'] == 0) {
         if ($modules_selected[0] && $agents_id[0]) {
             $full_modules = urlencode(implode(';', $modules_selected));
@@ -124,13 +125,13 @@ function mainAgentsModules()
         }
     }
 
-    // groups
+    // Groups.
     $filter_groups_label = '<b>'.__('Group').'</b>';
     $filter_groups = html_print_select_groups(false, 'AR', true, 'group_id', $group_id, '', '', '', true, false, true, '', false, 'width: auto;');
 
     $filter_recursion_label = '<b>'.__('Recursion').'</b>';
     $filter_recursion = html_print_checkbox('recursion', 1, 0, true);
-    // groups module
+    // Groups module.
     $filter_module_groups_label = '<b>'.__('Module group').'</b>';
     $filter_module_groups = html_print_select_from_sql(
         'SELECT * FROM tmodule_group ORDER BY name',
@@ -146,7 +147,7 @@ function mainAgentsModules()
         'width: auto;'
     );
 
-    // agent
+    // Agent.
     $agents = agents_get_group_agents($group_id);
     if ((empty($agents)) || $agents == -1) {
         $agents = [];
@@ -155,7 +156,7 @@ function mainAgentsModules()
     $filter_agents_label = '<b>'.__('Agents').'</b>';
     $filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, 'min-width: 180px; max-width: 200px;');
 
-    // type show
+    // Type show.
     $selection = [
         0 => __('Show common modules'),
         1 => __('Show all modules'),
@@ -163,12 +164,12 @@ function mainAgentsModules()
     $filter_type_show_label = '<b>'.__('Show common modules').'</b>';
     $filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', '', 0, true, false, true, '', false, 'min-width: 180px;');
 
-    // modules
+    // Modules.
     $all_modules = select_modules_for_agent_group($group_id, $agents_id, $selection_a_m, false);
     $filter_modules_label = '<b>'.__('Module').'</b>';
     $filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', '', 0, true, true, false, '', false, 'min-width: 180px; max-width: 200px;');
 
-    // update
+    // Update.
     $filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
 
     $onheader = [
@@ -178,11 +179,21 @@ function mainAgentsModules()
         'combo_groups'        => $filter_groups,
     ];
 
-    // Old style table, we need a lot of special formatting,don't use table function
-    // Prepare old-style table
+    /*
+     * Old style table, we need a lot of special formatting,don't use table function.
+     * Prepare old-style table.
+     */
+
     if ($config['pure'] == 0) {
-        // Header
-        ui_print_page_header(__('Agents/Modules'), 'images/module_mc.png', false, '', false, $updated_time);
+        // Header.
+        ui_print_page_header(
+            __('Agents/Modules'),
+            'images/module_mc.png',
+            false,
+            'agents_module_view',
+            false,
+            $updated_time
+        );
         echo '<table style="width:100%;">';
         echo '<tr>';
         echo "<td> <span style='float: right;'>".$fullscreen['text'].'</span> </td>';
@@ -193,38 +204,51 @@ function mainAgentsModules()
             $full_modules = urlencode(implode(';', $full_modules_selected));
             $full_agents = urlencode(implode(';', $full_agents_id));
 
-            $url = " index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset
+            $url = 'index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset
 			&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr&full_modules_selected=$full_modules
-			&full_agents_id=$full_agents&selection_agent_module=$selection_a_m";
+			&full_agents_id=$full_agents&selection_agent_module=$selection_a_m';
         } else {
-            $url = " index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr";
+            $url = 'index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr';
         }
 
-        // Floating menu - Start
+        // Floating menu - Start.
         echo '<div id="vc-controls" style="z-index: 999">';
 
         echo '<div id="menu_tab">';
         echo '<ul class="mn">';
 
-        // Quit fullscreen
+        // Quit fullscreen.
         echo '<li class="nomn">';
         echo '<a target="_top" href="'.$url.'">';
         echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
         echo '</a>';
         echo '</li>';
 
-        // Countdown
+        // Countdown.
         echo '<li class="nomn">';
         echo '<div class="vc-refr">';
-        echo '<div class="vc-countdown"></div>';
+        echo '<div class="vc-countdown style="display: inline;"></div>';
         echo '<div id="vc-refr-form">';
         echo __('Refresh').':';
-        echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+        echo html_print_select(
+            get_refresh_time_array(),
+            'refresh',
+            $refr,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            'margin-top: 3px;'
+        );
         echo '</div>';
         echo '</div>';
         echo '</li>';
 
-        // Console name
+        // Console name.
         echo '<li class="nomn">';
         echo '<div class="vc-title">'.__('Agent/module view').'</div>';
         echo '</li>';
@@ -233,35 +257,35 @@ function mainAgentsModules()
         echo '</div>';
 
         echo '</div>';
-        // Floating menu - End
+        // Floating menu - End.
         ui_require_jquery_file('countdown');
     }
 
     if ($config['pure'] != 1) {
-        echo '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'">';
-
-        echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
-            echo '<tr>';
-                echo '<td>'.$filter_groups_label.'</td>';
-                echo '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
-                echo '<td></td>';
-                echo '<td></td>';
-                echo '<td>'.$filter_module_groups_label.'</td>';
-                echo '<td>'.$filter_module_groups.'</td>';
-            echo '</tr>';
-            echo '<tr>';
-                echo '<td>'.$filter_agents_label.'</td>';
-                echo '<td>'.$filter_agents.'</td>';
-                echo '<td>'.$filter_type_show_label.'</td>';
-                echo '<td>'.$filter_type_show.'</td>';
-                echo '<td>'.$filter_modules_label.'</td>';
-                echo '<td>'.$filter_modules.'</td>';
-            echo '</tr>';
-            echo '<tr>';
-                echo "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
-            echo '</tr>';
-        echo '</table>';
-        echo '</form>';
+        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" style="width:100%;">';
+        $show_filters .= '<table class="white_table" cellpadding="0" cellspacing="0" border="0" style="width:100%; border:none;">';
+            $show_filters .= '<tr>';
+                $show_filters .= '<td>'.$filter_groups_label.'</td>';
+                $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
+                $show_filters .= '<td></td>';
+                $show_filters .= '<td></td>';
+                $show_filters .= '<td>'.$filter_module_groups_label.'</td>';
+                $show_filters .= '<td>'.$filter_module_groups.'</td>';
+            $show_filters .= '</tr>';
+            $show_filters .= '<tr>';
+                $show_filters .= '<td>'.$filter_agents_label.'</td>';
+                $show_filters .= '<td>'.$filter_agents.'</td>';
+                $show_filters .= '<td>'.$filter_type_show_label.'</td>';
+                $show_filters .= '<td>'.$filter_type_show.'</td>';
+                $show_filters .= '<td>'.$filter_modules_label.'</td>';
+                $show_filters .= '<td>'.$filter_modules.'</td>';
+            $show_filters .= '</tr>';
+            $show_filters .= '<tr>';
+                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
+            $show_filters .= '</tr>';
+        $show_filters .= '</table>';
+        $show_filters .= '</form>';
+        ui_toggle($show_filters, __('Filters'));
     }
 
     if ($agents_id[0] != -1) {
@@ -284,7 +308,7 @@ function mainAgentsModules()
 
     $count = 0;
     foreach ($agents as $agent) {
-        // TODO TAGS agents_get_modules
+        // TODO TAGS agents_get_modules.
         $module = agents_get_modules(
             $agent,
             false,
@@ -332,7 +356,7 @@ function mainAgentsModules()
                 }
             }
         } else {
-            // TODO TAGS agents_get_modules
+            // TODO TAGS agents_get_modules.
             $all_modules = agents_get_modules(
                 $agents,
                 false,
@@ -407,11 +431,11 @@ function mainAgentsModules()
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
-        echo "<th width='20px' "."style='vertical-align:top; padding-top: 35px;' "."rowspan='".($nagents + 1)."'>"."<a href='index.php?".'extension_in_menu=estado&'.'sec=extensions&'.'sec2=extensions/agents_modules&'.'refr=0&'.'save_serialize=1&'.'selection_a_m='.$selection_a_m.'&'.'hor_offset='.$new_hor_offset.'&'.'offset='.$offset."'>".html_print_image(
-            'images/arrow_left.png',
+        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+            'images/arrow_left_green.png',
             true,
             ['title' => __('Previous modules')]
-        ).'</a>'.'</th>';
+        ).'</a></th>';
     }
 
     $nmodules = 0;
@@ -433,11 +457,11 @@ function mainAgentsModules()
 
     if (($hor_offset + $block) < $nmodules) {
         $new_hor_offset = ($hor_offset + $block);
-        echo "<th width='20px' "."style='vertical-align:top; padding-top: 35px;' "."rowspan='".($nagents + 1)."'>"."<a href='index.php?".'extension_in_menu=estado&'.'sec=extensions&'.'sec2=extensions/agents_modules&'.'save_serialize=1&'.'selection_a_m='.$selection_a_m.'&'.'hor_offset='.$new_hor_offset.'&'.'offset='.$offset."'>".html_print_image(
-            'images/arrow.png',
+        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+            'images/arrow_right_green.png',
             true,
             ['title' => __('More modules')]
-        ).'</a>'.'</th>';
+        ).'</a></th>';
     }
 
     echo '</tr>';
@@ -450,12 +474,12 @@ function mainAgentsModules()
         $filter_agents['id_grupo'] = $group_id;
     }
 
-    // Prepare pagination
-    $url = 'index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&'.'hor_offset='.$hor_offset.'&selection_a_m='.$selection_a_m;
+    // Prepare pagination.
+    $url = 'index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&hor_offset='.$hor_offset.'&selection_a_m='.$selection_a_m;
     ui_pagination($total_pagination, $url);
 
     foreach ($agents as $agent) {
-        // Get stats for this group
+        // Get stats for this group.
         $agent_status = agents_get_status($agent['id_agente']);
         $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
         if (empty($alias['alias'])) {
@@ -464,29 +488,29 @@ function mainAgentsModules()
 
         switch ($agent_status) {
             case 4:
-                // Alert fired status
+                // Alert fired status.
                 $rowcolor = 'group_view_alrm';
             break;
 
             case 1:
-                // Critical status
+                // Critical status.
                 $rowcolor = 'group_view_crit';
             break;
 
             case 2:
-                // Warning status
+                // Warning status.
                 $rowcolor = 'group_view_warn';
             break;
 
             case 0:
-                // Normal status
+                // Normal status.
                 $rowcolor = 'group_view_ok';
             break;
 
             case 3:
             case -1:
             default:
-                // Unknown status
+                // Unknown status.
                 $rowcolor = 'group_view_unk';
             break;
         }
@@ -495,7 +519,7 @@ function mainAgentsModules()
 
         echo "<td class='$rowcolor'>
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".$alias['alias'].'</a></td>';
-        // TODO TAGS agents_get_modules
+        // TODO TAGS agents_get_modules.
         $agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, true);
 
         $nmodules = 0;
@@ -565,18 +589,23 @@ function mainAgentsModules()
 
     echo '</table>';
 
-    echo "<div class='legend_basic' style='width: 96%'>";
+    $show_legend = "<div class='legend_white'>";
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></div>".__('Orange cell when the module has fired alerts').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+            <div class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></div>".__('Red cell when the module has a critical status').'
+        </div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></div>".__('Yellow cell when the module has a warning status').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></div>".__('Green cell when the module has a normal status').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></div>".__('Grey cell when the module has an unknown status').'</div>';
+    $show_legend .= "<div style='display: flex;align-items: center;'>
+        <div class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></div>".__("Cell turns blue when the module is in 'not initialize' status").'</div>';
+    $show_legend .= '</div>';
+    ui_toggle($show_legend, __('Legend'));
 
-    echo '<table>';
-    echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>".__('Legend').'</b></td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module has fired alerts').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module has a critical status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module has a warning status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module has a normal status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module has an unknown status').'</td></tr>';
-    echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__("Cell turns blue when the module is in 'not initialize' status").'</td></tr>';
-    echo '</table>';
-    echo '</div>';
     $pure_var = $config['pure'];
     if ($pure_var) {
         $pure_var = 1;
@@ -620,16 +649,14 @@ $ignored_params['refresh'] = '';
         $.each($('.th_class_module_r'), function (i, elem) {
             id = $(elem).attr('id').replace('th_module_r_', '');
             $("#th_module_r_" + id).height(($("#div_module_r_" + id).width() + 10) + 'px');
-            
-            //$("#div_module_r_" + id).css('margin-top', (max_width - $("#div_module_r_" + id).width()) + 'px');
             $("#div_module_r_" + id).css('margin-top', (max_width - 20) + 'px');
             $("#div_module_r_" + id).show();
         });
 
-        var refr =" . $refr . ";
-        var pure =" . $pure_var . ";
-        var href ='" . ui_get_url_refresh ($ignored_params) . "';
-            
+        var refr = '<?php echo get_parameter('refresh', 0); ?>';
+        var pure = '<?php echo get_parameter('pure', 0); ?>';
+        var href =' <?php echo ui_get_url_refresh($ignored_params); ?>';
+
         if (pure) {
             var startCountDown = function (duration, cb) {
                 $('div.vc-countdown').countdown('destroy');
@@ -639,7 +666,7 @@ $ignored_params['refresh'] = '';
                 $('div.vc-countdown').countdown({
                     until: t,
                     format: 'MS',
-                    layout: '(%M%nn%M:%S%nn%S Until refresh)',
+                    layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>) ',
                     alwaysExpire: true,
                     onExpiry: function () {
                         $('div.vc-countdown').countdown('destroy');
@@ -648,8 +675,11 @@ $ignored_params['refresh'] = '';
                     }
                 });
             }
-            
-            startCountDown(refr, false);
+
+            if(refr>0){
+                startCountDown(refr, false);
+            }
+
             var controls = document.getElementById('vc-controls');
             autoHideElement(controls, 1000);
             

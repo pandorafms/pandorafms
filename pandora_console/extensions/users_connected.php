@@ -66,10 +66,10 @@ function users_extension_main_god($god=true)
         $rows = [];
         echo "<div class='nf'>".__('No other users connected').'</div>';
     } else {
-        $table->cellpadding = 4;
-        $table->cellspacing = 4;
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->size = [];
         $table->data = [];
         $table->head = [];

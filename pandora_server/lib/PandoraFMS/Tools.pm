@@ -29,6 +29,7 @@ use Sys::Syslog;
 use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
 use threads;
+use threads::shared;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -71,6 +72,16 @@ our @EXPORT = qw(
 	MIGRATIONSERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
+	DISCOVERY_HOSTDEVICES
+	DISCOVERY_HOSTDEVICES_CUSTOM
+	DISCOVERY_CLOUD_AWS
+	DISCOVERY_APP_VMWARE
+	DISCOVERY_APP_MYSQL
+	DISCOVERY_APP_ORACLE
+	DISCOVERY_CLOUD_AWS_EC2
+	DISCOVERY_CLOUD_AWS_RDS
+	DISCOVERY_CLOUD_AZURE_COMPUTE
+	DISCOVERY_DEPLOY_AGENTS
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -120,6 +131,7 @@ our @EXPORT = qw(
 	month_have_days
 	translate_obj
 	valid_regex
+	read_file
 	set_file_permissions
 	uri_encode
 	check_server_threads
@@ -169,6 +181,18 @@ use constant OFFLINE_LICENSE => 0x02;
 # Alert modes
 use constant RECOVERED_ALERT => 0;
 use constant FIRED_ALERT => 1;
+
+# Discovery task types
+use constant DISCOVERY_HOSTDEVICES => 0;
+use constant DISCOVERY_HOSTDEVICES_CUSTOM => 1;
+use constant DISCOVERY_CLOUD_AWS => 2;
+use constant DISCOVERY_APP_VMWARE => 3;
+use constant DISCOVERY_APP_MYSQL => 4;
+use constant DISCOVERY_APP_ORACLE => 5;
+use constant DISCOVERY_CLOUD_AWS_EC2 => 6;
+use constant DISCOVERY_CLOUD_AWS_RDS => 7;
+use constant DISCOVERY_CLOUD_AZURE_COMPUTE => 8;
+use constant DISCOVERY_DEPLOY_AGENTS => 9;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
@@ -329,6 +353,28 @@ my @ServerThreads;
 
 # Keep threads running.
 our $THRRUN :shared = 1;
+
+##########################################################################
+## Reads a file and returns entire content or undef if error.
+##########################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<", $path) ) {
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
+}
+
 
 ###############################################################################
 # Sets user:group owner for the given file
@@ -1841,7 +1887,7 @@ sub stop_server_threads {
 	$THRRUN = 0;
 
 	foreach my $thr (@ServerThreads) {
-			$thr->detach();
+			$thr->join();
 	}
 
 	@ServerThreads = ();

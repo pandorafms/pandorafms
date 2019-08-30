@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.733";
-my $pandora_build = "190416";
+my $pandora_version = "7.0NG.738";
+my $pandora_build = "190830";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -333,6 +333,7 @@ sub pandora_load_config {
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
 	$pa_config->{'autocreate_group'} = -1;
+	$pa_config->{'autocreate_group_force'} = 1;
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)
@@ -493,6 +494,8 @@ sub pandora_load_config {
 	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
 	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
+
+	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0 737
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -811,6 +814,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^autocreate_group\s+([0-9*]*)/i) {
 			$pa_config->{'autocreate_group'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^autocreate_group_force\s+([0-1])/i) {
+			$pa_config->{'autocreate_group_force'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^discovery_threads\s+([0-9]*)/i) {
 			$pa_config->{'discovery_threads'}= clean_blank($1);
 		}
@@ -916,6 +922,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_file\s+(.*)/i) {
 			$pa_config->{'event_file'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_inhibit_alerts\s+([0-1])/i) {
+			$pa_config->{'event_inhibit_alerts'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^text_going_down_normal\s+(.*)/i) {
 			$pa_config->{'text_going_down_normal'} = safe_input ($1);
@@ -1133,6 +1142,18 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^fsnmp\s(.*)/i) {
 			$pa_config->{'fsnmp'}= clean_blank($1); 
 		}
+
+		# Pandora HA extra
+		elsif ($parametro =~ m/^ha_file\s(.*)/i) {
+			$pa_config->{'ha_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_pid_file\s(.*)/i) {
+			$pa_config->{'ha_pid_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^pandora_service_cmd\s(.*)/i) {
+			$pa_config->{'pandora_service_cmd'} = clean_blank($1);
+		}
+		
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port
@@ -1200,7 +1221,7 @@ sub pandora_get_tconfig_token ($$$) {
 	my ($dbh, $token, $default_value) = @_;
 	
 	my $token_value = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", $token);
-	if (defined ($token_value)) {
+	if (defined ($token_value) && $token_value ne '') {
 		return safe_output ($token_value);
 	}
 	

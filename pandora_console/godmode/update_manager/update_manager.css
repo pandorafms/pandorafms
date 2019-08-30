@@ -34,7 +34,7 @@
   float: none;
 }
 #drop_file a {
-  background-color: #80ba27;
+  background-color: #82b92e;
   border-radius: 2px;
   color: #ffffff;
   cursor: pointer;
@@ -101,7 +101,7 @@
   width: 15px;
 }
 .fileupload_form ul li div {
-  display: block !important;
+  display: block;
 }
 .fileupload_form ul li.working span {
   background-position: 0 -12px;
@@ -140,6 +140,145 @@
 }
 
 #box_online {
-  background-color: #e6e6e6;
-  padding: 10px;
+  background-image: url("../../images/update_manager_background.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  padding: 40px 50px;
+  border: 1px solid #f3f3f3;
+  border-radius: 5px;
+  min-height: 600px;
+}
+
+div#box_online * {
+  font-size: 16pt;
+  font-family: "Open Sans", sans-serif;
+}
+
+#box_online .content {
+  max-width: 60%;
+}
+
+.update_popup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.update_icon {
+  padding-left: 20px;
+}
+
+.update_text h3 {
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+.update_text p {
+  font-size: 11pt;
+}
+
+.update_text a {
+  font-size: 11pt;
+  color: #82b92e;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  float: left;
+  padding-left: 19px;
+  padding-bottom: 5px;
+}
+
+a.update_manager_button {
+  padding: 10px 12px;
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: "Open Sans", sans-serif;
+}
+
+a.update_manager_button:after {
+  content: url(../../images/update_manager_button.png);
+  padding-left: 10px;
+}
+
+.progressbar {
+  margin-top: 15px;
+}
+
+.ui-draggable,
+.ui-draggable .ui-dialog-titlebar {
+  cursor: default;
+}
+
+#box_online #pkg_version {
+  color: #82b92e;
+  font-size: 75pt;
+  font-weight: bold;
+}
+
+/* METACONSOLE */
+.box_online_meta {
+  background: none;
+  min-height: 400px;
+  text-align: center;
+  border: none;
+}
+
+div#box_online.box_online_meta * {
+  font-size: 14pt;
+}
+
+#box_online.box_online_meta .content {
+  max-width: 100%;
+}
+
+#box_online.box_online_meta #pkg_version {
+  font-size: 60pt;
+}
+
+/* COMMUNITY */
+.update_manager_open {
+  max-width: 50%;
+  font-size: 10pt;
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+}
+
+.update_manager_warning {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.update_manager_warning p {
+  font-size: 10pt;
+}
+
+.update_manager_warning img {
+  padding-right: 20px;
+  width: 90px;
+}
+
+a.update_manager_button_open {
+  padding: 5px 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 1px solid #82b92e;
+  color: #82b92e;
+  border-radius: 2px;
+}
+
+a.update_manager_button_open:hover {
+  color: #fff;
+  background-color: #82b92e;
 }

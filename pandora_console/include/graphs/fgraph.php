@@ -21,6 +21,7 @@ if (empty($config['homedir'])) {
 }
 
 require_once $config['homedir'].'/include/functions.php';
+require_once $config['homedir'].'/include/graphs/functions_flot.php';
 
 $ttl = get_parameter('ttl', 1);
 $graph_type = get_parameter('graph_type', '');

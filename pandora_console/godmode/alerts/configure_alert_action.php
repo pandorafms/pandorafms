@@ -184,7 +184,6 @@ $table->colspan[2][1] = 2;
 
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds').ui_print_help_icon('action_threshold', true);
 $table->colspan[3][1] = 2;
 
 $table->data[4][0] = '';
@@ -318,9 +317,9 @@ $(document).ready (function () {
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
             function (data, status) {
-                original_command = js_html_entity_decode (data["command"]);
+                original_command = data["command"];
                 render_command_preview (original_command);
-                command_description = js_html_entity_decode (data["description"]);
+                command_description = data["description"];
                 render_command_description(command_description);
                 
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');

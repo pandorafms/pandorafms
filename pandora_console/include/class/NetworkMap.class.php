@@ -34,9 +34,9 @@ enterprise_include_once('include/functions_networkmap.php');
 enterprise_include_once('include/functions_discovery.php');
 
 // Avoid node overlapping.
-define('GRAPHVIZ_RADIUS_CONVERSION_FACTOR', 20);
-define('MAP_X_CORRECTION', 600);
-define('MAP_Y_CORRECTION', 150);
+define('GRAPHVIZ_CONVERSION_FACTOR', 30);
+define('MAP_X_CORRECTION', 0);
+define('MAP_Y_CORRECTION', 0);
 
 
 /**
@@ -192,6 +192,20 @@ class NetworkMap
     public $relations;
 
     /**
+     * Private nodes converted to JS.
+     *
+     * @var array
+     */
+    private $nodesJS;
+
+    /**
+     * Private relations converted to JS.
+     *
+     * @var array
+     */
+    private $relationsJS;
+
+    /**
      * Include a Pandora (or vendor) node or not.
      *
      * @var integer
@@ -319,6 +333,8 @@ class NetworkMap
         // Default mapOptions values.
         // Defines the command to generate positions.
         $this->mapOptions['generation_method'] = LAYOUT_SPRING1;
+        // Use fixed positions defined (X,Y) per node.
+        $this->mapOptions['fixed_positions'] = 0;
         $this->mapOptions['width'] = $config['networkmap_max_width'];
         $this->mapOptions['height'] = $config['networkmap_max_width'];
         $this->mapOptions['simple'] = 0;
@@ -999,23 +1015,25 @@ class NetworkMap
             case NODE_GENERIC:
                 // Handmade ones.
                 // Add also parent relationship.
-                $parent_id = $node['id_parent'];
+                if (isset($node['id_parent'])) {
+                    $parent_id = $node['id_parent'];
 
-                if ((int) $parent_id > 0) {
-                    $parent_node = $this->getNodeData(
-                        (int) $parent_id,
-                        'id_node'
-                    );
-                }
+                    if ((int) $parent_id >= 0) {
+                        $parent_node = $this->getNodeData(
+                            (int) $parent_id,
+                            'id_node'
+                        );
+                    }
 
-                // Store relationship.
-                if ($parent_node) {
-                    $relations[] = [
-                        'id_parent'   => $parent_node,
-                        'parent_type' => NODE_GENERIC,
-                        'id_child'    => $node['id_node'],
-                        'child_type'  => NODE_GENERIC,
-                    ];
+                    // Store relationship.
+                    if ($parent_node !== null) {
+                        $relations[] = [
+                            'id_parent'   => $parent_node,
+                            'parent_type' => NODE_GENERIC,
+                            'id_child'    => $node['id_node'],
+                            'child_type'  => NODE_GENERIC,
+                        ];
+                    }
                 }
             break;
 
@@ -1224,6 +1242,11 @@ class NetworkMap
             return '';
         }
 
+        if ($this->mapOptions['fixed_positions']) {
+            // Ignore.
+            return;
+        }
+
         $dot_str = '';
 
         // Color is being printed by D3, not graphviz.
@@ -1233,8 +1256,22 @@ class NetworkMap
         $url = 'none';
         $parent = $data['parent'];
         $font_size = $this->mapOptions['font_size'];
-        $radius = $this->mapOptions['map_filter']['node_radius'];
-        $radius /= GRAPHVIZ_RADIUS_CONVERSION_FACTOR;
+        if (isset($data['radius'])) {
+            $radius = $data['radius'];
+        } else {
+            $radius = $this->mapOptions['map_filter']['node_radius'];
+        }
+
+        $radius /= GRAPHVIZ_CONVERSION_FACTOR;
+
+        if (is_array($label)) {
+            $label = array_reduce(
+                function ($carry, $item) {
+                    $carry .= $item;
+                    return $carry;
+                }
+            );
+        }
 
         if (strlen($label) > 16) {
             $label = ui_print_truncate_text($label, 16, false, true, false);
@@ -1482,43 +1519,8 @@ class NetworkMap
      */
     public static function getColorByStatus($status)
     {
-        if (isset($status) === false) {
-            return COL_UNKNOWN;
-        }
-
-        switch ($status) {
-            case AGENT_MODULE_STATUS_NORMAL:
-            case AGENT_STATUS_NORMAL:
-            return COL_NORMAL;
-
-            case AGENT_MODULE_STATUS_NOT_INIT:
-            case AGENT_STATUS_NOT_INIT:
-            return COL_NOTINIT;
-
-            case AGENT_MODULE_STATUS_CRITICAL_BAD:
-            case AGENT_STATUS_CRITICAL:
-            return COL_CRITICAL;
-
-            case AGENT_MODULE_STATUS_WARNING:
-            case AGENT_STATUS_WARNING:
-            return COL_WARNING;
-
-            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-            case AGENT_MODULE_STATUS_WARNING_ALERT:
-            case AGENT_STATUS_ALERT_FIRED:
-            return COL_ALERTFIRED;
-
-            case AGENT_MODULE_STATUS_UNKNOWN:
-            case AGENT_STATUS_UNKNOWN:
-            return COL_UNKNOWN;
-
-            default:
-                // Ignored.
-            break;
-        }
-
-        return COL_IGNORED;
-
+        include_once __DIR__.'/../functions_modules.php';
+        return modules_get_color_status($status);
     }
 
 
@@ -1593,6 +1595,21 @@ class NetworkMap
 
             if (is_array($node['style']) === false) {
                 $node['style'] = json_decode($node['style'], true);
+
+                // Add styles.
+                if (isset($source_data['style']) === true
+                    && is_array($source_data['style']) === true
+                ) {
+                    $node['style'] = array_merge(
+                        $node['style'],
+                        $source_data['style']
+                    );
+                }
+            }
+
+            // Propagate styles.
+            foreach ($node['style'] as $k => $v) {
+                $item[$k] = $v;
             }
 
             $item['type'] = $node['type'];
@@ -1632,9 +1649,20 @@ class NetworkMap
                         $node[$k] = $v;
                     }
 
-                    $node['style']['label'] = $node['name'];
+                    if (!empty($node['text'])) {
+                        $node['style']['label'] = $node['text'];
+                    } else {
+                        $node['style']['label'] = $node['name'];
+                    }
+
                     $node['style']['shape'] = 'circle';
-                    $item['color'] = self::getColorByStatus($node['status']);
+                    if (isset($source_data['color'])) {
+                        $item['color'] = $source_data['color'];
+                    } else {
+                        $item['color'] = self::getColorByStatus(
+                            $node['status']
+                        );
+                    }
                 break;
             }
 
@@ -1679,6 +1707,7 @@ class NetworkMap
             $item['text'] = io_safe_output($node['style']['label']);
             $item['shape'] = $node['style']['shape'];
             $item['map_id'] = $node['id_map'];
+
             if (!isset($node['style']['id_networkmap'])
                 || $node['style']['id_networkmap'] == ''
                 || $node['style']['id_networkmap'] == 0
@@ -1694,8 +1723,6 @@ class NetworkMap
                 $item['image'] = $item['image_url'];
                 $item['image_height'] = 52;
                 $item['image_width'] = 52;
-                $item['width'] = $this->mapOptions['map_filter']['node_radius'];
-                $item['height'] = $this->mapOptions['map_filter']['node_radius'];
             }
 
             $return[] = $item;
@@ -2036,6 +2063,10 @@ class NetworkMap
                         'id_source' => $id_source,
                         'label'     => $label,
                         'image'     => null,
+                        'radius'    => max(
+                            $node['width'],
+                            $node['height']
+                        ),
                     ]
                 );
 
@@ -2148,8 +2179,8 @@ class NetworkMap
             if (preg_match('/^graph.*$/', $line) != 0) {
                 // Graph definition.
                 $fields = explode(' ', $line);
-                $this->map['width'] = ($fields[2] * 10 * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
-                $this->map['height'] = ($fields[3] * 10 * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+                $this->map['width'] = ($fields[2] * GRAPHVIZ_CONVERSION_FACTOR);
+                $this->map['height'] = ($fields[3] * GRAPHVIZ_CONVERSION_FACTOR);
 
                 if ($this->map['width'] > $config['networkmap_max_width']) {
                     $this->map['width'] = $config['networkmap_max_width'];
@@ -2162,8 +2193,8 @@ class NetworkMap
                 // Node.
                 $fields = explode(' ', $line);
                 $id = $fields[1];
-                $nodes[$id]['x'] = (($fields[2] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
-                $nodes[$id]['y'] = (($fields[3] * $this->mapOptions['map_filter']['node_radius']) - $this->mapOptions['map_filter']['rank_sep'] * GRAPHVIZ_RADIUS_CONVERSION_FACTOR);
+                $nodes[$id]['x'] = ($fields[2] * GRAPHVIZ_CONVERSION_FACTOR);
+                $nodes[$id]['y'] = ($fields[3] * GRAPHVIZ_CONVERSION_FACTOR);
             } else if (preg_match('/^edge.*$/', $line) != 0
                 && empty($this->relations) === true
             ) {
@@ -2401,7 +2432,17 @@ class NetworkMap
          * Calculate X,Y positions.
          */
 
-        $graph = $this->calculateCoords();
+        if (!$this->mapOptions['fixed_positions']) {
+            $graph = $this->calculateCoords();
+        } else {
+            // Set by user.
+            $graph['nodes'] = $this->rawNodes;
+            $graph['relations'] = $this->relations;
+            $this->map['width'] = $this->mapOptions['width'];
+            $this->map['height'] = $this->mapOptions['height'];
+        }
+
+        $this->map['filter']['z_dash'] = $this->mapOptions['z_dash'];
 
         if (is_array($graph) === true) {
             $nodes = $graph['nodes'];
@@ -2501,6 +2542,10 @@ class NetworkMap
             $style['image'] = $node_tmp['image'];
             $style['width'] = $node_tmp['width'];
             $style['height'] = $node_tmp['height'];
+            $style['radius'] = max(
+                $style['width'],
+                $style['height']
+            );
             $style['label'] = $node_tmp['text'];
 
             $node_tmp['style'] = json_encode($style);
@@ -2658,6 +2703,10 @@ class NetworkMap
             $output .= "var z_dash = null;\n";
         }
 
+        if (empty($networkmap['filter']['node_radius']) === true) {
+            $networkmap['filter']['node_radius'] = $this->mapOptions['map_filter']['node_radius'];
+        }
+
         $output .= 'var networkmap_refresh_time = 1000 * '.$networkmap['source_period'].";\n";
         $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
         $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";
@@ -2676,8 +2725,14 @@ class NetworkMap
             $nodes = [];
         }
 
-        $nodes_js = $this->nodesToJS($nodes);
-        $output .= 'networkmap.nodes = ('.json_encode($nodes_js).");\n";
+        $this->nodesJS = $this->nodesToJS($nodes);
+
+        $output .= 'networkmap.nodes = ('.json_encode($this->nodesJS).");\n";
+
+        // Clean.
+        unset($this->nodes);
+        unset($this->rawNodes);
+        unset($this->nodeMapping);
 
         // Translate edges to js links.
         $relations = $this->graph['relations'];
@@ -2685,8 +2740,11 @@ class NetworkMap
             $relations = [];
         }
 
-        $links_js = $this->edgeToJS($relations);
-        $output .= 'networkmap.links = ('.json_encode($links_js).");\n";
+        $this->relationsJS = $this->edgeToJS($relations);
+        $output .= 'networkmap.links = ('.json_encode($this->relationsJS).");\n";
+
+        // Clean.
+        unset($this->relations);
 
         $output .= '
         ////////////////////////////////////////////////////////////////////
@@ -2787,6 +2845,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node Details'),
             __('Node Details'),
+            '',
             false,
             true
         );
@@ -2839,6 +2898,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node Details'),
             __('Node Details'),
+            '',
             false,
             true
         );
@@ -2864,6 +2924,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Interface Information (SNMP)'),
             __('Interface Information (SNMP)'),
+            '',
             true,
             true
         );
@@ -2938,6 +2999,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node options'),
             __('Node options'),
+            '',
             true,
             true
         );
@@ -2998,6 +3060,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Relations'),
             __('Relations'),
+            '',
             true,
             true
         );
@@ -3107,6 +3170,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add agent node'),
             __('Add agent node'),
+            '',
             false,
             true
         );
@@ -3158,6 +3222,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add agent node (filter by group)'),
             __('Add agent node'),
+            '',
             true,
             true
         );
@@ -3198,6 +3263,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add fictional point'),
             __('Add agent node'),
+            '',
             true,
             true
         );
@@ -3221,16 +3287,21 @@ class NetworkMap
             && $this->useTooltipster
         ) {
             $output .= '<script type="text/javascript">
-                var nodes = networkmap.nodes;
-                var arrows = networkmap.links;
-                var width = networkmap_dimensions[0];
-                var height = networkmap_dimensions[1];
-                var font_size = '.$this->mapOptions['font_size'].';
-                var custom_params = '.json_encode($this->tooltipParams).';
-                var controller = null;
-                var homedir = "'.ui_get_full_url(false).'"
                 $(function() {
-                    controller = new SimpleMapController("#simple_map");
+                    controller = new SimpleMapController({
+                        map_width: '.$this->map['width'].',
+                        map_height: '.$this->map['height'].',
+                        id: "'.$this->idMap.'",
+                        target: "#simple_map",
+                        nodes: '.json_encode($this->nodesJS).',
+                        arrows: '.json_encode($this->relationsJS).',
+                        center_x: '.$this->map['center_x'].',
+                        center_y: '.$this->map['center_y'].',
+                        z_dash: '.$this->map['filter']['z_dash'].',
+                        font_size: '.$this->mapOptions['font_size'].',
+                        homedir: "'.ui_get_full_url(false).'",
+                        custom_params: '.json_encode($this->tooltipParams).'
+                    });
                     controller.init_map();
                 });
             </script>';
@@ -3315,9 +3386,17 @@ class NetworkMap
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
             $output .= 'style="border: 1px #ddd solid;';
-            $output .= ' width:'.$this->mapOptions['width'];
-            $output .= ' ;height:'.$this->mapOptions['height'].'">';
-            $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
+
+            if ($this->fullSize) {
+                $output .= ' width:100%';
+                $output .= ' ;height: 100%">';
+                $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="100%" height="100%">';
+            } else {
+                $output .= ' width:'.$this->mapOptions['width'].'px';
+                $output .= ' ;height:'.$this->mapOptions['height'].'px">';
+                $output .= '<svg id="svg'.$this->idMap.'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="'.$this->mapOptions['width'].'" height="'.$this->mapOptions['height'].'px">';
+            }
+
             $output .= '</svg>';
             $output .= '</div>';
         } else {
@@ -3361,19 +3440,18 @@ class NetworkMap
             $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
             $output .= ' style="position: absolute; left: 0px; top: 0px;">';
             $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
-            $output .= '<img id="image_arrow_minimap_'.$networkmap['id'].'"';
-            $output .= ' src="images/minimap_open_arrow.png" />';
+            $output .= html_print_image('/images/minimap_open_arrow.png', true, ['id' => 'arrow_minimap_'.$networkmap['id']]);
             $output .= '</a><div></div></div>';
 
             $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
             $output .= ' style="position: absolute; right: 10px; top: 10px;">';
             $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
-            $output .= '<img id="image_hide_show_labels" src="images/icono_borrar.png" />';
+            $output .= html_print_image('/images/icono_borrar.png', true, ['id' => 'image_hide_show_labels']);
             $output .= '</a></div>';
 
             $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
             $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
-            $output .= '<img id="image_hide_show_labels" src="images/spinner.gif" />';
+            $output .= html_print_image('/images/spinner.png', true, ['id' => 'image_hide_show_labels']);
             $output .= '</div>';
 
             // Close networkconsole_id div.

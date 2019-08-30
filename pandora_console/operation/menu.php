@@ -66,7 +66,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
     enterprise_hook('inventory_menu');
 
     if ($config['activate_netflow'] || $config['activate_nta']) {
-        $sub['network'] = [
+        $sub['network_traffic'] = [
             'text'    => __('Network'),
             'id'      => 'Network',
             'type'    => 'direct',
@@ -117,7 +117,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
             );
         }
 
-        $sub['network']['sub2'] = $netflow_sub;
+        $sub['network_traffic']['sub2'] = $netflow_sub;
     }
 
     if ($config['log_collector'] == 1) {
@@ -373,10 +373,36 @@ if (check_acl($config['id_user'], 0, 'ER')
         $pss = get_user_info($config['id_user']);
         $hashup = md5($config['id_user'].$pss['password']);
 
+        $user_filter = db_get_row_sql(
+            sprintf(
+                'SELECT f.id_filter, f.id_name
+                FROM tevent_filter f
+                INNER JOIN tusuario u
+                    ON u.default_event_filter=f.id_filter
+                WHERE u.id_user = "%s" ',
+                $config['id_user']
+            )
+        );
+        if ($user_filter !== false) {
+            $filter = events_get_event_filter($user_filter['id_filter']);
+        } else {
+            // Default.
+            $filter = [
+                'status'        => EVENT_NO_VALIDATED,
+                'event_view_hr' => $config['event_view_hr'],
+                'group_rep'     => 1,
+                'tag_with'      => [],
+                'tag_without'   => [],
+                'history'       => false,
+            ];
+        }
+
+        $fb64 = base64_encode(json_encode($filter));
+
         // RSS.
-        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['text'] = __('RSS');
-        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['id'] = 'RSS';
-        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['type'] = 'direct';
+        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
+        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
+        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
 
         // Marquee.
         $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
@@ -490,12 +516,6 @@ if (is_array($config['extensions'])) {
     if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AD') || check_acl($config['id_user'], 0, 'AW')) {
         $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
         $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled downtime';
-    }
-
-    if (check_acl($config['id_user'], 0, 'AW')) {
-        $sub['operation/servers/recon_view']['text'] = __('Recon view');
-        $sub['operation/servers/recon_view']['id'] = 'Recon view';
-        $sub['operation/servers/recon_view']['refr'] = 0;
     }
 
     foreach ($config['extensions'] as $extension) {

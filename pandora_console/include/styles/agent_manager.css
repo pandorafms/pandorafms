@@ -1,0 +1,183 @@
+/*
+ * ---------------------------------------------------------------------
+ * - Create/Update Agent - agent_manager.php
+ * ---------------------------------------------------------------------
+ */
+.agent_options {
+  width: 100%;
+  margin-right: 0px;
+  display: flex;
+  flex-flow: row wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.agent_options_update {
+  width: 85%;
+  margin-right: 20px;
+  min-width: 640px;
+}
+
+.agent_options_column_left,
+.agent_options_column_right {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.agent_options_column_left {
+  padding-right: 50px;
+}
+
+.agent_qr {
+  width: 15%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 20px 0px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+a#qr_code_agent_view {
+  margin-top: 5px;
+}
+
+.p-switch {
+  margin-right: 1em;
+}
+
+.sg_source,
+.sg_target {
+  width: 35%;
+}
+
+.sg_source select,
+.sg_target select {
+  width: 100%;
+}
+
+.first_row .agent_options_column_right select,
+.first_row .agent_options_column_right input,
+.first_row .agent_options_column_left select#grupo {
+  width: 95%;
+  box-sizing: border-box;
+}
+
+.first_row .agent_options_column_left .p-switch {
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+.agent_options_column_left input#text-direccion,
+.agent_options_column_left select#address_list,
+.agent_options_column_left input#text-agente,
+.agent_options_column_left input#text-alias {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.agent_options_agent_name > * {
+  margin-left: 5px;
+}
+
+.custom_fields_table {
+  border-spacing: 0px;
+}
+
+.custom_fields_table tr.datos {
+  background-color: #f7f7f7;
+  display: none;
+}
+
+.custom_fields_table tr.datos2 {
+  cursor: pointer;
+}
+
+.custom_fields_table tr td {
+  border: 1px solid #e0e0e0;
+}
+
+.custom_fields_table tr.datos2 td div.field_title {
+  padding: 10px;
+}
+
+.custom_fields_table tr.datos2 td {
+  border-radius: 4px;
+  padding: 0px;
+}
+
+.custom_fields_table tr.datos td {
+  padding: 15px 10px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.custom_fields_table .custom_field_row_opened td {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.agent_av_opt_right,
+.agent_av_opt_left,
+.secondary_groups_list {
+  flex: 1;
+}
+.secondary_groups_list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-width: 640px;
+}
+.secondary_group_arrows {
+  display: flex;
+  flex-direction: column;
+  padding: 0 2em;
+}
+
+.no-border.flex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: start;
+}
+
+.no-border.flex > div {
+  margin: 1em;
+}
+
+.agent_av_opt_left input,
+.agent_av_opt_left select {
+  width: 100%;
+}
+
+.agent_options_adv .agent_options_column_right .label_select select,
+.agent_options_adv .agent_options_column_right .label_select input[type="text"],
+.agent_options_adv #text-custom_id,
+.agent_options_adv #cps {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.agent_options_adv .label_select_simple.label_simple_one_item .p-switch {
+  margin-right: 5px;
+}
+
+.agent_description {
+  min-height: 4.8em;
+}
+.agent_custom_id {
+  padding-bottom: 0.7em;
+  padding-top: 0.5em;
+  display: inline-block;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+#safe_mode_module {
+  margin-top: 0.6em;
+}

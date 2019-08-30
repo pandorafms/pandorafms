@@ -82,7 +82,13 @@ $filter['limit'] = (int) $config['block_size'];
 // Search action: This will filter the display category view
 $result = false;
 
-$result = categories_get_all_categories();
+$result = db_get_all_rows_filter(
+    'tcategory',
+    [
+        'limit'  => $filter['limit'],
+        'offset' => $filter['offset'],
+    ]
+);
 
 // Display categories previously filtered or not
 $rowPair = true;
@@ -94,7 +100,7 @@ if (!empty($result)) {
 
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 
     $table->data = [];
     $table->head = [];
@@ -123,7 +129,8 @@ if (!empty($result)) {
             $data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
         } else {
             $data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
-            $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>&nbsp;&nbsp;';
+            $table->cellclass[][1] = 'action_buttons';
+            $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>';
             $data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
         }
 
@@ -131,6 +138,7 @@ if (!empty($result)) {
     }
 
     html_print_table($table);
+    ui_pagination($total_categories, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     // No categories available or selected
     ui_print_info_message(['no_close' => true, 'message' => __('No categories found') ]);

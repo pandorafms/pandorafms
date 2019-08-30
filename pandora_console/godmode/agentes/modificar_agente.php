@@ -118,7 +118,7 @@ if ($enable_agent) {
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 0];
         enterprise_hook('agent_update_from_cache', [$enable_agent, $values, $server_name]);
-
+        config_agents_update_config_token($enable_agent, 'standby', 0);
         db_pandora_audit('Agent management', 'Enable  '.$alias);
     } else {
         db_pandora_audit('Agent management', 'Fail to enable '.$alias);
@@ -140,6 +140,7 @@ if ($disable_agent) {
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 1];
         enterprise_hook('agent_update_from_cache', [$disable_agent, $values, $server_name]);
+        config_agents_update_config_token($disable_agent, 'standby', 1);
 
         db_pandora_audit('Agent management', 'Disable  '.$alias);
     } else {
@@ -162,7 +163,7 @@ echo '<td>';
 
 echo __('Group').'&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
+if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
     $return_all_group = false;
 } else {
     $return_all_group = true;
@@ -224,13 +225,13 @@ switch ($config['dbtype']) {
     break;
 }
 
-$selected = 'border: 1px solid black;';
-$selectNameUp = '';
-$selectNameDown = '';
-$selectOsUp = '';
-$selectOsDown = '';
-$selectGroupUp = '';
-$selectGroupDown = '';
+$selected = true;
+$selectNameUp = false;
+$selectNameDown = false;
+$selectOsUp = false;
+$selectOsDown = false;
+$selectGroupUp = false;
+$selectGroupDown = false;
 switch ($sortField) {
     case 'remote':
         switch ($sort) {
@@ -441,18 +442,27 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
 
 if ($agents !== false) {
-    echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='100%' class='databox data'>";
-    echo '<th>'.__('Agent name').' '.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp]).'</a>'.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown]).'</a>';
-    echo '</th>';
-    echo "<th title='".__('Remote agent configuration')."'>".__('R').' '.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=up&disabled=$disabled">'.html_print_image('images/sort_up.png', true, ['style' => $selectRemoteUp]).'</a>'.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=down&disabled=$disabled">'.html_print_image('images/sort_down.png', true, ['style' => $selectRemoteDown]).'</a>';
-    echo '</th>';
-    echo '<th>'.__('OS').' '.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">'.html_print_image('images/sort_up.png', true, ['style' => $selectOsUp]).'</a>'.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">'.html_print_image('images/sort_down.png', true, ['style' => $selectOsDown]).'</a>';
-    echo '</th>';
+    // Urls to sort the table.
+    $url_up_agente = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled';
+    $url_down_agente = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled';
+    $url_up_remote = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=up&disabled=$disabled';
+    $url_down_remote = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=remote&sort=down&disabled=$disabled';
+    $url_up_os = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled';
+    $url_down_os = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled';
+    $url_up_group = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=group&sort=up&disabled=$disabled';
+    $url_down_group = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled';
+
+
+    echo "<table cellpadding='0' id='agent_list' cellspacing='0' width='100%' class='info_table'>";
+    echo '<thead><tr>';
+    echo '<th>'.__('Agent name').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown).'</th>';
+    echo "<th title='".__('Remote agent configuration')."'>".__('R').ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown).'</th>';
+    echo '<th>'.__('OS').ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown).'</th>';
     echo '<th>'.__('Type').'</th>';
-    echo '<th>'.__('Group').' '.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=group&sort=up&disabled=$disabled">'.html_print_image('images/sort_up.png', true, ['style' => $selectGroupUp]).'</a>'.'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled">'.html_print_image('images/sort_down.png', true, ['style' => $selectGroupDown]).'</a>';
-        echo '</th>';
+    echo '<th>'.__('Group').ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown).'</th>';
     echo '<th>'.__('Description').'</th>';
     echo "<th style='text-align:left'>".__('Actions').'</th>';
+    echo '</tr></thead>';
     $color = 1;
 
     $rowPair = true;
@@ -628,7 +638,7 @@ if ($agents !== false) {
             $offsetArg = $offset;
         }
 
-        echo "<td class='$tdcolor' align='left' style='width:7%' valign='middle'>";
+        echo "<td class='$tdcolor action_buttons' align='left' style='width:7%' valign='middle'>";
 
         if ($agent['disabled']) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
@@ -654,7 +664,7 @@ if ($agents !== false) {
         }
 
         if ($check_aw) {
-            echo "&nbsp;&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 
             if ($agent['id_os'] != 100) {
@@ -670,7 +680,7 @@ if ($agents !== false) {
     }
 
     echo '</table>';
-    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
+    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
     echo "<table width='100%'><tr><td align='right'>";
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);

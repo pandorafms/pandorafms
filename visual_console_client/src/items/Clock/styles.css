@@ -1,0 +1,52 @@
+@font-face {
+  font-family: Alarm Clock;
+  src: url(./alarm-clock.ttf);
+}
+
+/* Digital clock */
+
+.visual-console-item .digital-clock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  justify-items: center;
+  align-content: center;
+  align-items: center;
+}
+
+.visual-console-item .digital-clock > span {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 50px;
+
+  /* To improve legibility */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
+
+.visual-console-item .digital-clock > span.date {
+  font-size: 25px;
+}
+
+.visual-console-item .digital-clock > span.timezone {
+  font-size: 25px;
+}
+
+/* Analog clock */
+
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
+.visual-console-item .analogic-clock .hour-hand {
+  animation: rotate-hour 43200s infinite linear;
+}
+
+.visual-console-item .analogic-clock .minute-hand {
+  animation: rotate-minute 3600s infinite linear;
+}
+
+.visual-console-item .analogic-clock .second-hand {
+  animation: rotate-second 60s infinite linear;
+}

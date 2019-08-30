@@ -31,6 +31,10 @@ $delete = (int) get_parameter('delete_tag', 0);
 $tag_name = (string) get_parameter('tag_name', '');
 $tab = (string) get_parameter('tab', 'list');
 
+if ($delete != 0 && is_metaconsole()) {
+    open_meta_frame();
+}
+
 // Metaconsole nodes
 $servers = false;
 if (is_metaconsole()) {
@@ -117,7 +121,14 @@ if (is_metaconsole()) {
     // ui_meta_print_header(__('Tags'), "", $buttons);
 } else {
     // Header
-    ui_print_page_header(__('Tags configuration'), 'images/tag.png', false, 'tags_config', true, $buttons);
+    ui_print_page_header(
+        __('Tags configuration'),
+        'images/tag.png',
+        false,
+        'tags_config',
+        true,
+        $buttons
+    );
 }
 
 // Two actions can performed in this page: search and delete tags
@@ -191,7 +202,7 @@ if (!empty($result)) {
 
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 
     $table->data = [];
     $table->head = [];
@@ -278,12 +289,14 @@ if (!empty($result)) {
 
         $data[5] = $output;
 
-        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>&nbsp;&nbsp;';
+        $table->cellclass[][6] = 'action_buttons';
+        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>';
         $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
         array_push($table->data, $data);
     }
 
     html_print_table($table);
+    ui_pagination($total_tags, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     if (is_metaconsole()) {
         ui_toggle($filter_form, __('Show Options'));
@@ -307,6 +320,9 @@ echo '<table border=0 cellpadding=0 cellspacing=0 width=100%>';
     echo '</tr>';
 echo '</table>';
 
+if ($delete != 0 && is_metaconsole()) {
+    close_meta_frame();
+}
 
 // ~ enterprise_hook('close_meta_frame');
 ?>

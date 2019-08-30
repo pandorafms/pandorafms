@@ -82,11 +82,9 @@ if ($get_extended_info == 1) {
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
-    $table->style[0] = 'min-width:120px; text-align: left;';
-    $table->style[1] = 'text-align: left;';
     $table->cellspacing = 2;
     $table->cellpadding = 2;
-    $table->class = 'alternate rounded_cells';
+    $table->class = 'table_modal_alternate';
 
     $output = [];
     $output[] = '<b>'.__('Timestamp').'</b>';

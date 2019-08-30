@@ -389,9 +389,12 @@ if (isset($login_failed)) {
                     echo '<h1>'.__('ERROR').'</h1>';
                     echo '<p>'.$config['auth_error'].'</p>';
                 echo '</div>';
-                echo '<div class="text_message_alert">';
-                    echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
-                echo '</div>';
+    if ($config['enable_pass_policy']) {
+        echo '<div class="text_message_alert">';
+            echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
+        echo '</div>';
+    }
+
                 echo '<div class="button_message_alert">';
                     html_print_submit_button('Ok', 'hide-login-error', false);
                 echo '</div>';

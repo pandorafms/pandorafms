@@ -258,33 +258,49 @@ if ($create_user) {
     } else {
         $have_number = false;
         $have_simbols = false;
-
-        if ($config['pass_needs_numbers']) {
-            $nums = preg_match('/([[:alpha:]])*(\d)+(\w)*/', $password_confirm);
-            if ($nums == 0) {
-                ui_print_error_message(__('Password must contain numbers'));
-                $user_info = $values;
-                $password_new = '';
-                $password_confirm = '';
-                $new_user = true;
-            } else {
-                $have_number = true;
+        if ($config['enable_pass_policy']) {
+            if ($config['pass_needs_numbers']) {
+                $nums = preg_match('/([[:alpha:]])*(\d)+(\w)*/', $password_confirm);
+                if ($nums == 0) {
+                    ui_print_error_message(__('Password must contain numbers'));
+                    $user_info = $values;
+                    $password_new = '';
+                    $password_confirm = '';
+                    $new_user = true;
+                } else {
+                    $have_number = true;
+                }
             }
-        }
 
-        if ($config['pass_needs_symbols']) {
-            $symbols = preg_match('/(\w)*(\W)+(\w)*/', $password_confirm);
-            if ($symbols == 0) {
-                ui_print_error_message(__('Password must contain symbols'));
-                $user_info = $values;
-                $password_new = '';
-                $password_confirm = '';
-                $new_user = true;
-            } else {
-                $have_simbols = true;
+            if ($config['pass_needs_symbols']) {
+                $symbols = preg_match('/(\w)*(\W)+(\w)*/', $password_confirm);
+                if ($symbols == 0) {
+                    ui_print_error_message(__('Password must contain symbols'));
+                    $user_info = $values;
+                    $password_new = '';
+                    $password_confirm = '';
+                    $new_user = true;
+                } else {
+                    $have_simbols = true;
+                }
             }
-        }
 
+            if ($config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
+                if ($have_number && $have_simbols) {
+                    $result = create_user($id, $password_new, $values);
+                }
+            } else if ($config['pass_needs_symbols'] && !$config['pass_needs_numbers']) {
+                if ($have_simbols) {
+                    $result = create_user($id, $password_new, $values);
+                }
+            } else if (!$config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
+                if ($have_number) {
+                    $result = create_user($id, $password_new, $values);
+                }
+            }
+        } else {
+            $result = create_user($id, $password_new, $values);
+        }
 
         $info = '{"Id_user":"'.$values['id_user'].'","FullName":"'.$values['fullname'].'","Firstname":"'.$values['firstname'].'","Lastname":"'.$values['lastname'].'","Email":"'.$values['email'].'","Phone":"'.$values['phone'].'","Comments":"'.$values['comments'].'","Is_admin":"'.$values['is_admin'].'","Language":"'.$values['language'].'","Timezone":"'.$values['timezone'].'","Block size":"'.$values['block_size'].'"';
 
@@ -296,33 +312,7 @@ if ($create_user) {
 
         $can_create = false;
 
-        if ($config['pass_needs_symbols']) {
-            if ($have_simbols) {
-                $symbols = true;
-            }
-        }
 
-        if ($config['pass_needs_numbers']) {
-            if ($have_number) {
-                $nums = true;
-            }
-        }
-
-        if ($config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
-            if ($nums && $symbols) {
-                $result = create_user($id, $password_new, $values);
-            }
-        } else if ($config['pass_needs_symbols'] && !$config['pass_needs_numbers']) {
-            if ($symbols) {
-                $result = create_user($id, $password_new, $values);
-            }
-        } else if (!$config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
-            if ($nums) {
-                $result = create_user($id, $password_new, $values);
-            }
-        } else {
-                $result = create_user($id, $password_new, $values);
-        }
 
         if ($result) {
             $res = save_pass_history($id, $password_new);

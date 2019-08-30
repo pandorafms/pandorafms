@@ -667,7 +667,7 @@ $table_adv_status .= html_print_checkbox_switch(
     $disabled,
     true
 );
-$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled mode').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
 $table_adv_status .= '</div>';
 
 // Url address.

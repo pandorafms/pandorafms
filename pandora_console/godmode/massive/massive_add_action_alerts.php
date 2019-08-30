@@ -215,7 +215,6 @@ $table->data[3][1] .= __('Number of alerts match from').' ';
 $table->data[3][1] .= html_print_input_text('fires_min', 0, '', 4, 10, true);
 $table->data[3][1] .= ' '.__('to').' ';
 $table->data[3][1] .= html_print_input_text('fires_max', 0, '', 4, 10, true);
-$table->data[3][1] .= ui_print_help_icon('alert-matches', true);
 $table->data[3][1] .= '</span>';
 
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_action_alerts">';

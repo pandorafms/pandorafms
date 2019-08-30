@@ -64,7 +64,7 @@ div.new_task_cluster > div {
 
 .button_task {
   margin-top: 10px;
-  background-color: #3f3f3f !important;
+  background-color: #3f3f3f;
   padding: 10px 10px 10px 10px;
   font-weight: bold;
   color: #82b92e;
@@ -77,4 +77,8 @@ div.new_task_cluster > div {
 
 #fuerte {
   font-size: 12px;
+}
+
+.flex-row-baseline * {
+  margin-right: 1em;
 }

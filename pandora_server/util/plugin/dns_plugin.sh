@@ -68,27 +68,16 @@ then
         help
 fi
 
-TMPFILE=/tmp/dns_$DNS_CHECK.tmp
 
-dig  @$DNS_CHECK $DOMAIN_CHECK > $TMPFILE
-RETURN_IP=`cat $TMPFILE | grep "^$DOMAIN_CHECK" | awk '{print $5}'`
-RETURN_TIMEOUT=`cat $TMPFILE | grep "Query time" | grep -o "[0-9]*"`
+results=`dig @$DNS_CHECK +nocmd $DOMAIN_CHECK +multiline +noall +answer A`
+targets=`echo "$results"| awk '{print $5}'`
 
- rm $TMPFILE 2> /dev/null
+for x in $targets; do
+        if [ "$x" == "$IP_CHECK" ]; then
+                echo 1
+                exit 0
+        fi
+done
 
-if [ $TIMEOUT_CHECK == 1 ]
-then
-    echo $RETURN_TIMEOUT
-    exit 0
-fi
-
-if [ "$RETURN_IP" != "$IP_CHECK" ]
-then
-    echo 0
-    exit 1
-else
-    echo 1
-    exit 0
-fi
-
-
+echo 0
+exit 0

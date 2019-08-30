@@ -52,11 +52,13 @@ if ($update_module) {
 }
 
 
-echo "<table cellpadding='4' cellspacing='4' width='100%' class='databox data'>";
+echo "<table cellpadding='0' cellspacing='0' width='100%' class='info_table'>";
+echo '<thead>';
 echo '<th>'.__('Icon').'</th>';
 echo '<th>'.__('ID').'</th>';
 echo '<th>'.__('Name').'</th>';
 echo '<th>'.__('Description').'</th>';
+echo '</thead';
 
 $rows = db_get_all_rows_sql('SELECT * FROM ttipo_modulo ORDER BY nombre');
 if ($rows === false) {

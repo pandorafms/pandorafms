@@ -669,7 +669,7 @@ function update_link(row_index, id_link) {
           temp_link["arrow_start"] = "module";
           temp_link["id_module_start"] = interface_source;
           temp_link["status_start"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["link_color"] = data["status"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = interface_source;
@@ -679,7 +679,7 @@ function update_link(row_index, id_link) {
           temp_link["arrow_end"] = "module";
           temp_link["id_module_end"] = interface_target;
           temp_link["status_end"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["link_color"] = data["status"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = interface_target;
@@ -1284,7 +1284,7 @@ function hide_labels_function() {
   $("#hide_labels_" + networkmap_id + " > a").attr("title", "Show Labels");
   $("#hide_labels_" + networkmap_id + " > a > img").attr(
     "src",
-    "images/icono_pintar.png"
+    window.location.origin + "/pandora_console/images/icono_pintar.png"
   );
 
   d3.selectAll(".node_text").style("display", "none");
@@ -1297,7 +1297,7 @@ function show_labels_function() {
   $("#hide_labels_" + networkmap_id + " > a").attr("title", "Hide Labels");
   $("#hide_labels_" + networkmap_id + " > a > img").attr(
     "src",
-    "images/icono_borrar.png"
+    window.location.origin + "/pandora_console/images//icono_borrar.png"
   );
 
   d3.selectAll(".node_text").style("display", "");
@@ -2329,7 +2329,7 @@ function add_interface_link_js() {
           temp_link["id_module_start"] = source_value;
           temp_link["status_start"] = data["status_start"];
           temp_link["link_color"] =
-            data["status_start"] == "1" ? "#FC4444" : "#999";
+            data["status_start"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = source_value;
@@ -2340,7 +2340,7 @@ function add_interface_link_js() {
           temp_link["id_module_end"] = target_value;
           temp_link["status_end"] = data["status_end"];
           temp_link["link_color"] =
-            data["status_end"] == "1" ? "#FC4444" : "#999";
+            data["status_end"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = target_value;

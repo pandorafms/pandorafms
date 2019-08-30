@@ -90,7 +90,14 @@ if ($meta) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(__('User detail editor'), 'images/gm_users.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('User detail editor'),
+        'images/gm_users.png',
+        false,
+        'profile_tab',
+        true,
+        $buttons
+    );
     $sec = 'gusuarios';
 }
 
@@ -130,6 +137,8 @@ if ($new_user && $config['admin_can_add_user']) {
     $user_info['not_login'] = false;
     $user_info['strict_acl'] = false;
     $user_info['session_time'] = 0;
+    $user_info['middlename'] = 0;
+
     if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
         $user_info['id_skin'] = '';
     }
@@ -143,6 +152,12 @@ if ($new_user && $config['admin_can_add_user']) {
         $user_info['metaconsole_agents_manager'] = 0;
         $user_info['metaconsole_assigned_server'] = '';
         $user_info['metaconsole_access_node'] = 0;
+    }
+
+    if ($config['ehorus_user_level_conf']) {
+        $user_info['ehorus_user_level_user'] = '';
+        $user_info['ehorus_user_level_pass'] = '';
+        $user_info['ehorus_user_level_enabled'] = true;
     }
 }
 
@@ -205,8 +220,22 @@ if ($create_user) {
     }
 
     $values['not_login'] = (bool) get_parameter('not_login', false);
+    $values['middlename'] = get_parameter('middlename', 0);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
+
+    // eHorus user level conf
+    if ($config['ehorus_user_level_conf']) {
+        $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
+        if ($values['ehorus_user_level_enabled'] === true) {
+            $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
+            $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+        } else {
+            $values['ehorus_user_level_user'] = null;
+            $values['ehorus_user_level_pass'] = null;
+        }
+    }
+
 
     if ($id == '') {
         ui_print_error_message(__('User ID cannot be empty'));
@@ -291,6 +320,14 @@ if ($update_user) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+
+    // eHorus user level conf.
+    $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
+    $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
+    $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+
+    $values['middlename'] = get_parameter('middlename', 0);
+
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -538,6 +575,10 @@ if ($delete_profile) {
     );
 }
 
+if ($values) {
+    $user_info = $values;
+}
+
 $table = new stdClass();
 $table->id = 'user_configuration_table';
 $table->width = '100%';
@@ -753,6 +794,7 @@ if (enterprise_installed() && !is_metaconsole()) {
     $values['Dashboard'] = __('Dashboard');
 }
 
+
 $table->data[12][1] = html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false);
 
 if (enterprise_installed()) {
@@ -834,6 +876,30 @@ foreach ($event_filter_data as $filter) {
 
 $table->data[16][0] = __('Default event filter');
 $table->data[16][1] = html_print_select($event_filter, 'default_event_filter', $user_info['default_event_filter'], '', '', __('None'), true, false, false);
+
+$table->data[17][0] = __('Disabled newsletter');
+if ($user_info['middlename'] >= 0) {
+    $middlename = false;
+} else {
+    $middlename = true;
+}
+
+$table->data[17][1] = html_print_checkbox(
+    'middlename',
+    -1,
+    $middlename,
+    true
+);
+
+if ($config['ehorus_user_level_conf']) {
+    $table->data[18][0] = __('eHorus user acces enabled');
+    $table->data[18][1] = html_print_checkbox('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
+    $table->data[19][0] = __('eHorus user');
+    $table->data[20][0] = __('eHorus password');
+    $table->data[19][1] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 15, 45, true);
+    $table->data[20][1] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 15, 45, true);
+}
+
 
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
@@ -926,6 +992,11 @@ $(document).ready (function () {
     $('#checkbox-metaconsole_agents_manager').trigger('change');
     
     show_data_section();
+    $('#checkbox-ehorus_user_level_enabled').change(function () {
+        switch_ehorus_conf();
+    });
+    $('#checkbox-ehorus_user_level_enabled').trigger('change');
+
 });
 
 function show_data_section () {
@@ -978,6 +1049,22 @@ function show_data_section () {
             $("#visual_console").css("display", "none");
             break;
     }
+}
+
+function switch_ehorus_conf()
+{
+    if(!$('#checkbox-ehorus_user_level_enabled').prop('checked')) 
+    {
+        $("#user_configuration_table-18").hide();
+        $("#user_configuration_table-19").hide();
+
+    }else
+    {
+        $("#user_configuration_table-18").show();
+        $("#user_configuration_table-19").show()   
+    }
+
+
 }
 
 /* ]]> */

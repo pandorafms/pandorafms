@@ -171,7 +171,7 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/camera.png',
                 true,
-                ['title' => __('Static Graph')]
+                ['title' => __('Static Image')]
             );
         break;
 

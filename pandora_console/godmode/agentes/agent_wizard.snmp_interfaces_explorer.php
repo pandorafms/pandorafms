@@ -1,16 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   SNMP interfaces.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once 'include/functions_modules.php';
@@ -23,7 +39,6 @@ $idAgent = (int) get_parameter('id_agente', 0);
 $ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 
 check_login();
-
 $ip_target = (string) get_parameter('ip_target', $ipAgent);
 $use_agent = get_parameter('use_agent');
 $snmp_community = (string) get_parameter('snmp_community', 'public');
@@ -37,10 +52,10 @@ $snmp3_privacy_method = get_parameter('snmp3_privacy_method');
 $snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_privacy_pass'));
 $tcp_port = (string) get_parameter('tcp_port');
 
-// See if id_agente is set (either POST or GET, otherwise -1
+// See if id_agente is set (either POST or GET, otherwise -1.
 $id_agent = $idAgent;
 
-// Get passed variables
+// Get passed variables.
 $snmpwalk = (int) get_parameter('snmpwalk', 0);
 $create_modules = (int) get_parameter('create_modules', 0);
 
@@ -48,7 +63,7 @@ $interfaces = [];
 $interfaces_ip = [];
 
 if ($snmpwalk) {
-    // OID Used is for SNMP MIB-2 Interfaces
+    // OID Used is for SNMP MIB-2 Interfaces.
     $snmpis = get_snmpwalk(
         $ip_target,
         $snmp_version,
@@ -64,7 +79,7 @@ if ($snmpwalk) {
         $tcp_port,
         $server_to_exec
     );
-    // ifXTable is also used
+    // IfXTable is also used.
     $ifxitems = get_snmpwalk(
         $ip_target,
         $snmp_version,
@@ -81,7 +96,7 @@ if ($snmpwalk) {
         $server_to_exec
     );
 
-    // Get the interfaces IPV4/IPV6
+    // Get the interfaces IPV4/IPV6.
     $snmp_int_ip = get_snmpwalk(
         $ip_target,
         $snmp_version,
@@ -98,12 +113,12 @@ if ($snmpwalk) {
         $server_to_exec
     );
 
-    // Build a [<interface id>] => [<interface ip>] array
+    // Build a [<interface id>] => [<interface ip>] array.
     if (!empty($snmp_int_ip)) {
         foreach ($snmp_int_ip as $key => $value) {
-            // The key is something like IP-MIB::ipAddressIfIndex.ipv4."<ip>"
-            // or IP-MIB::ipAddressIfIndex.ipv6."<ip>"
-            // The value is something like INTEGER: <interface id>
+            // The key is something like IP-MIB::ipAddressIfIndex.ipv4."<ip>".
+            // or IP-MIB::ipAddressIfIndex.ipv6."<ip>".
+            // The value is something like INTEGER: <interface id>.
             $data = explode(': ', $value);
             $interface_id = !empty($data) && isset($data[1]) ? $data[1] : false;
 
@@ -111,7 +126,7 @@ if ($snmpwalk) {
                 $interface_ip = $matches[1];
             }
 
-            // Get the first ip
+            // Get the first ip.
             if ($interface_id !== false && !empty($interface_ip) && !isset($interfaces_ip[$interface_id])) {
                 $interfaces_ip[$interface_id] = $interface_ip;
             }
@@ -120,17 +135,17 @@ if ($snmpwalk) {
         unset($snmp_int_ip);
     }
 
-    $snmpis = array_merge(($snmpis === false ? [] : $snmpis), ($ifxitems === false ? [] : $ifxitems));
+    $snmpis = array_merge((($snmpis === false) ? [] : $snmpis), (($ifxitems === false) ? [] : $ifxitems));
 
     $interfaces = [];
 
-    // We get here only the interface part of the MIB, not full mib
+    // We get here only the interface part of the MIB, not full mib.
     foreach ($snmpis as $key => $snmp) {
         $data = explode(': ', $snmp, 2);
         $keydata = explode('::', $key);
         $keydata2 = explode('.', $keydata[1]);
 
-        // Avoid results without index and interfaces without name
+        // Avoid results without index and interfaces without name.
         if (!isset($keydata2[1]) || !isset($data[1])) {
             continue;
         }
@@ -240,24 +255,22 @@ if ($create_modules) {
             $oid_array[(count($oid_array) - 1)] = $id;
             $oid = implode('.', $oid_array);
 
-            // Get the name
+            // Get the name.
             $name_array = explode('::', $oid_array[0]);
             $name = $ifname.'_'.$name_array[1];
 
-            // Clean the name
+            // Clean the name.
             $name = str_replace('"', '', $name);
 
-            // Proc moduletypes
+            // Proc moduletypes.
             if (preg_match('/Status/', $name_array[1])) {
                 $module_type = 18;
             } else if (preg_match('/Present/', $name_array[1])) {
                 $module_type = 18;
             } else if (preg_match('/PromiscuousMode/', $name_array[1])) {
                 $module_type = 18;
-            }
-
-            // String moduletypes
-            else if (preg_match('/Alias/', $name_array[1])) {
+            } else if (preg_match('/Alias/', $name_array[1])) {
+                // String moduletypes.
                 $module_type = 17;
             } else if (preg_match('/Address/', $name_array[1])) {
                 $module_type = 17;
@@ -267,15 +280,11 @@ if ($create_modules) {
                 $module_type = 17;
             } else if (preg_match('/Descr/', $name_array[1])) {
                 $module_type = 17;
-            }
-
-            // Specific counters (ends in s)
-            else if (preg_match('/s$/', $name_array[1])) {
+            } else if (preg_match('/s$/', $name_array[1])) {
+                // Specific counters (ends in s).
                 $module_type = 16;
-            }
-
-            // Otherwise, numeric
-            else {
+            } else {
+                // Otherwise, numeric.
                 $module_type = 15;
             }
 
@@ -322,7 +331,7 @@ if ($create_modules) {
                     } else if (preg_match('/ifAdminStatus/', $name_array[1])) {
                         $module_type = 2;
                     } else if (preg_match('/ifOperStatus/', $name_array[1])) {
-                        $module_type = 18;
+                        $module_type = 2;
                     } else {
                         $module_type = 4;
                     }
@@ -331,7 +340,7 @@ if ($create_modules) {
 
                     $output_oid = '';
 
-                    exec('ssh pandora_exec_proxy@'.$row['ip_address'].' snmptranslate -On '.$oid, $output_oid, $rc);
+                    exec('snmptranslate -On '.$oid, $output_oid, $rc);
 
                     $conf_oid = $output_oid[0];
                     $oid = $conf_oid;
@@ -398,7 +407,9 @@ if ($create_modules) {
     }
 
     if ($done > 0) {
-        ui_print_success_message(__('Successfully modules created')." ($done)");
+        ui_print_success_message(
+            __('Successfully modules created').' ('.$done.')'
+        );
     }
 
     if (!empty($errors)) {
@@ -408,17 +419,17 @@ if ($create_modules) {
         foreach ($errors as $code => $number) {
             switch ($code) {
                 case ERR_EXIST:
-                    $msg .= '<br>'.__('Another module already exists with the same name')." ($number)";
+                    $msg .= '<br>'.__('Another module already exists with the same name').' ('.$number.')';
                 break;
 
                 case ERR_INCOMPLETE:
-                    $msg .= '<br>'.__('Some required fields are missed').': ('.__('name').') '." ($number)";
+                    $msg .= '<br>'.__('Some required fields are missed').': ('.__('name').') ('.$number.')';
                 break;
 
                 case ERR_DB:
                 case ERR_GENERIC:
                 default:
-                    $msg .= '<br>'.__('Processing error')." ($number)";
+                    $msg .= '<br>'.__('Processing error').' ('.$number.')';
                 break;
             }
         }
@@ -427,10 +438,10 @@ if ($create_modules) {
     }
 }
 
-// Create the interface list for the interface
+// Create the interface list for the interface.
 $interfaces_list = [];
 foreach ($interfaces as $interface) {
-    // Get the interface name, removing " " characters and avoid "blank" interfaces
+    // Get the interface name, removing " " characters and avoid "blank" interfaces.
     if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != '') {
         $ifname = $interface['ifDescr']['value'];
     } else if (isset($interface['ifName']) && $interface['ifName']['value'] != '') {
@@ -443,7 +454,7 @@ foreach ($interfaces as $interface) {
 }
 
 echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-echo "<form method='post' id='walk_form' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente=$id_agent'>";
+echo "<form method='post' id='walk_form' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente=".$id_agent."'>";
 
 $table->width = '100%';
 $table->cellpadding = 0;
@@ -465,10 +476,15 @@ if (enterprise_installed()) {
     enterprise_include_once('include/functions_satellite.php');
 
     $rows = get_proxy_servers();
+
+    // Check if satellite server has remote configuration enabled.
+    $satellite_remote = config_agents_has_remote_configuration($id_agent);
+
     foreach ($rows as $row) {
         if ($row['server_type'] != 13) {
             $s_type = ' (Standard)';
         } else {
+            $id_satellite = $row['id_server'];
             $s_type = ' (Satellite)';
         }
 
@@ -477,7 +493,16 @@ if (enterprise_installed()) {
 }
 
 $table->data[1][2] = '<b>'.__('Server to execute command').'</b>';
-$table->data[1][3] = html_print_select($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
+$table->data[1][2] .= '<span id=satellite_remote_tip>'.ui_print_help_tip(__('In order to use remote executions you need to enable remote execution in satellite server'), true, 'images/tip_help.png', false, 'display:').'</span>';
+$table->data[1][4] = html_print_select(
+    $servers_to_exec,
+    'server_to_exec',
+    $server_to_exec,
+    'satellite_remote_warn('.$id_satellite.','.$satellite_remote.')',
+    '',
+    '',
+    true
+);
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
@@ -497,7 +522,7 @@ html_print_table($table);
 
 unset($table);
 
-// SNMP3 OPTIONS
+// SNMP3 OPTIONS.
 $table->width = '100%';
 
 $table->data[2][1] = '<b>'.__('Auth user').'</b>';
@@ -552,7 +577,7 @@ echo '</form>';
 
 if (!empty($interfaces_list)) {
     echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-    echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente=$id_agent'>";
+    echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente=".$id_agent."'>";
     echo '<span id="form_interfaces">';
 
     $id_snmp_serialize = serialize_in_temp($interfaces, $config['id_user'].'_snmp');
@@ -577,13 +602,30 @@ if (!empty($interfaces_list)) {
 
     $table->width = '100%';
 
-    // Agent selector
+    // Agent selector.
     $table->data[0][0] = '<b>'.__('Interfaces').'</b>';
     $table->data[0][1] = '';
     $table->data[0][2] = '<b>'.__('Modules').'</b>';
 
     $table->data[1][0] = html_print_select($interfaces_list, 'id_snmp[]', 0, false, '', '', true, true, true, '', false, 'width:500px; overflow: auto;');
-    $table->data[1][1] = html_print_image('images/darrowright.png', true);
+
+    $table->data[1][1] = __('When selecting interfaces');
+    $table->data[1][1] .= '<br>';
+    $table->data[1][1] .= html_print_select(
+        [
+            1 => __('Show common modules'),
+            0 => __('Show all modules'),
+        ],
+        'modules_selection_mode',
+        1,
+        false,
+        '',
+        '',
+        true,
+        false,
+        false
+    );
+
     $table->data[1][2] = html_print_select([], 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;');
     $table->data[1][2] .= html_print_input_hidden('agent', $id_agent, true);
 
@@ -608,11 +650,13 @@ ui_require_jquery_file('bgiframe');
 
 $(document).ready (function () {
     var inputActive = true;
-    
+
+    $('#server_to_exec option').trigger('change');
+
     $(document).data('text_for_module', $("#none_text").html());
-    
+
     $("#id_snmp").change(snmp_changed_by_multiple_snmp);
-    
+
     $("#snmp_version").change(function () {
         if (this.value == "3") {
             $("#snmp3_options").css("display", "");
@@ -621,28 +665,36 @@ $(document).ready (function () {
             $("#snmp3_options").css("display", "none");
         }
     });
-    
+
     $("#walk_form").submit(function() {
         $("#submit-snmp_walk").disable ();
         $("#oid_loading").show ();
         $("#no_snmp").hide ();
         $("#form_interfaces").hide ();
     });
+
+    // When select interfaces changes
+    $("#modules_selection_mode").change (function() {
+        $("#id_snmp").trigger('change');
+    });
+
 });
 
 function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
     var idSNMP = Array();
-    
+    var get_common_modules = $("#modules_selection_mode option:selected").val();
+
     jQuery.each ($("#id_snmp option:selected"), function (i, val) {
         idSNMP.push($(val).val());
     });
     $('#module').attr ('disabled', 1);
     $('#module').empty ();
     $('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
-    
-    jQuery.post ('ajax.php', 
+
+    jQuery.post ('ajax.php',
         {"page" : "godmode/agentes/agent_manager",
             "get_modules_json_for_multiple_snmp": 1,
+            "get_common_modules" : get_common_modules,
             "id_snmp[]": idSNMP,
             "id_snmp_serialize": $("#hidden-id_snmp_serialize").val()
         },
@@ -655,7 +707,7 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
                 $('#module').fadeIn ('normal');
                 c++;
                 });
-            
+
             if (c == 0) {
                 if (typeof($(document).data('text_for_module')) != 'undefined') {
                     $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
@@ -666,11 +718,11 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
                     }
                     else {
                         var anyText = $("#any_text").html(); //Trick for catch the translate text.
-                        
+
                         if (anyText == null) {
                             anyText = 'Any';
                         }
-                        
+
                         $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
                     }
                 }
@@ -682,6 +734,20 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
         "json");
 }
 
+
+function satellite_remote_warn(id_satellite, remote)
+{
+    if(!remote)
+    {
+        $('#server_to_exec option[value='+id_satellite+']').prop('disabled', true);
+        $('#satellite_remote_tip').removeAttr("style").show();
+    }
+    else
+    {
+        $('#satellite_remote_tip').removeAttr("style").hide();
+    }
+
+}
+
 /* ]]> */
 </script>
-

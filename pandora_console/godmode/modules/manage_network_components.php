@@ -36,6 +36,9 @@ require_once $config['homedir'].'/include/functions_component_groups.php';
 if (defined('METACONSOLE')) {
     components_meta_print_header();
     $sec = 'advanced';
+
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
 } else {
     /*
         Hello there! :)
@@ -46,11 +49,22 @@ if (defined('METACONSOLE')) {
 
     */
 
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
+    if ($id_modulo == 2 || $id_modulo == 4 || $id_modulo == 6) {
+        $help_header = 'local_module_tab';
+    } else if (!$new_component) {
+        $help_header = 'network_component_tab';
+    } else {
+        $help_header = 'network_component_tab';
+    }
+
+
     ui_print_page_header(
         __('Module management').' &raquo; '.__('Network component management'),
         '',
         false,
-        'network_component',
+        $help_header,
         true,
         '',
         false,
@@ -90,7 +104,6 @@ if (!empty($macros)) {
 
 $max_timeout = (int) get_parameter('max_timeout');
 $max_retries = (int) get_parameter('max_retries');
-$id_modulo = (int) get_parameter('id_component_type');
 $id_plugin = (int) get_parameter('id_plugin');
 $dynamic_interval = (int) get_parameter('dynamic_interval');
 $dynamic_max = (int) get_parameter('dynamic_max');
@@ -150,7 +163,6 @@ $disabled_types_event = json_encode($disabled_types_event);
 $create_component = (bool) get_parameter('create_component');
 $update_component = (bool) get_parameter('update_component');
 $delete_component = (bool) get_parameter('delete_component');
-$new_component = (bool) get_parameter('new_component');
 $duplicate_network_component = (bool) get_parameter('duplicate_network_component');
 $delete_multiple = (bool) get_parameter('delete_multiple');
 $multiple_delete = (bool) get_parameter('multiple_delete', 0);
@@ -638,14 +650,16 @@ unset($table);
 
 $table->width = '100%';
 $table->head = [];
-$table->class = 'databox data';
+$table->class = 'info_table';
+$table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
-$table->head[6] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+$table->head[6] = __('Action');
 $table->size = [];
+$table->size['checkbox'] = '20px';
 $table->size[1] = '75px';
 $table->size[6] = '80px';
 $table->align[6] = 'left';
@@ -657,6 +671,8 @@ foreach ($components as $component) {
     if ($component['max'] == $component['min'] && $component['max'] == 0) {
         $component['max'] = $component['min'] = __('N/A');
     }
+
+    $data['checkbox'] = html_print_checkbox_extended('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
 
     $data[0] = '<a href="index.php?sec='.$sec.'&'.'sec2=godmode/modules/manage_network_components&'.'id='.$component['id_nc'].'&pure='.$pure.'">';
     $data[0] .= io_safe_output($component['name']);
@@ -692,8 +708,9 @@ foreach ($components as $component) {
     $data[4] = network_components_get_group_name($component['id_group']);
     $data[5] = $component['max'].' / '.$component['min'];
 
+    $table->cellclass[][6] = 'action_buttons';
     $data[6] = '<a style="display: inline; float: left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>';
-    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
+    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
 
     array_push($table->data, $data);
 }
@@ -702,6 +719,7 @@ if (isset($data)) {
     echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
+    ui_pagination($total_components, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
     echo "<div style='float: right; margin-left: 5px;'>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';

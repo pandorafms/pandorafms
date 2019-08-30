@@ -15,7 +15,7 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
-// ACL for the general permission
+// ACL for the general permission.
 $vconsoles_read = check_acl($config['id_user'], 0, 'VR');
 $vconsoles_write = check_acl($config['id_user'], 0, 'VW');
 $vconsoles_manage = check_acl($config['id_user'], 0, 'VM');
@@ -61,7 +61,7 @@ $buttons['visual_console_favorite'] = [
     'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image('images/list.png', true, ['title' => __('Visual Favourite Console')]).'</a>',
 ];
 
-if ($is_enterprise && $vconsoles_manage) {
+if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template'] = [
         'active' => false,
         'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image('images/templates.png', true, ['title' => __('Visual Console Template')]).'</a>',
@@ -84,7 +84,7 @@ if (!$is_metaconsole) {
         __('Reporting').' &raquo; '.__('Visual Console'),
         'images/op_reporting.png',
         false,
-        'map_builder',
+        'map_builder_intro',
         false,
         $buttons
     );
@@ -327,7 +327,9 @@ echo '</tr></table>';
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->data = [];
 $table->head = [];
 $table->head[0] = __('Map name');
@@ -447,6 +449,10 @@ if (!$maps && !is_metaconsole()) {
         // Fix: IW was the old ACL for report editing, now is RW
         if ($vconsoles_write || $vconsoles_manage) {
             if (!is_metaconsole()) {
+                $table->cellclass[] = [
+                    3 => 'action_buttons',
+                    4 => 'action_buttons',
+                ];
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image('images/copy.png', true).'</a>';
                 $data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image('images/cross.png', true).'</a>';
             } else {
@@ -462,6 +468,7 @@ if (!$maps && !is_metaconsole()) {
     }
 
     html_print_table($table);
+    ui_pagination($total_maps, $url, $offset, $pagination, false, 'offset', true, 'pagination-bottom');
 }
 
 if ($maps) {

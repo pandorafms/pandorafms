@@ -42,7 +42,19 @@ function get_wiz_class($str)
         return 'ConsoleTasks';
 
         default:
-            // Ignore.
+            // Main, show header.
+            ui_print_page_header(
+                __('Discovery'),
+                '',
+                false,
+                '',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                ''
+            );
         return null;
     }
 }
@@ -81,7 +93,7 @@ function cl_load_cmp($a, $b)
 $classes = glob($config['homedir'].'/godmode/wizards/*.class.php');
 if (enterprise_installed()) {
     $ent_classes = glob(
-        $config['homedir'].'/enterprise/godmode/wizards/*.class.php'
+        $config['homedir'].'/'.ENTERPRISE_DIR.'/godmode/wizards/*.class.php'
     );
     if ($ent_classes === false) {
         $ent_classes = [];
@@ -128,6 +140,12 @@ if ($classname_selected === null) {
         } else {
             $wiz_data[] = $obj->load();
         }
+    }
+
+    // Show hints if there is no task.
+    if (get_parameter('discovery_hint', 0)) {
+        ui_require_css_file('discovery-hint');
+        ui_print_info_message(__('You must create a task first'));
     }
 
     Wizard::printBigButtonsList($wiz_data);

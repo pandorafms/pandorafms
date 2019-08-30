@@ -56,14 +56,20 @@ if ($a_template !== false) {
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
         } else {
-            // ~ ui_print_page_header (__('Alerts') .
-                // ~ ' &raquo; ' . __('Configure alert template'), "",
-                // ~ false, "alerts_config", true);
+            $step = (int) get_parameter('step', 1);
+            if ($step == 1) {
+                $help_header = 'configure_alert_template_step_1';
+            } else if ($step == 2) {
+                $help_header = 'configure_alert_template_step_2';
+            } else if ($step == 3) {
+                $help_header = 'configure_alert_template_step_3';
+            }
+
             ui_print_page_header(
                 __('Alerts').' &raquo; '.__('Configure alert template'),
                 '',
                 false,
-                '',
+                $help_header,
                 true
             );
         }
@@ -83,7 +89,13 @@ if ($a_template !== false) {
             if (defined('METACONSOLE')) {
                 alerts_meta_print_header();
             } else {
-                ui_print_page_header(__('Alerts').' &raquo; '.__('Configure alert template'), 'images/gm_alerts.png', false, 'conf_alert_template', true);
+                ui_print_page_header(
+                    __('Alerts').' &raquo; '.__('Configure alert template'),
+                    'images/gm_alerts.png',
+                    false,
+                    'conf_alert_template',
+                    true
+                );
             }
         } else {
             db_pandora_audit(
@@ -101,7 +113,22 @@ if ($a_template !== false) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        ui_print_page_header(__('Alerts').' &raquo; '.__('Configure alert template'), 'images/gm_alerts.png', false, 'conf_alert_template', true);
+        $step = (int) get_parameter('step', 1);
+        if ($step == 1) {
+            $help_header = 'configure_alert_template_step_1';
+        } else if ($step == 2) {
+            $help_header = 'configure_alert_template_step_2';
+        } else if ($step == 3) {
+            $help_header = 'configure_alert_template_step_3';
+        }
+
+        ui_print_page_header(
+            __('Alerts').' &raquo; '.__('Configure alert template'),
+            'images/gm_alerts.png',
+            false,
+            $help_header,
+            true
+        );
     }
 }
 
@@ -679,7 +706,7 @@ if ($step == 2) {
         'type',
         $type,
         '',
-        __('Select'),
+        __('None'),
         0,
         true,
         false,
@@ -1018,6 +1045,7 @@ var onchange_msg = <?php echo '"'.__('The alert would fire when the module value
 var onchange_not = <?php echo '"'.__('The alert would fire when the module value does not change').'"'; ?>;
 var unknown = <?php echo "'".__('The alert would fire when the module is in unknown status')."'"; ?>;
 var error_message_min_max_zero = <?php echo "'".__('The alert template cannot have the same value for min and max thresholds.')."'"; ?>;
+var not_normal = <?php echo "'".__('The alert would fire when the module is in not normal status')."'"; ?>;
 
 function check_fields_step2() {
     var correct = true;
@@ -1173,6 +1201,13 @@ if ($step == 2) {
             
             /* Show example */
             $("span#example").empty ().append (critical);
+            break;
+        case "not_normal":
+            $("#template-value, #template-max, span#matches_value, #template-min").hide ();
+            $("#template-example").show ();
+            
+            /* Show example */
+            $("span#example").empty ().append (not_normal);
             break;
         case "onchange":
             $("#template-value, #template-max, #template-min").hide ();

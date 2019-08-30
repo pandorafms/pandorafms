@@ -1966,7 +1966,7 @@ function visual_map_print_item(
                             echo '</tr>';
                             echo "<tr style='background-color:whitesmoke;height:90%;'>";
                                 echo '<td>';
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#e63c52;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
                                     echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
                                     echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
                                     echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
@@ -3278,7 +3278,12 @@ function visual_map_get_color_line_status($layoutData)
  */
 function visual_map_get_image_status_element($layoutData, $status=false)
 {
-    $img = 'images/console/icons/'.$layoutData['image'];
+    $metaconsole_hack = '';
+    if (is_metaconsole()) {
+        $metaconsole_hack = '../../';
+    }
+
+    $img = $metaconsole_hack.'images/console/icons/'.$layoutData['image'];
 
     if ($layoutData['type'] == 5) {
         // ICON ELEMENT
@@ -3611,11 +3616,6 @@ function visual_map_print_visual_map(
 
     global $config;
 
-    $metaconsole_hack = '/';
-    if (defined('METACONSOLE')) {
-        $metaconsole_hack = '../../';
-    }
-
     enterprise_include_once('meta/include/functions_ui_meta.php');
 
     include_once $config['homedir'].'/include/functions_custom_graphs.php';
@@ -3681,11 +3681,11 @@ function visual_map_print_visual_map(
         $mapHeight = $layout['height'];
         $backgroundImage = '';
         if ($layout['background'] != 'None.png') {
-            $backgroundImage = $metaconsole_hack.'images/console/background/'.$layout['background'];
+            $backgroundImage = 'images/console/background/'.$layout['background'];
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
     }
 
@@ -3698,7 +3698,7 @@ function visual_map_print_visual_map(
                 background-color:'.$layout['background_color'].';">';
 
     if ($layout['background'] != 'None.png') {
-        echo "<img src='".ui_get_full_url($backgroundImage)."' width='100%' height='100%' />";
+        echo "<img src='".ui_get_full_url($backgroundImage, false, false, false)."' width='100%' height='100%' />";
     }
 
     $layout_datas = db_get_all_rows_field_filter(
@@ -3776,7 +3776,7 @@ function visual_map_print_visual_map(
     // End main div
     echo '</div></div>';
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         echo '</div>';
     }
 }
@@ -3961,38 +3961,54 @@ function visual_map_translate_module_status($module_status)
  * layouts), and makes an AND operation to be sure that all the items
  * are OK. If any of them is down, then result is down (0)
  *
- * @param int Id of the layout
- * @param array Information about the status calculation of the item
- * @param int Depth (for recursion control)
+ * @param integer $layout_id   Id of the layout.
+ * @param array   $status_data Information about the status calculation of the
+ * item.
+ * @param integer $depth       Depth (for recursion control).
  *
- * @return boolean The status of the given layout. True if it's OK, false if not.
+ * @return integer The status of the given layout.
  */
 function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 {
     global $config;
 
-    // TODO: Implement this limit into the setup
+    // TODO: Implement this limit into the setup.
     if ($depth > 10) {
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    $layout_items = db_get_all_rows_filter('tlayout_data', ['id_layout' => $layout_id]);
+    $layout_items = db_get_all_rows_filter(
+        'tlayout_data',
+        ['id_layout' => $layout_id]
+    );
 
     if ($layout_items === false) {
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    // Check for valid items to retrieve the status for
+    // Check for valid items to retrieve the status for.
     $valid_layout_items = [];
     foreach ($layout_items as $layout_item_data) {
         if (($layout_item_data['type'] == GROUP_ITEM
             && !empty($layout_item_data['id_group'])
-            && check_acl($config['id_user'], $layout_item_data['id_group'], 'VR')
-            && check_acl($config['id_user'], $layout_item_data['element_group'], 'VR'))
+            && check_acl(
+                $config['id_user'],
+                $layout_item_data['id_group'],
+                'VR'
+            )
+            && check_acl(
+                $config['id_user'],
+                $layout_item_data['element_group'],
+                'VR'
+            ))
             || ((!empty($layout_item_data['id_layout_linked'])
             || !empty($layout_item_data['id_agente_modulo'])
             || !empty($layout_item_data['id_agent']))
-            && check_acl($config['id_user'], $layout_item_data['element_group'], 'VR'))
+            && check_acl(
+                $config['id_user'],
+                $layout_item_data['element_group'],
+                'VR'
+            ))
         ) {
             $valid_layout_items[] = $layout_item_data;
         }
@@ -4002,7 +4018,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    // Sort by node id to reduce the number of connections
+    // Sort by node id to reduce the number of connections.
     if (is_metaconsole()) {
         sort_by_column($valid_layout_items, 'id_metaconsole');
     }
@@ -4021,14 +4037,14 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 
             if (empty($node_id) && $meta_connected_to) {
                 metaconsole_restore_db();
-                // Restore db connection
+                // Restore db connection.
                 $meta_connected_to = null;
-            } else if (!empty($node_id) && (                empty($meta_connected_to)
-                || $meta_connected_to != $node_id)
+            } else if (!empty($node_id)
+                && (empty($meta_connected_to) || $meta_connected_to != $node_id)
             ) {
                 if (!empty($meta_connected_to)) {
                     metaconsole_restore_db();
-                    // Restore db connection
+                    // Restore db connection.
                 }
 
                 $connection = metaconsole_get_connection_by_id($node_id);
@@ -4042,64 +4058,78 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
 
         $status = VISUAL_MAP_STATUS_NORMAL;
 
-        $ent_element_status = enterprise_hook('enterprise_visual_map_get_status_element', [$layoutData]);
+        $ent_element_status = enterprise_hook(
+            'enterprise_visual_map_get_status_element',
+            [$layoutData]
+        );
         if ($ent_element_status === ENTERPRISE_NOT_HOOK) {
             $ent_element_status = false;
         }
 
-        // Enterprise element
         if ($ent_element_status !== false) {
+            // Enterprise element.
             $status = $ent_element_status;
-        }
-        // Other
-        else {
+        } else {
+            // Other.
             switch ($layout_item_data['type']) {
                 case STATIC_GRAPH:
                 case PERCENTILE_BAR:
                 case PERCENTILE_BUBBLE:
                 case CIRCULAR_PROGRESS_BAR:
                 case CIRCULAR_INTERIOR_PROGRESS_BAR:
-                    // Linked layout
                     if (!empty($layout_item_data['id_layout_linked'])) {
-                        $status = visual_map_get_layout_status($layout_item_data['id_layout_linked'], $layout_item_data, ($depth + 1));
-                    }
-                    // Module
-                    else if (!empty($layout_item_data['id_agente_modulo'])) {
-                        $module_status = modules_get_agentmodule_status($layout_item_data['id_agente_modulo']);
-                        $status = visual_map_translate_module_status($module_status);
-                    }
-                    // Agent
-                    else if (!empty($layout_item_data['id_agent'])) {
-                        $agent_status = agents_get_status($layout_item_data['id_agent'], true);
-                        $status = visual_map_translate_agent_status($agent_status);
-                    }
-                    // Unknown
-                    else {
+                        // Linked layout.
+                        $status = visual_map_get_layout_status(
+                            $layout_item_data['id_layout_linked'],
+                            $layout_item_data,
+                            ($depth + 1)
+                        );
+                    } else if (!empty($layout_item_data['id_agente_modulo'])) {
+                        // Module.
+                        $module_status = modules_get_agentmodule_status(
+                            $layout_item_data['id_agente_modulo']
+                        );
+                        $status = visual_map_translate_module_status(
+                            $module_status
+                        );
+                    } else if (!empty($layout_item_data['id_agent'])) {
+                        // Agent.
+                        $agent = db_get_row('tagente', 'id_agente', $layout_item_data['id_agent']);
+                        $agent_status = agents_get_status_from_counts($agent);
+                        $status = visual_map_translate_agent_status(
+                            $agent_status
+                        );
+                    } else {
+                        // Unknown.
                         $status = VISUAL_MAP_STATUS_UNKNOWN;
                     }
                 break;
 
                 case GROUP_ITEM:
-                    $group_status = groups_get_status($layout_item_data['id_group']);
+                    $group_status = groups_get_status(
+                        $layout_item_data['id_group']
+                    );
                     $status = visual_map_translate_agent_status($group_status);
                 break;
 
                 default:
-                    // If it's a graph, a progress bar or a data tag, ALWAYS report status OK
-                    // (=0) to avoid confussions here.
+                    // If it's a graph, a progress bar or a data tag,
+                    // ALWAYS report status OK (=0) to avoid confussions here.
                     $status = VISUAL_MAP_STATUS_NORMAL;
                 break;
             }
         }
 
-        // When the status calculation type is 'default', only one critical element is required to
-        // set the layout status as critical, so we can return the critical status right now.
-        if ($status_data['linked_layout_status_type'] === 'default' && (            $status == VISUAL_MAP_STATUS_CRITICAL_BAD
+        // When the status calculation type is 'default', only one critical
+        // element is required to set the layout status as critical, so we can
+        // return the critical status right now.
+        if ($status_data['linked_layout_status_type'] === 'default'
+            && ($status == VISUAL_MAP_STATUS_CRITICAL_BAD
             || $status == VISUAL_MAP_STATUS_CRITICAL_ALERT)
         ) {
             if (is_metaconsole() && $meta_connected_to) {
+                // Restore db connection.
                 metaconsole_restore_db();
-                // Restore db connection
             }
 
             return $status;
@@ -4113,11 +4143,11 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
     }
 
     if (is_metaconsole() && $meta_connected_to) {
+        // Restore db connection.
         metaconsole_restore_db();
-        // Restore db connection
     }
 
-    // Status calculation
+    // Status calculation.
     switch ($status_data['linked_layout_status_type']) {
         default:
         case 'default':
@@ -4149,7 +4179,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             if ($num_items_critical > 0
                 && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
             ) {
-                return $num_items_critical_alert > 0 ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
+                return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
             } else if ($num_items_warning > 0
                 && (($num_items_warning * 100) / $num_items) >= $weight
             ) {
@@ -4241,7 +4271,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'static_graph':
             case STATIC_GRAPH:
-                $text = __('Static graph').' - '.$image;
+                $text = __('Static Image').' - '.$image;
             break;
 
             case 'simple_value':
@@ -4524,4 +4554,44 @@ function visual_map_get_color_cloud_element($data)
     </svg>
     <?php
     return ob_get_clean();
+}
+
+
+/**
+ * Load the Visual Console Client files (js & css).
+ *
+ * @return void
+ */
+function visual_map_load_client_resources()
+{
+    global $config;
+
+    $baseUrl = ui_get_full_url(false, false, false, false);
+    $vcClientPath = 'include/visual-console-client';
+    $dir = $config['homedir'].'/'.$vcClientPath;
+    if (is_dir($dir)) {
+        $dh = opendir($dir);
+        if ($dh) {
+            while (($file = readdir($dh)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+
+                preg_match('/.*.js$/', $file, $match, PREG_OFFSET_CAPTURE);
+                if (empty($match) === false) {
+                    $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                    echo '<script type="text/javascript" src="'.$url.'"></script>';
+                    continue;
+                }
+
+                preg_match('/.*.css$/', $file, $match, PREG_OFFSET_CAPTURE);
+                if (empty($match) === false) {
+                    $url = $baseUrl.$vcClientPath.'/'.$match[0][0];
+                    echo '<link type="text/css" rel="stylesheet" href="'.$url.'" />';
+                }
+            }
+
+            closedir($dh);
+        }
+    }
 }

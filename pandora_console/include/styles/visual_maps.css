@@ -1,0 +1,203 @@
+/*
+ * ---------------------------------------------------------------------
+ * - VISUAL MAPS 													-
+ * ---------------------------------------------------------------------
+ */
+
+div#vc-controls {
+  position: fixed;
+  top: 30px;
+  right: 20px;
+}
+
+div#vc-controls div.vc-title,
+div#vc-controls div.vc-refr {
+  margin-top: 15px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+div#vc-controls div.vc-refr > div {
+  display: inline;
+}
+div#vc-controls img.vc-qr {
+  margin-top: 12px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.visual-console-edit-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.visual-console-edit-controls > span {
+  margin: 4px;
+}
+
+input.vs_button_ghost {
+  background-color: transparent;
+  border: 1px solid #82b92e;
+  color: #82b92e;
+  text-align: center;
+  padding: 4px 12px;
+  font-weight: bold;
+}
+
+#toolbox #auto_save {
+  padding-top: 5px;
+}
+
+#toolbox {
+  margin-top: 13px;
+}
+input.visual_editor_button_toolbox {
+  padding-right: 15px;
+  padding-top: 10px;
+  margin-top: 5px;
+}
+input.delete_min {
+  background: #fefefe url(../../images/cross.png) no-repeat center;
+}
+input.delete_min[disabled] {
+  background: #fefefe url(../../images/cross.disabled.png) no-repeat center;
+}
+input.graph_min {
+  background: #fefefe url(../../images/chart_curve.png) no-repeat center;
+}
+input.graph_min[disabled] {
+  background: #fefefe url(../../images/chart_curve.disabled.png) no-repeat
+    center;
+}
+input.bars_graph_min {
+  background: #fefefe url(../../images/icono-barras-arriba.png) no-repeat center;
+}
+input.bars_graph_min[disabled] {
+  background: #fefefe url(../../images/icono-barras-arriba.disabled.png)
+    no-repeat center;
+}
+input.percentile_min {
+  background: #fefefe url(../../images/chart_bar.png) no-repeat center;
+}
+input.percentile_min[disabled] {
+  background: #fefefe url(../../images/chart_bar.disabled.png) no-repeat center;
+}
+input.percentile_item_min {
+  background: #fefefe url(../../images/percentile_item.png) no-repeat center;
+}
+input.percentile_item_min[disabled] {
+  background: #fefefe url(../../images/percentile_item.disabled.png) no-repeat
+    center;
+}
+input.auto_sla_graph_min {
+  background: #fefefe url(../../images/auto_sla_graph.png) no-repeat center;
+}
+input.auto_sla_graph_min[disabled] {
+  background: #fefefe url(../../images/auto_sla_graph.disabled.png) no-repeat
+    center;
+}
+input.donut_graph_min {
+  background: #fefefe url(../../images/icono-quesito.png) no-repeat center;
+}
+input.donut_graph_min[disabled] {
+  background: #fefefe url(../../images/icono-quesito.disabled.png) no-repeat
+    center;
+}
+input.binary_min {
+  background: #fefefe url(../../images/binary.png) no-repeat center;
+}
+input.binary_min[disabled] {
+  background: #fefefe url(../../images/binary.disabled.png) no-repeat center;
+}
+input.camera_min {
+  background: #fefefe url(../../images/camera.png) no-repeat center;
+}
+input.camera_min[disabled] {
+  background: #fefefe url(../../images/camera.disabled.png) no-repeat center;
+}
+input.config_min {
+  background: #fefefe url(../../images/config.png) no-repeat center;
+}
+input.config_min[disabled] {
+  background: #fefefe url(../../images/config.disabled.png) no-repeat center;
+}
+input.label_min {
+  background: #fefefe url(../../images/tag_red.png) no-repeat center;
+}
+input.label_min[disabled] {
+  background: #fefefe url(../../images/tag_red.disabled.png) no-repeat center;
+}
+input.icon_min {
+  background: #fefefe url(../../images/photo.png) no-repeat center;
+}
+input.icon_min[disabled] {
+  background: #fefefe url(../../images/photo.disabled.png) no-repeat center;
+}
+input.clock_min {
+  background: #fefefe url(../../images/clock-tab.png) no-repeat center;
+}
+input.clock_min[disabled] {
+  background: #fefefe url(../../images/clock-tab.disabled.png) no-repeat center;
+}
+input.box_item {
+  background: #fefefe url(../../images/box_item.png) no-repeat center;
+}
+input.box_item[disabled] {
+  background: #fefefe url(../../images/box_item.disabled.png) no-repeat center;
+}
+input.line_item {
+  background: #fefefe url(../../images/line_item.png) no-repeat center;
+}
+input.line_item[disabled] {
+  background: #fefefe url(../../images/line_item.disabled.png) no-repeat center;
+}
+input.copy_item {
+  background: #fefefe url(../../images/copy_visualmap.png) no-repeat center;
+}
+input.copy_item[disabled] {
+  background: #fefefe url(../../images/copy_visualmap.disabled.png) no-repeat
+    center;
+}
+input.grid_min {
+  background: #fefefe url(../../images/grid.png) no-repeat center;
+}
+input.grid_min[disabled] {
+  background: #fefefe url(../../images/grid.disabled.png) no-repeat center;
+}
+input.save_min {
+  background: #fefefe url(../../images/file.png) no-repeat center;
+}
+input.save_min[disabled] {
+  background: #fefefe url(../../images/file.disabled.png) no-repeat center;
+}
+input.service_min {
+  background: #fefefe url(../../images/box.png) no-repeat center;
+}
+input.service_min[disabled] {
+  background: #fefefe url(../../images/box.disabled.png) no-repeat center;
+}
+
+input.group_item_min {
+  background: #fefefe url(../../images/group_green.png) no-repeat center;
+}
+input.group_item_min[disabled] {
+  background: #fefefe url(../../images/group_green.disabled.png) no-repeat
+    center;
+}
+input.color_cloud_min {
+  background: #fefefe url(../../images/color_cloud_item.png) no-repeat center;
+}
+input.color_cloud_min[disabled] {
+  background: #fefefe url(../../images/color_cloud_item.disabled.png) no-repeat
+    center;
+}
+
+div#cont {
+  position: fixed;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/*.termframe{
+	background-color: #82b92e;
+}*/

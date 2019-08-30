@@ -342,7 +342,7 @@ if ($items) {
     $table->size[0] = '5px';
     $table->size[1] = '15%';
     $table->size[4] = '8%';
-    $table->size[6] = '90px';
+    $table->size[6] = '120px';
     $table->size[7] = '30px';
 
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';

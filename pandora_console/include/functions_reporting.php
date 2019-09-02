@@ -3100,7 +3100,7 @@ function reporting_historical_data($report, $content)
 
     $return['type'] = 'historical_data';
     $period = $content['period'];
-    $date_limit = (time() - $period);
+    $date_limit = ($report['datetime'] - $period);
     if (empty($content['name'])) {
         $content['name'] = __('Historical data');
     }
@@ -3169,7 +3169,7 @@ function reporting_historical_data($report, $content)
                 FROM tagente_datos_string
                 WHERE id_agente_modulo ='.$content['id_agent_module'].'
                     AND utimestamp >'.$date_limit.'
-                    AND utimestamp <='.time(),
+                    AND utimestamp <='.$report['datetime'],
                 true
             );
         break;
@@ -3180,7 +3180,7 @@ function reporting_historical_data($report, $content)
                 FROM tagente_datos
                 WHERE id_agente_modulo ='.$content['id_agent_module'].'
                     AND utimestamp >'.$date_limit.'
-                    AND utimestamp <='.time(),
+                    AND utimestamp <='.$report['datetime'],
                 true
             );
         break;

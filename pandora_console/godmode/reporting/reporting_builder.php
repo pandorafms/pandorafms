@@ -1,4 +1,22 @@
 <script type="text/javascript">
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+}
+
+
     function check_all_checkboxes() {
         if ($("input[name=all_delete]").prop("checked")) {
             $(".check_delete").prop("checked", true);
@@ -578,7 +596,7 @@ switch ($action) {
                 break;
             }
 
-            if (! $delete) {
+            if (! $delete && !empty($type_access_selected)) {
                 db_pandora_audit(
                     'ACL Violation',
                     'Trying to access report builder deletion'

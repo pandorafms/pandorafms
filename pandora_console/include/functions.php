@@ -4084,7 +4084,7 @@ function mask2cidr($mask)
 function get_help_info($section_name)
 {
     global $config;
-    // hd($section_name);
+
     $user_language = get_user_language($id_user);
 
     $es = false;
@@ -5436,4 +5436,85 @@ if (!function_exists('getallheaders')) {
     }
 
 
+}
+
+
+/**
+ * Perform an API call to Integria IMS.
+ *
+ * @param string API host URL.
+ * @param string User name.
+ * @param string User password.
+ * @param string API password.
+ * @param string API Operation.
+ * @param array Array with parameters required by the API function.
+ *
+ * @return boolean True if API request succeeded, false if API request failed.
+ */
+function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array, $show_credentials_error_msg=false)
+{
+    $params_string = implode(',', $params_array);
+
+    $url_data = [
+        'user'      => $user,
+        'user_pass' => $user_pass,
+        'pass'      => $api_pass,
+        'op'        => $operation,
+        'params'    => html_entity_decode($params_string),
+    ];
+
+    // Build URL for API request.
+    $url = $api_hostname.'/integria/include/api.php';
+
+    ob_start();
+    $out = fopen('php://output', 'w');
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $url_data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+    curl_setopt($ch, CURLOPT_STDERR, $out);
+    $result = curl_exec($ch);
+
+     fclose($out);
+     $debug = ob_get_clean();
+
+    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    $error = false;
+
+    if ($result === false) {
+        $error = curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    if ($error === true || $http_status !== 200) {
+        if ($show_credentials_error_msg === true) {
+            ui_print_error_message(__('API request failed. Please check Integria IMS\' access credentials in Pandora setup.'));
+        }
+
+        return false;
+    } else {
+        return $result;
+    }
+}
+
+
+// Parse CSV consisting of one or more lines of the form key-value pair into an array.
+function get_array_from_csv_data($csv_data, &$array_values)
+{
+    $csv_array = explode("\n", $csv_data);
+
+    foreach ($csv_array as $csv_value) {
+        if (empty($csv_value)) {
+            continue;
+        }
+
+        $new_csv_value = str_getcsv($csv_value);
+
+        $array_values[$new_csv_value[0]] = $new_csv_value[1];
+    }
 }

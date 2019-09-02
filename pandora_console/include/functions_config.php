@@ -1451,8 +1451,36 @@ function config_update_config()
                         $error_update[] = __('integria API hostname');
                     }
 
+                    if (!config_update_value('integria_api_pass', io_input_password((string) get_parameter('integria_api_pass', $config['integria_api_pass'])))) {
+                        $error_update[] = __('Integria API password');
+                    }
+
                     if (!config_update_value('integria_req_timeout', (int) get_parameter('integria_req_timeout', $config['integria_req_timeout']))) {
                         $error_update[] = __('Integria request timeout');
+                    }
+
+                    if (!config_update_value('default_group', (int) get_parameter('default_group', $config['default_group']))) {
+                        $error_update[] = __('Integria default group');
+                    }
+
+                    if (!config_update_value('default_criticity', (int) get_parameter('default_criticity', $config['default_criticity']))) {
+                        $error_update[] = __('Integria default criticity');
+                    }
+
+                    if (!config_update_value('default_owner', (string) get_parameter('default_owner', $config['default_owner']))) {
+                        $error_update[] = __('Integria default owner');
+                    }
+
+                    if (!config_update_value('incident_type', (int) get_parameter('incident_type', $config['incident_type']))) {
+                        $error_update[] = __('Integria default incident type');
+                    }
+
+                    if (!config_update_value('incident_title', (string) get_parameter('incident_title', $config['incident_title']))) {
+                        $error_update[] = __('Integria default incident title');
+                    }
+
+                    if (!config_update_value('incident_content', (string) get_parameter('incident_content', $config['incident_content']))) {
+                        $error_update[] = __('Integria default incident content');
                     }
                 break;
 

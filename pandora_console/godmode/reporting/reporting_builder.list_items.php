@@ -267,7 +267,7 @@ if ($moduleFilter != 0) {
 
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-    $where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\'))';
+    $where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\',\'text\'))';
 } else {
     $where .= ' AND ((server_name IS NULL OR length(server_name) = 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 }
@@ -342,7 +342,7 @@ if ($items) {
     $table->size[0] = '5px';
     $table->size[1] = '15%';
     $table->size[4] = '8%';
-    $table->size[6] = '90px';
+    $table->size[6] = '120px';
     $table->size[7] = '30px';
 
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';

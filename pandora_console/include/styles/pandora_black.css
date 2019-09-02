@@ -392,3 +392,11 @@ div#box_online * {
 #text_wizard {
   color: #555;
 }
+
+div#code_license_dialog div#code,
+div#form_activate_licence #code {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0px;
+  background-color: #222;
+}

@@ -3596,7 +3596,7 @@ function graph_custom_sql_graph(
         $sql = io_safe_output($sql['sql']);
     }
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
+    if (($config['metaconsole'] == 1) && defined('METACONSOLE') && $report_content['server_name'] != '' && $report_content['server_name'] != '0') {
         $metaconsole_connection = enterprise_hook('metaconsole_get_connection', [$report_content['server_name']]);
 
         if ($metaconsole_connection === false) {
@@ -3611,7 +3611,7 @@ function graph_custom_sql_graph(
 
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
+    if (($config['metaconsole'] == 1) && defined('METACONSOLE') && $report_content['server_name'] != '' && $report_content['server_name'] != '0') {
         enterprise_hook('metaconsole_restore_db');
     }
 

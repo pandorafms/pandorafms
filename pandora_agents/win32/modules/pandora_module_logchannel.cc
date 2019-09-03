@@ -53,7 +53,7 @@ static EvtUpdateBookmarkT EvtUpdateBookmarkF = NULL;
  * @param name Module name.
  * @param service_name Service internal name to check.
  */
-Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern)
+Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern, string application)
 	: Pandora_Module (name) {
     int i;
 	vector<wstring> query;
@@ -90,6 +90,13 @@ Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source
 	if (id_number != 0) {
 		wstringstream ss;
 		ss << L"*[System[EventID='" << id_number << L"']]";
+		query.push_back(ss.str());
+	}
+
+	// Set the application
+	if (application != "") {
+		wstringstream ss;
+		ss << L"*[System/Provider[@Name='" << application.c_str() << L"']]";
 		query.push_back(ss.str());
 	}
 

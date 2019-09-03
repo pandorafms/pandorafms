@@ -98,6 +98,23 @@ function hd($var, $file='', $oneline=false)
 }
 
 
+/**
+ * Encapsulation (ob) for debug print function.
+ *
+ * @param mixed   $var     Variable to be dumped.
+ * @param string  $file    Target file path.
+ * @param boolean $oneline Show in oneline.
+ *
+ * @return string Dump string.
+ */
+function obhd($var, $file='', $oneline=false)
+{
+    ob_start();
+    hd($var, $file, $oneline);
+    return ob_get_clean();
+}
+
+
 function debug()
 {
     $args_num = func_num_args();

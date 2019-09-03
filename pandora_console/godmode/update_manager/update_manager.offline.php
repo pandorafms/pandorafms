@@ -31,6 +31,11 @@ global $config;
 
 check_login();
 
+if (!enterprise_installed()) {
+    include 'general/noaccess.php';
+    exit;
+}
+
 if (! check_acl($config['id_user'], 0, 'PM')
     && ! is_user_admin($config['id_user'])
 ) {

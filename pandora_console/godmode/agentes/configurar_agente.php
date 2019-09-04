@@ -1559,8 +1559,14 @@ if ($update_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -1757,8 +1763,14 @@ if ($create_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';

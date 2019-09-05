@@ -246,6 +246,8 @@ if (is_ajax()) {
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
+                $fields[] = 'te.id_agentmodule';
+                $fields[] = 'te.server_id';
             }
 
             $events = events_get_all(
@@ -278,7 +280,19 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
-                        $tmp->evento = io_safe_output($tmp->evento);
+                        $tmp->hint = '';
+                        $tmp->meta = false;
+                        if (strlen($tmp->evento) >= 255) {
+                            $tmp->hint = io_safe_output(chunk_split(substr($tmp->evento, 0, 600), 80, '<br>').'(...)');
+                            $tmp->meta = is_metaconsole();
+                            $tmp->evento = io_safe_output(substr($tmp->evento, 0, 253).'(...)');
+                            if (strpos($tmp->evento, ' ') === false) {
+                                $tmp->evento = substr($tmp->evento, 0, 80).'(...)';
+                            }
+                        } else {
+                            $tmp->evento = io_safe_output($tmp->evento);
+                        }
+
                         if ($tmp->module_name) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }
@@ -595,9 +609,9 @@ if ($pure) {
 
     // Countdown.
     echo '<li class="nomn">';
-    echo '<div class="vc-refr">';
-    echo '<div class="vc-countdown"></div>';
-    echo '<div id="vc-refr-form">';
+    echo '<div class="events-refr">';
+    echo '<div class="events-countdown"><span id="refrcounter"></span></div>';
+    echo '<div id="events-refr-form">';
     echo __('Refresh').':';
     echo html_print_select(
         get_refresh_time_array(),
@@ -970,7 +984,7 @@ if (is_metaconsole()) {
         'SELECT id, server_name FROM tmetaconsole_setup',
         'server_id',
         $server_id,
-        'script',
+        '',
         __('All'),
         '0',
         true
@@ -1017,15 +1031,14 @@ $adv_inputs[] = $in;
 // Only alert events.
 $data = html_print_select(
     [
-        '-1' => __('All'),
-        '0'  => __('Filter alert events'),
-        '1'  => __('Only alert events'),
+        '0' => __('Filter alert events'),
+        '1' => __('Only alert events'),
     ],
     'filter_only_alert',
     $filter_only_alert,
     '',
-    '',
-    '',
+    __('All'),
+    -1,
     true
 );
 $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
@@ -1258,7 +1271,13 @@ try {
     );
 
     // Get column names.
-    $column_names = events_get_column_names($fields);
+    $column_names = events_get_column_names($fields, true);
+
+    foreach ($column_names as $key => $column) {
+        if (is_array($column) && $column['text'] == 'S') {
+            $column_names[$key]['style'] = 'padding-left: 1em !important;';
+        }
+    }
 
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
@@ -1631,6 +1650,10 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
+    if(item.hint !== ''){
+        let ruta = item.meta == true ? '../../images/tip_help.png' : 'images/tip_help.png';
+        evn += '&nbsp;<img src="'+ruta+'" data-title="'+item.hint+'" data-use_title_for_force_title="1" class="forced_title" alt="'+item.hint+'">';
+    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;
@@ -2107,6 +2130,10 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+
+    let refresco = <?php echo get_parameter('refr', 0); ?>;
+    $('#refresh option[value='+refresco+']').attr('selected', 'selected');
+
     /* Filter to a href */
     $('.events_link').on('click', function(e) {
         e.preventDefault();
@@ -2121,6 +2148,7 @@ $(document).ready( function() {
 
         var url = e.currentTarget.href;
         url += 'fb64=' + btoa(JSON.stringify(values));
+        url += '&refr=' + '<?php echo $config['refr']; ?>';
         document.location = url;
 
     });
@@ -2257,6 +2285,60 @@ $(document).ready( function() {
         click_button_remove_tag("without");
     });
     
+
+    //Autorefresh in fullscreen
+    var pure = '<?php echo $pure; ?>';
+    if(pure == 1){
+        var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
+        var until_time='';
+
+        // If autorefresh is disabled, don't show the countdown   
+        var refresh_time = '<?php echo $_GET['refr']; ?>'; 
+        if(refresh_time == '' || refresh_time == 0){
+            $('#refrcounter').toggle();
+        }
+
+        function events_refresh() {
+            until_time = new Date();
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+
+            $("#refrcounter").countdown ({
+                until: until_time,
+                layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>)',
+                labels: ['', '', '', '', '', '', ''],
+                onExpiry: function () {
+                    dt_events.draw(false);
+                }
+            });
+        }
+        // Start the countdown when page is loaded (first time).
+        events_refresh();
+        // Repeat countdown according to refresh_interval.
+        setInterval(events_refresh, refresh_interval);
+
+
+        $("select#refresh").change (function () {
+            var href = window.location.href;
+
+            inputs = $("#events_form :input");
+            values = {};
+            inputs.each(function() {
+                values[this.name] = $(this).val();
+            })
+
+            var newValue = btoa(JSON.stringify(values));           
+            var fb64 = '<?php echo $fb64; ?>';  
+            // Check if the filters have changed.
+            if(fb64 !== newValue){
+                href = href.replace(fb64, newValue);
+            } 
+                
+            href = href.replace('refr='+refresh_time, 'refr='+this.value);
+
+            $(document).attr("location", href);
+        });
+    }
+
 });
 
 

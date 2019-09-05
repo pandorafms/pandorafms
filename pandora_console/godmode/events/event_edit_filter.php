@@ -232,10 +232,17 @@ $table->data[0][0] = '<b>'.__('Filter name').'</b>';
 $table->data[0][1] = html_print_input_text('id_name', $id_name, false, 20, 80, true);
 
 $table->data[1][0] = '<b>'.__('Save in group').'</b>'.ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
+
+$returnAllGroup = users_can_manage_group_all();
+// If the user can't manage All group but the filter is for All group, the user should see All group in the select.
+if ($returnAllGroup === false && $id_group_filter == 0) {
+    $returnAllGroup = true;
+}
+
 $table->data[1][1] = html_print_select_groups(
     $config['id_user'],
     $access,
-    users_can_manage_group_all(),
+    $returnAllGroup,
     'id_group_filter',
     $id_group_filter,
     '',

@@ -62,7 +62,7 @@ echo '<table width=95%>';
         echo '</td>';
 
         echo "<td valign='top'>";
-            echo grafico_eventos_usuario(320, 296);
+            echo grafico_eventos_usuario(320, 280);
         echo '</td>';
     echo '</tr>';
 
@@ -83,7 +83,7 @@ if (!users_is_admin()) {
 
     echo '<tr>';
         echo "<td valign='top'>";
-            echo grafico_eventos_grupo(300, 200, $where);
+            echo grafico_eventos_grupo(300, 250, $where);
         echo '</td>';
 
         echo "<td valign='top'>";
@@ -101,7 +101,7 @@ if (!users_is_admin()) {
     ];
 }
 
-            echo graph_events_validated(320, 296, $extra_filter);
+            echo graph_events_validated(320, 250, $extra_filter);
         echo '</td>';
     echo '</tr>';
 

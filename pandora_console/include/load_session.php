@@ -159,7 +159,26 @@ function pandora_session_gc($max_lifetime=300)
     global $config;
 
     if (isset($config['session_timeout'])) {
-        $max_lifetime = $config['session_timeout'];
+        $session_timeout = $config['session_timeout'];
+    } else {
+        // if $config doesn`t work ...
+        $session_timeout = db_get_value(
+            'value',
+            'tconfig',
+            'token',
+            'session_timeout'
+        );
+    }
+
+    if (!empty($session_timeout)) {
+        if ($session_timeout == -1) {
+            // The session expires in 10 years
+            $session_timeout = 315576000;
+        } else {
+            $session_timeout *= 60;
+        }
+
+        $max_lifetime = $session_timeout;
     }
 
     $time_limit = (time() - $max_lifetime);
@@ -170,6 +189,11 @@ function pandora_session_gc($max_lifetime=300)
             'last_active' => '<'.$time_limit,
         ]
     );
+
+    // Deleting cron and empty sessions.
+    $sql = "DELETE FROM tsessions_php WHERE 
+        data IS NULL OR id_session REGEXP '^cron-'";
+    db_process_sql($sql);
 
     return $retval;
 }

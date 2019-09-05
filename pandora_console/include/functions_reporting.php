@@ -3100,7 +3100,7 @@ function reporting_historical_data($report, $content)
 
     $return['type'] = 'historical_data';
     $period = $content['period'];
-    $date_limit = (time() - $period);
+    $date_limit = ($report['datetime'] - $period);
     if (empty($content['name'])) {
         $content['name'] = __('Historical data');
     }
@@ -3169,7 +3169,7 @@ function reporting_historical_data($report, $content)
                 FROM tagente_datos_string
                 WHERE id_agente_modulo ='.$content['id_agent_module'].'
                     AND utimestamp >'.$date_limit.'
-                    AND utimestamp <='.time(),
+                    AND utimestamp <='.$report['datetime'],
                 true
             );
         break;
@@ -3180,7 +3180,7 @@ function reporting_historical_data($report, $content)
                 FROM tagente_datos
                 WHERE id_agente_modulo ='.$content['id_agent_module'].'
                     AND utimestamp >'.$date_limit.'
-                    AND utimestamp <='.time(),
+                    AND utimestamp <='.$report['datetime'],
                 true
             );
         break;
@@ -5308,6 +5308,9 @@ function reporting_sql($report, $content)
     } else {
         $sql = io_safe_output($content['external_source']);
     }
+
+    // Check if exist sql macro
+    $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.
     $sql = check_sql($sql);
@@ -12077,6 +12080,28 @@ function reporting_label_macro($item, $label)
     }
 
     return $label;
+}
+
+
+/**
+ * Convert macro in sql string to value
+ *
+ * @param array  $report
+ * @param string $sql
+ *
+ * @return string
+ */
+function reporting_sql_macro(array $report, string $sql): string
+{
+    if (preg_match('/_timefrom_/', $sql)) {
+        $sql = str_replace(
+            '_timefrom_',
+            $report['datetime'],
+            $sql
+        );
+    }
+
+    return $sql;
 }
 
 

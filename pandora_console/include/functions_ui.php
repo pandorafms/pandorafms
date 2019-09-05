@@ -48,15 +48,16 @@ if (isset($config['homedir'])) {
  */
 function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
 {
-    $return = $text;
-
     if (array_search('[url]', $allowed_tags) !== false) {
-        $return = preg_replace(
-            '/\[url=([^\]]*)\]/',
-            '<a target="_blank" rel="noopener noreferrer" href="$1">',
-            $return
-        );
-        $return = str_replace('[/url]', '</a>', $return);
+        // If link hasn't http, add it.
+        if (preg_match('/https?:\/\//', $text)) {
+            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="$1">$2</a>';
+        } else {
+            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="http://$1">$2</a>';
+        }
+
+        // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes
+        $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $text);
     }
 
     return $return;
@@ -1487,7 +1488,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
     $filename = $path.$name.'.js';
 
     if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).$filename.'"></script>';
+        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
         return null;
     }
 
@@ -1504,7 +1505,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $config['js'][$name] = '../../'.$filename;
     } else {
         $config['js'][$name] = $filename;
@@ -1794,7 +1795,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_css = ui_get_full_url($filename);
+        $url_css = ui_get_full_url($filename, false, false, false);
         $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
     }
 
@@ -1851,7 +1852,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -1892,7 +1893,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -2841,7 +2842,7 @@ function ui_progress(
                 width_interval = '.$ajax['interval'].';
                 if (last % 10 == 0) {
                     $.post({
-                        url: "'.ui_get_full_url('ajax.php').'",
+                        url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                         data: {';
         if (is_array($ajax['data'])) {
             foreach ($ajax['data'] as $token => $value) {
@@ -3216,7 +3217,7 @@ function ui_print_datatable(array $parameters)
             ],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
-                url: "'.ui_get_full_url('ajax.php').'",
+                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
@@ -3692,7 +3693,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
     $url = htmlspecialchars($url);
 
     if (! $relative) {
-        return ui_get_full_url($url);
+        return ui_get_full_url($url, false, false, false);
     }
 
     return $url;
@@ -4444,6 +4445,10 @@ function ui_print_agent_autocomplete_input($parameters)
         $get_only_string_modules = true;
     }
 
+    if (isset($parameters['no_disabled_modules'])) {
+        $no_disabled_modules = $parameters['no_disabled_modules'];
+    }
+
     $spinner_image = html_print_image('images/spinner.gif', true, false, true);
     if (isset($parameters['spinner_image'])) {
         $spinner_image = $parameters['spinner_image'];
@@ -4451,7 +4456,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
     // Javascript configurations
     // ------------------------------------------------------------------.
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     // Default value.
     if (isset($parameters['javascript_ajax_page'])) {
         $javascript_ajax_page = $parameters['javascript_ajax_page'];
@@ -4591,7 +4596,11 @@ function ui_print_agent_autocomplete_input($parameters)
 			if ('.((int) $get_only_string_modules).') {
 				inputs.push ("get_only_string_modules=1");
 			}
-			
+
+            if ('.((int) $no_disabled_modules).') {
+                inputs.push ("disabled=0");
+            }
+
 			if ('.((int) $metaconsole_enabled).') {
 				if (('.((int) $use_input_server).')
 						|| ('.((int) $print_input_server).')) {

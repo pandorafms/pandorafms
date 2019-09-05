@@ -232,6 +232,8 @@ switch ($action) {
 
             $style = json_decode(io_safe_output($item['style']), true);
 
+            $name_from_template = $style['name_label'];
+
             $show_in_same_row = $style['show_in_same_row'];
             $show_in_landscape = $style['show_in_landscape'];
             $hide_notinit_agents = $style['hide_notinit_agents'];
@@ -868,18 +870,33 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_input_text(
-                    'name',
-                    $name,
-                    '',
-                    80,
-                    100,
-                    false,
-                    false,
-                    false,
-                    '',
-                    'fullwidth'
-                );
+                if ($name_from_template != '') {
+                    html_print_input_text(
+                        'name',
+                        $name_from_template,
+                        '',
+                        80,
+                        100,
+                        false,
+                        false,
+                        false,
+                        '',
+                        'fullwidth'
+                    );
+                } else {
+                    html_print_input_text(
+                        'name',
+                        $name,
+                        '',
+                        80,
+                        100,
+                        false,
+                        false,
+                        false,
+                        '',
+                        'fullwidth'
+                    );
+                }
                 ?>
             </td>
         </tr>

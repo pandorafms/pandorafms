@@ -1031,15 +1031,14 @@ $adv_inputs[] = $in;
 // Only alert events.
 $data = html_print_select(
     [
-        '-1' => __('All'),
-        '0'  => __('Filter alert events'),
-        '1'  => __('Only alert events'),
+        '0' => __('Filter alert events'),
+        '1' => __('Only alert events'),
     ],
     'filter_only_alert',
     $filter_only_alert,
     '',
-    '',
-    '',
+    __('All'),
+    -1,
     true
 );
 $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';

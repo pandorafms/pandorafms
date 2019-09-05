@@ -446,7 +446,7 @@ if ($agents !== false) {
     // Agent name size and description for Chinese and Japanese languages ​​are adjusted
     $agent_font_size = '7';
     $description_font_size = '6.5';
-    if ($config['language'] == 'ja' || $config['language'] == 'zh_CN') {
+    if ($config['language'] == 'ja' || $config['language'] == 'zh_CN' || $own_info['language'] == 'ja' || $own_info['language'] == 'zh_CN') {
         $agent_font_size = '15';
         $description_font_size = '11';
     }

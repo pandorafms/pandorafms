@@ -3185,6 +3185,7 @@ table#policy_modules td * {
 
 #news_board {
   min-width: 530px;
+  width: 100%;
 }
 
 #right_column_logon_ok {

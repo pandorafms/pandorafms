@@ -354,10 +354,10 @@ $table_mail_conf->data[0][1] = html_print_input_text('email_from_dir', $config['
 $table_mail_conf->data[1][0] = __('From name');
 $table_mail_conf->data[1][2] = html_print_input_text('email_from_name', $config['email_from_name'], '', 30, 100, true);
 
-$table_mail_conf->data[2][0] = __('Server SMTP');
+$table_mail_conf->data[2][0] = __('SMTP Server');
 $table_mail_conf->data[2][1] = html_print_input_text('email_smtpServer', $config['email_smtpServer'], '', 30, 100, true);
 
-$table_mail_conf->data[3][0] = __('Port SMTP');
+$table_mail_conf->data[3][0] = __('SMTP Port');
 $table_mail_conf->data[3][1] = html_print_input_text('email_smtpPort', $config['email_smtpPort'], '', 30, 100, true);
 
 $table_mail_conf->data[4][0] = __('Encryption');

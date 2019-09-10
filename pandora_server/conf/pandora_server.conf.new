@@ -250,6 +250,10 @@ mta_address localhost
 
 #mta_from Pandora FMS <pandora@mydomain.com>
 
+# SMTP encryption protocol (none, ssl, starttls)
+
+#mta_encryption none
+
 # Set 1 if want eMail deliver alert in separate mail  (default). 
 # Set 0 if want eMail deliver shared mail by all destination.
 mail_in_separate 1

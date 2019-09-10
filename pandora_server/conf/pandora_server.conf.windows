@@ -235,6 +235,10 @@ dataserver_threads 2
 #           probably you need to change it to avoid problems with your antispam
 #mta_from pandora@sampledomain.com
 
+# SMTP encryption protocol (none, ssl, starttls)
+
+#mta_encryption none
+
 # xprobe2: Optional package to detect OS types using advanced TCP/IP 
 # fingerprinting tecniques, much more accurates than stadard nmap.
 # If not provided, nmap is used insted xprobe2

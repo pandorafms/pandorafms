@@ -14,6 +14,7 @@ RUN yum -y install \
 
 # Install Pandora FMS agent
 RUN cd /tmp/pandora_agent/unix \
+	&& chmod +x pandora_agent_installer \
 	&& ./pandora_agent_installer --install
 
 # Set default variables
@@ -40,7 +41,7 @@ if [ $TIMEZONE != "" ]; then\n \
 fi\n \
 /etc/init.d/pandora_agent_daemon start\n \
 rm -f $0\n \
-bash' \
+tail -f /var/log/pandora/pandora_agent.log' \
 >> /entrypoint.sh && \
 chmod +x /entrypoint.sh
 

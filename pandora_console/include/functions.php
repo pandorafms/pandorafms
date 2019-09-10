@@ -2852,7 +2852,7 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
-    $divider = $config['csv_divider'];
+    $divider = html_entity_decode($config['csv_divider']);
 
     if (!$data) {
         echo __('No data found to export');

@@ -2471,7 +2471,7 @@ function html_print_image(
 
                 if (!is_readable($working_dir.'/enterprise/meta'.$src)) {
                     if ($isExternalLink) {
-                        $src = ui_get_full_url($src);
+                        $src = ui_get_full_url($src, false, false, false);
                     } else {
                         $src = ui_get_full_url('../..'.$src);
                     }

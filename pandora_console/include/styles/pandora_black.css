@@ -429,3 +429,12 @@ div#box_online * {
 .tooltipster-content {
   background: #222 !important;
 }
+
+/* licence */
+div#code_license_dialog div#code,
+div#form_activate_licence #code {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0px;
+  background-color: #222;
+}

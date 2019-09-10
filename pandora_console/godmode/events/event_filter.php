@@ -93,10 +93,11 @@ if ($strict_acl) {
         users_can_manage_group_all()
     );
 } else {
+    // All users should see the filters with the All group.
     $groups_user = users_get_groups(
         $config['id_user'],
         $access,
-        users_can_manage_group_all(),
+        true,
         true
     );
 }

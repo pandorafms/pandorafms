@@ -32,6 +32,7 @@ $table->size[0] = '30%';
 $table->style[0] = 'font-weight:bold';
 $table->size[1] = '70%';
 
+// Mail configuration table.
 $table_mail_conf = new stdClass();
 $table_mail_conf->width = '100%';
 $table_mail_conf->class = 'databox filters';

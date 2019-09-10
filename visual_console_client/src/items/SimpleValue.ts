@@ -1,8 +1,8 @@
 import {
   LinkedVisualConsoleProps,
-  UnknownObject,
+  AnyObject,
   WithModuleProps
-} from "../types";
+} from "../lib/types";
 import {
   linkedVCPropsDecoder,
   parseIntOr,
@@ -69,7 +69,7 @@ const parseProcessValue = (
  * is missing from the raw object or have an invalid type.
  */
 export function simpleValuePropsDecoder(
-  data: UnknownObject
+  data: AnyObject
 ): SimpleValueProps | never {
   if (typeof data.value !== "string" || data.value.length === 0) {
     throw new TypeError("invalid value");

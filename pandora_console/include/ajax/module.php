@@ -392,11 +392,16 @@ if (check_login()) {
                         switch ($row['module_type']) {
                             case 15:
                                 $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
+                                // System Uptime:
+                                // In case of System Uptime module, shows data in format "Days hours minutes seconds" if and only if
+                                // selected module unit is "_timeticks_"
+                                // Take notice that selected unit may not be postrocess unit
                                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                    if ($post_process > 0) {
-                                        $data[] = human_milliseconds_to_string(($row['data'] / $post_process));
+                                        $data_macro = modules_get_unit_macro($row[$attr[0]], $unit);
+                                    if ($data_macro) {
+                                        $data[] = $data_macro;
                                     } else {
-                                        $data[] = human_milliseconds_to_string($row['data']);
+                                        $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
                                     }
                                 } else {
                                     $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
@@ -467,11 +472,17 @@ if (check_login()) {
         $result = false;
         $id_module_a = (int) get_parameter('id_module_a');
         $id_module_b = (int) get_parameter('id_module_b');
+        $type = (string) get_parameter('relation_type');
 
         if ($id_module_a < 1) {
             $name_module_a = get_parameter('name_module_a', '');
             if ($name_module_a) {
-                $id_module_a = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_a);
+                $id_module_a = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_a
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -481,7 +492,12 @@ if (check_login()) {
         if ($id_module_b < 1) {
             $name_module_b = get_parameter('name_module_b', '');
             if ($name_module_b) {
-                $id_module_b = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_b);
+                $id_module_b = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_b
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -489,7 +505,7 @@ if (check_login()) {
         }
 
         if ($id_module_a > 0 && $id_module_b > 0) {
-            $result = modules_add_relation($id_module_a, $id_module_b);
+            $result = modules_add_relation($id_module_a, $id_module_b, $type);
         }
 
         echo json_encode($result);
@@ -824,23 +840,28 @@ if (check_login()) {
         $table->head[7] = __('Data');
         $table->head[8] = __('Graph');
         $table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-        $table->align = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-        ];
+        $table->align = [];
+        $table->align[0] = 'center';
+        $table->align[1] = 'left';
+        $table->align[2] = 'left';
+        $table->align[3] = 'left';
+        $table->align[4] = 'left';
+        $table->align[5] = 'left';
+        $table->align[6] = 'center';
+        $table->align[7] = 'left';
+        $table->align[8] = 'center';
+        $table->align[9] = 'right';
 
-        $table->headstyle[2] = 'min-width: 60px';
-        $table->headstyle[3] = 'min-width: 100px';
-        $table->headstyle[5] = 'min-width: 60px';
-        $table->headstyle[8] = 'min-width: 85px';
-        $table->headstyle[9] = 'min-width: 100px';
+        $table->headstyle[2] = 'min-width: 85px';
+        $table->headstyle[3] = 'min-width: 130px';
+        $table->size[3] = '30%';
+        $table->style[3] = 'max-width: 28em;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;';
+        $table->size[4] = '30%';
+        $table->headstyle[5] = 'min-width: 85px';
+        $table->headstyle[6] = 'min-width: 125px; text-align: center;';
+        $table->headstyle[7] = 'min-width: 125px;';
+        $table->headstyle[8] = 'min-width: 100px; text-align: center;';
+        $table->headstyle[9] = 'min-width: 120px; text-align: right;';
 
         $last_modulegroup = 0;
         $rowIndex = 0;
@@ -879,14 +900,14 @@ if (check_login()) {
                     $last_modulegroup = $module['id_module_group'];
                 }
 
-                // End of title of group
+                // End of title of group.
             }
 
             $data = [];
             if (($module['id_modulo'] != 1) && ($module['id_tipo_modulo'] != 100)) {
                 if ($agent_w) {
                     if ($module['flag'] == 0) {
-                        $data[0] = '<a href="index.php?'.'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$id_agente.'&amp;'.'id_agente_modulo='.$module['id_agente_modulo'].'&amp;'.'flag=1&amp;'.'refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
+                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
                     } else {
                         $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['border' => '0', 'title' => __('Refresh')]).'</a>';
                     }
@@ -1001,7 +1022,7 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_module_status($module['estado'], $title, true, false, true);
+            $data[5] = ui_print_status_image($status, $title, true);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 
@@ -1074,7 +1095,7 @@ if (check_login()) {
                     if ($data_macro) {
                         $salida = $data_macro;
                     } else {
-                        $salida .= '&nbsp;'.'<i>'.io_safe_output($module['unit']).'</i>';
+                        $salida .= '&nbsp;<i>'.io_safe_output($module['unit']).'</i>';
                     }
                 }
             } else {
@@ -1120,17 +1141,22 @@ if (check_login()) {
                     $draw_events = 0;
                 }
 
-                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;'.'id='.$module['id_agente_modulo'].'&amp;'.'label='.rawurlencode(
+                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;label='.rawurlencode(
                     urlencode(
                         base64_encode($module['nombre'])
                     )
-                ).'&amp;'.'refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 650)";
+                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
                 if (!is_snapshot_data($module['datos'])) {
                     $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
                 }
 
                 $server_name = '';
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', '.'"'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.modules_get_agentmodule_name($module['id_agente_modulo'])."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+
+                $modules_get_agentmodule_name = modules_get_agentmodule_name($module['id_agente_modulo']);
+                // Escape the double quotes that may have the name of the module.
+                $modules_get_agentmodule_name = str_replace('&quot;', '\"', $modules_get_agentmodule_name);
+
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
             }
 
             if ($module['estado'] == 3) {
@@ -1177,7 +1203,7 @@ if (check_login()) {
                 ui_print_info_message([ 'no_close' => true, 'message' => __('This agent doesn\'t have any active monitors.') ]);
             }
         } else {
-            $url = 'index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$id_agente.'&'.'refr=&filter_monitors=1&'.'status_filter_monitor='.$status_filter_monitor.'&'.'status_text_monitor='.$status_text_monitor.'&'.'status_module_group='.$status_module_group;
+            $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=&filter_monitors=1&status_filter_monitor='.$status_filter_monitor.'&status_text_monitor='.$status_text_monitor.'&status_module_group='.$status_module_group;
 
             if ($paginate_module) {
                 ui_pagination(

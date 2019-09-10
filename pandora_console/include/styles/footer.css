@@ -1,0 +1,33 @@
+/*
+ * ---------------------------------------------------------------------
+ * - FOOTER 														-
+ * ---------------------------------------------------------------------
+ */
+a.footer,
+a.footer span {
+  font-size: 9px;
+  color: white;
+}
+
+div#foot {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  background: #343434;
+  clear: both;
+  width: auto;
+  height: 38px;
+  margin-top: auto;
+  box-sizing: border-box;
+}
+
+div#foot a,
+div#foot span {
+  font-family: "Open Sans", sans-serif;
+  font-size: 8pt;
+  color: #9ca4a6;
+}
+
+div#foot small span {
+  font-size: 0.8em;
+}

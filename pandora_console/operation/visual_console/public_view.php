@@ -42,6 +42,9 @@ ob_start('ui_process_page_head');
 // Enterprise main.
 enterprise_include('index.php');
 
+$url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
+echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
+
 require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
@@ -83,7 +86,7 @@ echo '<div id="visual-console-container"></div>';
 echo '<div id="vc-controls" style="z-index:300;">';
 
 echo '<div id="menu_tab">';
-echo '<ul class="mn">';
+echo '<ul class="mn white-box-content box-shadow flex-row">';
 
 // QR code.
 echo '<li class="nomn">';
@@ -134,7 +137,7 @@ if (!users_can_manage_group_all('AR')) {
 }
 
 $ignored_params['refr'] = '';
-ui_require_javascript_file('pandora_visual_console');
+ui_require_javascript_file('pandora_visual_console', 'include/javascript/', true);
 include_javascript_d3();
 visual_map_load_client_resources();
 
@@ -157,6 +160,10 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
+
+    var controls = document.getElementById('vc-controls');
+    autoHideElement(controls, 1000);
+
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 
@@ -198,6 +205,14 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
+
+    // Add the datetime when the item was received.
+    var receivedAt = new Date();
+    items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+    });
+
     var visualConsoleManager = createVisualConsole(
         container,
         props,

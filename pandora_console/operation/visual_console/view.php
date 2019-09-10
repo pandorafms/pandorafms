@@ -19,6 +19,8 @@ check_login();
 require_once $config['homedir'].'/vendor/autoload.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
+ui_require_css_file('visual_maps');
+
 // Query parameters.
 $visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
 // To hide the menus.
@@ -155,6 +157,16 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
+if ($pure === false) {
+    echo '<div class="visual-console-edit-controls">';
+    echo '<span>'.__('Move and resize mode').'</span>';
+    echo '<span>';
+    echo html_print_checkbox_switch('edit-mode', 1, false, true);
+    echo '</span>';
+    echo '</div>';
+    echo '<br />';
+}
+
 echo '<div id="visual-console-container"></div>';
 
 if ($pure === true) {
@@ -162,7 +174,7 @@ if ($pure === true) {
     echo '<div id="vc-controls" style="z-index: 999">';
 
     echo '<div id="menu_tab">';
-    echo '<ul class="mn">';
+    echo '<ul class="mn white-box-content box-shadow flex-row">';
 
     // Quit fullscreen.
     echo '<li class="nomn">';
@@ -306,6 +318,14 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     }
+
+    // Add the datetime when the item was received.
+    var receivedAt = new Date();
+    items.map(function(item) {
+        item["receivedAt"] = receivedAt;
+        return item;
+    });
+
     var visualConsoleManager = createVisualConsole(
         container,
         props,
@@ -314,6 +334,17 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
+
+    // Enable/disable the edition mode.
+    $('input[name=edit-mode]').change(function(event) {
+        if ($(this).prop('checked')) {
+            visualConsoleManager.visualConsole.enableEditMode();
+            visualConsoleManager.changeUpdateInterval(0);
+        } else {
+            visualConsoleManager.visualConsole.disableEditMode();
+            visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
+        }
+    });
 
     // Update the data fetch interval.
     $('select#vc-refr').change(function(event) {

@@ -72,6 +72,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         <title><?php echo __('%s Graph', get_product_name()).' ('.$alias.' - '.$label; ?>)</title>
         <link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
+        <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
         <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
@@ -402,7 +403,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         echo '<div class="module_graph_menu_dropdown">
                 <div id="module_graph_menu_header" class="module_graph_menu_header">
                     '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
-                    <span>'.__('Graph configuration menu').ui_print_help_icon('graphs', true, $config['homeurl'], 'images/help_g.png', true).'</span>
+                    <span>'.__('Graph configuration menu').'</span>
                     '.html_print_image('images/config.png', true, ['float' => 'right'], false, false, true).'
                 </div>
                 <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>

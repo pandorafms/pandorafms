@@ -244,18 +244,22 @@ $htmlForm = '<form method="post" action="index.php?sec=estado&sec2=operation/age
 $htmlForm .= html_print_table($table, true);
 $htmlForm .= html_print_input_hidden('filter', 1, true);
 $htmlForm .= '<div class="action-buttons" style="width: '.$table->width.'">';
-$htmlForm .= html_print_button(
-    __('Save as custom graph'),
-    'save_custom_graph',
-    false,
-    '',
-    'class="sub add" style=""',
-    true
-).'&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub upd" style=""', true);
+if (check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
+    $htmlForm .= html_print_button(
+        __('Save as custom graph'),
+        'save_custom_graph',
+        false,
+        '',
+        'class="sub add" style=""',
+        true
+    );
+}
+
+$htmlForm .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub upd" style=""', true);
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 
-ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), false);
+ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), '', false);
 
 $utime = get_system_time();
 $current = date('Y-m-d', $utime);

@@ -170,6 +170,8 @@ if ($update_agents) {
     $n_edited = 0;
     $result = false;
     foreach ($id_agents as $id_agent) {
+        $old_interval_value = db_get_value_filter('intervalo', 'tagente', ['id_agente' => $id_agent]);
+
         if (!empty($values)) {
             $group_old = false;
             $disabled_old = false;
@@ -194,6 +196,18 @@ if ($update_agents) {
                 $server_name['server_name'] = db_get_sql('SELECT server_name FROM tagente WHERE id_agente ='.$id_agent);
                 // Force an update of the agent cache.
                 $result_metaconsole = agent_update_from_cache($id_agent, $values, $server_name);
+            }
+
+            // Update the configuration files.
+            if ($result && ($old_interval_value != $values['intervalo'])) {
+                enterprise_hook(
+                    'config_agents_update_config_token',
+                    [
+                        $id_agent,
+                        'interval',
+                        $values['intervalo'],
+                    ]
+                );
             }
 
             if ($disabled_old !== false && $disabled_old != $values['disabled']) {
@@ -686,7 +700,7 @@ if ($fields === false) {
 foreach ($fields as $field) {
     $data[0] = '<b>'.$field['name'].'</b>';
     $data[0] .= ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
         true
     );
     $combo = [];

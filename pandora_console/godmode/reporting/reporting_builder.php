@@ -1,4 +1,22 @@
 <script type="text/javascript">
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+}
+
+
     function check_all_checkboxes() {
         if ($("input[name=all_delete]").prop("checked")) {
             $(".check_delete").prop("checked", true);
@@ -45,6 +63,9 @@
                     .parent()
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
+                $('.check_delete').each(function(){
+                    $('#hidden-id_report_'+$(this).val()).prop("disabled", false);    
+                });
             }
             else{
                 $('[id^=checkbox-massive_report_check]')
@@ -575,7 +596,7 @@ switch ($action) {
                 break;
             }
 
-            if (! $delete) {
+            if (! $delete && !empty($type_access_selected)) {
                 db_pandora_audit(
                     'ACL Violation',
                     'Trying to access report builder deletion'
@@ -771,34 +792,32 @@ switch ($action) {
             $table->head[1] = __('Description');
             $table->head[2] = __('HTML');
             $table->head[3] = __('XML');
-            $table->size[0] = '20%';
-            $table->size[1] = '30%';
+            $table->size[0] = '50%';
+            $table->size[1] = '20%';
             $table->size[2] = '2%';
-            $table->headstyle[2] = 'min-width: 35px;';
+            $table->headstyle[2] = 'min-width: 35px;text-align: left;';
             $table->size[3] = '2%';
-            $table->headstyle[3] = 'min-width: 35px;';
+            $table->headstyle[3] = 'min-width: 35px;text-align: left;';
             $table->size[4] = '2%';
-            $table->headstyle[4] = 'min-width: 35px;';
-            $table->size[5] = '2%';
-            $table->headstyle[5] = 'min-width: 35px;';
-            $table->size[6] = '2%';
-            $table->headstyle[6] = 'min-width: 35px;';
-            $table->size[7] = '5%';
-            $table->headstyle['csv'] = 'min-width: 65px;';
-            $table->style[7] = 'text-align: center;';
-
-            $table->headstyle[9] = 'min-width: 100px;';
-            $table->style[9] = 'text-align: center;';
+            $table->headstyle[4] = 'min-width: 35px;text-align: left;';
 
             $next = 4;
             // Calculate dinamically the number of the column.
-            if (enterprise_hook('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
+            if (enterprise_hook('load_custom_reporting_1', [$table]) !== ENTERPRISE_NOT_HOOK) {
                 $next = 7;
             }
+
+            $table->size[$next] = '2%';
+            $table->style[$next] = 'text-align: left;';
+
+            $table->headstyle[($next + 2)] = 'min-width: 130px; text-align:right;';
+            $table->style[($next + 2)] = 'text-align: right;';
+
 
             // Admin options only for RM flag.
             if (check_acl($config['id_user'], 0, 'RM')) {
                 $table->head[$next] = __('Private');
+                $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
                 $table->size[$next] = '2%';
                 if (defined('METACONSOLE')) {
                     $table->align[$next] = '';
@@ -808,7 +827,9 @@ switch ($action) {
 
                 $next++;
                 $table->head[$next] = __('Group');
-                $table->size[$next] = '15%';
+                $table->headstyle[$next] = 'min-width: 40px;text-align: left;';
+                $table->size[$next] = '2%';
+                $table->align[$next] = 'left';
 
                 $next++;
                 $op_column = false;
@@ -826,7 +847,7 @@ switch ($action) {
 
                 // $table->size = array ();
                 $table->size[$next] = '10%';
-                $table->align[$next] = 'left';
+                $table->align[$next] = 'right';
             }
 
             $columnview = false;
@@ -1341,20 +1362,54 @@ switch ($action) {
                 switch ($action) {
                     case 'update':
                         $values = [];
+                        $server_name = get_parameter('server_id');
+                        if (is_metaconsole() && $server_name != '') {
+                            $id_meta = metaconsole_get_id_server($server_name);
+                            $connection = metaconsole_get_connection_by_id(
+                                $id_meta
+                            );
+                            metaconsole_connect($connection);
+                            $values['server_name'] = $connection['server_name'];
+                        }
+
                         $values['id_report'] = $idReport;
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+
                         $label = get_parameter('label', '');
 
+                        $id_agent = get_parameter('id_agent');
+                        $id_agent_module = get_parameter('id_agent_module');
+
                         // Add macros name.
-                        $items_label = [];
-                        $items_label['type'] = get_parameter('type');
-                        $items_label['id_agent'] = get_parameter('id_agent');
-                        $items_label['id_agent_module'] = get_parameter(
-                            'id_agent_module'
-                        );
                         $name_it = (string) get_parameter('name');
+
+                        $agent_description = agents_get_description($id_agent);
+                        $agent_group = agents_get_agent_group($id_agent);
+                        $agent_address = agents_get_address($id_agent);
+                        $agent_alias = agents_get_alias($id_agent);
+                        $module_name = modules_get_agentmodule_name(
+                            $id_agent_module
+                        );
+
+                        $module_description = modules_get_agentmodule_descripcion(
+                            $id_agent_module
+                        );
+
+                        $items_label = [
+                            'type'               => get_parameter('type'),
+                            'id_agent'           => $id_agent,
+                            'id_agent_module'    => $id_agent_module,
+                            'agent_description'  => $agent_description,
+                            'agent_group'        => $agent_group,
+                            'agent_address'      => $agent_address,
+                            'agent_alias'        => $agent_alias,
+                            'module_name'        => $module_name,
+                            'module_description' => $module_description,
+                        ];
+
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -1438,6 +1493,14 @@ switch ($action) {
                                 $values['text'] = get_parameter('text');
                                 $values['show_graph'] = get_parameter(
                                     'combo_graph_options'
+                                );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
                                 );
 
                                 $good_format = true;
@@ -1702,13 +1765,6 @@ switch ($action) {
                         );
                         $values['id_group'] = get_parameter('combo_group');
                         $values['server_name'] = get_parameter('server_name');
-                        $server_id = (int) get_parameter('server_id');
-                        if ($server_id != 0) {
-                            $connection = metaconsole_get_connection_by_id(
-                                $server_id
-                            );
-                            $values['server_name'] = $connection['server_name'];
-                        }
 
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
@@ -1900,8 +1956,8 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
                                 $style['event_filter_search'] = $event_filter_search;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -1965,22 +2021,11 @@ switch ($action) {
 
                         $values['style'] = io_safe_input(json_encode($style));
 
+                        if (is_metaconsole()) {
+                            metaconsole_restore_db();
+                        }
+
                         if ($good_format) {
-                            switch ($config['dbtype']) {
-                                case 'oracle':
-                                    if (isset($values['type'])) {
-                                        $values[db_escape_key_identifier(
-                                            'type'
-                                        )] = $values['type'];
-                                        unset($values['type']);
-                                    }
-                                break;
-
-                                default:
-                                    // Default.
-                                break;
-                            }
-
                             $resultOperationDB = db_process_sql_update(
                                 'treport_content',
                                 $values,
@@ -1993,20 +2038,62 @@ switch ($action) {
 
                     case 'save':
                         $values = [];
+
+                        $values['server_name'] = get_parameter('server_name');
+                        $server_id = (int) get_parameter('server_id');
+                        if ($server_id != 0) {
+                            $connection = metaconsole_get_connection_by_id(
+                                $server_id
+                            );
+                            metaconsole_connect($connection);
+                            $values['server_name'] = $connection['server_name'];
+                        }
+
                         $values['id_report'] = $idReport;
                         $values['type'] = get_parameter('type', null);
                         $values['description'] = get_parameter('description');
                         $label = get_parameter('label', '');
 
-                        // Add macros name.
-                        $items_label = [];
-                        $items_label['type'] = get_parameter('type');
-                        $items_label['id_agent'] = get_parameter('id_agent');
-                        $items_label['id_agent_module'] = get_parameter(
-                            'id_agent_module'
-                        );
-                        $name_it = (string) get_parameter('name');
                         $values['recursion'] = get_parameter('recursion', null);
+                        $values['show_extended_events'] = get_parameter(
+                            'include_extended_events',
+                            null
+                        );
+
+                        $id_agent = get_parameter('id_agent');
+                        $id_agent_module = get_parameter('id_agent_module');
+
+                        // Add macros name.
+                        $name_it = (string) get_parameter('name');
+
+                        $agent_description = agents_get_description($id_agent);
+                        $agent_group = agents_get_agent_group($id_agent);
+                        $agent_address = agents_get_address($id_agent);
+                        $agent_alias = agents_get_alias($id_agent);
+                        $module_name = modules_get_agentmodule_name(
+                            $id_agent_module
+                        );
+
+                        $module_description = modules_get_agentmodule_descripcion(
+                            $id_agent_module
+                        );
+
+                        if (is_metaconsole()) {
+                            metaconsole_restore_db();
+                        }
+
+                        $items_label = [
+                            'type'               => get_parameter('type'),
+                            'id_agent'           => $id_agent,
+                            'id_agent_module'    => $id_agent_module,
+                            'agent_description'  => $agent_description,
+                            'agent_group'        => $agent_group,
+                            'agent_address'      => $agent_address,
+                            'agent_alias'        => $agent_alias,
+                            'module_name'        => $module_name,
+                            'module_description' => $module_description,
+                        ];
+
                         $values['name'] = reporting_label_macro(
                             $items_label,
                             $name_it
@@ -2211,18 +2298,6 @@ switch ($action) {
                             break;
                         }
 
-
-
-                        $values['server_name'] = get_parameter('server_name');
-                        $server_id = (int) get_parameter('server_id');
-                        if ($server_id != 0) {
-                            $connection = metaconsole_get_connection_by_id(
-                                $server_id
-                            );
-
-                            $values['server_name'] = $connection['server_name'];
-                        }
-
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
                                 'combo_server'
@@ -2395,6 +2470,16 @@ switch ($action) {
 
                         $values['current_month'] = get_parameter('current_month');
 
+                        $values['failover_mode'] = get_parameter(
+                            'failover_mode',
+                            0
+                        );
+
+                        $values['failover_type'] = get_parameter(
+                            'failover_type',
+                            REPORT_FAILOVER_TYPE_NORMAL
+                        );
+
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
@@ -2418,6 +2503,7 @@ switch ($action) {
                             case 'event_report_agent':
                             case 'event_report_group':
                             case 'event_report_module':
+
                                 $show_summary_group = get_parameter(
                                     'show_summary_group',
                                     0
@@ -2473,22 +2559,11 @@ switch ($action) {
                                 $style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
-
-
-                                switch ($values['type']) {
-                                    case 'event_report_group':
-                                    case 'event_report_agent':
-                                        $style['event_filter_search'] = $event_filter_search;
-                                        if ($label != '') {
-                                            $style['label'] = $label;
-                                        } else {
-                                            $style['label'] = '';
-                                        }
-                                    break;
-
-                                    default:
-                                        // Default.
-                                    break;
+                                $style['event_filter_search'] = $event_filter_search;
+                                if ($label != '') {
+                                    $style['label'] = $label;
+                                } else {
+                                    $style['label'] = '';
                                 }
                             break;
 

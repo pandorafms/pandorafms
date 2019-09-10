@@ -1599,7 +1599,7 @@ function paint_graph_status(
       .attr("y", height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
-      .style("fill", "#fc4444");
+      .style("fill", "#e63c52");
 
     //styles for number and axes
     svg
@@ -1683,7 +1683,7 @@ function paint_graph_status(
         )
         .attr("width", 300)
         .attr("height", (max_c - min_c) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     } else {
       svg
         .append("g")
@@ -1695,7 +1695,7 @@ function paint_graph_status(
         .attr("y", height_x + 200 - (min_c - range_min) * position)
         .attr("width", 300)
         .attr("height", (min_c - range_min) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
       svg
         .append("g")
         .append("rect")
@@ -1709,7 +1709,7 @@ function paint_graph_status(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     }
   } else {
     d3.select("#svg_dinamic rect").remove();
@@ -1869,4 +1869,101 @@ function logo_preview(icon_name, icon_path, incoming_options) {
   } catch (err) {
     // console.log(err);
   }
+}
+
+// Advanced Form control.
+/* global $ */
+/* exported load_modal */
+function load_modal(settings) {
+  var AJAX_RUNNING = 0;
+  var data = new FormData();
+  if (settings.extradata) {
+    settings.extradata.forEach(function(item) {
+      if (item.value != undefined) data.append(item.name, item.value);
+    });
+  }
+  data.append("page", settings.onshow.page);
+  data.append("method", settings.onshow.method);
+
+  var width = 630;
+  if (settings.onshow.width) {
+    width = settings.onshow.width;
+  }
+
+  $.ajax({
+    method: "post",
+    url: settings.url,
+    processData: false,
+    contentType: false,
+    data: data,
+    success: function(data) {
+      settings.target.html(data);
+      settings.target.dialog({
+        resizable: true,
+        draggable: true,
+        modal: true,
+        title: settings.modal.title,
+        width: width,
+        overlay: {
+          opacity: 0.5,
+          background: "black"
+        },
+        buttons: [
+          {
+            class:
+              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+            text: settings.modal.cancel,
+            click: function() {
+              $(this).dialog("close");
+              settings.cleanup();
+            }
+          },
+          {
+            class:
+              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+            text: settings.modal.ok,
+            click: function() {
+              if (AJAX_RUNNING) return;
+              AJAX_RUNNING = 1;
+              var formdata = new FormData();
+              if (settings.extradata) {
+                settings.extradata.forEach(function(item) {
+                  if (item.value != undefined)
+                    formdata.append(item.name, item.value);
+                });
+              }
+              formdata.append("page", settings.onsubmit.page);
+              formdata.append("method", settings.onsubmit.method);
+
+              $("#" + settings.form + " :input").each(function() {
+                if (this.type == "file") {
+                  if ($(this).prop("files")[0]) {
+                    formdata.append(this.name, $(this).prop("files")[0]);
+                  }
+                } else {
+                  formdata.append(this.name, $(this).val());
+                }
+              });
+
+              $.ajax({
+                method: "post",
+                url: settings.url,
+                processData: false,
+                contentType: false,
+                data: formdata,
+                success: function(data) {
+                  settings.ajax_callback(data);
+                  AJAX_RUNNING = 0;
+                }
+              });
+            }
+          }
+        ],
+        closeOnEscape: false,
+        open: function() {
+          $(".ui-dialog-titlebar-close").hide();
+        }
+      });
+    }
+  });
 }

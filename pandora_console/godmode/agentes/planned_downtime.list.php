@@ -52,7 +52,7 @@ if ($migrate_malformed) {
 
 // Header.
 ui_print_page_header(
-    __('Planned Downtime'),
+    __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
     'planned_downtime',
@@ -136,9 +136,6 @@ $table_form = new StdClass();
 $table_form->class = 'databox filters';
 $table_form->width = '100%';
 $table_form->rowstyle = [];
-$table_form->rowstyle[0] = 'background-color: #f9faf9;';
-$table_form->rowstyle[1] = 'background-color: #f9faf9;';
-$table_form->rowstyle[2] = 'background-color: #f9faf9;';
 $table_form->data = [];
 
 $row = [];

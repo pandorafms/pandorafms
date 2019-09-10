@@ -35,8 +35,8 @@ define('NETFLOW_RES_LOWD', 6);
 define('NETFLOW_RES_MEDD', 12);
 define('NETFLOW_RES_HID', 24);
 define('NETFLOW_RES_ULTRAD', 30);
-define('NETFLOW_RES_HOURLY', 'hourly');
-define('NETFLOW_RES_DAILY', 'daily');
+define('NETFLOW_RES_HOURLY', -1);
+define('NETFLOW_RES_DAILY', -2);
 
 define('NETFLOW_MAX_DATA_CIRCULAR_MESH', 10000);
 
@@ -473,7 +473,7 @@ function netflow_get_data(
 
     // Put all points into an array.
     $intervals = [($start_date - $multiplier_time)];
-    while ((end($intervals) < $end_date) === true) {
+    while (($next = (end($intervals) + $multiplier_time) < $end_date) === true) {
         $intervals[] = (end($intervals) + $multiplier_time);
     }
 

@@ -1213,7 +1213,7 @@ if ($update_module || $create_module) {
 
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
-    $min = (int) get_parameter_post('min');
+    $min = (int) get_parameter('min');
     $max = (int) get_parameter('max');
     $interval = (int) get_parameter('module_interval', $intervalo);
     $ff_interval = (int) get_parameter('module_ff_interval');
@@ -1276,18 +1276,10 @@ if ($update_module || $create_module) {
                 $m_hide = $m['hide'];
             }
 
-            if ($update_module) {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
-                } else {
-                    $macros[$k]['value'] = get_parameter($m['macro'], '');
-                }
+            if ($m_hide == '1') {
+                $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
             } else {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password($macros_names[$k]);
-                } else {
-                    $macros[$k]['value'] = $macros_names[$k];
-                }
+                $macros[$k]['value'] = get_parameter($m['macro'], '');
             }
         }
 
@@ -1366,7 +1358,11 @@ if ($update_module || $create_module) {
 
     $parent_module_id = (int) get_parameter('parent_module_id');
     $ip_target = (string) get_parameter('ip_target');
-    if ($ip_target == '') {
+    // No autofill if the module is a webserver module.
+    if ($ip_target == ''
+        && $id_module_type < MODULE_WEBSERVER_CHECK_LATENCY
+        && $id_module_type > MODULE_WEBSERVER_RETRIEVE_STRING_DATA
+    ) {
         $ip_target = 'auto';
     }
 
@@ -1567,8 +1563,14 @@ if ($update_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -1765,8 +1767,14 @@ if ($create_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -2103,8 +2111,7 @@ if ($delete_module) {
     }
 }
 
-// MODULE DUPLICATION
-// ==================.
+// MODULE DUPLICATION.
 if (!empty($duplicate_module)) {
     // DUPLICATE agent module !
     $id_duplicate_module = $duplicate_module;
@@ -2150,8 +2157,46 @@ if (!empty($duplicate_module)) {
     }
 }
 
-// UPDATE GIS
-// ==========.
+// MODULE ENABLE/DISABLE.
+if ($enable_module) {
+    $result = modules_change_disabled($enable_module, 0);
+    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
+    $modulo_nombre = $modulo_nombre['nombre'];
+
+    if ($result === NOERR) {
+        enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
+        db_pandora_audit('Module management', 'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    } else {
+        db_pandora_audit('Module management', 'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully enabled'),
+        __('Could not be enabled')
+    );
+}
+
+if ($disable_module) {
+    $result = modules_change_disabled($disable_module, 1);
+    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$disable_module.'');
+    $modulo_nombre = $modulo_nombre['nombre'];
+
+    if ($result === NOERR) {
+        enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
+        db_pandora_audit('Module management', 'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    } else {
+        db_pandora_audit('Module management', 'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully disabled'),
+        __('Could not be disabled')
+    );
+}
+
+// UPDATE GIS.
 $updateGIS = get_parameter('update_gis', 0);
 if ($updateGIS) {
     $updateGisData = get_parameter('update_gis_data');
@@ -2239,8 +2284,11 @@ switch ($tab) {
     break;
 
     case 'alert':
-        // Because $id_agente is set, it will show only agent alerts.
-        // This var is for not display create button on alert list.
+        /*
+         * Because $id_agente is set, it will show only agent alerts
+         * This var is for not display create button on alert list
+         */
+
         $dont_display_alert_create_bttn = true;
         include 'godmode/alerts/alert_list.php';
     break;

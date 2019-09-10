@@ -93,6 +93,37 @@ final class Container extends Model
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Model::encode.
+     */
+    protected function encode(array $data): array
+    {
+        $result = [];
+        return $result;
+    }
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public function save(array $data=[]): bool
+    {
+        return true;
+    }
+
+
+    /**
      * Extract a group Id value.
      *
      * @param array $data Unknown input data structure.
@@ -319,7 +350,7 @@ final class Container extends Model
         // Default filter.
         $filter = ['id_layout' => $layoutId];
         $fields = [
-            'id',
+            'DISTINCT(id) AS id',
             'type',
             'cache_expiration',
             'id_layout',
@@ -340,8 +371,9 @@ final class Container extends Model
             // Only true condition if type is GROUP_ITEM.
             $filter[] = '('.\db_format_array_where_clause_sql(
                 [
-                    'type'     => GROUP_ITEM,
-                    'id_group' => $groupsFilter,
+                    'id_layout' => $layoutId,
+                    'type'      => GROUP_ITEM,
+                    'id_group'  => $groupsFilter,
                 ]
             ).')';
         }

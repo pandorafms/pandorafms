@@ -694,6 +694,20 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
+-- Table `tcredential_store`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcredential_store` (
+	`identifier` varchar(100) NOT NULL,
+	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`username` text,
+	`password` text,
+	`extra_1` text,
+	`extra_2` text,
+	PRIMARY KEY (`identifier`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
 -- Table `tincidencia`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tincidencia` (
@@ -806,6 +820,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
+	`type` ENUM('direct', 'failover') DEFAULT 'direct',
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`)
 		ON DELETE CASCADE,
@@ -1387,8 +1402,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`type` varchar(30) default 'simple_graph',
 	`period` int(11) NOT NULL default 0,
 	`order` int (11) NOT NULL default 0,
-	`name` varchar(150) NULL,
-	`description` mediumtext, 
+	`name` varchar(300) NULL,
+	`description` mediumtext,
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`text` TEXT,
 	`external_source` Text,
@@ -1438,6 +1453,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1450,6 +1467,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
 	`id` INTEGER UNSIGNED NOT NULL auto_increment,
 	`id_report_content` INTEGER UNSIGNED NOT NULL,
 	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL,
 	`sla_max` double(18,2) NOT NULL default 0,
 	`sla_min` double(18,2) NOT NULL default 0,
 	`sla_limit` double(18,2) NOT NULL default 0,
@@ -2978,6 +2996,8 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3219,6 +3239,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
+	KEY `id_tagente_idx` (`id_tagente`),
 	KEY `disabled` (`disabled`),
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3590,3 +3611,44 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_repository`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tagent_repository` (
+  `id` SERIAL,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `version` VARCHAR(10) DEFAULT '',
+  `path` text,
+  `uploaded_by` VARCHAR(100) DEFAULT '',
+  `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tdeployment_hosts`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdeployment_hosts` (
+  `id` SERIAL,
+  `id_cs` VARCHAR(100),
+  `ip` VARCHAR(100) NOT NULL UNIQUE,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `current_agent_version` VARCHAR(100) DEFAULT '' COMMENT "String latest installed agent",
+  `target_agent_version_id` BIGINT UNSIGNED,
+  `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
+  `server_ip` varchar(100) default NULL COMMENT "Where to point target agent",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store`(`identifier`)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
+    ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

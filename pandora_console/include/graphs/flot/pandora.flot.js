@@ -1,4 +1,5 @@
 /* global $ */
+/* exported pandoraFlotPie, pandoraFlotPieCustom */
 
 function pandoraFlotPie(
   graph_id,
@@ -14,7 +15,7 @@ function pandoraFlotPie(
   colors,
   hide_labels
 ) {
-  var labels = labels.split(separator);
+  labels = labels.split(separator);
   var data = values.split(separator);
 
   if (colors != "") {
@@ -92,7 +93,7 @@ function pandoraFlotPie(
   function pieHover(event, pos, obj) {
     if (!obj) return;
 
-    index = obj.seriesIndex;
+    var index = obj.seriesIndex;
     legends.css("color", "#3F3F3D");
     legends.eq(index).css("color", "");
   }
@@ -144,21 +145,14 @@ function pandoraFlotPieCustom(
     .pop()
     .split(".")
     .shift();
-  var labels = labels.split(separator);
-  var legend = legend.split(separator);
+  labels = labels.split(separator);
+  legend = legend.split(separator);
   var data = values.split(separator);
   var no_data = 0;
   if (colors != "") {
     colors = colors.split(separator);
   }
-  var colors_data = [
-    "#FC4444",
-    "#FFA631",
-    "#FAD403",
-    "#5BB6E5",
-    "#F2919D",
-    "#80BA27"
-  ];
+
   var color = null;
   for (var i = 0; i < data.length; i++) {
     if (colors != "") {
@@ -175,26 +169,29 @@ function pandoraFlotPieCustom(
   if (width <= 450) {
     show_legend = false;
     label_conf = {
-      show: false
-    };
-  } else {
-    label_conf = {
       show: true,
-      radius: 0.75,
+      radius: 5 / 8,
       formatter: function(label, series) {
+        console.log(series);
         return (
           '<div style="font-size:' +
           font_size +
-          "pt;" +
-          'text-align:center;padding:2px;color:white;">' +
-          series.percent.toFixed(2) +
-          "%</div>"
+          "pt; font-weight:bolder;" +
+          "text-align:center;padding:2px;color:rgb(63, 63, 61)" +
+          '">' +
+          label +
+          ":<br>" +
+          series.data[0][1] +
+          "</div>"
         );
       },
       background: {
-        opacity: 0.5,
-        color: ""
+        opacity: 0.5
       }
+    };
+  } else {
+    label_conf = {
+      show: false
     };
   }
 
@@ -203,8 +200,8 @@ function pandoraFlotPieCustom(
       pie: {
         show: true,
         radius: 3 / 4,
-        innerRadius: 0.4
-        //label: label_conf
+        innerRadius: 0.4,
+        label: label_conf
       }
     },
     legend: {
@@ -234,7 +231,7 @@ function pandoraFlotPieCustom(
   var legends = $("#" + graph_id + " .legendLabel");
   var j = 0;
   legends.each(function() {
-    //$(this).css('width', $(this).width());
+    //$(this).css("width", $(this).width());
     $(this).css("font-size", font_size + "pt");
     $(this).removeClass("legendLabel");
     $(this).addClass(font);
@@ -264,19 +261,6 @@ function pandoraFlotPieCustom(
     return false;
   });
 
-  var pielegends = $("#" + graph_id + " .pieLabelBackground");
-  pielegends.each(function() {
-    $(this)
-      .css("transform", "rotate(-35deg)")
-      .css("color", "black");
-  });
-  var labelpielegends = $("#" + graph_id + " .pieLabel");
-  labelpielegends.each(function() {
-    $(this)
-      .css("transform", "rotate(-35deg)")
-      .css("color", "black");
-  });
-
   // Events
   $("#" + graph_id).bind("plothover", pieHover);
   $("#" + graph_id).bind("plotclick", Clickpie);
@@ -287,16 +271,17 @@ function pandoraFlotPieCustom(
   function pieHover(event, pos, obj) {
     if (!obj) return;
 
-    index = obj.seriesIndex;
+    var index = obj.seriesIndex;
     legends.css("color", "#3F3F3D");
     legends.eq(index).css("color", "");
   }
 
   function Clickpie(event, pos, obj) {
     if (!obj) return;
-    percent = parseFloat(obj.series.percent).toFixed(2);
-    valor = parseFloat(obj.series.data[0][1]);
+    var percent = parseFloat(obj.series.percent).toFixed(2);
+    var valor = parseFloat(obj.series.data[0][1]);
 
+    var value = "";
     if (valor > 1000000) {
       value = Math.round((valor / 1000000) * 100) / 100;
       value = value + "M";
@@ -325,42 +310,6 @@ function pandoraFlotPieCustom(
       $("#watermark_image_" + graph_id).attr("src")
     );
   }
-  /*
-	window.onresize = function(event) {
-        $.plot($('#' + graph_id), data, conf_pie);
-        if (no_data == data.length) {
-			$('#'+graph_id+' .overlay').remove();
-			$('#'+graph_id+' .base').remove();
-			$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
-		}
-		var legends = $('#'+graph_id+' .legendLabel');
-		var j = 0;
-		legends.each(function () {
-			//$(this).css('width', $(this).width());
-			$(this).css('font-size', font_size+'pt');
-			$(this).removeClass("legendLabel");
-			$(this).addClass(font);
-			$(this).text(legend[j]);
-			j++;
-		});
-
-		if ($('input[name="custom_graph"]').val()) {
-			$('.legend>div').css('right',($('.legend>div').height()*-1));
-			$('.legend>table').css('right',($('.legend>div').height()*-1));
-		}
-		//$('.legend>table').css('border',"1px solid #E2E2E2");
-		$('.legend>table').css('background-color',"transparent");
-
-		var pielegends = $('#'+graph_id+' .pieLabelBackground');
-		pielegends.each(function () {
-			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
-		});
-		var labelpielegends = $('#'+graph_id+' .pieLabel');
-		labelpielegends.each(function () {
-			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
-		});
-    }
-*/
 }
 
 function pandoraFlotHBars(
@@ -380,12 +329,12 @@ function pandoraFlotHBars(
   max
 ) {
   var colors_data = [
-    "#FC4444",
+    "#e63c52",
     "#FFA631",
-    "#FAD403",
+    "#f3b200",
     "#5BB6E5",
     "#F2919D",
-    "#80BA27"
+    "#82b92e"
   ];
   values = values.split(separator2);
   font = font
@@ -639,7 +588,7 @@ function pandoraFlotVBars(
   var colors_data =
     colors.length > 0
       ? colors
-      : ["#FFA631", "#FC4444", "#FAD403", "#5BB6E5", "#F2919D", "#80BA27"];
+      : ["#FFA631", "#e63c52", "#f3b200", "#5BB6E5", "#F2919D", "#82b92e"];
   var datas = new Array();
 
   for (i = 0; i < values.length; i++) {
@@ -869,7 +818,7 @@ function pandoraFlotSlicebar(
 
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
@@ -1938,6 +1887,8 @@ function pandoraFlotArea(
   switch (type) {
     case "line":
     case 2:
+      stacked = null;
+      filled_s = false;
       break;
     case 3:
       stacked = "stack";
@@ -2681,13 +2632,13 @@ function pandoraFlotArea(
         if (events_data.event_type.search("alert") >= 0) {
           extra_color = "#FFA631";
         } else if (events_data.event_type.search("critical") >= 0) {
-          extra_color = "#FC4444";
+          extra_color = "#e63c52";
         } else if (events_data.event_type.search("warning") >= 0) {
-          extra_color = "#FAD403";
+          extra_color = "#f3b200";
         } else if (events_data.event_type.search("unknown") >= 0) {
-          extra_color = "#3BA0FF";
+          extra_color = "#4a83f3";
         } else if (events_data.event_type.search("normal") >= 0) {
-          extra_color = "#80BA27";
+          extra_color = "#82b92e";
         } else {
           extra_color = "#ffffff";
         }
@@ -2789,14 +2740,16 @@ function pandoraFlotArea(
     if (short_data) {
       formatted = number_format(v, force_integer, "", short_data);
     } else {
-      // It is an integer
+      // It is an integer.
       if (v - Math.floor(v) == 0) {
         formatted = number_format(v, force_integer, "", 2);
       }
     }
 
-    // Get only two decimals
-    formatted = round_with_decimals(formatted, 100);
+    // Get only two decimals.
+    if (typeof formatted != "string") {
+      formatted = Math.round(formatted * 100) / 100;
+    }
     return formatted;
   }
 

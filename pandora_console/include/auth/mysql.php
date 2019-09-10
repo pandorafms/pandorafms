@@ -1257,11 +1257,8 @@ function fill_permissions_ldap($sr)
     global $config;
     $permissions = [];
     $permissions_profile = [];
-    if (defined('METACONSOLE')) {
-        $meta = true;
-    }
 
-    if ($meta && (bool) $config['ldap_save_profile'] === false && $config['ldap_advanced_config'] == 0) {
+    if ((bool) $config['ldap_save_profile'] === false && ($config['ldap_advanced_config'] == 0 || $config['ldap_advanced_config'] == '')) {
         $result = 0;
         $result = db_get_all_rows_filter(
             'tusuario_perfil',
@@ -1287,43 +1284,9 @@ function fill_permissions_ldap($sr)
         return $permissions_profile;
     }
 
-    if ((bool) $config['ldap_save_profile'] === false && $config['ldap_advanced_config'] == '') {
-        $result = db_get_all_rows_filter(
-            'tusuario_perfil',
-            ['id_usuario' => $sr['uid'][0]]
-        );
-        if ($result == false) {
-            $permissions[0]['profile'] = $config['default_remote_profile'];
-            $permissions[0]['groups'][] = $config['default_remote_group'];
-            $permissions[0]['tags'] = $config['default_assign_tags'];
-            $permissions[0]['no_hierarchy'] = $config['default_no_hierarchy'];
-            return $permissions;
-        }
-
-        foreach ($result as $perms) {
-               $permissions_profile[] = [
-                   'profile'      => $perms['id_perfil'],
-                   'groups'       => [$perms['id_grupo']],
-                   'tags'         => $perms['tags'],
-                   'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
-               ];
-        }
-
-        return $permissions_profile;
-    }
-
     if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == 1) {
         $ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
-        foreach ($ldap_adv_perms as $ldap_adv_perm) {
-            $permissions[] = [
-                'profile'      => $ldap_adv_perm['profile'],
-                'groups'       => $ldap_adv_perm['group'],
-                'tags'         => implode(',', $ldap_adv_perm['tags']),
-                'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
-            ];
-        }
-
-        return $permissions;
+        return get_advanced_permissions($ldap_adv_perms, $sr);
     }
 
     if ($config['ldap_advanced_config'] == 1 && $config['ldap_save_profile'] == 0) {
@@ -1333,25 +1296,16 @@ function fill_permissions_ldap($sr)
         );
         if ($result == false) {
             $ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
-            foreach ($ldap_adv_perms as $ldap_adv_perm) {
-                $permissions[] = [
-                    'profile'      => $ldap_adv_perm['profile'],
-                    'groups'       => $ldap_adv_perm['group'],
-                    'tags'         => implode(',', $ldap_adv_perm['tags']),
-                    'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
-                ];
-            }
-
-            return $permissions;
+            return get_advanced_permissions($ldap_adv_perms, $sr);
         }
 
         foreach ($result as $perms) {
-               $permissions_profile[] = [
-                   'profile'      => $perms['id_perfil'],
-                   'groups'       => [$perms['id_grupo']],
-                   'tags'         => $perms['tags'],
-                   'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
-               ];
+            $permissions_profile[] = [
+                'profile'      => $perms['id_perfil'],
+                'groups'       => [$perms['id_grupo']],
+                'tags'         => $perms['tags'],
+                'no_hierarchy' => (bool) $perms['no_hierarchy'] ? 1 : 0,
+            ];
         };
 
         return $permissions_profile;
@@ -1365,22 +1319,43 @@ function fill_permissions_ldap($sr)
         return $permissions;
     }
 
-    // Decode permissions in advanced mode
-    $ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+    return $permissions;
+}
+
+
+/**
+ * Get permissions in advanced mode.
+ *
+ * @param array ldap_adv_perms
+ *
+ * @return array
+ */
+function get_advanced_permissions($ldap_adv_perms, $sr)
+{
+    $permissions = [];
     foreach ($ldap_adv_perms as $ldap_adv_perm) {
         $attributes = $ldap_adv_perm['groups_ldap'];
-        foreach ($attributes as $attr) {
-            $attr = explode('=', $attr, 2);
-            foreach ($sr[$attr[0]] as $s_attr) {
-                if (preg_match('/'.$attr[1].'/', $s_attr)) {
-                    $permissions[] = [
-                        'profile'      => $ldap_adv_perm['profile'],
-                        'groups'       => $ldap_adv_perm['group'],
-                        'tags'         => implode(',', $ldap_adv_perm['tags']),
-                        'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
-                    ];
+        if (!empty($attributes[0])) {
+            foreach ($attributes as $attr) {
+                $attr = explode('=', $attr, 2);
+                foreach ($sr[$attr[0]] as $s_attr) {
+                    if (preg_match('/'.$attr[1].'/', $s_attr)) {
+                        $permissions[] = [
+                            'profile'      => $ldap_adv_perm['profile'],
+                            'groups'       => $ldap_adv_perm['group'],
+                            'tags'         => implode(',', $ldap_adv_perm['tags']),
+                            'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
+                        ];
+                    }
                 }
             }
+        } else {
+            $permissions[] = [
+                'profile'      => $ldap_adv_perm['profile'],
+                'groups'       => $ldap_adv_perm['group'],
+                'tags'         => implode(',', $ldap_adv_perm['tags']),
+                'no_hierarchy' => (bool) $ldap_adv_perm['no_hierarchy'] ? 1 : 0,
+            ];
         }
     }
 
@@ -1472,7 +1447,10 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
         $tls = ' -ZZ ';
     }
 
-    if (stripos($ldap_host, 'ldap') !== false) {
+    if (stripos($ldap_host, 'ldap://') !== false
+        || stripos($ldap_host, 'ldaps://') !== false
+        || stripos($ldap_host, 'ldapi://') !== false
+    ) {
         $ldap_host = ' -H '.$ldap_host.':'.$ldap_port;
     } else {
         $ldap_host = ' -h '.$ldap_host.' -p '.$ldap_port;

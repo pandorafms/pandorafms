@@ -1,4 +1,5 @@
 import Group, { groupPropsDecoder } from "./Group";
+import { itemMetaDecoder } from "../lib";
 
 const genericRawProps = {
   id: 1,
@@ -33,6 +34,9 @@ describe("Group item", () => {
       ...positionRawProps,
       ...sizeRawProps,
       ...groupRawProps
+    }),
+    itemMetaDecoder({
+      receivedAt: new Date(1)
     })
   );
 

@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_update_manager.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
@@ -1262,6 +1263,7 @@ class ConsoleSupervisor
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
         $PHPmemory_limit_min = config_return_in_bytes('500M');
+        $PHPSerialize_precision = ini_get('serialize_precision');
 
         // PhantomJS status.
         $result_ejecution = exec($config['phantomjs_bin'].'/phantomjs --version');
@@ -1437,6 +1439,30 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.PHP.VERSION');
         }
+
+        if ($PHPSerialize_precision != -1) {
+            $url = 'https://www.php.net/manual/en/ini.core.php#ini.serialize-precision';
+            if ($config['language'] == 'es') {
+                $url = 'https://www.php.net/manual/es/ini.core.php#ini.serialize-precision';
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PHP.SERIALIZE_PRECISION',
+                    'title'   => sprintf(
+                        __("Not recommended '%s' value in PHP configuration"),
+                        'serialze_precision'
+                    ),                    'message' => sprintf(
+                        __('Recommended value is: %s'),
+                        sprintf('-1')
+                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
+        }
+
     }
 
 
@@ -1940,6 +1966,7 @@ class ConsoleSupervisor
     public function checkUpdateManagerRegistration()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
         if (update_manager_verify_registration() === false) {
@@ -1974,7 +2001,7 @@ class ConsoleSupervisor
             'id_user',
             $config['id_user']
         );
-        if (license_free() === true
+        if (!$config['disabled_newsletter']
             && $newsletter != 1
             && $login === false
         ) {
@@ -2244,6 +2271,7 @@ class ConsoleSupervisor
     public function getUMMessages()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
 
         if (update_manager_verify_registration() === false) {
             // Console not subscribed.
@@ -2260,8 +2288,6 @@ class ConsoleSupervisor
         // Only ask for messages once a day.
         $future = (time() + 2 * SECONDS_1HOUR);
         config_update_value('last_um_check', $future);
-
-        include_once $config['homedir'].'/include/functions_update_manager.php';
 
         $params = [
             'pandora_uid' => $config['pandora_uid'],

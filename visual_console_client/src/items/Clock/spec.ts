@@ -1,4 +1,5 @@
 import Clock, { clockPropsDecoder } from ".";
+import { itemMetaDecoder } from "../../lib";
 
 const genericRawProps = {
   id: 1,
@@ -46,6 +47,9 @@ describe("Clock item", () => {
       ...sizeRawProps,
       ...linkedModuleProps,
       ...digitalClockProps
+    }),
+    itemMetaDecoder({
+      receivedAt: new Date(1)
     })
   );
 

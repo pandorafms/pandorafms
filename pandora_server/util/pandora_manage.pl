@@ -4816,9 +4816,8 @@ sub cli_stop_downtime () {
 	exist_check($downtime_id,'planned downtime',$downtime_id);
 	
 	my $current_time = time;
-	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	my $data = get_db_single_row ($dbh, 'SELECT type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
+	my $data = get_db_single_row ($dbh, 'SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
 
 	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
 		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
@@ -4826,7 +4825,7 @@ sub cli_stop_downtime () {
 		exit;
 	}
 	
-	if($current_time >= $downtime_date_to) {
+	if($current_time >= $data->{'date_to'}) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}

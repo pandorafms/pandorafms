@@ -189,7 +189,7 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{'rb_product_name'} = 'Pandora FMS' unless (defined ($pa_config->{'rb_product_name'}) && $pa_config->{'rb_product_name'} ne '');
 
 	# Mail transport agent configuration. Local configuration takes precedence.
-	if ($pa_config->{"mta_address"} eq '') {
+	if ($pa_config->{"mta_local"} eq 0) {
 		$pa_config->{"mta_address"} = pandora_get_tconfig_token ($dbh, 'email_smtpServer', '');
 		$pa_config->{"mta_from"} = '"' . pandora_get_tconfig_token ($dbh, 'email_from_name', 'Pandora FMS') . '" <' . 
 		                           pandora_get_tconfig_token ($dbh, 'email_from_dir', 'pandora@pandorafms.org') . '>';
@@ -336,7 +336,8 @@ sub pandora_load_config {
 	$pa_config->{"mta_pass"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0 (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
 	$pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
-	$pa_config->{"mta_encryption"} = 'none';
+	$pa_config->{"mta_encryption"} = 'none'; # 7.0 739
+	$pa_config->{"mta_local"} = 0; # 7.0 739
 	$pa_config->{"mail_in_separate"} = 1; # 1: eMail deliver alert mail in separate mails.
 					      # 0: eMail deliver 1 mail with all destination.
 
@@ -610,6 +611,7 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mta_address\s(.*)/i) { 
 			$pa_config->{'mta_address'}= clean_blank($1); 
+			$pa_config->{'mta_local'}=1;
 		}
 		elsif ($parametro =~ m/^mta_port\s(.*)/i) { 
 			$pa_config->{'mta_port'}= clean_blank($1); 

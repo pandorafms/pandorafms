@@ -278,7 +278,7 @@ sub sendmail {
     }
 
     $smtp = $mail{'Smtp'} || $mail{'Server'};
-    unshift @{$mailcfg{'smtp'}}, $smtp if ($smtp and $mailcfg{'smtp'}->[0] ne $smtp);
+    $mailcfg{'smtp'}->[0] = $smtp if ($smtp and $mailcfg{'smtp'}->[0] ne $smtp);
 
     $encryption = $mail{'Encryption'} || $mail{'Encryption'};
 

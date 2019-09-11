@@ -4818,17 +4818,14 @@ sub cli_stop_downtime () {
 	my $current_time = time;
 	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	my $type_execution = get_db_value ($dbh, 'SELECT type_execution FROM tplanned_downtime WHERE id=?', $downtime_id);
-	
-	if($type_execution eq 'periodically'){
+	my $data = get_db_single_row ($dbh, 'SELECT type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
 
-		my $downtime_running = get_db_value  ($dbh, 'SELECT executed FROM tplanned_downtime WHERE id=?', $downtime_id);
-		if($downtime_running == 1){
-		print_log "[INFO] Planned_downtime '$downtime_name' can't be stopped\n\n";
+	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
+		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
+		print_log "[INFO] Periodical and running planned downtime cannot be stopped.\n\n";
 		exit;
-		}
 	}
-
+	
 	if($current_time >= $downtime_date_to) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;

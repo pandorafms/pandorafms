@@ -1930,11 +1930,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
 
             case 'unit_select':
                 if ($value != -1) {
-                    if ($value == 'none') {
-                        $values['unit'] = (string) get_parameter('unit_text');
-                    } else {
-                        $values['unit'] = $value;
-                    }
+                    $values['unit'] = (string) get_parameter('unit');
                 }
             break;
 

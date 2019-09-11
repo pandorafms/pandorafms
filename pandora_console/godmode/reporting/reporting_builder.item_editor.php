@@ -1317,7 +1317,7 @@ $class = 'databox filters';
 
                     if (metaconsole_load_external_db($connection) == NOERR) {
                         $agent_name = db_get_value_filter(
-                            'nombre',
+                            'alias',
                             'tagente',
                             ['id_agente' => $idAgent]
                         );

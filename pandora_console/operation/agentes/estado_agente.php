@@ -624,6 +624,13 @@ if (empty($agents)) {
     $agents = [];
 }
 
+$agent_font_size = 'font-size:  7px';
+$description_font_size = 'font-size: 6.5px';
+if ($config['language'] == 'ja' || $config['language'] == 'zh_CN' || $own_info['language'] == 'ja' || $own_info['language'] == 'zh_CN') {
+    $agent_font_size = 'font-size: 15px';
+    $description_font_size = 'font-size: 11px';
+}
+
 // Urls to sort the table.
 $url_up_agente = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=up';
 $url_down_agente = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=down';
@@ -739,7 +746,7 @@ foreach ($agents as $agent) {
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
     $data[0] .= '<span>';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"> <span style="font-size: 7pt;font-weight:bold" title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></a>';
+    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"> <span style="'.$agent_font_size.';font-weight:bold" title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></a>';
     $data[0] .= '</span>';
 
     if ($agent['quiet']) {
@@ -772,7 +779,7 @@ foreach ($agents as $agent) {
 
     $data[0] .= '</div></div>';
 
-    $data[1] = ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+    $data[1] = ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', $description_font_size);
 
     $data[10] = '';
 

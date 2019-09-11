@@ -4829,14 +4829,6 @@ sub cli_stop_downtime () {
 		}
 	}
 
-
-
-	if($current_time >= $downtime_date_to) {
-		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
-		exit;
-	}
-
-
 	if($current_time >= $downtime_date_to) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;

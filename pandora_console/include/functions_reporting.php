@@ -4876,15 +4876,15 @@ function reporting_value($report, $content, $type, $pdf=false)
                             $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
                             $date_reference = getdate();
 
-                    for ($i = $date_reference[0]; $i > ($date_reference[0] - $content['period']); $i -= $content['lapse']) {
-                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i - $content['lapse'] + 1)).' to '.date('Y-m-d H:i:s', $i).'</td><td>';
+                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
+                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) )).'</td><td>';
 
                         if ($i > $time_begin['utimestamp']) {
                             $value .= format_for_graph(
                                 reporting_get_agentmodule_data_max(
                                     $content['id_agent_module'],
                                     $content['lapse'],
-                                    $i
+                                    ($i + $content['lapse'])
                                 ),
                                 $config['graph_precision']
                             ).' '.$unit.'</td></tr>';
@@ -4983,15 +4983,15 @@ function reporting_value($report, $content, $type, $pdf=false)
                             $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
                             $date_reference = getdate();
 
-                    for ($i = $date_reference[0]; $i > ($date_reference[0] - $content['period']); $i -= $content['lapse']) {
-                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i - $content['lapse'] + 1)).' to '.date('Y-m-d H:i:s', $i).'</td><td>';
+                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
+                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) )).'</td><td>';
 
                         if ($i > $time_begin['utimestamp']) {
                             $value .= format_for_graph(
                                 reporting_get_agentmodule_data_min(
                                     $content['id_agent_module'],
                                     $content['lapse'],
-                                    $i
+                                    ($i + $content['lapse'])
                                 ),
                                 $config['graph_precision']
                             ).' '.$unit.'</td></tr>';
@@ -5090,15 +5090,15 @@ function reporting_value($report, $content, $type, $pdf=false)
                     $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
                     $date_reference = getdate();
 
-                    for ($i = $date_reference[0]; $i > ($date_reference[0] - $content['period']); $i -= $content['lapse']) {
-                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i - $content['lapse'] + 1)).' to '.date('Y-m-d H:i:s', $i).'</td><td>';
+                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
+                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) )).'</td><td>';
 
                         if ($i > $time_begin['utimestamp']) {
                             $value .= format_for_graph(
                                 reporting_get_agentmodule_data_average(
                                     $content['id_agent_module'],
                                     $content['lapse'],
-                                    $i
+                                    ($i + $content['lapse'])
                                 ),
                                 $config['graph_precision']
                             ).' '.$unit.'</td></tr>';

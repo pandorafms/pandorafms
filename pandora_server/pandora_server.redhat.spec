@@ -27,7 +27,7 @@ Requires:           perl(DBI) perl(DBD::mysql)
 Requires:           perl(HTTP::Request::Common) perl(LWP::Simple) perl(LWP::UserAgent)
 Requires:           perl(XML::Simple) perl(XML::Twig) net-snmp-utils
 Requires:           perl(NetAddr::IP) net-snmp net-tools
-Requires:           perl(IO::Socket::INET6) perl(Net::Telnet)
+Requires:           perl(IO::Socket::INET6) perl(IO::Socket::SSL) perl(Net::Telnet)
 Requires:           nmap sudo perl(JSON)
 Requires:           perl(Time::HiRes) perl(Encode::Locale)
 Requires:           perl perl(Sys::Syslog) perl(HTML::Entities) perl(Geo::IP)

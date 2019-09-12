@@ -301,8 +301,13 @@ function isInACL($ip)
             // example lab.artica.es without '*'
             $name = [];
             $name = gethostbyname($acl_ip);
-            if (preg_match('/'.$name.'/', $ip)) {
-                return true;
+            if (preg_match('/'.$name.'/', $ip, $matches)) {
+                // This is for false matches, like '' or $.
+                if (count($matches) == 1 && $matches[0] == '') {
+                    continue;
+                } else {
+                    return true;
+                }
             }
         }
     }

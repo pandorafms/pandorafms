@@ -4865,8 +4865,7 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if ($content['visual_format'] != 2) {
                     $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
-                    $date_reference = getdate();
-                    for ($i = $date_reference[0]; $i > ($date_reference[0] - $content['period']); $i -= $content['lapse']) {
+                    for ($i = $report['datetime']; $i > ($report['datetime'] - $content['period']); $i -= $content['lapse']) {
                         $row = [];
                         $row[__('Lapse')] = date('Y-m-d H:i:s', ($i - $content['lapse'] + 1)).' to '.date('Y-m-d H:i:s', $i);
 

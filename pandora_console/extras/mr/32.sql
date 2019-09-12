@@ -1,4 +1,4 @@
-START TRANSACTION
+START TRANSACTION;
 
 ALTER TABLE `tdatabase` MODIFY `last_error` text;
 ALTER TABLE `tdatabase` MODIFY `host` VARCHAR(255) DEFAULT '';

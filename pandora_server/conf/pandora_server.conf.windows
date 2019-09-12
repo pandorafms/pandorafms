@@ -214,6 +214,7 @@ recon_threads 2
 dataserver_threads 2
 
 # mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# If not set, the MTA configuration specified in the Pandora FMS Console will be used.
 
 #mta_address localhost
 

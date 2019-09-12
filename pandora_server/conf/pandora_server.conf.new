@@ -226,8 +226,9 @@ recon_threads 1
 dataserver_threads 1
 
 # mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# If not set, the MTA configuration specified in the Pandora FMS Console will be used.
 
-mta_address localhost
+#mta_address localhost
 
 # mta_port, this is the mail server port (default 25)
 

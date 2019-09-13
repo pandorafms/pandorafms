@@ -2532,7 +2532,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
             true
         ).' '.__('OK').': '.remove_right_zeros(
             number_format(
-                $item['data']['ok']['formated_value'],
+                $item['data']['ok']['value'],
                 $config['graph_precision']
             )
         ).' %</p>';
@@ -2543,7 +2543,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
             true
         ).' '.__('Not OK').': '.remove_right_zeros(
             number_format(
-                $item['data']['fail']['formated_value'],
+                $item['data']['fail']['value'],
                 $config['graph_precision']
             )
         ).' % '.'</p>';

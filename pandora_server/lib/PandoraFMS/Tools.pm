@@ -140,6 +140,7 @@ our @EXPORT = qw(
 	generate_agent_name_hash
 	long_to_ip
 	ip_to_long
+	get_enabled_servers
 );
 
 # ID of the different servers
@@ -2049,6 +2050,25 @@ sub long_to_ip {
 	return inet_ntoa pack("N", ($ip_long));
 }
 
+###############################################################################
+# Returns a list with enabled servers.
+###############################################################################
+sub get_enabled_servers {
+	my $conf = shift;
+
+	if (ref($conf) ne "HASH") {
+		return ();
+	}
+
+	my @server_list = map {
+		if ($_ =~ /server$/i && $conf->{$_} > 0) {
+			$_
+		} else {
+		}
+	} keys %{$conf};
+
+	return @server_list;
+}
 # End of function declaration
 # End of defined Code
 

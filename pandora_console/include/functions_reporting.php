@@ -4785,12 +4785,10 @@ function reporting_value($report, $content, $type, $pdf=false)
         'period'          => $content['period'],
         'width'           => '600px',
         'pure'            => false,
-    // true
         'date'            => $report['datetime'],
         'only_image'      => $only_image,
         'homeurl'         => ui_get_full_url(false, false, false, false),
         'ttl'             => 1,
-    // 2
         'type_graph'      => $config['type_module_charts'],
         'time_interval'   => $content['lapse'],
         'server_id'       => $id_meta,
@@ -4800,323 +4798,105 @@ function reporting_value($report, $content, $type, $pdf=false)
 
     switch ($type) {
         case 'max':
-            if ($content['lapse_calc'] == 0) {
-                $value = reporting_get_agentmodule_data_max(
-                    $content['id_agent_module'],
-                    $content['period'],
-                    $report['datetime']
-                );
-                if (!$config['simple_module_value']) {
-                    $formated_value = $value;
-                } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
-                }
-            } else {
-                $value = '
-                <table border="0" style="margin:0 auto;text-align:center;">
-                    <tr>
-                        <td width="400px;" height="20%;">';
-                if ($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3) {
-                    $value .= '
-                            <table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
-                                <tr>
-                                    <th style="padding:5px;background-color:#82b92e;">
-                                        '.__('Agent').'
-                                    </th>
-                                    <th style="padding:5px;background-color:#82b92e;">
-                                        '.__('Module').'
-                                    </th>
-                                    <th style="padding:5px;background-color:#82b92e;">
-                                        '.__('Maximum').'
-                                    </th>
-                                <tr>
-                                    <td style="padding:5px;">
-                                        '.$agent_name.'
-                                    </td>
-                                    <td style="padding:5px;">
-                                        '.$module_name.'
-                                    </td>
-                                    <td style="padding:5px;">
-                                        '.format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
-                                    </td>
-                                </tr>
-                            </table>';
-                }
-
-                $value .= '
-                    </td>
-                    <td rowspan="2" width="150px">
-                    </td>
-                    <td rowspan="2">';
-
-                if ($content['visual_format'] == 2 || $content['visual_format'] == 3) {
-                    $params['force_interval'] = 'max_only';
-                    $value .= grafico_modulo_sparse($params);
-                }
-
-                $value .= '
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>';
-
-                if ($content['visual_format'] == 1 || $content['visual_format'] == 3) {
-                    $value .= '
-                        <table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-                            <tr>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Lapse').'
-                                </th>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Maximum').'
-                                </th>
-                            </tr>
-                            <tr>';
-                            $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
-                            $date_reference = getdate();
-
-                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
-                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) )).'</td><td>';
-
-                        if ($i > $time_begin['utimestamp']) {
-                            $value .= format_for_graph(
-                                reporting_get_agentmodule_data_max(
-                                    $content['id_agent_module'],
-                                    $content['lapse'],
-                                    ($i + $content['lapse'])
-                                ),
-                                $config['graph_precision']
-                            ).' '.$unit.'</td></tr>';
-                        } else {
-                            $value .= 'N/A</td></tr>';
-                        }
-                    }
-
-                    $value .= '</table>';
-                }
-
-                $value .= '
-                            </td>
-                        </tr>
-                    </table>';
-
-                $formated_value = $value;
-            }
-        break;
-
         case 'min':
-            if ($content['lapse_calc'] == 0) {
-                $value = reporting_get_agentmodule_data_min(
-                    $content['id_agent_module'],
-                    $content['period'],
-                    $report['datetime']
-                );
-
-                if (!$config['simple_module_value']) {
-                    $formated_value = $value;
-                } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
-                }
-            } else {
-                $value = '
-                    <table border="0" style="margin:0 auto;text-align:center;">
-                        <tr>
-                            <td width="400px;" height="20%;">';
-
-                if ($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3) {
-                    $value .= '
-                        <table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
-                            <tr>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Agent').'
-                                </th>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Module').'
-                                </th>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Minimum').'
-                                </th>
-                            <tr>
-                                <td style="padding:5px;">
-                                    '.$agent_name.'
-                                </td>
-                                <td style="padding:5px;">
-                                    '.$module_name.'
-                                </td>
-                                <td style="padding:5px;">
-                                    '.format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
-                                    </td>
-                                </tr>
-                            </table>';
-                }
-
-                        $value .= '
-                    </td>
-                    <td rowspan="2" width="150px">
-                    </td>
-                    <td rowspan="2">';
-
-                if ($content['visual_format'] == 2 || $content['visual_format'] == 3) {
-                    $params['force_interval'] = 'min_only';
-                    $value .= grafico_modulo_sparse($params);
-                }
-
-                    $value .= '
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>';
-
-                if ($content['visual_format'] == 1 || $content['visual_format'] == 3) {
-                    $value .= '
-                        <table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-                            <tr>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Lapse').'
-                                </th>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Minimum').'
-                                </th>
-                            </tr>
-                            <tr>';
-                            $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
-                            $date_reference = getdate();
-
-                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
-                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) )).'</td><td>';
-
-                        if ($i > $time_begin['utimestamp']) {
-                            $value .= format_for_graph(
-                                reporting_get_agentmodule_data_min(
-                                    $content['id_agent_module'],
-                                    $content['lapse'],
-                                    ($i + $content['lapse'])
-                                ),
-                                $config['graph_precision']
-                            ).' '.$unit.'</td></tr>';
-                        } else {
-                            $value .= 'N/A</td></tr>';
-                        }
-                    }
-
-                    $value .= '</table>';
-                }
-
-                $value .= '
-                        
-                            </td>
-                        </tr>
-                    </table>';
-
-                $formated_value = $value;
-            }
-        break;
-
         case 'avg':
             if ($content['lapse_calc'] == 0) {
-                $value = reporting_get_agentmodule_data_average(
-                    $content['id_agent_module'],
-                    $content['period'],
-                    $report['datetime']
-                );
+                switch ($type) {
+                    case 'max':
+                        $value = reporting_get_agentmodule_data_max(
+                            $content['id_agent_module'],
+                            $content['period'],
+                            $report['datetime']
+                        );
+                    break;
+
+                    case 'min':
+                        $value = reporting_get_agentmodule_data_min(
+                            $content['id_agent_module'],
+                            $content['period'],
+                            $report['datetime']
+                        );
+                    break;
+
+                    case 'avg':
+                        $value = reporting_get_agentmodule_data_average(
+                            $content['id_agent_module'],
+                            $content['period'],
+                            $report['datetime']
+                        );
+                    break;
+                }
+
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
                 } else {
                     $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
                 }
             } else {
-                $value = '
-                    <table border="0" style="margin:0 auto;text-align:center;">
-                        <tr>
-                            <td width="400px;" height="20%;">';
+                $return['visual_format'] = $content['visual_format'];
 
-                if ($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3) {
-                    $value .= '
-                            <table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
-                                <tr>
-                                    <th style="padding:5px;background-color:#82b92e;">
-                                        '.__('Agent').'
-                                    </th>
-                                    <th style="padding:5px;background-color:#82b92e;">
-                                        '.__('Module').'
-                                    </th>
-                                    <th style="padding:5px;background-color:#82b92e;">
-                                        '.__('Average').'
-                                    </th>
-                                <tr>
-                                    <td style="padding:5px;">
-                                        '.$agent_name.'
-                                    </td>
-                                    <td style="padding:5px;">
-                                        '.$module_name.'
-                                    </td>
-                                    <td style="padding:5px;">
-                                        '.format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit.'
-                                    </td>
-                                </tr>
-                            </table>';
+                switch ($type) {
+                    case 'max':
+                        $params['force_interval'] = 'max_only';
+                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                    break;
+
+                    case 'min':
+                        $params['force_interval'] = 'min_only';
+                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                    break;
+
+                    case 'avg':
+                        $params['force_interval'] = 'avg_only';
+                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                    break;
                 }
 
-                        $value .= '
-                    </td>
-                    <td rowspan="2" width="150px">
-                    </td>
-                    <td rowspan="2">';
-                if ($content['visual_format'] == 2 || $content['visual_format'] == 3) {
-                    $params['force_interval'] = 'avg_only';
-                    $value .= grafico_modulo_sparse($params);
+                $return['data'][] = [
+                    __('Agent')   => $agent_name,
+                    __('Module')  => $module_name,
+                    __('Maximun') => $value,
+                ];
+
+                if ($content['visual_format'] != 1) {
+                    $graph = grafico_modulo_sparse($params);
+                    $return['data'][] = ['value' => $graph];
                 }
 
-                $value .= '
-                    
-                    </td>               
-                </tr>
-                <tr>
-                    <td>';
-
-                if ($content['visual_format'] == 1 || $content['visual_format'] == 3) {
-                    $value .= '
-                        <table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
-                            <tr>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Lapse').'
-                                </th>
-                                <th style="padding:5px;background-color:#82b92e;">
-                                    '.__('Average').'
-                                </th>
-                            </tr>
-                            <tr>';
-                    $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
-                    $date_reference = getdate();
+                if ($content['visual_format'] != 2) {
+                    $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
 
                     for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
-                        $value .= '<tr><td style="padding:5px;">'.date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) )).'</td><td>';
+                        $row = [];
+                        $row[__('Lapse')] = date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) ));
 
                         if ($i > $time_begin['utimestamp']) {
-                            $value .= format_for_graph(
-                                reporting_get_agentmodule_data_average(
-                                    $content['id_agent_module'],
-                                    $content['lapse'],
-                                    ($i + $content['lapse'])
-                                ),
-                                $config['graph_precision']
-                            ).' '.$unit.'</td></tr>';
-                        } else {
-                            $value .= 'N/A</td></tr>';
-                        }
-                    }
+                            switch ($type) {
+                                case 'max':
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                break;
 
-                    $value .= '</table>';
+                                case 'min':
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                break;
+
+                                case 'avg':
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                break;
+                            }
+                        } else {
+                            $row[__('Maximun')] = 'N/A';
+                        }
+
+                        $return['data'][] = $row;
+                    }
                 }
 
-                $value .= '
-                        
-                            </td>
-                        </tr>
-                    </table>';
+                if ($config['metaconsole']) {
+                    metaconsole_restore_db();
+                }
 
-                $formated_value = $value;
+                return reporting_check_structure_content($return);
             }
         break;
 

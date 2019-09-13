@@ -3205,6 +3205,7 @@ function ui_print_datatable(array $parameters)
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
+                    fieldSeparator: "'.$config['csv_divider'].'",
                     exportOptions : {
                         modifier : {
                             // DataTables core

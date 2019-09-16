@@ -1565,10 +1565,8 @@ $class = 'databox filters';
                     $all_modules = '';
                 } else {
                     $all_modules = db_get_all_rows_sql(
-                        'SELECT DISTINCT nombre, id_agente_modulo
-                            FROM tagente_modulo
-                            WHERE id_agente
-                                IN ('.implode(',', array_values($id_agents)).')'
+                        'SELECT DISTINCT nombre FROM 
+							tagente_modulo WHERE id_agente IN ('.implode(',', array_values($id_agents)).')'
                     );
                 }
 
@@ -3528,6 +3526,9 @@ $(document).ready (function () {
     chooseSQLquery();
 
     $("#id_agents").change(agent_changed_by_multiple_agents);
+
+    // Load selected modules by default
+    $("#id_agents2").trigger('click');
 
     $("#combo_group").change (
         function () {

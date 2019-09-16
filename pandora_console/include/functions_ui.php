@@ -48,15 +48,16 @@ if (isset($config['homedir'])) {
  */
 function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
 {
-    $return = $text;
-
     if (array_search('[url]', $allowed_tags) !== false) {
-        $return = preg_replace(
-            '/\[url=([^\]]*)\]/',
-            '<a target="_blank" rel="noopener noreferrer" href="$1">',
-            $return
-        );
-        $return = str_replace('[/url]', '</a>', $return);
+        // If link hasn't http, add it.
+        if (preg_match('/https?:\/\//', $text)) {
+            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="$1">$2</a>';
+        } else {
+            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="http://$1">$2</a>';
+        }
+
+        // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes
+        $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $text);
     }
 
     return $return;
@@ -1487,7 +1488,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
     $filename = $path.$name.'.js';
 
     if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url(false, false, false, false).$filename.'"></script>';
+        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
         return null;
     }
 
@@ -1504,7 +1505,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $config['js'][$name] = '../../'.$filename;
     } else {
         $config['js'][$name] = $filename;
@@ -1794,7 +1795,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_css = ui_get_full_url($filename);
+        $url_css = ui_get_full_url($filename, false, false, false);
         $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
     }
 
@@ -1851,7 +1852,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -1892,7 +1893,7 @@ function ui_process_page_head($string, $bitfield)
 
         array_push($loaded, $name);
 
-        $url_js = ui_get_full_url($filename);
+        $url_js = ui_get_full_url($filename, false, false, false);
         $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
     }
 
@@ -2055,7 +2056,7 @@ function ui_pagination(
     $actual_page = floor($offset / $pagination);
     $ini_page = (floor($actual_page / $block_limit) * $block_limit);
     $end_page = ($ini_page + $block_limit - 1);
-    if ($end_page > $number_of_pages) {
+    if ($end_page >= $number_of_pages) {
         $end_page = ($number_of_pages - 1);
     }
 
@@ -2841,7 +2842,7 @@ function ui_progress(
                 width_interval = '.$ajax['interval'].';
                 if (last % 10 == 0) {
                     $.post({
-                        url: "'.ui_get_full_url('ajax.php').'",
+                        url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                         data: {';
         if (is_array($ajax['data'])) {
             foreach ($ajax['data'] as $token => $value) {
@@ -3094,38 +3095,7 @@ function ui_print_datatable(array $parameters)
         $filter .= '<ul class="datatable_filter content">';
 
         foreach ($parameters['form']['inputs'] as $input) {
-            $filter .= '<li>';
-            $filter .= '<label>'.$input['label'].'</label>';
-            if ($input['type'] != 'select') {
-                $filter .= '<input type="'.$input['type'].'" ';
-                $filter .= ' style="'.$input['style'].'" ';
-                $filter .= ' class="'.$input['class'].'" ';
-                $filter .= ' value="'.$input['value'].'" ';
-                $filter .= ' name="'.$input['name'].'" id="'.$input['id'].'" />';
-            } else {
-                // Select.
-                $filter .= '<select class="'.$input['class'].'"';
-                $filter .= ' style="'.$input['style'].'" ';
-                $filter .= ' name="'.$input['name'].'" ';
-                $filter .= 'id="'.$input['id'].'">';
-
-                foreach ($input['options'] as $key => $opt) {
-                    if (is_array($opt)) {
-                        $filter .= '<option value="'.$opt['value'].'"';
-                        if ($opt['selected']) {
-                            $filter .= ' selected="yes" >';
-                        }
-
-                        $filter .= __($opt['text']).'</option>';
-                    } else {
-                        $filter .= '<option value="'.$key.'">'.$opt.'</option>';
-                    }
-                }
-
-                $filter .= '</select>';
-            }
-
-            $filter .= '</li>';
+            $filter .= html_print_input(($input + ['return' => true]), 'li');
         }
 
         $filter .= '<li>';
@@ -3247,7 +3217,7 @@ function ui_print_datatable(array $parameters)
             ],
             lengthMenu: '.json_encode($pagination_options).',
             ajax: {
-                url: "'.ui_get_full_url('ajax.php').'",
+                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                 type: "POST",
                 dataSrc: function (json) {
                     if (json.error) {
@@ -3723,10 +3693,28 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
     $url = htmlspecialchars($url);
 
     if (! $relative) {
-        return ui_get_full_url($url);
+        return ui_get_full_url($url, false, false, false);
     }
 
     return $url;
+}
+
+
+/**
+ * Checks if public_url usage is being forced to target 'visitor'.
+ *
+ * @return boolean
+ */
+function ui_forced_public_url()
+{
+    global $config;
+    $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+
+    if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
+        return false;
+    }
+
+    return (bool) $config['force_public_url'];
 }
 
 
@@ -3776,13 +3764,27 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     }
 
     if (!$no_proxy) {
-        // Check if the PandoraFMS runs across the proxy like as
-        // mod_proxy of Apache
-        // and check if public_url is set.
-        if (!empty($config['public_url'])
+        // Check proxy.
+        $proxy = false;
+        if (ui_forced_public_url()) {
+            $proxy = true;
+            $fullurl = $config['public_url'];
+            if (substr($fullurl, -1) != '/') {
+                $fullurl .= '/';
+            }
+
+            if ($url == 'index.php' && is_metaconsole()) {
+                $fullurl .= ENTERPRISE_DIR.'/meta';
+            }
+        } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
+            // Forced to use public url when being forwarder by a reverse proxy.
             $fullurl = $config['public_url'];
+            if (substr($fullurl, -1) != '/') {
+                $fullurl .= '/';
+            }
+
             $proxy = true;
         } else {
             $fullurl = $protocol.'://'.$_SERVER['SERVER_NAME'];
@@ -3813,7 +3815,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $url = $config['homeurl_static'].'/';
         }
 
-        if (defined('METACONSOLE') && $metaconsole_root) {
+        if (is_metaconsole() && $metaconsole_root) {
             $url .= 'enterprise/meta/';
         }
     } else if (!strstr($url, '.php')) {
@@ -3823,7 +3825,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             $fullurl .= $config['homeurl_static'].'/';
         }
 
-        if (defined('METACONSOLE') && $metaconsole_root) {
+        if (is_metaconsole() && $metaconsole_root) {
             $fullurl .= 'enterprise/meta/';
         }
     } else {
@@ -3835,7 +3837,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
 
-                if (defined('METACONSOLE') && $metaconsole_root) {
+                if (is_metaconsole() && $metaconsole_root) {
                     $fullurl .= 'enterprise/meta/';
                 }
             }
@@ -4443,6 +4445,10 @@ function ui_print_agent_autocomplete_input($parameters)
         $get_only_string_modules = true;
     }
 
+    if (isset($parameters['no_disabled_modules'])) {
+        $no_disabled_modules = $parameters['no_disabled_modules'];
+    }
+
     $spinner_image = html_print_image('images/spinner.gif', true, false, true);
     if (isset($parameters['spinner_image'])) {
         $spinner_image = $parameters['spinner_image'];
@@ -4450,7 +4456,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
     // Javascript configurations
     // ------------------------------------------------------------------.
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     // Default value.
     if (isset($parameters['javascript_ajax_page'])) {
         $javascript_ajax_page = $parameters['javascript_ajax_page'];
@@ -4590,7 +4596,11 @@ function ui_print_agent_autocomplete_input($parameters)
 			if ('.((int) $get_only_string_modules).') {
 				inputs.push ("get_only_string_modules=1");
 			}
-			
+
+            if ('.((int) $no_disabled_modules).') {
+                inputs.push ("disabled=0");
+            }
+
 			if ('.((int) $metaconsole_enabled).') {
 				if (('.((int) $use_input_server).')
 						|| ('.((int) $print_input_server).')) {

@@ -2684,7 +2684,7 @@ function can_user_access_node()
 
     $userinfo = get_user_info($config['id_user']);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];
     } else {
         return 1;
@@ -2852,6 +2852,8 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
+    $divider = html_entity_decode($config['csv_divider']);
+
     if (!$data) {
         echo __('No data found to export');
         return 0;
@@ -2869,9 +2871,9 @@ function print_audit_csv($data)
     // BOM
     print pack('C*', 0xEF, 0xBB, 0xBF);
 
-    echo __('User').';'.__('Action').';'.__('Date').';'.__('Source IP').';'.__('Comments')."\n";
+    echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).';'.io_safe_output($line['accion']).';'.date($config['date_format'], $line['utimestamp']).';'.$line['ip_origen'].';'.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;
@@ -5412,4 +5414,28 @@ function get_help_info($section_name)
 
     // hd($result);
     return $result;
+}
+
+
+if (!function_exists('getallheaders')) {
+
+
+    /**
+     * Fix for php-fpm
+     *
+     * @return array
+     */
+    function getallheaders()
+    {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+
 }

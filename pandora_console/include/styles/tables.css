@@ -122,6 +122,7 @@
   letter-spacing: 0.3pt;
   color: #000;
   background-color: #fff;
+  cursor: pointer;
 }
 
 .info_table tr th {
@@ -261,11 +262,16 @@ a.pandora_pagination {
   padding: 5px;
   color: #000;
   border: 1px solid #cacaca;
+  border-left: none;
   min-width: 12px;
-  margin-right: -1px;
   text-decoration: none;
   cursor: pointer;
 }
+.dataTables_paginate > span > span.ellipsis + a.pandora_pagination:last-child,
+.dataTables_paginate a.pandora_pagination.previous {
+  border-left: 1px solid #cacaca;
+}
+
 a.pandora_pagination.disabled {
   color: #cacaca;
 }
@@ -340,4 +346,9 @@ a.pandora_pagination.current:hover {
   background-position-x: left;
   background-position-y: center;
   cursor: pointer;
+}
+
+.info_table tr th.sorting_asc,
+.info_table tr th.sorting_desc {
+  padding-left: 15px;
 }

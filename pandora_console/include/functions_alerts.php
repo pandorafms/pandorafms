@@ -2492,7 +2492,7 @@ function alerts_get_action_escalation($action)
         $escalation[$action['fires_max']] = 1;
     } else if ($action['fires_min'] < $action['fires_max']) {
         for ($i = 1; $i <= $action['fires_max']; $i++) {
-            if ($i <= $action['fires_min']) {
+            if ($i < $action['fires_min']) {
                 $escalation[$i] = 0;
             } else {
                 $escalation[$i] = 1;

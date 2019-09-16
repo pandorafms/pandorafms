@@ -617,15 +617,20 @@ function users_save_login()
 
     $user_list = json_decode($user_list_json, true);
     if (empty($user_list)) {
-        $user_list = [];
-    }
-
-    if (isset($user_list[$config['id_user']])) {
-        $user_list[$config['id_user']]['count']++;
-    } else {
         $user_list[$config['id_user']] = [
             'name'  => $user['fullname'],
             'count' => 1,
+        ];
+    } else if (isset($user_list[$config['id_user']])) {
+        $user_list[$config['id_user']] = [
+            'name'  => $user['fullname'],
+            'count' => $user_list[$config['id_user']]['count'],
+        ];
+    } else {
+        $users_count = count($user_list);
+        $user_list[$config['id_user']] = [
+            'name'  => $user['fullname'],
+            'count' => ++$users_count,
         ];
     }
 
@@ -704,17 +709,7 @@ function users_save_logout($user=false, $delete=false)
         $user_list = [];
     }
 
-    if ($delete) {
-        unset($user_list[$user['id_user']]);
-    } else {
-        if (isset($user_list[$config['id_user']])) {
-            $user_list[$config['id_user']]['count']--;
-        }
-
-        if ($user_list[$config['id_user']]['count'] <= 0) {
-            unset($user_list[$user['id_user']]);
-        }
-    }
+    unset($user_list[$user['id_user']]);
 
     // Clean the file
     ftruncate($fp_user_list, 0);
@@ -1052,6 +1047,13 @@ function users_check_users()
         'users'   => '',
     ];
 
+    $users_with_session = db_get_all_rows_sql('SELECT tsessions_php.data FROM pandora.tsessions_php;');
+    $users_logged_now = [];
+    foreach ($users_with_session as $user_with_session) {
+        $tmp_id_user = explode('"', $user_with_session['data']);
+        array_push($users_logged_now, $tmp_id_user[1]);
+    }
+
     $file_global_user_list = $config['attachment_store'].'/pandora_chat.user_list.json.txt';
 
     // First lock the file
@@ -1082,12 +1084,31 @@ function users_check_users()
         $user_list = [];
     }
 
-    fclose($fp_user_list);
-
+    // Compare both user list. Meanwhile the user from chat file have an active
+    // session, his continue in the list of active chat users
     $user_name_list = [];
-    foreach ($user_list as $user) {
-        $user_name_list[] = $user['name'];
+    foreach ($user_list as $key => $user) {
+        if (in_array($key, $users_logged_now)) {
+            array_push($user_name_list, $user['name']);
+        } else {
+            unset($user_list[$key]);
+        }
     }
+
+    // Clean the file
+    ftruncate($fp_user_list, 0);
+
+    // Update the file with the correct list of users
+    $status = fwrite($fp_user_list, json_encode($user_list));
+
+    /*
+        if ($status === false) {
+        fclose($fp_user_list);
+
+        return;
+    } */
+    // Closing the resource
+    fclose($fp_user_list);
 
     $return['correct'] = true;
     $return['users'] = implode('<br />', $user_name_list);

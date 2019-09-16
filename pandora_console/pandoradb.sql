@@ -1402,8 +1402,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`type` varchar(30) default 'simple_graph',
 	`period` int(11) NOT NULL default 0,
 	`order` int (11) NOT NULL default 0,
-	`name` varchar(150) NULL,
-	`description` mediumtext, 
+	`name` varchar(300) NULL,
+	`description` mediumtext,
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`text` TEXT,
 	`external_source` Text,
@@ -3612,3 +3612,44 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_repository`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tagent_repository` (
+  `id` SERIAL,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `version` VARCHAR(10) DEFAULT '',
+  `path` text,
+  `uploaded_by` VARCHAR(100) DEFAULT '',
+  `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tdeployment_hosts`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdeployment_hosts` (
+  `id` SERIAL,
+  `id_cs` VARCHAR(100),
+  `ip` VARCHAR(100) NOT NULL UNIQUE,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `current_agent_version` VARCHAR(100) DEFAULT '' COMMENT "String latest installed agent",
+  `target_agent_version_id` BIGINT UNSIGNED,
+  `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
+  `server_ip` varchar(100) default NULL COMMENT "Where to point target agent",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store`(`identifier`)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
+    ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

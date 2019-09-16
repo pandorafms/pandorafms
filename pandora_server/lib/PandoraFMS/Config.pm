@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.736";
-my $pandora_build = "190712";
+my $pandora_version = "7.0NG.738";
+my $pandora_build = "190916";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -333,6 +333,7 @@ sub pandora_load_config {
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
 	$pa_config->{'autocreate_group'} = -1;
+	$pa_config->{'autocreate_group_force'} = 1;
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)
@@ -493,6 +494,8 @@ sub pandora_load_config {
 	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
 	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
+
+	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0 737
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -811,6 +814,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^autocreate_group\s+([0-9*]*)/i) {
 			$pa_config->{'autocreate_group'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^autocreate_group_force\s+([0-1])/i) {
+			$pa_config->{'autocreate_group_force'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^discovery_threads\s+([0-9]*)/i) {
 			$pa_config->{'discovery_threads'}= clean_blank($1);
 		}
@@ -916,6 +922,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_file\s+(.*)/i) {
 			$pa_config->{'event_file'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_inhibit_alerts\s+([0-1])/i) {
+			$pa_config->{'event_inhibit_alerts'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^text_going_down_normal\s+(.*)/i) {
 			$pa_config->{'text_going_down_normal'} = safe_input ($1);

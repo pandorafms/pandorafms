@@ -369,7 +369,7 @@ echo '</div>';
             text = err.message;
             failed = 1;
         }
-        if (!failed && data['error']) {
+        if (!failed && data['error'] != undefined) {
             title =  "<?php echo __('Failed'); ?>";
             text = data['error'];
             failed = 1;
@@ -522,12 +522,10 @@ echo '</div>';
 
     function calculate_inputs() {
         if ($('#product :selected').val() == "CUSTOM") {
-            $('#div-username label').text('<?php echo __('Username'); ?>');
+            $('#div-username label').text('<?php echo __('User'); ?>');
             $('#div-password label').text('<?php echo __('Password'); ?>');
-            $('#div-extra_1 label').text('<?php echo __('Extra'); ?>');
-            $('#div-extra_2 label').text('<?php echo __('Extra (2)'); ?>');
-            $('#div-extra_1').show();
-            $('#div-extra_2').show();
+            $('#div-extra_1').hide();
+            $('#div-extra_2').hide();
         } else if ($('#product :selected').val() == "AWS") {
             $('#div-username label').text('<?php echo __('Access key ID'); ?>');
             $('#div-password label').text('<?php echo __('Secret access key'); ?>');
@@ -557,8 +555,8 @@ echo '</div>';
             success: function(data) {
                 $('#form_new').html(data);
                 $('#id_group').val(0);
-                // By default AWS.
-                $('#product').val('AWS');
+                // By default CUSTOM.
+                $('#product').val('CUSTOM');
                 calculate_inputs();
 
                 $('#product').on('change', function() {
@@ -590,9 +588,6 @@ echo '</div>';
                             text: 'OK',
                             click: function(e) {
                                 var values = {};
-
-                                console.log($('#form_new'));
-
                                 $('#form_new :input').each(function() {
                                     values[this.name] = btoa($(this).val());
                                 });

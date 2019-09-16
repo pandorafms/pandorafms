@@ -1151,7 +1151,12 @@ if (check_login()) {
                 }
 
                 $server_name = '';
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.modules_get_agentmodule_name($module['id_agente_modulo'])."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+
+                $modules_get_agentmodule_name = modules_get_agentmodule_name($module['id_agente_modulo']);
+                // Escape the double quotes that may have the name of the module.
+                $modules_get_agentmodule_name = str_replace('&quot;', '\"', $modules_get_agentmodule_name);
+
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
             }
 
             if ($module['estado'] == 3) {

@@ -241,15 +241,8 @@ table.table_modal_alternate tr:nth-child(even) td {
 .datos3,
 .info_table .datos4,
 .datos4 {
-  background-color: #666;
-  color: #fff;
-}
-
-.info_table .datos3,
-.datos3,
-.info_table .datos4,
-.datos4 {
   background-color: #444;
+  color: #fff;
 }
 
 .action_buttons a[href] img,
@@ -393,4 +386,17 @@ ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
 /* update_manager.css */
 div#box_online * {
   color: #000;
+}
+
+/* discovery.css */
+#text_wizard {
+  color: #555;
+}
+
+div#code_license_dialog div#code,
+div#form_activate_licence #code {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0px;
+  background-color: #222;
 }

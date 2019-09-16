@@ -854,7 +854,10 @@ $class = 'databox filters';
                 }
                 ?>
                 <?php
-                $text = __('This type of report brings a lot of data loading, it is recommended to use it for scheduled reports and not for real-time view.');
+                if (!isset($text)) {
+                    $text = __('This type of report brings a lot of data loading, it is recommended to use it for scheduled reports and not for real-time view.');
+                }
+
                     echo '<a id="log_help_tip" style="visibility: hidden;" href="javascript:" class="tip" >'.html_print_image('images/tip.png', true, ['title' => $text]).'</a>';
                 ?>
             </td>
@@ -866,7 +869,18 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_input_text('name', $name, '', 80, 100);
+                html_print_input_text(
+                    'name',
+                    $name,
+                    '',
+                    80,
+                    100,
+                    false,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
                 ?>
             </td>
         </tr>
@@ -924,7 +938,18 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                echo html_print_input_text('label', $label, '', 50, 255, true);
+                echo html_print_input_text(
+                    'label',
+                    $label,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
                 ?>
             </td>
         </tr>
@@ -1293,7 +1318,7 @@ $class = 'databox filters';
 
                     if (metaconsole_load_external_db($connection) == NOERR) {
                         $agent_name = db_get_value_filter(
-                            'nombre',
+                            'alias',
                             'tagente',
                             ['id_agente' => $idAgent]
                         );

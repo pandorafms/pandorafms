@@ -461,26 +461,25 @@ if ($fields === false) {
 
 $custom_fields = [];
 foreach ($fields as $field) {
-    $data = [];
-    $data[0] = '<b>'.$field['name'].ui_print_help_tip(__('Custom field'), true).'</b>';
-        $custom_value = db_get_all_rows_sql(
-            'select tagent_custom_data.description,tagent_custom_fields.is_password_type from tagent_custom_fields 
-			INNER JOIN tagent_custom_data ON tagent_custom_fields.id_field = tagent_custom_data.id_field where tagent_custom_fields.id_field = '.$field['id_field'].' and tagent_custom_data.id_agent = '.$id_agente
-        );
+    $custom_value = db_get_all_rows_sql(
+        'select tagent_custom_data.description,tagent_custom_fields.is_password_type from tagent_custom_fields 
+        INNER JOIN tagent_custom_data ON tagent_custom_fields.id_field = tagent_custom_data.id_field where tagent_custom_fields.id_field = '.$field['id_field'].' and tagent_custom_data.id_agent = '.$id_agente
+    );
 
-    if ($custom_value[0]['description'] === false || $custom_value[0]['description'] == '') {
-        $custom_value[0]['description'] = '<i>-'.__('empty').'-</i>';
-    } else {
+    if ($custom_value[0]['description'] !== false && $custom_value[0]['description'] != '') {
+        $data = [];
+
+        $data[0] = '<b>'.$field['name'].ui_print_help_tip(__('Custom field'), true).'</b>';
         $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
-    }
 
-    if ($custom_value[0]['is_password_type']) {
-            $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
-    } else {
-        $data[1] = $custom_value[0]['description'];
-    }
+        if ($custom_value[0]['is_password_type']) {
+                $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+        } else {
+            $data[1] = $custom_value[0]['description'];
+        }
 
-    $custom_fields[] = $data;
+        $custom_fields[] = $data;
+    }
 }
 
 $custom_fields_count = count($custom_fields);

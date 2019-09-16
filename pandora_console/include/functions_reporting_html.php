@@ -141,6 +141,15 @@ function html_do_report_info($report)
 }
 
 
+/**
+ * Print html report.
+ *
+ * @param array   $report      Info.
+ * @param boolean $mini        Type.
+ * @param integer $report_info Show info.
+ *
+ * @return array
+ */
 function reporting_html_print_report($report, $mini=false, $report_info=1)
 {
     if ($report_info == 1) {
@@ -161,7 +170,38 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         $table->rowstyle = [];
 
         if (isset($item['label']) && $item['label'] != '') {
-            $label = reporting_label_macro($item, $item['label']);
+            $id_agent = $item['id_agent'];
+            $id_agent_module = $item['id_agent_module'];
+
+            // Add macros name.
+            $agent_description = agents_get_description($id_agent);
+            $agent_group = agents_get_agent_group($id_agent);
+            $agent_address = agents_get_address($id_agent);
+            $agent_alias = agents_get_alias($id_agent);
+            $module_name = modules_get_agentmodule_name(
+                $id_agent_module
+            );
+
+            $module_description = modules_get_agentmodule_descripcion(
+                $id_agent_module
+            );
+
+            $items_label = [
+                'type'               => $item['type'],
+                'id_agent'           => $id_agent,
+                'id_agent_module'    => $id_agent_module,
+                'agent_description'  => $agent_description,
+                'agent_group'        => $agent_group,
+                'agent_address'      => $agent_address,
+                'agent_alias'        => $agent_alias,
+                'module_name'        => $module_name,
+                'module_description' => $module_description,
+            ];
+
+            $label = reporting_label_macro(
+                $items_label,
+                $item['label']
+            );
         } else {
             $label = '';
         }
@@ -180,7 +220,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
         $table->data['description_row']['description'] = $item['description'];
 
-        if ($item['type'] == 'event_report_agent' || $item['type'] == 'event_report_group' || $item['type'] == 'event_report_module') {
+        if ($item['type'] == 'event_report_agent'
+            || $item['type'] == 'event_report_group'
+            || $item['type'] == 'event_report_module'
+        ) {
             $table->data['count_row']['count'] = 'Total events: '.$item['total_events'];
         }
 
@@ -759,7 +802,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->size[10] = '2%';
             $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
             $table1->size[11] = '15%';
-            $table1->data[0][11] = '<span>'.__('Ignore time').'</span>';
+            $table1->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
 
             if ($pdf === 0) {
                 $table->colspan['legend']['cell'] = 2;
@@ -2741,20 +2784,130 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         $font_size = '3';
     }
 
-    $table->colspan['data']['cell'] = 3;
-    $table->cellstyle['data']['cell'] = 'text-align: left;';
+    if (isset($item['visual_format']) && $item['visual_format'] != 0
+        && ($item['type'] == 'max_value' || $item['type'] == 'min_value' || $item['type'] == 'avg_value')
+    ) {
+        $table2 = new stdClass();
+        $table2->width = '100%';
+        switch ($item['type']) {
+            case 'max_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Maximun'),
+                ];
+            break;
 
-    $table->data['data']['cell'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: #000000;">';
+            case 'min_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Minimun'),
+                ];
+            break;
 
-    if ($check_empty && empty($item['data']['value'])) {
-        $table->data['data']['cell'] .= __('Unknown');
-    } else if ($only_value) {
-        $table->data['data']['cell'] .= $item['data']['value'];
+            case 'avg_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Average'),
+                ];
+            break;
+        }
+
+        $table2->data = [];
+
+        $data = $item['data'][0];
+
+        $row = [
+            $data[__('Agent')],
+            $data[__('Module')],
+            $data[__('Maximun')],
+        ];
+
+        $table2->data[] = $row;
+
+        $table2->title = $item['title'];
+        $table2->titleclass = 'title_table_pdf';
+        $table2->titlestyle = 'text-align:left;';
+        $table->colspan[1][0] = 3;
+        $table->colspan[2][0] = 3;
+        $table->colspan[3][0] = 3;
+
+        array_push($table->data, html_print_table($table2, true));
+        unset($item['data'][0]);
+
+        if ($item['visual_format'] != 1) {
+            $value = $item['data'][1]['value'];
+            array_push($table->data, $value);
+            unset($item['data'][1]);
+        }
+
+        if ($item['visual_format'] != 2) {
+            $table1 = new stdClass();
+            $table1->width = '100%';
+            switch ($item['type']) {
+                case 'max_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Maximun'),
+                    ];
+                break;
+
+                case 'min_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Minimun'),
+                    ];
+                break;
+
+                case 'avg_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Average'),
+                    ];
+                break;
+            }
+
+            $table1->data = [];
+            foreach ($item['data'] as $data) {
+                if (!is_numeric($data[__('Maximun')])) {
+                    $row = [
+                        $data[__('Lapse')],
+                        $data[__('Maximun')],
+                    ];
+                } else {
+                    $row = [
+                        $data[__('Lapse')],
+                        remove_right_zeros(number_format($data[__('Maximun')], $config['graph_precision'])),
+                    ];
+                }
+
+                $table1->data[] = $row;
+            }
+
+            $table1->title = $item['title'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+
+            array_push($table->data, html_print_table($table1, true));
+        }
     } else {
-        $table->data['data']['cell'] .= $item['data']['formated_value'];
-    }
+        $table->colspan['data']['cell'] = 3;
+        $table->cellstyle['data']['cell'] = 'text-align: left;';
 
-    $table->data['data']['cell'] .= '</p>';
+        $table->data['data']['cell'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: #000000;">';
+
+        if ($check_empty && empty($item['data']['value'])) {
+            $table->data['data']['cell'] .= __('Unknown');
+        } else if ($only_value) {
+            $table->data['data']['cell'] .= $item['data']['value'];
+        } else {
+            $table->data['data']['cell'] .= $item['data']['formated_value'];
+        }
+
+        $table->data['data']['cell'] .= '</p>';
+    }
 }
 
 
@@ -3399,7 +3552,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table2->size[10] = '2%';
         $table2->data[0][10] = '<img src ="'.$src.$hack_metaconsole.'images/square_light_gray.png">';
         $table2->size[11] = '15%';
-        $table2->data[0][11] = '<span>'.__('Ignore time').'</span>';
+        $table2->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
     }
 
     if ($pdf !== 0) {

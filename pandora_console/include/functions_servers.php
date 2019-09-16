@@ -32,9 +32,9 @@ require_once __DIR__.'/constants.php';
 /**
  * Get a server.
  *
- * @param int Server id to get.
- * @param array Extra filter.
- * @param array Fields to get.
+ * @param integer $id_server Server id to get.
+ * @param array   $filter    Extra filter.
+ * @param array   $fields    Fields to get.
  *
  * @return Server with the given id. False if not available.
  */
@@ -61,7 +61,12 @@ function servers_get_server($id_server, $filter=false, $fields=false)
  */
 function servers_get_names()
 {
-    $all_servers = @db_get_all_rows_filter('tserver', false, ['DISTINCT(name) as name']);
+    $all_servers = db_get_all_rows_sql(
+        'SELECT DISTINCT(`name`) as name
+        FROM tserver
+        WHERE server_type <> 13'
+    );
+
     if ($all_servers === false) {
         return [];
     }
@@ -76,7 +81,11 @@ function servers_get_names()
 
 
 /**
- * This function forces a recon task to be queued by the server asap
+ * This function forces a recon task to be queued by the server asap.
+ *
+ * @param integer $id_recon_task Id.
+ *
+ * @return void
  */
 function servers_force_recon_task($id_recon_task)
 {
@@ -141,9 +150,10 @@ function servers_get_total_modules()
 
 
 /**
- * This function will get several metrics from the database to get info about server performance
+ * This function will get several metrics from the database
+ * to get info about server performance.
  *
- * @return array with several data
+ * @return array with several data.
  */
 function servers_get_performance()
 {
@@ -161,18 +171,20 @@ function servers_get_performance()
 
     if ($config['realtimestats'] == 1) {
         $counts = db_get_all_rows_sql(
-            '
-			SELECT tagente_modulo.id_modulo,
+            'SELECT tagente_modulo.id_modulo,
 				COUNT(tagente_modulo.id_agente_modulo) modules
 			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND tagente.id_agente = tagente_estado.id_agente
-				
 				AND tagente_modulo.disabled = 0
 				AND delete_pending = 0
-				AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
+				AND (utimestamp > 0
+                    OR (id_tipo_modulo = 100
+                        OR (id_tipo_modulo > 21
+                        AND id_tipo_modulo < 23)
+                    )
+                )
 				AND tagente.disabled = 0
-				
 			GROUP BY tagente_modulo.id_modulo'
         );
 
@@ -204,6 +216,10 @@ function servers_get_performance()
 
                 case MODULE_WEB:
                     $data['total_web_modules'] = $c['modules'];
+                break;
+
+                default:
+                    // Not possible.
                 break;
             }
 
@@ -259,6 +275,8 @@ function servers_get_performance()
                 case SERVER_TYPE_EVENT:
                 case SERVER_TYPE_DISCOVERY:
                 case SERVER_TYPE_SYSLOG:
+                default:
+                    // Nothing.
                 break;
             }
 
@@ -272,17 +290,22 @@ function servers_get_performance()
 
     $interval_avgs = [];
 
-    // Avg of modules interval when modules have module_interval > 0
+    // Avg of modules interval when modules have module_interval > 0.
     $interval_avgs_modules = db_get_all_rows_sql(
-        '
-		SELECT count(tagente_modulo.id_modulo) modules ,
+        'SELECT count(tagente_modulo.id_modulo) modules ,
 			tagente_modulo.id_modulo,
 			AVG(tagente_modulo.module_interval) avg_interval
 		FROM tagente_modulo, tagente_estado, tagente
 		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 			AND tagente_modulo.disabled = 0
 			AND module_interval > 0
-			AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
+			AND (utimestamp > 0 OR (
+                    id_tipo_modulo = 100
+                    OR (id_tipo_modulo > 21
+                        AND id_tipo_modulo < 23
+                    )
+                )
+            )
 			AND delete_pending = 0
 			AND tagente.disabled = 0
 			AND tagente.id_agente = tagente_estado.id_agente
@@ -293,16 +316,15 @@ function servers_get_performance()
         $interval_avgs_modules = [];
     }
 
-    // Transform into a easily format
+    // Transform into a easily format.
     foreach ($interval_avgs_modules as $iamodules) {
         $interval_avgs[$iamodules['id_modulo']]['avg_interval'] = $iamodules['avg_interval'];
         $interval_avgs[$iamodules['id_modulo']]['modules'] = $iamodules['modules'];
     }
 
-    // Avg of agents interval when modules have module_interval == 0
+    // Avg of agents interval when modules have module_interval == 0.
     $interval_avgs_agents = db_get_all_rows_sql(
-        '
-		SELECT count(tagente_modulo.id_modulo) modules ,
+        'SELECT count(tagente_modulo.id_modulo) modules ,
 			tagente_modulo.id_modulo, AVG(tagente.intervalo) avg_interval
 		FROM tagente_modulo, tagente_estado, tagente
 		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -319,50 +341,89 @@ function servers_get_performance()
         $interval_avgs_agents = [];
     }
 
-    // Merge with the previous calculated array
+    // Merge with the previous calculated array.
     foreach ($interval_avgs_agents as $iaagents) {
         if (!isset($interval_avgs[$iaagents['id_modulo']]['modules'])) {
             $interval_avgs[$iaagents['id_modulo']]['avg_interval'] = $iaagents['avg_interval'];
             $interval_avgs[$iaagents['id_modulo']]['modules'] = $iaagents['modules'];
         } else {
-            $interval_avgs[$iaagents['id_modulo']]['avg_interval'] = servers_get_avg_interval($interval_avgs[$iaagents['id_modulo']], $iaagents);
+            $interval_avgs[$iaagents['id_modulo']]['avg_interval'] = servers_get_avg_interval(
+                $interval_avgs[$iaagents['id_modulo']],
+                $iaagents
+            );
             $interval_avgs[$iaagents['id_modulo']]['modules'] += $iaagents['modules'];
         }
     }
 
+    $info_servers = array_reduce(
+        servers_get_info(),
+        function ($carry, $item) {
+            $carry[$item['server_type']] = $item;
+            return $carry;
+        }
+    );
     foreach ($interval_avgs as $id_modulo => $ia) {
+        $module_lag = 0;
         switch ($id_modulo) {
             case MODULE_DATA:
+                $module_lag = $info_servers[SERVER_TYPE_DATA]['module_lag'];
                 $data['avg_interval_local_modules'] = $ia['avg_interval'];
-                $data['local_modules_rate'] = servers_get_rate($data['avg_interval_local_modules'], $data['total_local_modules']);
+                $data['local_modules_rate'] = servers_get_rate(
+                    $data['avg_interval_local_modules'],
+                    ($data['total_local_modules'] - $module_lag)
+                );
             break;
 
             case MODULE_NETWORK:
+                $module_lag = $info_servers[SERVER_TYPE_NETWORK]['module_lag'];
+                $module_lag += $info_servers[SERVER_TYPE_SNMP]['module_lag'];
+                $module_lag += $info_servers[SERVER_TYPE_ENTERPRISE_ICMP]['module_lag'];
+                $module_lag += $info_servers[SERVER_TYPE_ENTERPRISE_SNMP]['module_lag'];
                 $data['avg_interval_network_modules'] = $ia['avg_interval'];
                 $data['network_modules_rate'] = servers_get_rate(
                     $data['avg_interval_network_modules'],
-                    $data['total_network_modules']
+                    ($data['total_network_modules'] - $module_lag)
                 );
             break;
 
             case MODULE_PLUGIN:
+                $module_lag = $info_servers[SERVER_TYPE_PLUGIN]['module_lag'];
                 $data['avg_interval_plugin_modules'] = $ia['avg_interval'];
-                $data['plugin_modules_rate'] = servers_get_rate($data['avg_interval_plugin_modules'], $data['total_plugin_modules']);
+                $data['plugin_modules_rate'] = servers_get_rate(
+                    $data['avg_interval_plugin_modules'],
+                    ($data['total_plugin_modules'] - $module_lag)
+                );
             break;
 
             case MODULE_PREDICTION:
+                $module_lag = $info_servers[SERVER_TYPE_PREDICTION]['module_lag'];
                 $data['avg_interval_prediction_modules'] = $ia['avg_interval'];
-                $data['prediction_modules_rate'] = servers_get_rate($data['avg_interval_prediction_modules'], $data['total_prediction_modules']);
+                $data['prediction_modules_rate'] = servers_get_rate(
+                    $data['avg_interval_prediction_modules'],
+                    ($data['total_prediction_modules'] - $module_lag)
+                );
             break;
 
             case MODULE_WMI:
+                $module_lag = $info_servers[SERVER_TYPE_WMI]['module_lag'];
                 $data['avg_interval_wmi_modules'] = $ia['avg_interval'];
-                $data['wmi_modules_rate'] = servers_get_rate($data['avg_interval_wmi_modules'], $data['total_wmi_modules']);
+                $data['wmi_modules_rate'] = servers_get_rate(
+                    $data['avg_interval_wmi_modules'],
+                    ($data['total_wmi_modules'] - $module_lag)
+                );
             break;
 
             case MODULE_WEB:
+                $module_lag = $info_servers[SERVER_TYPE_WEB]['module_lag'];
                 $data['avg_interval_web_modules'] = $ia['avg_interval'];
-                $data['web_modules_rate'] = servers_get_rate($data['avg_interval_web_modules'], $data['total_web_modules']);
+                $data['web_modules_rate'] = servers_get_rate(
+                    $data['avg_interval_web_modules'],
+                    ($data['total_web_modules'] - $module_lag)
+                );
+            break;
+
+            default:
+                // Not possible.
             break;
         }
 
@@ -385,25 +446,55 @@ function servers_get_performance()
         $data['avg_interval_total_modules'] = (array_sum($data['avg_interval_total_modules']) / count($data['avg_interval_total_modules']));
     }
 
-    $data['remote_modules_rate'] = servers_get_rate($data['avg_interval_remote_modules'], $data['total_remote_modules']);
-    $data['total_modules_rate'] = servers_get_rate($data['avg_interval_total_modules'], $data['total_modules']);
+    $total_modules_lag = 0;
+    foreach ($info_servers as $key => $value) {
+        switch ($key) {
+            case SERVER_TYPE_DATA:
+            case SERVER_TYPE_NETWORK:
+            case SERVER_TYPE_SNMP:
+            case SERVER_TYPE_ENTERPRISE_ICMP:
+            case SERVER_TYPE_ENTERPRISE_SNMP:
+            case SERVER_TYPE_PLUGIN:
+            case SERVER_TYPE_PREDICTION:
+            case SERVER_TYPE_WMI:
+            case SERVER_TYPE_WEB:
+                $total_modules_lag += $value['module_lag'];
+            break;
+
+            default:
+                // Not possible.
+            break;
+        }
+    }
+
+    $data['remote_modules_rate'] = servers_get_rate(
+        $data['avg_interval_remote_modules'],
+        $data['total_remote_modules']
+    );
+
+    $data['total_modules_rate'] = servers_get_rate(
+        $data['avg_interval_total_modules'],
+        ($data['total_modules'] - $total_modules_lag)
+    );
 
     return ($data);
 }
 
 
 /**
- * Get avg interval
+ * Get avg interval.
  *
- * @param mixed Array with avg and count data of first part
- * @param mixed Array with avg and count data of second part
+ * @param array $modules_avg_interval1 Array with avg and count
+ * data of first part.
+ * @param array $modules_avg_interval2 Array with avg and count
+ * data of second part.
  *
- * @return float number of avg modules between two parts
+ * @return float number of avg modules between two parts.
  */
-
-
-function servers_get_avg_interval($modules_avg_interval1, $modules_avg_interval2)
-{
+function servers_get_avg_interval(
+    $modules_avg_interval1,
+    $modules_avg_interval2
+) {
     $total_modules = ($modules_avg_interval1['modules'] + $modules_avg_interval2['modules']);
 
     $parcial1 = ($modules_avg_interval1['avg_interval'] * $modules_avg_interval1['modules']);
@@ -416,21 +507,23 @@ function servers_get_avg_interval($modules_avg_interval1, $modules_avg_interval2
 /**
  * Get server rate
  *
- * @param float avg of interval of these modules
- * @param int number of modules
+ * @param float   $avg_interval Avg of interval of these modules.
+ * @param integer $num_modules  Number of modules.
  *
  * @return float number of modules processed by second
  */
 function servers_get_rate($avg_interval, $num_modules)
 {
-    return $avg_interval > 0 ? ($num_modules / $avg_interval) : 0;
+    return ($avg_interval > 0) ? ($num_modules / $avg_interval) : 0;
 }
 
 
 /**
- * This function will get all the server information in an array or a specific server
+ * This function will get all the server information in an array
+ * or a specific server.
  *
- * @param mixed An optional integer or array of integers to select specific servers
+ * @param integer $id_server An optional integer or array of integers
+ * to select specific servers.
  *
  * @return mixed False in case the server doesn't exist or an array with info.
  */
@@ -461,127 +554,211 @@ function servers_get_info($id_server=-1)
     foreach ($result as $server) {
         switch ($server['server_type']) {
             case SERVER_TYPE_DATA:
-                $server['img'] = html_print_image('images/data.png', true, ['title' => __('Data server')]);
+                $server['img'] = html_print_image(
+                    'images/data.png',
+                    true,
+                    ['title' => __('Data server')]
+                );
                 $server['type'] = 'data';
                 $id_modulo = 1;
             break;
 
             case SERVER_TYPE_NETWORK:
-                $server['img'] = html_print_image('images/network.png', true, ['title' => __('Network server')]);
+                $server['img'] = html_print_image(
+                    'images/network.png',
+                    true,
+                    ['title' => __('Network server')]
+                );
                 $server['type'] = 'network';
                 $id_modulo = 2;
             break;
 
             case SERVER_TYPE_SNMP:
-                $server['img'] = html_print_image('images/snmp.png', true, ['title' => __('SNMP Trap server')]);
+                $server['img'] = html_print_image(
+                    'images/snmp.png',
+                    true,
+                    ['title' => __('SNMP Trap server')]
+                );
                 $server['type'] = 'snmp';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_DISCOVERY:
-                $server['img'] = html_print_image('images/recon.png', true, ['title' => __('Discovery server')]);
+                $server['img'] = html_print_image(
+                    'images/recon.png',
+                    true,
+                    ['title' => __('Discovery server')]
+                );
                 $server['type'] = 'recon';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_PLUGIN:
-                $server['img'] = html_print_image('images/plugin.png', true, ['title' => __('Plugin server')]);
+                $server['img'] = html_print_image(
+                    'images/plugin.png',
+                    true,
+                    ['title' => __('Plugin server')]
+                );
                 $server['type'] = 'plugin';
                 $id_modulo = 4;
             break;
 
             case SERVER_TYPE_PREDICTION:
-                $server['img'] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction server')]);
+                $server['img'] = html_print_image(
+                    'images/chart_bar.png',
+                    true,
+                    ['title' => __('Prediction server')]
+                );
                 $server['type'] = 'prediction';
                 $id_modulo = 5;
             break;
 
             case SERVER_TYPE_WMI:
-                $server['img'] = html_print_image('images/wmi.png', true, ['title' => __('WMI server')]);
+                $server['img'] = html_print_image(
+                    'images/wmi.png',
+                    true,
+                    ['title' => __('WMI server')]
+                );
                 $server['type'] = 'wmi';
                 $id_modulo = 6;
             break;
 
             case SERVER_TYPE_EXPORT:
-                $server['img'] = html_print_image('images/server_export.png', true, ['title' => __('Export server')]);
+                $server['img'] = html_print_image(
+                    'images/server_export.png',
+                    true,
+                    ['title' => __('Export server')]
+                );
                 $server['type'] = 'export';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_INVENTORY:
-                $server['img'] = html_print_image('images/page_white_text.png', true, ['title' => __('Inventory server')]);
+                $server['img'] = html_print_image(
+                    'images/page_white_text.png',
+                    true,
+                    ['title' => __('Inventory server')]
+                );
                 $server['type'] = 'inventory';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_WEB:
-                $server['img'] = html_print_image('images/world.png', true, ['title' => __('Web server')]);
+                $server['img'] = html_print_image(
+                    'images/world.png',
+                    true,
+                    ['title' => __('Web server')]
+                );
                 $server['type'] = 'web';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_EVENT:
-                $server['img'] = html_print_image('images/lightning_go.png', true, ['title' => __('Event server')]);
+                $server['img'] = html_print_image(
+                    'images/lightning_go.png',
+                    true,
+                    ['title' => __('Event server')]
+                );
                 $server['type'] = 'event';
                 $id_modulo = 2;
             break;
 
             case SERVER_TYPE_ENTERPRISE_ICMP:
-                $server['img'] = html_print_image('images/network.png', true, ['title' => __('Enterprise ICMP server')]);
+                $server['img'] = html_print_image(
+                    'images/network.png',
+                    true,
+                    ['title' => __('Enterprise ICMP server')]
+                );
                 $server['type'] = 'enterprise icmp';
                 $id_modulo = 2;
             break;
 
             case SERVER_TYPE_ENTERPRISE_SNMP:
-                $server['img'] = html_print_image('images/network.png', true, ['title' => __('Enterprise SNMP server')]);
+                $server['img'] = html_print_image(
+                    'images/network.png',
+                    true,
+                    ['title' => __('Enterprise SNMP server')]
+                );
                 $server['type'] = 'enterprise snmp';
                 $id_modulo = 2;
             break;
 
             case SERVER_TYPE_ENTERPRISE_SATELLITE:
-                $server['img'] = html_print_image('images/satellite.png', true, ['title' => __('Enterprise Satellite server')]);
+                $server['img'] = html_print_image(
+                    'images/satellite.png',
+                    true,
+                    ['title' => __('Enterprise Satellite server')]
+                );
                 $server['type'] = 'enterprise satellite';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
-                $server['img'] = html_print_image('images/transactional_map.png', true, ['title' => __('Enterprise Transactional server')]);
+                $server['img'] = html_print_image(
+                    'images/transactional_map.png',
+                    true,
+                    ['title' => __('Enterprise Transactional server')]
+                );
                 $server['type'] = 'enterprise transactional';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_MAINFRAME:
-                $server['img'] = html_print_image('images/mainframe.png', true, ['title' => __('Mainframe server')]);
+                $server['img'] = html_print_image(
+                    'images/mainframe.png',
+                    true,
+                    ['title' => __('Mainframe server')]
+                );
                 $server['type'] = 'mainframe';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_SYNC:
-                $server['img'] = html_print_image('images/sync.png', true, ['title' => __('Sync server')]);
+                $server['img'] = html_print_image(
+                    'images/sync.png',
+                    true,
+                    ['title' => __('Sync server')]
+                );
                 $server['type'] = 'sync';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_WUX:
-                $server['img'] = html_print_image('images/icono-wux.png', true, ['title' => __('Wux server')]);
+                $server['img'] = html_print_image(
+                    'images/icono-wux.png',
+                    true,
+                    ['title' => __('Wux server')]
+                );
                 $server['type'] = 'wux';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_SYSLOG:
-                $server['img'] = html_print_image('images/syslog.png', true, ['title' => __('Syslog server')]);
+                $server['img'] = html_print_image(
+                    'images/syslog.png',
+                    true,
+                    ['title' => __('Log server')]
+                );
                 $server['type'] = 'syslog';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_AUTOPROVISION:
-                $server['img'] = html_print_image('images/autoprovision.png', true, ['title' => __('Autoprovision server')]);
+                $server['img'] = html_print_image(
+                    'images/autoprovision.png',
+                    true,
+                    ['title' => __('Autoprovision server')]
+                );
                 $server['type'] = 'autoprovision';
                 $id_modulo = 0;
             break;
 
             case SERVER_TYPE_MIGRATION:
-                $server['img'] = html_print_image('images/migration.png', true, ['title' => __('Migration server')]);
+                $server['img'] = html_print_image(
+                    'images/migration.png',
+                    true,
+                    ['title' => __('Migration server')]
+                );
                 $server['type'] = 'migration';
                 $id_modulo = 0;
             break;
@@ -594,31 +771,54 @@ function servers_get_info($id_server=-1)
         }
 
         if ($config['realtimestats'] == 0) {
-            // ---------------------------------------------------------------
-            // Take data from database if not realtime stats
-            // ---------------------------------------------------------------
-            $server['lag'] = db_get_sql('SELECT lag_time FROM tserver WHERE id_server = '.$server['id_server']);
-            $server['module_lag'] = db_get_sql('SELECT lag_modules FROM tserver WHERE id_server = '.$server['id_server']);
-            $server['modules'] = db_get_sql('SELECT my_modules FROM tserver WHERE id_server = '.$server['id_server']);
-            $server['modules_total'] = db_get_sql('SELECT total_modules_running FROM tserver WHERE id_server = '.$server['id_server']);
+            // Take data from database if not realtime stats.
+            $server['lag'] = db_get_sql(
+                'SELECT lag_time
+                FROM tserver
+                WHERE id_server = '.$server['id_server']
+            );
+            $server['module_lag'] = db_get_sql(
+                'SELECT lag_modules
+                FROM tserver
+                WHERE id_server = '.$server['id_server']
+            );
+            $server['modules'] = db_get_sql(
+                'SELECT my_modules
+                FROM tserver
+                WHERE id_server = '.$server['id_server']
+            );
+            $server['modules_total'] = db_get_sql(
+                'SELECT total_modules_running
+                FROM tserver
+                WHERE id_server = '.$server['id_server']
+            );
         } else {
-            // ---------------------------------------------------------------
-            // Take data in realtime
-            // ---------------------------------------------------------------
+            // Take data in realtime.
             $server['module_lag'] = 0;
             $server['lag'] = 0;
 
-            // Inventory server
+            // Inventory server.
             if ($server['server_type'] == SERVER_TYPE_INVENTORY) {
-                // Get modules exported by this server
-                $server['modules'] = db_get_sql("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente AND tagente.server_name = '".$server['name']."'");
+                // Get modules exported by this server.
+                $server['modules'] = db_get_sql(
+                    "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory)
+                    FROM tagente, tagent_module_inventory
+                    WHERE tagente.disabled=0
+                        AND tagent_module_inventory.id_agente = tagente.id_agente
+                        AND tagente.server_name = '".$server['name']."'"
+                );
 
-                // Get total exported modules
-                $server['modules_total'] = db_get_sql('SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente');
+                // Get total exported modules.
+                $server['modules_total'] = db_get_sql(
+                    'SELECT COUNT(tagent_module_inventory.id_agent_module_inventory)
+                    FROM tagente, tagent_module_inventory
+                    WHERE tagente.disabled=0
+                    AND tagent_module_inventory.id_agente = tagente.id_agente'
+                );
 
                 $interval_esc = db_escape_key_identifier('interval');
 
-                // Get the module lag
+                // Get the module lag.
                 $server['module_lag'] = db_get_sql(
                     'SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag
 					FROM tagente, tagent_module_inventory
@@ -630,7 +830,7 @@ function servers_get_info($id_server=-1)
 					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.'.$interval_esc
                 );
 
-                // Get the lag
+                // Get the lag.
                 $server['lag'] = db_get_sql(
                     'SELECT AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.'.$interval_esc.')
 					FROM tagente, tagent_module_inventory
@@ -641,162 +841,119 @@ function servers_get_info($id_server=-1)
 					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory.".$interval_esc.' * 10)
 					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.'.$interval_esc
                 );
-                // Export server
+                // Export server.
             } else if ($server['server_type'] == SERVER_TYPE_EXPORT) {
-                // Get modules exported by this server
-                $server['modules'] = db_get_sql('SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = '.$server['id_server']);
+                // Get modules exported by this server.
+                $server['modules'] = db_get_sql(
+                    'SELECT COUNT(tagente_modulo.id_agente_modulo)
+                    FROM tagente, tagente_modulo, tserver_export
+                    WHERE tagente.disabled=0
+                        AND tagente_modulo.id_agente = tagente.id_agente
+                        AND tagente_modulo.id_export = tserver_export.id
+                        AND tserver_export.id_export_server = '.$server['id_server']
+                );
 
-                // Get total exported modules
-                $server['modules_total'] = db_get_sql('SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export != 0');
+                // Get total exported modules.
+                $server['modules_total'] = db_get_sql(
+                    'SELECT COUNT(tagente_modulo.id_agente_modulo)
+                    FROM tagente, tagente_modulo
+                    WHERE tagente.disabled=0
+                        AND tagente_modulo.id_agente = tagente.id_agente
+                        AND tagente_modulo.id_export != 0'
+                );
 
                 $server['lag'] = 0;
                 $server['module_lag'] = 0;
-            }
-            // Discovery server
-            else if ($server['server_type'] == SERVER_TYPE_DISCOVERY) {
+            } else if ($server['server_type'] == SERVER_TYPE_DISCOVERY) {
+                // Discovery server.
                 $server['name'] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$server['id_server'].'">'.$server['name'].'</a>';
 
-                // Total jobs running on this Discovery server
+                // Total jobs running on this Discovery server.
                 $server['modules'] = db_get_sql(
                     'SELECT COUNT(id_rt)
 					FROM trecon_task
 					WHERE id_recon_server = '.$server['id_server']
                 );
 
-                // Total recon jobs (all servers)
-                $server['modules_total'] = db_get_sql('SELECT COUNT(status) FROM trecon_task');
+                // Total recon jobs (all servers).
+                $server['modules_total'] = db_get_sql(
+                    'SELECT COUNT(status) FROM trecon_task'
+                );
 
-                // Lag (take average active time of all active tasks)
+                // Lag (take average active time of all active tasks).
                 $server['module_lag'] = 0;
-
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                        $server['lag'] = db_get_sql('SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = '.$server['id_server']);
-
-                        $server['module_lag'] = db_get_sql('SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = '.$server['id_server']);
-                    break;
-
-                    case 'postgresql':
-                        $server['lag'] = db_get_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp from trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server['id_server']);
-
-                        $server['module_lag'] = db_get_sql("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server['id_server']);
-                    break;
-
-                    case 'oracle':
-                        $server['lag'] = db_get_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.")) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.'))  > (utimestamp + interval_sweep) AND id_recon_server = '.$server['id_server']);
-
-                        $server['module_lag'] = db_get_sql("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.'))  > (utimestamp + interval_sweep) AND id_recon_server = '.$server['id_server']);
-                    break;
-                }
+                $server['lag'] = db_get_sql(
+                    'SELECT UNIX_TIMESTAMP() - utimestamp
+                    FROM trecon_task
+                    WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep)
+                    AND id_recon_server = '.$server['id_server']
+                );
+                $server['module_lag'] = db_get_sql(
+                    'SELECT COUNT(id_rt)
+                    FROM trecon_task
+                    WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep)
+                    AND id_recon_server = '.$server['id_server']
+                );
             } else {
-                // ---------------------------------------------------------------
-                // Data, Plugin, WMI, Network and Others
-                $server['modules'] = db_get_sql('SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = '.$server['id_server']);
+                // Data, Plugin, WMI, Network and Others.
+                $server['modules'] = db_get_sql(
+                    'SELECT count(tagente_estado.id_agente_modulo)
+                    FROM tagente_estado, tagente_modulo, tagente
+                    WHERE tagente.disabled=0
+                        AND tagente_modulo.id_agente = tagente.id_agente
+                        AND tagente_modulo.disabled = 0
+                        AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                        AND tagente_estado.running_by = '.$server['id_server']
+                );
 
-                $server['modules_total'] = db_get_sql('SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = '.$server['server_type']);
+                $server['modules_total'] = db_get_sql(
+                    'SELECT count(tagente_estado.id_agente_modulo)
+                    FROM tserver, tagente_estado, tagente_modulo, tagente
+                    WHERE tagente.disabled=0
+                    AND tagente_modulo.id_agente = tagente.id_agente
+                    AND tagente_modulo.disabled = 0
+                    AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                    AND tagente_estado.running_by = tserver.id_server
+                    AND tserver.server_type = '.$server['server_type']
+                );
 
-                // Remote servers LAG Calculation (server_type != 0)
+                // Remote servers LAG Calculation (server_type != 0).
                 if ($server['server_type'] != 0) {
-                    switch ($config['dbtype']) {
-                        case 'mysql':
-                            $result = db_get_row_sql(
-                                'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
-								WHERE utimestamp > 0
-								AND tagente.disabled = 0
-								AND tagente.id_agente = tagente_estado.id_agente
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								AND current_interval > 0
-								AND running_by = '.$server['id_server'].'
-								AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-								AND (UNIX_TIMESTAMP() - utimestamp) > current_interval'
-                            );
-                        break;
-
-                        case 'postgresql':
-                            $result = db_get_row_sql(
-                                "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
-								WHERE utimestamp > 0
-								AND tagente.disabled = 0
-								AND tagente.id_agente = tagente_estado.id_agente
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								AND current_interval > 0
-								AND running_by = ".$server['id_server']."
-								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) < ( current_interval * 10)
-								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > current_interval"
-                            );
-                        break;
-
-                        case 'oracle':
-                            $result = db_get_row_sql(
-                                "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
-								WHERE utimestamp > 0
-								AND tagente.disabled = 0
-								AND tagente.id_agente = tagente_estado.id_agente
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								AND current_interval > 0
-								AND running_by = '.$server['id_server']."
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.")) - utimestamp) < ( current_interval * 10)
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) - utimestamp) * (".SECONDS_1DAY.')) > current_interval'
-                            );
-                        break;
-                    }
+                    $result = db_get_row_sql(
+                        'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
+                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag
+                        FROM tagente_estado, tagente_modulo, tagente
+                        WHERE utimestamp > 0
+                            AND tagente.disabled = 0
+                            AND tagente.id_agente = tagente_estado.id_agente
+                            AND tagente_modulo.disabled = 0
+                            AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                            AND current_interval > 0
+                            AND running_by = '.$server['id_server'].'
+                            AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+                            AND (UNIX_TIMESTAMP() - utimestamp) > current_interval'
+                    );
                 } else {
-                    // Local/Dataserver server LAG calculation:
-                    switch ($config['dbtype']) {
-                        case 'mysql':
-                            $result = db_get_row_sql(
-                                'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
-								WHERE utimestamp > 0
-								AND tagente.disabled = 0
-								AND tagente.id_agente = tagente_estado.id_agente
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_tipo_modulo < 5
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								AND current_interval > 0
-								AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-								AND running_by = '.$server['id_server'].'
-								AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)'
-                            );
-                        break;
-
-                        case 'postgresql':
-                            $result = db_get_row_sql(
-                                "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
-								WHERE utimestamp > 0
-								AND tagente.disabled = 0
-								AND tagente.id_agente = tagente_estado.id_agente
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_tipo_modulo < 5 
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								AND current_interval > 0
-								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) < ( current_interval * 10)
-								AND running_by = ".$server['id_server']."
-								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > (current_interval * 1.1)"
-                            );
-                        break;
-
-                        case 'oracle':
-                            $result = db_get_row_sql(
-                                "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.")) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
-								WHERE utimestamp > 0
-								AND tagente.disabled = 0
-								AND tagente.id_agente = tagente_estado.id_agente
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_tipo_modulo < 5 
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								AND current_interval > 0
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - utimestamp) < ( current_interval * 10)
-								AND running_by = '.$server['id_server']."
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - utimestamp) > (current_interval * 1.1)'
-                            );
-                        break;
-                    }
+                    // Local/Dataserver server LAG calculation.
+                    $result = db_get_row_sql(
+                        'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
+                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag
+                        FROM tagente_estado, tagente_modulo, tagente
+                        WHERE utimestamp > 0
+                            AND tagente.disabled = 0
+                            AND tagente.id_agente = tagente_estado.id_agente
+                            AND tagente_modulo.disabled = 0
+                            AND tagente_modulo.id_tipo_modulo < 5
+                            AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                            AND current_interval > 0
+                            AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+                            AND running_by = '.$server['id_server'].'
+                            AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)'
+                    );
                 }
 
-                // Lag over current_interval * 2 is not lag, it's a timed out module
+                // Lag over current_interval * 2 is not lag,
+                // it's a timed out module.
                 if (!empty($result['lag'])) {
                     $server['lag'] = $result['lag'];
                 }
@@ -805,28 +962,37 @@ function servers_get_info($id_server=-1)
                     $server['module_lag'] = $result['module_lag'];
                 }
             }
-        } //end if
+        }
 
         if (isset($server['module_lag'])) {
-            $server['lag_txt'] = ($server['lag'] == 0 ? '-' : human_time_description_raw($server['lag'])).' / '.$server['module_lag'];
+            $server['lag_txt'] = (($server['lag'] == 0) ? '-' : human_time_description_raw($server['lag'])).' / '.$server['module_lag'];
         } else {
             $server['lag_txt'] = '';
         }
 
         if ($server['modules_total'] > 0) {
-            $server['load'] = round(($server['modules'] / $server['modules_total'] * 100));
+            $server['load'] = round(
+                ($server['modules'] / $server['modules_total'] * 100)
+            );
         } else {
             $server['load'] = 0;
         }
 
-        // Push the raw data on the return stack
+        // Push the raw data on the return stack.
         $return[$server['id_server']] = $server;
-    } //end foreach
+    }
 
     return $return;
 }
 
 
+/**
+ * Get server type
+ *
+ * @param integer $type Type.
+ *
+ * @return array Result.
+ */
 function servers_get_servers_type($type)
 {
     return db_get_all_rows_filter('tserver', ['server_type' => $type]);
@@ -836,25 +1002,28 @@ function servers_get_servers_type($type)
 /**
  * Get the server name.
  *
- * @param int Server id.
+ * @param integer $id_server Server id.
  *
  * @return string Name of the given server
  */
 function servers_get_name($id_server)
 {
-    return (string) db_get_value('name', 'tserver', 'id_server', (int) $id_server);
+    return (string) db_get_value(
+        'name',
+        'tserver',
+        'id_server',
+        (int) $id_server
+    );
 }
 
 
 /**
- * Get the presence of .conf and .md5 into remote_config dir
+ * Get the presence of .conf and .md5 into remote_config dir.
  *
- * @param string Agent name
+ * @param string $server_name Agent name.
  *
- * @return true if files exist and are writable
+ * @return true If files exist and are writable.
  */
-
-
 function servers_check_remote_config($server_name)
 {
     global $config;
@@ -862,8 +1031,12 @@ function servers_check_remote_config($server_name)
     $server_md5 = md5($server_name, false);
 
     $filenames = [];
-    $filenames['md5'] = io_safe_output($config['remote_config']).'/md5/'.$server_md5.'.srv.md5';
-    $filenames['conf'] = io_safe_output($config['remote_config']).'/conf/'.$server_md5.'.srv.conf';
+    $filenames['md5'] = io_safe_output(
+        $config['remote_config']
+    ).'/md5/'.$server_md5.'.srv.md5';
+    $filenames['conf'] = io_safe_output(
+        $config['remote_config']
+    ).'/conf/'.$server_md5.'.srv.conf';
 
     if (! isset($filenames['conf'])) {
         return false;
@@ -881,14 +1054,15 @@ function servers_check_remote_config($server_name)
 
 
 /**
- * Return a string containing image tag for a given target id (server)
- * TODO: Make this print_servertype_icon and move to functions_ui.php. Make XHTML compatible. Make string translatable
+ * Return a string containing image tag for a given target id (server).
+ * TODO: Make this print_servertype_icon and move to functions_ui.php.
+ *      Make XHTML compatible. Make string translatable.
  *
- * @deprecated Use print_servertype_icon instead
+ * @param integer $id Server type id.
  *
- * @param int Server type id
+ * @deprecated Use print_servertype_icon instead.
  *
- * @return string Fully formatted IMG HTML tag with icon
+ * @return string Fully formatted IMG HTML tag with icon.
  */
 function servers_show_type($id)
 {
@@ -896,37 +1070,67 @@ function servers_show_type($id)
 
     switch ($id) {
         case 1:
-        return html_print_image('images/database.png', true, ['title' => get_product_name().' Data server']);
+            $return = html_print_image(
+                'images/database.png',
+                true,
+                ['title' => get_product_name().' Data server']
+            );
+        break;
 
-            break;
         case 2:
-        return html_print_image('images/network.png', true, ['title' => get_product_name().' Network server']);
+            $return = html_print_image(
+                'images/network.png',
+                true,
+                ['title' => get_product_name().' Network server']
+            );
+        break;
 
-            break;
         case 4:
-        return html_print_image('images/plugin.png', true, ['title' => get_product_name().' Plugin server']);
+            $return = html_print_image(
+                'images/plugin.png',
+                true,
+                ['title' => get_product_name().' Plugin server']
+            );
+        break;
 
-            break;
         case 5:
-        return html_print_image('images/chart_bar.png', true, ['title' => get_product_name().' Prediction server']);
+            $return = html_print_image(
+                'images/chart_bar.png',
+                true,
+                ['title' => get_product_name().' Prediction server']
+            );
+        break;
 
-            break;
         case 6:
-        return html_print_image('images/wmi.png', true, ['title' => get_product_name().' WMI server']);
+            $return = html_print_image(
+                'images/wmi.png',
+                true,
+                ['title' => get_product_name().' WMI server']
+            );
+        break;
 
-            break;
         case 7:
-        return html_print_image('images/server_web.png', true, ['title' => get_product_name().' WEB server']);
+            $return = html_print_image(
+                'images/server_web.png',
+                true,
+                ['title' => get_product_name().' WEB server']
+            );
+        break;
 
-            break;
         case 8:
-        return html_print_image('images/module-wux.png', true, ['title' => get_product_name().' WUX server']);
+            $return = html_print_image(
+                'images/module-wux.png',
+                true,
+                ['title' => get_product_name().' WUX server']
+            );
+        break;
 
-            break;
         default:
-        return '--';
-            break;
+            $return = '--';
+        break;
     }
+
+    return $return;
 }
 
 
@@ -941,28 +1145,10 @@ function servers_check_status()
 {
     global $config;
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql = 'SELECT COUNT(id_server)
-				FROM tserver
-				WHERE status = 1
-					AND keepalive > NOW() - INTERVAL server_keepalive*2 SECOND';
-        break;
-
-        case 'postgresql':
-            $sql = "SELECT COUNT(id_server)
-				FROM tserver
-				WHERE status = 1
-					AND keepalive > NOW() - INTERVAL 'server_keepalive*2 SECOND'";
-        break;
-
-        case 'oracle':
-            $sql = "SELECT COUNT(id_server)
-				FROM tserver
-				WHERE status = 1
-					AND keepalive > systimestamp - INTERVAL 'server_keepalive*2' SECOND";
-        break;
-    }
+    $sql = 'SELECT COUNT(id_server)
+        FROM tserver
+        WHERE status = 1
+            AND keepalive > NOW() - INTERVAL server_keepalive*2 SECOND';
 
     $status = (int) db_get_sql($sql);
     // Cast as int will assure a number value
@@ -972,10 +1158,9 @@ function servers_check_status()
 
 
 /**
- * @deprecated use servers_get_info instead
  * Get statistical information for a given server
  *
- * @param int Server id to get status.
+ * @param integer $id_server Server id to get status.
  *
  * @return array Server info array
  */
@@ -1036,7 +1221,7 @@ function servers_get_server_string_name(int $server)
         return __('Discovery server');
 
         case SERVER_TYPE_SYSLOG:
-        return __('Syslog server');
+        return __('Log server');
 
         case SERVER_TYPE_WUX:
         return __('WUX server');

@@ -83,6 +83,7 @@ $validate_event = get_parameter('validate_event', 0);
 $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
 $get_comments = get_parameter('get_comments', 0);
+$get_events_fired = (bool) get_parameter('get_events_fired');
 
 if ($get_comments) {
     $event = get_parameter('event', false);
@@ -1289,12 +1290,14 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
+    if ($meta) {
+        metaconsole_restore_db();
+    }
+
     if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
 
-    // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct
-    // node connection was lost.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
             metaconsole_connect($server);
@@ -1573,7 +1576,6 @@ if ($get_list_events_agents) {
     $date_from = get_parameter('date_from');
     $date_to = get_parameter('date_to');
     $id_user = $config['id_user'];
-    $server_id = get_parameter('server_id');
 
     $returned_sql = events_sql_events_grouped_agents(
         $id_agent,
@@ -1694,4 +1696,118 @@ if ($get_table_response_command) {
     );
 
     return;
+}
+
+if ($get_events_fired) {
+    $id = get_parameter('id_row');
+    $idGroup = get_parameter('id_group');
+    $agents = get_parameter('agents', null);
+
+    $query = ' AND id_evento > '.$id;
+
+    $type = [];
+    $alert = get_parameter('alert_fired');
+    if ($alert == 'true') {
+        $resultAlert = alerts_get_event_status_group(
+            $idGroup,
+            [
+                'alert_fired',
+                'alert_ceased',
+            ],
+            $query,
+            $agents
+        );
+    }
+
+    $critical = get_parameter('critical');
+    if ($critical == 'true') {
+        $resultCritical = alerts_get_event_status_group(
+            $idGroup,
+            'going_up_critical',
+            $query,
+            $agents
+        );
+    }
+
+    $warning = get_parameter('warning');
+    if ($warning == 'true') {
+        $resultWarning = alerts_get_event_status_group(
+            $idGroup,
+            'going_up_warning',
+            $query,
+            $agents
+        );
+    }
+
+    $unknown = get_parameter('unknown');
+    if ($unknown == 'true') {
+        $resultUnknown = alerts_get_event_status_group(
+            $idGroup,
+            'going_unknown',
+            $query,
+            $agents
+        );
+    }
+
+    if ($resultAlert) {
+        $return = [
+            'fired' => $resultAlert,
+            'sound' => $config['sound_alert'],
+        ];
+        $event = events_get_event($resultAlert);
+
+        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+        $agent_name = agents_get_alias($event['id_agente']);
+
+        $return['message'] = io_safe_output($agent_name).' - ';
+        $return['message'] .= __('Alert fired in module ');
+        $return['message'] .= io_safe_output($module_name).' - ';
+        $return['message'] .= $event['timestamp'];
+    } else if ($resultCritical) {
+        $return = [
+            'fired' => $resultCritical,
+            'sound' => $config['sound_critical'],
+        ];
+        $event = events_get_event($resultCritical);
+
+        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+        $agent_name = agents_get_alias($event['id_agente']);
+
+        $return['message'] = io_safe_output($agent_name).' - ';
+        $return['message'] .= __('Module ').io_safe_output($module_name);
+        $return['message'] .= __(' is going to critical').' - ';
+        $return['message'] .= $event['timestamp'];
+    } else if ($resultWarning) {
+        $return = [
+            'fired' => $resultWarning,
+            'sound' => $config['sound_warning'],
+        ];
+        $event = events_get_event($resultWarning);
+
+        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+        $agent_name = agents_get_alias($event['id_agente']);
+
+        $return['message'] = io_safe_output($agent_name).' - ';
+        $return['message'] .= __('Module ').io_safe_output($module_name);
+        $return['message'] .= __(' is going to warning').' - ';
+        $return['message'] .= $event['timestamp'];
+    } else if ($resultUnknown) {
+        $return = [
+            'fired' => $resultUnknown,
+            'sound' => $config['sound_alert'],
+        ];
+        $event = events_get_event($resultUnknown);
+
+        $module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+        $agent_name = agents_get_alias($event['id_agente']);
+
+        $return['message'] = io_safe_output($agent_name).' - ';
+        $return['message'] .= __('Module ').io_safe_output($module_name);
+        $return['message'] .= __(' is going to unknown').' - ';
+        $return['message'] .= $event['timestamp'];
+    } else {
+        $return = ['fired' => 0];
+    }
+
+    echo io_json_mb_encode($return);
 }

@@ -159,10 +159,10 @@ if ($show_update_action_menu) {
     $id_action = (int) get_parameter('id_action');
 
     $actions = alerts_get_alert_agent_module_actions($id_alert);
-    $action_opction = db_get_row(
+    $action_option = db_get_row(
         'talert_template_module_actions',
-        'id_alert_template_module',
-        $id_alert
+        'id',
+        $id_action
     );
 
     $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
@@ -242,7 +242,7 @@ if ($show_update_action_menu) {
             $data .= '<td class="datos">';
                 $data .= html_print_input_text(
                     'fires_min_ajax',
-                    $action_opction['fires_min'],
+                    $action_option['fires_min'],
                     '',
                     4,
                     10,
@@ -251,7 +251,7 @@ if ($show_update_action_menu) {
                 $data .= ' '.__('to').' ';
                 $data .= html_print_input_text(
                     'fires_max_ajax',
-                    $action_opction['fires_max'],
+                    $action_option['fires_max'],
                     '',
                     4,
                     10,
@@ -266,7 +266,7 @@ if ($show_update_action_menu) {
             $data .= '<td class="datos2">';
                 $data .= html_print_input_text(
                     'module_action_threshold_ajax',
-                    $action_opction['module_action_threshold'],
+                    $action_option['module_action_threshold'],
                     '',
                     4,
                     10,

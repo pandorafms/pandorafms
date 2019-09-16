@@ -3527,6 +3527,9 @@ $(document).ready (function () {
 
     $("#id_agents").change(agent_changed_by_multiple_agents);
 
+    // Load selected modules by default
+    $("#id_agents2").trigger('click');
+
     $("#combo_group").change (
         function () {
             jQuery.post ("ajax.php",

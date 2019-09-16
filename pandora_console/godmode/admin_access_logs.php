@@ -94,7 +94,7 @@ $table->data[1] = $data;
 $form = '<form name="query_sel" method="post" action="index.php?sec=glog&sec2=godmode/admin_access_logs">';
 $form .= html_print_table($table, true);
 $form .= '</form>';
-ui_toggle($form, __('Filter'), '', false);
+ui_toggle($form, __('Filter'), '', '', false);
 
 $filter = '1=1';
 
@@ -183,10 +183,10 @@ if (empty($result)) {
 }
 
 $table = new stdClass();
-$table->cellpadding = 4;
-$table->cellspacing = 4;
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 $table->size = [];
 $table->data = [];
 $table->head = [];
@@ -246,7 +246,18 @@ foreach ($result as $row) {
     }
 }
 
+foreach ($table->rowclass as $key => $value) {
+    if (strpos($value, 'limit_scroll') !== false) {
+        $table->colspan[$key] = [7];
+    } else {
+        if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+            $table->cellclass[$key][6] = 'action_buttons';
+        }
+    }
+}
+
 html_print_table($table);
+ui_pagination($count, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 
 if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
     enterprise_hook('enterpriseAuditFooter');

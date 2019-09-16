@@ -1,0 +1,81 @@
+text.text-tooltip {
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: bold;
+}
+
+div#bullets_modules span {
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+table#agent_interface_info .noresizevc.graph {
+  width: 500px;
+}
+
+div.agent_details_agent_alias {
+  flex: 1;
+}
+
+div.agent_details_agent_alias * {
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+#module_list {
+  width: 100%;
+}
+
+#module_filter_agent_view tr td {
+  padding-bottom: 3em;
+}
+
+#div_all_events_24h {
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 3em;
+}
+
+#rect1,
+#rect2 {
+  z-index: 10;
+  position: absolute;
+  height: 238px;
+  width: 0px;
+  background: #3d84a8;
+}
+
+.agent-animation {
+  height: 300px;
+  width: 600px;
+  background: #3d84a8;
+  border-radius: 3px;
+  position: relative;
+  padding: 32px;
+}
+.agent-animation:before {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  height: 240px;
+  width: 2px;
+  background: #48466d;
+}
+.agent-animation:after {
+  content: "";
+  position: absolute;
+  left: 30px;
+  bottom: 30px;
+  height: 2px;
+  width: 540px;
+  background: #48466d;
+}
+.agent-animation svg {
+  position: absolute;
+  left: 32px;
+  top: 30px;
+  width: 540px !important;
+}
+.agent-animation svg .cls-1 {
+  fill: none;
+  stroke: #abedd8;
+  stroke-miterlimit: 10;
+  stroke-width: 2px;
+}

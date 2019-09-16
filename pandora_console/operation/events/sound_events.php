@@ -59,7 +59,7 @@ echo '</head>';
 echo "<body style='background-color: #494949; max-width: 550px; max-height: 400px; margin-top:40px;'>";
 echo "<h1 class='modalheaderh1'>".__('Sound console').'</h1>';
 
-$table = null;
+$table = new StdClass;
 $table->width = '100%';
 $table->styleTable = 'padding-left:16px; padding-right:16px; padding-top:16px;';
 $table->class = ' ';
@@ -82,7 +82,7 @@ $table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly=
 
 html_print_table($table);
 
-$table = null;
+$table = new StdClass;
 $table->width = '100%';
 $table->rowstyle[0] = 'text-align:center;';
 $table->styleTable = 'padding-top:16px;padding-bottom:16px;';
@@ -196,15 +196,15 @@ function forgetPreviousEvents() {
     var agents = $("#id_agents").val();
 
     jQuery.post ("../../ajax.php",
-        {"page" : "operation/events/events",
+        {"page" : "include/ajax/events",
             "get_events_fired": 1,
             "id_group": group,
-            "agents[]" : agents,
             "alert_fired": alert_fired,
             "critical": critical,
             "warning": warning,
             "unknown": unknown,
-            "id_row": id_row
+            "id_row": id_row,
+            "agents[]" : agents
         },
         function (data) {
             firedId = parseInt(data['fired']);
@@ -219,18 +219,17 @@ function forgetPreviousEvents() {
 
 function check_event() {
     var agents = $("#id_agents").val();
-    
     if (running) {
         jQuery.post ("../../ajax.php",
-            {"page" : "operation/events/events",
+            {"page" : "include/ajax/events",
                 "get_events_fired": 1,
                 "id_group": group,
-                "agents[]" : agents,
                 "alert_fired": alert_fired,
                 "critical": critical,
                 "warning": warning,
                 "unknown": unknown,
-                "id_row": id_row
+                "id_row": id_row,
+                "agents[]" : agents,
             },
             function (data) {
                 firedId = parseInt(data['fired']);
@@ -247,7 +246,6 @@ function check_event() {
                     $('audio').remove();
                     $('body').append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
                 }
-                
             },
             "json"
         );

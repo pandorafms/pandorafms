@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.732 PS190326";
+my $version = "7.0NG.738 PS190916";
 
 # save program name for logging
 my $progname = basename($0);
@@ -155,6 +155,7 @@ sub help_screen{
 	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
     help_screen_line('--get_agents_module_current_data', '<module_name>', "Get the agent and current data \n\t  of all the modules with a given name");
 	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', "Create a new network \n\t  module from a network component");
+	help_screen_line('--create_network_component', "<network_component_name> <network_component_group> <network_component_type> \n\t [<description> <module_interval> <max_value> <min_value> \n\t <snmp_community> <id_module_group> <max_timeout> \n\t <history_data> <min_warning> <max_warning> \n\t <str_warning> <min_critical> <max_critical> \n\t <str_critical> <min_ff_event> <post_process> \n\t <disabled_types_event> <each_ff> <min_ff_event_normal> \n\t <min_ff_event_warning> <min_ff_event_critical>]", "Create a new network component");	
 	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> ]", "Create a new Synthetic module");
 	print "\nALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
@@ -283,19 +284,94 @@ sub api_call($$$;$$$$) {
 	return $content;
 }
 
+
+###############################################################################
+# Update token conf file agent
+###############################################################################
+sub update_conf_txt ($$$$) {
+	my ($conf, $agent_name, $token, $value) = @_;
+
+	# Read the conf of each agent.
+	my $conf_file_txt = enterprise_hook(
+		'read_agent_conf_file',
+		[
+			$conf,
+			$agent_name
+		]
+	);
+
+	# Check if there is agent conf.
+	if(!$conf_file_txt){
+		return 0;
+	}
+
+	my $updated = 0;
+	my $txt_content = "";
+
+	my @lines = split /\n/, $conf_file_txt;
+
+	foreach my $line (@lines) {
+		if ($line =~ /^\s*$token\s/ || $line =~ /^#$token\s/ || $line =~ /^#\s$token\s/) {
+			$txt_content .= $token.' '.$value."\n";
+			$updated = 1;
+		} else {
+			$txt_content .= $line."\n";
+		}
+	}
+
+	if ($updated == 0) {
+		$txt_content .= "\n$token $value\n";
+	}
+
+	# Write the conf.
+	my $result = enterprise_hook(
+		'write_agent_conf_file',
+		[
+			$conf,
+			$agent_name,
+			$txt_content
+		]
+	);
+
+	return $result;
+}
+
+
 ###############################################################################
 # Disable a entire group
 ###############################################################################
 sub pandora_disable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
+	my @agents_bd = [];
+	my $result = 0;
+
 	if ($group == 0){
+		# Extract all the names of the pandora agents if it is for all = 0.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		# Update bbdd.
 		db_do ($dbh, "UPDATE tagente SET disabled = 1");
 	}
 	else {
+		# Extract all the names of the pandora agents if it is for group.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+		# Update bbdd.
 		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
 	}
-    exit;
+
+	foreach my $name_agent (@agents_bd) {
+		# Check the standby field I put it to 0.
+		my $new_conf = update_conf_txt(
+			$conf,
+			$name_agent->{'nombre'},
+			'standby',
+			'1'
+		);
+	}
+
+    return $result;
 }
 
 ###############################################################################
@@ -304,13 +380,35 @@ sub pandora_disable_group ($$$) {
 sub pandora_enable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
+	my @agents_bd = [];
+	my $result = 0;
+
 	if ($group == 0){
-			db_do ($dbh, "UPDATE tagente SET disabled = 0");
+		# Extract all the names of the pandora agents if it is for all = 0.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		# Update bbdd.
+		$result = db_do ($dbh, "UPDATE tagente SET disabled = 0");
 	}
 	else {
-			db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
+		# Extract all the names of the pandora agents if it is for group.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+		# Update bbdd.
+		$result = db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
 	}
-    exit;
+
+	foreach my $name_agent (@agents_bd) {
+		# Check the standby field I put it to 0.
+		my $new_conf = update_conf_txt(
+			$conf,
+			$name_agent->{'nombre'},
+			'standby',
+			'0'
+		);
+	}
+
+    return $result;
 }
 
 ##############################################################################
@@ -1683,6 +1781,23 @@ sub cli_create_network_module_from_component() {
 	my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $nc_id);
 	
 	pandora_create_module_from_network_component ($conf, $component, $agent_id, $dbh);
+}
+
+##############################################################################
+# Create a network component.
+# Related option: --create_network_component
+##############################################################################
+sub cli_create_network_component() {
+	my ($c_name, $c_group, $c_type) = @ARGV[2..4];
+	my @todo = @ARGV[5..20];
+	my $other = join('|', @todo);
+	my @todo2 = @ARGV[22..26];
+	my $other2 = join('|', @todo2);
+
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'new_network_component', $c_name, undef, "$c_type|$other|$c_group|$other2");
+	
+	print "$result \n\n ";
 }
 
 ##############################################################################
@@ -3783,9 +3898,8 @@ sub cli_get_agent_group() {
 				else {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
 					my $group_name = get_group_name ($dbh_metaconsole, $id_group);
-					my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
 					$agent_name = safe_output($agent_name);
-					print "[INFO] Server: $metaconsole_name Agent: $agent_name Name Group: $group_name\n\n";
+					print "[INFO] Agent: $agent_name Name Group: $group_name\n\n";
 				}
 			}
 		}
@@ -3825,7 +3939,6 @@ sub cli_get_agent_group_id() {
 			foreach my $server (@servers_id) {
 				my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 				
-				my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
 				my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
 				
 				if ($id_agent == -1) {
@@ -3834,7 +3947,7 @@ sub cli_get_agent_group_id() {
 				else {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
 					$agent_name = safe_output($agent_name);
-					print "Server: $metaconsole_name Agent: $agent_name ID Group: $id_group\n\n";
+					print "Agent: $agent_name ID Group: $id_group\n\n";
 				}
 			}
 		}
@@ -6203,6 +6316,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_network_module_from_component') {
 			param_check($ltotal, 2);
 			cli_create_network_module_from_component();
+		}
+		elsif ($param eq '--create_network_component') {
+			param_check($ltotal, 24, 21);
+			cli_create_network_component();
 		}
 		elsif ($param eq '--create_netflow_filter') {
 			param_check($ltotal, 5);

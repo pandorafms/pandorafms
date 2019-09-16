@@ -388,6 +388,11 @@ $table->data['form_modules_4'][1] = html_print_select(
     true
 );
 
+$table->rowstyle['form_modules_filter'] = 'vertical-align: top;';
+$table->rowclass['form_modules_filter'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_filter'][0] = __('Filter Modules');
+$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
+
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
 $table->data['form_modules_2'][0] = __('Modules');
@@ -467,6 +472,11 @@ $table->data['form_agents_4'][1] = html_print_select(
     true,
     true
 );
+
+$table->rowstyle['form_agents_filter'] = 'vertical-align: top;';
+$table->rowclass['form_agents_filter'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_filter'][0] = __('Filter agents');
+$table->data['form_agents_filter'][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
 
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
@@ -695,7 +705,7 @@ $table->data['edit1'][1] = '<table width="100%">';
                 true
             );
 
-            $table->data['edit3'][0] = __('Post process').ui_print_help_icon('postprocess', true);
+            $table->data['edit3'][0] = __('Post process');
 
             $table->data['edit3'][1] = html_print_extended_select_for_post_process(
                 'post_process',
@@ -844,20 +854,118 @@ $table->data['edit1'][1] = '<table width="100%">';
             $table->data['edit6'][3] = html_print_extended_select_for_unit('unit', '-1', '', '', '0', '15', true, false, false, false, 1);
 
 
-            // FF stands for Flip-flop
-            $table->data['edit7'][0] = __('FF threshold').' '.ui_print_help_icon('ff_threshold', true);
+            // FF stands for Flip-flop.
+            $table->data['edit7'][0] = __('FF threshold').' ';
+
             $table->colspan['edit7'][1] = 3;
-            $table->data['edit7'][1] = __('Mode').' '.html_print_select(['' => __('No change'), '1' => __('Each state changing'), '0' => __('All state changing')], 'each_ff', '', '', '', '', true).'<br />';
-            $table->data['edit7'][1] .= __('All state changing').' : '.html_print_input_text('min_ff_event', '', '', 5, 15, true).'<br />';
+            $table->data['edit7'][1] = __('Mode').' ';
+            $table->data['edit7'][1] .= html_print_select(
+                [
+                    ''  => __('No change'),
+                    '1' => __('Each state changing'),
+                    '0' => __('All state changing'),
+                ],
+                'each_ff',
+                '',
+                '',
+                '',
+                '',
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 400px;'
+            ).'<br />';
+
+            $table->data['edit7'][1] .= __('All state changing').' : ';
+            $table->data['edit7'][1] .= html_print_input_text(
+                'min_ff_event',
+                '',
+                '',
+                5,
+                15,
+                true
+            ).'<br />';
+
             $table->data['edit7'][1] .= __('Each state changing').' : ';
-            $table->data['edit7'][1] .= __('To normal').html_print_input_text('min_ff_event_normal', '', '', 5, 15, true).' ';
-            $table->data['edit7'][1] .= __('To warning').html_print_input_text('min_ff_event_warning', '', '', 5, 15, true).' ';
-            $table->data['edit7'][1] .= __('To critical').html_print_input_text('min_ff_event_critical', '', '', 5, 15, true).' ';
+            $table->data['edit7'][1] .= __('To normal').' ';
+            $table->data['edit7'][1] .= html_print_input_text(
+                'min_ff_event_normal',
+                '',
+                '',
+                5,
+                15,
+                true
+            ).' ';
+
+            $table->data['edit7'][1] .= __('To warning').' ';
+            $table->data['edit7'][1] .= html_print_input_text(
+                'min_ff_event_warning',
+                '',
+                '',
+                5,
+                15,
+                true
+            ).' ';
+
+            $table->data['edit7'][1] .= __('To critical').' ';
+            $table->data['edit7'][1] .= html_print_input_text(
+                'min_ff_event_critical',
+                '',
+                '',
+                5,
+                15,
+                true
+            ).'<br>';
+
+            $table->data['edit7'][1] .= __('Keep counters').' ';
+            $table->data['edit7'][1] .= html_print_select(
+                [
+                    ''  => __('No change'),
+                    '1' => __('Active Counters'),
+                    '0' => __('Inactive Counters'),
+                ],
+                'ff_type',
+                '',
+                '',
+                '',
+                '',
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 400px;'
+            );
 
             $table->data['edit8'][0] = __('FF interval');
-            $table->data['edit8'][1] = html_print_input_text('module_ff_interval', '', '', 5, 10, true).ui_print_help_tip(__('Module execution flip flop time interval (in secs).'), true);
+            $table->data['edit8'][1] = html_print_input_text(
+                'module_ff_interval',
+                '',
+                '',
+                5,
+                10,
+                true
+            );
+            $table->data['edit8'][1] .= ui_print_help_tip(
+                __('Module execution flip flop time interval (in secs).'),
+                true
+            );
+
             $table->data['edit8'][2] = __('FF timeout');
-            $table->data['edit8'][3] = html_print_input_text('ff_timeout', '', '', 5, 10, true).ui_print_help_tip(__('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'), true);
+            $table->data['edit8'][3] = html_print_input_text(
+                'ff_timeout',
+                '',
+                '',
+                5,
+                10,
+                true
+            );
+            $table->data['edit8'][3] .= ui_print_help_tip(
+                __('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'),
+                true
+            );
 
             $table->data['edit9'][0] = __('Historical data');
             $table->data['edit9'][1] = html_print_select(['' => __('No change'), '1' => __('Yes'), '0' => __('No')], 'history_data', '', '', '', '', true);
@@ -958,26 +1066,26 @@ $table->data['edit1'][1] = '<table width="100%">';
                 true
             );
 
-            $table->data['edit22'][0] = __('Web checks').ui_print_help_icon('web_checks', true);
+            $table->data['edit22'][0] = __('Web checks');
             ;
             $table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter_text" cols="65" rows="15"></textarea>';
 
             $table->data['edit16'][2] = __('Port');
             $table->data['edit16'][3] = html_print_input_text('tcp_port', '', '', 5, 20, true);
 
-            $table->data['edit17'][0] = __('TCP send').' '.ui_print_help_icon('tcp_send', true);
+            $table->data['edit17'][0] = __('TCP send');
             $table->data['edit17'][1] = html_print_textarea('tcp_send2', 2, 65, '', '', true);
 
             $table->data['edit17'][2] = __('TCP receive');
             $table->data['edit17'][3] = html_print_textarea('tcp_rcv', 2, 65, '', '', true);
 
-            $table->data['edit18'][0] = __('WMI query').ui_print_help_icon('wmiquery', true);
+            $table->data['edit18'][0] = __('WMI query');
             $table->data['edit18'][1] = html_print_input_text('wmi_query', '', '', 35, 255, true);
 
             $table->data['edit18'][2] = __('Key string');
             $table->data['edit18'][3] = html_print_input_text('key_string', '', '', 20, 60, true);
 
-            $table->data['edit19'][0] = __('Field number').ui_print_help_icon('wmifield', true);
+            $table->data['edit19'][0] = __('Field number');
             $table->data['edit19'][1] = html_print_input_text('field_number', '', '', 5, 15, true);
 
             $table->data['edit20'][0] = __('Plugin').ui_print_help_icon('plugin_macros', true);
@@ -1149,6 +1257,9 @@ $(document).ready (function () {
                 });
                 $("#module_loading").hide ();
                 $("#module_name").removeAttr ("disabled");
+                //Filter modules. Call the function when the select is fully loaded.
+                var textNoData = "<?php echo __('None'); ?>";
+                filterByText($('#module_name'), $("#text-filter_modules"), textNoData);
             },
             "json"
         );
@@ -1532,6 +1643,9 @@ $(document).ready (function () {
                             .html(value["alias"]);
                         $("#id_agents").append (option);
                     });
+                    //Filter agents. Call the function when the select is fully loaded.
+                    var textNoData = "<?php echo __('None'); ?>";
+                    filterByText($('#id_agents'), $("#text-filter_agents"), textNoData);
                 },
                 "json"
             );
@@ -1685,7 +1799,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         $agents_select = [$agents_select];
     }
 
-    // List of fields which can be updated
+    // List of fields which can be updated.
     $fields = [
         'dynamic_interval',
         'dynamic_max',
@@ -1730,6 +1844,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'min_ff_event_normal',
         'min_ff_event_warning',
         'min_ff_event_critical',
+        'ff_type',
         'each_ff',
         'module_ff_interval',
         'ff_timeout',
@@ -1815,11 +1930,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
 
             case 'unit_select':
                 if ($value != -1) {
-                    if ($value == 'none') {
-                        $values['unit'] = (string) get_parameter('unit_text');
-                    } else {
-                        $values['unit'] = $value;
-                    }
+                    $values['unit'] = (string) get_parameter('unit');
                 }
             break;
 

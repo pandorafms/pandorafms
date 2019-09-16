@@ -267,7 +267,7 @@ if ($moduleFilter != 0) {
 
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-    $where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\'))';
+    $where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\',\'text\'))';
 } else {
     $where .= ' AND ((server_name IS NULL OR length(server_name) = 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 }
@@ -330,30 +330,36 @@ if ($items) {
     if (defined('METACONSOLE')) {
         $table->width = '100%';
         $table->class = 'databox data';
+        $arrow_up = 'images/sort_up.png';
+        $arrow_down = 'images/sort_down.png';
+    } else {
+        $table->class = 'info_table';
+        $arrow_up = 'images/sort_up_black.png';
+        $arrow_down = 'images/sort_down_black.png';
     }
 
     $table->size = [];
     $table->size[0] = '5px';
     $table->size[1] = '15%';
     $table->size[4] = '8%';
-    $table->size[6] = '90px';
+    $table->size[6] = '120px';
     $table->size[7] = '30px';
 
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';
     $table->head[1] = __('Type');
     if (!$filterEnable) {
-        $table->head[1] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image('images/sort_up.png', true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image('images/sort_down.png', true, ['title' => __('Descent')]).'</a>';
+        $table->head[1] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_up, true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_down, true, ['title' => __('Descent')]).'</a></span>';
     }
 
     $table->head[2] = __('Agent');
     if (!$filterEnable) {
-        $table->head[2] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image('images/sort_up.png', true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image('images/sort_down.png', true, ['title' => __('Descent')]).'</a>';
+        $table->head[2] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_up, true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_down, true, ['title' => __('Descent')]).'</a></span>';
     }
 
     $table->head[3] = __('Module');
 
     if (!$filterEnable) {
-        $table->head[3] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image('images/sort_up.png', true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image('images/sort_down.png', true, ['title' => __('Descent')]).'</a>';
+        $table->head[3] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_up, true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_down, true, ['title' => __('Descent')]).'</a></span>';
     }
 
     $table->head[4] = __('Time lapse');
@@ -493,6 +499,7 @@ foreach ($items as $item) {
     $row[6] = '';
 
     if (check_acl($config['id_user'], $item['id_group'], 'RM')) {
+        $table->cellclass[][6] = 'action_buttons';
         $row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report='.$idReport.'&id_item='.$item['id_rc'].'">'.html_print_image('images/wrench_orange.png', true, ['title' => __('Edit')]).'</a>';
         $row[6] .= '&nbsp;';
         $row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report='.$idReport.'&id_item='.$item['id_rc'].$urlFilter.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
@@ -738,7 +745,12 @@ function message_check_delete_items() {
 }
 
 function added_ids_deleted_items_to_hidden_input() {
-    message_check_delete_items();
+   var success = message_check_delete_items();
+
+   if(success === false){
+    $(".check_delete").prop("checked", false);
+       return false;
+   }
     
     var ids = '';
     var first = true;

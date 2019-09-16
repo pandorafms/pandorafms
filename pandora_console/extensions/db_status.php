@@ -25,7 +25,7 @@ function extension_db_status()
         __('DB Schema check'),
         'images/extensions.png',
         false,
-        '',
+        'db_status_tab',
         true,
         ''
     );
@@ -69,7 +69,7 @@ function extension_db_status()
 
     echo "<div style='text-align: right;'>";
     html_print_input_hidden('db_status_execute', 1);
-    html_print_submit_button(__('Execute Test'), 'submit', false, 'class="sub"');
+    html_print_submit_button(__('Execute Test'), 'submit', false, 'class="sub next"');
     echo '</div>';
 
     echo '</form>';
@@ -215,7 +215,7 @@ function extension_db_check_tables_differences(
     $diff_tables = array_diff($tables_test, $tables_system);
 
     ui_print_result_message(
-        !empty($diff_tables),
+        empty($diff_tables),
         __('Success! %s DB contains all tables', get_product_name()),
         __(
             '%s DB could not retrieve all tables. The missing tables are (%s)',

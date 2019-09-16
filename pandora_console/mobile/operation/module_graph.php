@@ -47,6 +47,8 @@ class ModuleGraph
 
     private $module = null;
 
+    private $server_id = '';
+
 
     function __construct()
     {
@@ -68,6 +70,8 @@ class ModuleGraph
 
         $this->id = (int) $system->getRequest('id', 0);
         $this->id_agent = (int) $system->getRequest('id_agent', 0);
+        $this->server_id = $system->getRequest('server_id', '');
+
         $this->module = modules_get_agentmodule($this->id);
         $this->graph_type = return_graphtype($this->module['id_tipo_modulo']);
 
@@ -124,6 +128,16 @@ class ModuleGraph
             switch ($parameter2) {
                 case 'get_graph':
                     $this->getFilters();
+                    if ($system->getConfig('metaconsole')) {
+                        $server_data = metaconsole_get_connection_by_id(
+                            $this->server_id
+                        );
+                        // Establishes connection.
+                        if (metaconsole_load_external_db($server_data) !== NOERR) {
+                            return false;
+                        }
+                    }
+
                     $correct = 0;
                     $graph = '';
                     $correct = 1;
@@ -197,6 +211,10 @@ class ModuleGraph
                         break;
                     }
 
+                    if ($system->getConfig('metaconsole')) {
+                        metaconsole_restore_db();
+                    }
+
                     $graph = ob_get_clean().$graph;
 
                     echo json_encode(['correct' => $correct, 'graph' => $graph]);
@@ -252,7 +270,7 @@ class ModuleGraph
                             - $(".ui-collapsible").height()
                             - 55;
                     var width = $(document).width() - 25;
-                    ajax_get_graph($("#id_module").val(), heigth, width);
+                    ajax_get_graph($("#id_module").val(), heigth, width, $("#server_id").val());
                 }
 
                 load_graph();
@@ -264,7 +282,7 @@ class ModuleGraph
                 });
             });
 
-            function ajax_get_graph(id, heigth_graph, width_graph) {
+            function ajax_get_graph(id, heigth_graph, width_graph, server_id) {
                 postvars = {};
                 postvars["action"] = "ajax";
                 postvars["parameter1"] = "module_graph";
@@ -283,6 +301,8 @@ class ModuleGraph
                 postvars["start_date"] = $("input[name = 'start_date']").val();
 
                 postvars["id"] = id;
+
+                postvars["server_id"] = server_id;
 
                 $.ajax ({
                     type: "POST",
@@ -360,9 +380,18 @@ class ModuleGraph
                     ]
                 )
             );
+            $ui->contentAddHtml(
+                $ui->getInput(
+                    [
+                        'id'    => 'server_id',
+                        'value' => $this->server_id,
+                        'type'  => 'hidden',
+                    ]
+                )
+            );
             $title = sprintf(__('Options for %s : %s'), $agent_alias, $this->module['nombre']);
             $ui->contentBeginCollapsible($title);
-                $ui->beginForm('index.php?page=module_graph&id='.$this->id);
+                $ui->beginForm('index.php?page=module_graph&id='.$this->id.'&server_id='.$this->server_id);
                     $options = [
                         'name'    => 'draw_alerts',
                         'value'   => 1,

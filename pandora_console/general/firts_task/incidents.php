@@ -28,7 +28,7 @@ if ($incident_w || $incident_m) {
         <?php echo html_print_image('images/firts_task/icono_grande_incidencia.png', true, ['title' => __('Incidents')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Incidents'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Incidents'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "Besides receiving and processing data to monitor systems or applications,

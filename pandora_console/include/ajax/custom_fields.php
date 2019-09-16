@@ -1,17 +1,33 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Custom fields View
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
 if (check_login()) {
-    // Pandora FMS- http://pandorafms.com
-    // ==================================================
-    // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-    // Please see http://pandorafms.org for full contribution list
-    // This program is free software; you can redistribute it and/or
-    // modify it under the terms of the  GNU Lesser General Public License
-    // as published by the Free Software Foundation; version 2
-    // This program is distributed in the hope that it will be useful,
-    // but WITHOUT ANY WARRANTY; without even the implied warranty of
-    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    // GNU General Public License for more details.
     global $config;
 
     include_once $config['homedir'].'/include/functions_agents.php';
@@ -21,9 +37,18 @@ if (check_login()) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $get_custom_fields_data = (bool) get_parameter('get_custom_fields_data', 0);
-    $build_table_custom_fields = (bool) get_parameter('build_table_custom_fields', 0);
-    $build_table_child_custom_fields = (bool) get_parameter('build_table_child_custom_fields', 0);
-    $build_table_save_filter = (bool) get_parameter('build_table_save_filter', 0);
+    $build_table_custom_fields = (bool) get_parameter(
+        'build_table_custom_fields',
+        0
+    );
+    $build_table_child_custom_fields = (bool) get_parameter(
+        'build_table_child_custom_fields',
+        0
+    );
+    $build_table_save_filter = (bool) get_parameter(
+        'build_table_save_filter',
+        0
+    );
     $append_tab_filter = (bool) get_parameter('append_tab_filter', 0);
     $create_filter_cf = (bool) get_parameter('create_filter_cf', 0);
     $update_filter_cf = (bool) get_parameter('update_filter_cf', 0);
@@ -43,9 +68,16 @@ if (check_login()) {
         $start = get_parameter('start', 0);
         $draw = get_parameter('draw', 0);
         $search = get_parameter('search', '');
-        $indexed_descriptions = json_decode(io_safe_output(get_parameter('indexed_descriptions', '')), true);
+        $indexed_descriptions = json_decode(
+            io_safe_output(
+                get_parameter('indexed_descriptions', '')
+            ),
+            true
+        );
+        $module_status = get_parameter('module_status');
+        $id_status = get_parameter('id_status');
 
-        // order query
+        // Order query.
         $order_column = $order[0]['column'];
         $type_order = $order[0]['dir'];
         switch ($order_column) {
@@ -66,27 +98,34 @@ if (check_login()) {
             break;
         }
 
-        // table temporary for save array in table by order and search custom_field data
+        // Table temporary for save array in table
+        // by order and search custom_field data.
         $table_temporary = 'CREATE TEMPORARY TABLE temp_custom_fields (
 		id_server int(10),
 		id_agent int(10),
 		name_custom_fields varchar(2048),
+        critical_count int,
+        warning_count int,
+        unknown_count int,
+        notinit_count int,
+        normal_count int,
+        total_count int,
 		`status` int(2),
 		KEY `data_index_temp_1` (`id_server`, `id_agent`)
 	)';
         db_process_sql($table_temporary);
 
-        // insert values array in table temporary
+        // Insert values array in table temporary.
         $values_insert = [];
         foreach ($indexed_descriptions as $key => $value) {
-            $values_insert[] = '('.$value['id_server'].', '.$value['id_agente'].", '".$value['description']."', ".$value['status'].')';
+            $values_insert[] = '('.$value['id_server'].', '.$value['id_agente'].", '".$value['description']."', '".$value['critical_count']."', '".$value['warning_count']."', '".$value['unknown_count']."', '".$value['notinit_count']."', '".$value['normal_count']."', '".$value['total_count']."', ".$value['status'].')';
         }
 
         $values_insert_implode = implode(',', $values_insert);
         $query_insert = 'INSERT INTO temp_custom_fields VALUES '.$values_insert_implode;
         db_process_sql($query_insert);
 
-        // search table for alias, custom field data, server_name, direction
+        // Search table for alias, custom field data, server_name, direction.
         $search_query = '';
         if ($search['value'] != '') {
             $search_query = ' AND (tma.alias LIKE "%'.$search['value'].'%"';
@@ -95,7 +134,61 @@ if (check_login()) {
             $search_query .= ' OR temp.name_custom_fields LIKE "%'.$search['value'].'%" ) ';
         }
 
-        // query all fields result
+        // Search for status module.
+        $status_agent_search = '';
+        if (isset($id_status) === true && is_array($id_status) === true) {
+            if (in_array(-1, $id_status) === false) {
+                if (in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $id_status) === false) {
+                    $status_agent_search = ' AND temp.status IN ('.implode(',', $id_status).')';
+                } else {
+                    // Not normal statuses.
+                    $status_agent_search = ' AND temp.status IN (1,2,3,4,5)';
+                }
+            }
+        }
+
+        // Search for status module.
+        $status_module_search = '';
+        if (isset($module_status) === true && is_array($module_status) === true) {
+            if (in_array(-1, $module_status) === false) {
+                if (in_array(AGENT_MODULE_STATUS_NOT_NORMAL, $module_status) === false) {
+                    if (count($module_status) > 0) {
+                        $status_module_search = ' AND ( ';
+                        foreach ($module_status as $key => $value) {
+                            $status_module_search .= ($key != 0) ? ' OR (' : ' (';
+                            switch ($value) {
+                                default:
+                                case AGENT_STATUS_NORMAL:
+                                    $status_module_search .= ' temp.normal_count > 0) ';
+                                break;
+                                case AGENT_STATUS_CRITICAL:
+                                    $status_module_search .= ' temp.critical_count > 0) ';
+                                break;
+
+                                case AGENT_STATUS_WARNING:
+                                    $status_module_search .= ' temp.warning_count > 0) ';
+                                break;
+
+                                case AGENT_STATUS_UNKNOWN:
+                                    $status_module_search .= ' temp.unknown_count > 0) ';
+                                break;
+
+                                case AGENT_STATUS_NOT_INIT:
+                                    $status_module_search .= ' temp.notinit_count > 0) ';
+                                break;
+                            }
+                        }
+
+                        $status_module_search .= ' ) ';
+                    }
+                } else {
+                    // Not normal.
+                    $status_module_search = ' AND ( temp.critical_count > 0 OR temp.warning_count > 0 OR temp.unknown_count > 0 AND temp.notinit_count > 0 )';
+                }
+            }
+        }
+
+        // Query all fields result.
         $query = sprintf(
             'SELECT
 			tma.id_agente,
@@ -112,10 +205,14 @@ if (check_login()) {
 			AND temp.id_server = tma.id_tmetaconsole_setup
 		WHERE tma.disabled = 0
 		%s
+        %s
+        %s
 		%s
 		LIMIT %d OFFSET %d
 		',
             $search_query,
+            $status_agent_search,
+            $status_module_search,
             $order_by,
             $length,
             $start
@@ -123,23 +220,27 @@ if (check_login()) {
 
         $result = db_get_all_rows_sql($query);
 
-        // query count
+        // Query count.
         $query_count = sprintf(
             'SELECT
 			COUNT(tma.id_agente) AS `count`
-		FROM tmetaconsole_agent tma
-		INNER JOIN temp_custom_fields temp
-			ON temp.id_agent = tma.id_tagente
-			AND temp.id_server = tma.id_tmetaconsole_setup
-		WHERE tma.disabled = 0
-		%s
-		',
-            $search_query
+            FROM tmetaconsole_agent tma
+            INNER JOIN temp_custom_fields temp
+                ON temp.id_agent = tma.id_tagente
+                AND temp.id_server = tma.id_tmetaconsole_setup
+            WHERE tma.disabled = 0
+            %s
+            %s
+            %s
+            ',
+            $search_query,
+            $status_agent_search,
+            $status_module_search
         );
 
         $count = db_get_sql($query_count);
 
-        // for link nodes.
+        // For link nodes.
         $array_nodes = metaconsole_get_connections();
         if (isset($array_nodes) && is_array($array_nodes)) {
             $hash_array_nodes = [];
@@ -158,27 +259,27 @@ if (check_login()) {
                 $user_rot13 = str_rot13($config['id_user']);
                 $hashdata = $user.$pwd;
                 $hashdata = md5($hashdata);
-                $url_hash = '&amp;'.'loginhash=auto&amp;'.'loginhash_data='.$hashdata.'&amp;'.'loginhash_user='.$user_rot13;
+                $url_hash = '&amp;loginhash=auto&amp;loginhash_data='.$hashdata.'&amp;loginhash_user='.$user_rot13;
 
                 $hash_array_nodes[$server['id']]['hashurl'] = $url_hash;
                 $hash_array_nodes[$server['id']]['server_url'] = $server['server_url'];
             }
         }
 
-        // prepare rows for table dinamic
+        // Prepare rows for table dinamic.
         $data = [];
         foreach ($result as $values) {
             $image_status = agents_get_image_status($values['status']);
 
-            // link nodes
-            $agent_link = '<a href="'.$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'].'/'.'index.php?'.'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$values['id_tagente'].$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'].'">';
+            // Link nodes.
+            $agent_link = '<a href="'.$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$values['id_tagente'].$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'].'">';
 
             $agent_alias = ui_print_truncate_text(
                 $values['alias'],
                 'agent_small',
                 false,
                 true,
-                false,
+                true,
                 '[&hellip;]',
                 'font-size:7.5pt;'
             );
@@ -191,13 +292,14 @@ if (check_login()) {
 
             $data[] = [
                 'ref'               => $referencia,
-                'data_custom_field' => $values['name_custom_fields'],
+                'data_custom_field' => ui_bbcode_to_html($values['name_custom_fields']),
                 'server'            => $values['server_name'],
                 'agent'             => $agent,
                 'IP'                => $values['direccion'],
                 'status'            => "<div id='reload_status_agent_".$values['id_tmetaconsole_setup'].'_'.$values['id_tagente']."'>".$image_status.'</div>',
                 'id_agent'          => $values['id_tagente'],
                 'id_server'         => $values['id_tmetaconsole_setup'],
+                'status_value'      => $values['status'],
             ];
         }
 
@@ -225,7 +327,7 @@ if (check_login()) {
             $name_where = " AND tam.nombre LIKE '%".$module_search."%'";
         }
 
-        // filter by status module
+        // Filter by status module.
         $and_module_status = '';
         if (is_array($module_status)) {
             if (!in_array(-1, $module_status)) {
@@ -260,7 +362,7 @@ if (check_login()) {
                         $and_module_status .= ' ) ';
                     }
                 } else {
-                    // not normal
+                    // Not normal.
                     $and_module_status = 'AND tae.estado <> 0 AND tae.estado <> 300 ';
                 }
             }
@@ -314,7 +416,12 @@ if (check_login()) {
                     && $value['id_tipo_modulo'] != 23
                     && $value['id_tipo_modulo'] != 33
                 ) {
-                    $table_modules->data[$key][1] = remove_right_zeros(number_format($value['datos'], $config['graph_precision']));
+                    $table_modules->data[$key][1] = remove_right_zeros(
+                        number_format(
+                            $value['datos'],
+                            $config['graph_precision']
+                        )
+                    );
                 } else {
                     $table_modules->data[$key][1] = $value['datos'];
                 }
@@ -329,7 +436,10 @@ if (check_login()) {
                 );
 
                 $table_modules->data[$key][3] = $value['current_interval'];
-                $table_modules->data[$key][4] = ui_print_timestamp($value['utimestamp'], true);
+                $table_modules->data[$key][4] = ui_print_timestamp(
+                    $value['utimestamp'],
+                    true
+                );
                 switch ($value['estado']) {
                     case 0:
                     case 300:
@@ -398,7 +508,7 @@ if (check_login()) {
             }
         }
 
-        // status agents from tagente
+        // Status agents from tagente.
         $sql_info_agents = 'SELECT * fROM tagente WHERE id_agente ='.$id_agent;
         $info_agents = db_get_row_sql($sql_info_agents);
         $status_agent = agents_get_status_from_counts($info_agents);
@@ -463,7 +573,13 @@ if (check_login()) {
                 false
             );
 
-            $table->data[0][3] = html_print_submit_button(__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
+            $table->data[0][3] = html_print_submit_button(
+                __('Load filter'),
+                'load_filter',
+                false,
+                'class="sub upd"',
+                true
+            );
 
             echo "<form action='' method='post'>";
             html_print_table($table);
@@ -474,7 +590,12 @@ if (check_login()) {
     }
 
     if ($append_tab_filter) {
-        $filters = json_decode(io_safe_output(get_parameter('filters', '')), true);
+        $filters = json_decode(
+            io_safe_output(
+                get_parameter('filters', '')
+            ),
+            true
+        );
 
         $table = new StdClass;
         $table->id = 'save_filter_form';
@@ -485,7 +606,14 @@ if (check_login()) {
         if ($filters['id'] == 'extended_create_filter') {
             echo "<div id='msg_error_create'></div>";
             $table->data[0][0] = __('Filter name');
-            $table->data[0][1] = html_print_input_text('id_name', '', '', 15, 255, true);
+            $table->data[0][1] = html_print_input_text(
+                'id_name',
+                '',
+                '',
+                15,
+                255,
+                true
+            );
 
             $table->data[1][0] = __('Group');
             $table->data[1][1] = html_print_select_groups(
@@ -510,7 +638,13 @@ if (check_login()) {
             );
 
             $table->rowspan[0][2] = 2;
-            $table->data[0][2] = html_print_submit_button(__('Create filter'), 'create_filter', false, 'class="sub upd"', true);
+            $table->data[0][2] = html_print_submit_button(
+                __('Create filter'),
+                'create_filter',
+                false,
+                'class="sub upd"',
+                true
+            );
         } else {
             echo "<div id='msg_error_update'></div>";
             echo "<div id='msg_error_delete'></div>";
@@ -552,8 +686,20 @@ if (check_login()) {
                 false
             );
 
-            $table->data[0][2] = html_print_submit_button(__('Delete filter'), 'delete_filter', false, 'class="sub upd"', true);
-            $table->data[1][2] = html_print_submit_button(__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+            $table->data[0][2] = html_print_submit_button(
+                __('Delete filter'),
+                'delete_filter',
+                false,
+                'class="sub upd"',
+                true
+            );
+            $table->data[1][2] = html_print_submit_button(
+                __('Update filter'),
+                'update_filter',
+                false,
+                'class="sub upd"',
+                true
+            );
         }
 
         html_print_table($table);
@@ -561,17 +707,20 @@ if (check_login()) {
     }
 
     if ($create_filter_cf) {
-        // initialize result
+        // Initialize result.
         $result_array = [];
         $result_array['error'] = 0;
         $result_array['msg'] = '';
 
-        // initialize vars
-        $filters = json_decode(io_safe_output(get_parameter('filters', '')), true);
+        // Initialize vars.
+        $filters = json_decode(
+            io_safe_output(get_parameter('filters', '')),
+            true
+        );
         $name_filter = get_parameter('name_filter', '');
         $group_search = get_parameter('group_search', 0);
 
-        // check that the name is not empty
+        // Check that the name is not empty.
         if ($name_filter == '') {
             $result_array['error'] = 1;
             $result_array['msg'] = ui_print_error_message(
@@ -596,7 +745,7 @@ if (check_login()) {
             return;
         }
 
-        // check custom field is not empty
+        // Check custom field is not empty.
         if ($filters['id_custom_fields'] == '') {
             $result_array['error'] = 1;
             $result_array['msg'] = ui_print_error_message(
@@ -608,13 +757,15 @@ if (check_login()) {
             return;
         }
 
-        // insert
+        // Insert.
         $values = [];
         $values['name'] = $name_filter;
         $values['group_search'] = $group_search;
         $values['id_group'] = $filters['group'];
         $values['id_custom_field'] = $filters['id_custom_fields'];
-        $values['id_custom_fields_data'] = json_encode($filters['id_custom_fields_data']);
+        $values['id_custom_fields_data'] = json_encode(
+            $filters['id_custom_fields_data']
+        );
         $values['id_status'] = json_encode($filters['id_status']);
         $values['module_search'] = $filters['module_search'];
         $values['module_status'] = json_encode($filters['module_status']);
@@ -622,7 +773,7 @@ if (check_login()) {
 
         $insert = db_process_sql_insert('tagent_custom_fields_filter', $values);
 
-        // check error insert
+        // Check error insert.
         if ($insert) {
             $result_array['error'] = 0;
             $result_array['msg'] = ui_print_success_message(
@@ -644,17 +795,17 @@ if (check_login()) {
     }
 
     if ($update_filter_cf) {
-        // initialize result
+        // Initialize result.
         $result_array = [];
         $result_array['error'] = 0;
         $result_array['msg'] = '';
 
-        // initialize vars
+        // Initialize vars.
         $filters = json_decode(io_safe_output(get_parameter('filters', '')), true);
         $id_filter = get_parameter('id_filter', '');
         $group_search = get_parameter('group_search', 0);
 
-        // check selected filter
+        // Check selected filter.
         if ($id_filter == -1) {
             $result_array['error'] = 1;
             $result_array['msg'] = ui_print_error_message(
@@ -666,11 +817,11 @@ if (check_login()) {
             return;
         }
 
-        // array condition update
+        // Array condition update.
         $condition = [];
         $condition['id'] = $id_filter;
 
-        // check selected custom fields
+        // Check selected custom fields.
         if ($filters['id_custom_fields'] == '') {
             $result_array['error'] = 1;
             $result_array['msg'] = ui_print_error_message(
@@ -682,7 +833,7 @@ if (check_login()) {
             return;
         }
 
-        // array values update
+        // Array values update.
         $values = [];
         $values['id_group'] = $filters['group'];
         $values['group_search'] = $group_search;
@@ -693,10 +844,10 @@ if (check_login()) {
         $values['module_status'] = json_encode($filters['module_status']);
         $values['recursion'] = $filters['recursion'];
 
-        // update
+        // Update.
         $update = db_process_sql_update('tagent_custom_fields_filter', $values, $condition);
 
-        // check error insert
+        // Check error insert.
         if ($update) {
             $result_array['error'] = 0;
             $result_array['msg'] = ui_print_success_message(
@@ -718,16 +869,16 @@ if (check_login()) {
     }
 
     if ($delete_filter_cf) {
-        // Initialize result
+        // Initialize result.
         $result_array = [];
         $result_array['error'] = 0;
         $result_array['msg'] = '';
 
-        // Initialize vars
+        // Initialize vars.
         $filters = json_decode(io_safe_output(get_parameter('filters', '')), true);
         $id_filter = get_parameter('id_filter', '');
 
-        // Check selected filter
+        // Check selected filter.
         if ($id_filter == -1) {
             $result_array['error'] = 1;
             $result_array['msg'] = ui_print_error_message(
@@ -739,14 +890,14 @@ if (check_login()) {
             return;
         }
 
-        // Array condition update
+        // Array condition update.
         $condition = [];
         $condition['id'] = $id_filter;
 
-        // Delete
+        // Delete.
         $delete = db_process_sql_delete('tagent_custom_fields_filter', $condition);
 
-        // Check error insert
+        // Check error insert.
         if ($delete) {
             $result_array['error'] = 0;
             $result_array['msg'] = ui_print_success_message(

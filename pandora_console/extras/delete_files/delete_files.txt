@@ -1,3 +1,1 @@
-/godmode/servers/recorn_script.php
-/godmode/servers/manage_recontask_form.php
-/godmode/servers/manage_recontask.php
+operation/servers/recon_view.php

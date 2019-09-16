@@ -127,7 +127,7 @@ ui_print_page_header(
     io_safe_output($networkmap['name']),
     'images/bricks.png',
     false,
-    'network_map_enterprise',
+    'network_map_enterprise_list',
     false,
     $buttons,
     false,
@@ -504,9 +504,9 @@ function create_loading_tooltip(d, x, y) {
 }
 
 function show_tooltip(d) {
-    x = d3.event.clientX + 10;
-    y = d3.event.clientY + 10;
-    
+    x = d3.event.clientX  100;
+    y = d3.event.clientY  100;
+
     if (d.default_tooltip) {
         create_loading_tooltip(d, x, y);
         

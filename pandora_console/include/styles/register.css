@@ -1,0 +1,59 @@
+input[type="submit"].submit-cancel,
+button.submit-cancel.ui-button.ui-corner-all.ui-widget,
+button.submit-cancel {
+  color: #fb4444;
+  border: 1px solid #fb4444;
+  background: #fff;
+  padding: 5px;
+  font-size: 1.3em;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  text-align: center;
+  height: 30px;
+  width: 90px;
+}
+
+input[type="submit"].submit-cancel:hover,
+button.submit-cancel.ui-button.ui-corner-all.ui-widget:hover,
+button.submit-cancel:hover {
+  color: #fff;
+  background: #fb4444;
+}
+
+input[type="submit"].submit-next,
+button.submit-next.ui-button.ui-corner-all.ui-widget,
+input[type="button"].submit-next {
+  color: #82b92e;
+  border: 1px solid #82b92e;
+  background: #fff;
+  padding: 5px;
+  font-size: 1.3em;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  text-align: center;
+  height: 30px;
+}
+
+input[type="submit"].submit-next:hover,
+button.submit-next.ui-button.ui-corner-all.ui-widget:hover,
+input[type="button"].submit-next:hover {
+  color: #fff;
+  background: #82b92e;
+}
+
+div.submit_buttons_container {
+  position: absolute;
+  margin: 10px auto 0px;
+  bottom: 0px;
+  width: 90%;
+  position: relative;
+  clear: both;
+  height: 4em;
+}
+
+.license_text {
+  width: 95%;
+  overflow-y: auto;
+  text-align: justify;
+  margin: 1em auto;
+}

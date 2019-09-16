@@ -49,18 +49,18 @@ if ($new_networkmap) {
     $id_group = 0;
     $node_radius = 40;
     $description = '';
-    $method = 'fdp';
+    $method = 'neato';
     $recon_task_id = 0;
     $source = 'group';
     $ip_mask = '';
-    $dont_show_subgroups = false;
+    $dont_show_subgroups = 0;
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
-    $node_sep = 0.25;
+    $node_sep = 0.1;
     $rank_sep = 1.0;
     $mindist = 1.0;
-    $kval = 0.3;
+    $kval = 0.1;
 }
 
 $disabled_generation_method_select = false;
@@ -198,7 +198,7 @@ ui_print_page_header(
     __('Networkmap'),
     'images/bricks.png',
     false,
-    'network_map_enterprise',
+    'network_map_enterprise_edit',
     false
 );
 
@@ -330,7 +330,13 @@ if ($not_found) {
     $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
 
     $table->data['source_data_dont_show_subgroups'][0] = __('Don\'t show subgroups:');
-    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox('dont_show_subgroups', '1', $dont_show_subgroups, true, $disabled_source);
+    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox(
+        'dont_show_subgroups',
+        '1',
+        $dont_show_subgroups,
+        true,
+        $disabled_source
+    );
 
     $methods = [
         'twopi'          => 'radial',
@@ -348,7 +354,7 @@ if ($not_found) {
         $method,
         '',
         '',
-        'twopi',
+        'neato',
         true,
         false,
         true,
@@ -377,14 +383,14 @@ if ($not_found) {
 
     html_print_table($table);
 
-    echo "<div style='width: ".$table->width."; text-align: right;'>";
+    echo "<div style='width: ".$table->width."; text-align: right; margin-top:20px;'>";
     if ($new_networkmap) {
         html_print_input_hidden('save_networkmap', 1);
         html_print_submit_button(
             __('Save networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub next"'
         );
     }
 
@@ -395,7 +401,7 @@ if ($not_found) {
             __('Update networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub upd"'
         );
     }
 

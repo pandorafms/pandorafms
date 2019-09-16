@@ -1,3 +1,6 @@
+/* global $ */
+/* exported pandoraFlotPie, pandoraFlotPieCustom */
+
 function pandoraFlotPie(
   graph_id,
   values,
@@ -12,7 +15,7 @@ function pandoraFlotPie(
   colors,
   hide_labels
 ) {
-  var labels = labels.split(separator);
+  labels = labels.split(separator);
   var data = values.split(separator);
 
   if (colors != "") {
@@ -90,7 +93,7 @@ function pandoraFlotPie(
   function pieHover(event, pos, obj) {
     if (!obj) return;
 
-    index = obj.seriesIndex;
+    var index = obj.seriesIndex;
     legends.css("color", "#3F3F3D");
     legends.eq(index).css("color", "");
   }
@@ -142,21 +145,14 @@ function pandoraFlotPieCustom(
     .pop()
     .split(".")
     .shift();
-  var labels = labels.split(separator);
-  var legend = legend.split(separator);
+  labels = labels.split(separator);
+  legend = legend.split(separator);
   var data = values.split(separator);
   var no_data = 0;
   if (colors != "") {
     colors = colors.split(separator);
   }
-  var colors_data = [
-    "#FC4444",
-    "#FFA631",
-    "#FAD403",
-    "#5BB6E5",
-    "#F2919D",
-    "#80BA27"
-  ];
+
   var color = null;
   for (var i = 0; i < data.length; i++) {
     if (colors != "") {
@@ -173,26 +169,29 @@ function pandoraFlotPieCustom(
   if (width <= 450) {
     show_legend = false;
     label_conf = {
-      show: false
-    };
-  } else {
-    label_conf = {
       show: true,
-      radius: 0.75,
+      radius: 5 / 8,
       formatter: function(label, series) {
+        console.log(series);
         return (
           '<div style="font-size:' +
           font_size +
-          "pt;" +
-          'text-align:center;padding:2px;color:white;">' +
-          series.percent.toFixed(2) +
-          "%</div>"
+          "pt; font-weight:bolder;" +
+          "text-align:center;padding:2px;color:rgb(63, 63, 61)" +
+          '">' +
+          label +
+          ":<br>" +
+          series.data[0][1] +
+          "</div>"
         );
       },
       background: {
-        opacity: 0.5,
-        color: ""
+        opacity: 0.5
       }
+    };
+  } else {
+    label_conf = {
+      show: false
     };
   }
 
@@ -201,8 +200,8 @@ function pandoraFlotPieCustom(
       pie: {
         show: true,
         radius: 3 / 4,
-        innerRadius: 0.4
-        //label: label_conf
+        innerRadius: 0.4,
+        label: label_conf
       }
     },
     legend: {
@@ -232,7 +231,7 @@ function pandoraFlotPieCustom(
   var legends = $("#" + graph_id + " .legendLabel");
   var j = 0;
   legends.each(function() {
-    //$(this).css('width', $(this).width());
+    //$(this).css("width", $(this).width());
     $(this).css("font-size", font_size + "pt");
     $(this).removeClass("legendLabel");
     $(this).addClass(font);
@@ -262,19 +261,6 @@ function pandoraFlotPieCustom(
     return false;
   });
 
-  var pielegends = $("#" + graph_id + " .pieLabelBackground");
-  pielegends.each(function() {
-    $(this)
-      .css("transform", "rotate(-35deg)")
-      .css("color", "black");
-  });
-  var labelpielegends = $("#" + graph_id + " .pieLabel");
-  labelpielegends.each(function() {
-    $(this)
-      .css("transform", "rotate(-35deg)")
-      .css("color", "black");
-  });
-
   // Events
   $("#" + graph_id).bind("plothover", pieHover);
   $("#" + graph_id).bind("plotclick", Clickpie);
@@ -285,16 +271,17 @@ function pandoraFlotPieCustom(
   function pieHover(event, pos, obj) {
     if (!obj) return;
 
-    index = obj.seriesIndex;
+    var index = obj.seriesIndex;
     legends.css("color", "#3F3F3D");
     legends.eq(index).css("color", "");
   }
 
   function Clickpie(event, pos, obj) {
     if (!obj) return;
-    percent = parseFloat(obj.series.percent).toFixed(2);
-    valor = parseFloat(obj.series.data[0][1]);
+    var percent = parseFloat(obj.series.percent).toFixed(2);
+    var valor = parseFloat(obj.series.data[0][1]);
 
+    var value = "";
     if (valor > 1000000) {
       value = Math.round((valor / 1000000) * 100) / 100;
       value = value + "M";
@@ -323,42 +310,6 @@ function pandoraFlotPieCustom(
       $("#watermark_image_" + graph_id).attr("src")
     );
   }
-  /*
-	window.onresize = function(event) {
-        $.plot($('#' + graph_id), data, conf_pie);
-        if (no_data == data.length) {
-			$('#'+graph_id+' .overlay').remove();
-			$('#'+graph_id+' .base').remove();
-			$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
-		}
-		var legends = $('#'+graph_id+' .legendLabel');
-		var j = 0;
-		legends.each(function () {
-			//$(this).css('width', $(this).width());
-			$(this).css('font-size', font_size+'pt');
-			$(this).removeClass("legendLabel");
-			$(this).addClass(font);
-			$(this).text(legend[j]);
-			j++;
-		});
-
-		if ($('input[name="custom_graph"]').val()) {
-			$('.legend>div').css('right',($('.legend>div').height()*-1));
-			$('.legend>table').css('right',($('.legend>div').height()*-1));
-		}
-		//$('.legend>table').css('border',"1px solid #E2E2E2");
-		$('.legend>table').css('background-color',"transparent");
-
-		var pielegends = $('#'+graph_id+' .pieLabelBackground');
-		pielegends.each(function () {
-			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
-		});
-		var labelpielegends = $('#'+graph_id+' .pieLabel');
-		labelpielegends.each(function () {
-			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
-		});
-    }
-*/
 }
 
 function pandoraFlotHBars(
@@ -378,12 +329,12 @@ function pandoraFlotHBars(
   max
 ) {
   var colors_data = [
-    "#FC4444",
+    "#e63c52",
     "#FFA631",
-    "#FAD403",
+    "#f3b200",
     "#5BB6E5",
     "#F2919D",
-    "#80BA27"
+    "#82b92e"
   ];
   values = values.split(separator2);
   font = font
@@ -637,7 +588,7 @@ function pandoraFlotVBars(
   var colors_data =
     colors.length > 0
       ? colors
-      : ["#FFA631", "#FC4444", "#FAD403", "#5BB6E5", "#F2919D", "#80BA27"];
+      : ["#FFA631", "#e63c52", "#f3b200", "#5BB6E5", "#F2919D", "#82b92e"];
   var datas = new Array();
 
   for (i = 0; i < values.length; i++) {
@@ -867,7 +818,7 @@ function pandoraFlotSlicebar(
 
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
@@ -1074,7 +1025,6 @@ function pandoraFlotArea(
     .split(".")
     .shift();
   var width = params.width;
-  var height = params.height;
   var vconsole = params.vconsole;
   var dashboard = params.dashboard;
   var menu = params.menu;
@@ -1088,9 +1038,8 @@ function pandoraFlotArea(
   var background_color = params.backgroundColor;
   var legend_color = params.legend_color;
   var update_legend = {};
-
-  //XXXXXX colocar
   var force_integer = 0;
+  var title = params.title;
 
   if (typeof type === "undefined" || type == "") {
     type = params.type_graph;
@@ -1105,8 +1054,6 @@ function pandoraFlotArea(
   var red_up = parseFloat(data_module_graph.c_max);
   var yellow_inverse = parseInt(data_module_graph.w_inv);
   var red_inverse = parseInt(data_module_graph.c_inv);
-
-  //XXXXX
   var markins_graph = true;
 
   // If threshold and up are the same, that critical or warning is disabled
@@ -1934,6 +1881,9 @@ function pandoraFlotArea(
     }
   }
 
+  var stacked = null;
+  var filled_s = 0.3;
+
   switch (type) {
     case "line":
     case 2:
@@ -1960,7 +1910,15 @@ function pandoraFlotArea(
   var data_base = new Array();
   var lineWidth = $("#hidden-line_width_graph").val() || 1;
 
-  i = 0;
+  var i = 0;
+  var fill_color = "green";
+  var line_show = true;
+  var points_show = false;
+  var filled = false;
+  var steps_chart = false;
+  var radius = false;
+  var fill_points = fill_color;
+
   $.each(values, function(index, value) {
     if (typeof value.data !== "undefined") {
       if (index.search("alert") >= 0) {
@@ -1974,7 +1932,7 @@ function pandoraFlotArea(
       switch (series_type[index]) {
         case "area":
           line_show = true;
-          points_show = false; // XXX - false
+          points_show = false;
           filled = filled_s;
           steps_chart = false;
           radius = false;
@@ -1995,7 +1953,7 @@ function pandoraFlotArea(
           points_show = true;
           filled = false;
           steps_chart = false;
-          radius = 1.5;
+          radius = 3;
           fill_points = fill_color;
           break;
         case "unknown":
@@ -2033,7 +1991,7 @@ function pandoraFlotArea(
           },
           points: {
             show: points_show,
-            radius: 3,
+            radius: radius,
             fillColor: fill_points
           },
           legend: legend.index
@@ -2051,7 +2009,8 @@ function pandoraFlotArea(
     number_ticks = 5;
   }
 
-  var maxticks = date_array["period"] / 3600 / number_ticks;
+  // masticks this variable is commented because the library defines the tick number by itself
+  // var maxticks = date_array["period"] / 3600 / number_ticks;
 
   var options = {
     series: {
@@ -2125,16 +2084,11 @@ function pandoraFlotArea(
     options.selection = false;
   }
 
-  var stack = 0,
-    bars = true,
-    lines = false,
-    steps = false;
-
   var plot = $.plot($("#" + graph_id), datas, options);
 
   // Re-calculate the graph height with the legend height
-  if (dashboard || vconsole) {
-    $acum = 0;
+  if (dashboard) {
+    var $acum = 0;
     if (dashboard) $acum = 35;
     var hDiff =
       $("#" + graph_id).height() - $("#legend_" + graph_id).height() - $acum;
@@ -2143,21 +2097,11 @@ function pandoraFlotArea(
         navigator.userAgent
       )
     ) {
+      // not defined.???
     } else {
       $("#" + graph_id).css("height", hDiff);
     }
   }
-
-  /*
-		//XXXREvisar esto
-		if (vconsole) {
-			var myCanvas = plot.getCanvas();
-			plot.setupGrid(); // redraw plot to new size
-			plot.draw();
-			var image = myCanvas.toDataURL("image/png");
-			return;
-		}
-	*/
 
   // Adjust the overview plot to the width and position of the main plot
   adjust_left_width_canvas(graph_id, "overview_" + graph_id);
@@ -2251,7 +2195,7 @@ function pandoraFlotArea(
       return;
     }
 
-    dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
+    var dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
 
     var maxticks_zoom = dataInSelection / 3600000 / number_ticks;
     if (maxticks_zoom < 0.001) {
@@ -2261,8 +2205,9 @@ function pandoraFlotArea(
       }
     }
 
+    var y_recal = "";
     if (thresholded) {
-      var y_recal = axis_thresholded(
+      y_recal = axis_thresholded(
         threshold_data,
         plot.getAxes().yaxis.min,
         plot.getAxes().yaxis.max,
@@ -2271,11 +2216,11 @@ function pandoraFlotArea(
         red_up
       );
     } else {
-      var y_recal = ranges.yaxis;
+      y_recal = ranges.yaxis;
     }
 
     if (thresholded) {
-      data_base_treshold = add_threshold(
+      var data_base_treshold = add_threshold(
         data_base,
         threshold_data,
         ranges.yaxis.from,
@@ -2400,7 +2345,6 @@ function pandoraFlotArea(
   var updateLegendTimeout = null;
   var latestPosition = null;
   var currentPlot = null;
-  var currentRanges = null;
 
   // Update legend with the data of the plot in the mouse position
   function updateLegend() {
@@ -2434,7 +2378,7 @@ function pandoraFlotArea(
       "Dec"
     ];
 
-    date_format =
+    var date_format =
       (d.getDate() < 10 ? "0" : "") +
       d.getDate() +
       " " +
@@ -2455,7 +2399,7 @@ function pandoraFlotArea(
 
     var timesize = $("#timestamp_" + graph_id).width();
 
-    dataset = currentPlot.getData();
+    var dataset = currentPlot.getData();
 
     var timenewpos =
       dataset[0].xaxis.p2c(pos.x) +
@@ -2481,9 +2425,8 @@ function pandoraFlotArea(
       $("#timestamp_" + graph_id).css("left", timenewpos);
     }
 
-    var dataset = currentPlot.getData();
     var i = 0;
-    for (k = 0; k < dataset.length; k++) {
+    for (var k = 0; k < dataset.length; k++) {
       // k is the real series counter
       // i is the series counter without thresholds
       var series = dataset[k];
@@ -2492,7 +2435,7 @@ function pandoraFlotArea(
       }
 
       // find the nearest points, x-wise
-      for (j = 0; j < series.data.length; ++j) {
+      for (var j = 0; j < series.data.length; ++j) {
         if (series.data[j][0] > pos.x) {
           break;
         }
@@ -2503,10 +2446,10 @@ function pandoraFlotArea(
         }
       }
 
-      y_array = format_unit_yaxes(y);
+      var y_array = format_unit_yaxes(y);
 
       y = y_array["y"];
-      how_bigger = y_array["unit"];
+      var how_bigger = y_array["unit"];
 
       var data_legend = [];
 
@@ -2516,8 +2459,9 @@ function pandoraFlotArea(
         series_type[dataset[k]["label"]] != "unknown" &&
         series_type[dataset[k]["label"]] != "percentil"
       ) {
+        var label_aux = "";
         if (Object.keys(update_legend).length == 0) {
-          var label_aux = legend[series.label];
+          label_aux = legend[series.label];
 
           $("#legend_" + graph_id + " .legendLabel")
             .eq(i)
@@ -2532,6 +2476,16 @@ function pandoraFlotArea(
                 unit
             );
         } else {
+          var min_y_array;
+          var min_y = 0;
+          var min_bigger = "";
+          var max_y_array;
+          var max_y = 0;
+          var max_bigger = "";
+          var avg_y_array;
+          var avg_y = 0;
+          var avg_bigger = "";
+
           $.each(update_legend, function(index, value) {
             if (!value[x]) {
               x = x + 1;
@@ -2581,7 +2535,7 @@ function pandoraFlotArea(
               avg_bigger;
           });
 
-          var label_aux =
+          label_aux =
             legend[series.label].split(":")[0] + data_legend[series.label];
           $("#legend_" + graph_id + " .legendLabel")
             .eq(i)
@@ -2604,7 +2558,7 @@ function pandoraFlotArea(
   }
 
   // Events
-  $("#overview_" + graph_id).bind("plothover", function(event, pos, item) {
+  $("#overview_" + graph_id).bind("plothover", function(event, pos) {
     plot.setCrosshair({ x: pos.x, y: pos.y });
     currentPlot = plot;
     latestPosition = pos;
@@ -2613,7 +2567,7 @@ function pandoraFlotArea(
     }
   });
 
-  $("#" + graph_id).bind("plothover", function(event, pos, item) {
+  $("#" + graph_id).bind("plothover", function(event, pos) {
     overview.setCrosshair({ x: pos.x, y: pos.y });
     currentPlot = plot;
     latestPosition = pos;
@@ -2636,7 +2590,6 @@ function pandoraFlotArea(
       $("#extra_" + graph_id).css("width", "170px");
       $("#extra_" + graph_id).css("height", "60px");
 
-      var dataset = plot.getData();
       var extra_info = "<i>No info to show</i>";
       var extra_show = false;
       var extra_height = $("#extra_" + graph_id).height();
@@ -2657,8 +2610,6 @@ function pandoraFlotArea(
         coord_x = coord_x - extra_width;
       }
 
-      var coord_y = offset_graph.top + height_legend + extra_height;
-
       $("#extra_" + graph_id).css("left", coord_x);
       $("#extra_" + graph_id).css("top", coord_y);
 
@@ -2677,21 +2628,22 @@ function pandoraFlotArea(
           });
         });
 
+        var extra_color = "#ffffff";
         if (events_data.event_type.search("alert") >= 0) {
-          $extra_color = "#FFA631";
+          extra_color = "#FFA631";
         } else if (events_data.event_type.search("critical") >= 0) {
-          $extra_color = "#FC4444";
+          extra_color = "#e63c52";
         } else if (events_data.event_type.search("warning") >= 0) {
-          $extra_color = "#FAD403";
+          extra_color = "#f3b200";
         } else if (events_data.event_type.search("unknown") >= 0) {
-          $extra_color = "#3BA0FF";
+          extra_color = "#4a83f3";
         } else if (events_data.event_type.search("normal") >= 0) {
-          $extra_color = "#80BA27";
+          extra_color = "#82b92e";
         } else {
-          $extra_color = "#ffffff";
+          extra_color = "#ffffff";
         }
 
-        $("#extra_" + graph_id).css("background-color", $extra_color);
+        $("#extra_" + graph_id).css("background-color", extra_color);
 
         extra_info = "<b>" + events_data.evento + ":";
         extra_info +=
@@ -2717,9 +2669,10 @@ function pandoraFlotArea(
   }
 
   if (image_treshold) {
+    var y_recal = plot.getAxes().yaxis.max;
     if (!thresholded) {
       // Recalculate the y axis
-      var y_recal = axis_thresholded(
+      y_recal = axis_thresholded(
         threshold_data,
         plot.getAxes().yaxis.min,
         plot.getAxes().yaxis.max,
@@ -2727,11 +2680,9 @@ function pandoraFlotArea(
         extremes,
         red_up
       );
-    } else {
-      var y_recal = plot.getAxes().yaxis.max;
     }
 
-    datas_treshold = add_threshold(
+    var datas_treshold = add_threshold(
       data_base,
       threshold_data,
       plot.getAxes().yaxis.min,
@@ -2762,7 +2713,7 @@ function pandoraFlotArea(
   // Reset interactivity styles
   function resetInteractivity() {
     $("#timestamp_" + graph_id).hide();
-    dataset = plot.getData();
+    var dataset = plot.getData();
     for (i = 0; i < dataset.length; ++i) {
       var series = dataset[i];
       var label_aux = legend[series.label];
@@ -2784,24 +2735,25 @@ function pandoraFlotArea(
     overview.clearCrosshair();
   }
 
-  function yFormatter(v, axis) {
+  function yFormatter(v) {
+    var formatted = v;
     if (short_data) {
-      var formatted = number_format(v, force_integer, "", short_data);
+      formatted = number_format(v, force_integer, "", short_data);
     } else {
-      // It is an integer
+      // It is an integer.
       if (v - Math.floor(v) == 0) {
-        var formatted = number_format(v, force_integer, "", 2);
-      } else {
-        var formatted = v;
+        formatted = number_format(v, force_integer, "", 2);
       }
     }
 
-    // Get only two decimals
-    formatted = round_with_decimals(formatted, 100);
+    // Get only two decimals.
+    if (typeof formatted != "string") {
+      formatted = Math.round(formatted * 100) / 100;
+    }
     return formatted;
   }
 
-  function lFormatter(v, item) {
+  function lFormatter(v) {
     return '<span style="color:' + legend_color + '">' + legend[v] + "</span>";
   }
 
@@ -2858,9 +2810,10 @@ function pandoraFlotArea(
         );
         thresholded = false;
       } else {
+        var y_recal = plot.getAxes().yaxis.max;
         if (!thresholded) {
           // Recalculate the y axis
-          var y_recal = axis_thresholded(
+          y_recal = axis_thresholded(
             threshold_data,
             plot.getAxes().yaxis.min,
             plot.getAxes().yaxis.max,
@@ -2868,8 +2821,6 @@ function pandoraFlotArea(
             extremes,
             red_up
           );
-        } else {
-          var y_recal = plot.getAxes().yaxis.max;
         }
 
         datas_treshold = add_threshold(
@@ -2917,7 +2868,6 @@ function pandoraFlotArea(
         homeurl + "images/zoom_cross.disabled.png"
       );
       overview.clearSelection();
-      currentRanges = null;
       thresholded = false;
       max_draw = [];
     });
@@ -2932,7 +2882,6 @@ function pandoraFlotArea(
 
     // Add bottom margin in the legend
     // Estimated height of 24 (works fine with this data in all browsers)
-    menu_height = 24;
     $("#legend_" + graph_id).css("margin-bottom", "10px");
     parent_height = parseInt(
       $("#menu_" + graph_id)
@@ -2979,6 +2928,7 @@ function format_unit_yaxes(y) {
 }
 
 function adjust_menu(graph_id, plot, parent_height, width, show_legend) {
+  var left_ticks_width = 0;
   if (
     $("#" + graph_id + " .xAxis .tickLabel")
       .eq(0)
@@ -2988,14 +2938,11 @@ function adjust_menu(graph_id, plot, parent_height, width, show_legend) {
       .eq(0)
       .css("width")
       .split("px")[0];
-  } else {
-    left_ticks_width = 0;
   }
 
-  var parent_height_new = 0;
-
+  var legend_height = 0;
   if (show_legend) {
-    var legend_height =
+    legend_height =
       parseInt(
         $("#legend_" + graph_id)
           .css("height")
@@ -3006,12 +2953,9 @@ function adjust_menu(graph_id, plot, parent_height, width, show_legend) {
           .css("margin-top")
           .split("px")[0]
       );
-  } else {
-    var legend_height = 0;
   }
 
   var menu_height = "25";
-
   if (
     $("#menu_" + graph_id).height() != undefined &&
     $("#menu_" + graph_id).height() > 20
@@ -3019,7 +2963,7 @@ function adjust_menu(graph_id, plot, parent_height, width, show_legend) {
     menu_height = $("#menu_" + graph_id).height();
   }
 
-  offset = $("#" + graph_id)[0].offsetTop;
+  var offset = $("#" + graph_id)[0].offsetTop;
 
   $("#menu_" + graph_id).css("top", offset + "px");
 

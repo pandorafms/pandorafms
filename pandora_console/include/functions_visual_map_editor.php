@@ -688,7 +688,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'percentile_item',
                 'datos',
             ];
-            $form_items['percentile_item_row_6']['html'] = '<td align="left">'.__('Label color').'</td>
+            $form_items['percentile_item_row_6']['html'] = '<td align="left">'.__('Value color').'</td>
 				<td align="left">'.html_print_input_text_extended(
                 'percentile_label_color',
                 '#ffffff',
@@ -1128,9 +1128,58 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 true
             ).'</td>';
 
-            // Insert and modify before the buttons to create or update.
+    if (!$config['legacy_vc']) {
+        $intervals = [
+            10   => '10 '.__('seconds'),
+            30   => '30 '.__('seconds'),
+            60   => '1 '.__('minutes'),
+            300  => '5 '.__('minutes'),
+            900  => '15 '.__('minutes'),
+            1800 => '30 '.__('minutes'),
+            3600 => '1 '.__('hour'),
+        ];
+
+        $form_items_advance['cache_expiration_row'] = [];
+        $form_items_advance['cache_expiration_row']['items'] = [
+            'static_graph',
+            'percentile_bar',
+            'percentile_item',
+            'module_graph',
+            'simple_value',
+            'datos',
+            'auto_sla_graph',
+            'group_item',
+            'bars_graph',
+            'donut_graph',
+            'color_cloud',
+            'service',
+        ];
+        $form_items_advance['cache_expiration_row']['html'] = '<td align="left">';
+        $form_items_advance['cache_expiration_row']['html'] .= __('Cache expiration');
+        $form_items_advance['cache_expiration_row']['html'] .= '</td>';
+        $form_items_advance['cache_expiration_row']['html'] .= '<td align="left">';
+        $form_items_advance['cache_expiration_row']['html'] .= html_print_extended_select_for_time(
+            'cache_expiration',
+            $config['vc_default_cache_expiration'],
+            '',
+            __('No cache'),
+            0,
+            false,
+            true,
+            false,
+            true,
+            '',
+            false,
+            $intervals
+        );
+        $form_items_advance['cache_expiration_row']['html'] .= '</td>';
+    }
+
+    // Insert and modify before the buttons to create or update.
     if (enterprise_installed()) {
-        enterprise_visual_map_editor_modify_form_items_advance_palette($form_items_advance);
+        enterprise_visual_map_editor_modify_form_items_advance_palette(
+            $form_items_advance
+        );
     }
 
     foreach ($form_items_advance as $item => $item_options) {
@@ -1245,7 +1294,7 @@ function visual_map_editor_print_toolbox()
     }
 
     echo '<div id="toolbox">';
-        visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
+        visual_map_print_button_editor('static_graph', __('Static Image'), 'left', false, 'camera_min', true);
         visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
         visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
         visual_map_print_button_editor('donut_graph', __('Serialized pie graph'), 'left', false, 'donut_graph_min', true);
@@ -1386,6 +1435,10 @@ function visual_map_editor_print_hack_translate_strings()
     echo "<p style='text-align: center;font-weight: bold;'>".__('Could not be save.').'</p>';
     echo '</div>';
 
+    echo "<div id='message_alert_no_custom_graph'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
+    echo "<p style='text-align: center;font-weight: bold;'>".__('No custom graph defined.').'</p>';
+    echo '</div>';
+
 }
 
 
@@ -1394,6 +1447,9 @@ function visual_map_editor_print_hack_translate_strings()
 <script type="text/javascript">
 $(document).ready (function () {
     $("#map_linked").change(function () {
+        $("option[value=" + this.value + "]", this)
+        .attr("selected", true).siblings()
+        .removeAttr("selected")
         $("#text-agent").val("");
         $("input[name=id_agent]").val(0);
         $("#module").empty();

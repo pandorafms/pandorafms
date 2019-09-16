@@ -243,19 +243,25 @@ function format_numeric($number, $decimals=1)
 
 /**
  * Render numeric data for a graph. It adds magnitude suffix to the number
- * (M for millions, K for thousands...) base-10
+ * (M for millions, K for thousands...). Base can be modified with divider.
  *
- * TODO: base-2 multiplication
- *
- * @param float                                       $number   Number to be rendered
- * @param integer                                     $decimals Numbers after comma. Default value: 1
- * @param dec_point Decimal separator character. Default value: .
- * @param thousands_sep Thousands separator character. Default value: ,
+ * @param float   $number        Number to be rendered.
+ * @param integer $decimals      Numbers after comma (default 1).
+ * @param string  $dec_point     Decimal separator character (default .).
+ * @param string  $thousands_sep Thousands separator character (default ,).
+ * @param integer $divider       Number to divide the rendered number.
+ * @param string  $sufix         Units of the multiple.
  *
  * @return string A string with the number and the multiplier
  */
-function format_for_graph($number, $decimals=1, $dec_point='.', $thousands_sep=',')
-{
+function format_for_graph(
+    $number,
+    $decimals=1,
+    $dec_point='.',
+    $thousands_sep=',',
+    $divider=1000,
+    $sufix=''
+) {
     $shorts = [
         '',
         'K',
@@ -268,15 +274,15 @@ function format_for_graph($number, $decimals=1, $dec_point='.', $thousands_sep='
         'Y',
     ];
     $pos = 0;
-    while ($number >= 1000) {
-        // as long as the number can be divided by 1000
+    while ($number >= $divider) {
+        // As long as the number can be divided by divider.
         $pos++;
-        // Position in array starting with 0
-        $number = ($number / 1000);
+        // Position in array starting with 0.
+        $number = ($number / $divider);
     }
 
-    return remove_right_zeros(format_numeric($number, $decimals)).$shorts[$pos];
-    // This will actually do the rounding and the decimals
+    // This will actually do the rounding and the decimals.
+    return remove_right_zeros(format_numeric($number, $decimals)).$shorts[$pos].$sufix;
 }
 
 
@@ -865,12 +871,13 @@ function get_parameter_switch($name, $default='')
     $data = get_parameter($name, null);
 
     if ($data === null) {
-        return 0;
+        return (isset($default) ? $default : 0);
     } else if ($data == 'on') {
         return 1;
     }
 
-    return 0;
+    // Return value assigned to switch.
+    return $data;
 }
 
 
@@ -892,6 +899,47 @@ function set_cookie($name, $value)
     } else {
         setcookie($name, $value);
     }
+}
+
+
+/**
+ * Returns database ORDER clause from datatables AJAX call.
+ *
+ * @param boolean $as_array Return as array or as string.
+ *
+ * @return string Order or empty.
+ */
+function get_datatable_order($as_array=false)
+{
+    $order = get_parameter('order');
+
+    if (is_array($order)) {
+        $column = $order[0]['column'];
+        $direction = $order[0]['dir'];
+    }
+
+    if (!isset($column) || !isset($direction)) {
+        return '';
+    }
+
+    $columns = get_parameter('columns');
+
+    if (is_array($columns)) {
+        $column_name = $columns[$column]['data'];
+    }
+
+    if (!isset($column_name)) {
+        return '';
+    }
+
+    if ($as_array) {
+        return [
+            'direction' => $direction,
+            'field'     => $column_name,
+        ];
+    }
+
+    return $column_name.' '.$direction;
 }
 
 
@@ -1385,6 +1433,11 @@ function enterprise_installed()
 {
     $return = false;
 
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        return $return;
+    }
+
     if (defined('PANDORA_ENTERPRISE')) {
         if (PANDORA_ENTERPRISE) {
             $return = true;
@@ -1437,8 +1490,14 @@ function enterprise_include($filename)
 {
     global $config;
 
-    // Load enterprise extensions
-    $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        $destdir = DESTDIR;
+    } else {
+        $destdir = '';
+    }
+
+    $filepath = realpath($destdir.$config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {
         return ENTERPRISE_NOT_HOOK;
@@ -1457,11 +1516,24 @@ function enterprise_include($filename)
 }
 
 
+/**
+ * Includes a file from enterprise section.
+ *
+ * @param string $filename Target file.
+ *
+ * @return mixed Result code.
+ */
 function enterprise_include_once($filename)
 {
     global $config;
 
-    // Load enterprise extensions
+    // Load enterprise extensions.
+    if (defined('DESTDIR')) {
+        $destdir = DESTDIR;
+    } else {
+        $destdir = '';
+    }
+
     $filepath = realpath($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename);
 
     if ($filepath === false) {
@@ -1561,10 +1633,27 @@ function safe_sql_string($string)
 }
 
 
+/**
+ * Verifies if current Pandora FMS installation is a Metaconsole.
+ *
+ * @return boolean True metaconsole installation, false if not.
+ */
 function is_metaconsole()
 {
     global $config;
     return (bool) $config['metaconsole'];
+}
+
+
+/**
+ * Check if current Pandora FMS installation has joined a Metaconsole env.
+ *
+ * @return boolean True joined, false if not.
+ */
+function has_metaconsole()
+{
+    global $config;
+    return (bool) $config['node_metaconsole'] && (bool) $config['metaconsole_node_id'];
 }
 
 
@@ -1748,18 +1837,70 @@ function array_key_to_offset($array, $key)
 
 
 /**
+ * Undocumented function
+ *
+ * @param array $arguments Following format:
+ *  [
+ *   'ip_target'
+ *   'snmp_version'
+ *   'snmp_community'
+ *   'snmp3_auth_user'
+ *   'snmp3_security_level'
+ *   'snmp3_auth_method'
+ *   'snmp3_auth_pass'
+ *   'snmp3_privacy_method'
+ *   'snmp3_privacy_pass'
+ *   'quick_print'
+ *   'base_oid'
+ *   'snmp_port'
+ *   'server_to_exec'
+ *   'extra_arguments'
+ *   'format'
+ *  ]
+ *
+ * @return array SNMP result.
+ */
+function get_h_snmpwalk(array $arguments)
+{
+    return get_snmpwalk(
+        $arguments['ip_target'],
+        $arguments['snmp_version'],
+        isset($arguments['snmp_community']) ? $arguments['snmp_community'] : '',
+        isset($arguments['snmp3_auth_user']) ? $arguments['snmp3_auth_user'] : '',
+        isset($arguments['snmp3_security_level']) ? $arguments['snmp3_security_level'] : '',
+        isset($arguments['snmp3_auth_method']) ? $arguments['snmp3_auth_method'] : '',
+        isset($arguments['snmp3_auth_pass']) ? $arguments['snmp3_auth_pass'] : '',
+        isset($arguments['snmp3_privacy_method']) ? $arguments['snmp3_privacy_method'] : '',
+        isset($arguments['snmp3_privacy_pass']) ? $arguments['snmp3_privacy_pass'] : '',
+        isset($arguments['quick_print']) ? $arguments['quick_print'] : 0,
+        isset($arguments['base_oid']) ? $arguments['base_oid'] : '',
+        isset($arguments['snmp_port']) ? $arguments['snmp_port'] : '',
+        isset($arguments['server_to_exec']) ? $arguments['server_to_exec'] : 0,
+        isset($arguments['extra_arguments']) ? $arguments['extra_arguments'] : '',
+        isset($arguments['format']) ? $arguments['format'] : '-Oa'
+    );
+}
+
+
+/**
  * Make a snmpwalk and return it.
  *
- * @param string  $ip_target             The target address.
- * @param string  $snmp_version          Version of the snmp: 1,2,2c or 3.
- * @param string  $snmp_community.
- * @param string  $snmp3_auth_user.
- * @param string  $snmp3_security_level.
- * @param string  $snmp3_auth_method.
- * @param string  $snmp3_auth_pass.
- * @param string  $snmp3_privacy_method.
- * @param string  $snmp3_privacy_pass.
- * @param integer $quick_print           0 for all details, 1 for only value.
+ * @param string  $ip_target            The target address.
+ * @param string  $snmp_version         Version of the snmp: 1,2,2c or 3.
+ * @param string  $snmp_community       Snmp_community.
+ * @param string  $snmp3_auth_user      Snmp3_auth_user.
+ * @param string  $snmp3_security_level Snmp3_security_level.
+ * @param string  $snmp3_auth_method    Snmp3_auth_method.
+ * @param string  $snmp3_auth_pass      Snmp3_auth_pass.
+ * @param string  $snmp3_privacy_method Snmp3_privacy_method.
+ * @param string  $snmp3_privacy_pass   Snmp3_privacy_pass.
+ * @param integer $quick_print          To get all details 0, 1: only value.
+ * @param string  $base_oid             Base_oid.
+ * @param string  $snmp_port            Snmp_port.
+ * @param integer $server_to_exec       Server_to_exec.
+ * @param string  $extra_arguments      Extra_arguments.
+ * @param string  $format               Format to apply, for instance, to
+ *                                      retrieve hex-dumps: --hexOutputLength.
  *
  * @return array SNMP result.
  */
@@ -1777,7 +1918,8 @@ function get_snmpwalk(
     $base_oid='',
     $snmp_port='',
     $server_to_exec=0,
-    $extra_arguments=''
+    $extra_arguments='',
+    $format='-Oa'
 ) {
     global $config;
 
@@ -1828,15 +1970,15 @@ function get_snmpwalk(
         case '3':
             switch ($snmp3_security_level) {
                 case 'authNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 case 'noAuthNoPriv':
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -l '.escapeshellarg($snmp3_security_level).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
 
                 default:
-                    $command_str = $snmpwalk_bin.' -m ALL -Oa '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+                    $command_str = $snmpwalk_bin.' -m ALL '.$format.' '.$extra_arguments.' -v 3'.' -u '.escapeshellarg($snmp3_auth_user).' -A '.escapeshellarg($snmp3_auth_pass).' -l '.escapeshellarg($snmp3_security_level).' -a '.escapeshellarg($snmp3_auth_method).' -x '.escapeshellarg($snmp3_privacy_method).' -X '.escapeshellarg($snmp3_privacy_pass).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
                 break;
             }
         break;
@@ -1845,7 +1987,7 @@ function get_snmpwalk(
         case '2c':
         case '1':
         default:
-            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' -Oa -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
+            $command_str = $snmpwalk_bin.' -m ALL '.$extra_arguments.' '.$format.' -v '.escapeshellarg($snmp_version).' -c '.escapeshellarg(io_safe_output($snmp_community)).' '.escapeshellarg($ip_target).' '.$base_oid.' 2> '.$error_redir_dir;
         break;
     }
 
@@ -1860,11 +2002,16 @@ function get_snmpwalk(
         exec($command_str, $output, $rc);
     }
 
-    // Parse the output of snmpwalk
+    // Parse the output of snmpwalk.
     $snmpwalk = [];
     foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode(' = ', $line);
+        // Separate the OID from the value.
+        if (strpos($format, 'q') === false) {
+            $full_oid = explode(' = ', $line, 2);
+        } else {
+            $full_oid = explode(' ', $line, 2);
+        }
+
         if (isset($full_oid[1])) {
             $snmpwalk[$full_oid[0]] = $full_oid[1];
         }
@@ -2537,7 +2684,7 @@ function can_user_access_node()
 
     $userinfo = get_user_info($config['id_user']);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];
     } else {
         return 1;
@@ -2656,7 +2803,7 @@ function get_news($arguments)
         case 'mysql':
         case 'postgresql':
             $sql = sprintf(
-                "SELECT subject,timestamp,text,author
+                "SELECT id_news,subject,timestamp,text,author
 				FROM tnews WHERE id_group IN (%s) AND 
 								modal = %s AND 
 								(expire = 0 OR (expire = 1 AND expire_timestamp > '%s'))
@@ -2705,6 +2852,8 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
+    $divider = html_entity_decode($config['csv_divider']);
+
     if (!$data) {
         echo __('No data found to export');
         return 0;
@@ -2722,9 +2871,9 @@ function print_audit_csv($data)
     // BOM
     print pack('C*', 0xEF, 0xBB, 0xBF);
 
-    echo __('User').';'.__('Action').';'.__('Date').';'.__('Source IP').';'.__('Comments')."\n";
+    echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).';'.io_safe_output($line['accion']).';'.date($config['date_format'], $line['utimestamp']).';'.$line['ip_origen'].';'.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;
@@ -3529,25 +3678,27 @@ function series_type_graph_array($data, $show_elements_graph)
                     break;
                 }
 
-                if (isset($show_elements_graph['labels'])
+                if (isset($show_elements_graph['labels'][$value['agent_module_id']])
                     && is_array($show_elements_graph['labels'])
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].': ';
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].'Baseline ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
                         }
                     } else {
-                        if ($show_elements_graph['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        if ($value['unit']) {
+                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
                         } else {
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
                         }
@@ -3841,9 +3992,10 @@ function pandora_xhprof_display_result($key='', $method='link')
 /**
  * From a network with a mask remove the smallest ip and the highest
  *
- * @param  string address to identify the network.
- * @param  string mask to identify the mask network
- * @return array or false with smallest ip and highest ip
+ * @param string $address Identify the network.
+ * @param string $mask    Identify the mask network.
+ *
+ * @return array or false with smallest ip and highest ip.
  */
 function range_ips_for_network($address, $mask)
 {
@@ -3851,15 +4003,15 @@ function range_ips_for_network($address, $mask)
         return false;
     }
 
-    // convert ip addresses to long form
+    // Convert ip addresses to long form.
     $address_long = ip2long($address);
     $mask_long = ip2long($mask);
 
-    // caculate first usable address
+    // Calculate first usable address.
     $ip_host_first = ((~$mask_long) & $address_long);
-    $ip_first = (($address_long ^ $ip_host_first) + 1);
+    $ip_first = (($address_long ^ $ip_host_first));
 
-    // caculate last usable address
+    // Calculate last usable address.
     $ip_broadcast_invert = ~$mask_long;
     $ip_last = (($address_long | $ip_broadcast_invert) - 1);
 
@@ -3875,9 +4027,10 @@ function range_ips_for_network($address, $mask)
 /**
  * from two ips find out if there is such an ip
  *
- * @param  string ip ip wont validate
- * @param  string ip_lower
- * @param  string ip_upper
+ * @param string ip ip wont validate
+ * @param string ip_lower
+ * @param string ip_upper
+ *
  * @return boolean true or false if the ip is between the two ips
  */
 function is_in_network($ip, $ip_lower, $ip_upper)
@@ -3927,4 +4080,1362 @@ function mask2cidr($mask)
     $long = ip2long($mask);
     $base = ip2long('255.255.255.255');
     return (32 - log((($long ^ $base) + 1), 2));
+}
+
+
+function get_help_info($section_name)
+{
+    global $config;
+    // hd($section_name);
+    $user_language = get_user_language($id_user);
+
+    $es = false;
+    $result = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:';
+    if ($user_language == 'es') {
+        $es = true;
+        $result = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:';
+    }
+
+    switch ($section_name) {
+        case 'tactical_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_t.C3.A1ctica';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Tactical_view';
+            }
+        break;
+
+        case 'group_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_Grupos';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Group_view';
+            }
+        break;
+
+        case 'tree_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_.C3.A1rbol';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#The_Tree_View';
+            }
+        break;
+
+        case 'monitor_detail_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Detalles_Monitores';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Monitor_Details';
+            }
+        break;
+
+        case 'tag_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_etiquetas';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Tag_view';
+            }
+        break;
+
+        case 'alert_validation':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Detalles_de_Alertas';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Alert_Details';
+            }
+        break;
+
+        case 'agents_alerts_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_agente_.2F_alerta';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Agent.2F_Alert_View';
+            }
+        break;
+
+        case 'agents_module_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_agente_.2F_modulo';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Agents_.2F_Modules_View';
+            }
+        break;
+
+        case 'module_groups_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_grupos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Module_Groups_View';
+            }
+        break;
+
+        case 'snmp_browser_view':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Navegador_SNMP_de_Pandora_FMS';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Pandora_FMS_SNMP_MIB_Browser';
+            }
+        break;
+
+        case 'snmp_trap_generator_view':
+            if ($es) {
+                $result .= 'Monitorizacion_traps_SNMP&printable=yes#Generador_de_Traps';
+            } else {
+                $result .= 'SNMP_traps_Monitoring&printable=yes#Trap_Generator';
+            }
+        break;
+
+        case 'real_time_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Gr.C3.A1ficas_Real-time';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Real-time_Graphs';
+            }
+        break;
+
+        case 'agent_status':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Detalles_del_agente';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Agent_Details';
+            }
+        break;
+
+        case 'agent_main_tab':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Visualizaci.C3.B3n_del_agente';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console_2';
+            }
+        break;
+
+        case 'alert_config':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Creaci.C3.B3n_de_una_Acci.C3.B3n';
+            } else {
+                $result .= 'Alerts&printable=yes#Creating_an_Action';
+            }
+        break;
+
+        case 'alert_macros':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Macros_sustituibles_en_los_campos_Field1.2C_Field2.2C_Field3..._Field10';
+            } else {
+                $result .= 'Alerts&printable=yes#Replaceable_Macros_within_Field_1_through_Field_10';
+            }
+        break;
+
+        case 'alerts_config':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Configuraci.C3.B3n_de_alertas_en_Pandora_FMS';
+            } else {
+                $result .= 'Alerts&printable=yes#Alert_Configuration_in_Pandora_FMS';
+            }
+        break;
+
+        case 'alert_special_days':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Lista_de_d.C3.ADas_especiales';
+            } else {
+                $result .= 'Alerts&printable=yes#List_of_special_days';
+            }
+        break;
+
+        case 'alerts':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Alertas';
+            } else {
+                $result .= 'Policy&printable=yes#Alerts';
+            }
+        break;
+
+        case 'collections':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Colecciones_de_ficheros';
+            } else {
+                $result .= 'Policy&printable=yes#File_Collections';
+            }
+        break;
+
+        case 'component_groups':
+            if ($es) {
+                $result .= 'Plantillas_y_Componentes&printable=yes#Grupos_de_componentes';
+            } else {
+                $result .= 'Templates_and_components&printable=yes#Component_Groups';
+            }
+        break;
+
+        case 'configure_gis_map':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'GIS&printable=yes#Introduction';
+            }
+        break;
+
+        case 'configure_gis_map_edit':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#GIS_Maps';
+            } else {
+                $result .= 'GIS&printable=yes#GIS_Maps';
+            }
+        break;
+
+        case 'event_alert':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Introducci.C3.B3n_2';
+            } else {
+                $result .= 'Events&printable=yes#Introduction_2';
+            }
+        break;
+
+        case 'eventview':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Events&printable=yes#Introduction';
+            }
+        break;
+
+        case 'export_server':
+            if ($es) {
+                $result .= 'ExportServer&printable=yes#A.C3.B1adir_un_servidor_de_destino';
+            } else {
+                $result .= 'Export_Server&printable=yes#Adding_a_Target_Server';
+            }
+        break;
+
+        case 'external_alert':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Alertas_Externas';
+            } else {
+                $result .= 'Policy&printable=yes#External_Alerts';
+            }
+        break;
+
+        case 'gis_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Configuraci.C3.B3n_del_Agent_GIS';
+            } else {
+                $result .= 'GIS&printable=yes#The_Agent.27s_GIS_Setup';
+            }
+        break;
+
+        case 'graph_builder':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Crear_Gr.C3.A1ficas_combinadas';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Creating_combined_graphs';
+            }
+        break;
+
+        case 'graph_editor':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion&printable=yes#Agregar_elementos_a_gr.C3.A1ficas_combinadas';
+            } else {
+                $result .= 'Data_Presentation/Visualization&printable=yes#Adding_elements_to_combined_graphs';
+            }
+        break;
+
+        case 'dashboards_tab':
+            if ($es) {
+                $result .= 'Dashboard&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Dashboard&printable=yes#Introduction';
+            }
+        break;
+
+        case 'history_database':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Base_de_datos_hist.C3.B3rica';
+            } else {
+                $result .= 'Console_Setup&printable=yes#The_History_Database';
+            }
+        break;
+
+        case 'inventory_tab':
+            if ($es) {
+                $result .= 'Inventario&printable=yes#M.C3.B3dulos_de_inventario';
+            } else {
+                $result .= 'Inventory&printable=yes#Inventory_Modules';
+            }
+        break;
+
+        case 'ipam_list_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'IPAM&printable=yes#Introduction';
+            }
+        break;
+
+        case 'ipam_calculator_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Calculadora_de_subredes';
+            } else {
+                $result .= 'IPAM&printable=yes#Subnetwork_calculator';
+            }
+        break;
+
+        case 'ipam_vlan_config_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Vlan_IPAM';
+            } else {
+                $result .= 'IPAM&printable=yes#VLAN_IPAM';
+            }
+        break;
+
+        case 'ipam_vlan_statistics_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Estad.C3.ADsticas_IPAM_Vlan';
+            } else {
+                $result .= 'IPAM&printable=yes#IPAM_VLAN_Stats';
+            }
+        break;
+
+        case 'ipam_vlan_wizard_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Wizard_IPAM_Vlan';
+            } else {
+                $result .= 'IPAM&printable=yes#IPAM_VLAN_Wizard:';
+            }
+        break;
+
+        case 'ipam_supernet_config_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#IPAM_Supernet';
+            } else {
+                $result .= 'IPAM&printable=yes#IPAM_Supernet';
+            }
+        break;
+
+        case 'ipam_supernet_map_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Mapa_Superred_IPAM';
+            } else {
+                $result .= 'IPAM&printable=yes#IPAM_Supernet_Map';
+            }
+        break;
+
+        case 'ipam_supernet_statistics_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Estad.C3.ADsticas_IPAM_Superred';
+            } else {
+                $result .= 'IPAM&printable=yes#IPAM_Supernet_Stats';
+            }
+        break;
+
+        case 'ipam_new_tab':
+        case 'ipam_edit_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Vista_de_edici.C3.B3n';
+            } else {
+                $result .= 'IPAM&printable=yes#Edit_view';
+            }
+        break;
+
+        case 'ipam_massive_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Vista_Operaciones_masivas';
+            } else {
+                $result .= 'IPAM&printable=yes#Massive_operations_view';
+            }
+        break;
+
+        case 'ipam_network_tab':
+        case 'ipam_force_tab':
+            if ($es) {
+                $result .= 'IPAM&printable=yes#Vista_de_iconos';
+            } else {
+                $result .= 'IPAM&printable=yes#Icon_view';
+            }
+        break;
+
+        case 'macros_visual_maps':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Macros_en_las_consolas_visuales';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Macros_in_Visual_Consoles';
+            }
+        break;
+
+        case 'linked_map_status_calc':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Mapa_asociado';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Associated_Map';
+            }
+        break;
+
+        case 'main_tab':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
+            }
+        break;
+
+        case 'manage_alert_list':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Gestionar_alertas_desde_el_agente';
+            } else {
+                $result .= 'Alerts&printable=yes#Managing_Alerts_from_within_the_Agent';
+            }
+        break;
+
+        case 'alert_scalate':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Escalado_de_alertas';
+            } else {
+                $result .= 'Alerts&printable=yes#Scaling_Alerts';
+            }
+        break;
+
+        case 'map_builder_intro':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Introduction';
+            }
+        break;
+
+        case 'map_builder_favorite':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Consolas_visuales_favoritas';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Favorite_visual_consoles';
+            }
+        break;
+
+        case 'map_builder_template':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Plantillas_de_consolas_visuales';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Visual_Console_Templates';
+            }
+        break;
+
+        case 'map_builder_wizard':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Asistente_de_consola_visuales';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Wizard_Visual_Console';
+            }
+        break;
+
+        case 'module_linking':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Policy&printable=yes#Types_of_Modules';
+            }
+        break;
+
+        case 'network_map_enterprise_edit':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_de_red&printable=yes#Mapa_de_red_no_vac.C3.ADo';
+            } else {
+                $result .= 'Data_Presentation/Network_Maps&printable=yes#Non_empty_network_map';
+            }
+        break;
+
+        case 'network_map_enterprise_list':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_de_red&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Data_Presentation/Network_Maps&printable=yes#Introduction';
+            }
+        break;
+
+        case 'network_map_enterprise_empty':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_de_red&printable=yes#Mapa_de_red_vac.C3.ADo';
+            } else {
+                $result .= 'Data_Presentation/Network_Maps&printable=yes#Empty_network_map';
+            }
+        break;
+
+        case 'network_map_enterprise_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_de_red&printable=yes#Vista_de_un_mapa_de_red';
+            } else {
+                $result .= 'Data_Presentation/Network_Maps&printable=yes#Network_map_view';
+            }
+        break;
+
+        case 'transactional_view':
+            if ($es) {
+                $result .= 'Monitorizacion_transaccional&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Transactional_Monitoring&printable=yes#Introduction';
+            }
+        break;
+
+        case 'pcap_filter':
+            if ($es) {
+                $result .= 'Netflow&printable=yes#Creaci.C3.B3n_del_filtro';
+            } else {
+                $result .= 'Netflow&printable=yes#Filter_creation';
+            }
+        break;
+
+        case 'planned_downtime':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Introducci.C3.B3n_4';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Introduction_4';
+            }
+        break;
+
+        case 'planned_downtime_editor':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Creaci.C3.B3n_parada_planificada';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Create_a_scheduled_downtime';
+            }
+        break;
+
+        case 'plugin_definition':
+            if ($es) {
+                $result .= 'Anexo_Server_Plugins&printable=yes#Registro_manual_de_un_plugin_en_la_consola';
+            } else {
+                $result .= 'Anexo_Server_plugins_developement&printable=yes#Plugin_manual_registration';
+            }
+        break;
+
+        case 'plugin_macros':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Macros_internas';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Internal_Macros';
+            }
+        break;
+
+        case 'plugin_policy':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Plugins_de_agente';
+            } else {
+                $result .= 'Policy&printable=yes#Agent_Plug_Ins';
+            }
+        break;
+
+        case 'policy_queue':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Gesti.C3.B3n_de_la_cola_de_pol.C3.ADticas';
+            } else {
+                $result .= 'Policy&printable=yes#Policy_Queues_Management';
+            }
+        break;
+
+        case 'prediction_source_module':
+            if ($es) {
+                $result .= 'Monitorizacion_otra&printable=yes#Tipos_de_monitorizaci.C3.B3n_predictiva';
+            } else {
+                $result .= 'Other_Monitoring&printable=yes#Types_of_predictive_monitoring';
+            }
+        break;
+
+        case 'wmi_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_de_Windows_remotos_con_WMI';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Windows_Remote_Monitoring_with_WMI';
+            }
+        break;
+
+        case 'template_reporting_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#Introduction';
+            }
+        break;
+
+        case 'reporting_template_list_item_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Pesta.C3.B1a_List_Items';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_.27List_Items.27_Tab';
+            }
+        break;
+
+        case 'reporting_template_item_editor_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Pesta.C3.B1a_Item_editor';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_.27Item_Editor.27_Tab';
+            }
+        break;
+
+        case 'reporting_template_advanced_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Opciones_avanzadas_de_informe';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_Advanced_Options_Tab';
+            }
+        break;
+
+        case 'reporting_advanced_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Opciones_avanzadas_de_informe';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_Advanced_Options_Tab';
+            }
+        break;
+
+        case 'reporting_global_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Global';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_Global_Tab';
+            }
+        break;
+
+        case 'reporting_item_editor_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Pesta.C3.B1a_Item_editor';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_.27Item_Editor.27_Tab';
+            }
+        break;
+
+        case 'reporting_list_items_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Pesta.C3.B1a_List_Items';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_.27List_Items.27_Tab';
+            }
+        break;
+
+        case 'reporting_wizard_sla_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Wizard_SLA';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_SLA_Wizard_Tab';
+            }
+        break;
+
+        case 'reporting_wizard_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Wizard_general';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#The_Wizard_Tab';
+            }
+        break;
+
+        case 'response_macros':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Event_Responses_macros';
+            } else {
+                $result .= 'Events&printable=yes#Event_Responses_macros';
+            }
+        break;
+
+        case 'events_responses_tab':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Introducci.C3.B3n_3';
+            } else {
+                $result .= 'Events&printable=yes#Introduction_3';
+            }
+        break;
+
+        case 'servers':
+            if ($es) {
+                $result .= 'Interfaz&printable=yes#Gesti.C3.B3n_de_servidores';
+            } else {
+                $result .= 'Interface&printable=yes#Server_management';
+            }
+        break;
+
+        case 'snmpwalk':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Navegador_SNMP_de_Pandora_FMS';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Pandora_FMS_SNMP_MIB_Browser';
+            }
+        break;
+
+        case 'tags_config':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Sistemas_de_permisos_ampliados_mediante_etiquetas_.28tags.29';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Permission_system_extended_by_tags';
+            }
+        break;
+
+        case 'transactional_map_phases':
+            if ($es) {
+                $result .= 'Monitorizacion_transaccional&printable=yes#Creaci.C3.B3n_del_.C3.A1rbol_de_fases';
+            } else {
+                $result .= 'Transactional_Monitoring&printable=yes#Creating_the_phase_tree';
+            }
+        break;
+
+        case 'transactional_map_phases_data':
+            if ($es) {
+                $result .= 'Monitorizacion_transaccional&printable=yes#Configuraci.C3.B3n_de_los_scripts_de_control';
+            } else {
+                $result .= 'Transactional_Monitoring&printable=yes#Control_scripts_configuration';
+            }
+        break;
+
+        case 'wizard_reporting_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Informes&printable=yes#Asistente_de_plantillas';
+            } else {
+                $result .= 'Data_Presentation/Reports&printable=yes#Template_Wizard';
+            }
+        break;
+
+        case 'user_edit_notifications':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Configuraci.C3.B3n_de_notificaciones';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Notification_configuration';
+            }
+        break;
+
+        case 'view_services':
+            if ($es) {
+                $result .= 'Servicios&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Services&printable=yes#Introduction';
+            }
+        break;
+
+        case 'visual_console_editor_data_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Creaci.C3.B3n_-_Datos_generales';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Creation_-_General_data';
+            }
+        break;
+
+        case 'visual_console_editor_editor_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Creaci.C3.B3n_y_edici.C3.B3n_de_consolas_visuales';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Creation_and_edition_of_Visual_Consoles';
+            }
+        break;
+
+        case 'visual_console_editor_list_elements_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Creaci.C3.B3n_-_lista_de_elementos';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Creation_-_List_of_Elements';
+            }
+        break;
+
+        case 'visual_console_editor_wizard_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Creaci.C3.B3n_-_Wizard';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Creation_-_Wizard';
+            }
+        break;
+
+        case 'visual_console_editor_wizard_services_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Creaci.C3.B3n_-_Wizard_de_Servicios';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Creation_-_Service_Wizard';
+            }
+        break;
+
+        case 'visual_console_tab':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Mapa_asociado';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Associated_Map';
+            }
+        break;
+
+        case 'view_created_map_services_tab':
+            if ($es) {
+                $result .= 'Servicios&printable=yes#Vista_de_mapa_de_servicio';
+            } else {
+                $result .= 'Services&printable=yes#Service_Map_View';
+            }
+        break;
+
+        case 'view_created_services_tab':
+            if ($es) {
+                $result .= 'Servicios&printable=yes#Lista_simple_de_un_servicio_y_todos_los_elementos_que_contiene';
+            } else {
+                $result .= 'Services&printable=yes#List-based_view_of_a_Service_and_its_Elements';
+            }
+        break;
+
+        case 'config_service_element_tab':
+            if ($es) {
+                $result .= 'Servicios&printable=yes#Configuraci.C3.B3n_de_elementos';
+            } else {
+                $result .= 'Services&printable=yes#Element_Configuration';
+            }
+        break;
+
+        case 'config_service_tab':
+            if ($es) {
+                $result .= 'Servicios&printable=yes#Configuraci.C3.B3n_inicial';
+            } else {
+                $result .= 'Services&printable=yes#Initial_Configuration';
+            }
+        break;
+
+        case 'other_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Otra_configuraci.C3.B3n';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Other_configuration';
+            }
+        break;
+
+        case 'services_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_servicios';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Services_configuration';
+            }
+        break;
+
+        case 'visual_consoles_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_de_las_consolas_visuales';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Visual_console_configuration';
+            }
+        break;
+
+        case 'charts_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_de_gr.C3.A1ficas';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Chart_settings';
+            }
+        break;
+
+        case 'front_and_text_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_de_Fuente_y_texto';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Font_and_text_settings';
+            }
+        break;
+
+        case 'gis_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_GIS';
+            } else {
+                $result .= 'Console_Setup&printable=yes#GIS_configuration';
+            }
+        break;
+
+        case 'style_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_de_estilo';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Style_configuration';
+            }
+        break;
+
+        case 'behavoir_conf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_del_comportamiento';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Behaviour_configuration';
+            }
+        break;
+
+        case 'setup_ehorus_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#eHorus';
+            } else {
+                $result .= 'Console_Setup&printable=yes#EHorus';
+            }
+        break;
+
+        case 'diagnostic_tool_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Diagnostic_tool';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Diagnostic_tool';
+            }
+        break;
+
+        case 'performance_metrics_tab':
+            if ($es) {
+                $result .= 'Optimizacion&printable=yes#Comprobaci.C3.B3n_del_fichero_my.ini.2Fcnf';
+            } else {
+                $result .= 'Optimization&printable=yes#Check_my.ini.2Fcnf_settings';
+            }
+        break;
+
+        case 'db_status_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#DB_Schema_Check';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#DB_Schema_Check';
+            }
+        break;
+
+        case 'database_backup_utility_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Backup';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Backup';
+            }
+        break;
+
+        case 'update_manager_offline_tab':
+            if ($es) {
+                $result .= 'Actualizacion&printable=yes#Actualizaciones_.22offline.22';
+            } else {
+                $result .= 'Anexo_Upgrade&printable=yes#.22Offline.22_updates';
+            }
+        break;
+
+        case 'update_manager_online_tab':
+            if ($es) {
+                $result .= 'Actualizacion&printable=yes#Actualizaciones_.22online.22';
+            } else {
+                $result .= 'Anexo_Upgrade&printable=yes#.22Online.22_updates';
+            }
+        break;
+
+        case 'others_database_maintenance_options_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Otros';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Others';
+            }
+        break;
+
+        case 'database_maintenance_options_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Opciones_de_mantenimiento_de_la_base_de_datos';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Database_maintenance_options';
+            }
+        break;
+
+        case 'database_maintenance_status_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Estado_del_mantenimiento_de_las_bases_de_datos';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Database_maintenance_status';
+            }
+        break;
+
+        case 'historical_database_maintenance_options_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Opciones_de_mantenimiento_de_la_base_de_datos_hist.C3.B3rica';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Historical_database_maintenance_options';
+            }
+        break;
+
+        case 'setup_enterprise_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Enterprise';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Features_of_the_Enterprise_Version';
+            }
+        break;
+
+        case 'setup_general_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#General_Setup';
+            } else {
+                $result .= 'Console_Setup&printable=yes#General_Setup';
+            }
+        break;
+
+        case 'export_target_tab':
+            if ($es) {
+                $result .= 'ExportServer&printable=yes#A.C3.B1adir_un_servidor_de_destino';
+            } else {
+                $result .= 'Export_Server&printable=yes#Adding_a_Target_Server';
+            }
+        break;
+
+        case 'servers_ha_clusters_tab':
+            if ($es) {
+                $result .= 'HA&printable=yes#Alta_disponibilidad_del_Servidor_de_Datos';
+            } else {
+                $result .= 'HA&printable=yes#HA_of_Data_Server';
+            }
+        break;
+
+        case 'plugins_tab':
+            if ($es) {
+                $result .= 'Anexo_Agent_Plugins&printable=yes#Caracter.C3.ADsticas_b.C3.A1sicas_de_plugin_de_agente';
+            } else {
+                $result .= 'Anexo_Agent_Plugins&printable=yes#Basic_Features_of_the_Agent_Plugin';
+            }
+        break;
+
+        case 'create_agent':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
+            }
+        break;
+
+        case 'agent_snmp_explorer_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Wizard_SNMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#SNMP_Wizard';
+            }
+        break;
+
+        case 'agent_snmp_interfaces_explorer_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#SNMP_Interfaces_wizard';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#SNMP_Interface_Wizard';
+            }
+        break;
+
+        case 'agent_snmp_wmi_explorer_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Wizard_WMI';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#WMI_Wizard';
+            }
+        break;
+
+        case 'group_list_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Introducci.C3.B3n_2';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Introduction_2';
+            }
+        break;
+
+        case 'acl_setup_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Introducci.C3.B3n_3';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Introduction_3';
+            }
+        break;
+
+        case 'profile_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Perfiles_en_Pandora_FMS';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Profiles_in_Pandora_FMS';
+            }
+        break;
+
+        case 'configure_profiles_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion&printable=yes#Perfiles_en_Pandora_FMS';
+            } else {
+                $result .= 'Managing_and_Administration&printable=yes#Profiles_in_Pandora_FMS';
+            }
+        break;
+
+        case 'network_component_tab':
+            if ($es) {
+                $result .= 'Plantillas_y_Componentes&printable=yes#Componentes_de_red';
+            } else {
+                $result .= 'Templates_and_components&printable=yes#Network_Components';
+            }
+        break;
+
+        case 'local_component_tab':
+            if ($es) {
+                $result .= 'Plantillas_y_Componentes&printable=yes#Componentes_locales';
+            } else {
+                $result .= 'Templates_and_components&printable=yes#Local_Components';
+            }
+        break;
+
+        case 'module_template_tab':
+            if ($es) {
+                $result .= 'Plantillas_y_Componentes&printable=yes#Plantillas_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Templates_and_components&printable=yes#Module_Templates';
+            }
+        break;
+
+        case 'agent_autoconf_tab':
+            if ($es) {
+                $result .= 'Configuracion_Agentes&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Configuration_Agents&printable=yes#Introduction';
+            }
+        break;
+
+        case 'policies_management_tab':
+            if ($es) {
+                $result .= 'Politicas&printable=yes#Introducci.C3.B3n';
+            } else {
+                $result .= 'Policy&printable=yes#Introduction';
+            }
+        break;
+
+        case 'massive_agents_tab':
+            if ($es) {
+                $result .= 'Operaciones_Masivas&printable=yes#Edici.C3.B3n_masiva_de_agentes';
+            } else {
+                $result .= 'Massive_Operations&printable=yes#Agent_massive_edition';
+            }
+        break;
+
+        case 'massive_modules_tab':
+            if ($es) {
+                $result .= 'Operaciones_Masivas&printable=yes#Edici.C3.B3n_masiva_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Massive_Operations&printable=yes#Modules_massive_edition';
+            }
+        break;
+
+        case 'massive_policies_tab':
+            if ($es) {
+                $result .= 'Operaciones_Masivas&printable=yes#Editar_m.C3.B3dulos_de_pol.C3.ADticas_masivamente';
+            } else {
+                $result .= 'Massive_Operations&printable=yes#Edit_policy_modules_massively';
+            }
+        break;
+
+        case 'alert_templates_tab':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Introducci.C3.B3n_4';
+            } else {
+                $result .= 'Alerts&printable=yes#Introduction_4';
+            }
+        break;
+
+        case 'configure_alert_template_step_1':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Paso_1:_General';
+            } else {
+                $result .= 'Alerts&printable=yes#Step_1:_General';
+            }
+        break;
+
+        case 'configure_alert_template_step_2':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Paso_2:_Condiciones';
+            } else {
+                $result .= 'Alerts&printable=yes#Step_2:_Conditions';
+            }
+        break;
+
+        case 'configure_alert_template_step_3':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Paso_3:_Campos_avanzados';
+            } else {
+                $result .= 'Alerts&printable=yes#Step_3:_Advanced_fields';
+            }
+        break;
+
+        case 'alerts_action':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Introducci.C3.B3n_3';
+            } else {
+                $result .= 'Alerts&printable=yes#Introduction_3';
+            }
+        break;
+
+        case 'alerts_command_tab':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Introducci.C3.B3n_2';
+            } else {
+                $result .= 'Alerts&printable=yes#Introduction_2';
+            }
+        break;
+
+        case 'alerts_config_command_tab':
+            if ($es) {
+                $result .= 'Alertas&printable=yes#Creaci.C3.B3n_de_un_comando_para_una_alerta';
+            } else {
+                $result .= 'Alerts&printable=yes#Command_Creation_for_an_Alert';
+            }
+        break;
+
+        case 'configure_alert_event_step_1':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Creaci.C3.B3n_alerta_de_evento';
+            } else {
+                $result .= 'Events&printable=yes#Event_Alert_creation';
+            }
+        break;
+
+        case 'configure_event_rule_tab':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Creaci.C3.B3n_alerta_de_evento';
+            } else {
+                $result .= 'Events&printable=yes#Event_Alert_creation';
+            }
+        break;
+
+        case 'snmp_alert_overview_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_traps_SNMP&printable=yes#Introducci.C3.B3n_2';
+            } else {
+                $result .= 'SNMP_traps_Monitoring&printable=yes#Introduction_2';
+            }
+        break;
+
+        case 'snmp_alert_update_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_traps_SNMP&printable=yes#A.C3.B1adir_una_alerta';
+            } else {
+                $result .= 'SNMP_traps_Monitoring&printable=yes#Alert_Creation';
+            }
+        break;
+
+        case 'sound_console_tab':
+            if ($es) {
+                $result .= 'Eventos&printable=yes#Uso';
+            } else {
+                $result .= 'Events&printable=yes#Use';
+            }
+        break;
+
+        case 'local_module_tab':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Par.C3.A1metros_comunes';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Common_Parameters';
+            }
+        break;
+
+        case 'local_module':
+            if ($es) {
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Operations&printable=yes#Types_of_Modules';
+            }
+        break;
+
+        case 'data_server_module_tab':
+            if ($es) {
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Operations&printable=yes#Types_of_Modules';
+            }
+        break;
+
+        case 'network_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#ICMP_Monitoring';
+            }
+        break;
+
+        case 'wux_console':
+            if ($es) {
+                $result .= 'Monitorizacion_Usuario&printable=yes#Crear_un_m.C3.B3dulo_de_an.C3.A1lisis_web_en_Pandora_FMS_Console';
+            } else {
+                $result .= 'User_Monitorization&printable=yes#Creating_a_Web_Analytics_module_in_Pandora_FMS_Console';
+            }
+        break;
+
+        case 'gis_basic_configurations_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Configuraci.C3.B3n_B.C3.A1sica';
+            } else {
+                $result .= 'GIS&printable=yes#Basic_Configuration';
+            }
+        break;
+
+        case 'gis_map_connection_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Mapas_Open_Street';
+            } else {
+                $result .= 'GIS&printable=yes#Open_Street_Maps';
+            }
+        break;
+
+        case 'icmp_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#ICMP_Monitoring';
+            }
+        break;
+
+        case 'snmp_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP';
+            }
+        break;
+
+        case 'tcp_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#TCP_Monitoring';
+            }
+        break;
+
+        case 'webserver_module_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web';
+            } else {
+                $result .= 'Web_Monitoring&printable=yes#Creating_Web_Modules';
+            }
+        break;
+
+        case 'wmi_query_tab':
+            if ($es) {
+                $result .= 'Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_de_Windows_remotos_con_WMI';
+            } else {
+                $result .= 'Remote_Monitoring&printable=yes#Windows_Remote_Monitoring_with_WMI';
+            }
+        break;
+
+        case 'module_type_tab':
+            if ($es) {
+                $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
+            } else {
+                $result .= '';
+            }
+        break;
+
+        case 'render_view_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS&printable=yes#Operaci.C3.B3n';
+            } else {
+                $result .= 'GIS&printable=yes#Operation';
+            }
+        break;
+    }
+
+    // hd($result);
+    return $result;
+}
+
+
+if (!function_exists('getallheaders')) {
+
+
+    /**
+     * Fix for php-fpm
+     *
+     * @return array
+     */
+    function getallheaders()
+    {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+
 }

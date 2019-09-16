@@ -40,7 +40,9 @@ if ($servers === false) {
 
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->size = [];
 
 $table->style = [];
@@ -49,11 +51,11 @@ $table->style[0] = 'font-weight: bold';
 $table->align = [];
 $table->align[1] = 'center';
 $table->align[3] = 'center';
-$table->align[8] = 'center';
+$table->align[8] = 'right';
 
 $table->headstyle[1] = 'text-align:center';
 $table->headstyle[3] = 'text-align:center';
-$table->headstyle[8] = 'text-align:center';
+$table->headstyle[8] = 'text-align:right;width: 120px;';
 
 // $table->title = __('Tactical server information');
 $table->titleclass = 'tabletitle';
@@ -80,7 +82,11 @@ $names_servers = [];
 
 foreach ($servers as $server) {
     $data = [];
-    $table->cellclass[][3] = 'progress_bar';
+    // $table->cellclass[][3] = 'progress_bar';
+    $table->cellclass[] = [
+        3 => 'progress_bar',
+        8 => 'action_buttons',
+    ];
     $data[0] = '<span title="'.$server['version'].'">'.strip_tags($server['name']).'</span>';
 
     // Status
@@ -146,37 +152,37 @@ foreach ($servers as $server) {
          $data[8] = '';
 
         if ($server['type'] == 'recon') {
-            $data[8] .= '<a href="index.php?sec=gservers&sec2=operation/servers/recon_view">';
+            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist').'">';
             $data[8] .= html_print_image(
                 'images/firts_task/icono_grande_reconserver.png',
                 true,
                 [
-                    'title' => __('Manage recon tasks'),
+                    'title' => __('Manage Discovery tasks'),
                     'style' => 'width:21px;height:21px;',
                 ]
             );
-            $data[8] .= '</a>&nbsp;&nbsp;';
+            $data[8] .= '</a>';
         }
 
         if ($server['type'] == 'data') {
-            $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server['id_server'].'">';
+            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server['id_server']).'">';
             $data[8] .= html_print_image(
                 'images/target.png',
                 true,
                 ['title' => __('Reset module status and fired alert counts')]
             );
-            $data[8] .= '</a>&nbsp;&nbsp;';
+            $data[8] .= '</a>';
         } else if ($server['type'] == 'enterprise snmp') {
-            $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server['id_server'].'">';
+            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server['id_server']).'">';
             $data[8] .= html_print_image(
                 'images/target.png',
                 true,
                 ['title' => __('Claim back SNMP modules')]
             );
-            $data[8] .= '</a>&nbsp;&nbsp;';
+            $data[8] .= '</a>';
         }
 
-        $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server['id_server'].'">';
+        $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server['id_server']).'">';
         $data[8] .= html_print_image(
             'images/config.png',
             true,
@@ -185,7 +191,7 @@ foreach ($servers as $server) {
         $data[8] .= '</a>';
 
         if (($names_servers[$safe_server_name] === true) && ($server['type'] == 'data' || $server['type'] == 'enterprise satellite')) {
-            $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'">';
+            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext).'">';
             $data[8] .= html_print_image(
                 'images/remote_configuration.png',
                 true,
@@ -195,7 +201,7 @@ foreach ($servers as $server) {
             $names_servers[$safe_server_name] = false;
         }
 
-        $data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server['id_server'].'&amp;delete=1">';
+        $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server['id_server'].'&amp;delete=1').'">';
         $data[8] .= html_print_image(
             'images/cross.png',
             true,
@@ -225,7 +231,13 @@ if ($tiny) {
 }
 
 if ($tiny) {
-    ui_toggle(html_print_table($table, true), __('Tactical server information'), false, $hidden_toggle);
+    ui_toggle(
+        html_print_table($table, true),
+        __('Tactical server information'),
+        '',
+        '',
+        $hidden_toggle
+    );
 } else {
     html_print_table($table);
 }

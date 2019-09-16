@@ -24,7 +24,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no custom 
         <?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, ['title' => __('Custom Fields')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Custom Fields'); ?>        <p id="description_task"> 
+        <h3> <?php echo __('Create Custom Fields'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "Custom fields are an easy way to personalized agent's information.

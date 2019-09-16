@@ -1,0 +1,354 @@
+/*
+ * ---------------------------------------------------------------------
+ * - TABLES
+ * ---------------------------------------------------------------------
+ */
+/* This is to use divs like tables */
+.table_div {
+  display: table;
+}
+.table_thead,
+.table_tbody {
+  display: table-row;
+}
+.table_th {
+  font-weight: bold;
+}
+.table_th,
+.table_td {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 10px;
+}
+/* Tables with 3 columns */
+.table_three_columns .table_th,
+.table_three_columns .table_td {
+  width: 33%;
+}
+
+.white-box-content > form > .databox.filters {
+  border: none;
+}
+
+.databox.filters {
+  background: #fff;
+  padding: 1em 0;
+}
+
+.databox.filters,
+.databox.data {
+  margin-bottom: 20px;
+}
+
+.databox.filters > tbody > tr > td {
+  padding: 10px;
+  padding-left: 20px;
+}
+
+.databox.filters > tbody > tr > td > img,
+.databox.filters > tbody > tr > td > div > a > img,
+.databox.filters > tbody > tr > td > span > img,
+.databox.filters > tbody > tr > td > span > a > img,
+.databox.filters > tbody > tr > td > a > img {
+  vertical-align: middle;
+  margin-left: 5px;
+}
+.databox.filters > tbody > tr > td > a > img {
+  vertical-align: middle;
+}
+
+.databox.data > tbody > tr > td > img,
+.databox.data > thead > tr > th > img,
+.databox.data > tbody > tr > td > div > a > img,
+.databox.data > tbody > tr > td > span > img,
+.databox.data > tbody > tr > td > span > a > img,
+.databox.data > tbody > tr > td > a > img,
+.databox.data > tbody > tr > td > form > a > img {
+  vertical-align: middle;
+}
+
+.databox.data > tbody > tr:hover {
+  background-color: #eee;
+}
+
+.databox.data > tbody > tr > td > input[type="checkbox"] {
+  margin: 0px;
+}
+
+.databox_color > tbody > tr > td {
+  padding-left: 10px;
+}
+
+.databox.agente > tbody > tr > td > div > canvas {
+  width: 100%;
+  text-align: left;
+}
+.databox.agente > tbody > tr > td > div.graph {
+  width: 100%;
+  text-align: left;
+}
+
+.info_table {
+  background-color: #fff;
+  margin-bottom: 10px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.info_table > tbody > tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+.info_table tr > td:first-child,
+.info_table tr > th:first-child {
+  padding-left: 5px;
+}
+.info_table tr > td:last-child,
+.info_table tr > th:last-child {
+  padding-right: 5px;
+}
+
+.info_table tr:first-child > th {
+  background-color: #fff;
+  color: #000;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.info_table th {
+  font-size: 7.5pt;
+  letter-spacing: 0.3pt;
+  color: #000;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.info_table tr th {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.info_table > thead > tr {
+  height: 3em;
+  vertical-align: top;
+}
+
+/* Radius top */
+.info_table > thead > tr:first-child > th:first-child {
+  border-top-left-radius: 4px;
+}
+.info_table > thead > tr:first-child > th:last-child {
+  border-top-right-radius: 4px;
+}
+
+/* Radius bottom */
+.info_table > tbody > tr:last-child > td:first-child {
+  border-top-left-radius: 4px;
+}
+.info_table > tbody > tr:last-child > td:last-child {
+  border-top-right-radius: 4px;
+}
+
+.info_table > tbody > tr > th,
+.info_table > thead > tr > th,
+.info_table > thead > tr > th a,
+.info_table > thead > tr > th > span {
+  padding: 0.1em;
+  font-weight: normal;
+  color: #000;
+  margin-left: 0.5em;
+}
+
+.info_table > tbody > tr {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.info_table > tbody > tr > td {
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+  border: none;
+  padding-left: 0px;
+  padding-right: 9px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.info_table.no-td-padding td {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.info_table > tbody > tr > td > img,
+.info_table > thead > tr > th > img,
+.info_table > tbody > tr > td > div > a > img,
+.info_table > tbody > tr > td > span > img,
+.info_table > tbody > tr > td > span > a > img,
+.info_table > tbody > tr > td > a > img,
+.info_table > tbody > tr > td > form > a > img {
+  vertical-align: middle;
+}
+
+.info_table > tbody > tr:hover {
+  /* This !important is necessary to overwrite the white background of tables with less than 5 rows. */
+  background-color: #eee !important;
+}
+
+.info_.profile_list > thead > tr > th > a.tip {
+  padding: 0px;
+}
+
+.info_table .datos3,
+.datos3,
+.info_table .datos4,
+.datos4 {
+  background-color: #fff;
+  color: #000;
+  border-bottom: 2px solid #82b92e;
+  border-left: none;
+  border-right: none;
+  height: 30px;
+  font-size: 8.6pt;
+  font-weight: normal;
+}
+
+.databox.datos2 {
+  background: #f5f5f5;
+}
+
+.databox.datos {
+  background: #fff;
+}
+
+.filters input {
+  background: #fbfbfb;
+}
+
+.datos4 {
+  /*Add because in php the function html_print_table write style in cell and this is style head.*/
+  text-align: center;
+}
+
+.datos3 *,
+.datos4 *,
+.info_table .datos3 *,
+.info_table .datos4 * {
+  font-size: 8.6pt;
+  font-weight: 600;
+  padding: 1.3em 0;
+}
+
+/*td.datos_id {
+	color: #1a313a;
+}*/
+
+/* user list php */
+tr.disabled_row_user * {
+  color: grey;
+}
+
+/* Disable datatables border */
+table.dataTable.info_table.no-footer {
+  border-bottom: none;
+}
+
+/* Datatables pagination */
+.dataTables_paginate.paging_simple_numbers {
+  margin: 2em 0;
+}
+
+a.pandora_pagination {
+  padding: 5px;
+  color: #000;
+  border: 1px solid #cacaca;
+  border-left: none;
+  min-width: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.dataTables_paginate > span > span.ellipsis + a.pandora_pagination:last-child,
+.dataTables_paginate a.pandora_pagination.previous {
+  border-left: 1px solid #cacaca;
+}
+
+a.pandora_pagination.disabled {
+  color: #cacaca;
+}
+a.pandora_pagination:hover {
+  text-decoration: none;
+  background-color: #e2e2e2;
+}
+
+a.pandora_pagination.current,
+a.pandora_pagination.current:hover {
+  color: #fff;
+  background-color: #82b92e;
+}
+
+/* CSV button datatables */
+.dt-button.buttons-csv.buttons-html5 {
+  background-image: url(../../images/csv_mc.png);
+  background-position: center center;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  color: #000;
+  border: none;
+  font-family: "lato", "Open Sans", sans-serif;
+  cursor: pointer;
+  display: inline;
+  padding: 7pt;
+  margin-left: 10px;
+}
+.dt-button.buttons-csv.buttons-html5 span {
+  font-size: 0;
+}
+
+.dt-buttons {
+  margin-top: 3pt;
+}
+
+.dt-button.buttons-csv.buttons-html5:active,
+.dt-button.buttons-csv.buttons-html5:hover {
+  border: none;
+}
+
+.dt-button.buttons-csv.buttons-html5[disabled] {
+  color: #b4b4b4;
+  background-color: #f3f3f3;
+  border-color: #b6b6b6;
+  cursor: default;
+}
+
+/* Default datatable filter style */
+.datatable_filter.content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.datatable_filter.content label {
+  margin-right: 1em;
+}
+.datatable_filter.content li {
+  flex: 1 1 auto;
+  margin: 1em auto;
+}
+.sorting_desc {
+  background: url(../../images/sort_down_green.png) no-repeat;
+  background-position-x: left;
+  background-position-y: center;
+  cursor: pointer;
+}
+.sorting_asc {
+  background: url(../../images/sort_up_green.png) no-repeat;
+  background-position-x: left;
+  background-position-y: center;
+  cursor: pointer;
+}
+
+.info_table tr th.sorting_asc,
+.info_table tr th.sorting_desc {
+  padding-left: 15px;
+}

@@ -226,17 +226,18 @@ $order = null;
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$selected = 'border: 1px solid black;';
+$selected = true;
+// 'border: 1px solid black;';
 $selectDisabledUp = '';
 $selectDisabledDown = '';
 $selectStandbyUp = '';
 $selectStandbyDown = '';
-$selectAgentUp = '';
-$selectAgentDown = '';
-$selectModuleUp = '';
-$selectModuleDown = '';
-$selectTemplateUp = '';
-$selectTemplateDown = '';
+$selectAgentUp = false;
+$selectAgentDown = false;
+$selectModuleUp = false;
+$selectModuleDown = false;
+$selectTemplateUp = false;
+$selectTemplateDown = false;
 
 switch ($sortField) {
     case 'disabled':
@@ -346,11 +347,11 @@ switch ($sortField) {
             $selectStandbyUp = '';
             $selectStandbyDown = '';
             $selectAgentUp = $selected;
-            $selectAgentDown = '';
-            $selectModuleUp = '';
-            $selectModuleDown = '';
-            $selectTemplateUp = '';
-            $selectTemplateDown = '';
+            $selectAgentDown = false;
+            $selectModuleUp = false;
+            $selectModuleDown = false;
+            $selectTemplateUp = false;
+            $selectTemplateDown = false;
             $order = [
                 'field' => 'agent_name',
                 'order' => 'ASC',
@@ -360,12 +361,12 @@ switch ($sortField) {
             $selectDisabledDown = '';
             $selectStandbyUp = '';
             $selectStandbyDown = '';
-            $selectAgentUp = '';
-            $selectAgentDown = '';
+            $selectAgentUp = false;
+            $selectAgentDown = false;
             $selectModuleUp = $selected;
-            $selectModuleDown = '';
-            $selectTemplateUp = '';
-            $selectTemplateDown = '';
+            $selectModuleDown = false;
+            $selectTemplateUp = false;
+            $selectTemplateDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -402,12 +403,21 @@ if (!$id_agente) {
     $url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente='.$id_agente.'&offset='.$offset.$form_params;
 }
 
+// Urls to sort the table.
+$url_up_agente = $url.'&sort_field=agent&sort=up&pure='.$pure;
+$url_down_agente = $url.'&sort_field=agent&sort=down&pure='.$pure;
+$url_up_module = $url.'&sort_field=module&sort=up&pure='.$pure;
+$url_down_module = $url.'&sort_field=module&sort=down&pure='.$pure;
+$url_up_template = $url.'&sort_field=template&sort=up&pure='.$pure;
+$url_down_template = $url.'&sort_field=template&sort=down&pure='.$pure;
+
+
 $table = new stdClass();
 
 if (is_metaconsole()) {
     $table->class = 'alert_list databox';
 } else {
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 }
 
 $table->width = '100%';
@@ -427,32 +437,27 @@ $table->head = [];
 if (! $id_agente) {
     $table->style = [];
     $table->style[0] = 'font-weight: bold;';
-    $table->head[0] = __('Agent').'&nbsp;'.'<a href="'.$url.'&sort_field=agent&sort=up&pure='.$pure.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentUp]).'</a>'.'<a href="'.$url.'&sort_field=agent&sort=down&pure='.$pure.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentDown]).'</a>';
-    $table->size[0] = '4%';
-    $table->size[1] = '8%';
-    $table->size[2] = '8%';
-    $table->size[3] = '4%';
-    $table->size[4] = '4%';
+    $table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
+    $table->headstyle[0] = 'width: 100%; min-width: 12em;';
+    $table->headstyle[1] = 'min-width: 15em;';
+    $table->headstyle[2] = 'min-width: 20em;';
+    $table->headstyle[3] = 'min-width: 1em;';
+    $table->headstyle[4] = 'min-width: 15em;';
 
     /*
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         $table->size[4] = '8%';
     }*/
 } else {
-    $table->head[0] = __('Module').'&nbsp;'.'<a href="'.$url.'&sort_field=module&sort=up&pure='.$pure.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleUp]).'</a>'.'<a href="'.$url.'&sort_field=module&sort=down&pure='.$pure.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleDown]).'</a>';
-    // Different sizes or the layout screws up
-    $table->size[0] = '0%';
-    $table->size[1] = '10%';
-    $table->size[2] = '30%';
-    /*
-        if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-        $table->size[4] = '25%';
-    }  */
-    $table->size[3] = '1%';
-    $table->size[4] = '1%';
+    $table->head[0] = __('Module').ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
+    $table->headstyle[0] = 'width: 100%; min-width: 15em;';
+    $table->headstyle[1] = 'min-width: 15em;';
+    $table->headstyle[2] = 'min-width: 20em;';
+    $table->headstyle[3] = 'min-width: 1em;';
+    $table->headstyle[4] = 'min-width: 15em;';
 }
 
-$table->head[1] = __('Template').'&nbsp;'.'<a href="'.$url.'&sort_field=template&sort=up&pure='.$pure.'">'.html_print_image('images/sort_up.png', true, ['style' => $selectTemplateUp]).'</a>'.'<a href="'.$url.'&sort_field=template&sort=down&pure='.$pure.'">'.html_print_image('images/sort_down.png', true, ['style' => $selectTemplateDown]).'</a>';
+$table->head[1] = __('Template').ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
 $table->head[2] = __('Actions');
 $table->head[3] = __('Status');
 $table->head[4] = "<span title='".__('Operations')."'>".__('Op.').'</span>';
@@ -690,20 +695,41 @@ foreach ($simple_alerts as $alert) {
                     $data[2] .= '</tr>';
                     $data[2] .= '<tr class="datos">';
                         $data[2] .= '<td class="datos" style="font-weight:bold;padding:6px;">';
-                            $data[2] .= __('Number of alerts match from').'&nbsp;'.ui_print_help_icon('alert-matches', true, ui_get_full_url(false, false, false, false));
+                            $data[2] .= __('Number of alerts match from');
                         $data[2] .= '</td>';
                         $data[2] .= '<td class="datos">';
-                            $data[2] .= html_print_input_text('fires_min', 0, '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'fires_min',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                             $data[2] .= ' '.__('to').' ';
-                            $data[2] .= html_print_input_text('fires_max', 0, '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'fires_max',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                         $data[2] .= '</td>';
                     $data[2] .= '</tr>';
                     $data[2] .= '<tr class="datos2">';
                         $data[2] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
-                            $data[2] .= __('Threshold').'&nbsp;'.ui_print_help_icon('action_threshold', true, ui_get_full_url(false, false, false, false));
+                            $data[2] .= __('Threshold');
                         $data[2] .= '</td>';
                         $data[2] .= '<td class="datos2">';
-                            $data[2] .= html_print_input_text('module_action_threshold', '', '', 4, 10, true);
+                            $data[2] .= html_print_input_text(
+                                'module_action_threshold',
+                                '',
+                                '',
+                                4,
+                                10,
+                                true
+                            );
                         $data[2] .= '</td>';
                     $data[2] .= '</tr>';
                 $data[2] .= '</table>';
@@ -728,6 +754,10 @@ foreach ($simple_alerts as $alert) {
 
     $data[3] = ui_print_status_image($status, $title, true);
 
+    $table->cellclass[] = [
+        3 => 'action_buttons',
+        4 => 'action_buttons',
+    ];
     $data[4] = '<form class="disable_alert_form" action="'.$url.'" method="post" style="display: inline;">';
     if ($alert['disabled']) {
         $data[4] .= html_print_input_image('enable', 'images/lightbulb_off.png', 1, 'padding:0px', true);
@@ -742,7 +772,7 @@ foreach ($simple_alerts as $alert) {
 
     // To manage alert is necessary LW permissions in the agent group
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-        $data[4] .= '&nbsp;&nbsp;<form class="standby_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+        $data[4] .= '<form class="standby_alert_form" action="'.$url.'" method="post" style="display: inline;">';
         if (!$alert['standby']) {
             $data[4] .= html_print_input_image('standby_off', 'images/bell.png', 1, 'padding:0px;', true);
             $data[4] .= html_print_input_hidden('standbyon_alert', 1, true);
@@ -771,7 +801,7 @@ foreach ($simple_alerts as $alert) {
 
     // To manage alert is necessary LW permissions in the agent group
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-        $data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+        $data[4] .= '<form class="delete_alert_form" action="'.$url.'" method="post" style="display: inline;">';
         $is_cluster = (bool) get_parameter('id_cluster');
         if (!$is_cluster) {
             if ($alert['disabled']) {
@@ -815,6 +845,11 @@ foreach ($simple_alerts as $alert) {
 
 if (isset($data)) {
     html_print_table($table);
+    if ($id_agente) {
+        ui_pagination($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.$form_params.$sort_params, 0, 0, false, 'offset', true, 'pagination-bottom');
+    } else {
+        ui_pagination($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list'.$form_params.$sort_params, 0, 0, false, 'offset', true, 'pagination-bottom');
+    }
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alerts defined') ]);
 }

@@ -22,7 +22,6 @@ INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal
 INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (8,'Jabber&#x20;Alert','echo&#x20;_field3_&#x20;|&#x20;sendxmpp&#x20;-r&#x20;_field1_&#x20;--chatroom&#x20;_field2_','Send&#x20;jabber&#x20;alert&#x20;to&#x20;chat&#x20;room&#x20;in&#x20;a&#x20;predefined&#x20;server&#x20;&#40;configure&#x20;first&#x20;.sendxmpprc&#x20;file&#41;.&#x20;Uses&#x20;field3&#x20;as&#x20;text&#x20;message,&#x20;field1&#x20;as&#x20;useralias&#x20;for&#x20;source&#x20;message,&#x20;and&#x20;field2&#x20;for&#x20;chatroom&#x20;name',0,'[\"User&#x20;alias\",\"Chatroom&#x20;name\",\"Message\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (9,'SMS','sendsms&#x20;_field1_&#x20;_field2_','Send&#x20;SMS&#x20;using&#x20;the&#x20;standard&#x20;SMS&#x20;device,&#x20;using&#x20;smstools.&#x20;&#x20;Uses&#x20;field2&#x20;as&#x20;text&#x20;message,&#x20;field1&#x20;as&#x20;destination&#x20;phone&#x20;&#40;include&#x20;international&#x20;prefix!&#41;',0,'[\"Destination&#x20;number\",\"Message\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (10,'Validate&#x20;Event','Internal&#x20;type','This&#x20;alert&#x20;validate&#x20;the&#x20;events&#x20;matched&#x20;with&#x20;a&#x20;module&#x20;given&#x20;the&#x20;agent&#x20;name&#x20;&#40;_field1_&#41;&#x20;and&#x20;module&#x20;name&#x20;&#40;_field2_&#41;',1,'[\"Agent&#x20;name\",\"Module&#x20;name\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
-INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (11,'Integria&#x20;IMS&#x20;Ticket','Internal&#x20;type','This&#x20;alert&#x20;create&#x20;a&#x20;ticket&#x20;into&#x20;your&#x20;Integria&#x20;IMS.',1,'[\"Integria&#x20;IMS&#x20;API&#x20;path\",\"Integria&#x20;IMS&#x20;API&#x20;pass\",\"Integria&#x20;IMS&#x20;user\",\"Integria&#x20;IMS&#x20;user&#x20;pass\",\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Email&#x20;copy\",\"Ticket&#x20;owner\",\"Ticket&#x20;description\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\",\"\",\"\"]');
 INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\"Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (13,'Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 --
@@ -31,6 +30,9 @@ INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal
 
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` (`token`, `value`) VALUES 
+('cron_extension_installed','1'),
+('cron_extension_sql_version','1'),
+('cron_last_run','0'),
 ('language','en_GB'),
 ('block_size','20'),
 ('days_purge','45'),
@@ -77,15 +79,11 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('sound_alert', 'include/sounds/air_shock_alarm.wav'),
 ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav'),
 ('sound_warning', 'include/sounds/negativebeep.wav'),
-('integria_enabled', '0'),
-('integria_api_password', ''),
-('integria_inventory', '0'),
-('integria_url', ''),
 ('netflow_interval', '3600'),
 ('netflow_daemon', '/usr/bin/nfcapd'),
 ('netflow_nfdump', '/usr/bin/nfdump'),
 ('netflow_max_resolution', '50'),
-('event_fields', 'evento,id_agente,estado,timestamp'),
+('event_fields', 'mini_severity,evento,id_agente,estado,timestamp'),
 ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp'),
 ('list_ACL_IPs_for_API', '127.0.0.1'),
 ('enable_pass_policy', 0),
@@ -111,10 +109,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 26),
+('MR', 31),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '733'),
+('current_package_enterprise', '738'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
@@ -267,7 +265,6 @@ INSERT INTO `ttipo_modulo` VALUES
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(24,'log4x',0,'Log4x','mod_log4x.png'),
 (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
 (30,'web_data',9,'Remote HTTP module to check latency','mod_web_data.png'),
 (31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
@@ -342,8 +339,7 @@ INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0
 -- Dumping data for table `tnews`
 --
 
-INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES (1,'admin','Welcome to Pandora FMS!','This is the Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW());
-INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES (2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',NOW());
+INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES (1,'admin','Welcome&#x20;to&#x20;Pandora&#x20;FMS&#x20;Console', '&amp;lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;font-size:&#x20;13px;&quot;&amp;gt;Hello,&#x20;congratulations,&#x20;if&#x20;you&apos;ve&#x20;arrived&#x20;here&#x20;you&#x20;already&#x20;have&#x20;an&#x20;operational&#x20;monitoring&#x20;console.&#x20;Remember&#x20;that&#x20;our&#x20;forums&#x20;and&#x20;online&#x20;documentation&#x20;are&#x20;available&#x20;24x7&#x20;to&#x20;get&#x20;you&#x20;out&#x20;of&#x20;any&#x20;trouble.&#x20;You&#x20;can&#x20;replace&#x20;this&#x20;message&#x20;with&#x20;a&#x20;personalized&#x20;one&#x20;at&#x20;Admin&#x20;tools&#x20;-&amp;amp;gt;&#x20;Site&#x20;news.&amp;lt;/p&amp;gt;&#x20;',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');
 INSERT INTO tmodule VALUES (2,'Network&#x20;module');
@@ -1113,8 +1109,6 @@ INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field
 (2,'Restart&#x20;agent',12,'REFRESH AGENT *','','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES
 (3,'Monitoring&#x20;Event',3,'_agent_&#x20;_module_&#x20;generated&#x20;an&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_fired','pandora','','4','','','','','',0,0,'RECOVERED:&#x20;_agent_&#x20;_module_&#x20;generated&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_ceased','pandora','','4','','','','','');
-INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES
-(4,'Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',11,'http://localhost/integria/include/api.php','1234','admin','integria','_agent_:&#x20;_alert_name_','1','3','copy@dom.com','admin','_alert_description_',0,0,'','','','','','','','','','');
 
 -- alert templates (default)
 
@@ -1132,10 +1126,10 @@ INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (3, 'Monitoring&#x
 INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t3.id_grupo&#41;&#x20;as&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;as&#x20;t4&#x20;WHERE&#x20;t4.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;t4.disabled&#x20;=&#x20;0&#x20;AND&#x20;t4.ultimo_contacto&#x20;&lt;&#x20;NOW&#40;&#41;&#x20;-&#x20;&#40;intervalo&#x20;/&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;agent_unknown,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#x20;AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#40;21,22,23,24,100&#41;&#x20;AND&#x20;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-&#x20;tagente_estado.utimestamp&#41;&#x20;&gt;=&#x20;&#40;tagente_estado.current_interval&#x20;/&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;monitor_unknow,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#x20;&#40;21,22,23,24&#41;&#x20;AND&#x20;utimestamp&#x20;=&#x20;0&#41;&#x20;as&#x20;monitor_no_init,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;0&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;&#40;utimestamp&#x20;&gt;&#x20;0&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24&#41;&#41;&#41;&#41;&#x20;as&#x20;monitor_ok,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;1&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;monitor_critical,&#x20;&#40;SELECT&#x20;COUNT&#40;talert_template_modules.id&#41;&#x20;FROM&#x20;talert_template_modules,&#x20;tagente_modulo,&#x20;tagente_estado,&#x20;tagente&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente_modulo.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;talert_template_modules.id_agent_module&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;as&#x20;t1&#x20;where&#x20;0&#x20;&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;');
 
 -- trecon scripts
-INSERT INTO `trecon_script` VALUES (2,'IPMI&#x20;Recon','Specific&#x20;Pandora&#x20;FMS&#x20;Intel&#x20;DCM&#x20;Discovery&#x20;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2011&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x20;./ipmi-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;create_incident_flag&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;&lt;custom_field3&gt;&#x20;&lt;custom_field4&gt;&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;custom_field1&#x20;=&#x20;Network&#x20;i.e.:&#x20;192.168.100.0/24&#x0d;&#x0a;*&#x20;custom_field2&#x20;=&#x20;Username&#x0d;&#x0a;*&#x20;custom_field3&#x20;=&#x20;Password&#x0d;&#x0a;*&#x20;custom_field4&#x20;=&#x20;Additional&#x20;parameters&#x20;i.e.:&#x20;-D&#x20;LAN_2_0','/usr/share/pandora_server/util/recon_scripts/ipmi-recon.pl','{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Network\",\"help\":\"i.e.:&#x20;192.168.100.0/24\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Username\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Password\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Additional&#x20;parameters\",\"help\":\"Optional&#x20;additional&#x20;parameters&#x20;such&#x20;as&#x20;-D&#x20;LAN_2_0&#x20;to&#x20;use&#x20;IPMI&#x20;ver&#x20;2.0&#x20;instead&#x20;of&#x20;1.5.&#x20;&#x20;These&#x20;options&#x20;will&#x20;also&#x20;be&#x20;passed&#x20;to&#x20;the&#x20;IPMI&#x20;plugin&#x20;when&#x20;the&#x20;current&#x20;values&#x20;are&#x20;read.\",\"value\":\"\",\"hide\":\"\"}}');
-INSERT INTO `trecon_script` VALUES (5,'WMI&#x20;Recon&#x20;Script','This&#x20;script&#x20;is&#x20;used&#x20;to&#x20;automatically&#x20;gather&#x20;host&#x20;information&#x20;via&#x20;WMI.&#x0d;&#x0a;Available&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;Network&#x20;=&#x20;network&#x20;to&#x20;scan&#x20;&#40;e.g.&#x20;192.168.100.0/24&#41;.&#x0d;&#x0a;*&#x20;WMI&#x20;auth&#x20;=&#x20;comma&#x20;separated&#x20;list&#x20;of&#x20;WMI&#x20;authentication&#x20;tokens&#x20;in&#x20;the&#x20;format&#x20;username%password&#x20;&#40;e.g.&#x20;Administrador%pass&#41;.&#x0d;&#x0a;&#x0d;&#x0a;See&#x20;the&#x20;documentation&#x20;for&#x20;more&#x20;information.','/usr/share/pandora_server/util/recon_scripts/wmi-recon.pl','{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Network\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"WMI&#x20;auth\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"}}');
-INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Discovery.Application.VMware', 'Discovery&#x20;Application&#x20;script&#x20;to&#x20;monitor&#x20;VMware&#x20;technologies&#x20;&#40;ESXi,&#x20;VCenter,&#x20;VSphere&#41;', '/usr/share/pandora_server/util/recon_scripts/vmware-plugin.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');
-INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Discovery.Cloud', 'Discovery&#x20;Cloud&#x20;script&#x20;to&#x20;monitor&#x20;Cloud&#x20;technologies&#x20;&#40;AWS.EC2,&#x20;AWS.S3,&#x20;AWS.RDS,&#x20RDS,&#x20AWS.EKS&#41;', '/usr/share/pandora_server/util/recon_scripts/pcm_client.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');
+INSERT INTO `trecon_script` (`type`,`name`,`description`,`script`,`macros`) VALUES (1, 'Discovery.Application.VMware', 'Discovery&#x20;Application&#x20;script&#x20;to&#x20;monitor&#x20;VMware&#x20;technologies&#x20;&#40;ESXi,&#x20;VCenter,&#x20;VSphere&#41;', '/usr/share/pandora_server/util/recon_scripts/vmware-plugin.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');
+INSERT INTO `trecon_script` (`type`,`name`,`description`,`script`,`macros`) VALUES (2, 'Discovery.Cloud', 'Discovery&#x20;Cloud&#x20;script&#x20;to&#x20;monitor&#x20;Cloud&#x20;technologies&#x20;&#40;AWS.EC2,&#x20;AWS.S3,&#x20;AWS.RDS,&#x20RDS,&#x20AWS.EKS&#41;', '/usr/share/pandora_server/util/recon_scripts/pcm_client.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');
+-- IPAM is 3.
+INSERT INTO `trecon_script` (`type`,`name`,`description`,`script`,`macros`) VALUES (4, 'IPMI&#x20;Recon','Specific&#x20;Pandora&#x20;FMS&#x20;Intel&#x20;DCM&#x20;Discovery&#x20;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2011&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x20;./ipmi-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;create_incident_flag&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;&lt;custom_field3&gt;&#x20;&lt;custom_field4&gt;&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;custom_field1&#x20;=&#x20;Network&#x20;i.e.:&#x20;192.168.100.0/24&#x0d;&#x0a;*&#x20;custom_field2&#x20;=&#x20;Username&#x0d;&#x0a;*&#x20;custom_field3&#x20;=&#x20;Password&#x0d;&#x0a;*&#x20;custom_field4&#x20;=&#x20;Additional&#x20;parameters&#x20;i.e.:&#x20;-D&#x20;LAN_2_0','/usr/share/pandora_server/util/recon_scripts/ipmi-recon.pl','{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Network\",\"help\":\"i.e.:&#x20;192.168.100.0/24\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Username\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Password\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Additional&#x20;parameters\",\"help\":\"Optional&#x20;additional&#x20;parameters&#x20;such&#x20;as&#x20;-D&#x20;LAN_2_0&#x20;to&#x20;use&#x20;IPMI&#x20;ver&#x20;2.0&#x20;instead&#x20;of&#x20;1.5.&#x20;&#x20;These&#x20;options&#x20;will&#x20;also&#x20;be&#x20;passed&#x20;to&#x20;the&#x20;IPMI&#x20;plugin&#x20;when&#x20;the&#x20;current&#x20;values&#x20;are&#x20;read.\",\"value\":\"\",\"hide\":\"\"}}');
 
 INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `plugin_type`, `macros`, `parameters`) VALUES (1,'IPMI&#x20;Plugin','Plugin&#x20;to&#x20;get&#x20;IPMI&#x20;monitors&#x20;from&#x20;a&#x20;IPMI&#x20;Device.',0,'/usr/share/pandora_server/util/plugin/ipmi-plugin.pl',0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Target&#x20;IP\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Username\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Password\",\"help\":\"\",\"value\":\"\",\"hide\":\"true\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Sensor\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Additional&#x20;Options\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"}}','-h&#x20;_field1_&#x20;-u&#x20;_field2_&#x20;-p&#x20;_field3_&#x20;-s&#x20;_field4_&#x20;--&#x20;_field5_');
 
@@ -1155,7 +1149,7 @@ INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0,0,''),(2,'De
 
 INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es','',''),(2,'critical','Critical&#x20;modules','','',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone','','',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules','','',''),(5,'configuration','','','','');
 
-INSERT INTO `tevent_response` VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x20;the&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_agent_address_','command',0,620,500,0,'',0),(3,'Create&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;the&#x20;standard&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS','index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event=_event_id_','url',0,0,0,1,'',0),(4,'Create&#x20;Integria&#x20;IMS&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;integria&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS.&#x20;&#x0d;&#x0a;&#x0d;&#x0a;Is&#x20;necessary&#x20;to&#x20;enable&#x20;and&#x20;configure&#x20;the&#x20;Integria&#x20;incidents&#x20;in&#x20;Pandora&#x20;FMS&#x20;setup.','index.php?sec=workspace&amp;sec2=operation/integria_incidents/incident&amp;tab=editor&amp;from_event=_event_id_','url',0,0,0,1,'',0),(5,'Restart&#x20;agent','Restart&#x20;the&#x20;agent&#x20;with&#x20;using&#x20;UDP&#x20;protocol.&#x0d;&#x0a;&#x0d;&#x0a;To&#x20;use&#x20;this&#x20;response&#x20;is&#x20;necessary&#x20;to&#x20;have&#x20;installed&#x20;Pandora&#x20;FMS&#x20;server&#x20;and&#x20;console&#x20;in&#x20;the&#x20;same&#x20;machine.','/usr/share/pandora_server/util/udp_client.pl&#x20;_agent_address_&#x20;41122&#x20;&quot;REFRESH&#x20;AGENT&quot;','command',0,620,500,0,'',0),(6,'Ping&#x20;to&#x20;module&#x20;agent&#x20;host','Ping&#x20;to&#x20;the&#x20;module&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_module_address_','command',0,620,500,0,'',0);
+INSERT INTO `tevent_response` VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x20;the&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_agent_address_','command',0,620,500,0,'',0),(3,'Create&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;the&#x20;standard&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS','index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event=_event_id_','url',0,0,0,1,'',0),(5,'Restart&#x20;agent','Restart&#x20;the&#x20;agent&#x20;with&#x20;using&#x20;UDP&#x20;protocol.&#x0d;&#x0a;&#x0d;&#x0a;To&#x20;use&#x20;this&#x20;response&#x20;is&#x20;necessary&#x20;to&#x20;have&#x20;installed&#x20;Pandora&#x20;FMS&#x20;server&#x20;and&#x20;console&#x20;in&#x20;the&#x20;same&#x20;machine.','/usr/share/pandora_server/util/udp_client.pl&#x20;_agent_address_&#x20;41122&#x20;&quot;REFRESH&#x20;AGENT&quot;','command',0,620,500,0,'',0),(6,'Ping&#x20;to&#x20;module&#x20;agent&#x20;host','Ping&#x20;to&#x20;the&#x20;module&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_module_address_','command',0,620,500,0,'',0);
 
 INSERT INTO `tupdate_settings` VALUES  ('current_update', '412'), ('customer_key', 'PANDORA-FREE'), ('updating_binary_path', 'Path where the updated binary files will be stored'), ('updating_code_path', 'Path where the updated code is stored'), ('dbname', ''), ('dbhost', ''), ('dbpass', ''), ('dbuser', ''), ('dbport', ''), ('proxy', ''), ('proxy_port', ''), ('proxy_user', ''), ('proxy_pass', '');
 
@@ -1301,7 +1295,7 @@ INSERT INTO `tnotification_source`(`description`, `icon`, `max_postpone_time`, `
   ("Message", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Pending&#x20;task", "icono_info_mr.png", 86400, 1, 1, 0),
   ("Advertisement", "icono_info_mr.png", 86400, 1, 1, 0),
-  ("Official&#x20;communication", "icono_info_mr.png", 86400, 1, 1, 0),
+  ("Official&#x20;communication", "icono_logo_pandora.png", 86400, 1, 1, 0),
   ("Sugerence", "icono_info_mr.png", 86400, 1, 1, 0);
 
 -- 
@@ -1312,4 +1306,119 @@ INSERT INTO `tnotification_source_user`(`id_source`,`id_user`,`enabled`,`also_ma
 
 INSERT INTO `tnotification_source_group` SELECT `id`,0 FROM `tnotification_source` WHERE `description`="Message";
 
-  
+INSERT INTO `tnotification_source_user` (`id_source`, `id_user`, `enabled`, `also_mail`) VALUES
+  ((SELECT `id` FROM `tnotification_source` WHERE `description`="Official&#x20;communication"), "admin", 1, 0);
+
+UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20;status' OR `description` = 'Official&#x20;communication';
+
+
+-- 
+-- Dumping data for table `tlayout`
+-- 
+INSERT INTO `tlayout`
+VALUES
+    (1, 'Demo&#x20;visual console', 0, 'fondo.jpg', 1080, 1920, 'white', 0);
+
+-- 
+-- Dumping data for table `tlayout_data`
+-- 
+INSERT INTO `tlayout_data`
+VALUES
+  (1,1,998,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(2,1,998,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(3,1,1016,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(4,1,1016,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(5,1,1034,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(6,1,1034,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(7,1,1052,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(8,1,1052,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(9,1,1070,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(10,1,1070,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(11,1,1088,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(12,1,1088,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(13,1,1106,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(14,1,1106,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(15,1,1124,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(16,1,1124,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(17,1,1142,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(18,1,1142,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(19,1,1160,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(20,1,1160,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(21,1,1178,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(22,1,1178,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(23,1,1196,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(24,1,1196,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(25,1,1214,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(26,1,1214,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(27,1,1232,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(28,1,1232,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(29,1,1250,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(30,1,1250,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(31,1,1268,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(32,1,1268,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(33,1,1286,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(34,1,1286,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(35,1,1286,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(36,1,1304,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(37,1,1304,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(38,1,1322,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(39,1,1322,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(40,1,1340,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(41,1,1507,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(42,1,1536,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(43,1,1568,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(44,1,1599,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(45,1,1627,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(46,1,1656,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(47,1,1685,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(48,1,1714,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(49,1,1743,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(50,1,1772,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(51,1,1449,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(52,1,1800,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(53,1,1413,243,205,426,'','rack_frame',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(54,1,962,381,73,408,'','rack_firewall',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(55,1,962,454,73,408,'','rack_pdu',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(56,1,530,732,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(57,1,962,233,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(58,1,962,307,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(59,1,530,658,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(60,1,530,350,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(61,1,530,204,73,408,'','rack_psa',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(62,1,530,277,73,408,'','rack_pdu',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(63,1,530,585,73,408,'','rack_firewall',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(64,1,530,424,161,411,'','rack_double_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(65,1,1426,448,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(66,1,1495,540,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(67,1,1423,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(68,1,1463,540,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(69,1,1433,540,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(70,1,74,733,73,408,'','rack_pdu',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(71,1,1098,701,80,18,'','rack_hard_disk',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(72,1,1148,701,80,18,'','rack_hard_disk',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(73,1,1340,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(74,1,1358,783,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(75,1,1358,699,80,18,'','rack_hard_disk_2',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(76,1,1143,783,80,18,'','rack_hard_disk',0,3600,9,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(77,1,962,682,205,426,'','rack_frame',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(78,1,1522,540,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(79,1,1419,521,205,426,'','rack_frame',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(80,1,74,278,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(81,1,74,572,161,411,'','rack_double_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(82,1,1418,729,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(83,1,962,527,73,408,'','rack_switch',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(84,1,74,352,73,408,'','rack_router',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(85,1,962,600,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(86,1,530,806,73,408,'','rack_firewall',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(87,1,74,425,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(88,1,74,499,73,408,'','rack_switch',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(89,1,74,806,73,408,'','rack_psa',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(90,1,74,204,74,413,'','rack_server',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(91,1,1424,806,73,408,'','rack_firewall',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+	(92,1,1486,907,0,0,'&lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Office&#x20;8&#x20;-&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Rack&#x20;2&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
+	(93,1,1048,889,58,281,'&lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Office&#x20;8&#x20;-&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Rack&#x20;1&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
+	(94,1,580,904,0,0,'&lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Office&#x20;7&#x20;-&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Rack&#x20;2&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
+	(95,1,132,907,0,0,'&lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Office&#x20;7&#x20;-&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Rack&#x20;1&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
+	(96,1,733,20,0,0,'&lt;p&#x20;style=&quot;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_48pt&quot;&gt;&lt;strong&gt;&lt;span&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;OFFICE&#x20;RACKS&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
+	(97,1,1479,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60)
+;

@@ -31,6 +31,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 if (is_ajax()) {
     $get_agents = (bool) get_parameter('get_agents');
     $recursion = (int) get_parameter('recursion');
+    $disabled_modules = (int) get_parameter('disabled_modules');
 
     if ($get_agents) {
         $id_group = (int) get_parameter('id_group');
@@ -44,12 +45,18 @@ if (is_ajax()) {
             $groups = [$id_group];
         }
 
+        if ($disabled_modules == 0) {
+            $filter['tagente_modulo.disabled'] = '<> 1';
+        } else {
+            unset($filter['tagente_modulo.disabled']);
+        }
+
         $agents_alerts = [];
         foreach ($groups as $group) {
             $agents_alerts_one_group = alerts_get_agents_with_alert_template(
                 $id_alert_template,
                 $group,
-                false,
+                $filter,
                 [
                     'tagente.alias',
                     'tagente.id_agente',
@@ -253,6 +260,11 @@ $table->data[1][1] = html_print_select_groups(
     '',
     $id_alert_template == 0
 );
+
+$table->data[0][2] = __('Show alerts on disabled modules');
+$table->data[0][3] = html_print_checkbox('disabled_modules', 1, false, true, false);
+
+
 $table->data[1][2] = __('Group recursion');
 $table->data[1][3] = html_print_checkbox('recursion', 1, false, true, false);
 
@@ -360,6 +372,7 @@ $(document).ready (function () {
             "get_agents" : 1,
             "id_group" : this.value,
             "recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0,
+            "disabled_modules" : $("#checkbox-disabled_modules").is(":checked") ? 1 : 0,
             "id_alert_template" : $("#id_alert_template").val(),
             // Add a key prefix to avoid auto sorting in js object conversion
             "keys_prefix" : "_"
@@ -386,6 +399,10 @@ $(document).ready (function () {
     
     $("#modules_selection_mode").change (function() {
         $("#id_agents").trigger('change');
+    });
+
+    $("#checkbox-disabled_modules").click(function () {
+        $("#id_group").trigger("change");
     });
 });
 /* ]]> */

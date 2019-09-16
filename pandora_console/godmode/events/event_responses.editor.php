@@ -124,7 +124,7 @@ $data[3] .= '<span class="size">'.html_print_input_text('modal_height', $event_r
 $table->data[2] = $data;
 
 $data = [];
-$data[0] = __('Parameters').ui_print_help_icon('response_parameters', true);
+$data[0] = __('Parameters');
 $data[1] = html_print_input_text(
     'params',
     $event_response['params'],
@@ -143,12 +143,12 @@ $table->data[3] = $data;
 
 $data = [];
 $data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" style="display:none;" class="labels">'.__('URL').'</span>'.ui_print_help_icon('response_macros', true);
-$data[1] = html_print_input_text(
+$data[1] = html_print_textarea(
     'target',
+    3,
+    1,
     $event_response['target'],
-    '',
-    100,
-    255,
+    'style="min-height:initial;"',
     true
 );
 

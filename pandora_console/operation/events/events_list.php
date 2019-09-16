@@ -232,68 +232,70 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
     );
     $user_default_filter = $user_default_filter[0];
 
-    // FORM.
-    $id_name = $user_default_filter['id_name'];
-    $id_group = $user_default_filter['id_group'];
-    if ($user_default_filter['event_type'] != '') {
-        $event_type = $user_default_filter['event_type'];
-    }
+    if (!empty($user_default_filter)) {
+        // FORM.
+        $id_name = $user_default_filter['id_name'];
+        $id_group = $user_default_filter['id_group'];
+        if ($user_default_filter['event_type'] != '') {
+            $event_type = $user_default_filter['event_type'];
+        }
 
-    $severity = $user_default_filter['severity'];
-    $status = $user_default_filter['status'];
-    $event_view_hr = $user_default_filter['event_view_hr'];
-    $group_rep = $user_default_filter['group_rep'];
-    $id_extra = $user_default_filter['id_extra'];
-    $user_comment = $user_default_filter['user_comment'];
-    $source = $user_default_filter['source'];
+        $severity = $user_default_filter['severity'];
+        $status = $user_default_filter['status'];
+        $event_view_hr = $user_default_filter['event_view_hr'];
+        $group_rep = $user_default_filter['group_rep'];
+        $id_extra = $user_default_filter['id_extra'];
+        $user_comment = $user_default_filter['user_comment'];
+        $source = $user_default_filter['source'];
 
-    if ($user_default_filter['search'] != '') {
-        $search = $user_default_filter['search'];
-    }
+        if ($user_default_filter['search'] != '') {
+            $search = $user_default_filter['search'];
+        }
 
-    if ($user_default_filter['id_user_ack'] != 0) {
-        $id_user_ack = $user_default_filter['id_user_ack'];
-    }
+        if ($user_default_filter['id_user_ack'] != 0) {
+            $id_user_ack = $user_default_filter['id_user_ack'];
+        }
 
-    if ($user_default_filter['id_agent_module'] != 0) {
-        $id_agent_module = $user_default_filter['id_agent_module'];
-    }
+        if ($user_default_filter['id_agent_module'] != 0) {
+            $id_agent_module = $user_default_filter['id_agent_module'];
+        }
 
-    if ($user_default_filter['id_agent'] != 0) {
-        $id_agent = $user_default_filter['id_agent'];
-        $text_agent = agents_get_alias($id_agent);
-    }
+        if ($user_default_filter['id_agent'] != 0) {
+            $id_agent = $user_default_filter['id_agent'];
+            $text_agent = agents_get_alias($id_agent);
+        }
 
-    if ($user_default_filter['filter_only_alert'] != -1) {
-        $filter_only_alert = $user_default_filter['filter_only_alert'];
-    }
+        if ($user_default_filter['filter_only_alert'] != -1) {
+            $filter_only_alert = $user_default_filter['filter_only_alert'];
+        }
 
-    if ($user_default_filter['pagination'] != 20) {
-        $pagination = $user_default_filter['pagination'];
-    }
+        if ($user_default_filter['pagination'] != 20) {
+            $pagination = $user_default_filter['pagination'];
+        }
 
-    if ($user_default_filter['date_from'] != '0000-00-00') {
-        $date_from = $user_default_filter['date_from'];
-    }
+        if ($user_default_filter['date_from'] != '0000-00-00') {
+            $date_from = $user_default_filter['date_from'];
+        }
 
-    if ($user_default_filter['date_to'] != '0000-00-00') {
-        $date_to = $user_default_filter['date_to'];
-    }
+        if ($user_default_filter['date_to'] != '0000-00-00') {
+            $date_to = $user_default_filter['date_to'];
+        }
 
-    if (io_safe_output($user_default_filter['tag_with']) != '[]'
-        && io_safe_output($user_default_filter['tag_with']) != '["0"]'
-    ) {
-        $tag_with = $user_default_filter['tag_with'];
-        $tag_with_clean = io_safe_output($tag_with);
-        $tag_with = json_decode($tag_with_clean, true);
-    }
+        if (io_safe_output($user_default_filter['tag_with']) != '[]'
+            && io_safe_output($user_default_filter['tag_with']) != '["0"]'
+        ) {
+            $tag_with = $user_default_filter['tag_with'];
+            $tag_with_clean = io_safe_output($tag_with);
+            $tag_with = json_decode($tag_with_clean, true);
+        }
 
-    if (io_safe_output($user_default_filter['tag_without']) != '[]'
-        && io_safe_output($user_default_filter['tag_without']) != '["0"]'
-    ) {
-        $tag_without = $user_default_filter['tag_without'];
-        $tag_without_clear = io_safe_output($tag_without);
-        $tag_without = json_decode($tag_without_clear, true);
+        if (io_safe_output($user_default_filter['tag_without']) != '[]'
+            && io_safe_output($user_default_filter['tag_without']) != '["0"]'
+        ) {
+            $tag_without = $user_default_filter['tag_without'];
+            $tag_without_clear = io_safe_output($tag_without);
+            $tag_without = json_decode($tag_without_clear, true);
+        }
     }
 }
 
@@ -706,6 +708,9 @@ if (is_metaconsole()) {
 // Hidden field with the loaded filter name.
 $events_filter .= html_print_input_hidden('id_name', $id_name, true);
 
+// Hidden field that signals filter has been applied.
+$events_filter .= html_print_input_hidden('is_filtered', 'true', true);
+
 // Hidden open filter flag
 // If autoupdate is in use collapse filter.
 if ($open_filter) {
@@ -987,6 +992,7 @@ $data[0] = ui_toggle(
     html_print_table($table_advanced, true),
     __('Advanced options'),
     '',
+    '',
     true,
     true
 );
@@ -1039,6 +1045,20 @@ $events_filter .= $botom_update;
 
 $events_filter .= '</form>';
 // This is the filter div.
+$user_filter = db_get_value(
+    'default_event_filter',
+    'tusuario',
+    'id_user',
+    $config['id_user']
+);
+$user_default_filter = db_get_all_rows_filter(
+    'tevent_filter',
+    ['id_filter' => $user_filter]
+);
+$user_default_filter = $user_default_filter[0];
+
+$id_name = $user_default_filter['id_name'];
+
 $filter_resume['title'] = empty($id_name) ? __('No filter loaded') : __('Filter loaded').': '.$id_name;
 
 if (is_metaconsole()) {
@@ -1321,8 +1341,6 @@ $(document).ready( function() {
                     // Update the info with the loaded filter
                     $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
 
-                    // Update the view with the loaded filter
-                    $('#submit-update').trigger('click');
                 },
                 "json"
             );

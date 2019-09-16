@@ -38,7 +38,7 @@ function include_javascript_d3($return=false)
 }
 
 
-function d3_relationship_graph($elements, $matrix, $unit, $width=700, $return=false)
+function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
 {
     global $config;
 
@@ -53,7 +53,7 @@ function d3_relationship_graph($elements, $matrix, $unit, $width=700, $return=fa
     $output = '<div id="chord_diagram"></div>';
     $output .= include_javascript_d3(true);
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					chordDiagram('#chord_diagram', $elements, $matrix, '$unit', $width);
+					chordDiagram('#chord_diagram', $elements, $matrix, $width);
 				</script>";
 
     if (!$return) {
@@ -190,8 +190,8 @@ function d3_bullet_chart(
 			}
 			
 			.bullet { font: 7px sans-serif; }
-			.bullet .marker.s0 { stroke: #FC4444; stroke-width: 2px; }
-			.bullet .marker.s1 { stroke: #FAD403; stroke-width: 2px; }
+			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
+			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }
 			.bullet .tick line { stroke: #666; stroke-width: .5px; }
 			.bullet .range.s0 { fill: #ddd; }
@@ -354,8 +354,19 @@ function ux_console_phases_donut($phases, $id, $return=false)
 }
 
 
-function d3_progress_bar($id, $percentile, $width, $height, $color, $unit='%', $text='', $fill_color='#FFFFFF')
-{
+function d3_progress_bar(
+    $id,
+    $percentile,
+    $width,
+    $height,
+    $color,
+    $unit='%',
+    $text='',
+    $fill_color='#FFFFFF',
+    $radiusx=10,
+    $radiusy=10,
+    $transition=1
+) {
     global $config;
 
     $recipient_name = 'progress_bar_'.$id;
@@ -366,8 +377,20 @@ function d3_progress_bar($id, $percentile, $width, $height, $color, $unit='%', $
     $output .= '<div id='.$recipient_name." style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					progress_bar_d3('".$recipient_name_to_js."', ".(int) $percentile.', '.(int) $width.', '.(int) $height.", '".$color."', '".$unit."', '".$text."', '".$fill_color."');
-				</script>";
+					progress_bar_d3(
+						'".$recipient_name_to_js."',
+						".(int) $percentile.',
+						'.(int) $width.',
+						'.(int) $height.",
+						'".$color."',
+						'".$unit."',
+						'".$text."',
+						'".$fill_color."',
+						".(int) $radiusx.',
+						'.(int) $radiusy.',
+						'.(int) $transition.'
+					);
+				</script>';
 
     return $output;
 }
@@ -392,7 +415,7 @@ function d3_progress_bubble($id, $percentile, $width, $height, $color, $unit='%'
 }
 
 
-function progress_circular_bar($id, $percentile, $width, $height, $color, $unit='%', $text='', $fill_color='#FFFFFF')
+function progress_circular_bar($id, $percentile, $width, $height, $color, $unit='%', $text='', $fill_color='#FFFFFF', $transition=1)
 {
     global $config;
 
@@ -404,7 +427,7 @@ function progress_circular_bar($id, $percentile, $width, $height, $color, $unit=
     $output .= '<div id='.$recipient_name." style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					print_circular_progress_bar('".$recipient_name_to_js."', ".(int) $percentile.', '.(int) $width.', '.(int) $height.", '".$color."', '".$unit."', '".$text."', '".$fill_color."');
+					print_circular_progress_bar('".$recipient_name_to_js."', ".(int) $percentile.', '.(int) $width.', '.(int) $height.", '".$color."', '".$unit."', '".$text."', '".$fill_color."', '".$transition."');
 				</script>";
 
     return $output;
@@ -696,4 +719,72 @@ function print_clock_digital_1($time_format, $timezone, $clock_animation, $width
 
                 return $output;
 
+}
+
+
+/**
+ * Print dougnhnut.
+ *
+ * @param array   $colors     Colors.
+ * @param integer $width      Width.
+ * @param integer $height     Height.
+ * @param array   $data       Data.
+ * @param mixed   $data_total Data_total.
+ *
+ * @return string HTML.
+ */
+function print_donut_narrow_graph(
+    array $colors,
+    $width,
+    $height,
+    array $data,
+    $data_total
+) {
+    global $config;
+
+    if (empty($data)) {
+        return graph_nodata_image($width, $height, 'pie');
+    }
+
+    $series = count($data);
+    if (($series != count($colors)) || ($series == 0)) {
+        return '';
+    }
+
+    $data = json_encode($data);
+    $colors = json_encode($colors);
+
+    $graph_id = uniqid('graph_');
+
+    // This is for "Style template" in visual styles.
+    switch ($config['style']) {
+        case 'pandora':
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+
+        case 'pandora_black':
+            $textColor = '#fff';
+            $strokeColor = '#222';
+        break;
+
+        default:
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+    }
+
+    $textColor = json_encode($textColor);
+    $strokeColor = json_encode($strokeColor);
+
+    $out = "<div id='$graph_id'></div>";
+    $out .= include_javascript_d3(true);
+    $out .= "<script type='text/javascript'>
+						donutNarrowGraph($colors, $width, $height, $data_total, $textColor, $strokeColor)
+						.donutbody(d3.select($graph_id))
+						.data($data)
+						.render();	
+			</script>";
+
+    return $out;
 }

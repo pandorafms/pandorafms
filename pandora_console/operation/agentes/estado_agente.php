@@ -264,17 +264,19 @@ if ($search != '') {
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 
-$selected = 'border: 1px solid black;';
-$selectNameUp = '';
-$selectNameDown = '';
-$selectOsUp = '';
-$selectOsDown = '';
-$selectIntervalUp = '';
-$selectIntervalDown = '';
-$selectGroupUp = '';
-$selectGroupDown = '';
-$selectLastContactUp = '';
-$selectLastContactDown = '';
+$selected = true;
+$selectNameUp = false;
+$selectNameDown = false;
+$selectOsUp = false;
+$selectOsDown = false;
+$selectIntervalUp = false;
+$selectIntervalDown = false;
+$selectGroupUp = false;
+$selectGroupDown = false;
+$selectDescriptionUp = false;
+$selectDescriptionDown = false;
+$selectLastContactUp = false;
+$selectLastContactDown = false;
 $order = null;
 
 
@@ -428,7 +430,7 @@ switch ($sortField) {
     case 'description':
         switch ($sort) {
             case 'up':
-                $selectLastContactUp = $selected;
+                $selectDescriptionUp = $selected;
                 $order = [
                     'field'  => 'comentarios',
                     'field2' => 'alias'.$order_collation,
@@ -437,7 +439,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectLastContactDown = $selected;
+                $selectDescriptionDown = $selected;
                 $order = [
                     'field'  => 'comentarios',
                     'field2' => 'alias'.$order_collation,
@@ -449,15 +451,17 @@ switch ($sortField) {
 
     default:
         $selectNameUp = $selected;
-        $selectNameDown = '';
-        $selectOsUp = '';
-        $selectOsDown = '';
-        $selectIntervalUp = '';
-        $selectIntervalDown = '';
-        $selectGroupUp = '';
-        $selectGroupDown = '';
-        $selectLastContactUp = '';
-        $selectLastContactDown = '';
+        $selectNameDown = false;
+        $selectOsUp = false;
+        $selectOsDown = false;
+        $selectIntervalUp = false;
+        $selectIntervalDown = false;
+        $selectGroupUp = false;
+        $selectGroupDown = false;
+        $selectDescriptionUp = false;
+        $selectDescriptionDown = false;
+        $selectLastContactUp = false;
+        $selectLastContactDown = false;
         $order = [
             'field'  => 'alias'.$order_collation,
             'field2' => 'alias'.$order_collation,
@@ -620,6 +624,30 @@ if (empty($agents)) {
     $agents = [];
 }
 
+$agent_font_size = 'font-size:  7px';
+$description_font_size = 'font-size: 6.5px';
+if ($config['language'] == 'ja' || $config['language'] == 'zh_CN' || $own_info['language'] == 'ja' || $own_info['language'] == 'zh_CN') {
+    $agent_font_size = 'font-size: 15px';
+    $description_font_size = 'font-size: 11px';
+}
+
+// Urls to sort the table.
+$url_up_agente = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=up';
+$url_down_agente = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=down';
+$url_up_description = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=description&amp;sort=up';
+$url_down_description = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=description&amp;sort=down';
+$url_up_remote = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=remote&amp;sort=up';
+$url_down_remote = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=remote&amp;sort=down';
+$url_up_os = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=os&amp;sort=up';
+$url_down_os = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=os&amp;sort=down';
+$url_up_interval = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=interval&amp;sort=up';
+$url_down_interval = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=interval&amp;sort=down';
+$url_up_group = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=group&amp;sort=up';
+$url_down_group = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=group&amp;sort=down';
+$url_up_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=up';
+$url_down_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=down';
+
+
 // Prepare pagination
 ui_pagination(
     $total_agents,
@@ -631,27 +659,25 @@ $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'info_table';
 
 $table->head = [];
-$table->head[0] = __('Agent').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=name&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown, 'alt' => 'down']).'</a>';
+$table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
 $table->size[0] = '10%';
 
-$table->head[1] = __('Description').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=description&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=description&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown, 'alt' => 'down']).'</a>';
-
+$table->head[1] = __('Description').ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
 $table->size[1] = '16%';
 
-$table->head[10] = __('Remote').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=remote&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectRemoteUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=remote&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectRemoteDown, 'alt' => 'down']).'</a>';
-
+$table->head[10] = __('Remote').ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
 $table->size[10] = '9%';
 
-$table->head[2] = __('OS').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=os&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectOsUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=os&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectOsDown, 'alt' => 'down']).'</a>';
+$table->head[2] = __('OS').ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
 $table->size[2] = '8%';
 
-$table->head[3] = __('Interval').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=interval&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectIntervalUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=interval&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectIntervalDown, 'alt' => 'down']).'</a>';
+$table->head[3] = __('Interval').ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
 $table->size[3] = '10%';
 
-$table->head[4] = __('Group').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=group&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectGroupUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=group&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectGroupDown, 'alt' => 'down']).'</a>';
+$table->head[4] = __('Group').ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
 $table->size[4] = '8%';
 
 $table->head[5] = __('Type');
@@ -666,7 +692,7 @@ $table->size[7] = '4%';
 $table->head[8] = __('Alerts');
 $table->size[8] = '4%';
 
-$table->head[9] = __('Last contact').' '.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastContactUp, 'alt' => 'up']).'</a>'.'<a href="index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastContactDown, 'alt' => 'down']).'</a>';
+$table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
 $table->size[9] = '15%';
 
 $table->align = [];
@@ -720,7 +746,7 @@ foreach ($agents as $agent) {
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
     $data[0] .= '<span>';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"> <span style="font-size: 7pt;font-weight:bold" title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></a>';
+    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"> <span style="'.$agent_font_size.';font-weight:bold" title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></a>';
     $data[0] .= '</span>';
 
     if ($agent['quiet']) {
@@ -753,7 +779,7 @@ foreach ($agents as $agent) {
 
     $data[0] .= '</div></div>';
 
-    $data[1] = ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+    $data[1] = ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', $description_font_size);
 
     $data[10] = '';
 
@@ -795,14 +821,6 @@ foreach ($agents as $agent) {
 
 if (!empty($table->data)) {
     html_print_table($table);
-    if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
-        echo '<div style="text-align: right; float: right;">';
-        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_input_hidden('new_agent', 1);
-            html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
-        echo '</form>';
-        echo '</div>';
-    }
 
     ui_pagination(
         $total_agents,
@@ -819,8 +837,19 @@ if (!empty($table->data)) {
         0,
         false,
         'offset',
-        false
+        true,
+        'pagination-bottom'
     );
+
+    if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
+        echo '<div style="text-align: right; float: right;">';
+        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+            html_print_input_hidden('new_agent', 1);
+            html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
+        echo '</form>';
+        echo '</div>';
+    }
+
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);

@@ -121,6 +121,7 @@ if (is_ajax()) {
                         'min_ff_event_normal'   => 0,
                         'min_ff_event_warning'  => 0,
                         'min_ff_event_critical' => 0,
+                        'ff_type'               => 0,
                         'each_ff'               => 0,
                     ]
                 );

@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.732 PS190326";
+my $version = "7.0NG.738 PS190916";
 
 # Pandora server configuration
 my %conf;
@@ -136,7 +136,7 @@ sub pandora_purgedb ($$) {
 		pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
 		
 		# Delete sessions data
-		pandora_delete_old_session_data ($dbh, $ulimit_timestamp);
+		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
 		
@@ -340,7 +340,7 @@ sub pandora_purgedb ($$) {
 	} else {
 		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
 			"'sql_graph_pie'", "'database_serialized'", "'sql'", "'inventory'", "'inventory_changes'",
-			"'netflow_area'", "'netflow_pie'", "'netflow_data'", "'netflow_statistics'", "'netflow_summary'");
+			"'netflow_area'", "'netflow_data'", "'netflow_summary'");
 		my $blacklist_types_str = join(',', @blacklist_types);
 		
 		# Deleted modules
@@ -429,9 +429,16 @@ sub pandora_purgedb ($$) {
 				WHERE date < CURDATE() - $conf->{'_num_past_special_days'} AND date > '0001-01-01'");
 		}
 	}
-	
+
 	# Delete old tgraph_source data
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
+	# Delete network traffic old data.
+	log_message ('PURGE', 'Deleting old network matrix data.');
+	if ($conf->{'_delete_old_network_matrix'} > 0) {
+		my $matrix_limit = time() - 86400 * $conf->{'_delete_old_network_matrix'};
+		db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
+	}
 
 	# Delete old messages
 	log_message ('PURGE', "Deleting old messages.");
@@ -439,6 +446,10 @@ sub pandora_purgedb ($$) {
 		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
 		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
 	}
+
+	# Delete old cache data
+	log_message ('PURGE', "Deleting old cache data.");
+	db_do ($dbh, "DELETE FROM `tvisual_console_elements_cache` WHERE (UNIX_TIMESTAMP(`created_at`) + `expiration`) < UNIX_TIMESTAMP()");
 }
 
 ###############################################################################
@@ -659,6 +670,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
+	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
@@ -666,6 +678,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
    	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
+	$conf->{'_session_timeout'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'session_timeout'");
 
 	$conf->{'_big_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'big_operation_step_datos_purge'");
 	$conf->{'_small_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'small_operation_step_datos_purge'");
@@ -978,12 +991,28 @@ sub pandora_delete_old_export_data {
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
-	my ($dbh, $ulimit_timestamp) = @_;
+    my ($conf, $dbh, $ulimit_timestamp) = @_;
+
+    my $session_timeout = $conf->{'_session_timeout'};
+
+	if ($session_timeout ne '') {
+		if ($session_timeout == -1) {
+			# The session expires in 10 years
+			$session_timeout = 315576000;
+		} else {
+			$session_timeout *= 60;
+		}
+
+		$ulimit_timestamp = time() - $session_timeout;
+	}
 
 	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
+
+	db_do ($dbh, "DELETE FROM tsessions_php WHERE
+	data IS NULL OR id_session REGEXP '^cron-'");
 }
 
 ###############################################################################

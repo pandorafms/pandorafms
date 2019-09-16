@@ -26,14 +26,15 @@
  * ============================================================================
  */
 
-define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+// Begin.
 
-/**
- * Global Wizard generic class. Needs to be inherited.
- *
- * Used in Hostdevices class, Applications class and others, is the core of
- * Discovery proyect.
- */
+
+ /**
+  * Global Wizard generic class. Needs to be inherited.
+  *
+  * Used in Hostdevices class, Applications class and others, is the core of
+  * Discovery proyect.
+  */
 class Wizard
 {
 
@@ -190,15 +191,18 @@ class Wizard
      * Builder for breadcrum
      *
      * @param array   $urls Array of urls to be stored in breadcrum.
-     * @param boolean $add  True if breadcrum should be added instead of
-     *      overwrite it.
+     * @param boolean $add  True if breadcrum should be added
+     *                      instead of overwrite it.
      *
      * @return void
      */
-    public function prepareBreadcrum(array $urls, bool $add=false)
-    {
+    public function prepareBreadcrum(
+        array $urls,
+        bool $add=false
+    ) {
         $bc = [];
         $i = 0;
+
         foreach ($urls as $url) {
             if ($url['selected'] == 1) {
                 $class = 'selected';
@@ -206,9 +210,12 @@ class Wizard
                 $class = '';
             }
 
-            $bc[$i]    = '<a href="'.$url['link'].'" class="text_color">';
-            $bc[$i]   .= '<div class="arrow_box '.$class.'">'.$url['label'];
-            $bc[$i++] .= '</div></a>';
+            $bc[$i] = '';
+            $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
+            $bc[$i] .= $url['label'];
+            $bc[$i] .= '</a>';
+            $bc[$i] .= '</span>';
+            $i++;
         }
 
         if ($add === true) {
@@ -216,7 +223,6 @@ class Wizard
         } else {
             $this->setBreadcrum($bc);
         }
-
     }
 
 
@@ -256,7 +262,10 @@ class Wizard
      */
     public function printBreadcrum()
     {
-        return '<h1 class="wizard">'.implode('', $this->breadcrum).'</h1>';
+        return implode(
+            '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
+            $this->breadcrum
+        );
     }
 
 
@@ -287,239 +296,20 @@ class Wizard
      */
     public function printInput($data)
     {
+        global $config;
+
+        include_once $config['homedir'].'/include/functions_html.php';
+
         if (is_array($data) === false) {
             return '';
         }
 
-        switch ($data['type']) {
-            case 'text':
-            return html_print_input_text(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : true),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : ''),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
-            );
-
-            case 'image':
-            return html_print_input_image(
-                $data['name'],
-                $data['src'],
-                $data['value'],
-                ((isset($data['style']) === true) ? $data['style'] : ''),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['options']) === true) ? $data['options'] : false)
-            );
-
-            case 'text_extended':
-            return html_print_input_text_extended(
-                $data['name'],
-                $data['value'],
-                $data['id'],
-                $data['alt'],
-                $data['size'],
-                $data['maxlength'],
-                $data['disabled'],
-                $data['script'],
-                $data['attributes'],
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['password']) === true) ? $data['password'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : '')
-            );
-
-            case 'password':
-            return html_print_input_password(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : '')
-            );
-
-            case 'text':
-            return html_print_input_text(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : ''),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
-            );
-
-            case 'image':
-            return html_print_input_image(
-                $data['name'],
-                $data['src'],
-                $data['value'],
-                ((isset($data['style']) === true) ? $data['style'] : ''),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['options']) === true) ? $data['options'] : false)
-            );
-
-            case 'hidden':
-            return html_print_input_hidden(
-                $data['name'],
-                $data['value'],
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : false)
-            );
-
-            case 'hidden_extended':
-            return html_print_input_hidden_extended(
-                $data['name'],
-                $data['value'],
-                $data['id'],
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : false)
-            );
-
-            case 'color':
-            return html_print_input_color(
-                $data['name'],
-                $data['value'],
-                ((isset($data['class']) === true) ? $data['class'] : false),
-                ((isset($data['return']) === true) ? $data['return'] : false)
-            );
-
-            case 'file':
-            return html_print_input_file(
-                $data['name'],
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['options']) === true) ? $data['options'] : false)
-            );
-
-            case 'select':
-            return html_print_select(
-                $data['fields'],
-                $data['name'],
-                ((isset($data['selected']) === true) ? $data['selected'] : ''),
-                ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
-                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
-                ((isset($data['sort']) === true) ? $data['sort'] : true),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['style']) === true) ? $data['style'] : false),
-                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
-                ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['modal']) === true) ? $data['modal'] : false),
-                ((isset($data['message']) === true) ? $data['message'] : ''),
-                ((isset($data['select_all']) === true) ? $data['select_all'] : false)
-            );
-
-            case 'select_from_sql':
-            return html_print_select_from_sql(
-                $data['sql'],
-                $data['name'],
-                ((isset($data['selected']) === true) ? $data['selected'] : ''),
-                ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
-                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
-                ((isset($data['sort']) === true) ? $data['sort'] : true),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['style']) === true) ? $data['style'] : false),
-                ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
-            );
-
-            case 'select_groups':
-            return html_print_select_groups(
-                ((isset($data['id_user']) === true) ? $data['id_user'] : false),
-                ((isset($data['privilege']) === true) ? $data['privilege'] : 'AR'),
-                ((isset($data['returnAllGroup']) === true) ? $data['returnAllGroup'] : true),
-                $data['name'],
-                ((isset($data['selected']) === true) ? $data['selected'] : ''),
-                ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
-                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
-                ((isset($data['sort']) === true) ? $data['sort'] : true),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['style']) === true) ? $data['style'] : false),
-                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
-                ((isset($data['id_group']) === true) ? $data['id_group'] : false),
-                ((isset($data['keys_field']) === true) ? $data['keys_field'] : 'id_grupo'),
-                ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
-                ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
-                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false)
-            );
-
-            case 'submit':
-            return '<div class="action-buttons" style="width: 100%">'.html_print_submit_button(
-                ((isset($data['label']) === true) ? $data['label'] : 'OK'),
-                ((isset($data['name']) === true) ? $data['name'] : ''),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
-                ((isset($data['return']) === true) ? $data['return'] : false)
-            ).'</div>';
-
-            case 'checkbox':
-            return html_print_checkbox(
-                $data['name'],
-                $data['value'],
-                ((isset($data['checked']) === true) ? $data['checked'] : false),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false)
-            );
-
-            case 'switch':
-            return html_print_switch($data);
-
-            case 'interval':
-            return html_print_extended_select_for_time(
-                $data['name'],
-                $data['value'],
-                ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
-                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
-                ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['style']) === true) ? $data['selected'] : false),
-                ((isset($data['unique']) === true) ? $data['unique'] : false)
-            );
-
-            case 'textarea':
-            return html_print_textarea(
-                $data['name'],
-                $data['rows'],
-                $data['columns'],
-                ((isset($data['value']) === true) ? $data['value'] : ''),
-                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : '')
-            );
-
-            default:
-                // Ignore.
-            break;
+        $input = html_print_input(($data + ['return' => true]), 'div', true);
+        if ($input === false) {
+            return '';
         }
 
-        return '';
+        return $input;
     }
 
 
@@ -545,6 +335,7 @@ class Wizard
             ],
             'inputs' => [
                 [
+                    'class'     => 'w100p',
                     'arguments' => [
                         'name'       => 'submit',
                         'label'      => __('Go back'),
@@ -572,23 +363,194 @@ class Wizard
     {
         $output = '';
         if ($input['hidden'] == 1) {
-            $class = ' class="hidden"';
+            $class = ' hidden';
         } else {
             $class = '';
         }
 
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" '.$class.'>';
-            $output .= '<ul class="wizard">';
+            if ($input['wrapper']) {
+                $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
+                $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
+            } else {
+                $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            }
+
+            $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlock($input, $return);
+            }
+
+            // Close block.
+            if ($input['wrapper']) {
+                $output .= '</ul></'.$input['wrapper'].'>';
+            } else {
+                $output .= '</ul></li>';
+            }
+        } else {
+            if ($input['arguments']['type'] != 'hidden') {
+                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+                $output .= '<label>'.$input['label'].'</label>';
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+                $output .= '</li>';
+            } else {
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+            }
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Print a block of inputs with grid format.
+     *
+     * @param array   $input  Definition of target block to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML content.
+     */
+    public function printBlockAsGrid(array $input, bool $return=false)
+    {
+        $output = '';
+        if ($input['hidden'] == 1) {
+            $class = ' hidden';
+        } else {
+            $class = '';
+        }
+
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
+        if (is_array($input['block_content']) === true) {
+            // Print independent block of inputs.
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<ul class="wizard '.$input['block_class'].'">';
+            foreach ($input['block_content'] as $input) {
+                $output .= $this->printBlockAsGrid($input, $return);
             }
 
             $output .= '</ul></li>';
         } else {
             if ($input['arguments']['type'] != 'hidden') {
-                $output .= '<li id="'.$input['id'].'" '.$class.'>';
+                if ($input['arguments']['inline'] != 'true') {
+                    $output .= '<div class="edit_discovery_input">';
+                } else {
+                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
+                    if (!isset($input['extra'])) {
+                        $output .= '<div style="width: 50%;">';
+                    }
+
+                    if (isset($input['extra'])) {
+                        $output .= '<div style="display: flex; margin-right:10px;">';
+                    }
+                }
+
+                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
+                    $output .= '<div style="margin-right:10px;">';
+                }
+
+                $output .= '<div class="label_select">';
+                $output .= $input['label'];
+                $output .= '</div>';
+
+                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
+                    $output .= '</div>';
+                }
+
+                if ($input['arguments']['inline'] == 'true' && !isset($input['extra'])) {
+                    $output .= '</div>';
+                }
+
+                if ($input['arguments']['type'] == 'text' || $input['arguments']['type'] == 'text_extended') {
+                    $output .= '<div class="discovery_text_input">';
+                    $output .= $this->printInput($input['arguments']);
+                    $output .= '</div>';
+                } else if ($input['arguments']['inline'] == 'true') {
+                    if (isset($input['extra'])) {
+                        $output .= '<div style="">';
+                        $output .= '<div style="float: left;">';
+                    } else {
+                        $output .= '<div style="width:50%;">';
+                        $output .= '<div style="float: right;">';
+                    }
+
+                    $output .= $this->printInput($input['arguments']);
+                    $output .= '</div>';
+                    $output .= '</div>';
+
+                    if (isset($input['extra'])) {
+                        $output .= '</div>';
+                    }
+                } else {
+                    $output .= $this->printInput($input['arguments']);
+                }
+
+                // Allow dynamic content.
+                $output .= $input['extra'];
+                $output .= '</div>';
+            } else {
+                $output .= $this->printInput($input['arguments']);
+                // Allow dynamic content.
+                $output .= $input['extra'];
+            }
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Print a block of inputs as a list element.
+     *
+     * @param array   $input  Definition of target block to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML content.
+     */
+    public function printBlockAsList(array $input, bool $return=false)
+    {
+        $output = '';
+        if ($input['hidden'] == 1) {
+            $class = ' hidden';
+        } else {
+            $class = '';
+        }
+
+        if (isset($input['class']) === true) {
+            $class = $input['class'].$class;
+        }
+
+        if (is_array($input['block_content']) === true) {
+            // Print independent block of inputs.
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<ul class="wizard '.$input['block_class'].'">';
+            foreach ($input['block_content'] as $input) {
+                $output .= $this->printBlockAsList($input, $return);
+            }
+
+            $output .= '</ul></li>';
+        } else {
+            if ($input['arguments']['type'] != 'hidden') {
+                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
@@ -612,20 +574,25 @@ class Wizard
     /**
      * Print a form.
      *
-     * @param array   $data   Definition of target form to be printed.
-     * @param boolean $return Return as string or direct output.
+     * @param array   $data            Definition of target form to be printed.
+     * @param boolean $return          Return as string or direct output.
+     * @param boolean $print_white_box Print a white box.
      *
      * @return string HTML code.
      */
-    public function printForm(array $data, bool $return=false)
-    {
+    public function printForm(
+        array $data,
+        bool $return=false,
+        bool $print_white_box=false
+    ) {
         $form = $data['form'];
         $inputs = $data['inputs'];
         $js = $data['js'];
+        $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {
@@ -643,15 +610,202 @@ class Wizard
             error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
-        $output = '<ul class="wizard">';
+        $output_submit = '';
+        $output = '';
+
+        if ($print_white_box === true) {
+            $output .= '<div class="white_box">';
+        }
+
+        $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {
-            $output .= $this->printBlock($input, true);
+            if ($input['arguments']['type'] != 'submit') {
+                $output .= $this->printBlock($input, true);
+            } else {
+                $output_submit .= $this->printBlock($input, true);
+            }
         }
 
         $output .= '</ul>';
+
+        if ($print_white_box === true) {
+            $output .= '</div>';
+        }
+
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output_head.$output;
+
+    }
+
+
+    /**
+     * Print a form as a grid of inputs.
+     *
+     * @param array   $data   Definition of target form to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML code.
+     */
+    public function printFormAsGrid(array $data, bool $return=false)
+    {
+        $form = $data['form'];
+
+        $rows = $data['rows'];
+
+        $js = $data['js'];
+        $rawjs = $data['js_block'];
+        $cb_function = $data['cb_function'];
+        $cb_args = $data['cb_args'];
+
+        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head .= '" '.$form['extra'].'>';
+
+        if ($return === false) {
+            echo $output_head;
+        }
+
+        try {
+            if (isset($cb_function) === true) {
+                call_user_func_array(
+                    $cb_function,
+                    (isset($cb_args) === true) ? $cb_args : []
+                );
+            }
+        } catch (Exception $e) {
+            error_log('Error executing wizard callback: ', $e->getMessage());
+        }
+
+        $output_submit = '';
+        $output = '';
+
+        $first_block_printed = false;
+
+        if (is_array($rows)) {
+            foreach ($rows as $row) {
+                if ($row['new_form_block'] == true) {
+                    if ($first_block_printed === true) {
+                        // If first form block has been placed, then close it before starting a new one.
+                        $output .= '</div>';
+                        $output .= '<div class="white_box" style="margin-top: 30px;">';
+                    } else {
+                        $output .= '<div class="white_box">';
+                    }
+
+                    $first_block_printed = true;
+                }
+
+                $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
+
+                foreach ($row['columns'] as $column) {
+                    $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
+                    $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
+                    $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
+                    $extra_styles = isset($column['style']) ? $column['style'] : '';
+
+                    $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
+
+                    foreach ($column['inputs'] as $input) {
+                        if (is_array($input)) {
+                            if ($input['arguments']['type'] != 'submit') {
+                                $output .= $this->printBlockAsGrid($input, true);
+                            } else {
+                                $output_submit .= $this->printBlockAsGrid($input, true);
+                            }
+                        } else {
+                            $output .= $input;
+                        }
+                    }
+
+                    $output .= '</div>';
+                }
+
+                $output .= '</div>';
+            }
+        }
+
+        $output .= '</div>';
+
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= '</form>';
+        $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output_head.$output;
+
+    }
+
+
+    /**
+     * Print a form as a list.
+     *
+     * @param array   $data   Definition of target form to be printed.
+     * @param boolean $return Return as string or direct output.
+     *
+     * @return string HTML code.
+     */
+    public function printFormAsList(array $data, bool $return=false)
+    {
+        $form = $data['form'];
+        $inputs = $data['inputs'];
+        $js = $data['js'];
+        $rawjs = $data['js_block'];
+        $cb_function = $data['cb_function'];
+        $cb_args = $data['cb_args'];
+
+        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head .= '" '.$form['extra'].'>';
+
+        if ($return === false) {
+            echo $output_head;
+        }
+
+        try {
+            if (isset($cb_function) === true) {
+                call_user_func_array(
+                    $cb_function,
+                    (isset($cb_args) === true) ? $cb_args : []
+                );
+            }
+        } catch (Exception $e) {
+            error_log('Error executing wizard callback: ', $e->getMessage());
+        }
+
+        $output = '<div class="white_box">';
+        $output .= '<ul class="wizard">';
+
+        foreach ($inputs as $input) {
+            if ($input['arguments']['type'] != 'submit') {
+                $output .= $this->printBlockAsList($input, true);
+            } else {
+                $output_submit .= $this->printBlockAsList($input, true);
+            }
+        }
+
+        $output .= '</ul>';
+        $output .= '</div>';
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= '</form>';
+        $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
 
         if ($return === false) {
             echo $output;
@@ -699,7 +853,7 @@ class Wizard
      */
     public static function printBigButtonsList($list_data)
     {
-        echo '<ul>';
+        echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
     }

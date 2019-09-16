@@ -1,17 +1,32 @@
 <?php
+/**
+ * Configure agents.
+ *
+ * @category   Agents view - management.
+ * @package    Pandora FMS
+ * @subpackage User interface.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 enterprise_include('godmode/agentes/configurar_agente.php');
@@ -20,13 +35,14 @@ enterprise_include_once('include/functions_modules.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');
+ui_require_css_file('agent_manager');
 
 check_login();
 
-// Get tab parameter to check ACL in each tabs
+// Get tab parameter to check ACL in each tabs.
 $tab = get_parameter('tab', 'main');
 
-// See if id_agente is set (either POST or GET, otherwise -1
+// See if id_agente is set (either POST or GET, otherwise -1.
 $id_agente = (int) get_parameter('id_agente');
 $group = 0;
 $all_groups = [$group];
@@ -46,6 +62,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         break;
 
         default:
+            // Default.
         break;
     }
 
@@ -63,11 +80,11 @@ require_once 'include/functions_modules.php';
 require_once 'include/functions_alerts.php';
 require_once 'include/functions_reporting.php';
 
-// Get passed variables
+// Get passed variables.
 $alerttype = get_parameter('alerttype');
 $id_agent_module = (int) get_parameter('id_agent_module');
 
-// Init vars
+// Init vars.
 $descripcion = '';
 $comentarios = '';
 $campo_1 = '';
@@ -137,7 +154,7 @@ $alert_priority = 0;
 $server_name = '';
 $grupo = 0;
 $id_os = 9;
-// Windows
+// Windows.
 $custom_id = '';
 $cascade_protection = 0;
 $cascade_protection_modules = 0;
@@ -156,23 +173,23 @@ $cps = 0;
 $create_agent = (bool) get_parameter('create_agent');
 $module_macros = [];
 
-// Create agent
+// Create agent.
 if ($create_agent) {
     $mssg_warning = 0;
     $alias_safe_output = io_safe_output(get_parameter('alias', ''));
-    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
     $unique_ip = (int) get_parameter_post('unique_ip', 0);
 
-    // safe_output only validate ip
+    // Safe_output only validate ip.
     $direccion_agente = trim(io_safe_output($direccion_agente));
 
     if (!validate_address($direccion_agente)) {
         $mssg_warning = 1;
     }
 
-    // safe-input before validate ip
+    // Safe-input before validate ip.
     $direccion_agente = io_safe_input($direccion_agente);
 
     $nombre_agente = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
@@ -193,7 +210,7 @@ if ($create_agent) {
     $update_gis_data = (int) get_parameter_post('update_gis_data', 0);
     $url_description = (string) get_parameter('url_description');
     $quiet = (int) get_parameter('quiet', 0);
-    $cps = (int) get_parameter('cps', 0);
+    $cps = (int) get_parameter_switch('cps', -1);
 
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -208,7 +225,7 @@ if ($create_agent) {
         $field_values[$field['id_field']] = (string) get_parameter_post('customvalue_'.$field['id_field'], '');
     }
 
-    // Check if agent exists (BUG WC-50518-2)
+    // Check if agent exists (BUG WC-50518-2).
     if ($alias == '') {
         $agent_creation_error = __('No agent alias specified');
         $agent_created_ok = 0;
@@ -256,7 +273,7 @@ if ($create_agent) {
         }
 
         if ($id_agente !== false) {
-            // Create custom fields for this agent
+            // Create custom fields for this agent.
             foreach ($field_values as $key => $value) {
                 $update_custom = db_process_sql_insert(
                     'tagent_custom_data',
@@ -268,7 +285,7 @@ if ($create_agent) {
                 );
             }
 
-            // Create address for this agent in taddress
+            // Create address for this agent in taddress.
             if ($direccion_agente != '') {
                 agents_add_address($id_agente, $direccion_agente);
             }
@@ -311,7 +328,7 @@ if ($create_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
-            // Create the secondary groups
+            // Create the secondary groups.
             enterprise_hook(
                 'agents_update_secondary_groups',
                 [
@@ -324,7 +341,7 @@ if ($create_agent) {
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(
                 'Agent management',
-                "Created agent $unsafe_alias",
+                'Created agent '.$unsafe_alias,
                 false,
                 true,
                 $info
@@ -341,14 +358,14 @@ if ($create_agent) {
     }
 }
 
-// Show tabs
+// Show tabs.
 $img_style = [
     'class' => 'top',
     'width' => 16,
 ];
 
 if ($id_agente) {
-    // View tab
+    // View tab.
     $viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
 
     if ($tab == 'view') {
@@ -359,7 +376,7 @@ if ($id_agente) {
 
     $viewtab['operation'] = 1;
 
-    // Main tab
+    // Main tab.
     $maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">'.html_print_image('images/gm_setup.png', true, ['title' => __('Setup')]).'</a>';
     if ($tab == 'main') {
         $maintab['active'] = true;
@@ -367,7 +384,7 @@ if ($id_agente) {
         $maintab['active'] = false;
     }
 
-    // Module tab
+    // Module tab.
     $moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.html_print_image('images/gm_modules.png', true, ['title' => __('Modules')]).'</a>';
 
     if ($tab == 'module') {
@@ -376,7 +393,7 @@ if ($id_agente) {
         $moduletab['active'] = false;
     }
 
-    // Alert tab
+    // Alert tab.
     $alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.html_print_image('images/gm_alerts.png', true, ['title' => __('Alerts')]).'</a>';
 
     if ($tab == 'alert') {
@@ -385,7 +402,7 @@ if ($id_agente) {
         $alerttab['active'] = false;
     }
 
-    // Template tab
+    // Template tab.
     $templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">'.html_print_image('images/templates.png', true, ['title' => __('Module templates')]).'</a>';
 
     if ($tab == 'template') {
@@ -395,7 +412,7 @@ if ($id_agente) {
     }
 
 
-    // Inventory
+    // Inventory.
     $inventorytab = enterprise_hook('inventory_tab');
 
     if ($inventorytab == -1) {
@@ -412,7 +429,7 @@ if ($id_agente) {
     }
 
     if ($has_remote_conf === true) {
-        // Plugins
+        // Plugins.
         $pluginstab = enterprise_hook('plugins_tab');
         if ($pluginstab == -1) {
             $pluginstab = '';
@@ -421,21 +438,21 @@ if ($id_agente) {
         $pluginstab = '';
     }
 
-    // Collection
+    // Collection.
     $collectiontab = enterprise_hook('collection_tab');
 
     if ($collectiontab == -1) {
         $collectiontab = '';
     }
 
-    // Group tab
+    // Group tab.
     $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image('images/group.png', true, [ 'title' => __('Group')]).'</a>';
 
     $grouptab['active'] = false;
 
     $gistab = [];
 
-    // GIS tab
+    // GIS tab.
     if ($config['activate_gis']) {
         $gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image('images/gm_gis.png', true, [ 'title' => __('GIS data')]).'</a>';
 
@@ -446,10 +463,10 @@ if ($id_agente) {
         }
     }
 
-    // Agent wizard tab
+    // Agent wizard tab.
     $agent_wizard['text'] = '<a href="javascript:" class="agent_wizard_tab">'.html_print_image('images/wand_agent.png', true, [ 'title' => __('Agent wizard')]).'</a>';
 
-    // Hidden subtab layer
+    // Hidden subtab layer.
     $agent_wizard['sub_menu'] = '<ul class="mn subsubmenu" style="display:none; float:none;">';
     $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">';
     $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'.html_print_image('images/wand_snmp.png', true, [ 'title' => __('SNMP Wizard')]).'</a>';
@@ -471,7 +488,7 @@ if ($id_agente) {
 
     $total_incidents = agents_get_count_incidents($id_agente);
 
-    // Incident tab
+    // Incident tab.
     if ($total_incidents > 0) {
         $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">'.html_print_image('images/book_edit.png', true, ['title' => __('Incidents')]).'</a>';
 
@@ -488,7 +505,7 @@ if ($id_agente) {
             $agent_name = io_safe_output($agent_name);
             $agent_md5 = md5($agent_name, false);
 
-            $remote_configuration_tab['text'] = '<a href="index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'tab=remote_configuration&amp;'.'id_agente='.$id_agente.'&amp;'.'disk_conf='.$agent_md5.'">'.html_print_image(
+            $remote_configuration_tab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=remote_configuration&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">'.html_print_image(
                 'images/remote_configuration.png',
                 true,
                 ['title' => __('Remote configuration')]
@@ -532,7 +549,7 @@ if ($id_agente) {
             ];
         }
 
-        // Only if the agent has incidents associated show incidents tab
+        // Only if the agent has incidents associated show incidents tab.
         if ($total_incidents) {
             $onheader['incident'] = $incidenttab;
         }
@@ -545,7 +562,7 @@ if ($id_agente) {
         ];
     }
 
-    // Extensions tabs
+    // Extensions tabs.
     foreach ($config['extensions'] as $extension) {
         if (isset($extension['extension_god_tab'])) {
             if (check_acl($config['id_user'], $group, $extension['extension_god_tab']['acl'])) {
@@ -574,20 +591,24 @@ if ($id_agente) {
     }
 
     $help_header = '';
-    // This add information to the header
+    $tab_name = '';
+    // This add information to the header.
     switch ($tab) {
         case 'main':
             $tab_description = '- '.__('Setup');
+            $help_header = 'main_tab';
+            $tab_name = 'Setup';
         break;
 
         case 'collection':
             $tab_description = '- '.__('Collection');
-            $help_header = 'collection_tab';
+            $tab_name = 'Collection';
         break;
 
         case 'inventory':
             $tab_description = '- '.__('Inventory');
             $help_header = 'inventory_tab';
+            $tab_name = 'Inventory';
         break;
 
         case 'plugins':
@@ -598,19 +619,23 @@ if ($id_agente) {
         case 'module':
             $type_module_t = get_parameter('moduletype', '');
             $tab_description = '- '.__('Modules');
+            $tab_name = 'Modules';
             if ($type_module_t == 'webux') {
                 $help_header = 'wux_console';
+            } else {
+                $help_header = 'local_module_tab';
             }
         break;
 
         case 'alert':
             $tab_description = '- '.__('Alert');
             $help_header = 'manage_alert_list';
+            $tab_name = 'Alerts';
         break;
 
         case 'template':
             $tab_description = '- '.__('Templates');
-            $help_header = 'template_tab';
+            $tab_name = 'Module templates';
         break;
 
         case 'gis':
@@ -630,14 +655,24 @@ if ($id_agente) {
             switch (get_parameter('wizard_section')) {
                 case 'snmp_explorer':
                     $tab_description = '- '.__('SNMP Wizard');
+                    $help_header = 'agent_snmp_explorer_tab';
+                    $tab_name = 'SNMP Wizard';
                 break;
 
                 case 'snmp_interfaces_explorer':
                     $tab_description = '- '.__('SNMP Interfaces wizard');
+                    $help_header = 'agent_snmp_interfaces_explorer_tab';
+                    $tab_name = 'SNMP Interfaces wizard';
                 break;
 
                 case 'wmi_explorer':
                     $tab_description = '- '.__('WMI Wizard');
+                    $help_header = 'agent_snmp_wmi_explorer_tab';
+                    $tab_name = 'WMI Wizard';
+                break;
+
+                default:
+                    // Default.
                 break;
             }
         break;
@@ -649,10 +684,15 @@ if ($id_agente) {
                     $tab_description = '- '.__('SNMP explorer');
                     $help_header = 'snmp_explorer';
                 break;
+
+                default:
+                    // Default.
+                break;
             }
         break;
 
         default:
+            // Default.
         break;
     }
 
@@ -665,16 +705,36 @@ if ($id_agente) {
         $onheader,
         false,
         '',
-        $config['item_title_size_text']
+        $config['item_title_size_text'],
+        '',
+        ui_print_breadcrums(
+            [
+                __('Resources'),
+                __('Manage agents'),
+                '<span class="breadcrumb_active">'.$tab_name.'</span>',
+            ]
+        )
     );
 } else {
-    // Create agent
+    // Create agent.
     ui_print_page_header(
         __('Agent manager'),
         'images/bricks.png',
         false,
         'create_agent',
-        true
+        true,
+        '',
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        ui_print_breadcrums(
+            [
+                __('Resources'),
+                __('Manage agents'),
+                '<span class="breadcrumb_active">'.__('Create agent').'</span>',
+            ]
+        )
     );
 }
 
@@ -682,12 +742,12 @@ $delete_conf_file = (bool) get_parameter('delete_conf_file');
 
 if ($delete_conf_file) {
     $correct = false;
-    // Delete remote configuration
+    // Delete remote configuration.
     if (isset($config['remote_config'])) {
         $agent_md5 = md5(io_safe_output(agents_get_name($id_agente, 'none')), false);
 
         if (file_exists($config['remote_config'].'/md5/'.$agent_md5.'.md5')) {
-            // Agent remote configuration editor
+            // Agent remote configuration editor.
             $file_name = $config['remote_config'].'/conf/'.$agent_md5.'.conf';
             $correct = @unlink($file_name);
 
@@ -703,7 +763,7 @@ if ($delete_conf_file) {
     );
 }
 
-// Show agent creation results
+// Show agent creation results.
 if ($create_agent) {
     if (!isset($agent_creation_error)) {
         $agent_creation_error = __('Could not be created');
@@ -720,17 +780,17 @@ if ($create_agent) {
     }
 }
 
-// Fix / Normalize module data
+// Fix / Normalize module data.
 if (isset($_GET['fix_module'])) {
     $id_module = get_parameter_get('fix_module', 0);
-    // get info about this module
+    // Get info about this module.
     $media = reporting_get_agentmodule_data_average($id_module, 30758400);
-    // Get average over the year
+    // Get average over the year.
     $media *= 1.3;
     $error = '';
     $result = true;
 
-    // If the value of media is 0 or something went wrong, don't delete
+    // If the value of media is 0 or something went wrong, don't delete.
     if (!empty($media)) {
         $where = [
             'datos'            => '>'.$media,
@@ -759,25 +819,25 @@ if (isset($_GET['fix_module'])) {
 
 $update_agent = (bool) get_parameter('update_agent');
 
-// Update AGENT
+// Update AGENT.
 if ($update_agent) {
-    // if modified some agent paramenter
+    // If modified some agent paramenter.
     $mssg_warning = 0;
     $id_agente = (int) get_parameter_post('id_agente');
     $nombre_agente = str_replace('`', '&lsquo;', (string) get_parameter_post('agente', ''));
     $alias_safe_output = io_safe_output(get_parameter('alias', ''));
-    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$-]/', '', $alias_safe_output)));
+    $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
     $unique_ip = (int) get_parameter_post('unique_ip', 0);
-    // safe_output only validate ip
+    // Safe_output only validate ip.
     $direccion_agente = trim(io_safe_output($direccion_agente));
 
     if (!validate_address($direccion_agente)) {
         $mssg_warning = 1;
     }
 
-    // safe-input before validate ip
+    // Safe-input before validate ip.
     $direccion_agente = io_safe_input($direccion_agente);
 
     $address_list = (string) get_parameter_post('address_list', '');
@@ -786,10 +846,13 @@ if ($update_agent) {
         && $direccion_agente == agents_get_address($id_agente)
         && $address_list != agents_get_address($id_agente)
     ) {
-        // If we selected another IP in the drop down list to be 'primary':
-        // a) field is not the same as selectbox
-        // b) field has not changed from current IP
-        // c) selectbox is not the current IP
+        /*
+         *  If we selected another IP in the drop down list to be 'primary':
+         * a) field is not the same as selectbox
+         * b) field has not changed from current IP
+         * c) selectbox is not the current IP.
+         */
+
         if (!empty($address_list)) {
             $direccion_agente = $address_list;
         }
@@ -799,7 +862,7 @@ if ($update_agent) {
     $intervalo = (int) get_parameter_post('intervalo', SECONDS_5MINUTES);
     $comentarios = str_replace('`', '&lsquo;', (string) get_parameter_post('comentarios', ''));
     $modo = (int) get_parameter_post('modo', 0);
-    // Mode: Learning, Normal or Autodisabled
+    // Mode: Learning, Normal or Autodisabled.
     $id_os = (int) get_parameter_post('id_os');
     $disabled = (bool) get_parameter_post('disabled');
     $server_name = (string) get_parameter_post('server_name', '');
@@ -812,8 +875,7 @@ if ($update_agent) {
     $update_gis_data = (int) get_parameter_post('update_gis_data', 0);
     $url_description = (string) get_parameter('url_description');
     $quiet = (int) get_parameter('quiet', 0);
-    $cps = (int) get_parameter('cps', 0);
-
+    $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -837,7 +899,7 @@ if ($update_agent) {
         );
 
         if ($old_value === false) {
-            // Create custom field if not exist
+            // Create custom field if not exist.
             $update_custom = db_process_sql_insert(
                 'tagent_custom_data',
                 [
@@ -866,10 +928,10 @@ if ($update_agent) {
         ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
     }
 
-    // Verify if there is another agent with the same name but different ID
+    // Verify if there is another agent with the same name but different ID.
     if ($alias == '') {
         ui_print_error_message(__('No agent alias specified'));
-        // If there is an agent with the same name, but a different ID
+        // If there is an agent with the same name, but a different ID.
     }
 
     if ($unique_ip && $direccion_agente != '') {
@@ -882,7 +944,7 @@ if ($update_agent) {
     } else if ($exists_ip) {
         ui_print_error_message(__('Duplicate main IP address'));
     } else {
-        // If different IP is specified than previous, add the IP
+        // If different IP is specified than previous, add the IP.
         if ($direccion_agente != ''
             && $direccion_agente != agents_get_address($id_agente)
         ) {
@@ -890,7 +952,7 @@ if ($update_agent) {
         }
 
         $action_delete_ip = (bool) get_parameter('delete_ip', false);
-        // If IP is set for deletion, delete first
+        // If IP is set for deletion, delete first.
         if ($action_delete_ip) {
             $delete_ip = get_parameter_post('address_list');
 
@@ -939,11 +1001,11 @@ if ($update_agent) {
                 __('There was a problem updating the agent')
             );
         } else {
-            // Update the agent from the metaconsole cache
+            // Update the agent from the metaconsole cache.
             enterprise_include_once('include/functions_agents.php');
             enterprise_hook('agent_update_from_cache', [$id_agente, $values, $server_name]);
 
-            // Update the configuration files
+            // Update the configuration files.
             if ($old_values['intervalo'] != $intervalo) {
                 enterprise_hook(
                     'config_agents_update_config_token',
@@ -961,7 +1023,7 @@ if ($update_agent) {
                     [
                         $id_agente,
                         'standby',
-                        $disabled ? '1' : '0',
+                        ($disabled) ? '1' : '0',
                     ]
                 );
                 // Validate alerts for disabled agents.
@@ -1047,7 +1109,7 @@ if ($update_agent) {
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 'Agent management',
-                "Updated agent $alias",
+                'Updated agent '.$alias,
                 false,
                 false,
                 $info
@@ -1057,9 +1119,9 @@ if ($update_agent) {
 }
 
 // Read agent data
-// This should be at the end of all operation checks, to read the changes - $id_agente doesn't have to be retrieved
+// This should be at the end of all operation checks, to read the changes - $id_agente doesn't have to be retrieved.
 if ($id_agente) {
-    // This has been done in the beginning of the page, but if an agent was created, this id might change
+    // This has been done in the beginning of the page, but if an agent was created, this id might change.
     $id_grupo = agents_get_agent_group($id_agente);
     if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') && !check_acl_one_of_groups($config['id_user'], $all_groups, 'AD')) {
         db_pandora_audit('ACL Violation', 'Trying to admin an agent without access');
@@ -1067,15 +1129,15 @@ if ($id_agente) {
         exit;
     }
 
-    $agent = db_get_row('tagente', 'id_agente', $id_agente);
+    $agent = db_get_row('tagente', 'id_agente', $id_agente, false, false);
     if (empty($agent)) {
-        // Close out the page
+        // Close out the page.
         ui_print_error_message(__('There was a problem loading the agent'));
         return;
     }
 
     $intervalo = $agent['intervalo'];
-    // Define interval in seconds
+    // Define interval in seconds.
     $nombre_agente = $agent['nombre'];
     if (empty($alias)) {
         $alias = $agent['alias'];
@@ -1111,11 +1173,11 @@ $create_module = (bool) get_parameter('create_module');
 $delete_module = (bool) get_parameter('delete_module');
 $enable_module = (int) get_parameter('enable_module');
 $disable_module = (int) get_parameter('disable_module');
-// It is the id_agent_module to duplicate
+// It is the id_agent_module to duplicate.
 $duplicate_module = (int) get_parameter('duplicate_module');
 $edit_module = (bool) get_parameter('edit_module');
 
-// GET DATA for MODULE UPDATE OR MODULE INSERT
+// GET DATA for MODULE UPDATE OR MODULE INSERT.
 if ($update_module || $create_module) {
     $id_grupo = agents_get_agent_group($id_agente);
     $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
@@ -1136,9 +1198,12 @@ if ($update_module || $create_module) {
     $id_module_group = (int) get_parameter('id_module_group');
     $flag = (bool) get_parameter('flag');
 
-    // Don't read as (float) because it lost it's decimals when put into MySQL
-    // where are very big and PHP uses scientific notation, p.e:
-    // 1.23E-10 is 0.000000000123
+    /*
+     * Don't read as (float) because it lost it's decimals when put into MySQL
+     * where are very big and PHP uses scientific notation, p.e:
+     * 1.23E-10 is 0.000000000123.
+     */
+
     $post_process = (string) get_parameter('post_process', 0.0);
     if (get_parameter('prediction_module')) {
         $prediction_module = 1;
@@ -1148,7 +1213,7 @@ if ($update_module || $create_module) {
 
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
-    $min = (int) get_parameter_post('min');
+    $min = (int) get_parameter('min');
     $max = (int) get_parameter('max');
     $interval = (int) get_parameter('module_interval', $intervalo);
     $ff_interval = (int) get_parameter('module_ff_interval');
@@ -1160,7 +1225,7 @@ if ($update_module || $create_module) {
     $tcp_send = (string) get_parameter('tcp_send');
     $tcp_rcv = (string) get_parameter('tcp_rcv');
     $tcp_port = (int) get_parameter('tcp_port');
-    // Correction in order to not insert 0 as port
+    // Correction in order to not insert 0 as port.
     $is_port_empty = get_parameter('tcp_port', '');
     if ($is_port_empty === '') {
         $tcp_port = null;
@@ -1186,7 +1251,7 @@ if ($update_module || $create_module) {
     }
 
     if ($id_module_type == 25) {
-        // web analysis, from MODULE_WUX
+        // Web analysis, from MODULE_WUX.
         $custom_string_1 = base64_encode((string) get_parameter('custom_string_1', $custom_string_1_default));
         $custom_integer_1 = (int) get_parameter('custom_integer_1', $custom_integer_1_default);
     } else {
@@ -1198,8 +1263,9 @@ if ($update_module || $create_module) {
     $custom_string_3 = (string) get_parameter('custom_string_3', $custom_string_3_default);
     $custom_integer_2 = (int) get_parameter('custom_integer_2', 0);
 
-    // Get macros
+    // Get macros.
     $macros = (string) get_parameter('macros');
+    $macros_names = (array) get_parameter('macro_name', []);
 
     if (!empty($macros)) {
         $macros = json_decode(base64_decode($macros), true);
@@ -1223,11 +1289,11 @@ if ($update_module || $create_module) {
 
         foreach ($conf_array as $line) {
             if (preg_match('/^module_name\s*(.*)/', $line, $match)) {
-                $new_configuration_data .= 'module_name '.io_safe_output($name)."\n";
-            }
-            // We delete from conf all the module macros starting with _field
-            else if (!preg_match('/^module_macro_field.*/', $line, $match)) {
-                $new_configuration_data .= "$line\n";
+                $new_configuration_data .= 'module_name ';
+                $new_configuration_data .= io_safe_output($name)."\n";
+            } else if (!preg_match('/^module_macro_field.*/', $line, $match)) {
+                // We delete from conf all the module macros starting with _field.
+                $new_configuration_data .= $line."\n";
             }
         }
 
@@ -1243,14 +1309,6 @@ if ($update_module || $create_module) {
             $new_configuration_data = str_replace('module_end', $macros_for_data.'module_end', $new_configuration_data);
         }
 
-        /*
-            $macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
-
-            if ($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
-            // Add macros to configuration file
-            $new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
-            }
-        */
         $configuration_data = str_replace(
             '\\',
             '&#92;',
@@ -1269,16 +1327,16 @@ if ($update_module || $create_module) {
 
     $snmp_community = (string) get_parameter('snmp_community');
     $snmp_oid = (string) get_parameter('snmp_oid');
-    // Change double quotes by single
+    // Change double quotes by single.
     $snmp_oid = preg_replace('/&quot;/', '&#039;', $snmp_oid);
 
     if (empty($snmp_oid)) {
-        // The user did not set any OID manually but did a SNMP walk
+        // The user did not set any OID manually but did a SNMP walk.
         $snmp_oid = (string) get_parameter('select_snmp_oid');
     }
 
     if ($id_module_type >= 15 && $id_module_type <= 18) {
-        // New support for snmp v3
+        // New support for snmp v3.
         $tcp_send = (string) get_parameter('snmp_version');
         $plugin_user = (string) get_parameter('snmp3_auth_user');
         $plugin_pass = io_input_password((string) get_parameter('snmp3_auth_pass'));
@@ -1300,7 +1358,11 @@ if ($update_module || $create_module) {
 
     $parent_module_id = (int) get_parameter('parent_module_id');
     $ip_target = (string) get_parameter('ip_target');
-    if ($ip_target == '') {
+    // No autofill if the module is a webserver module.
+    if ($ip_target == ''
+        && $id_module_type < MODULE_WEBSERVER_CHECK_LATENCY
+        && $id_module_type > MODULE_WEBSERVER_RETRIEVE_STRING_DATA
+    ) {
         $ip_target = 'auto';
     }
 
@@ -1320,13 +1382,10 @@ if ($update_module || $create_module) {
     $ff_event_normal = (int) get_parameter('ff_event_normal');
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
+    $ff_type = (int) get_parameter('ff_type');
     $each_ff = (int) get_parameter('each_ff');
     $ff_timeout = (int) get_parameter('ff_timeout');
-    $unit = (string) get_parameter('unit_select');
-    if ($unit == 'none') {
-        $unit = (string) get_parameter('unit_text');
-    }
-
+    $unit = (string) get_parameter('unit');
     $id_tag = (array) get_parameter('id_tag_selected');
     $serialize_ops = (string) get_parameter('serialize_ops');
     $critical_instructions = (string) get_parameter('critical_instructions');
@@ -1396,9 +1455,13 @@ if ($update_module || $create_module) {
     }
 
     $active_snmp_v3 = get_parameter('active_snmp_v3');
-    if ($active_snmp_v3) {
-        // LOST CODE?
-    }
+
+    /*
+     * if ($active_snmp_v3) {
+     *     // LOST CODE?.
+     *
+     * }
+     */
 
     $throw_unknown_events = (bool) get_parameter('throw_unknown_events', false);
     // Set the event type that can show.
@@ -1409,28 +1472,17 @@ if ($update_module || $create_module) {
     $module_macro_values = (array) get_parameter('module_macro_values', []);
     $module_macros = modules_get_module_macros_json($module_macro_names, $module_macro_values);
 
-    // Make changes in the conf file if necessary
+    // Make changes in the conf file if necessary.
     enterprise_include_once('include/functions_config_agents.php');
 
     $module_in_policy = enterprise_hook('policies_is_module_in_policy', [$id_agent_module]);
     $module_linked = enterprise_hook('policies_is_module_linked', [$id_agent_module]);
-
-    if ((!$module_in_policy && !$module_linked )
-        || ( $module_in_policy && !$module_linked )
-    ) {
-        enterprise_hook(
-            'config_agents_write_module_in_conf',
-            [
-                $id_agente,
-                io_safe_output($old_configuration_data),
-                io_safe_output($configuration_data),
-                $disabled,
-            ]
-        );
-    }
 }
 
-// MODULE UPDATE
+// Initialize result of the action (insert or update).
+$success_action = NOERR;
+
+// MODULE UPDATE.
 if ($update_module) {
     $id_agent_module = (int) get_parameter('id_agent_module');
 
@@ -1482,6 +1534,7 @@ if ($update_module) {
         'min_ff_event_normal'   => $ff_event_normal,
         'min_ff_event_warning'  => $ff_event_warning,
         'min_ff_event_critical' => $ff_event_critical,
+        'ff_type'               => $ff_type,
         'each_ff'               => $each_ff,
         'ff_timeout'            => $ff_timeout,
         'unit'                  => io_safe_output($unit),
@@ -1506,8 +1559,14 @@ if ($update_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -1515,7 +1574,7 @@ if ($update_module) {
         }
     }
 
-    // In local modules, the interval is updated by agent
+    // In local modules, the interval is updated by agent.
     $module_kind = (int) get_parameter('moduletype');
     if ($module_kind == MODULE_DATA) {
         unset($values['module_interval']);
@@ -1564,6 +1623,8 @@ if ($update_module) {
             break;
         }
 
+        // I save the result of the action (insert or update).
+        $success_action = $result;
         $result = false;
         ui_print_error_message($msg);
 
@@ -1571,7 +1632,7 @@ if ($update_module) {
 
         db_pandora_audit(
             'Agent management',
-            "Fail to try update module '$name' for agent ".$agent['alias']
+            "Fail to try update module '".$name."' for agent ".$agent['alias']
         );
     } else {
         if ($prediction_module == 3) {
@@ -1584,7 +1645,7 @@ if ($update_module) {
             );
         }
 
-        // Update the module interval
+        // Update the module interval.
         cron_update_module_interval($id_agent_module, $cron_interval);
 
         ui_print_success_message(__('Module successfully updated'));
@@ -1595,7 +1656,7 @@ if ($update_module) {
 
         db_pandora_audit(
             'Agent management',
-            "Updated module '$name' for agent ".$agent['alias'],
+            "Updated module '".$name."' for agent ".$agent['alias'],
             false,
             false,
             io_json_mb_encode($values)
@@ -1603,9 +1664,11 @@ if ($update_module) {
     }
 }
 
-// MODULE INSERT
-// =================
+// MODULE INSERT.
 if ($create_module) {
+    // Old configuration data must always be empty in case of creation.
+    $old_configuration_data = '';
+
     if (isset($_POST['combo_snmp_oid'])) {
         $combo_snmp_oid = get_parameter_post('combo_snmp_oid');
     }
@@ -1615,18 +1678,16 @@ if ($create_module) {
     }
 
     $id_module = (int) get_parameter('id_module');
-    // Commented because can't create prediction modules
-    /*
-        if ($id_module == 5) {
-        $prediction_module = 1;
-        }
-    */
 
     switch ($config['dbtype']) {
         case 'oracle':
             if (empty($description) || !isset($description)) {
                 $description = ' ';
             }
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -1677,6 +1738,7 @@ if ($create_module) {
         'min_ff_event_normal'   => $ff_event_normal,
         'min_ff_event_warning'  => $ff_event_warning,
         'min_ff_event_critical' => $ff_event_critical,
+        'ff_type'               => $ff_type,
         'each_ff'               => $each_ff,
         'ff_timeout'            => $ff_timeout,
         'unit'                  => io_safe_output($unit),
@@ -1701,8 +1763,14 @@ if ($create_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -1739,20 +1807,29 @@ if ($create_module) {
             break;
         }
 
+        // I save the result of the action (insert or update).
+        $success_action = $id_agent_module;
+
         $id_agent_module = false;
         ui_print_error_message($msg);
         $edit_module = true;
         $moduletype = $id_module;
         db_pandora_audit(
             'Agent management',
-            "Fail to try added module '$name' for agent ".$agent['alias']
+            "Fail to try added module '".$name."' for agent ".$agent['alias']
         );
     } else {
         if ($prediction_module == 3) {
-            enterprise_hook('modules_create_synthetic_operations', [$id_agent_module, $serialize_ops]);
+            enterprise_hook(
+                'modules_create_synthetic_operations',
+                [
+                    $id_agent_module,
+                    $serialize_ops,
+                ]
+            );
         }
 
-        // Update the module interval
+        // Update the module interval.
         cron_update_module_interval($id_agent_module, $cron_interval);
 
         ui_print_success_message(__('Module added successfully'));
@@ -1764,7 +1841,7 @@ if ($create_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
             'Agent management',
-            "Added module '$name' for agent ".$agent['alias'],
+            "Added module '".$name."' for agent ".$agent['alias'],
             false,
             true,
             io_json_mb_encode($values)
@@ -1772,8 +1849,114 @@ if ($create_module) {
     }
 }
 
+// MODULE ENABLE/DISABLE
+// =====================.
+if ($enable_module) {
+    $result = modules_change_disabled($enable_module, 0);
+    $module_name = modules_get_agentmodule_name($enable_module);
+
+    // Write for conf disable if remote_config.
+    $configuration_data = enterprise_hook(
+        'config_agents_get_module_from_conf',
+        [
+            $id_agente,
+            io_safe_output($module_name),
+        ]
+    );
+    // Force disable.
+    $disabled = 0;
+
+    // Force Update when disabled for save disabled in conf.
+    $old_configuration_data = $configuration_data;
+
+    // Successfull action.
+    $success_action = $result;
+
+    $success_action = $result;
+    if ($result === NOERR) {
+        db_pandora_audit(
+            'Module management',
+            'Enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    } else {
+        db_pandora_audit(
+            'Module management',
+            'Fail to enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully enabled'),
+        __('Could not be enabled')
+    );
+}
+
+if ($disable_module) {
+    $result = modules_change_disabled($disable_module, 1);
+    $module_name = modules_get_agentmodule_name($disable_module);
+
+    // Write for conf disable if remote_config.
+    $configuration_data = enterprise_hook(
+        'config_agents_get_module_from_conf',
+        [
+            $id_agente,
+            io_safe_output($module_name),
+        ]
+    );
+    // Force disable.
+    $disabled = 1;
+
+    // Force Update when disabled for save disabled in conf.
+    $old_configuration_data = $configuration_data;
+
+    // Successfull action.
+    $success_action = $result;
+
+
+    if ($result === NOERR) {
+        db_pandora_audit(
+            'Module management',
+            'Disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    } else {
+        db_pandora_audit(
+            'Module management',
+            'Fail to disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+        );
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully disabled'),
+        __('Could not be disabled')
+    );
+}
+
+// Fix to stop the module from being added to the agent's conf
+// when an error occurred while updating or inserting. or enable disable module.
+if ($update_module || $create_module
+    || $enable_module || $disable_module
+) {
+    if ((!$module_in_policy && !$module_linked)
+        || ($module_in_policy && !$module_linked)
+    ) {
+        if ($success_action > 0) {
+            enterprise_hook(
+                'config_agents_write_module_in_conf',
+                [
+                    $id_agente,
+                    io_safe_output($old_configuration_data),
+                    io_safe_output($configuration_data),
+                    $disabled,
+                ]
+            );
+        }
+    }
+}
+
 // MODULE DELETION
-// =================
+// =================.
 if ($delete_module) {
     // DELETE agent module !
     $id_borrar_modulo = (int) get_parameter_get('delete_module', 0);
@@ -1809,7 +1992,7 @@ if ($delete_module) {
     enterprise_include_once('include/functions_config_agents.php');
     enterprise_hook('config_agents_delete_module_in_conf', [modules_get_agentmodule_agent($id_borrar_modulo), modules_get_agentmodule_name($id_borrar_modulo)]);
 
-    // Init transaction
+    // Init transaction.
     $error = 0;
 
     // First delete from tagente_modulo -> if not successful, increment
@@ -1828,7 +2011,7 @@ if ($delete_module) {
     if ($result === false) {
         $error++;
     } else {
-        // Set flag to update module status count
+        // Set flag to update module status count.
         db_process_sql(
             'UPDATE tagente
 			SET update_module_count = 1, update_alert_count = 1
@@ -1870,7 +2053,7 @@ if ($delete_module) {
     }
 
     // Trick to detect if we are deleting a synthetic module (avg or arithmetic)
-    // If result is empty then module doesn't have this type of submodules
+    // If result is empty then module doesn't have this type of submodules.
     $ops_json = enterprise_hook('modules_get_synthetic_operations', [$id_borrar_modulo]);
     $result_ops_synthetic = json_decode($ops_json);
     if (!empty($result_ops_synthetic)) {
@@ -1878,18 +2061,17 @@ if ($delete_module) {
         if ($result === false) {
             $error++;
         }
-    } //end if
-    else {
+    } else {
         $result_components = enterprise_hook('modules_get_synthetic_components', [$id_borrar_modulo]);
         $count_components = 1;
         if (!empty($result_components)) {
-            // Get number of components pending to delete to know when it's needed to update orders
+            // Get number of components pending to delete to know when it's needed to update orders.
             $num_components = count($result_components);
             $last_target_module = 0;
             foreach ($result_components as $id_target_module) {
-                // Detects change of component or last component to update orders
+                // Detects change of component or last component to update orders.
                 if (($count_components == $num_components)
-                    or ($last_target_module != $id_target_module)
+                    || ($last_target_module != $id_target_module)
                 ) {
                     $update_orders = true;
                 } else {
@@ -1908,7 +2090,7 @@ if ($delete_module) {
         }
     }
 
-    // Check for errors
+    // Check for errors.
     if ($error != 0) {
         ui_print_error_message(__('There was a problem deleting the module'));
     } else {
@@ -1925,8 +2107,7 @@ if ($delete_module) {
     }
 }
 
-// MODULE DUPLICATION
-// ==================
+// MODULE DUPLICATION.
 if (!empty($duplicate_module)) {
     // DUPLICATE agent module !
     $id_duplicate_module = $duplicate_module;
@@ -1972,8 +2153,7 @@ if (!empty($duplicate_module)) {
     }
 }
 
-// MODULE ENABLE/DISABLE
-// =====================
+// MODULE ENABLE/DISABLE.
 if ($enable_module) {
     $result = modules_change_disabled($enable_module, 0);
     $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
@@ -2012,8 +2192,7 @@ if ($disable_module) {
     );
 }
 
-// UPDATE GIS
-// ==========
+// UPDATE GIS.
 $updateGIS = get_parameter('update_gis', 0);
 if ($updateGIS) {
     $updateGisData = get_parameter('update_gis_data');
@@ -2102,8 +2281,10 @@ switch ($tab) {
 
     case 'alert':
         /*
-            Because $id_agente is set, it will show only agent alerts */
-        // This var is for not display create button on alert list
+         * Because $id_agente is set, it will show only agent alerts
+         * This var is for not display create button on alert list
+         */
+
         $dont_display_alert_create_bttn = true;
         include 'godmode/alerts/alert_list.php';
     break;
@@ -2152,7 +2333,7 @@ switch ($tab) {
     default:
         if (enterprise_hook('switch_agent_tab', [$tab])) {
             // This will make sure that blank pages will have at least some
-            // debug info in them - do not translate debug
+            // debug info in them - do not translate debug.
             ui_print_error_message(__('Invalid tab specified'));
         }
     break;

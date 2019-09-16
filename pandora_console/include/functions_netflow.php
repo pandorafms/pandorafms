@@ -1,36 +1,60 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Netflow functions
+ *
+ * @package    Functons.
+ * @subpackage Netflow functions.
+ *
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_io.php';
-enterprise_include_once($config['homedir'].'/enterprise/include/pdf_translator.php');
-enterprise_include_once($config['homedir'].'/enterprise/include/functions_metaconsole.php');
+require_once $config['homedir'].'/include/functions_network.php';
+require_once $config['homedir'].'/include/class/NetworkMap.class.php';
+enterprise_include_once(
+    $config['homedir'].'/enterprise/include/pdf_translator.php'
+);
+enterprise_include_once(
+    $config['homedir'].'/enterprise/include/functions_metaconsole.php'
+);
 
-// Date format for nfdump
+define('NETFLOW_RES_LOWD', 6);
+define('NETFLOW_RES_MEDD', 12);
+define('NETFLOW_RES_HID', 24);
+define('NETFLOW_RES_ULTRAD', 30);
+define('NETFLOW_RES_HOURLY', -1);
+define('NETFLOW_RES_DAILY', -2);
+
+define('NETFLOW_MAX_DATA_CIRCULAR_MESH', 10000);
+
+// Date format for nfdump.
 global $nfdump_date_format;
 $nfdump_date_format = 'Y/m/d.H:i:s';
 
-// Array to hold the hostnames
+// Array to hold the hostnames.
 $hostnames = [];
 
 
 /**
  * Selects all netflow filters (array (id_name => id_name)) or filters filtered
  *
- * @param mixed Array with filter conditions to retrieve filters or false.
+ * @param mixed $filter Array with filter conditions to retrieve filters or
+ *      false.
  *
- * @return array List of all filters
+ * @return array List of all filters.
  */
 function netflow_get_filters($filter=false)
 {
@@ -56,9 +80,10 @@ function netflow_get_filters($filter=false)
 /**
  * Selects all netflow reports (array (id_name => id_name)) or filters filtered
  *
- * @param mixed Array with filter conditions to retrieve filters or false.
+ * @param mixed $filter Array with filter conditions to retrieve filters or
+ *      false.
  *
- * @return array List of all filters
+ * @return array List of all filters.
  */
 function netflow_get_reports($filter=false)
 {
@@ -81,47 +106,21 @@ function netflow_get_reports($filter=false)
 }
 
 
-// permite validar si un filtro pertenece a un grupo permitido para el usuario
+/**
+ * Check if a filter owns to a certain group.
+ *
+ * @param integer $id_sg Id group to check.
+ *
+ * @return boolean True if user manages that group.
+ */
 function netflow_check_filter_group($id_sg)
 {
     global $config;
 
     $id_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id_sg);
     $own_info = get_user_info($config['id_user']);
-    // Get group list that user has access
+    // Get group list that user has access.
     $groups_user = users_get_groups($config['id_user'], 'IW', $own_info['is_admin'], true);
-    $groups_id = [];
-    $has_permission = false;
-
-    foreach ($groups_user as $key => $groups) {
-        if ($groups['id_grupo'] == $id_group) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-/*
-    Permite validar si un informe pertenece a un grupo permitido para el usuario.
- * Si mode = false entonces es modo godmode y solo puede ver el grupo All el admin
- * Si es modo operation (mode = true) entonces todos pueden ver el grupo All
- */
-
-function netflow_check_report_group($id_report, $mode=false)
-{
-    global $config;
-
-    if (!$mode) {
-        $own_info = get_user_info($config['id_user']);
-        $mode = $own_info['is_admin'];
-    }
-
-    $id_group = db_get_value('id_group', 'tnetflow_report', 'id_report', $id_report);
-
-    // Get group list that user has access
-    $groups_user = users_get_groups($config['id_user'], 'IW', $mode, true);
     $groups_id = [];
     $has_permission = false;
 
@@ -138,9 +137,9 @@ function netflow_check_report_group($id_report, $mode=false)
 /**
  * Get a filter.
  *
- * @param int filter id to be fetched.
- * @param array Extra filter.
- * @param array Fields to be fetched.
+ * @param integer $id_sg  Filter id to be fetched.
+ * @param mixed   $filter Extra filter.
+ * @param mixed   $fields Fields to be fetched.
  *
  * @return array A netflow filter matching id and filter.
  */
@@ -157,51 +156,10 @@ function netflow_filter_get_filter($id_sg, $filter=false, $fields=false)
 
 
 /**
- * Get options.
- *
- * @param int filter id to be fetched.
- * @param array Extra filter.
- * @param array Fields to be fetched.
- *
- * @return array A netflow filter matching id and filter.
- */
-function netflow_reports_get_reports($id_report, $filter=false, $fields=false)
-{
-    if (empty($id_report)) {
-        return false;
-    }
-
-    if (! is_array($filter)) {
-        $filter = [];
-    }
-
-    $filter['id_report'] = (int) $id_report;
-
-    return db_get_row_filter('tnetflow_report', $filter, $fields);
-}
-
-
-function netflow_reports_get_content($id_rc, $filter=false, $fields=false)
-{
-    if (empty($id_rc)) {
-        return false;
-    }
-
-    if (! is_array($filter)) {
-        $filter = [];
-    }
-
-    $filter['id_rc'] = (int) $id_rc;
-
-    return db_get_row_filter('tnetflow_report_content', $filter, $fields);
-}
-
-
-/**
  * Compare two flows according to the 'data' column.
  *
- * @param array a First flow.
- * @param array b Second flow.
+ * @param array $a First flow.
+ * @param array $b Second flow.
  *
  * @return Result of the comparison.
  */
@@ -214,7 +172,9 @@ function compare_flows($a, $b)
 /**
  * Sort netflow data according to the 'data' column.
  *
- * @param array netflow_data Netflow data array.
+ * @param array $netflow_data Netflow data array.
+ *
+ * @return void (Array passed by reference)
  */
 function sort_netflow_data(&$netflow_data)
 {
@@ -225,22 +185,22 @@ function sort_netflow_data(&$netflow_data)
 /**
  * Show a table with netflow statistics.
  *
- * @param array data Statistic data.
- * @param string start_date Start date.
- * @param string end_date End date.
- * @param string aggregate Aggregate field.
- * @param string unit Unit to show.
+ * @param array  $data       Statistic data.
+ * @param string $start_date Start date.
+ * @param string $end_date   End date.
+ * @param string $aggregate  Aggregate field.
  *
- * @return The statistics table.
+ * @return string HTML statistics table.
  */
-function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
+function netflow_stat_table($data, $start_date, $end_date, $aggregate)
 {
     global $nfdump_date_format;
 
     $start_date = date($nfdump_date_format, $start_date);
     $end_date = date($nfdump_date_format, $end_date);
     $values = [];
-    $table->width = '40%';
+    $table = new stdClass();
+    $table->width = '100%';
     $table->cellspacing = 0;
     $table->class = 'databox';
     $table->data = [];
@@ -249,7 +209,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
 
     $table->head = [];
     $table->head[0] = '<b>'.netflow_format_aggregate($aggregate).'</b>';
-    $table->head[1] = '<b>'.netflow_format_unit($unit).'</b>';
+    $table->head[1] = '<b>'.__('Value').'</b>';
     $table->style[0] = 'padding: 6px;';
     $table->style[1] = 'padding: 6px;';
 
@@ -257,13 +217,12 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
         $agg = $data[$j]['agg'];
         if (!isset($values[$agg])) {
             $values[$agg] = $data[$j]['data'];
-            $table->data[$x][0] = $agg;
-            $table->data[$x][1] = format_numeric($data[$j]['data']).'&nbsp;'.netflow_format_unit($unit);
         } else {
             $values[$agg] += $data[$j]['data'];
-            $table->data[$x][0] = $agg;
-            $table->data[$x][1] = format_numeric($data[$j]['data']).'&nbsp;'.netflow_format_unit($unit);
         }
+
+        $table->data[$x][0] = $agg;
+        $table->data[$x][1] = network_format_bytes($data[$j]['data']);
 
         $j++;
         $x++;
@@ -276,14 +235,14 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit)
 /**
  * Show a table with netflow data.
  *
- * @param array data Netflow data.
- * @param string start_date Start date.
- * @param string end_date End date.
- * @param string aggregate Aggregate field.
+ * @param array  $data       Netflow data.
+ * @param string $start_date Start date.
+ * @param string $end_date   End date.
+ * @param string $aggregate  Aggregate field.
  *
- * @return The statistics table.
+ * @return string HTML data table.
  */
-function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
+function netflow_data_table($data, $start_date, $end_date, $aggregate)
 {
     global $nfdump_date_format;
 
@@ -291,7 +250,7 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
     $start_date = date($nfdump_date_format, $start_date);
     $end_date = date($nfdump_date_format, $end_date);
 
-    // Set the format
+    // Set the format.
     if ($period <= SECONDS_6HOURS) {
         $time_format = 'H:i:s';
     } else if ($period < SECONDS_1DAY) {
@@ -305,6 +264,7 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
     }
 
     $values = [];
+    $table = new stdClass();
     $table->size = ['100%'];
     $table->class = 'databox';
     $table->cellspacing = 0;
@@ -332,7 +292,7 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
         $table->style[1] = 'padding: 4px;';
     }
 
-    // No aggregates
+    // No aggregates.
     if ($source_count == 0) {
         $table->head[1] = __('Data');
         $table->align[1] = 'right';
@@ -340,21 +300,17 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
 
         foreach ($data as $timestamp => $value) {
             $table->data[$i][0] = date($time_format, $timestamp);
-            $table->data[$i][1] = format_numeric($value['data']).'&nbsp;'.netflow_format_unit($unit);
+            $table->data[$i][1] = network_format_bytes($value['data']);
             $i++;
         }
-    }
-    // Aggregates
-    else {
+    } else {
         $i = 0;
         foreach ($data['data'] as $timestamp => $values) {
             $table->data[$i][0] = date($time_format, $timestamp);
             for ($j = 0; $j < $source_count; $j++) {
-                if (isset($values[$source_index[$j]])) {
-                    $table->data[$i][($j + 1)] = format_numeric($values[$source_index[$j]]).'&nbsp;'.netflow_format_unit($unit);
-                } else {
-                    $table->data[$i][($j + 1)] = (0).'&nbsp;'.netflow_format_unit($unit);
-                }
+                $table->data[$i][($j + 1)] = network_format_bytes(
+                    $values[$source_index[$j]]
+                );
             }
 
             $i++;
@@ -368,18 +324,19 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $unit)
 /**
  * Show a table with a traffic summary.
  *
- * @param array data Summary data.
+ * @param array $data Summary data.
  *
- * @return The statistics table.
+ * @return string HTML summary table.
  */
 function netflow_summary_table($data)
 {
     global $nfdump_date_format;
 
     $values = [];
-    $table->size = ['50%'];
+    $table = new stdClass();
     $table->cellspacing = 0;
     $table->class = 'databox';
+    $table->styleTable = 'width: 100%';
     $table->data = [];
 
     $table->style[0] = 'font-weight: bold; padding: 6px';
@@ -387,32 +344,32 @@ function netflow_summary_table($data)
 
     $row = [];
     $row[] = __('Total flows');
-    $row[] = format_numeric($data['totalflows']);
+    $row[] = format_for_graph($data['totalflows'], 2);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Total bytes');
-    $row[] = format_numeric($data['totalbytes']);
+    $row[] = network_format_bytes($data['totalbytes']);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Total packets');
-    $row[] = format_numeric($data['totalpackets']);
+    $row[] = format_for_graph($data['totalpackets'], 2);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Average bits per second');
-    $row[] = format_numeric($data['avgbps']);
+    $row[] = network_format_bytes($data['avgbps']);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Average packets per second');
-    $row[] = format_numeric($data['avgpps']);
+    $row[] = format_for_graph($data['avgpps'], 2);
     $table->data[] = $row;
 
     $row = [];
     $row[] = __('Average bytes per packet');
-    $row[] = format_numeric($data['avgbpp']);
+    $row[] = format_for_graph($data['avgbpp'], 2);
     $table->data[] = $row;
 
     $html = html_print_table($table, true);
@@ -424,7 +381,7 @@ function netflow_summary_table($data)
 /**
  * Returns 1 if the given address is a network address.
  *
- * @param string address Host or network address.
+ * @param string $address Host or network address.
  *
  * @return 1 if the address is a network address, 0 otherwise.
  */
@@ -441,225 +398,173 @@ function netflow_is_net($address)
 /**
  * Returns netflow data for the given period in an array.
  *
- * @param string start_date Period start date.
- * @param string end_date Period end date.
- * @param string filter Netflow filter.
- * @param string aggregate Aggregate field.
- * @param int max Maximum number of aggregates.
- * @param string unit Unit to show.
+ * @param string  $start_date         Period start date.
+ * @param string  $end_date           Period end date.
+ * @param mixed   $interval_length    Resolution points or hourly or daily.
+ * @param string  $filter             Netflow filter.
+ * @param string  $aggregate          Aggregate field.
+ * @param integer $max                Maximum number of aggregates.
+ * @param boolean $absolute           True to give the absolute data and false
+ *      to get troughput.
+ * @param string  $connection_name    Node name when data is get in meta.
+ * @param boolean $address_resolution True to resolve ips to hostnames.
  *
- * @return An array with netflow stats.
+ * @return array An array with netflow stats.
  */
-function netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit, $connection_name='', $address_resolution=false)
-{
+function netflow_get_data(
+    $start_date,
+    $end_date,
+    $interval_length,
+    $filter,
+    $aggregate,
+    $max,
+    $absolute,
+    $connection_name='',
+    $address_resolution=false
+) {
     global $nfdump_date_format;
     global $config;
 
-    // Requesting remote data
+    // Requesting remote data.
     if (defined('METACONSOLE') && $connection_name != '') {
-        $data = metaconsole_call_remote_api($connection_name, 'netflow_get_data', "$start_date|$end_date|$interval_length|".base64_encode(json_encode($filter))."|$aggregate|$max|$unit".(int) $address_resolution);
+        $data = metaconsole_call_remote_api(
+            $connection_name,
+            'netflow_get_data',
+            "$start_date|$end_date|$interval_length|".base64_encode(json_encode($filter))."|$aggregate|$max|1".(int) $address_resolution
+        );
         return json_decode($data, true);
     }
 
-    // Calculate the number of intervals
-    if ($interval_length <= 0) {
-        // $num_intervals = $config['graph_res'] * 50;
-        $num_intervals = 250;
-        $period = ($end_date - $start_date);
-        $interval_length = (int) ($period / $num_intervals);
-    } else {
-        $period = ($end_date - $start_date);
-        $num_intervals = (int) ($period / $interval_length);
+    if ($start_date > $end_date) {
+        return [];
     }
 
-    // Set a max number of intervals
-    if ($num_intervals > $config['netflow_max_resolution']) {
-        $num_intervals = $config['netflow_max_resolution'];
-        $interval_length = (int) ($period / $num_intervals);
+    // Calculate the number of intervals.
+    $multiplier_time = ($end_date - $start_date);
+    switch ($interval_length) {
+        case NETFLOW_RES_LOWD:
+        case NETFLOW_RES_MEDD:
+        case NETFLOW_RES_HID:
+        case NETFLOW_RES_ULTRAD:
+            $multiplier_time = ceil(($end_date - $start_date) / $interval_length);
+        break;
+
+        case NETFLOW_RES_HOURLY:
+            $multiplier_time = SECONDS_1HOUR;
+        break;
+
+        case NETFLOW_RES_DAILY:
+            $multiplier_time = SECONDS_1DAY;
+        break;
+
+        default:
+            $multiplier_time = ($end_date - $start_date);
+        break;
     }
 
-    // If there is aggregation calculate the top n
-    if ($aggregate != 'none') {
-        $values['data'] = [];
-        $values['sources'] = [];
-
-        // Get the command to call nfdump
-        $command = netflow_get_command($filter);
-
-        // Suppress the header line and the statistics at the bottom and configure piped output
-        $command .= ' -q -o csv';
-
-        // Call nfdump
-        $agg_command = $command." -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-        exec($agg_command, $string);
-
-        // Remove the first line
-        $string[0] = '';
-
-        // Parse aggregates
-        foreach ($string as $line) {
-            if ($line == '') {
-                continue;
-            }
-
-            $val = explode(',', $line);
-            if ($aggregate == 'proto') {
-                $values['sources'][$val[3]] = 1;
-            } else {
-                $values['sources'][$val[4]] = 1;
-            }
-        }
-
-        // Update the filter
-        switch ($aggregate) {
-            case 'proto':
-                $extra_filter = 'proto';
-            break;
-
-            default:
-            case 'srcip':
-                $extra_filter = 'ip_src';
-            break;
-            case 'srcport':
-                $extra_filter = 'src_port';
-            break;
-
-            case 'dstip':
-                $extra_filter = 'ip_dst';
-            break;
-
-            case 'dstport':
-                $extra_filter = 'dst_port';
-            break;
-        }
-
-        if (isset($filter[$extra_filter]) && $filter[$extra_filter] != '') {
-            $filter[$extra_filter] .= ',';
-        }
-
-        $filter[$extra_filter] = implode(
-            ',',
-            array_keys($values['sources'])
+    // Recalculate to not pass of netflow_max_resolution.
+    if ($config['netflow_max_resolution'] > 0
+        && (($end_date - $start_date) / $multiplier_time) > 50
+    ) {
+        $multiplier_time = ceil(
+            (($end_date - $start_date) / $config['netflow_max_resolution'])
         );
-    } else {
-        $values = [];
     }
 
-    // Address resolution start
-    $get_hostnames = false;
-    if ($address_resolution && ($aggregate == 'srcip' || $aggregate == 'dstip')) {
-        $get_hostnames = true;
-        global $hostnames;
+    // Put all points into an array.
+    $intervals = [($start_date - $multiplier_time)];
+    while (($next = (end($intervals) + $multiplier_time) < $end_date) === true) {
+        $intervals[] = (end($intervals) + $multiplier_time);
+    }
 
-        $sources = [];
-        foreach ($values['sources'] as $source => $value) {
-            if (!isset($hostnames[$source])) {
-                $hostname = gethostbyaddr($source);
-                if ($hostname !== false) {
-                    $hostnames[$source] = $hostname;
-                    $source = $hostname;
+    if (end($intervals) != $end_date) {
+        $intervals[] = $end_date;
+    }
+
+    // Calculate the top values.
+    $values = netflow_get_top_data(
+        $start_date,
+        $end_date,
+        $filter,
+        $aggregate,
+        $max
+    );
+
+    // Update the filter to get properly next data.
+    netflow_update_second_level_filter(
+        $filter,
+        $aggregate,
+        array_keys($values['sources'])
+    );
+
+    // Resolve addresses if required.
+    $get_hostnames = false;
+    if ($address_resolution === true) {
+        global $hostnames;
+        netflow_address_resolution($values, $get_hostnames, $aggregate);
+    }
+
+    foreach ($intervals as $k => $time) {
+        $interval_start = $time;
+        if (!isset($intervals[($k + 1)])) {
+            continue;
+        }
+
+        $interval_end = $intervals[($k + 1)];
+
+        // Set default values.
+        foreach ($values['sources'] as $source => $discard) {
+            $values['data'][$interval_end][$source] = 0;
+        }
+
+        $data = netflow_get_stats(
+            $interval_start,
+            $interval_end,
+            $filter,
+            $aggregate,
+            $max,
+            $absolute,
+            $connection_name
+        );
+
+        foreach ($data as $line) {
+            // Address resolution start.
+            if ($get_hostnames) {
+                if (!isset($hostnames[$line['agg']])) {
+                    $hostname = false;
+                    // Trying to get something like an IP from the description.
+                    if (preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $line['agg'], $matches)
+                        || preg_match(
+                            "/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
+                            (2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i",
+                            $line['agg'],
+                            $matches
+                        )
+                    ) {
+                        if ($matches[0]) {
+                            $hostname = gethostbyaddr($line['agg']);
+                        }
+                    }
+
+                    if ($hostname !== false) {
+                        $hostnames[$line['agg']] = $hostname;
+                        $line['agg'] = $hostname;
+                    }
+                } else {
+                    $line['agg'] = $hostnames[$line['agg']];
                 }
-            } else {
-                $source = $hostnames[$source];
             }
 
-            $sources[$source] = $value;
-        }
-
-        $values['sources'] = $sources;
-    }
-
-    // Address resolution end
-    $interval_start = $start_date;
-    for ($i = 0; $i < $num_intervals; $i++, $interval_start += ($interval_length + 1)) {
-        $interval_end = ($interval_start + $interval_length);
-        if ($interval_end > $end_date) {
-            $interval_end = $end_date;
-        }
-
-        if ($aggregate == 'none') {
-            $data = netflow_get_summary($interval_start, $interval_end, $filter, $connection_name);
-            if (! isset($data['totalbytes'])) {
-                $values[$interval_start]['data'] = 0;
+            // Address resolution end.
+            if (! isset($values['sources'][$line['agg']])) {
                 continue;
             }
 
-            switch ($unit) {
-                case 'megabytes':
-                    $values[$interval_start]['data'] = ($data['totalbytes'] / 1048576);
-                break;
-
-                case 'megabytespersecond':
-                    $values[$interval_start]['data'] = ($data['avgbps'] / 1048576 / 8);
-                break;
-
-                case 'kilobytes':
-                    $values[$interval_start]['data'] = ($data['totalbytes'] / 1024);
-                break;
-
-                case 'kilobytespersecond':
-                    $values[$interval_start]['data'] = ($data['avgbps'] / 1024 / 8);
-                break;
-
-                default:
-                    $values[$interval_start]['data'] = $data['totalbytes'];
-                break;
-            }
-        } else {
-            // Set default values
-            foreach ($values['sources'] as $source => $discard) {
-                $values['data'][$interval_start][$source] = 0;
-            }
-
-            $data = netflow_get_stats(
-                $interval_start,
-                $interval_end,
-                $filter,
-                $aggregate,
-                $max,
-                $unit,
-                $connection_name
-            );
-
-            foreach ($data as $line) {
-                // Address resolution start
-                if ($get_hostnames) {
-                    if (!isset($hostnames[$line['agg']])) {
-                        $hostname = false;
-                        // Trying to get something like an IP from the description
-                        if (preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $line['agg'], $matches)
-                            || preg_match(
-                                "/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
-								(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i",
-                                $line['agg'],
-                                $matches
-                            )
-                        ) {
-                            if ($matches[0]) {
-                                $hostname = gethostbyaddr($line['agg']);
-                            }
-                        }
-
-                        if ($hostname !== false) {
-                            $hostnames[$line['agg']] = $hostname;
-                            $line['agg'] = $hostname;
-                        }
-                    } else {
-                        $line['agg'] = $hostnames[$line['agg']];
-                    }
-                }
-
-                // Address resolution end
-                if (! isset($values['sources'][$line['agg']])) {
-                    continue;
-                }
-
-                $values['data'][$interval_start][$line['agg']] = $line['data'];
-            }
+            $values['data'][$interval_end][$line['agg']] = $line['data'];
         }
     }
 
-    if (($aggregate != 'none') && (empty($values['data']))) {
+    if (empty($values['data'])) {
         return [];
     }
 
@@ -670,29 +575,40 @@ function netflow_get_data($start_date, $end_date, $interval_length, $filter, $ag
 /**
  * Returns netflow stats for the given period in an array.
  *
- * @param string start_date Period start date.
- * @param string end_date Period end date.
- * @param string filter Netflow filter.
- * @param string aggregate Aggregate field.
- * @param int max Maximum number of aggregates.
- * @param string unit Unit to show.
+ * @param string  $start_date         Period start date.
+ * @param string  $end_date           Period end date.
+ * @param string  $filter             Netflow filter.
+ * @param string  $aggregate          Aggregate field.
+ * @param integer $max                Maximum number of aggregates.
+ * @param boolean $absolute           True to give the absolute data and false
+ *      to get troughput.
+ * @param string  $connection_name    Node name when data is get in meta.
+ * @param boolean $address_resolution True to resolve ips to hostnames.
  *
- * @return An array with netflow stats.
+ * @return array With netflow stats.
  */
-function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $unit, $connection_name='', $address_resolution=false)
-{
+function netflow_get_stats(
+    $start_date,
+    $end_date,
+    $filter,
+    $aggregate,
+    $max,
+    $absolute=true,
+    $connection_name='',
+    $address_resolution=false
+) {
     global $config, $nfdump_date_format;
 
-    // Requesting remote data
+    // Requesting remote data.
     if (defined('METACONSOLE') && $connection_name != '') {
-        $data = metaconsole_call_remote_api($connection_name, 'netflow_get_stats', "$start_date|$end_date|".base64_encode(json_encode($filter))."|$aggregate|$max|$unit|".(int) $address_resolution);
+        $data = metaconsole_call_remote_api($connection_name, 'netflow_get_stats', "$start_date|$end_date|".base64_encode(json_encode($filter))."|$aggregate|$max|$absolute|".(int) $address_resolution);
         return json_decode($data, true);
     }
 
-    // Get the command to call nfdump
+    // Get the command to call nfdump.
     $command = netflow_get_command($filter);
 
-    // Execute nfdump
+    // Execute nfdump.
     $command .= " -o csv -q -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $string);
 
@@ -700,7 +616,7 @@ function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $u
         return [];
     }
 
-    // Remove the first line
+    // Remove the first line.
     $string[0] = '';
 
     $i = 0;
@@ -716,60 +632,35 @@ function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $u
         $values[$i]['date'] = $val[0];
         $values[$i]['time'] = $val[1];
 
-        // create field to sort array
+        // Create field to sort array.
         $datetime = $val[0];
         $end_date = strtotime($datetime);
         $values[$i]['datetime'] = $end_date;
-        if ($aggregate == 'proto') {
-            $values[$i]['agg'] = $val[3];
-        } else {
-            // Address resolution start
-            if ($address_resolution && ($aggregate == 'srcip' || $aggregate == 'dstip')) {
-                global $hostnames;
+        // Address resolution start.
+        if ($address_resolution && ($aggregate == 'srcip' || $aggregate == 'dstip')) {
+            global $hostnames;
 
-                if (!isset($hostnames[$val[4]])) {
-                    $hostname = gethostbyaddr($val[4]);
-                    if ($hostname !== false) {
-                        $hostnames[$val[4]] = $hostname;
-                        $val[4] = $hostname;
-                    }
-                } else {
-                    $val[4] = $hostnames[$val[4]];
+            if (!isset($hostnames[$val[4]])) {
+                $hostname = gethostbyaddr($val[4]);
+                if ($hostname !== false) {
+                    $hostnames[$val[4]] = $hostname;
+                    $val[4] = $hostname;
                 }
+            } else {
+                $val[4] = $hostnames[$val[4]];
             }
-
-            // Address resolution end
-            $values[$i]['agg'] = $val[4];
         }
+
+        // Address resolution end.
+        $values[$i]['agg'] = $val[4];
 
         if (! isset($val[9])) {
             return [];
         }
 
-        switch ($unit) {
-            case 'megabytes':
-                $values[$i]['data'] = ($val[9] / 1048576);
-            break;
-
-            case 'megabytespersecond':
-                $values[$i]['data'] = ($val[9] / 1048576 / $interval_length);
-            break;
-
-            case 'kilobytes':
-                $values[$i]['data'] = ($val[9] / 1024);
-            break;
-
-            case 'kilobytespersecond':
-                $values[$i]['data'] = ($val[9] / 1024 / $interval_length);
-            break;
-
-            default:
-            case 'bytes':
-                $values[$i]['data'] = $val[9];
-            break;
-            case 'bytespersecond':
-                $values[$i]['data'] = ($val[9] / $interval_length);
-            break;
+        $values[$i]['data'] = $val[9];
+        if (!$absolute) {
+            $values[$i]['data'] = ($values[$i]['data'] / $interval_length);
         }
 
         $i++;
@@ -784,27 +675,28 @@ function netflow_get_stats($start_date, $end_date, $filter, $aggregate, $max, $u
 /**
  * Returns a traffic summary for the given period in an array.
  *
- * @param string start_date Period start date.
- * @param string end_date Period end date.
- * @param string filter Netflow filter.
+ * @param string $start_date      Period start date.
+ * @param string $end_date        Period end date.
+ * @param string $filter          Netflow filter.
+ * @param string $connection_name Node name when data is get in meta.
  *
- * @return An array with netflow stats.
+ * @return array With netflow summary data.
  */
 function netflow_get_summary($start_date, $end_date, $filter, $connection_name='')
 {
     global $nfdump_date_format;
     global $config;
 
-    // Requesting remote data
+    // Requesting remote data.
     if (defined('METACONSOLE') && $connection_name != '') {
         $data = metaconsole_call_remote_api($connection_name, 'netflow_get_summary', "$start_date|$end_date|".base64_encode(json_encode($filter)));
         return json_decode($data, true);
     }
 
-    // Get the command to call nfdump
+    // Get the command to call nfdump.
     $command = netflow_get_command($filter);
 
-    // Execute nfdump
+    // Execute nfdump.
     $command .= ' -o csv -n 1 -s srcip/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $string);
 
@@ -812,7 +704,7 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
         return [];
     }
 
-    // Read the summary
+    // Read the summary.
     $summary = explode(',', $string[5]);
     if (! isset($summary[5])) {
         return [];
@@ -830,137 +722,174 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
 
 
 /**
- * Returns a traffic record for the given period in an array.
+ * Returns a relationships data for the given period in an array.
  *
- * @param string start_date Period start date.
- * @param string end_date Period end date.
- * @param string filter Netflow filter.
- * @param int max Maximum number of elements.
- * @param string unit to show.
+ * @param string  $start_date Period start date.
+ * @param string  $end_date   Period end date.
+ * @param string  $filter     Netflow filter.
+ * @param integer $max        Maximum number of elements.
+ * @param string  $aggregate  One of srcip, srcport, dstip, dstport.
  *
- * @return An array with netflow stats.
+ * @return array With raw relationship data.
  */
-function netflow_get_record($start_date, $end_date, $filter, $max, $unit, $address_resolution=false)
-{
+function netflow_get_relationships_raw_data(
+    $start_date,
+    $end_date,
+    $filter,
+    $max,
+    $aggregate
+) {
     global $nfdump_date_format;
     global $config;
 
-    // TIME_START = 0;
-    // TIME_END = 1;
-    // DURATION = 2;
-    // SOURCE_ADDRESS = 3;
-    // DESTINATION_ADDRESS = 4;
-    // SOURCE_PORT = 5;
-    // DESTINATION_PORT = 6;
-    // PROTOCOL = 7;
-    // INPUT_BYTES = 12;
-    // Get the command to call nfdump
+    $max_data = netflow_get_top_data(
+        $start_date,
+        $end_date,
+        $filter,
+        $aggregate,
+        $max
+    );
+
+    // Update src and dst filter (both).
+    $sources_array = array_keys($max_data['sources']);
+    $is_ip = netflow_aggregate_is_ip($aggregate);
+    netflow_update_second_level_filter(
+        $filter,
+        ($is_ip === true) ? 'dstip' : 'dstport',
+        $sources_array
+    );
+    netflow_update_second_level_filter(
+        $filter,
+        ($is_ip === true) ? 'srcip' : 'srcport',
+        $sources_array
+    );
+
+    // Get the command to call nfdump.
+    $command = sprintf(
+        '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
+        netflow_get_command($filter),
+        NETFLOW_MAX_DATA_CIRCULAR_MESH,
+        'record',
+        date($nfdump_date_format, $start_date),
+        date($nfdump_date_format, $end_date)
+    );
+
+    // Get the command to call nfdump.
     $command = netflow_get_command($filter);
 
-    // Execute nfdump
-    $command .= " -q -o csv -n $max -s record/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    // Execute nfdump.
+    $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {
+        return [
+            'lines'   => [],
+            'sources' => [],
+        ];
+    }
+
+    return [
+        'lines'   => $result,
+        'sources' => $sources_array,
+    ];
+}
+
+
+/**
+ * Parse the raw relationships data to be painted by circular mesh chart.
+ *
+ * @param array   $result        Lines gotten from nfdump call.
+ * @param array   $sources_array Array with sources involved in the chart.
+ * @param boolean $is_ip         Is ip or port.
+ *
+ * @return array With data to be parsed on circular mesh chart.
+ */
+function netflow_parse_relationships_for_circular_mesh(
+    $result,
+    $sources_array,
+    $is_ip
+) {
+    if (empty($result)) {
         return [];
     }
 
-    $values = [];
-    foreach ($result as $key => $line) {
-        $data = [];
+    // Initialize some data structures.
+    $data = [
+        'elements' => [],
+        'matrix'   => [],
+    ];
+    $initial_data = [];
+    // This array has the ips or port like keys and the array position as value.
+    $inverse_sources_array = array_flip($sources_array);
+    foreach ($sources_array as $sdata) {
+        $data['elements'][$inverse_sources_array[$sdata]] = $sdata;
+        $initial_data[$inverse_sources_array[$sdata]] = 0;
+    }
 
+    foreach ($sources_array as $sdata) {
+        $data['matrix'][$inverse_sources_array[$sdata]] = $initial_data;
+    }
+
+    // Port are situated in a different places from addreses.
+    $src_key = ($is_ip === true) ? 3 : 5;
+    $dst_key = ($is_ip === true) ? 4 : 6;
+    // Store a footprint of initial data to be compared at the end.
+    $freeze_data = md5(serialize($data));
+    foreach ($result as $line) {
+        if (empty($line) === true) {
+            continue;
+        }
+
+        // Parse the line.
         $items = explode(',', $line);
 
-        $data['time_start'] = $items[0];
-        $data['time_end'] = $items[1];
-        $data['duration'] = ($items[2] / 1000);
-        $data['source_address'] = $items[3];
-        $data['destination_address'] = $items[4];
-        $data['source_port'] = $items[5];
-        $data['destination_port'] = $items[6];
-        $data['protocol'] = $items[7];
+        // Get the required data.
+        $src_item = $inverse_sources_array[$items[$src_key]];
+        $dst_item = $inverse_sources_array[$items[$dst_key]];
+        $value = $items[12];
 
-        switch ($unit) {
-            case 'megabytes':
-                $data['data'] = ($items[12] / 1048576);
-            break;
-
-            case 'megabytespersecond':
-                $data['data'] = ($items[12] / 1048576 / $data['duration']);
-            break;
-
-            case 'kilobytes':
-                $data['data'] = ($items[12] / 1024);
-            break;
-
-            case 'kilobytespersecond':
-                $data['data'] = ($items[12] / 1024 / $data['duration']);
-            break;
-
-            default:
-            case 'bytes':
-                $data['data'] = $items[12];
-            break;
-            case 'bytespersecond':
-                $data['data'] = ($items[12] / $data['duration']);
-            break;
+        // Check if valid data.
+        if (!isset($value)
+            || !isset($data['matrix'][$dst_item][$src_item])
+            || !isset($data['matrix'][$src_item][$dst_item])
+        ) {
+            continue;
         }
 
-        $values[] = $data;
+        // Update the value.
+        $data['matrix'][$src_item][$dst_item] += (int) $value;
     }
 
-    // Address resolution start
-    if ($address_resolution) {
-        global $hostnames;
-
-        for ($i = 0; $i < count($values); $i++) {
-            if (!isset($hostnames[$values[$i]['source_address']])) {
-                $hostname = gethostbyaddr($values[$i]['source_address']);
-                if ($hostname !== false) {
-                    $hostnames[$values[$i]['source_address']] = $hostname;
-                    $values[$i]['source_address'] = $hostname;
-                }
-            } else {
-                $values[$i]['source_address'] = $hostnames[$values[$i]['source_address']];
-            }
-
-            if (!isset($hostnames[$values[$i]['destination_address']])) {
-                $hostname = gethostbyaddr($values[$i]['destination_address']);
-                if ($hostname !== false) {
-                    $hostnames[$values[$i]['destination_address']] = $hostname;
-                    $values[$i]['destination_address'] = $hostname;
-                }
-            } else {
-                $values[$i]['destination_address'] = $hostnames[$values[$i]['destination_address']];
-            }
-        }
+    // Comparte footprints.
+    if ($freeze_data === md5(serialize($data))) {
+        // Taht means that all relationships are 0.
+        return [];
     }
 
-    // Address resolution end
-    return $values;
+    return $data;
 }
 
 
 /**
  * Returns the command needed to run nfdump for the given filter.
  *
- * @param array filter Netflow filter.
+ * @param array $filter Netflow filter.
  *
- * @return Command to run.
+ * @return string Command to run.
  */
 function netflow_get_command($filter)
 {
     global $config;
 
-    // Build command
+    // Build command.
     $command = io_safe_output($config['netflow_nfdump']).' -N';
 
-    // Netflow data path
+    // Netflow data path.
     if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
         $command .= ' -R. -M '.$config['netflow_path'];
     }
 
-    // Filter options
+    // Filter options.
     $command .= netflow_get_filter_arguments($filter);
 
     return $command;
@@ -970,13 +899,13 @@ function netflow_get_command($filter)
 /**
  * Returns the nfdump command line arguments that match the given filter.
  *
- * @param array filter Netflow filter.
+ * @param array $filter Netflow filter.
  *
- * @return Command line argument string.
+ * @return string Command line argument string.
  */
 function netflow_get_filter_arguments($filter)
 {
-    // Advanced filter
+    // Advanced filter.
     $filter_args = '';
     if ($filter['advanced_filter'] != '') {
         $filter_args = preg_replace('/["\r\n]/', '', io_safe_output($filter['advanced_filter']));
@@ -987,7 +916,7 @@ function netflow_get_filter_arguments($filter)
         $filter_args .= ' "(router ip '.$filter['router_ip'].')';
     }
 
-    // Normal filter
+    // Normal filter.
     if ($filter['ip_dst'] != '') {
         $filter_args .= ' "(';
         $val_ipdst = explode(',', io_safe_output($filter['ip_dst']));
@@ -1102,74 +1031,11 @@ function netflow_get_filter_arguments($filter)
 function netflow_get_chart_types()
 {
     return [
-        'netflow_area'          => __('Area graph'),
-        'netflow_pie_summatory' => __('Pie graph and Summary table'),
-        'netflow_statistics'    => __('Statistics table'),
-        'netflow_data'          => __('Data table'),
-        'netflow_mesh'          => __('Circular mesh'),
-        'netflow_host_treemap'  => __('Host detailed traffic'),
-    ];
-}
-
-
-/**
- * Gets valid intervals for a netflow chart in the format:
- *
- * interval_length => interval_description
- *
- * @return array of valid intervals.
- */
-function netflow_get_valid_intervals()
-{
-    return [
-        (string) SECONDS_10MINUTES => __('10 mins'),
-        (string) SECONDS_15MINUTES => __('15 mins'),
-        (string) SECONDS_30MINUTES => __('30 mins'),
-        (string) SECONDS_1HOUR     => __('1 hour'),
-        (string) SECONDS_2HOUR     => __('2 hours'),
-        (string) SECONDS_5HOUR     => __('5 hours'),
-        (string) SECONDS_12HOURS   => __('12 hours'),
-        (string) SECONDS_1DAY      => __('1 day'),
-        (string) SECONDS_2DAY      => __('2 days'),
-        (string) SECONDS_5DAY      => __('5 days'),
-        (string) SECONDS_15DAYS    => __('15 days'),
-        (string) SECONDS_1WEEK     => __('Last week'),
-        (string) SECONDS_1MONTH    => __('Last month'),
-        (string) SECONDS_2MONTHS   => __('2 months'),
-        (string) SECONDS_3MONTHS   => __('3 months'),
-        (string) SECONDS_6MONTHS   => __('6 months'),
-        (string) SECONDS_1YEAR     => __('Last year'),
-        (string) SECONDS_2YEARS    => __('2 years'),
-    ];
-}
-
-
-/**
- * Gets valid intervals for a netflow chart in the format:
- *
- * interval_length => interval_description
- *
- * @return array of valid intervals.
- */
-function netflow_get_valid_subintervals()
-{
-    return [
-        (string) SECONDS_1MINUTE   => __('1 min'),
-        (string) SECONDS_2MINUTES  => __('2 mins'),
-        (string) SECONDS_5MINUTES  => __('5 mins'),
-        (string) SECONDS_10MINUTES => __('10 mins'),
-        (string) SECONDS_15MINUTES => __('15 mins'),
-        (string) SECONDS_30MINUTES => __('30 mins'),
-        (string) SECONDS_1HOUR     => __('1 hour'),
-        (string) SECONDS_2HOUR     => __('2 hours'),
-        (string) SECONDS_5HOUR     => __('5 hours'),
-        (string) SECONDS_12HOURS   => __('12 hours'),
-        (string) SECONDS_1DAY      => __('1 day'),
-        (string) SECONDS_2DAY      => __('2 days'),
-        (string) SECONDS_5DAY      => __('5 days'),
-        (string) SECONDS_15DAYS    => __('15 days'),
-        (string) SECONDS_1WEEK     => __('1 week'),
-        (string) SECONDS_1MONTH    => __('1 month'),
+        'netflow_area'         => __('Area graph'),
+        'netflow_summary'      => __('Summary'),
+        'netflow_data'         => __('Data table'),
+        'netflow_mesh'         => __('Circular mesh'),
+        'netflow_host_treemap' => __('Host detailed traffic'),
     ];
 }
 
@@ -1177,20 +1043,31 @@ function netflow_get_valid_subintervals()
 /**
  * Draw a netflow report item.
  *
- * @param string start_date Period start date.
- * @param string end_date Period end date.
- * @param string interval_length Interval length in seconds (num_intervals * interval_length = start_date - end_date).
- * @param string type Chart type.
- * @param array filter Netflow filter.
- * @param int max_aggregates Maximum number of aggregates.
- * @param string output Output format. Only HTML and XML are supported.
+ * @param string  $start_date         Period start date.
+ * @param string  $end_date           Period end date.
+ * @param mixed   $interval_length    Resolution points or hourly or daily.
+ * @param string  $type               Chart type.
+ * @param array   $filter             Netflow filter.
+ * @param integer $max_aggregates     Maximum number of aggregates.
+ * @param string  $connection_name    Node name when data is get in meta.
+ * @param string  $output             Output format. Only HTML, PDF and XML
+ *      are supported.
+ * @param boolean $address_resolution True to resolve ips to hostnames.
  *
- * @return The netflow report in the appropriate format.
+ * @return string The netflow report in the appropriate format.
  */
-function netflow_draw_item($start_date, $end_date, $interval_length, $type, $filter, $max_aggregates, $connection_name='', $output='HTML', $address_resolution=false)
-{
+function netflow_draw_item(
+    $start_date,
+    $end_date,
+    $interval_length,
+    $type,
+    $filter,
+    $max_aggregates,
+    $connection_name='',
+    $output='HTML',
+    $address_resolution=false
+) {
     $aggregate = $filter['aggregate'];
-    $unit = $filter['output'];
     $interval = ($end_date - $start_date);
     if (defined('METACONSOLE')) {
         $width = 950;
@@ -1200,106 +1077,17 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
 
     $height = 320;
 
-    // Process item
+    // Process item.
     switch ($type) {
-        case '0':
         case 'netflow_area':
-            $data = netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
-            if (empty($data)) {
-                break;
-            }
-
-            if ($aggregate != 'none') {
-                if ($output == 'HTML') {
-                    $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                    $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                    if ($interval_length != 0) {
-                        $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
-                    }
-
-                    $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit));
-                    return $html;
-                } else if ($output == 'PDF') {
-                    $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                    $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                    if ($interval_length != 0) {
-                        $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
-                    }
-
-                    $html .= graph_netflow_aggregate_area($data, $interval, $width, $height, netflow_format_unit($unit), 2, true);
-                    return $html;
-                } else if ($output == 'XML') {
-                    $xml = "<unit>$unit</unit>\n";
-                    $xml .= "<aggregate>$aggregate</aggregate>\n";
-                    $xml .= "<resolution>$interval_length</resolution>\n";
-                    $xml .= netflow_aggregate_area_xml($data);
-                    return $xml;
-                }
-            } else {
-                if ($output == 'HTML') {
-                    $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                    if ($interval_length != 0) {
-                        $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
-                    }
-
-                    $html .= graph_netflow_total_area($data, $interval, 660, 320, netflow_format_unit($unit));
-                    return $html;
-                } else if ($output == 'PDF') {
-                    $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                    if ($interval_length != 0) {
-                        $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
-                    }
-
-                    $html .= graph_netflow_total_area($data, $interval, 660, 320, netflow_format_unit($unit), 2, true);
-                    return $html;
-                } else if ($output == 'XML') {
-                    $xml = "<unit>$unit</unit>\n";
-                    $xml .= "<resolution>$interval_length</resolution>\n";
-                    $xml .= netflow_total_area_xml($data);
-                    return $xml;
-                }
-            }
-        break;
-
-        case '2':
-        case 'netflow_data':
-            $data = netflow_get_data($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
-
-            if (empty($data)) {
-                break;
-            }
-
-            if ($output == 'HTML' || $output == 'PDF') {
-                $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                if ($interval_length != 0) {
-                    $html .= '&nbsp;<b>'._('Resolution').":</b> $interval_length ".__('seconds');
-                }
-
-                $html .= "<div style='width: 100%; overflow: auto;'>";
-                $html .= netflow_data_table($data, $start_date, $end_date, $aggregate, $unit);
-                $html .= '</div>';
-
-                return $html;
-            } else if ($output == 'XML') {
-                $xml = "<unit>$unit</unit>\n";
-                $xml .= "<aggregate>$aggregate</aggregate>\n";
-                $xml .= "<resolution>$interval_length</resolution>\n";
-                // Same as netflow_aggregate_area_xml
-                $xml .= netflow_aggregate_area_xml($data);
-                return $xml;
-            }
-        break;
-
-        case '3':
-        case 'netflow_statistics':
-            $data = netflow_get_stats(
+            $data = netflow_get_data(
                 $start_date,
                 $end_date,
+                $interval_length,
                 $filter,
                 $aggregate,
                 $max_aggregates,
-                $unit,
+                false,
                 $connection_name,
                 $address_resolution
             );
@@ -1308,14 +1096,55 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
             }
 
             if ($output == 'HTML' || $output == 'PDF') {
-                $html = netflow_stat_table($data, $start_date, $end_date, $aggregate, $unit);
+                $html .= graph_netflow_aggregate_area(
+                    $data,
+                    $interval,
+                    $width,
+                    $height,
+                    ($output === 'HTML') ? 1 : 2,
+                    ($output === 'HTML'),
+                    $end_date
+                );
                 return $html;
             } else if ($output == 'XML') {
-                return netflow_stat_xml($data);
+                $xml .= '<aggregate>'.$aggregate."</aggregate>\n";
+                $xml .= '<resolution>'.$interval_length."</resolution>\n";
+                $xml .= netflow_aggregate_area_xml($data);
+                return $xml;
             }
         break;
 
-        case '4':
+        case 'netflow_data':
+            $data = netflow_get_data(
+                $start_date,
+                $end_date,
+                $interval_length,
+                $filter,
+                $aggregate,
+                $max_aggregates,
+                true,
+                $connection_name,
+                $address_resolution
+            );
+            if (empty($data)) {
+                break;
+            }
+
+            if ($output == 'HTML' || $output == 'PDF') {
+                $html .= "<div style='width: 100%; overflow: auto;'>";
+                $html .= netflow_data_table($data, $start_date, $end_date, $aggregate);
+                $html .= '</div>';
+
+                return $html;
+            } else if ($output == 'XML') {
+                $xml .= '<aggregate>'.$aggregate."</aggregate>\n";
+                $xml .= '<resolution>'.$interval_length."</resolution>\n";
+                // Same as netflow_aggregate_area_xml.
+                $xml .= netflow_aggregate_area_xml($data);
+                return $xml;
+            }
+        break;
+
         case 'netflow_summary':
             $data_summary = netflow_get_summary(
                 $start_date,
@@ -1327,22 +1156,13 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                 break;
             }
 
-            if ($output == 'HTML' || $output == 'PDF') {
-                return netflow_summary_table($data_summary);
-            } else if ($output == 'XML') {
-                return netflow_summary_xml($data_summary);
-            }
-        break;
-
-        case '1':
-        case 'netflow_pie':
             $data_pie = netflow_get_stats(
                 $start_date,
                 $end_date,
                 $filter,
                 $aggregate,
                 $max_aggregates,
-                $unit,
+                true,
                 $connection_name,
                 $address_resolution
             );
@@ -1350,131 +1170,65 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                 break;
             }
 
-            if ($output == 'HTML') {
-                $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate));
+            if ($output === 'HTML' || $output === 'PDF') {
+                $html = '<table style="width: 100%">';
+                $html .= '<tr>';
+                $html .= '<td style="width: 50%">';
+                $html .= netflow_summary_table($data_summary);
+                $html .= '</td>';
+                $html .= '<td style="width: 50%">';
+                $html .= graph_netflow_aggregate_pie(
+                    $data_pie,
+                    netflow_format_aggregate($aggregate),
+                    ($output === 'HTML') ? 1 : 2,
+                    ($output === 'HTML')
+                );
+                $html .= '</td>';
+                $html .= '</tr>';
+                $html .= '</table>';
+                $html .= netflow_stat_table(
+                    $data_pie,
+                    $start_date,
+                    $end_date,
+                    $aggregate
+                );
                 return $html;
-            } else if ($output == 'PDF') {
-                $html = '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                $html .= '&nbsp;<b>'.__('Aggregate').":</b> $aggregate";
-                $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate), 2, true);
-                return $html;
-            } else if ($output == 'XML') {
-                $xml = "<unit>$unit</unit>\n";
-                $xml .= "<aggregate>$aggregate</aggregate>\n";
-                $xml .= netflow_aggregate_pie_xml($data_pie);
-                return $xml;
-            }
-        break;
-
-        case 'netflow_pie_summatory':
-            $data_summary = netflow_get_summary(
-                $start_date,
-                $end_date,
-                $filter,
-                $connection_name
-            );
-            if (empty($data_summary)) {
-                break;
-            }
-
-            $data_pie = netflow_get_stats(
-                $start_date,
-                $end_date,
-                $filter,
-                $aggregate,
-                $max_aggregates,
-                $unit,
-                $connection_name,
-                $address_resolution
-            );
-            if (empty($data_pie)) {
-                break;
-            }
-
-            switch ($output) {
-                case 'HTML':
-                    $html = '<table>';
-                    $html .= '<tr>';
-                    $html .= '<td>';
-                    $html .= netflow_summary_table($data_summary);
-                    $html .= '<b>'.__('Unit').':</b> '.netflow_format_unit($unit);
-                    $html .= '&nbsp;<b>'.__('Aggregate').':</b> '.netflow_format_aggregate($aggregate);
-                    $html .= '</td>';
-                    $html .= '<td>';
-                    $html .= graph_netflow_aggregate_pie($data_pie, netflow_format_aggregate($aggregate));
-                    $html .= '</td>';
-                    $html .= '</tr>';
-                    $html .= '</table>';
-                return $html;
-
-                    break;
-                case 'PDF':
-                break;
-
-                case 'XML':
-                return netflow_summary_xml($data_summary);
-
-                    break;
+            } else if ($output === 'XML') {
+                return netflow_summary_xml($data_summary, $data_pie);
             }
         break;
 
         case 'netflow_mesh':
-            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit, $address_resolution);
-
-            switch ($aggregate) {
-                case 'srcport':
-                case 'dstport':
-                    $source_type = 'source_port';
-                    $destination_type = 'destination_port';
-                break;
-
-                default:
-                case 'dstip':
-                case 'srcip':
-                    $source_type = 'source_address';
-                    $destination_type = 'destination_address';
-                break;
-            }
-
-            $data = [];
-            $data['elements'] = [];
-            $data['matrix'] = [];
-            foreach ($netflow_data as $record) {
-                if (!in_array($record[$source_type], $data['elements'])) {
-                    $data['elements'][] = $record[$source_type];
-                    $data['matrix'][] = [];
-                }
-
-                if (!in_array($record[$destination_type], $data['elements'])) {
-                    $data['elements'][] = $record[$destination_type];
-                    $data['matrix'][] = [];
-                }
-            }
-
-            for ($i = 0; $i < count($data['matrix']); $i++) {
-                $data['matrix'][$i] = array_fill(0, count($data['matrix']), 0);
-            }
-
-            foreach ($netflow_data as $record) {
-                $source_key = array_search($record[$source_type], $data['elements']);
-                $destination_key = array_search($record[$destination_type], $data['elements']);
-                if ($source_key !== false && $destination_key !== false) {
-                    $data['matrix'][$source_key][$destination_key] += $record['data'];
-                }
-            }
+            $data = netflow_get_relationships_raw_data(
+                $start_date,
+                $end_date,
+                $filter,
+                $max_aggregates,
+                $aggregate,
+                $address_resolution
+            );
+            $data_circular = netflow_parse_relationships_for_circular_mesh(
+                $data['lines'],
+                $data['sources'],
+                netflow_aggregate_is_ip($aggregate)
+            );
 
             $html = '<div style="text-align:center;">';
-            $html .= graph_netflow_circular_mesh($data, netflow_format_unit($unit), 700);
+            $html .= graph_netflow_circular_mesh($data_circular);
             $html .= '</div>';
-
         return $html;
 
-            break;
         case 'netflow_host_treemap':
-            $netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit, $address_resolution);
-
+            $data_stats = netflow_get_stats(
+                $start_date,
+                $end_date,
+                $filter,
+                $aggregate,
+                $max_aggregates,
+                true,
+                $connection_name,
+                $address_resolution
+            );
             switch ($aggregate) {
                 case 'srcip':
                 case 'srcport':
@@ -1492,51 +1246,30 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
                 break;
             }
 
-            $data_aux = [];
-            foreach ($netflow_data as $record) {
-                $address = $record[$address_type];
-                $port = $record[$port_type];
-
-                if (!isset($data_aux[$address])) {
-                    $data_aux[$address] = [];
-                }
-
-                if (!isset($data_aux[$address][$port])) {
-                    $data_aux[$address][$port] = 0;
-                }
-
-                $data_aux[$address][$port] += $record['data'];
-            }
-
+            $data_graph = [
+                'name'     => __('Host detailed traffic').': '.$type,
+                'children' => [],
+            ];
             $id = -1;
 
-            $data = [];
-
-            if (! empty($netflow_data)) {
-                $data['name'] = __('Host detailed traffic').': '.$type;
-                $data['children'] = [];
-
-                foreach ($data_aux as $address => $ports) {
-                    $children = [];
-                    $children['id'] = $id++;
-                    $children['name'] = $address;
-                    $children['children'] = [];
-                    foreach ($ports as $port => $value) {
-                        $children_data = [];
-                        $children_data['id'] = $id++;
-                        $children_data['name'] = $port;
-                        $children_data['value'] = $value;
-                        $children_data['tooltip_content'] = "$port: <b>".format_numeric($value).' '.netflow_format_unit($unit).'</b>';
-                        $children['children'][] = $children_data;
-                    }
-
-                    $data['children'][] = $children;
-                }
+            foreach ($data_stats as $sdata) {
+                $data_graph['children'][] = [
+                    'id'       => $i++,
+                    'name'     => $sdata['agg'],
+                    'children' => [
+                        [
+                            'id'              => $i++,
+                            'name'            => $sdata['agg'],
+                            'value'           => $sdata['data'],
+                            'tooltip_content' => network_format_bytes($sdata['data']),
+                        ],
+                    ],
+                ];
             }
-        return graph_netflow_host_traffic($data, netflow_format_unit($unit), 'auto', 400);
+        return graph_netflow_host_traffic($data_graph, 'auto', 400);
 
-            break;
         default:
+            // Nothing to do.
         break;
     }
 
@@ -1547,106 +1280,31 @@ function netflow_draw_item($start_date, $end_date, $interval_length, $type, $fil
 
 
 /**
- * Render a netflow report as an XML.
- *
- * @param int ID of the netflow report.
- * @param string end_date Period start date.
- * @param string end_date Period end date.
- * @param string interval_length Interval length in seconds (num_intervals * interval_length = start_date - end_date).
- */
-function netflow_xml_report($id, $start_date, $end_date, $interval_length=0)
-{
-    // Get report data
-    $report = db_get_row_sql('SELECT * FROM tnetflow_report WHERE id_report ='.(int) $id);
-    if ($report === false) {
-        echo '<report>'.__('Error generating report')."</report>\n";
-        return;
-    }
-
-    // Print report header
-    $time = get_system_time();
-    echo '<?xml version="1.0" encoding="UTF-8" ?>';
-    echo "<report>\n";
-    echo "  <generated>\n";
-    echo '    <unix>'.$time."</unix>\n";
-    echo '    <rfc2822>'.date('r', $time)."</rfc2822>\n";
-    echo "  </generated>\n";
-    echo '  <name>'.io_safe_output($report['id_name'])."</name>\n";
-    echo '  <description>'.io_safe_output($report['description'])."</description>\n";
-    echo '  <start_date>'.date('r', $start_date)."</start_date>\n";
-    echo '  <end_date>'.date('r', $end_date)."</end_date>\n";
-
-    // Get netflow item types
-    $item_types = netflow_get_chart_types();
-
-    // Print report items
-    $report_contents = db_get_all_rows_sql(
-        "SELECT *
-		FROM tnetflow_report_content
-		WHERE id_report='".$report['id_report']."'
-		ORDER BY `order`"
-    );
-    foreach ($report_contents as $content) {
-        // Get item filters
-        $filter = db_get_row_sql(
-            "SELECT *
-			FROM tnetflow_filter
-			WHERE id_sg = '".io_safe_input($content['id_filter'])."'",
-            false,
-            true
-        );
-        if ($filter === false) {
-            continue;
-        }
-
-        echo "  <report_item>\n";
-        echo '    <description>'.io_safe_output($content['description'])."</description>\n";
-        echo '    <type>'.io_safe_output($item_types[$content['show_graph']])."</type>\n";
-        echo '    <max_aggregates>'.$content['max']."</max_aggregates>\n";
-        echo "    <filter>\n";
-        echo '      <name>'.io_safe_output($filter['id_name'])."</name>\n";
-        echo '      <src_ip>'.io_safe_output($filter['ip_src'])."</src_ip>\n";
-        echo '      <dst_ip>'.io_safe_output($filter['ip_dst'])."</dst_ip>\n";
-        echo '      <src_port>'.io_safe_output($filter['src_port'])."</src_port>\n";
-        echo '      <dst_port>'.io_safe_output($filter['src_port'])."</dst_port>\n";
-        echo '      <advanced>'.io_safe_output($filter['advanced_filter'])."</advanced>\n";
-        echo '      <aggregate>'.io_safe_output($filter['aggregate'])."</aggregate>\n";
-        echo '      <unit>'.io_safe_output($filter['output'])."</unit>\n";
-        echo "    </filter>\n";
-
-        echo netflow_draw_item($start_date, $end_date, $interval_length, $content['show_graph'], $filter, $content['max'], $report['server_name'], 'XML');
-
-        echo "  </report_item>\n";
-    }
-
-    echo "</report>\n";
-}
-
-
-/**
  * Render an aggregated area chart as an XML.
  *
- * @param array Netflow data.
+ * @param array $data Netflow data.
+ *
+ * @return void XML is echoed.
  */
 function netflow_aggregate_area_xml($data)
 {
-    // Print source information
+    // Print source information.
     if (isset($data['sources'])) {
         echo "<aggregates>\n";
         foreach ($data['sources'] as $source => $discard) {
-            echo "<aggregate>$source</aggregate>\n";
+            echo '<aggregate>'.$source."</aggregate>\n";
         }
 
         echo "</aggregates>\n";
 
-        // Print flow information
+        // Print flow information.
         echo "<flows>\n";
         foreach ($data['data'] as $timestamp => $flow) {
             echo "<flow>\n";
             echo '  <timestamp>'.$timestamp."</timestamp>\n";
             echo "  <aggregates>\n";
             foreach ($flow as $source => $data) {
-                echo "    <aggregate>$source</aggregate>\n";
+                echo '    <aggregate>'.$source."</aggregate>\n";
                 echo '    <data>'.$data."</data>\n";
             }
 
@@ -1670,90 +1328,36 @@ function netflow_aggregate_area_xml($data)
 
 
 /**
- * Render an area chart as an XML.
- *
- * @param array Netflow data.
- */
-function netflow_total_area_xml($data)
-{
-    // Print flow information
-    $xml = "<flows>\n";
-    foreach ($data as $timestamp => $flow) {
-        $xml .= "<flow>\n";
-        $xml .= '  <timestamp>'.$timestamp."</timestamp>\n";
-        $xml .= '  <data>'.$flow['data']."</data>\n";
-        $xml .= "</flow>\n";
-    }
-
-    $xml .= "</flows>\n";
-
-    return $xml;
-}
-
-
-/**
- * Render a pie chart as an XML.
- *
- * @param array Netflow data.
- */
-function netflow_aggregate_pie_xml($data)
-{
-    // Calculate total
-    $total = 0;
-    foreach ($data as $flow) {
-        $total += $flow['data'];
-    }
-
-    if ($total == 0) {
-        return;
-    }
-
-    // Print percentages
-    echo "<pie>\n";
-    foreach ($data as $flow) {
-        echo '<aggregate>'.$flow['agg']."</aggregate>\n";
-        echo '<data>'.format_numeric((100 * $flow['data'] / $total), 2)."%</data>\n";
-    }
-
-    echo "</pie>\n";
-}
-
-
-/**
- * Render a stats table as an XML.
- *
- * @param array Netflow data.
- */
-function netflow_stat_xml($data)
-{
-    // Print stats
-    $xml .= "<stats>\n";
-    foreach ($data as $flow) {
-        $xml .= '<aggregate>'.$flow['agg']."</aggregate>\n";
-        $xml .= '<data>'.$flow['data']."</data>\n";
-    }
-
-    $xml .= "</stats>\n";
-
-    return $xml;
-}
-
-
-/**
  * Render a summary table as an XML.
  *
- * @param array Netflow data.
+ * @param array $data      Netflow data.
+ * @param array $rows_data Table info (top N hosts).
+ *
+ * @return string Wiht XML data.
  */
-function netflow_summary_xml($data)
+function netflow_summary_xml($data, $rows_data)
 {
-    // Print summary
+    // Print summary.
     $xml = "<summary>\n";
-    $xml .= '  <total_flows>'.$data['totalflows']."</total_flows>\n";
-    $xml .= '  <total_bytes>'.$data['totalbytes']."</total_bytes>\n";
-    $xml .= '  <total_packets>'.$data['totalbytes']."</total_packets>\n";
-    $xml .= '  <average_bps>'.$data['avgbps']."</average_bps>\n";
-    $xml .= '  <average_pps>'.$data['avgpps']."</average_pps>\n";
-    $xml .= '  <average_bpp>'.$data['avgpps']."</average_bpp>\n";
+    $xml = "    <totals>\n";
+    $xml .= '        <total_flows>'.$data['totalflows']."</total_flows>\n";
+    $xml .= '        <total_bytes>'.$data['totalbytes']."</total_bytes>\n";
+    $xml .= '        <total_packets>'.$data['totalbytes']."</total_packets>\n";
+    $xml .= '        <average_bps>'.$data['avgbps']."</average_bps>\n";
+    $xml .= '        <average_pps>'.$data['avgpps']."</average_pps>\n";
+    $xml .= '        <average_bpp>'.$data['avgpps']."</average_bpp>\n";
+    $xml .= "    </totals>\n";
+
+    // Add the data table.
+    $xml .= "    <hostsdata>\n";
+    foreach ($rows_data as $d) {
+        $xml .= "<data>\n";
+        $xml .= '<host>'.$d['agg']."</host>\n";
+        $xml .= '<bytes>'.$d['data']."</bytes>\n";
+        $xml .= "</data>\n";
+    }
+
+    $xml .= "    </hostsdata>\n";
     $xml .= "</summary>\n";
 
     return $xml;
@@ -1761,41 +1365,11 @@ function netflow_summary_xml($data)
 
 
 /**
- * Return a string describing the given unit.
- *
- * @param string Netflow unit.
- */
-function netflow_format_unit($unit)
-{
-    switch ($unit) {
-        case 'megabytes':
-        return __('MB');
-
-        case 'megabytespersecond':
-        return __('MB/s');
-
-        case 'kilobytes':
-        return __('kB');
-
-        case 'kilobytespersecond':
-        return __('kB/s');
-
-        case 'bytes':
-        return __('Bytes');
-
-        case 'bytespersecond':
-        return __('B/s');
-
-        default:
-        return '';
-    }
-}
-
-
-/**
  * Return a string describing the given aggregate.
  *
- * @param string Netflow aggregate.
+ * @param string $aggregate Netflow aggregate.
+ *
+ * @return string With formatted aggregate.
  */
 function netflow_format_aggregate($aggregate)
 {
@@ -1805,9 +1379,6 @@ function netflow_format_aggregate($aggregate)
 
         case 'dstip':
         return __('Dst IP');
-
-        case 'proto':
-        return __('Protocol');
 
         case 'srcip':
         return __('Src IP');
@@ -1824,20 +1395,20 @@ function netflow_format_aggregate($aggregate)
 /**
  * Check the nfdump binary for compatibility.
  *
- * @param string nfdump binary full path.
+ * @param string $nfdump_binary Nfdump binary full path.
  *
- * @return 1 if the binary does not exist or is not executable, 2 if a
+ * @return integer 1 if the binary does not exist or is not executable, 2 if a
  *         version older than 1.6.8 is installed or the version cannot be
  *         determined, 0 otherwise.
  */
 function netflow_check_nfdump_binary($nfdump_binary)
 {
-    // Check that the binary exists and is executable
+    // Check that the binary exists and is executable.
     if (! is_executable($nfdump_binary)) {
         return 1;
     }
 
-    // Check at least version 1.6.8
+    // Check at least version 1.6.8.
     $output = '';
     $rc = -1;
     exec($nfdump_binary.' -V', $output, $rc);
@@ -1865,4 +1436,463 @@ function netflow_check_nfdump_binary($nfdump_binary)
     }
 
     return 2;
+}
+
+
+/**
+ * Get the netflow datas to build a netflow explorer data structure.
+ *
+ * @param integer $max        Number of result displayed.
+ * @param string  $top_action Action to do (listeners,talkers,tcp or udp).
+ * @param integer $start_date In utimestamp.
+ * @param integer $end_date   In utimestamp.
+ * @param string  $filter     Ip to filter.
+ * @param string  $order      Select one of bytes,pkts,flow.
+ *
+ * @return array With data (host, sum_bytes, sum_pkts and sum_flows).
+ */
+function netflow_get_top_summary(
+    $max,
+    $top_action,
+    $start_date,
+    $end_date,
+    $filter='',
+    $order='bytes'
+) {
+    global $nfdump_date_format;
+    $netflow_filter = [];
+    $sort = '';
+    switch ($top_action) {
+        case 'listeners':
+            if (empty(!$filter)) {
+                $netflow_filter['ip_src'] = $filter;
+            }
+
+            $sort = 'dstip';
+        break;
+
+        case 'talkers':
+            if (empty(!$filter)) {
+                $netflow_filter['ip_dst'] = $filter;
+            }
+
+            $sort = 'srcip';
+        break;
+
+        case 'tcp':
+        case 'udp':
+            $netflow_filter['proto'] = $top_action;
+            $sort = 'port';
+            if (empty(!$filter)) {
+                $netflow_filter['advanced_filter'] = sprintf(
+                    '((dst port %s) or (src port %s)) and (proto %s)',
+                    $filter,
+                    $filter,
+                    $top_action
+                );
+                // Display ips when filter is set in port.
+                $sort = 'ip';
+            }
+        break;
+
+        default:
+        return [];
+    }
+
+    $command = netflow_get_command($netflow_filter);
+
+    // Execute nfdump.
+    $order_text = '';
+    switch ($order) {
+        case 'flows':
+            $order_text = 'flows';
+        break;
+
+        case 'pkts':
+            $order_text = 'packets';
+        break;
+
+        case 'bytes':
+        default:
+            $order_text = 'bytes';
+        break;
+    }
+
+    $command .= " -q -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    exec($command, $result);
+
+    if (! is_array($result)) {
+        return [];
+    }
+
+    // Remove first line (avoiding slow array_shift).
+    $result = array_reverse($result);
+    array_pop($result);
+    $result = array_reverse($result);
+
+    $top_info = [];
+    foreach ($result as $line) {
+        if (empty($line)) {
+            continue;
+        }
+
+        $data = explode(',', $line);
+        if (!isset($data[9])) {
+            continue;
+        }
+
+        $top_info[(string) $data[4]] = [
+            'host'      => $data[4],
+            'sum_bytes' => $data[9],
+            'sum_pkts'  => $data[7],
+            'sum_flows' => $data[5],
+            'pct_bytes' => $data[10],
+            'pct_pkts'  => $data[8],
+            'pct_flows' => $data[6],
+        ];
+    }
+
+    return $top_info;
+}
+
+
+/**
+ * Check the netflow version and print an error message if there is not correct.
+ *
+ * @return boolean True if version check is correct.
+ */
+function netflow_print_check_version_error()
+{
+    global $config;
+
+    switch (netflow_check_nfdump_binary($config['netflow_nfdump'])) {
+        case 0:
+        return true;
+
+        case 1:
+            ui_print_error_message(
+                __('nfdump binary (%s) not found!', $config['netflow_nfdump'])
+            );
+        return false;
+
+        case 2:
+        default:
+            ui_print_error_message(
+                __('Make sure nfdump version 1.6.8 or newer is installed!')
+            );
+        return false;
+    }
+}
+
+
+/**
+ * Returns the array for netflow resolution select.
+ *
+ * @return array With all values.
+ */
+function netflow_resolution_select_params()
+{
+    return [
+        NETFLOW_RES_LOWD   => __('Low'),
+        NETFLOW_RES_MEDD   => __('Medium'),
+        NETFLOW_RES_HID    => __('High'),
+        NETFLOW_RES_ULTRAD => __('Ultra High'),
+        NETFLOW_RES_HOURLY => __('Hourly'),
+        NETFLOW_RES_DAILY  => __('Daily'),
+    ];
+}
+
+
+/**
+ * Get the resolution name.
+ *
+ * @param mixed $value Type.
+ *
+ * @return string Translated name. Unknown for unrecognized resolution names.
+ */
+function netflow_get_resolution_name($value)
+{
+    $resolutions = netflow_resolution_select_params();
+    return (isset($resolutions[$value])) ? $resolutions[$value] : __('Unknown');
+}
+
+
+/**
+ * Report formatted subtitle.
+ *
+ * @param string $aggregate  Aggregate by param.
+ * @param string $resolution Netfow live view resolution.
+ * @param string $type       Type of view.
+ *
+ * @return string HTML with formatted subtitle.
+ */
+function netflow_generate_subtitle_report($aggregate, $resolution, $type)
+{
+    $subt = __(
+        'Agregate by %s',
+        netflow_format_aggregate($aggregate)
+    );
+
+    // Display the resolution only in required reports.
+    if (in_array($type, ['netflow_area', 'netflow_data']) === true) {
+        $subt .= ' - ';
+        $subt .= __(
+            'Resolution %s',
+            netflow_get_resolution_name($resolution)
+        );
+    }
+
+    return $subt;
+}
+
+
+/**
+ * Returns netflow stats for the given period in an array.
+ *
+ * @param string  $start_date Period start date.
+ * @param string  $end_date   Period end date.
+ * @param string  $filter     Netflow filter.
+ * @param string  $aggregate  Aggregate field.
+ * @param integer $max        Maximum number of aggregates.
+ *
+ * @return array With netflow stats.
+ */
+function netflow_get_top_data(
+    $start_date,
+    $end_date,
+    $filter,
+    $aggregate,
+    $max
+) {
+    global $nfdump_date_format;
+
+    $values = [
+        'data'    => [],
+        'sources' => [],
+    ];
+
+    // Get the command to call nfdump.
+    $agg_command = sprintf(
+        '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
+        netflow_get_command($filter),
+        $max,
+        $aggregate,
+        date($nfdump_date_format, $start_date),
+        date($nfdump_date_format, $end_date)
+    );
+
+    // Call nfdump.
+    exec($agg_command, $string);
+
+    // Remove the first line.
+    $string[0] = '';
+
+    // Parse aggregates.
+    foreach ($string as $line) {
+        if (empty($line) === true) {
+            continue;
+        }
+
+        $val = explode(',', $line);
+        $values['sources'][$val[4]] = 1;
+    }
+
+    return $values;
+}
+
+
+/**
+ * Returns netflow stats for the given period in an array.
+ *
+ * @param string $filter    Netflow filter (passed by reference).
+ * @param string $aggregate Aggregate field.
+ * @param array  $sources   Sources to aggregate to filter.
+ *
+ * @return void $filter is passed by reference.
+ */
+function netflow_update_second_level_filter(&$filter, $aggregate, $sources)
+{
+    // Update the filter.
+    switch ($aggregate) {
+        default:
+        case 'srcip':
+            $extra_filter = 'ip_src';
+        break;
+        case 'srcport':
+            $extra_filter = 'src_port';
+        break;
+
+        case 'dstip':
+            $extra_filter = 'ip_dst';
+        break;
+
+        case 'dstport':
+            $extra_filter = 'dst_port';
+        break;
+    }
+
+    if (isset($filter[$extra_filter]) && $filter[$extra_filter] != '') {
+        $filter[$extra_filter] .= ',';
+    }
+
+    $filter[$extra_filter] = implode(',', $sources);
+}
+
+
+/**
+ * Change some values on address resolve.
+ *
+ * @param array   $values        Where data will be overwritten (ref).
+ * @param boolean $get_hostnames Change it if address resolution es done (ref).
+ * @param string  $aggregate     One of srcip, srcport, dstip, dstport.
+ *
+ * @return void Referenced passed params will be changed.
+ */
+function netflow_address_resolution(&$values, &$get_hostnames, $aggregate)
+{
+    if ($aggregate !== 'srcip' && $aggregate !== 'dstip') {
+        return;
+    }
+
+    $get_hostnames = true;
+    global $hostnames;
+
+    $sources = [];
+    foreach ($values['sources'] as $source => $value) {
+        if (!isset($hostnames[$source])) {
+            $hostname = gethostbyaddr($source);
+            if ($hostname !== false) {
+                $hostnames[$source] = $hostname;
+                $source = $hostname;
+            }
+        } else {
+            $source = $hostnames[$source];
+        }
+
+        $sources[$source] = $value;
+    }
+
+    $values['sources'] = $sources;
+}
+
+
+/**
+ * Check if is aggregate by IP or by port
+ *
+ * @param string $aggregate Aggregate tag.
+ *
+ * @return boolean True if is IP. False for port.
+ */
+function netflow_aggregate_is_ip($aggregate)
+{
+    return in_array($aggregate, ['dstip', 'srcip']);
+}
+
+
+/**
+ * Build netflow data structure to network map.
+ *
+ * @param integer $start_date Time in timestamp format.
+ * @param integer $end_date   Time in timestamp format.
+ * @param integer $top        Max data to show.
+ * @param integer $aggregate  One of dstip or srcip.
+ *
+ * @return array With map structure.
+ */
+function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
+{
+    // Pass an empty filter data structure.
+    $data = netflow_get_relationships_raw_data(
+        $start_date,
+        $end_date,
+        [
+            'id_name'         => '',
+            'id_group'        => 0,
+            'aggregate'       => $aggregate,
+            'id_dst'          => '',
+            'ip_src'          => '',
+            'dst_port'        => '',
+            'src_port'        => '',
+            'advanced_filter' => '',
+            'router_ip'       => '',
+        ],
+        $top,
+        $aggregate
+    );
+
+    $nodes = array_map(
+        function ($elem) {
+            return network_init_node_map($elem);
+        },
+        array_merge($data['sources'], [__('Others')])
+    );
+
+    $relations = [];
+    $inverse_nodes = array_flip($data['sources']);
+
+    // Port are situated in a different places from addreses.
+    $is_ip = true;
+    $src_key = ($is_ip === true) ? 3 : 5;
+    $dst_key = ($is_ip === true) ? 4 : 6;
+    $retrieved_data = array_fill_keys($inverse_nodes, false);
+
+    foreach ($data['lines'] as $line) {
+        if (empty($line) === true) {
+            continue;
+        }
+
+        // Parse the line.
+        $items = explode(',', $line);
+
+        // Get the required data.
+        $src_item = $inverse_nodes[$items[$src_key]];
+        $dst_item = $inverse_nodes[$items[$dst_key]];
+        $value = $items[12];
+        $index_rel = $src_item.'-'.$dst_item;
+
+        // Check if valid data.
+        if (!isset($value) || (!isset($src_item) && !isset($dst_item))) {
+            continue;
+        }
+
+        // Mark as connected source and destination.
+        $retrieved_data[$src_item] = true;
+        $retrieved_data[$dst_item] = true;
+
+        if (isset($relations[$index_rel])) {
+            $relations[$index_rel]['text_start'] += $value;
+        } else {
+            // Update the value.
+            network_init_relation_map($relations, $src_item, $dst_item, $value);
+        }
+    }
+
+    // Format the data in edges.
+    array_walk(
+        $relations,
+        function (&$elem) {
+            $elem['text_start'] = network_format_bytes($elem['text_start']);
+        }
+    );
+
+    // Search for orphan nodes.
+    $orphan_hosts = [];
+    $orphan_index = (end($inverse_nodes) + 1);
+    foreach ($retrieved_data as $position => $rd) {
+        if ($rd === true) {
+            continue;
+        }
+
+        network_init_relation_map($orphan_hosts, $position, $orphan_index);
+    }
+
+    // If there is not any orphan node, delete it.
+    if (empty($orphan_hosts)) {
+        array_pop($nodes);
+    }
+
+    return network_general_map_configuration(
+        $nodes,
+        array_merge($relations, $orphan_hosts)
+    );
 }

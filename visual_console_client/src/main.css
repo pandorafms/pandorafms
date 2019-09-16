@@ -1,0 +1,34 @@
+#visual-console-container {
+  margin: 0px auto;
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+.visual-console-item {
+  position: absolute;
+  display: flex;
+  flex-direction: initial;
+  justify-items: center;
+  align-items: center;
+  user-select: text;
+}
+
+.visual-console-item.is-editing {
+  border: 2px dashed #b2b2b2;
+  transform: translateX(-2px) translateY(-2px);
+  cursor: move;
+  user-select: none;
+}
+
+.visual-console-item.is-editing > .resize-draggable {
+  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
+  background: url(./resize-handle.svg);
+  cursor: se-resize;
+}

@@ -153,24 +153,48 @@ if ($show_update_action_menu) {
     $id_alert = (int) get_parameter('id_alert');
 
     $module_name = modules_get_agentmodule_name($id_agent_module);
-    $agent_alias = modules_get_agentmodule_agent_alias($id_agent);
+
+    $agent_alias = modules_get_agentmodule_agent_alias($id_agent_module);
 
     $id_action = (int) get_parameter('id_action');
 
     $actions = alerts_get_alert_agent_module_actions($id_alert);
-    $action_opction = db_get_row('talert_template_module_actions', 'id_alert_template_module', $id_alert);
+    $action_option = db_get_row(
+        'talert_template_module_actions',
+        'id',
+        $id_action
+    );
 
     $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
     $data .= '<table class="databox_color" style="width:100%">';
-        $data .= html_print_input_hidden('update_action', 1, true);
-        $data .= html_print_input_hidden('id_module_action_ajax', $id_module_action, true);
+        $data .= html_print_input_hidden(
+            'update_action',
+            1,
+            true
+        );
+        $data .= html_print_input_hidden(
+            'id_module_action_ajax',
+            $id_module_action,
+            true
+        );
     if (! $id_agente) {
         $data .= '<tr class="datos2">';
             $data .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
-            $data .= __('Agent');
+            $data .= __('Agent').'&nbsp;'.ui_print_help_icon(
+                'alert_scalate',
+                true,
+                ui_get_full_url(false, false, false, false)
+            );
             $data .= '</td>';
             $data .= '<td class="datos">';
-            $data .= ui_print_truncate_text($agent_alias, 'agent_small', false, true, true, '[&hellip;]');
+            $data .= ui_print_truncate_text(
+                $agent_alias,
+                'agent_small',
+                false,
+                true,
+                true,
+                '[&hellip;]'
+            );
             $data .= '</td>';
         $data .= '</tr>';
     }
@@ -180,7 +204,14 @@ if ($show_update_action_menu) {
             $data .= __('Module');
             $data .= '</td>';
             $data .= '<td class="datos">';
-            $data .= ui_print_truncate_text($module_name, 'module_small', false, true, true, '[&hellip;]');
+            $data .= ui_print_truncate_text(
+                $module_name,
+                'module_small',
+                false,
+                true,
+                true,
+                '[&hellip;]'
+            );
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
@@ -188,29 +219,72 @@ if ($show_update_action_menu) {
                 $data .= __('Action');
             $data .= '</td>';
             $data .= '<td class="datos2">';
-                $data .= html_print_select($actions, 'action_select_ajax', $id_action, '', __('None'), 0, true, false, true, '', false, 'width:150px');
+                $data .= html_print_select(
+                    $actions,
+                    'action_select_ajax',
+                    $id_action,
+                    '',
+                    __('None'),
+                    0,
+                    true,
+                    false,
+                    true,
+                    '',
+                    false,
+                    'width:150px'
+                );
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos">';
             $data .= '<td class="datos" style="font-weight:bold;padding:6px;">';
-                $data .= __('Number of alerts match from').'&nbsp;'.ui_print_help_icon('alert-matches', true, ui_get_full_url(false, false, false, false));
+                $data .= __('Number of alerts match from');
             $data .= '</td>';
             $data .= '<td class="datos">';
-                $data .= html_print_input_text('fires_min_ajax', $action_opction['fires_min'], '', 4, 10, true);
+                $data .= html_print_input_text(
+                    'fires_min_ajax',
+                    $action_option['fires_min'],
+                    '',
+                    4,
+                    10,
+                    true
+                );
                 $data .= ' '.__('to').' ';
-                $data .= html_print_input_text('fires_max_ajax', $action_opction['fires_max'], '', 4, 10, true);
+                $data .= html_print_input_text(
+                    'fires_max_ajax',
+                    $action_option['fires_max'],
+                    '',
+                    4,
+                    10,
+                    true
+                );
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
             $data .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
-                $data .= __('Threshold').'&nbsp;'.ui_print_help_icon('action_threshold', true, ui_get_full_url(false, false, false, false));
+                $data .= __('Threshold');
             $data .= '</td>';
             $data .= '<td class="datos2">';
-                $data .= html_print_input_text('module_action_threshold_ajax', $action_opction['module_action_threshold'], '', 4, 10, true);
+                $data .= html_print_input_text(
+                    'module_action_threshold_ajax',
+                    $action_option['module_action_threshold'],
+                    '',
+                    4,
+                    10,
+                    true
+                );
             $data .= '</td>';
         $data .= '</tr>';
     $data .= '</table>';
-    $data .= html_print_submit_button(__('Update'), 'updbutton', false, ['class' => 'sub next', 'style' => 'float:right'], true);
+    $data .= html_print_submit_button(
+        __('Update'),
+        'updbutton',
+        false,
+        [
+            'class' => 'sub next',
+            'style' => 'float:right',
+        ],
+        true
+    );
     $data .= '</form>';
     echo $data;
     return;

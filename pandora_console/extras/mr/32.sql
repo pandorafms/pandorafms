@@ -4,4 +4,6 @@ UPDATE `tlayout_data` SET `height` = 70 , `width` = 70 WHERE `height` = 0 && `wi
 (`type` = 10 && `image` IS NOT NULL && `image` != '' && `image` != 'none') ||
 (`type` = 11 && `image` IS NOT NULL && `image` != '' && `image` != 'none' && `show_statistics` = 0));
 
+ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '1';
+
 COMMIT;

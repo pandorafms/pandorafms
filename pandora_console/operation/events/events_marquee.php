@@ -17,7 +17,7 @@ error_reporting(1);
 $MAX_MARQUEE_EVENTS = 10;
 $MARQUEE_INTERVAL = 90;
 $MARQUEE_FONT_SIZE = '32px';
-$MARQUEE_SPEED = 12;
+$MARQUEE_SPEED = 9;
 
 $output = '';
 

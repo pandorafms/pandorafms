@@ -3611,11 +3611,6 @@ function visual_map_print_visual_map(
 
     global $config;
 
-    $metaconsole_hack = '/';
-    if (defined('METACONSOLE')) {
-        $metaconsole_hack = '../../';
-    }
-
     enterprise_include_once('meta/include/functions_ui_meta.php');
 
     include_once $config['homedir'].'/include/functions_custom_graphs.php';
@@ -3681,11 +3676,11 @@ function visual_map_print_visual_map(
         $mapHeight = $layout['height'];
         $backgroundImage = '';
         if ($layout['background'] != 'None.png') {
-            $backgroundImage = $metaconsole_hack.'images/console/background/'.$layout['background'];
+            $backgroundImage = 'images/console/background/'.$layout['background'];
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
     }
 
@@ -3698,7 +3693,7 @@ function visual_map_print_visual_map(
                 background-color:'.$layout['background_color'].';">';
 
     if ($layout['background'] != 'None.png') {
-        echo "<img src='".ui_get_full_url($backgroundImage)."' width='100%' height='100%' />";
+        echo "<img src='".ui_get_full_url($backgroundImage, false, false, false)."' width='100%' height='100%' />";
     }
 
     $layout_datas = db_get_all_rows_field_filter(
@@ -3776,7 +3771,7 @@ function visual_map_print_visual_map(
     // End main div
     echo '</div></div>';
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         echo '</div>';
     }
 }

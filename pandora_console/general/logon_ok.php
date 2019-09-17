@@ -172,6 +172,7 @@ unset($table);
 echo '<div id="right">';
 
 // News.
+require_once 'general/news_dialog.php';
 $options = [];
 $options['id_user'] = $config['id_user'];
 $options['modal'] = false;
@@ -187,6 +188,7 @@ if (!empty($news)) {
     } else {
         $comparation_suffix = __('ago');
     }
+
 
     $output_news = '<div id="news_board" class="new">';
     foreach ($news as $article) {

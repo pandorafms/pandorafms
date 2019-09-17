@@ -100,7 +100,15 @@ if ($update_filter > -2) {
                 'filter'             => $filter,
                 'unified_filters_id' => $new_unified_id,
             ];
+            if ($values['description'] == '') {
+                $result = false;
+                $msg = __('Description is empty');
+            } else if ($values['filter'] == '') {
+                $result = false;
+                $msg = __('Filter is empty');
+            } else {
                 $result = db_process_sql_insert('tsnmp_filter', $values);
+            }
         } else {
             for ($i = 0; $i < $index_post; $i++) {
                 $filter = get_parameter('filter_'.$i);
@@ -109,12 +117,28 @@ if ($update_filter > -2) {
                     'filter'             => $filter,
                     'unified_filters_id' => $new_unified_id,
                 ];
-                $result = db_process_sql_insert('tsnmp_filter', $values);
+                if ($values['filter'] != '' && $values['description'] != '') {
+                    $result = db_process_sql_insert('tsnmp_filter', $values);
+                }
+            }
+
+            if ($result === null) {
+                if ($values['description'] != '') {
+                    $result = false;
+                    $msg = __('Filters are empty');
+                } else {
+                    $result = false;
+                    $msg = __('Description is empty');
+                }
             }
         }
 
         if ($result === false) {
-            ui_print_error_message(__('There was a problem creating the filter'));
+            if (!isset($msg)) {
+                $msg = __('There was a problem creating the filter');
+            }
+
+            ui_print_error_message($msg);
         } else {
             ui_print_success_message(__('Successfully created'));
         }
@@ -215,8 +239,10 @@ if ($edit_filter > -2) {
     $result_unified = db_get_all_rows_sql('SELECT DISTINCT(unified_filters_id) FROM tsnmp_filter ORDER BY unified_filters_id ASC');
 
     $aglomerate_result = [];
-    foreach ($result_unified as $res) {
-        $aglomerate_result[$res['unified_filters_id']] = db_get_all_rows_sql('SELECT * FROM tsnmp_filter WHERE unified_filters_id = '.$res['unified_filters_id'].' ORDER BY id_snmp_filter ASC');
+    if (is_array($result_unified) === true) {
+        foreach ($result_unified as $res) {
+            $aglomerate_result[$res['unified_filters_id']] = db_get_all_rows_sql('SELECT * FROM tsnmp_filter WHERE unified_filters_id = '.$res['unified_filters_id'].' ORDER BY id_snmp_filter ASC');
+        }
     }
 
     $table = new stdClass();
@@ -282,7 +308,8 @@ if ($edit_filter > -2) {
 ?>
 
 <script type="text/javascript">
-    var id = "<?php echo $index; ?>";
+    // +1 because there is already a defined 'filter' field.
+    var id = parseInt("<?php echo $index; ?>")+1; 
     var homeurl = "<?php echo $config['homeurl']; ?>";
 
     $(document).ready (function () {

@@ -2784,20 +2784,130 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         $font_size = '3';
     }
 
-    $table->colspan['data']['cell'] = 3;
-    $table->cellstyle['data']['cell'] = 'text-align: left;';
+    if (isset($item['visual_format']) && $item['visual_format'] != 0
+        && ($item['type'] == 'max_value' || $item['type'] == 'min_value' || $item['type'] == 'avg_value')
+    ) {
+        $table2 = new stdClass();
+        $table2->width = '100%';
+        switch ($item['type']) {
+            case 'max_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Maximun'),
+                ];
+            break;
 
-    $table->data['data']['cell'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: #000000;">';
+            case 'min_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Minimun'),
+                ];
+            break;
 
-    if ($check_empty && empty($item['data']['value'])) {
-        $table->data['data']['cell'] .= __('Unknown');
-    } else if ($only_value) {
-        $table->data['data']['cell'] .= $item['data']['value'];
+            case 'avg_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Average'),
+                ];
+            break;
+        }
+
+        $table2->data = [];
+
+        $data = $item['data'][0];
+
+        $row = [
+            $data[__('Agent')],
+            $data[__('Module')],
+            $data[__('Maximun')],
+        ];
+
+        $table2->data[] = $row;
+
+        $table2->title = $item['title'];
+        $table2->titleclass = 'title_table_pdf';
+        $table2->titlestyle = 'text-align:left;';
+        $table->colspan[1][0] = 3;
+        $table->colspan[2][0] = 3;
+        $table->colspan[3][0] = 3;
+
+        array_push($table->data, html_print_table($table2, true));
+        unset($item['data'][0]);
+
+        if ($item['visual_format'] != 1) {
+            $value = $item['data'][1]['value'];
+            array_push($table->data, $value);
+            unset($item['data'][1]);
+        }
+
+        if ($item['visual_format'] != 2) {
+            $table1 = new stdClass();
+            $table1->width = '100%';
+            switch ($item['type']) {
+                case 'max_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Maximun'),
+                    ];
+                break;
+
+                case 'min_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Minimun'),
+                    ];
+                break;
+
+                case 'avg_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Average'),
+                    ];
+                break;
+            }
+
+            $table1->data = [];
+            foreach ($item['data'] as $data) {
+                if (!is_numeric($data[__('Maximun')])) {
+                    $row = [
+                        $data[__('Lapse')],
+                        $data[__('Maximun')],
+                    ];
+                } else {
+                    $row = [
+                        $data[__('Lapse')],
+                        remove_right_zeros(number_format($data[__('Maximun')], $config['graph_precision'])),
+                    ];
+                }
+
+                $table1->data[] = $row;
+            }
+
+            $table1->title = $item['title'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+
+            array_push($table->data, html_print_table($table1, true));
+        }
     } else {
-        $table->data['data']['cell'] .= $item['data']['formated_value'];
-    }
+        $table->colspan['data']['cell'] = 3;
+        $table->cellstyle['data']['cell'] = 'text-align: left;';
 
-    $table->data['data']['cell'] .= '</p>';
+        $table->data['data']['cell'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: #000000;">';
+
+        if ($check_empty && empty($item['data']['value'])) {
+            $table->data['data']['cell'] .= __('Unknown');
+        } else if ($only_value) {
+            $table->data['data']['cell'] .= $item['data']['value'];
+        } else {
+            $table->data['data']['cell'] .= $item['data']['formated_value'];
+        }
+
+        $table->data['data']['cell'] .= '</p>';
+    }
 }
 
 

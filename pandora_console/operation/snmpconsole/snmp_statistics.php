@@ -155,7 +155,7 @@ foreach ($traps_generated_by_source as $trap) {
         $row['source'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap['source'].'" title="'.__('Create agent').'">'.$trap['source'].'</a>';
     } else {
         $agent_id = $agent['id_agente'];
-        $agent_name = ui_print_truncate_text($agent['nombre'], 'agent_medium', true, true, true, '[&hellip;]', '');
+        $agent_name = ui_print_truncate_text($agent['alias'], 'agent_medium', true, true, true, '[&hellip;]', '');
         $row['source'] = "<a href=\"index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$agent_id\" title=\"".__('View agent details').'">';
         $row['source'] .= "<strong>$agent_name</strong></a>";
     }

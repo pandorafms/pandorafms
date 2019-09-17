@@ -2684,7 +2684,7 @@ function can_user_access_node()
 
     $userinfo = get_user_info($config['id_user']);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];
     } else {
         return 1;
@@ -2852,6 +2852,8 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
+    $divider = html_entity_decode($config['csv_divider']);
+
     if (!$data) {
         echo __('No data found to export');
         return 0;
@@ -2869,9 +2871,9 @@ function print_audit_csv($data)
     // BOM
     print pack('C*', 0xEF, 0xBB, 0xBF);
 
-    echo __('User').';'.__('Action').';'.__('Date').';'.__('Source IP').';'.__('Comments')."\n";
+    echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).';'.io_safe_output($line['accion']).';'.date($config['date_format'], $line['utimestamp']).';'.$line['ip_origen'].';'.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;
@@ -5516,4 +5518,82 @@ function get_array_from_csv_data_pair($csv_data, &$array_values)
 
         $array_values[$new_csv_value[0]] = $new_csv_value[1];
     }
+}
+
+
+/**
+ * Parse CSV consisting of one or more lines of the form key-value pair into an array.
+ *
+ * @param string $csv_data     Data returned of csv api call.
+ * @param string $array_values Returned array.
+ * @param array  $index        Array to create an associative index (opcional).
+ */
+function get_array_from_csv_data_all($csv_data, &$array_values, $index=false)
+{
+    $csv_array = explode("\n", $csv_data);
+
+    foreach ($csv_array as $csv_value) {
+        if (empty($csv_value)) {
+            continue;
+        }
+
+        $new_csv_value = str_getcsv($csv_value);
+
+        if ($index !== false) {
+            foreach ($new_csv_value as $key => $value) {
+                $new_csv_value_index[$index[$key]] = $value;
+            }
+
+            $array_values[$new_csv_value[0]] = $new_csv_value_index;
+        } else {
+            $array_values[$new_csv_value[0]] = $new_csv_value;
+        }
+    }
+}
+
+
+/**
+ * Print priority for Integria IMS with colors.
+ *
+ * @param string $priority       value of priority in Integria IMS.
+ * @param string $priority_label text shown in color box.
+ *
+ * @return HTML  code to print the color box.
+ */
+function ui_print_integria_incident_priority($priority, $priority_label)
+{
+    global $config;
+
+    $output = '';
+    switch ($priority) {
+        case 0:
+            $color = COL_UNKNOWN;
+        break;
+
+        case 1:
+            $color = COL_NORMAL;
+        break;
+
+        case 10:
+            $color = COL_NOTINIT;
+        break;
+
+        case 2:
+            $color = COL_WARNING;
+        break;
+
+        case 3:
+            $color = COL_ALERTFIRED;
+        break;
+
+        case 4:
+            $color = COL_CRITICAL;
+        break;
+    }
+
+    $output = '<div class="priority" style="background: '.$color.'">';
+    $output .= $priority_label;
+    $output .= '</div>';
+
+    return $output;
 }

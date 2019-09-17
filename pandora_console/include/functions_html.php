@@ -3356,3 +3356,108 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
     return $output;
 }
+
+
+/**
+ * Print an autocomplete input filled out with Integria IMS users.
+ *
+ * @param string  $name    The name of ajax control, by default is "users".
+ * @param string  $default The default value to show in the ajax control.
+ * @param boolean $return  If it is true return a string with the output instead to echo the output.
+ * @param string  $size    Size.
+ *
+ * @return mixed If the $return is true, return the output as string.
+ */
+function html_print_autocomplete_users_from_integria(
+    $name='users',
+    $default='',
+    $return=false,
+    $size='30'
+) {
+    global $config;
+
+    ob_start();
+
+    html_print_input_text_extended(
+        $name,
+        $default,
+        'text-'.$name,
+        '',
+        $size,
+        100,
+        false,
+        '',
+        []
+    );
+    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    ?>
+    <script type="text/javascript">
+        function escapeHTML (str)
+        {
+            var div = document.createElement('div');
+            var text = document.createTextNode(str);
+            div.appendChild(text);
+            return div.innerHTML;
+        }
+        
+        $(document).ready (function () {
+                $("#text-<?php echo $name; ?>").autocomplete({
+                    minLength: 2,
+                    source: function( request, response ) {
+                            var term = request.term; //Word to search
+                            
+                            data_params = {
+                                page: "include/ajax/integria_incidents.ajax",
+                                search_term: term,
+                                get_users: 1,
+                            };
+                            
+                            jQuery.ajax ({
+                                data: data_params,
+                                async: false,
+                                type: "POST",
+                                url: action="<?php echo $javascript_ajax_page; ?>",
+                                timeout: 10000,
+                                dataType: "json",
+                                success: function (data) {
+                                        console.log(data);
+                                        temp = [];
+                                        $.each(data, function (id, module) {
+                                                temp.push({
+                                                    'value' : id,
+                                                    'label' : module});
+                                        });
+                                        
+                                        response(temp);
+                                    }
+                                });
+                        },
+                    change: function( event, ui ) {
+                            if (!ui.item)
+                                $("input[name='<?php echo $name; ?>_hidden']")
+                                    .val(0);
+                            return false;
+                        },
+                    select: function( event, ui ) {
+                            $("input[name='<?php echo $name; ?>_hidden']")
+                                .val(ui.item.value);
+                            
+                            $("#text-<?php echo $name; ?>").val( ui.item.label );
+                            return false;
+                        }
+                    }
+                );
+            });
+    </script>
+    <?php
+    $output = ob_get_clean();
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}

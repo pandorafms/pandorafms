@@ -5453,7 +5453,7 @@ if (!function_exists('getallheaders')) {
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array, $show_credentials_error_msg=false)
+function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array=[], $show_credentials_error_msg=false)
 {
     $params_string = implode(',', $params_array);
 
@@ -5506,7 +5506,7 @@ function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operati
 
 
 // Parse CSV consisting of one or more lines of the form key-value pair into an array.
-function get_array_from_csv_data($csv_data, &$array_values)
+function get_array_from_csv_data_pair($csv_data, &$array_values)
 {
     $csv_array = explode("\n", $csv_data);
 
@@ -5519,4 +5519,82 @@ function get_array_from_csv_data($csv_data, &$array_values)
 
         $array_values[$new_csv_value[0]] = $new_csv_value[1];
     }
+}
+
+
+/**
+ * Parse CSV consisting of one or more lines of the form key-value pair into an array.
+ *
+ * @param string $csv_data     Data returned of csv api call.
+ * @param string $array_values Returned array.
+ * @param array  $index        Array to create an associative index (opcional).
+ */
+function get_array_from_csv_data_all($csv_data, &$array_values, $index=false)
+{
+    $csv_array = explode("\n", $csv_data);
+
+    foreach ($csv_array as $csv_value) {
+        if (empty($csv_value)) {
+            continue;
+        }
+
+        $new_csv_value = str_getcsv($csv_value);
+
+        if ($index !== false) {
+            foreach ($new_csv_value as $key => $value) {
+                $new_csv_value_index[$index[$key]] = $value;
+            }
+
+            $array_values[$new_csv_value[0]] = $new_csv_value_index;
+        } else {
+            $array_values[$new_csv_value[0]] = $new_csv_value;
+        }
+    }
+}
+
+
+/**
+ * Print priority for Integria IMS with colors.
+ *
+ * @param string $priority       value of priority in Integria IMS.
+ * @param string $priority_label text shown in color box.
+ *
+ * @return HTML  code to print the color box.
+ */
+function ui_print_integria_incident_priority($priority, $priority_label)
+{
+    global $config;
+
+    $output = '';
+    switch ($priority) {
+        case 0:
+            $color = COL_UNKNOWN;
+        break;
+
+        case 1:
+            $color = COL_NORMAL;
+        break;
+
+        case 10:
+            $color = COL_NOTINIT;
+        break;
+
+        case 2:
+            $color = COL_WARNING;
+        break;
+
+        case 3:
+            $color = COL_ALERTFIRED;
+        break;
+
+        case 4:
+            $color = COL_CRITICAL;
+        break;
+    }
+
+    $output = '<div class="priority" style="background: '.$color.'">';
+    $output .= $priority_label;
+    $output .= '</div>';
+
+    return $output;
 }

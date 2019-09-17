@@ -138,11 +138,11 @@ $integria_types_values = [];
 
 $integria_groups_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', []);
 
-get_array_from_csv_data($integria_groups_csv, $group_values);
+get_array_from_csv_data_pair($integria_groups_csv, $group_values);
 
 $integria_criticity_levels_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', []);
 
-get_array_from_csv_data($integria_criticity_levels_csv, $integria_criticity_values);
+get_array_from_csv_data_pair($integria_criticity_levels_csv, $integria_criticity_values);
 
 $integria_users_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_users', []);
 
@@ -156,7 +156,7 @@ foreach ($csv_array as $csv_line) {
 
 $integria_types_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types', []);
 
-get_array_from_csv_data($integria_types_csv, $integria_types_values);
+get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
 
 // Enable table.
 $table_enable = new StdClass();

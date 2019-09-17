@@ -1467,12 +1467,20 @@ function config_update_config()
                         $error_update[] = __('Integria default criticity');
                     }
 
+                    if (!config_update_value('default_creator', (string) get_parameter('default_creator', $config['default_creator']))) {
+                        $error_update[] = __('Integria default creator');
+                    }
+
                     if (!config_update_value('default_owner', (string) get_parameter('default_owner', $config['default_owner']))) {
                         $error_update[] = __('Integria default owner');
                     }
 
                     if (!config_update_value('incident_type', (int) get_parameter('incident_type', $config['incident_type']))) {
                         $error_update[] = __('Integria default incident type');
+                    }
+
+                    if (!config_update_value('incident_status', (int) get_parameter('incident_status', $config['incident_status']))) {
+                        $error_update[] = __('Integria default incident status');
                     }
 
                     if (!config_update_value('incident_title', (string) get_parameter('incident_title', $config['incident_title']))) {

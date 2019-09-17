@@ -131,18 +131,23 @@ if (get_parameter('update_config', 0) == 1) {
 }
 
 // Get parameters from Integria IMS API.
-$group_values = [];
+$integria_group_values = [];
 $integria_criticity_values = [];
 $integria_users_values = [];
 $integria_types_values = [];
+$integria_status_values = [];
 
 $integria_groups_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', []);
 
-get_array_from_csv_data($integria_groups_csv, $group_values);
+get_array_from_csv_data_pair($integria_groups_csv, $integria_group_values);
+
+$integria_status_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', []);
+
+get_array_from_csv_data_pair($integria_status_csv, $integria_status_values);
 
 $integria_criticity_levels_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', []);
 
-get_array_from_csv_data($integria_criticity_levels_csv, $integria_criticity_values);
+get_array_from_csv_data_pair($integria_criticity_levels_csv, $integria_criticity_values);
 
 $integria_users_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_users', []);
 
@@ -156,7 +161,7 @@ foreach ($csv_array as $csv_line) {
 
 $integria_types_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types', []);
 
-get_array_from_csv_data($integria_types_csv, $integria_types_values);
+get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
 
 // Enable table.
 $table_enable = new StdClass();
@@ -226,11 +231,41 @@ $table_cr_settings->class = 'databox filters';
 $table_cr_settings->size['name'] = '30%';
 $table_cr_settings->style['name'] = 'font-weight: bold';
 
+// Custom response incident title.
+$row = [];
+$row['name'] = __('Title');
+$row['control'] = html_print_input_text(
+    'incident_title',
+    $config['incident_title'],
+    __('Name'),
+    50,
+    100,
+    true,
+    false,
+    false
+).ui_print_help_icon('response_macros', true);
+$table_cr_settings->data['custom_response_incident_title'] = $row;
+
+// Custom response incident description.
+$row = [];
+$row['name'] = __('Description');
+$row['control'] = html_print_input_text(
+    'incident_content',
+    $config['incident_content'],
+    '',
+    50,
+    100,
+    true,
+    false,
+    false
+).ui_print_help_icon('response_macros', true);
+$table_cr_settings->data['custom_response_incident_content'] = $row;
+
 // Custom response default group.
 $row = [];
-$row['name'] = __('Default group');
+$row['name'] = __('Group');
 $row['control'] = html_print_select(
-    $group_values,
+    $integria_group_values,
     'default_group',
     $config['default_group'],
     '',
@@ -246,7 +281,7 @@ $table_cr_settings->data['custom_response_def_group'] = $row;
 
 // Custom response default criticity.
 $row = [];
-$row['name'] = __('Default criticity');
+$row['name'] = __('Criticity');
 $row['control'] = html_print_select(
     $integria_criticity_values,
     'default_criticity',
@@ -262,27 +297,31 @@ $row['control'] = html_print_select(
 );
 $table_cr_settings->data['custom_response_def_criticity'] = $row;
 
+// Custom response default creator.
+$row = [];
+$row['name'] = __('Creator');
+$row['control'] = html_print_autocomplete_users_from_integria(
+    'default_creator',
+    $config['default_creator'],
+    true
+);
+
+$table_cr_settings->data['custom_response_def_creator'] = $row;
+
 // Custom response default owner.
 $row = [];
-$row['name'] = __('Default owner');
-$row['control'] = html_print_select(
-    $integria_users_values,
+$row['name'] = __('Owner');
+$row['control'] = html_print_autocomplete_users_from_integria(
     'default_owner',
     $config['default_owner'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+    true
 );
+
 $table_cr_settings->data['custom_response_def_owner'] = $row;
 
 // Custom response default incident type.
 $row = [];
-$row['name'] = __('Incident type');
+$row['name'] = __('Type');
 $row['control'] = html_print_select(
     $integria_types_values,
     'incident_type',
@@ -298,35 +337,23 @@ $row['control'] = html_print_select(
 );
 $table_cr_settings->data['custom_response_incident_type'] = $row;
 
-// Custom response incident title.
+// Custom response default incident status.
 $row = [];
-$row['name'] = __('Incident title');
-$row['control'] = html_print_input_text(
-    'incident_title',
-    $config['incident_title'],
-    __('Name'),
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('response_macros', true);
-$table_cr_settings->data['custom_response_incident_title'] = $row;
-
-// Custom response incident content.
-$row = [];
-$row['name'] = __('Incident content');
-$row['control'] = html_print_input_text(
-    'incident_content',
-    $config['incident_content'],
+$row['name'] = __('Status');
+$row['control'] = html_print_select(
+    $integria_status_values,
+    'incident_status',
+    $config['incident_status'],
     '',
-    50,
-    100,
+    __('Select'),
+    0,
     true,
     false,
+    true,
+    '',
     false
-).ui_print_help_icon('response_macros', true);
-$table_cr_settings->data['custom_response_incident_content'] = $row;
+);
+$table_cr_settings->data['custom_response_incident_status'] = $row;
 
 // Test.
 $row = [];
@@ -374,7 +401,7 @@ if ($has_connection != false) {
     // Form custom response settings.
     echo '<div id="form_custom_response_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Custom response settings').'</legend>';
+    echo '<legend>'.__('Incident default values').'</legend>';
 
     html_print_table($table_cr_settings);
 
@@ -503,6 +530,7 @@ echo '</form>';
             type: "POST",
             url: "ajax.php",
             dataType: "json",
+            timeout: timeout ? timeout * 1000 : 0,
             data: data
         })
         .done(function(data, textStatus, xhr) {

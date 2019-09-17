@@ -5342,6 +5342,25 @@ table.info_table.policy_sub_table {
   color: #848484;
 }
 
+/* Inputs type text shown as a black line */
+.integria_incidents_options input[type="text"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-size: 10pt;
+  padding: 2px 5px;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: left bottom 2px;
+  margin-bottom: 4px;
+}
+
+.integria_incident_options input[readonly] {
+  color: #848484;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - CLASSES FOR THE NEW TOGGLES                     								-

@@ -39,19 +39,24 @@ if ($has_connection === false) {
     return;
 }
 
-// If everything OK, get parameters from Integria IMS API.
-$group_values = [];
+// If everything OK, get parameters from Integria IMS API in order to populate combos.
+$integria_group_values = [];
 $integria_criticity_values = [];
 $integria_users_values = [];
 $integria_types_values = [];
+$integria_status_values = [];
 
 $integria_groups_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', []);
 
-get_array_from_csv_data($integria_groups_csv, $group_values);
+get_array_from_csv_data_pair($integria_groups_csv, $integria_group_values);
+
+$integria_status_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', []);
+
+get_array_from_csv_data_pair($integria_status_csv, $integria_status_values);
 
 $integria_criticity_levels_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', []);
 
-get_array_from_csv_data($integria_criticity_levels_csv, $integria_criticity_values);
+get_array_from_csv_data_pair($integria_criticity_levels_csv, $integria_criticity_values);
 
 $integria_users_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_users', []);
 
@@ -65,129 +70,184 @@ foreach ($csv_array as $csv_line) {
 
 $integria_types_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types', []);
 
-get_array_from_csv_data($integria_types_csv, $integria_types_values);
+get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
 
 $event_id = (int) get_parameter('from_event');
-$create_incident = (int) get_parameter('create_incident', 0);
-$incident_group_id = (int) get_parameter('default_group');
-$incident_default_criticity_id = (int) get_parameter('default_criticity');
-$incident_default_owner = (int) get_parameter('default_owner');
-$incident_type = (int) get_parameter('incident_type');
+$incident_id_edit = (int) get_parameter('incident_id');
+$create_incident = (bool) get_parameter('create_incident', 0);
+$update_incident = (bool) get_parameter('update_incident', 0);
+$incident_group_id = (int) get_parameter('group');
+$incident_criticity_id = (int) get_parameter('criticity');
+$incident_owner = get_parameter('owner');
+$incident_type = (int) get_parameter('type');
+$incident_creator = get_parameter('creator');
+$incident_status = (int) get_parameter('status');
 $incident_title = events_get_field_value_by_event_id($event_id, get_parameter('incident_title'));
 $incident_content = events_get_field_value_by_event_id($event_id, get_parameter('incident_content'));
 
-if ($create_incident === 1) {
-    // Call Integria IMS API method to create an incident.
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_incident', [$incident_title, $incident_group_id, $incident_default_criticity_id, $incident_content, '', '0', '', 'admin', '0', '1']);
+$update = (isset($_GET['incident_id']) === true);
 
+// If incident id is specified, retrieve incident values from api to populate combos with such values.
+if ($update) {
+    // Call Integria IMS API method to get details of an incident given its id.
+    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_details', [$incident_id_edit]);
+
+    // API call does not return indexes, therefore future modifications of API function in Integria IMS may lead to inconsistencies when accessing resulting array in this file.
+    $incident_details = explode(',', $result_api_call);
+}
+
+// Perform action.
+if ($create_incident === true) {
+    // Call Integria IMS API method to create an incident.
+    $result_api_call = integria_api_call($config['integria_hostname'], $incident_creator, $config['integria_pass'], $config['integria_api_pass'], 'create_incident', [$incident_title, $incident_group_id, $incident_criticity_id, $incident_content, '', '0', '', $incident_owner, '0', $incident_status]);
+
+    // Necessary to explicitly set true if not false because it returns api call result in case of success instead of true value.
     $incident_created_ok = ($result_api_call != false) ? true : false;
 
     ui_print_result_message(
         $incident_created_ok,
-        __('Successfully created'),
-        __('Could not be created')
+        __('Successfully created in Integria IMS'),
+        __('Could not be created in Integria IMS')
+    );
+} else if ($update_incident === true) {
+    // Call Integria IMS API method to update an incident.
+    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'update_incident', [$incident_id_edit, $incident_title, $incident_content, '', $incident_group_id, $incident_criticity_id, 0, $incident_status, $incident_owner]);
+
+    // Necessary to explicitly set true if not false because it returns api call result in case of success instead of true value.
+    $incident_updated_ok = ($result_api_call != false) ? true : false;
+
+    ui_print_result_message(
+        $incident_updated_ok,
+        __('Successfully updated in Integria IMS'),
+        __('Could not be updated in Integria IMS')
     );
 }
 
 $table = new stdClass();
 $table->width = '100%';
 $table->id = 'add_alert_table';
-$table->class = 'databox filters';
+$table->class = 'databox filters integria_incidents_options';
 $table->head = [];
 
 $table->data = [];
 $table->size = [];
 $table->size = [];
-$table->size[0] = '15%';
-$table->size[1] = '90%';
+$table->style[0] = 'width: 33%; padding-right: 50px; padding-left: 100px;';
+$table->style[1] = 'width: 33%; padding-right: 50px; padding-left: 50px;';
+$table->style[2] = 'width: 33%; padding-right: 100px; padding-left: 50px;';
+$table->colspan[0][0] = 2;
+$table->colspan[3][0] = 3;
 
-$table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select(
-    $group_values,
-    'default_group',
-    $config['default_group'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
-);
-
-$table->data[1][0] = __('Default Criticity');
-$table->data[1][1] = html_print_select(
-    $integria_criticity_values,
-    'default_criticity',
-    $config['default_criticity'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
-);
-
-$table->data[2][0] = __('Default Owner');
-$table->data[2][1] = html_print_select(
-    $integria_users_values,
-    'default_owner',
-    $config['default_owner'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
-);
-
-$table->data[0][2] = __('Incident Type');
-$table->data[0][3] = html_print_select(
-    $integria_types_values,
-    'incident_type',
-    $config['incident_type'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
-);
-
-$table->data[1][2] = __('Incident title').ui_print_help_icon('response_macros', true);
-$table->data[1][3] = html_print_input_text(
+$table->data[0][0] = '<div class="label_select"><p class="input_label">'.__('Title').':&nbsp'.ui_print_help_icon('response_macros', true).'</p>';
+$table->data[0][0] .= '<div class="label_select_parent">'.html_print_input_text(
     'incident_title',
-    $config['incident_title'],
+    $update ? $incident_details[3] : $config['incident_title'],
     __('Name'),
     50,
     100,
     true,
     false,
     true
-);
+).'</div>';
 
-$table->data[2][2] = __('Incident content').ui_print_help_icon('response_macros', true);
-$table->data[2][3] = html_print_input_text(
-    'incident_content',
-    $config['incident_content'],
+$table->data[1][0] = '<div class="label_select"><p class="input_label">'.__('Type').': </p>';
+$table->data[1][0] .= '<div class="label_select_parent">'.html_print_select(
+    $integria_types_values,
+    'type',
+    $update ? $incident_details[17] : $config['incident_type'],
     '',
-    50,
-    100,
+    __('Select'),
+    0,
     true,
     false,
+    true,
+    '',
+    false,
+    'width: 100%;'
+).'</div>';
+
+$table->data[2][0] = '<div class="label_select"><p class="input_label">'.__('Status').': </p>';
+$table->data[2][0] .= '<div class="label_select_parent">'.html_print_select(
+    $integria_status_values,
+    'status',
+    $update ? $incident_details[6] : $config['incident_status'],
+    '',
+    __('Select'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
+).'</div>';
+
+$table->data[1][1] = '<div class="label_select"><p class="input_label">'.__('Group').': </p>';
+$table->data[1][1] .= '<div class="label_select_parent">'.html_print_select(
+    $integria_group_values,
+    'group',
+    $update ? $incident_details[8] : $config['default_group'],
+    '',
+    __('Select'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
+).'</div>';
+
+$table->data[2][1] = '<div class="label_select"><p class="input_label">'.__('Creator').': </p>';
+$table->data[2][1] .= '<div class="label_select_parent">'.html_print_autocomplete_users_from_integria(
+    'creator',
+    $update ? $incident_details[10] : $config['default_creator'],
     true
-);
+).'</div>';
+
+$table->data[1][2] = '<div class="label_select"><p class="input_label">'.__('Criticity').': </p>';
+$table->data[1][2] .= '<div class="label_select_parent">'.html_print_select(
+    $integria_criticity_values,
+    'criticity',
+    $update ? $incident_details[7] : $config['default_criticity'],
+    '',
+    __('Select'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
+).'</div>';
+
+$table->data[2][2] = '<div class="label_select"><p class="input_label">'.__('Owner').': </p>';
+
+$table->data[2][2] .= '<div class="label_select_parent">'.html_print_autocomplete_users_from_integria(
+    'owner',
+    $update ? $incident_details[10] : $config['default_owner'],
+    true
+).'</div>';
+
+$table->data[3][0] = '<div class="label_select"><p class="input_label">'.__('Description').':&nbsp'.ui_print_help_icon('response_macros', true).'</p>';
+$table->data[3][0] .= '<div class="label_select_parent">'.html_print_textarea(
+    'incident_content',
+    3,
+    20,
+    $update ? $incident_details[4] : $config['incident_content'],
+    '',
+    true
+).'</div>';
 
 echo '<form name="create_integria_incident_form" method="POST">';
 html_print_table($table);
-html_print_input_hidden('create_incident', 1);
+
+if (!$update) {
+    html_print_input_hidden('create_incident', 1);
+} else {
+    html_print_input_hidden('update_incident', 1);
+}
+
 echo '<div style="width: 100%; text-align:right;">';
 html_print_submit_button(__('Create'), 'accion', false, 'class="sub wand"');
 echo '</div>';

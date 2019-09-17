@@ -5451,7 +5451,7 @@ if (!function_exists('getallheaders')) {
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array, $show_credentials_error_msg=false)
+function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array=[], $show_credentials_error_msg=false)
 {
     $params_string = implode(',', $params_array);
 
@@ -5466,8 +5466,8 @@ function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operati
     // Build URL for API request.
     $url = $api_hostname.'/integria/include/api.php';
 
-    ob_start();
-    $out = fopen('php://output', 'w');
+    // ob_start();
+    // $out = fopen('php://output', 'w');
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -5478,9 +5478,8 @@ function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operati
     curl_setopt($ch, CURLOPT_STDERR, $out);
     $result = curl_exec($ch);
 
-     fclose($out);
-     $debug = ob_get_clean();
-
+    // fclose($out);
+    // $debug = ob_get_clean();
     $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     $error = false;
@@ -5504,7 +5503,7 @@ function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operati
 
 
 // Parse CSV consisting of one or more lines of the form key-value pair into an array.
-function get_array_from_csv_data($csv_data, &$array_values)
+function get_array_from_csv_data_pair($csv_data, &$array_values)
 {
     $csv_array = explode("\n", $csv_data);
 

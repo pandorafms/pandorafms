@@ -1451,7 +1451,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.PHP.SERIALIZE_PRECISION',
                     'title'   => sprintf(
                         __("Not recommended '%s' value in PHP configuration"),
-                        'serialze_precision'
+                        'serialize_precision'
                     ),                    'message' => sprintf(
                         __('Recommended value is: %s'),
                         sprintf('-1')

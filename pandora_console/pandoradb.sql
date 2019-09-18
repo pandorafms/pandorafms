@@ -1455,6 +1455,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`uncompressed_module` TINYINT DEFAULT '0',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2998,6 +2999,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`uncompressed_module` TINYINT DEFAULT '0',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

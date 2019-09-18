@@ -47,9 +47,6 @@ if ($update_settings) {
 
 ui_require_javascript_file_enterprise('load_enterprise');
 enterprise_include_once('include/functions_license.php');
-$config['license_mode'] = 1;
-var_dump($config['license_mode']);
-
 $license = enterprise_hook('license_get_info');
 
 $rows = db_get_all_rows_in_table('tupdate_settings');

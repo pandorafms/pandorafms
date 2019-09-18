@@ -47,6 +47,9 @@ if ($update_settings) {
 
 ui_require_javascript_file_enterprise('load_enterprise');
 enterprise_include_once('include/functions_license.php');
+$config['license_mode'] = 1;
+var_dump($config['license_mode']);
+
 $license = enterprise_hook('license_get_info');
 
 $rows = db_get_all_rows_in_table('tupdate_settings');
@@ -726,7 +729,7 @@ render_info_data(
     echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(' Pandora FMS Licence Information').'</th></tr>';
 
     render_row(html_print_textarea('keys[customer_key]', 10, 255, $settings->customer_key, 'style="height:40px; width:450px;"', true), 'Customer key');
-    render_row($license['expiry_date'], 'Expires');
+    render_row($license['expiry_date'], $license['expiry_caption']);
     render_row($license['limit'].' agents', 'Platform Limit');
     render_row($license['count'].' agents', 'Current Platform Count');
     render_row($license['count_enabled'].' agents', 'Current Platform Count (enabled: items)');

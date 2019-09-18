@@ -2639,6 +2639,10 @@ function config_process_config()
         config_update_value('zoom_graph', 1);
     }
 
+    if (!isset($config['percentil'])) {
+        config_update_value('percentil', 95);
+    }
+
     if (!isset($config['render_proc_ok'])) {
         config_update_value('render_proc_ok', __('Ok'));
     }

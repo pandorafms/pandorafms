@@ -3789,11 +3789,20 @@ function series_type_graph_array($data, $show_elements_graph)
             } else if (strpos($key, 'percentil') !== false) {
                 $data_return['series_type'][$key] = 'percentil';
                 if ($show_elements_graph['percentil']) {
-                    $data_return['legend'][$key] = __('Percentil').' '.$config['percentil'].'º '.__('of module').' ';
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = __('Percentil').' ';
+                        $name_legend .= $config['percentil'].'º ';
+                        $name_legend .= __('of module').' ';
+                        $name_legend .= $value['agent_alias'].' / ';
+                        $name_legend .= $value['module_name'].' / ';
+                        $name_legend .= __('Unit ').' ';
+                        $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                        $name_legend = __('Percentil').' ';
+                        $name_legend .= $config['percentil'].'º ';
+                        $name_legend .= __('of module').' ';
+                        $name_legend .= $value['agent_alias'].' / ';
+                        $name_legend .= $value['module_name'].': ';
                     }
 
                     $data_return['legend'][$key] .= $name_legend;

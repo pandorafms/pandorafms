@@ -302,6 +302,15 @@ function grafico_modulo_sparse_data(
     $array_data['sum'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
     $array_data['sum'.$series_suffix]['unit'] = $data_module_graph['unit'];
 
+    if ($params['percentil']) {
+        $array_data['percentil'.$series_suffix]['agent_module_id'] = $agent_module_id;
+        $array_data['percentil'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+        $array_data['percentil'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
+        $array_data['percentil'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
+        $array_data['percentil'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
+        $array_data['percentil'.$series_suffix]['unit'] = $data_module_graph['unit'];
+    }
+
     // This is for a specific type of report that consists in passing
     // an interval and doing the average sum and avg.
     if ($params['force_interval'] != '') {
@@ -376,12 +385,6 @@ function grafico_modulo_sparse_data(
             1 => $acum_array_data[($i - 1)][1],
         ];
         $array_data['sum1']['data'] = $acum_array_data;
-    }
-
-    if ($params['percentil']) {
-        $percentil_value = $array_data['percentil'.$series_suffix]['data'][0][1];
-    } else {
-        $percentil_value = 0;
     }
 
     $events = [];
@@ -1470,8 +1473,6 @@ function graphic_combined_module(
                 $max = $array_data['sum'.$i]['max'];
                 $min = $array_data['sum'.$i]['min'];
                 $avg = $array_data['sum'.$i]['avg'];
-
-                $percentil_value = $array_data['percentil'.$i]['data'][0][1];
 
                 if ($config['fixed_graph'] == false) {
                     $water_mark = [

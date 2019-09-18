@@ -10738,7 +10738,7 @@ function reporting_get_agentmodule_data_sum(
 ) {
     global $config;
 
-    // Initialize variables
+    // Initialize variables.
     if (empty($date)) {
         $date = get_system_time();
     }
@@ -10760,7 +10760,7 @@ function reporting_get_agentmodule_data_sum(
         $id_module_type
     );
     $module_interval = modules_get_interval($id_agent_module);
-    // Check if module must be compressed
+    // Check if module must be compressed.
     if (!$uncompressed_module) {
         $uncompressed_module = is_module_uncompressed($module_name);
     }
@@ -10770,14 +10770,14 @@ function reporting_get_agentmodule_data_sum(
         return 0;
     }
 
-    // Incremental modules are treated differently
+    // Incremental modules are treated differently.
     $module_inc = is_module_inc($module_name);
 
     if (!$uncompressed_module) {
-        // Get module data
+        // Get module data.
         $interval_data = db_get_all_rows_sql(
             '
-            SELECT * FROM tagente_datos 
+            SELECT * FROM tagente_datos
             WHERE id_agente_modulo = '.(int) $id_agent_module.'
                 AND utimestamp > '.(int) $datelimit.'
                 AND utimestamp < '.(int) $date.'
@@ -10798,7 +10798,7 @@ function reporting_get_agentmodule_data_sum(
         return false;
     }
 
-    // Set initial conditions
+    // Set initial conditions.
     $total = 0;
     $partial_total = 0;
     $count_sum = 0;
@@ -10806,17 +10806,6 @@ function reporting_get_agentmodule_data_sum(
     foreach ($interval_data as $data) {
         $partial_total = 0;
         $count_sum = 0;
-
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                // Do none
-            break;
-
-            case 'oracle':
-                $data['datos'] = oracle_format_float_to_php($data['datos']);
-            break;
-        }
 
         if (!$uncompressed_module) {
             $total += $data['datos'];
@@ -10832,7 +10821,7 @@ function reporting_get_agentmodule_data_sum(
                 continue;
             }
 
-            $total += ($partial_total / $count_sum);
+            $total += $partial_total;
         } else {
             $last = end($data['data']);
             $total += $last['datos'];

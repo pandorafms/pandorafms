@@ -47,7 +47,8 @@ $incident_owner = (string) get_parameter('incident_owner', '');
 $incident_creator = (string) get_parameter('incident_creator', '');
 $incident_priority = (int) get_parameter('incident_priority', -1);
 $incident_resolution = (string) get_parameter('incident_resolution', '');
-$incident_date = (string) get_parameter('incident_date', '');
+$created_from = (string) get_parameter('created_from', '');
+$created_to = (string) get_parameter('created_to', '');
 
 $offset = (int) get_parameter('offset');
 
@@ -74,9 +75,9 @@ if ($delete_incident) {
 
 // Full url with all filters.
 $url = ui_get_full_url(
-    'index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&incident_text='.$incident_text.'&incident_status='.$incident_status.'&incident_group='.$incident_group.'&incident_owner='.$incident_owner.'&incident_creator='.$incident_creator.'&incident_priority='.$incident_priority.'&incident_resolution='.$incident_resolution.'&incident_date='.$incident_date.'&offset='.$offset
+    'index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&incident_text='.$incident_text.'&incident_status='.$incident_status.'&incident_group='.$incident_group.'&incident_owner='.$incident_owner.'&incident_creator='.$incident_creator.'&incident_priority='.$incident_priority.'&incident_resolution='.$incident_resolution.'&created_from='.$created_from.'&created_to='.$created_to.'&offset='.$offset
 );
-hd($url);
+
 
 // ---- FILTERS ----
 // API calls to fill the filters.
@@ -165,7 +166,7 @@ $table->data[2][1] = html_print_select(
 $table->data[2][2] = __('Date');
 $table->data[2][3] = html_print_input_text_extended(
     'created_from',
-    '',
+    $created_from,
     'created_from',
     '',
     12,
@@ -177,7 +178,7 @@ $table->data[2][3] = html_print_input_text_extended(
 );
 $table->data[2][3] .= html_print_input_text_extended(
     'created_to',
-    '',
+    $created_to,
     'created_to',
     '',
     12,
@@ -189,8 +190,8 @@ $table->data[2][3] .= html_print_input_text_extended(
 );
 
 // TODO: image of Integria IMS.
-$table->data[2][4] = 'Imagen:';
-$table->data[2][5] = 'IMAGEN';
+$table->data[2][4] = '';
+$table->data[2][5] = '';
 
 
 // Send filters to get_tickets_integriaims().
@@ -202,7 +203,8 @@ $tickets_filters = [
     'incident_creator'    => $incident_creator,
     'incident_priority'   => $incident_priority,
     'incident_resolution' => $incident_resolution,
-    'incident_date'       => $incident_date,
+    'created_from'        => $created_from,
+    'created_to'          => $created_to,
 ];
 
 // Data to export to csv file.
@@ -319,3 +321,16 @@ if (check_acl($config['id_user'], 0, 'IR')) {
         echo '</div>';
     echo '</form>';
 }
+
+// Datapicker library for show calendar.
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+?>
+
+
+<script language="javascript" type="text/javascript">
+    $(document).ready( function() {
+        $("#created_from, #created_to").datepicker({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
+        });  
+    });
+</script>

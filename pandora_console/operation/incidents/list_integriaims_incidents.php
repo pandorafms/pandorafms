@@ -40,7 +40,7 @@ if ($has_connection === false) {
 }
 
 // Get parameters for filters.
-$incident_text = (string) get_parameter('text_filter', '');
+$incident_text = (string) get_parameter('incident_text', '');
 $incident_status = (int) get_parameter('incident_status', 0);
 $incident_group = (int) get_parameter('incident_group', 1);
 $incident_owner = (string) get_parameter('incident_owner', '');
@@ -109,7 +109,7 @@ $table->cellspacing = '0';
 $table->data = [];
 
 $table->data[0][0] = __('Text filter');
-$table->data[0][1] = html_print_input_text('text_filter', $text_filter, '', 20, 40, true);
+$table->data[0][1] = html_print_input_text('incident_text', $incident_text, '', 30, 100, true);
 
 $table->data[0][2] = __('Status');
 $table->data[0][3] = html_print_select(
@@ -163,60 +163,70 @@ $table->data[2][1] = html_print_select(
 
 // TODO: field type date.
 $table->data[2][2] = __('Date');
-$table->data[2][3] = 'FECHA';
+$table->data[2][3] = html_print_input_text_extended(
+    'created_from',
+    '',
+    'created_from',
+    '',
+    12,
+    50,
+    false,
+    '',
+    'placeholder="'.__('Created from').'"',
+    true
+);
+$table->data[2][3] .= html_print_input_text_extended(
+    'created_to',
+    '',
+    'created_to',
+    '',
+    12,
+    50,
+    false,
+    '',
+    'style="margin-left:5px;" placeholder="'.__('Created to').'"',
+    true
+);
 
 // TODO: image of Integria IMS.
 $table->data[2][4] = 'Imagen:';
 $table->data[2][5] = 'IMAGEN';
 
 
+// Send filters to get_tickets_integriaims().
+$tickets_filters = [
+    'incident_text'       => $incident_text,
+    'incident_status'     => $incident_status,
+    'incident_group'      => $incident_group,
+    'incident_owner'      => $incident_owner,
+    'incident_creator'    => $incident_creator,
+    'incident_priority'   => $incident_priority,
+    'incident_resolution' => $incident_resolution,
+    'incident_date'       => $incident_date,
+];
+
+// Data to export to csv file.
+$decode_csv = base64_encode(json_encode($tickets_filters));
+
+
+// ---- PRINT TABLE FILTERS ----
 $integria_incidents_form = '<form method="post" action="'.$url.'">';
 $integria_incidents_form .= html_print_table($table, true);
 $integria_incidents_form .= '<div style="width:100%; text-align:right;">';
-$integria_incidents_form .= '<div style="float:right; margin-left: 5px;">'.html_print_submit_button(__('Export to CSV'), 'csv_button', false, 'class="sub next"', true).'</div>';
+$integria_incidents_form .= '<div style="float:right; margin-left: 5px;">'.html_print_button(
+    __('Export to CSV'),
+    'csv_export',
+    false,
+    "location.href='operation/incidents/integriaims_export_csv.php?tickets_filters=$decode_csv'",
+    'class="sub next"',
+    true
+).'</div>';
 $integria_incidents_form .= '<div>'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true).'</div>';
 $integria_incidents_form .= '</div>';
 $integria_incidents_form .= '</form>';
 
 // ui_toggle($integria_incidents_form, __('Add Custom filter'));
 echo $integria_incidents_form;
-
-// ---- LIST OF INCIDENTS ----
-$result_api_call_list = integria_api_call(
-    $config['integria_hostname'],
-    $config['integria_user'],
-    $config['integria_pass'],
-    $config['integria_api_pass'],
-    'get_incidents',
-    [
-        $incident_text,
-        $incident_status,
-        $incident_group,
-        $incident_priority,
-        '0',
-        $incident_owner,
-        $incident_creator,
-    ]
-);
-// 'get_incidents', ['', '0', '1', '-1', '0', 'admin', 'admin']);
-// http://192.168.70.124/integria/include/api.php?user=admin&user_pass=integria&pass=1234&op=get_incidents&params=,0,1,-1
-$array_get_incidents = [];
-
-// Return array of api call 'get_incidents'.
-get_array_from_csv_data_all($result_api_call_list, $array_get_incidents);
-
-// Modify $array_get_incidents if filter for resolution exists.
-$filter_resolution = [];
-foreach ($array_get_incidents as $key => $value) {
-    if ($incident_resolution !== '' && ($array_get_incidents[$key][12] == $incident_resolution)) {
-        $filter_resolution[$key] = $array_get_incidents[$key];
-        continue;
-    }
-}
-
-if ($incident_resolution !== '') {
-    $array_get_incidents = $filter_resolution;
-}
 
 /*
  * Order api call 'get_incidents'.
@@ -231,6 +241,10 @@ if ($incident_resolution !== '') {
  * id_creator    = $array_get_incidents[$key][10]
  *
  */
+
+// ---- LIST OF INCIDENTS ----
+// Get list of incidents.
+$array_get_incidents = get_tickets_integriaims($tickets_filters);
 
 // Prepare pagination.
 $incidents_limit = $config['block_size'];
@@ -273,7 +287,7 @@ foreach ($incidents_paginated as $key => $value) {
     $table->data[$i][4] = ui_print_integria_incident_priority($array_get_incidents[$key][7], $priority_incident[$array_get_incidents[$key][7]]);
     $table->data[$i][5] = $array_get_incidents[$key][9];
     $table->data[$i][6] = $array_get_incidents[$key][10];
-    $table->data[$i][7] = $array_get_incidents[$key][0];
+    $table->data[$i][7] = $array_get_incidents[$key][5];
     $table->data[$i][8] = '';
     $table->cellclass[$i][8] = 'action_buttons';
     if (check_acl($config['id_user'], 0, 'IW')) {
@@ -301,7 +315,7 @@ ui_pagination(count($array_get_incidents), $url, $offset, 0, false, 'offset', tr
 if (check_acl($config['id_user'], 0, 'IR')) {
     echo '<form method="POST" action="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident').'">';
         echo '<div style="width: 100%; text-align:right;">';
-            html_print_submit_button(__('Create'), 'create_new_incident', false, 'class="sub wand"');
+            html_print_submit_button(__('Create'), 'create_new_incident', false, 'class="sub next"');
         echo '</div>';
     echo '</form>';
 }

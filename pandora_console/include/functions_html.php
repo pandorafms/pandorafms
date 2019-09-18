@@ -3423,7 +3423,6 @@ function html_print_autocomplete_users_from_integria(
                                 timeout: 10000,
                                 dataType: "json",
                                 success: function (data) {
-                                        console.log(data);
                                         temp = [];
                                         $.each(data, function (id, module) {
                                                 temp.push({

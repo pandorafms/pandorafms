@@ -5597,3 +5597,63 @@ function ui_print_integria_incident_priority($priority, $priority_label)
 
     return $output;
 }
+
+
+/**
+ * Get tickets from Integria IMS.
+ *
+ * @param array $tickets_filters Filters to send to API.
+ *
+ * @return array  Tickets returned by API call.
+ */
+function get_tickets_integriaims($tickets_filters)
+{
+    global $config;
+
+    // Filters.
+    $incident_text = $tickets_filters['incident_text'];
+    $incident_status = $tickets_filters['incident_status'];
+    $incident_group = $tickets_filters['incident_group'];
+    $incident_owner = $tickets_filters['incident_owner'];
+    $incident_creator = $tickets_filters['incident_creator'];
+    $incident_priority = $tickets_filters['incident_priority'];
+    $incident_resolution = $tickets_filters['incident_resolution'];
+    $incident_date = $tickets_filters['incident_date'];
+
+    // API call.
+    $result_api_call_list = integria_api_call(
+        $config['integria_hostname'],
+        $config['integria_user'],
+        $config['integria_pass'],
+        $config['integria_api_pass'],
+        'get_incidents',
+        [
+            $incident_text,
+            $incident_status,
+            $incident_group,
+            $incident_priority,
+            '0',
+            $incident_owner,
+            $incident_creator,
+        ]
+    );
+
+    // Return array of api call 'get_incidents'.
+    $array_get_incidents = [];
+    get_array_from_csv_data_all($result_api_call_list, $array_get_incidents);
+
+    // Modify $array_get_incidents if filter for resolution exists.
+    $filter_resolution = [];
+    foreach ($array_get_incidents as $key => $value) {
+        if ($incident_resolution !== '' && ($array_get_incidents[$key][12] == $incident_resolution)) {
+            $filter_resolution[$key] = $array_get_incidents[$key];
+            continue;
+        }
+    }
+
+    if ($incident_resolution !== '') {
+        $array_get_incidents = $filter_resolution;
+    }
+
+    return $array_get_incidents;
+}

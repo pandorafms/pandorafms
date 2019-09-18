@@ -1586,12 +1586,35 @@ class Item extends CachedModel
             $result['timezone'] = $timezone;
         }
 
-        $show_last_value = static::parseIntOr(
-            static::issetInArray($data, ['show_last_value', 'showLastValue']),
+        $show_last_value = static::notEmptyStringOr(
+            static::issetInArray($data, ['showLastValueTooltip']),
             null
         );
+        if ($show_last_value === null) {
+            $show_last_value = static::parseIntOr(
+                static::issetInArray($data, ['show_last_value', 'showLastValue']),
+                null
+            );
+        }
+
         if ($show_last_value !== null) {
-            $result['show_last_value'] = $show_last_value;
+            if (\is_numeric($show_last_value) === true) {
+                $result['show_last_value'] = $show_last_value;
+            } else {
+                switch ($show_last_value) {
+                    case 'enabled':
+                        $result['show_last_value'] = 1;
+                    break;
+
+                    case 'disabled':
+                        $result['show_last_value'] = 2;
+                    break;
+
+                    default:
+                        $result['show_last_value'] = 0;
+                    break;
+                }
+            }
         }
 
         $cacheExpiration = static::extractCacheExpiration($data);

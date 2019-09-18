@@ -94,7 +94,8 @@ class ShowLastValueInputGroup extends InputGroup<Partial<StaticGraphProps>> {
 
     const showLastValueSelect = document.createElement("select");
     showLastValueSelect.required = true;
-    showLastValueSelect.value =
+
+    const currentValue =
       this.currentData.showLastValueTooltip ||
       this.initialData.showLastValueTooltip ||
       "default";
@@ -103,6 +104,9 @@ class ShowLastValueInputGroup extends InputGroup<Partial<StaticGraphProps>> {
       const optionElement = document.createElement("option");
       optionElement.value = option.value;
       optionElement.textContent = option.text;
+      if (currentValue == optionElement.value) {
+        optionElement.selected = true;
+      }
       showLastValueSelect.appendChild(optionElement);
     });
 

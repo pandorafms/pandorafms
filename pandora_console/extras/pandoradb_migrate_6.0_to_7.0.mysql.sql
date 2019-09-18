@@ -800,7 +800,6 @@ ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEF
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 
-
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
 -- -----------------------------------------------------

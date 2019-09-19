@@ -426,8 +426,17 @@ if ($getVisualConsole === true) {
         }
     }
 
+    if ($data['type'] == DONUT_GRAPH) {
+        // Only type sting.
+        $filter = sprintf(
+            'id_tipo_modulo IN (17,23,3,10,33)'
+        );
+    }
+
     $agent_modules = agents_get_modules(
-        $data['agentId']
+        $data['agentId'],
+        false,
+        $filter
     );
 
     if (is_metaconsole()) {

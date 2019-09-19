@@ -15,7 +15,8 @@ import Item, {
   ItemProps,
   itemBasePropsDecoder,
   LinkConsoleInputGroup,
-  ImageInputGroup
+  ImageInputGroup,
+  AgentModuleInputGroup
 } from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
@@ -26,7 +27,8 @@ export type StaticGraphProps = {
   statusImageSrc: string | null; // URL?
   lastValue: string | null;
 } & ItemProps &
-  (WithModuleProps | LinkedVisualConsoleProps);
+  WithModuleProps &
+  LinkedVisualConsoleProps;
 
 /**
  * Extract a valid enum value from a raw unknown value.
@@ -162,6 +164,7 @@ export default class StaticGraph extends Item<StaticGraphProps> {
    * ImageInputGroup
    * ShowLastValueInputGroup
    * LinkConsoleInputGroup
+   * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
@@ -178,7 +181,9 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     formContainer.addInputGroup(
       new ShowLastValueInputGroup("show-last-value", this.props)
     );
-
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
+    );
     return formContainer;
   }
 }

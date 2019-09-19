@@ -14,7 +14,8 @@ import Item, {
   ItemType,
   ItemProps,
   itemBasePropsDecoder,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  AgentModuleInputGroup
 } from "../Item";
 import { FormContainer, InputGroup } from "../Form";
 
@@ -131,6 +132,9 @@ export default class DonutGraph extends Item<DonutGraphProps> {
     );
     formContainer.addInputGroup(
       new LegendBackgroundColorInputGroup("legend-background-color", this.props)
+    );
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
     );
     return formContainer;
   }

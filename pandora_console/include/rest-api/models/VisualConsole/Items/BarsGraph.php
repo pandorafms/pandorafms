@@ -286,12 +286,7 @@ final class BarsGraph extends Item
                 $color,
                 [],
                 [],
-                \ui_get_full_url(
-                    'images/image_problem_area.png',
-                    false,
-                    false,
-                    false
-                ),
+                'images/image_problem_area.png',
                 '',
                 '',
                 $waterMark,

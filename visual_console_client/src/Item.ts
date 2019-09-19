@@ -918,6 +918,7 @@ interface AgentAutocompleteData {
   agentAlias: string | null;
   agentDescription: string | null;
   agentAddress: string | null;
+  type: number | null;
 }
 
 /**
@@ -926,7 +927,7 @@ interface AgentAutocompleteData {
  * Agent and module is stored in the  property
  */
 export class AgentModuleInputGroup extends InputGroup<
-  Partial<WithModuleProps>
+  Partial<ItemProps & WithModuleProps>
 > {
   protected createContent(): HTMLElement | HTMLElement[] {
     const agentLabel = document.createElement("label");
@@ -973,7 +974,8 @@ export class AgentModuleInputGroup extends InputGroup<
                       current.agentDescription,
                       null
                     ),
-                    metaconsoleId: parseIntOr(current.metaconsoleId, null)
+                    metaconsoleId: parseIntOr(current.metaconsoleId, null),
+                    type: parseIntOr(this.initialData.type, null)
                   });
                 }
               }
@@ -1032,7 +1034,8 @@ export class AgentModuleInputGroup extends InputGroup<
             this.initialData.agentDescription,
             null
           ),
-          metaconsoleId: parseIntOr(this.initialData.metaconsoleId, null)
+          metaconsoleId: parseIntOr(this.initialData.metaconsoleId, null),
+          type: parseIntOr(this.initialData.type, null)
         })
       );
     }

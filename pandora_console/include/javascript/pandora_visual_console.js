@@ -342,7 +342,8 @@ function createVisualConsole(
               asyncTaskManager
                 .add(identifier + "-" + params.id, function(doneAsyncTask) {
                   var dataObject = {
-                    value: params.value
+                    value: params.value,
+                    type: params.type
                   };
                   var abortable = autocompleteAgentsVisualConsole(
                     baseUrl,

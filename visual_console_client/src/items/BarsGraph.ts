@@ -1,6 +1,11 @@
 import { AnyObject, WithModuleProps } from "../lib/types";
 import { modulePropsDecoder, decodeBase64, stringIsEmpty, t } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  AgentModuleInputGroup
+} from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
 export type BarsGraphProps = {
@@ -228,6 +233,7 @@ export default class BarsGraph extends Item<BarsGraphProps> {
    * BackgroundColorInputGroup
    * GridColorInputGroup
    * TypeGraphInputGroup
+   * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
@@ -239,6 +245,9 @@ export default class BarsGraph extends Item<BarsGraphProps> {
     );
     formContainer.addInputGroup(
       new GridColorInputGroup("grid-color", this.props)
+    );
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
     );
 
     return formContainer;

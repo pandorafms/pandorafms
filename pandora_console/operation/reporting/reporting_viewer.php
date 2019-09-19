@@ -17,7 +17,6 @@ global $config;
 check_login();
 
 enterprise_hook('open_meta_frame');
-
 $id_report = (int) get_parameter('id');
 
 if (! $id_report) {

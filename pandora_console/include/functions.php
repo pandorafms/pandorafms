@@ -5597,3 +5597,105 @@ function ui_print_integria_incident_priority($priority, $priority_label)
 
     return $output;
 }
+
+
+/**
+ * Get tickets from Integria IMS.
+ *
+ * @param array $tickets_filters Filters to send to API.
+ *
+ * @return array  Tickets returned by API call.
+ */
+function get_tickets_integriaims($tickets_filters)
+{
+    global $config;
+
+    // Filters.
+    $incident_text = $tickets_filters['incident_text'];
+    $incident_status = $tickets_filters['incident_status'];
+    $incident_group = $tickets_filters['incident_group'];
+    $incident_owner = $tickets_filters['incident_owner'];
+    $incident_creator = $tickets_filters['incident_creator'];
+    $incident_priority = $tickets_filters['incident_priority'];
+    $incident_resolution = $tickets_filters['incident_resolution'];
+    $created_from = $tickets_filters['created_from'];
+    $created_to = $tickets_filters['created_to'];
+
+    // API call.
+    $result_api_call_list = integria_api_call(
+        $config['integria_hostname'],
+        $config['integria_user'],
+        $config['integria_pass'],
+        $config['integria_api_pass'],
+        'get_incidents',
+        [
+            $incident_text,
+            $incident_status,
+            $incident_group,
+            $incident_priority,
+            '0',
+            $incident_owner,
+            $incident_creator,
+        ]
+    );
+
+    // Return array of api call 'get_incidents'.
+    $array_get_incidents = [];
+    get_array_from_csv_data_all($result_api_call_list, $array_get_incidents);
+
+    // Modify $array_get_incidents if filter for resolution exists.
+    $filter_resolution = [];
+    foreach ($array_get_incidents as $key => $value) {
+        if ($incident_resolution !== '' && ($array_get_incidents[$key][12] == $incident_resolution)) {
+            $filter_resolution[$key] = $array_get_incidents[$key];
+            continue;
+        }
+    }
+
+    if ($incident_resolution !== '') {
+        $array_get_incidents = $filter_resolution;
+    }
+
+    // Modify $array_get_incidents if filter for date is selected.
+    if ($created_from !== '' && $created_to !== '') {
+        $date = [];
+        $date_utimestamp = [];
+        foreach ($array_get_incidents as $key => $value) {
+            // Change format date / to -.
+            $date[$key] = date('Y-m-d', strtotime($array_get_incidents[$key][9]));
+            // Covert date to utimestamp.
+            $date_utimestamp[$key] = strtotime($date[$key]);
+        }
+
+        // Change format date / to -.
+        $created_from_date = date('Y-m-d', strtotime($created_from));
+        $created_to_date = date('Y-m-d', strtotime($created_to));
+
+        // Covert date to utimestamp.
+        $created_from_timestamp = strtotime($created_from_date);
+        $created_to_timestamp = strtotime($created_to_date);
+
+        // Dates within the selected period.
+        $selected_period = array_filter(
+            $date_utimestamp,
+            function ($value) use ($created_from_timestamp, $created_to_timestamp) {
+                return ($value >= $created_from_timestamp && $value <= $created_to_timestamp);
+            }
+        );
+
+        // Return incidents with the correct dates.
+        $filter_date = [];
+        foreach ($array_get_incidents as $key => $value) {
+            foreach ($selected_period as $index => $value) {
+                if ($array_get_incidents[$key][0] == $index) {
+                    $filter_date[$key] = $array_get_incidents[$key];
+                    continue;
+                }
+            }
+        }
+
+        $array_get_incidents = $filter_date;
+    }
+
+    return $array_get_incidents;
+}

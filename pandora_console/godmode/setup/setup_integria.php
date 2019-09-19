@@ -210,7 +210,7 @@ $table_remote->data['integria_hostname'] = $row;
 // API password.
 $row = [];
 $row['name'] = __('API Password');
-$row['control'] = html_print_input_text('integria_api_pass', $config['integria_api_pass'], '', 30, 100, true);
+$row['control'] = html_print_input_password('integria_api_pass', io_output_password($config['integria_api_pass']), '', 30, 100, true);
 $row['control'] .= ui_print_help_tip(__('Password of Integria IMS\' API'), true);
 $table_remote->data['integria_api_pass'] = $row;
 

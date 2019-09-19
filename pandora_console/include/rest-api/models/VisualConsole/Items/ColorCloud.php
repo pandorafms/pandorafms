@@ -38,6 +38,7 @@ final class ColorCloud extends Item
     private static function encodeColorRanges(array $data): array
     {
         $colorRangeArray = [];
+
         if (isset($data['colorRanges']) === true) {
             foreach ($data['colorRanges'] as $colorRange) {
                 if (\is_numeric($colorRange['fromValue']) === true
@@ -72,33 +73,32 @@ final class ColorCloud extends Item
     protected function encode(array $data): array
     {
         $return = parent::encode($data);
-
-        $defaultColor = null;
-        if (isset($data['defaultColor']) === true) {
-            $defaultColor = static::extractDefaultColor($data);
-        }
-
         $colorRanges = null;
         if (isset($data['colorRanges']) === true) {
+            $defaultColor = null;
+            if (isset($data['defaultColor']) === true) {
+                $defaultColor = static::extractDefaultColor($data);
+            }
+
             $colorRanges = static::encodeColorRanges($data);
-        }
 
-        if (empty($data['id']) === true) {
-            $return['label'] = json_encode(
-                [
-                    'default_color' => $defaultColor,
-                    'color_ranges'  => $colorRanges,
-                ]
-            );
-        } else {
-            $prevData = $this->toArray();
+            if (empty($data['id']) === true) {
+                $return['label'] = json_encode(
+                    [
+                        'default_color' => $defaultColor,
+                        'color_ranges'  => $colorRanges,
+                    ]
+                );
+            } else {
+                $prevData = $this->toArray();
 
-            $return['label'] = json_encode(
-                [
-                    'default_color' => ($defaultColor !== null) ? $defaultColor : $prevData['defaultColor'],
-                    'color_ranges'  => ($colorRanges !== null && (count($colorRanges) > 0)) ? $colorRanges : $prevData['colorRanges'],
-                ]
-            );
+                $return['label'] = json_encode(
+                    [
+                        'default_color' => ($defaultColor !== null) ? $defaultColor : $prevData['defaultColor'],
+                        'color_ranges'  => ($colorRanges !== null && (count($colorRanges) > 0)) ? $colorRanges : $prevData['colorRanges'],
+                    ]
+                );
+            }
         }
 
         return $return;

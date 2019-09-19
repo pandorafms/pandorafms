@@ -390,7 +390,7 @@ if ($getVisualConsole === true) {
         }
     } else {
         $agents = agents_get_agents(
-            $filter_alias,
+            $filter,
             [
                 'id_agente',
                 'nombre',

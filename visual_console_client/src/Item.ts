@@ -993,7 +993,10 @@ export class AgentModuleInputGroup extends InputGroup<
     };
 
     const handleSelected = (item: AgentAutocompleteData): string => {
-      this.updateData({ agentId: item.agentId });
+      this.updateData({
+        agentId: item.agentId,
+        metaconsoleId: item.metaconsoleId
+      });
 
       const selectedItem = item.agentAddress
         ? `${item.agentAlias} - ${item.agentAddress}`

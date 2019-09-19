@@ -40,6 +40,9 @@ ob_start('ui_process_page_head');
 // Enterprise main
 enterprise_include('index.php');
 
+$url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
+echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
+
 require_once 'include/functions_visual_map.php';
 
 $hash = get_parameter('hash');
@@ -96,31 +99,41 @@ if ($layout) {
     echo '<div id="vc-container"></div>';
 }
 
-// Floating menu - Start
+// Floating menu - Start.
 echo '<div id="vc-controls" style="z-index:300;">';
 
 echo '<div id="menu_tab">';
-echo '<ul class="mn">';
+echo '<ul class="mn white-box-content box-shadow flex-row">';
 
-// QR code
+// QR code.
 echo '<li class="nomn">';
 echo '<a href="javascript: show_dialog_qrcode();">';
 echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 
-// Countdown
+// Countdown.
 echo '<li class="nomn">';
 echo '<div class="vc-refr">';
-echo '<div class="vc-countdown"></div>';
+echo '<div class="vc-countdown style="display: inline;"></div>';
 echo '<div id="vc-refr-form">';
 echo __('Refresh').':';
-echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
+echo html_print_select(
+    get_refresh_time_array(),
+    'vc-refr',
+    $refr,
+    '',
+    '',
+    0,
+    true,
+    false,
+    false
+);
 echo '</div>';
 echo '</div>';
 echo '</li>';
 
-// Console name
+// Console name.
 echo '<li class="nomn">';
 echo '<div class="vc-title">'.$layout_name.'</div>';
 echo '</li>';
@@ -129,15 +142,15 @@ echo '</ul>';
 echo '</div>';
 
 echo '</div>';
-// Floating menu - End
-// QR code dialog
+
+// QR code dialog.
 echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of the page').'">';
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
-ui_require_jquery_file('countdown');
-ui_require_javascript_file('wz_jsgraphics');
-ui_require_javascript_file('pandora_visual_console');
+ui_require_jquery_file('countdown', 'include/javascript/', true);
+ui_require_javascript_file('wz_jsgraphics', 'include/javascript/', true);
+ui_require_javascript_file('pandora_visual_console', 'include/javascript/', true);
 $ignored_params['refr'] = '';
 ?>
 
@@ -175,7 +188,7 @@ $ignored_params['refr'] = '';
         var controls = document.getElementById('vc-controls');
         autoHideElement(controls, 1000);
         
-        $('select#refr').change(function (event) {
+        $('#vc-controls').change(function (event) {
             refr = Number.parseInt(event.target.value, 10);
             startCountDown(refr, false);
         });

@@ -1205,13 +1205,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 
 		# Address
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Subject
-		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
+		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Message
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Content
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		if($field4 eq ""){
 			$field4 = "text/html";
@@ -3943,8 +3943,8 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 ##########################################################################
 # Search string for macros and substitutes them with their values.
 ##########################################################################
-sub subst_alert_macros ($$;$$$$) {
-	my ($string, $macros, $pa_config, $dbh, $agent, $module) = @_;
+sub subst_alert_macros ($$;$$$$$) {
+	my ($string, $macros, $pa_config, $dbh, $agent, $module, $alert) = @_;
 
 	my $macro_regexp = join('|', keys %{$macros});
 
@@ -3952,14 +3952,14 @@ sub subst_alert_macros ($$;$$$$) {
 	if (defined($string) && $string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
 		my $quote = $1 ? $1 : $2;
 		$subst_func = sub {
-			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);
+			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module,$alert);
 			$macro =~ s/'/'\\''/g; # close, escape, open
 			return decode_entities($quote . "'" . $macro . "'" . $quote); # close, quote, open
 		};
 	}
 	else {
 		$subst_func = sub {
-			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);
+			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module, $alert);
 			return decode_entities($macro);
 		};
 	}
@@ -3993,8 +3993,8 @@ sub subst_column_macros ($$;$$$$) {
 ##########################################################################
 # Load macros that access the database on demand.
 ##########################################################################
-sub on_demand_macro($$$$$$) {
-	my ($pa_config, $dbh, $macro, $macros, $agent, $module) = @_;
+sub on_demand_macro($$$$$$;$) {
+	my ($pa_config, $dbh, $macro, $macros, $agent, $module,$alert) = @_;
 
 	# Static macro.
 	return $macros->{$macro} if (defined($macros->{$macro}));
@@ -4010,7 +4010,7 @@ sub on_demand_macro($$$$$$) {
 	} elsif ($macro eq '_moduletags_') {
 		return (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_policy_') {
-		return (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '';
+		return (defined ($alert)) ? enterprise_hook('get_policy_name_policy_alerts_id', [$dbh, $alert->{'id_policy_alerts'}]) : '';
 	} elsif ($macro eq '_email_tag_') {
 		return (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_phone_tag_') {

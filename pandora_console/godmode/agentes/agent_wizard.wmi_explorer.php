@@ -353,7 +353,7 @@ html_print_table($table);
 echo "<div style='text-align:right; width:".$table->width."'>";
 echo '<span id="oid_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>';
 html_print_submit_button(__('WMI Explore'), 'wmi_explore', false, ['class' => 'sub next']);
-echo '</div>';
+echo '</div><br>';
 
 if ($wmiexplore && $fail) {
     ui_print_error_message(__('Unable to do WMI explorer'));
@@ -364,7 +364,7 @@ unset($table);
 echo '</form>';
 
 if ($wmiexplore && !$fail) {
-    echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
+    echo '<br><span id ="none_text" style="display: none;">'.__('None').'</span>';
     echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
     echo '<span id="form_interfaces">';
 
@@ -379,7 +379,7 @@ if ($wmiexplore && !$fail) {
     // Namespace
     html_print_input_hidden('server_to_exec', $server_to_exec);
 
-    $table->width = '98%';
+    $table->width = '100%';
 
     // Mode selector
     $modes = [];
@@ -404,7 +404,7 @@ if ($wmiexplore && !$fail) {
 
     $table->colspan[1][0] = 2;
     $table->data[1][2] = '<b>'.__('Modules').'</b>';
-    $table->cellstyle[1][2] = 'vertical-align: middle;';
+    $table->cellstyle[1][2] = 'text-align: center;';
 
     // Components list
     $table->data[2][0] = '<div class="wizard_mode_form wizard_mode_components">';
@@ -495,7 +495,7 @@ if ($wmiexplore && !$fail) {
         'width: 300px;'
     );
     $table->data[2][0] .= '</div>';
-    $table->cellstyle[2][0] = 'vertical-align: top; text-align: center;';
+    $table->cellstyle[2][0] = 'vertical-align: bottom; text-align: center;';
 
 
     // Components arrow

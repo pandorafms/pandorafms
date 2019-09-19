@@ -1,4 +1,22 @@
 <script type="text/javascript">
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+}
+
+
     function check_all_checkboxes() {
         if ($("input[name=all_delete]").prop("checked")) {
             $(".check_delete").prop("checked", true);
@@ -578,7 +596,7 @@ switch ($action) {
                 break;
             }
 
-            if (! $delete) {
+            if (! $delete && !empty($type_access_selected)) {
                 db_pandora_audit(
                     'ACL Violation',
                     'Trying to access report builder deletion'
@@ -1890,6 +1908,11 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
+                        if ($values['type'] = 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
+                        }
+
+
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
@@ -2444,6 +2467,10 @@ switch ($action) {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {
                             $values['id_agent'] = get_parameter('group');
+                        }
+
+                        if ($values['type'] = 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
                         }
 
                         $values['header_definition'] = get_parameter('header');

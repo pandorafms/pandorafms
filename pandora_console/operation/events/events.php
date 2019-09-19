@@ -246,6 +246,8 @@ if (is_ajax()) {
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
+                $fields[] = 'te.id_agentmodule';
+                $fields[] = 'te.server_id';
             }
 
             $events = events_get_all(
@@ -982,7 +984,7 @@ if (is_metaconsole()) {
         'SELECT id, server_name FROM tmetaconsole_setup',
         'server_id',
         $server_id,
-        'script',
+        '',
         __('All'),
         '0',
         true
@@ -1029,15 +1031,14 @@ $adv_inputs[] = $in;
 // Only alert events.
 $data = html_print_select(
     [
-        '-1' => __('All'),
-        '0'  => __('Filter alert events'),
-        '1'  => __('Only alert events'),
+        '0' => __('Filter alert events'),
+        '1' => __('Only alert events'),
     ],
     'filter_only_alert',
     $filter_only_alert,
     '',
-    '',
-    '',
+    __('All'),
+    -1,
     true
 );
 $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
@@ -1246,6 +1247,14 @@ try {
         ];
     }
 
+    // Identifies column instructions to make it unsortable.
+    if (in_array('instructions', $fields) > 0) {
+        $fields[array_search('instructions', $fields)] = [
+            'text'  => 'instructions',
+            'class' => 'column-instructions',
+        ];
+    }
+
     $evento_id = array_search('evento', $fields);
     if ($evento_id !== false) {
         $fields[$evento_id] = [
@@ -1410,6 +1419,7 @@ try {
             'no_sortable_columns' => [
                 -1,
                 -2,
+                'column-instructions',
             ],
             'ajax_postprocess'    => 'process_datatables_item(item)',
             'drawCallback'        => 'process_datatables_callback(this, settings)',

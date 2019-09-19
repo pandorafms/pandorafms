@@ -795,7 +795,7 @@ switch ($tab) {
             echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
             echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
             html_print_input_hidden('new_networkmap', 1);
-            html_print_submit_button(__('Create networkmap'), 'crt', false, 'class="sub next" style="float: right;"');
+            html_print_submit_button(__('Create network map'), 'crt', false, 'class="sub next" style="float: right;"');
             echo '</form>';
             echo '</div>';
 
@@ -803,7 +803,7 @@ switch ($tab) {
                 echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
                 echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
                 html_print_input_hidden('new_empty_networkmap', 1);
-                html_print_submit_button(__('Create empty networkmap'), 'crt', false, 'class="sub next" style="float: right; margin-right:20px;"');
+                html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next" style="float: right; margin-right:20px;"');
                 echo '</form>';
                 echo '</div>';
             }

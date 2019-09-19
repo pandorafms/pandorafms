@@ -4181,6 +4181,7 @@ function reporting_sql_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $return['chart'] = graph_custom_sql_graph(
                 $content['id_rc'],
                 $width,
@@ -4191,9 +4192,6 @@ function reporting_sql_graph(
                 $ttl,
                 $content['top_n_value']
             );
-        break;
-
-        case 'data':
         break;
     }
 
@@ -4394,6 +4392,7 @@ function reporting_netflow(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $return['chart'] = netflow_draw_item(
                 ($report['datetime'] - $content['period']),
                 $report['datetime'],
@@ -7542,8 +7541,26 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
     $return['title'] = $content['name'];
     $return['subtitle'] = io_safe_output($graph['name']);
+    $return['agent_name'] = $agent_alias;
+    $return['module_name'] = $module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text(
         $report,
@@ -7557,6 +7574,7 @@ function reporting_custom_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $params = [
                 'period'     => $content['period'],
                 'width'      => $width,

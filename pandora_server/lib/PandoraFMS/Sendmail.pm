@@ -379,7 +379,7 @@ sub sendmail {
             $S = new IO::Socket::INET(PeerPort => $port, PeerAddr => $server, Proto => 'tcp');
         }
         else {
-            $S = new IO::Socket::SSL(PeerPort => $port, PeerAddr => $server, Proto => 'tcp', SSL_verify => 0, Domain => AF_INET);
+            $S = new IO::Socket::SSL(PeerPort => $port, PeerAddr => $server, Proto => 'tcp', SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE(), Domain => AF_INET);
         }
         if ( $S ) {
             print STDERR "- connected to $server\n" if $mailcfg{'debug'} > 9;

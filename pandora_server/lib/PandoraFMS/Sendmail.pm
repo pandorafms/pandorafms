@@ -211,10 +211,10 @@ sub sendmail {
             my $data = ref($_[$i]) ? $_[$i] : \$_[$i];
             if ($mailcfg{'debug'} > 9) {
                 if (length($$data) < 500) {
-                    print ">", $$data;
+                    print STDERR ">", $$data;
                 }
                 else {
-                    print "> [...", length($$data), " bytes sent ...]\n";
+                    print STDERR "> [...", length($$data), " bytes sent ...]\n";
                 }
             }
 			my @sockets = $Sel->can_write($mailcfg{'timeout'});
@@ -238,7 +238,7 @@ sub sendmail {
 			last if ($buffer =~ m/\n$/);
 		}
 
-        print "<$server_reply" if $mailcfg{'debug'} > 9;
+        print STDERR "<$server_reply" if $mailcfg{'debug'} > 9;
         if ($server_reply =~ /^[45]/) {
             chomp $server_reply;
             return; # return false
@@ -363,7 +363,7 @@ sub sendmail {
     $localhost = hostname() || 'localhost';
 
     foreach $server ( @{$mailcfg{'smtp'}} ) {
-        print "- trying $server\n" if $mailcfg{'debug'} > 9;
+        print STDERR "- trying $server\n" if $mailcfg{'debug'} > 9;
 
         $server =~ s/\s+//go; # remove spaces just in case of a typo
         # extract port if server name like "mail.domain.com:2525"
@@ -382,12 +382,12 @@ sub sendmail {
             $S = new IO::Socket::SSL(PeerPort => $port, PeerAddr => $server, Proto => 'tcp', SSL_verify => 0, Domain => AF_INET);
         }
         if ( $S ) {
-            print "- connected to $server\n" if $mailcfg{'debug'} > 9;
+            print STDERR "- connected to $server\n" if $mailcfg{'debug'} > 9;
             last;
         }
         else {
             $error .= "connect to $server failed\n";
-            print "- connect to $server failed, next server...\n" if $mailcfg{'debug'} > 9;
+            print STDERR "- connect to $server failed, next server...\n" if $mailcfg{'debug'} > 9;
             next; # next server
         }
     }

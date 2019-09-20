@@ -5903,14 +5903,3 @@ table.table_modal_alternate tr td:first-child {
 .fullwidth {
   width: 100%;
 }
-
-/* Class for integria incidents */
-div.priority {
-  width: 80px;
-  color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  padding: 5px;
-  display: table-cell;
-  vertical-align: middle;
-}

@@ -18,11 +18,21 @@ $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
 $copyVisualConsoleItem = (bool) get_parameter('copyVisualConsoleItem');
-$getGroupsVisualConsoleItem = (bool) get_parameter('getGroupsVisualConsoleItem');
+$getGroupsVisualConsoleItem = (bool) get_parameter(
+    'getGroupsVisualConsoleItem'
+);
 $getAllVisualConsole = (bool) get_parameter('getAllVisualConsole');
 $getImagesVisualConsole = (bool) get_parameter('getImagesVisualConsole');
-$autocompleteAgentsVisualConsole = (bool) get_parameter('autocompleteAgentsVisualConsole');
-$autocompleteModuleVisualConsole = (bool) get_parameter('autocompleteModuleVisualConsole');
+$autocompleteAgentsVisualConsole = (bool) get_parameter(
+    'autocompleteAgentsVisualConsole'
+);
+$autocompleteModuleVisualConsole = (bool) get_parameter(
+    'autocompleteModuleVisualConsole'
+);
+
+$getCustomGraphVisualConsoleItem = (bool) get_parameter(
+    'getCustomGraphVisualConsoleItem'
+);
 
 ob_clean();
 
@@ -455,6 +465,33 @@ if ($getVisualConsole === true) {
             array_keys($agent_modules)
         );
     }
+
+    echo json_encode($result);
+    return;
+} else if ($getCustomGraphVisualConsoleItem) {
+    include_once 'include/functions_custom_graphs.php';
+    enterprise_include_once('include/functions_metaconsole.php');
+    $data = [];
+    if (is_metaconsole()) {
+        $data = metaconsole_get_custom_graphs();
+    } else {
+        $data = custom_graphs_get_user(
+            $config['id_user'],
+            false,
+            true,
+            'RR'
+        );
+    }
+
+    $result = array_map(
+        function ($id) use ($data) {
+            return [
+                'value' => $id,
+                'text'  => is_metaconsole() ? io_safe_output($data[$id]) : io_safe_output($data[$id]['name']),
+            ];
+        },
+        array_keys($data)
+    );
 
     echo json_encode($result);
     return;

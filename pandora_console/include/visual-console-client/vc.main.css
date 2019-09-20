@@ -138,6 +138,14 @@ form.visual-console-item-edition > input[type="submit"] {
   right: 15px;
 }
 
+.show-elements {
+  visibility: visible;
+}
+
+.hide-elements {
+  visibility: hidden;
+}
+
 /* Styles for the solid icons */
 
 .fa {
@@ -210,7 +218,7 @@ form.visual-console-item-edition > input[type="submit"] {
   border-bottom: none;
   border-top: none;
   /*position the autocomplete items to be the same width as the container:*/
-  position: fixed;
+  position: absolute;
   z-index: 1;
   overflow: auto;
   max-height: 150px;

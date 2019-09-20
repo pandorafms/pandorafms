@@ -11,7 +11,7 @@
   border-bottom: none;
   border-top: none;
   /*position the autocomplete items to be the same width as the container:*/
-  position: fixed;
+  position: absolute;
   z-index: 1;
   overflow: auto;
   max-height: 150px;

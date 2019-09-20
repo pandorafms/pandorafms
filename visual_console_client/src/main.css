@@ -101,3 +101,11 @@ form.visual-console-item-edition > input[type="submit"] {
   bottom: 5px;
   right: 15px;
 }
+
+.show-elements {
+  visibility: visible;
+}
+
+.hide-elements {
+  visibility: hidden;
+}

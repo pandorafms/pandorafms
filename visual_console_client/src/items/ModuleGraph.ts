@@ -16,9 +16,15 @@ import Item, {
   ItemType,
   ItemProps,
   itemBasePropsDecoder,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  AgentModuleInputGroup
 } from "../Item";
 import { FormContainer, InputGroup } from "../Form";
+import fontAwesomeIcon from "../lib/FontAwesomeIcon";
+import {
+  faCircleNotch,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 export type ModuleGraphProps = {
   type: ItemType.MODULE_GRAPH;
@@ -140,6 +146,138 @@ class BackgroundTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
 }
 
 /**
+ * Class to add item to the Module graph item form
+ * This item consists of a radio buttons.
+ */
+class ChooseTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const divContainer = document.createElement("div");
+    const radioButtonModuleLabel = document.createElement("label");
+    radioButtonModuleLabel.textContent = t("Module Graph");
+
+    divContainer.appendChild(radioButtonModuleLabel);
+
+    const radioButtonModule = document.createElement("input");
+    radioButtonModule.type = "radio";
+    radioButtonModule.name = "type-graph";
+    radioButtonModule.value = "module";
+    radioButtonModule.required = true;
+
+    divContainer.appendChild(radioButtonModule);
+
+    radioButtonModule.addEventListener("change", event => {
+      const show = document.getElementsByClassName(
+        "input-group-agent-autocomplete"
+      );
+      for (let i = 0; i < show.length; i++) {
+        show[i].classList.add("show-elements");
+        show[i].classList.remove("hide-elements");
+      }
+    });
+
+    const radioButtonCustomLabel = document.createElement("label");
+    radioButtonCustomLabel.textContent = t("Custom Graph");
+
+    divContainer.appendChild(radioButtonCustomLabel);
+
+    const radioButtonCustom = document.createElement("input");
+    radioButtonCustom.type = "radio";
+    radioButtonCustom.name = "type-graph";
+    radioButtonCustom.value = "module";
+    radioButtonCustom.required = true;
+
+    divContainer.appendChild(radioButtonCustom);
+
+    radioButtonCustom.addEventListener("change", event => {
+      const show = document.getElementsByClassName(
+        "input-group-agent-autocomplete"
+      );
+      for (let i = 0; i < show.length; i++) {
+        show[i].classList.add("hide-elements");
+        show[i].classList.remove("show-elements");
+      }
+    });
+
+    /*
+      backgroundTypeSelect.value =
+        this.currentData.backgroundType ||
+        this.initialData.backgroundType ||
+        "default";
+
+      backgroundTypeSelect.addEventListener("change", event => {
+        this.updateData({
+          backgroundType: parseBackgroundType(
+            (event.target as HTMLSelectElement).value
+          )
+        });
+      });
+    */
+
+    return divContainer;
+  }
+}
+
+/**
+ * Class to add item to the general items form
+ * This item consists of a label and a Acl Group type select.
+ * Acl is stored in the aclGroupId property
+ */
+class CustomGraphInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const customGraphLabel = document.createElement("label");
+    customGraphLabel.textContent = t("Custom graph");
+
+    const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
+      size: "small",
+      spin: true
+    });
+    customGraphLabel.appendChild(spinner);
+
+    this.requestData("custom-graph-list", {}, (error, data) => {
+      // Remove Spinner.
+      spinner.remove();
+
+      if (error) {
+        customGraphLabel.appendChild(
+          fontAwesomeIcon(faExclamationCircle, t("Error"), {
+            size: "small",
+            color: "#e63c52"
+          })
+        );
+      }
+
+      if (data instanceof Array) {
+        const customGraphSelect = document.createElement("select");
+        customGraphSelect.required = true;
+
+        data.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option.value;
+          optionElement.textContent = option.text;
+          customGraphSelect.appendChild(optionElement);
+        });
+
+        /*
+        customGraphSelect.addEventListener("change", event => {
+          this.updateData({
+            aclGroupId: parseIntOr((event.target as HTMLSelectElement).value, 0)
+          });
+        });
+
+        customGraphSelect.value = `${this.currentData.aclGroupId ||
+          this.initialData.aclGroupId ||
+          0}`;
+          */
+
+        customGraphLabel.appendChild(customGraphSelect);
+      }
+    });
+
+    return customGraphLabel;
+  }
+}
+
+/*
  * Class to add item to the Module graph item form
  * This item consists of a label and select type graph.
  * Show type is stored in the  property.
@@ -292,6 +430,15 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     );
     formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)
+    );
+    formContainer.addInputGroup(
+      new ChooseTypeInputGroup("show-type-graph", this.props)
+    );
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
+    );
+    formContainer.addInputGroup(
+      new CustomGraphInputGroup("custom-graph-list", this.props)
     );
     return formContainer;
   }

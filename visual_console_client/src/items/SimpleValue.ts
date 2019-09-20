@@ -15,7 +15,8 @@ import Item, {
   ItemType,
   ItemProps,
   itemBasePropsDecoder,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  AgentModuleInputGroup
 } from "../Item";
 import { FormContainer, InputGroup } from "../Form";
 
@@ -271,6 +272,7 @@ export default class SimpleValue extends Item<SimpleValueProps> {
    * Add to:
    * LinkConsoleInputGroup
    * ProcessInputGroup
+   * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
@@ -279,6 +281,9 @@ export default class SimpleValue extends Item<SimpleValueProps> {
     );
     formContainer.addInputGroup(
       new ProcessInputGroup("process-operation", this.props)
+    );
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
     );
     return formContainer;
   }

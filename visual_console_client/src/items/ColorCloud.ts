@@ -410,15 +410,16 @@ export default class ColorCloud extends Item<ColorCloudProps> {
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
+    );
+    formContainer.addInputGroup(
       new LinkConsoleInputGroup("link-console", this.props)
     );
     formContainer.addInputGroup(new ColorInputGroup("color-cloud", this.props));
     formContainer.addInputGroup(
       new RangesInputGroup("ranges-cloud", this.props)
     );
-    formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-aoutocomplete", this.props)
-    );
+
     return formContainer;
   }
 }

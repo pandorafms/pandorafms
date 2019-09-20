@@ -6,7 +6,12 @@ import {
   stringIsEmpty,
   t
 } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  AgentModuleInputGroup
+} from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
 export type EventsHistoryProps = {
@@ -129,10 +134,14 @@ export default class EventsHistory extends Item<EventsHistoryProps> {
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
    * MaxTimeInputGroup
+   * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(new MaxTimeInputGroup("max-time", this.props));
+    formContainer.addInputGroup(
+      new AgentModuleInputGroup("agent-autocomplete", this.props)
+    );
 
     return formContainer;
   }

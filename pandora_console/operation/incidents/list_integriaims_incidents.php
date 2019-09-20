@@ -39,6 +39,9 @@ if ($has_connection === false) {
     return;
 }
 
+// Styles.
+ui_require_css_file('integriaims');
+
 // Get parameters for filters.
 $incident_text = (string) get_parameter('incident_text', '');
 $incident_status = (int) get_parameter('incident_status', 0);
@@ -283,11 +286,13 @@ foreach ($incidents_paginated as $key => $value) {
     }
 
     $table->data[$i][0] = '#'.$array_get_incidents[$key][0];
-    $table->data[$i][1] = $array_get_incidents[$key][3];
+    $table->data[$i][1] = '<a href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$array_get_incidents[$key][0]).'">';
+    $table->data[$i][1] .= $array_get_incidents[$key][3];
+    $table->data[$i][1] .= '</a>';
     $table->data[$i][2] = $group_incident[$array_get_incidents[$key][8]];
     $table->data[$i][3] = $status_incident[$array_get_incidents[$key][6]].' / '.$resolution_incident[$array_get_incidents[$key][12]];
     $table->data[$i][4] = ui_print_integria_incident_priority($array_get_incidents[$key][7], $priority_incident[$array_get_incidents[$key][7]]);
-    $table->data[$i][5] = $array_get_incidents[$key][9];
+    $table->data[$i][5] = $array_get_incidents[$key][9].' / '.$array_get_incidents[$key][1];
     $table->data[$i][6] = $array_get_incidents[$key][10];
     $table->data[$i][7] = $array_get_incidents[$key][5];
     $table->data[$i][8] = '';

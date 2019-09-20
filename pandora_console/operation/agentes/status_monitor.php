@@ -1501,7 +1501,6 @@ if (!empty($result)) {
                     'type'    => $graph_type,
                     'period'  => SECONDS_1DAY,
                     'id'      => $row['id_agente_modulo'],
-                    'label'   => base64_encode($row['module_name']),
                     'refresh' => SECONDS_10MINUTES,
                 ];
 

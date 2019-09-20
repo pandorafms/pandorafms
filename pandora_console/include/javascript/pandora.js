@@ -1915,7 +1915,9 @@ function load_modal(settings) {
             text: settings.modal.cancel,
             click: function() {
               $(this).dialog("close");
-              settings.cleanup();
+              if (typeof settings.cleanup == "function") {
+                settings.cleanup();
+              }
             }
           },
           {

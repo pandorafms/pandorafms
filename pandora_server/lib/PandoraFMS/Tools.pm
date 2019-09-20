@@ -518,7 +518,14 @@ sub pandora_sendmail {
 		Smtp		=> $pa_config->{"mta_address"},
 		Port		=> $pa_config->{"mta_port"},
 		From		=> $pa_config->{"mta_from"},
+		Encryption	=> $pa_config->{"mta_encryption"},
 	);
+
+	# Set the timeout.
+	$PandoraFMS::Sendmail::mailcfg{'timeout'} = $pa_config->{"tcp_timeout"};
+
+	# Enable debugging.
+	$PandoraFMS::Sendmail::mailcfg{'debug'} = $pa_config->{"verbosity"};
 	
 	if (defined($content_type)) {
 		$mail{'Content-Type'} = $content_type;
@@ -535,15 +542,12 @@ sub pandora_sendmail {
 		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
 	}
 
-	if (sendmail %mail) { 
-		return;
-	}
-	else {
-		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-		if (defined($Mail::Sendmail::error)){
-			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+	eval {
+		if (!sendmail(%mail)) { 
+			logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
+			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5) if (defined($Mail::Sendmail::error));
 		}
-	}
+	};
 }
 
 ##########################################################################

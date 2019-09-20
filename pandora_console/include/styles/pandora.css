@@ -5904,7 +5904,11 @@ table.table_modal_alternate tr td:first-child {
   width: 100%;
 }
 
-/* Class for integria incidents */
+/*
+ * ---------------------------------------------------------------------
+ * - INTEGRIA INCIDENTS
+ * ---------------------------------------------------------------------
+ */
 div.priority {
   width: 80px;
   color: #fff;
@@ -5913,4 +5917,14 @@ div.priority {
   padding: 5px;
   display: table-cell;
   vertical-align: middle;
+}
+
+.comment_title {
+  padding: 5px 10px 5px 20px;
+  background-color: rgba(130, 185, 46, 0.16);
+  border-radius: 3px;
+}
+
+.comment_body {
+  padding: 15px 20px 15px 20px;
 }

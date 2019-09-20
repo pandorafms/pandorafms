@@ -6651,7 +6651,6 @@ function events_get_field_value_by_event_id(
 ) {
     global $config;
 
-    $return = '';
     $meta = false;
     $event = db_get_row('tevento', 'id_evento', $event_id);
 
@@ -6674,11 +6673,11 @@ function events_get_field_value_by_event_id(
             $ip = __('N/A');
         }
 
-        $return = str_replace('_agent_address_', $ip, $value);
+        $value = str_replace('_agent_address_', $ip, $value);
     }
 
     if (strpos($value, '_agent_id_') !== false) {
-        $return = str_replace('_agent_id_', $event['id_agente'], $value);
+        $value = str_replace('_agent_id_', $event['id_agente'], $value);
     }
 
     if (strpos($value, '_module_address_') !== false) {
@@ -6693,7 +6692,7 @@ function events_get_field_value_by_event_id(
                 $module['ip_target'] = __('N/A');
             }
 
-            $return = str_replace('_module_address_', $module['ip_target'], $value);
+            $value = str_replace('_module_address_', $module['ip_target'], $value);
             if (empty($module['nombre'])) {
                 $module['nombre'] = __('N/A');
             }
@@ -6702,7 +6701,7 @@ function events_get_field_value_by_event_id(
                 metaconsole_restore_db();
             }
         } else {
-            $return = str_replace('_module_address_', __('N/A'), $value);
+            $value = str_replace('_module_address_', __('N/A'), $value);
         }
     }
 
@@ -6718,7 +6717,7 @@ function events_get_field_value_by_event_id(
                 $module['ip_target'] = __('N/A');
             }
 
-            $return = str_replace(
+            $value = str_replace(
                 '_module_name_',
                 io_safe_output($module['nombre']),
                 $value
@@ -6728,28 +6727,28 @@ function events_get_field_value_by_event_id(
                 metaconsole_restore_db();
             }
         } else {
-            $return = str_replace('_module_name_', __('N/A'), $value);
+            $value = str_replace('_module_name_', __('N/A'), $value);
         }
     }
 
     if (strpos($value, '_event_id_') !== false) {
-        $return = str_replace('_event_id_', $event['id_evento'], $value);
+        $value = str_replace('_event_id_', $event['id_evento'], $value);
     }
 
     if (strpos($value, '_user_id_') !== false) {
         if (!empty($event['id_usuario'])) {
-            $return = str_replace('_user_id_', $event['id_usuario'], $value);
+            $value = str_replace('_user_id_', $event['id_usuario'], $value);
         } else {
-            $return = str_replace('_user_id_', __('N/A'), $value);
+            $value = str_replace('_user_id_', __('N/A'), $value);
         }
     }
 
     if (strpos($value, '_group_id_') !== false) {
-        $return = str_replace('_group_id_', $event['id_grupo'], $value);
+        $value = str_replace('_group_id_', $event['id_grupo'], $value);
     }
 
     if (strpos($value, '_group_name_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_group_name_',
             groups_get_name($event['id_grupo'], true),
             $value
@@ -6757,7 +6756,7 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_event_utimestamp_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_event_utimestamp_',
             $event['utimestamp'],
             $value
@@ -6765,7 +6764,7 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_event_date_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_event_date_',
             date($config['date_format'], $event['utimestamp']),
             $value
@@ -6773,7 +6772,7 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_event_text_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_event_text_',
             events_display_name($event['evento']),
             $value
@@ -6781,7 +6780,7 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_event_type_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_event_type_',
             events_print_type_description($event['event_type'], true),
             $value
@@ -6789,7 +6788,7 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_alert_id_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_alert_id_',
             empty($event['is_alert_am']) ? __('N/A') : $event['is_alert_am'],
             $value
@@ -6797,11 +6796,11 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_event_severity_id_') !== false) {
-        $return = str_replace('_event_severity_id_', $event['criticity'], $value);
+        $value = str_replace('_event_severity_id_', $event['criticity'], $value);
     }
 
     if (strpos($value, '_event_severity_text_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_event_severity_text_',
             get_priority_name($event['criticity']),
             $value
@@ -6809,27 +6808,27 @@ function events_get_field_value_by_event_id(
     }
 
     if (strpos($value, '_module_id_') !== false) {
-        $return = str_replace('_module_id_', $event['id_agentmodule'], $value);
+        $value = str_replace('_module_id_', $event['id_agentmodule'], $value);
     }
 
     if (strpos($value, '_event_tags_') !== false) {
-        $return = str_replace('_event_tags_', $event['tags'], $value);
+        $value = str_replace('_event_tags_', $event['tags'], $value);
     }
 
     if (strpos($value, '_event_extra_id_') !== false) {
         if (empty($event['id_extra'])) {
-            $return = str_replace('_event_extra_id_', __('N/A'), $value);
+            $value = str_replace('_event_extra_id_', __('N/A'), $value);
         } else {
-            $return = str_replace('_event_extra_id_', $event['id_extra'], $value);
+            $value = str_replace('_event_extra_id_', $event['id_extra'], $value);
         }
     }
 
     if (strpos($value, '_event_source_') !== false) {
-        $return = str_replace('_event_source_', $event['source'], $value);
+        $value = str_replace('_event_source_', $event['source'], $value);
     }
 
     if (strpos($value, '_event_instruction_') !== false) {
-        $return = str_replace(
+        $value = str_replace(
             '_event_instruction_',
             events_display_instructions($event['event_type'], $event, false),
             $value
@@ -6838,15 +6837,15 @@ function events_get_field_value_by_event_id(
 
     if (strpos($value, '_owner_user_') !== false) {
         if (empty($event['owner_user'])) {
-            $return = str_replace('_owner_user_', __('N/A'), $value);
+            $value = str_replace('_owner_user_', __('N/A'), $value);
         } else {
-            $return = str_replace('_owner_user_', $event['owner_user'], $value);
+            $value = str_replace('_owner_user_', $event['owner_user'], $value);
         }
     }
 
     if (strpos($value, '_event_status_') !== false) {
         $event_st = events_display_status($event['estado']);
-        $return = str_replace('_event_status_', $event_st['title'], $value);
+        $value = str_replace('_event_status_', $event_st['title'], $value);
     }
 
     if (strpos($value, '_group_custom_id_') !== false) {
@@ -6857,26 +6856,22 @@ function events_get_field_value_by_event_id(
             )
         );
         $event_st = events_display_status($event['estado']);
-        $return = str_replace('_group_custom_id_', $group_custom_id, $value);
+        $value = str_replace('_group_custom_id_', $group_custom_id, $value);
     }
 
     // Parse the event custom data.
     if (!empty($event['custom_data'])) {
         $custom_data = json_decode(base64_decode($event['custom_data']));
         foreach ($custom_data as $key => $val) {
-            $return = str_replace('_customdata_'.$key.'_', $val, $value);
+            $value = str_replace('_customdata_'.$key.'_', $val, $value);
         }
     }
 
     // This will replace the macro with the current logged user.
     if (strpos($value, '_current_user_') !== false) {
-        $return = str_replace('_current_user_', $config['id_user'], $value);
+        $value = str_replace('_current_user_', $config['id_user'], $value);
     }
 
-    if (empty($return)) {
-        return $value;
-    } else {
-        return $return;
-    }
+    return $value;
 
 }

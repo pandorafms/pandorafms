@@ -5456,7 +5456,7 @@ if (!function_exists('getallheaders')) {
 function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array=[], $show_credentials_error_msg=false)
 {
     $params_string = implode(',', $params_array);
-
+    hd($params_string, true);
     $url_data = [
         'user'      => $user,
         'user_pass' => $user_pass,

@@ -152,11 +152,7 @@ if (!$modules || !$searchModules) {
             $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
             $win_handle = dechex(crc32($module['id_agente_modulo'].$module['module_name']));
 
-            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module['id_agente_modulo'].'&'.'label='.rawurlencode(
-                urlencode(
-                    base64_encode($module['module_name'])
-                )
-            ).'&'.'refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
+            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module['id_agente_modulo'].'&'.'refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
 
             $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => 0, 'alt' => '']).'</a>';
             $graphCell .= '&nbsp;'."<a href='index.php?".'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$module['id_agente'].'&amp;'.'tab=data_view&'.'period='.SECONDS_1DAY.'&amp;'.'id='.$module['id_agente_modulo']."'>".html_print_image(

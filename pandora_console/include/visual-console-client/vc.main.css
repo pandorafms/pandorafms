@@ -139,11 +139,11 @@ form.visual-console-item-edition > input[type="submit"] {
 }
 
 .show-elements {
-  visibility: visible;
+  display: inline-block;
 }
 
 .hide-elements {
-  visibility: hidden;
+  display: none;
 }
 
 /* Styles for the solid icons */

@@ -3,9 +3,21 @@ import {
   stringIsEmpty,
   notEmptyStringOr,
   decodeBase64,
-  parseIntOr
+  parseIntOr,
+  t
 } from "../lib";
-import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import Item, {
+  ItemType,
+  ItemProps,
+  itemBasePropsDecoder,
+  ImageInputGroup
+} from "../Item";
+import { FormContainer, InputGroup } from "../Form";
+import fontAwesomeIcon from "../lib/FontAwesomeIcon";
+import {
+  faCircleNotch,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 export type ServiceProps = {
   type: ItemType.SERVICE;
@@ -52,6 +64,79 @@ export function servicePropsDecoder(data: AnyObject): ServiceProps | never {
   };
 }
 
+/**
+ * Class to add item to the general items form
+ * This item consists of a label and a Service List type select.
+ */
+class ServiceListInputGroup extends InputGroup<Partial<ServiceProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const serviceListLabel = document.createElement("label");
+    serviceListLabel.textContent = t("Service");
+
+    const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
+      size: "small",
+      spin: true
+    });
+    serviceListLabel.appendChild(spinner);
+
+    this.requestData("service-list", {}, (error, data) => {
+      // Remove Spinner.
+      spinner.remove();
+
+      if (error) {
+        serviceListLabel.appendChild(
+          fontAwesomeIcon(faExclamationCircle, t("Error"), {
+            size: "small",
+            color: "#e63c52"
+          })
+        );
+      }
+
+      if (data instanceof Array) {
+        const serviceListSelect = document.createElement("select");
+        serviceListSelect.required = true;
+
+        data.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option.id;
+          optionElement.textContent = option.name;
+          serviceListSelect.appendChild(optionElement);
+        });
+
+        serviceListSelect.value = `${this.currentData.serviceId ||
+          this.initialData.serviceId ||
+          0}`;
+
+        serviceListSelect.addEventListener("change", event => {
+          if (typeof (event.target as HTMLSelectElement).value === "string") {
+            const id = (event.target as HTMLSelectElement).value.split("|")[0];
+            /*
+            const metaconsoleId = (event.target as HTMLSelectElement).value.split(
+              "|"
+            )[1];
+            */
+            this.updateData({
+              serviceId: parseIntOr(id, 0)
+              //metaconsoleId: parseIntOr(metaconsoleId, 0)
+            });
+          } else {
+            this.updateData({
+              serviceId: parseIntOr(
+                (event.target as HTMLSelectElement).value,
+                0
+              )
+            });
+          }
+        });
+
+        serviceListLabel.appendChild(serviceListSelect);
+      }
+    });
+
+    return serviceListLabel;
+  }
+}
+
 export default class Service extends Item<ServiceProps> {
   public createDomElement(): HTMLElement {
     const element = document.createElement("div");
@@ -66,5 +151,27 @@ export default class Service extends Item<ServiceProps> {
     }
 
     return element;
+  }
+
+  /**
+   * @override function to add or remove inputsGroups those that are not necessary.
+   * Add to:
+   * ImageInputGroup
+   * ServiceListInputGroup
+   */
+  public getFormContainer(): FormContainer {
+    const formContainer = super.getFormContainer();
+    formContainer.addInputGroup(
+      new ImageInputGroup("image-console", {
+        ...this.props,
+        imageKey: "imageSrc",
+        showStatusImg: false
+      })
+    );
+    formContainer.addInputGroup(
+      new ServiceListInputGroup("service-list", this.props)
+    );
+
+    return formContainer;
   }
 }

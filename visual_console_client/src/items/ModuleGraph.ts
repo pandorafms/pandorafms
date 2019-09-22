@@ -32,6 +32,7 @@ export type ModuleGraphProps = {
   backgroundType: "white" | "black" | "transparent";
   graphType: "line" | "area";
   period: number | null;
+  customGraphId: number | null;
 } & ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
@@ -92,6 +93,7 @@ export function moduleGraphPropsDecoder(
     backgroundType: parseBackgroundType(data.backgroundType),
     period: parseIntOr(data.period, null),
     graphType: parseGraphType(data.graphType),
+    customGraphId: parseIntOr(data.customGraphId, null),
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -162,17 +164,17 @@ class ChooseTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
     radioButtonModule.name = "type-graph";
     radioButtonModule.value = "module";
     radioButtonModule.required = true;
+    radioButtonModule.checked = this.initialData.customGraphId ? false : true;
 
     divContainer.appendChild(radioButtonModule);
 
-    radioButtonModule.addEventListener("change", event => {
-      const show = document.getElementsByClassName(
+    radioButtonModule.addEventListener("change", e => {
+      this.updateRadioButton(
+        "input-group-custom-graph-list",
         "input-group-agent-autocomplete"
       );
-      for (let i = 0; i < show.length; i++) {
-        show[i].classList.add("show-elements");
-        show[i].classList.remove("hide-elements");
-      }
+      //Remove Id graph custom.
+      this.updateData({ customGraphId: 0 });
     });
 
     const radioButtonCustomLabel = document.createElement("label");
@@ -183,38 +185,34 @@ class ChooseTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
     const radioButtonCustom = document.createElement("input");
     radioButtonCustom.type = "radio";
     radioButtonCustom.name = "type-graph";
-    radioButtonCustom.value = "module";
+    radioButtonCustom.value = "custom";
     radioButtonCustom.required = true;
+    radioButtonCustom.checked = this.initialData.customGraphId ? true : false;
 
     divContainer.appendChild(radioButtonCustom);
 
     radioButtonCustom.addEventListener("change", event => {
-      const show = document.getElementsByClassName(
-        "input-group-agent-autocomplete"
+      this.updateRadioButton(
+        "input-group-agent-autocomplete",
+        "input-group-custom-graph-list"
       );
-      for (let i = 0; i < show.length; i++) {
-        show[i].classList.add("hide-elements");
-        show[i].classList.remove("show-elements");
-      }
     });
-
-    /*
-      backgroundTypeSelect.value =
-        this.currentData.backgroundType ||
-        this.initialData.backgroundType ||
-        "default";
-
-      backgroundTypeSelect.addEventListener("change", event => {
-        this.updateData({
-          backgroundType: parseBackgroundType(
-            (event.target as HTMLSelectElement).value
-          )
-        });
-      });
-    */
 
     return divContainer;
   }
+
+  private updateRadioButton = (id: string, id2: string): void => {
+    const itemAgentAutocomplete = document.getElementsByClassName(id);
+    for (let i = 0; i < itemAgentAutocomplete.length; i++) {
+      itemAgentAutocomplete[i].classList.add("hide-elements");
+      itemAgentAutocomplete[i].classList.remove("show-elements");
+    }
+    const itemCustomGraphList = document.getElementsByClassName(id2);
+    for (let i = 0; i < itemCustomGraphList.length; i++) {
+      itemCustomGraphList[i].classList.add("show-elements");
+      itemCustomGraphList[i].classList.remove("hide-elements");
+    }
+  };
 }
 
 /**
@@ -222,7 +220,7 @@ class ChooseTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
  * This item consists of a label and a Acl Group type select.
  * Acl is stored in the aclGroupId property
  */
-class CustomGraphInputGroup extends InputGroup<Partial<ItemProps>> {
+class CustomGraphInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
     const customGraphLabel = document.createElement("label");
     customGraphLabel.textContent = t("Custom graph");
@@ -257,17 +255,29 @@ class CustomGraphInputGroup extends InputGroup<Partial<ItemProps>> {
           customGraphSelect.appendChild(optionElement);
         });
 
-        /*
-        customGraphSelect.addEventListener("change", event => {
-          this.updateData({
-            aclGroupId: parseIntOr((event.target as HTMLSelectElement).value, 0)
-          });
-        });
-
-        customGraphSelect.value = `${this.currentData.aclGroupId ||
-          this.initialData.aclGroupId ||
+        customGraphSelect.value = `${this.currentData.customGraphId ||
+          this.initialData.customGraphId ||
           0}`;
-          */
+
+        customGraphSelect.addEventListener("change", event => {
+          if (typeof (event.target as HTMLSelectElement).value === "string") {
+            const id = (event.target as HTMLSelectElement).value.split("|")[0];
+            const metaconsoleId = (event.target as HTMLSelectElement).value.split(
+              "|"
+            )[1];
+            this.updateData({
+              customGraphId: parseIntOr(id, 0),
+              metaconsoleId: parseIntOr(metaconsoleId, 0)
+            });
+          } else {
+            this.updateData({
+              customGraphId: parseIntOr(
+                (event.target as HTMLSelectElement).value,
+                0
+              )
+            });
+          }
+        });
 
         customGraphLabel.appendChild(customGraphSelect);
       }
@@ -416,6 +426,9 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
    * PeriodInputGroup
    * GraphTypeInputGroup
    * BackgroundTypeInputGroup
+   * ChooseTypeInputGroup
+   * AgentModuleInputGroup
+   * CustomGraphInputGroup
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
@@ -434,11 +447,25 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     formContainer.addInputGroup(
       new ChooseTypeInputGroup("show-type-graph", this.props)
     );
+
+    const displayAgent = this.props.customGraphId
+      ? "hide-elements"
+      : "show-elements";
+    const displayCustom = this.props.customGraphId
+      ? "show-elements"
+      : "hide-elements ";
+
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new AgentModuleInputGroup(
+        `agent-autocomplete ${displayAgent}`,
+        this.props
+      )
     );
     formContainer.addInputGroup(
-      new CustomGraphInputGroup("custom-graph-list", this.props)
+      new CustomGraphInputGroup(
+        `custom-graph-list ${displayCustom}`,
+        this.props
+      )
     );
     return formContainer;
   }

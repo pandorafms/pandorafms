@@ -34,6 +34,10 @@ $getCustomGraphVisualConsoleItem = (bool) get_parameter(
     'getCustomGraphVisualConsoleItem'
 );
 
+$serviceListVisualConsole = (bool) get_parameter(
+    'serviceListVisualConsole'
+);
+
 ob_clean();
 
 // Retrieve the visual console.
@@ -473,7 +477,7 @@ if ($getVisualConsole === true) {
     enterprise_include_once('include/functions_metaconsole.php');
     $data = [];
     if (is_metaconsole()) {
-        $data = metaconsole_get_custom_graphs();
+        $data = metaconsole_get_custom_graphs(true);
     } else {
         $data = custom_graphs_get_user(
             $config['id_user'],
@@ -494,6 +498,29 @@ if ($getVisualConsole === true) {
     );
 
     echo json_encode($result);
+    return;
+} else if ($serviceListVisualConsole) {
+    // Services_get_services_no_ancestors_meta.
+    if (!enterprise_installed()) {
+        echo json_encode(false);
+        return;
+    }
+
+    enterprise_include_once('include/functions_services.php');
+    // Services list.
+    $services = [];
+    $services = enterprise_hook(
+        'services_get_services',
+        [
+            false,
+            [
+                'id',
+                'name',
+            ],
+        ]
+    );
+
+    echo io_safe_output(json_encode($services));
     return;
 }
 

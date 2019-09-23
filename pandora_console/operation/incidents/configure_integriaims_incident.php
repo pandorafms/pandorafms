@@ -98,13 +98,24 @@ $incident_status = (int) get_parameter('status');
 $incident_title = events_get_field_value_by_event_id($event_id, get_parameter('incident_title'));
 $incident_content = events_get_field_value_by_event_id($event_id, get_parameter('incident_content'));
 
+// Separator conversions.
+$incident_title = str_replace(',', ':::', $incident_title);
+$incident_content = str_replace(',', ':::', $incident_content);
+
 // If incident id is specified, retrieve incident values from api to populate combos with such values.
 if ($update) {
     // Call Integria IMS API method to get details of an incident given its id.
     $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_details', [$incident_id_edit]);
 
     // API call does not return indexes, therefore future modifications of API function in Integria IMS may lead to inconsistencies when accessing resulting array in this file.
-    $incident_details = explode(',', $result_api_call);
+    $incident_details_separator = explode(',', $result_api_call);
+
+    $incident_details = array_map(
+        function ($item) {
+            return str_replace(':::', ',', $item);
+        },
+        $incident_details_separator
+    );
 }
 
 // Perform action.

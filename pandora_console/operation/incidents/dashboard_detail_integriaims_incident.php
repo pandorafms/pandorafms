@@ -207,6 +207,7 @@ if (check_acl($config['id_user'], 0, 'IW')) {
             header('Content-Length: '.filesize($download_file_name));
             ob_end_clean();
             readfile($download_file_name);
+            unlink($download_file_name);
             exit;
         }
 

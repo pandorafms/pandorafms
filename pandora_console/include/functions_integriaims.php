@@ -240,12 +240,19 @@ function get_array_from_csv_data_all($csv_data, &$array_values, $index=false)
 
         if ($index !== false) {
             foreach ($new_csv_value as $key => $value) {
-                $new_csv_value_index[$index[$key]] = $value;
+                $new_csv_value_index[$index[$key]] = str_replace(':::', ',', $value);
+                ;
             }
 
             $array_values[$new_csv_value[0]] = $new_csv_value_index;
         } else {
-            $array_values[$new_csv_value[0]] = $new_csv_value;
+            $new_csv_value_comma = array_map(
+                function ($item) {
+                    return str_replace(':::', ',', $item);
+                },
+                $new_csv_value
+            );
+            $array_values[$new_csv_value[0]] = $new_csv_value_comma;
         }
     }
 }

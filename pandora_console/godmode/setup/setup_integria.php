@@ -294,7 +294,7 @@ $row['control'] = html_print_select(
     'default_group',
     $config['default_group'],
     '',
-    '',
+    __('Select'),
     0,
     true,
     false,

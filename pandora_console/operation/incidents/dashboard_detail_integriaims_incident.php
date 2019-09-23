@@ -16,7 +16,7 @@ global $config;
 
 check_login();
 
-if (!(check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0, 'IR'))) {
+if (!check_acl($config['id_user'], 0, 'IR')) {
     // Doesn't have access to this page.
     db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
     include 'general/noaccess.php';
@@ -278,14 +278,13 @@ if (check_acl($config['id_user'], 0, 'IW')) {
     $table_files_section->data[0][0] = '<div class="label_select"><p class="input_label">'.__('File name').':</p>';
     $table_files_section->data[0][0] .= html_print_input_file('userfile', true);
     $table_files_section->data[1][0] = '<div class="label_select"><p class="input_label">'.__('Description').':</p>';
-    $table_files_section->data[1][0] .= html_print_input_text(
+    $table_files_section->data[1][0] .= html_print_textarea(
         'file_description',
+        3,
+        20,
         '',
-        __('Description'),
-        50,
-        100,
-        true,
-        false
+        '',
+        true
     );
 
     $table_files_section->data[2][0] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';

@@ -219,14 +219,17 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 -- Table `tdatabase`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdatabase` (
-	`id` int(10) unsigned NOT NULL auto_increment,
-	`host` varchar(100) default '',
-	`os_port` int(4) unsigned default '22',
-	`os_user` varchar(100) default '',
-	`db_port` int(4) unsigned default '3306',
+	`id` INT(10) unsigned NOT NULL auto_increment,
+	`host` VARCHAR(255) default '',
+	`label` VARCHAR(255) default '',
+	`os_port` INT UNSIGNED NOT NULL DEFAULT 22,
+	`os_user` VARCHAR(255) default '',
+	`db_port` INT UNSIGNED NOT NULL DEFAULT 3306,
 	`status` tinyint(1) unsigned default '0',
 	`action` tinyint(1) unsigned default '0',
-	`last_error` varchar(255) default '',
+	`ssh_key` TEXT,
+	`ssh_pubkey` TEXT,
+	`last_error` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
@@ -798,6 +801,7 @@ ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) D
 ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -1454,6 +1458,7 @@ ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
 ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
+ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`

@@ -355,6 +355,12 @@ define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
 
+// Type of Webserver Modules.
+define('MODULE_WEBSERVER_CHECK_LATENCY', 30);
+define('MODULE_WEBSERVER_CHECK_SERVER_RESPONSE', 31);
+define('MODULE_WEBSERVER_RETRIEVE_NUMERIC_DATA', 32);
+define('MODULE_WEBSERVER_RETRIEVE_STRING_DATA', 33);
+
 // SNMP CONSTANTS.
 define('SNMP_DIR_MIBS', 'attachment/mibs');
 
@@ -624,3 +630,21 @@ define('DEFAULT_NODE_COLOR', COL_NOTINIT);
 define('DEFAULT_NODE_IMAGE', 'images/networkmap/unknown.png');
 
 define('NODE_IMAGE_PADDING', 5);
+
+// Pandora Database HA constants.
+define('HA_ACTION_NONE', 0);
+define('HA_ACTION_DEPLOY', 1);
+define('HA_ACTION_RECOVER', 2);
+define('HA_ACTION_PROMOTE', 3);
+define('HA_ACTION_DEMOTE', 4);
+define('HA_ACTION_DISABLE', 5);
+define('HA_ACTION_ENABLE', 6);
+define('HA_ACTION_CLEANUP', 7);
+define('HA_ACTION_RESYNC', 8);
+
+define('HA_UNINITIALIZED', 0);
+define('HA_ONLINE', 1);
+define('HA_PENDING', 2);
+define('HA_PROCESSING', 3);
+define('HA_DISABLED', 4);
+define('HA_FAILED', 5);

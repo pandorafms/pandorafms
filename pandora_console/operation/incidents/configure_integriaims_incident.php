@@ -14,6 +14,8 @@
 // Load global vars
 global $config;
 
+require_once 'include/functions_integriaims.php';
+
 check_login();
 
 if (!(check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0, 'IR'))) {
@@ -25,10 +27,11 @@ if (!(check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0,
 
 $update = (isset($_GET['incident_id']) === true);
 
+$onheader = integriaims_tabs('create_tab');
 if ($update) {
-    ui_print_page_header(__('Update Integria IMS Incident'), '', false, '', false, '');
+    ui_print_page_header(__('Update Integria IMS Incident'), '', false, '', false, $onheader);
 } else {
-    ui_print_page_header(__('Create Integria IMS Incident'), '', false, '', false, '');
+    ui_print_page_header(__('Create Integria IMS Incident'), '', false, '', false, $onheader);
 }
 
 // Check if Integria integration enabled.

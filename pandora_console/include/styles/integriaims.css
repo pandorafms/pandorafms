@@ -13,7 +13,7 @@ div.priority {
 div.integria_details {
   display: grid;
   grid-column-gap: 10px;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(min-content, auto));
   grid-auto-rows: 1fr;
 }
 
@@ -47,11 +47,12 @@ div.integria_details_row_three {
 
 div.integria_details_description {
   width: 100%;
+}
+
+div.integria_details_description textarea {
+  width: 100%;
   background-color: #fbfbfb;
-  border: 1px solid #cbcbcb;
-  border-radius: 3px;
-  padding: 5px 10px 5px 5px;
-  min-height: 100px;
+  resize: vertical;
 }
 
 .integriaims_details_box {

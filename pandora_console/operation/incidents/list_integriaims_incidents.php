@@ -14,6 +14,8 @@
 // Load global vars
 global $config;
 
+require_once 'include/functions_integriaims.php';
+
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'IR') && ! check_acl($config['id_user'], 0, 'IW') && ! check_acl($config['id_user'], 0, 'IM')) {
@@ -23,7 +25,9 @@ if (! check_acl($config['id_user'], 0, 'IR') && ! check_acl($config['id_user'], 
     exit;
 }
 
-ui_print_page_header(__('Integria IMS Incidents'), '', false, '', false, '');
+// Header tabs.
+$onheader = integriaims_tabs('list_tab');
+ui_print_page_header(__('Integria IMS Incidents'), '', false, '', false, $onheader);
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
@@ -84,25 +88,11 @@ $url = ui_get_full_url(
 
 // ---- FILTERS ----
 // API calls to fill the filters.
-// Get status.
-$status_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status');
-$status_incident = [];
-get_array_from_csv_data_pair($status_api_call, $status_incident);
+$status_incident = integriaims_get_details('status');
+$group_incident = integriaims_get_details('group');
+$priority_incident = integriaims_get_details('priority');
+$resolution_incident = integriaims_get_details('resolution');
 
-// Get group.
-$group_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups');
-$group_incident = [];
-get_array_from_csv_data_pair($group_api_call, $group_incident);
-
-// Get priority.
-$priority_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities');
-$priority_incident = [];
-get_array_from_csv_data_pair($priority_api_call, $priority_incident);
-
-// Get resolution.
-$resolution_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_resolutions');
-$resolution_incident = [];
-get_array_from_csv_data_pair($resolution_api_call, $resolution_incident);
 
 // TABLE FILTERS.
 $table = new StdClass();
@@ -230,8 +220,7 @@ $integria_incidents_form .= '<div>'.html_print_submit_button(__('Filter'), 'filt
 $integria_incidents_form .= '</div>';
 $integria_incidents_form .= '</form>';
 
-// ui_toggle($integria_incidents_form, __('Add Custom filter'));
-echo $integria_incidents_form;
+ui_toggle($integria_incidents_form, __('Add Custom filter'), '', '', false);
 
 /*
  * Order api call 'get_incidents'.
@@ -315,8 +304,12 @@ foreach ($incidents_paginated as $key => $value) {
 
 // Show table incidents.
 ui_pagination(count($array_get_incidents), $url, $offset);
-html_print_table($table);
-ui_pagination(count($array_get_incidents), $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
+if (empty($table->data) === true) {
+    ui_print_info_message(['no_close' => true, 'message' => __('No incidents to show').'.' ]);
+} else {
+    html_print_table($table);
+    ui_pagination(count($array_get_incidents), $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
+}
 
 // Show button to create incident.
 if (check_acl($config['id_user'], 0, 'IR')) {

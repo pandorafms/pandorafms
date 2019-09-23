@@ -5342,25 +5342,6 @@ table.info_table.policy_sub_table {
   color: #848484;
 }
 
-/* Inputs type text shown as a black line */
-.integria_incidents_options input[type="text"] {
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
-  font-size: 10pt;
-  padding: 2px 5px;
-  box-sizing: border-box;
-  background-repeat: no-repeat;
-  background-position: left bottom 2px;
-  margin-bottom: 4px;
-}
-
-.integria_incident_options input[readonly] {
-  color: #848484;
-}
-
 /*
  * ---------------------------------------------------------------------
  * - CLASSES FOR THE NEW TOGGLES                     								-
@@ -5902,29 +5883,4 @@ table.table_modal_alternate tr td:first-child {
 
 .fullwidth {
   width: 100%;
-}
-
-/*
- * ---------------------------------------------------------------------
- * - INTEGRIA INCIDENTS
- * ---------------------------------------------------------------------
- */
-div.priority {
-  width: 80px;
-  color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  padding: 5px;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.comment_title {
-  padding: 5px 10px 5px 20px;
-  background-color: rgba(130, 185, 46, 0.16);
-  border-radius: 3px;
-}
-
-.comment_body {
-  padding: 15px 20px 15px 20px;
 }

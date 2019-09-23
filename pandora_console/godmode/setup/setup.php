@@ -119,7 +119,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
 
 $buttons['integria'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/ehorus/ehorus.png', true, ['title' => __('Integria IMS')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/integria.png', true, ['title' => __('Integria IMS')]).'</a>',
 ];
 
 $buttons['ehorus'] = [

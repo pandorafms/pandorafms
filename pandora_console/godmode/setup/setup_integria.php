@@ -61,12 +61,37 @@ if (get_parameter('update_config', 0) == 1) {
     if ($config['integria_enabled'] == 1) {
         if ($event_response_exists === false) {
             // Create 'Create incident in IntegriaIMS from event' event response only when user enables IntegriaIMS integration and it does not exist in database.
-            db_process_sql_insert('tevent_response', ['name' => io_safe_input('Create incident in IntegriaIMS from event'), 'description' => io_safe_input('Create an incident in Integria IMS from an event'), 'target' => io_safe_input('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&from_event=_event_id_'), 'type' => 'url', 'id_group' => '0', 'modal_width' => '0', 'modal_height' => '0', 'new_window' => '1', 'params' => '', 'server_to_exec' => '0']);
+            db_process_sql_insert(
+                'tevent_response',
+                [
+                    'name'           => io_safe_input('Create incident in IntegriaIMS from event'),
+                    'description'    => io_safe_input('Create an incident in Integria IMS from an event'),
+                    'target'         => io_safe_input('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&from_event=_event_id_'),
+                    'type'           => 'url',
+                    'id_group'       => '0',
+                    'modal_width'    => '0',
+                    'modal_height'   => '0',
+                    'new_window'     => '1',
+                    'params'         => '',
+                    'server_to_exec' => '0',
+                ]
+            );
         }
 
         if ($command_exists === false) {
             // Create 'Integria IMS Ticket' command only when user enables IntegriaIMS integration and it does not exist in database.
-            $id_command_inserted = db_process_sql_insert('talert_commands', ['name' => io_safe_input('Integria IMS Ticket'), 'command' => io_safe_input('perl /usr/share/pandora_server/util/integria_rticket.pl -p '.$config['integria_hostname'].'/integria/include/api.php -u '.$config['integria_api_pass'].','.$config['integria_user'].','.$config['integria_pass'].' -create_ticket -name "_field1_" -desc "_field2_" -group _field3_ -priority _field4_ -owner _field5_ -type _field6_'), 'description' => io_safe_input('Create an incident in Integria IMS'), 'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket description').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'"]', 'fields_values' => '["'.io_safe_input($config['incident_title']).'", "'.io_safe_input($config['incident_content']).'", "'.io_safe_input($config['default_group']).'", "'.io_safe_input($config['default_criticity']).'", "'.io_safe_input($config['default_owner']).'", "'.io_safe_input($config['incident_type']).'"]', 'fields_hidden' => '["","","","","","","","","",""]']);
+            $id_command_inserted = db_process_sql_insert(
+                'talert_commands',
+                [
+                    'name'                => io_safe_input('Integria IMS Ticket'),
+                    'command'             => io_safe_input('perl /usr/share/pandora_server/util/integria_rticket.pl -p '.$config['integria_hostname'].'/integria/include/api.php -u '.$config['integria_api_pass'].','.$config['integria_user'].','.$config['integria_pass'].' -create_ticket -name "_field1_" -desc "_field2_" -group _field3_ -priority _field4_ -owner _field5_ -type _field6_'),
+                    'internal'            => 1,
+                    'description'         => io_safe_input('Create an incident in Integria IMS'),
+                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket description').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'"]',
+                    'fields_values'       => '["'.io_safe_input($config['incident_title']).'", "'.io_safe_input($config['incident_content']).'", "'.io_safe_input($config['default_group']).'", "'.io_safe_input($config['default_criticity']).'", "'.io_safe_input($config['default_owner']).'", "'.io_safe_input($config['incident_type']).'"]',
+                    'fields_hidden'       => '["","","","","","","","","",""]',
+                ]
+            );
 
             // Create 'Create Integria IMS Ticket' action only when user enables IntegriaIMS integration and command exists in database.
             $action_values = [
@@ -269,7 +294,7 @@ $row['control'] = html_print_select(
     'default_group',
     $config['default_group'],
     '',
-    __('Select'),
+    '',
     0,
     true,
     false,

@@ -3372,11 +3372,19 @@ function html_print_autocomplete_users_from_integria(
     $name='users',
     $default='',
     $return=false,
-    $size='30'
+    $size='30',
+    $disable=false,
+    $required=false
 ) {
     global $config;
 
     ob_start();
+
+    $attrs = ['style' => 'background: url(images/user_green.png) no-repeat right;'];
+
+    if ($required) {
+        $attrs['required'] = 'required';
+    }
 
     html_print_input_text_extended(
         $name,
@@ -3385,12 +3393,17 @@ function html_print_autocomplete_users_from_integria(
         '',
         $size,
         100,
-        false,
+        $disable,
         '',
-        ['style' => 'background: url(images/user_green.png) no-repeat right;']
+        $attrs
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
+
+    if ($disable === true) {
+        ui_print_help_tip(__('This value cannot be updated.'), false);
+    } else {
+        ui_print_help_tip(__('Type at least two characters to search the user.'), false);
+    }
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>

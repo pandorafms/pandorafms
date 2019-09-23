@@ -93,3 +93,32 @@ div.integria_details_description {
   border-left: none;
   border-right: none;
 }
+
+/* Inputs type text shown as a black line */
+.integria_incidents_options input[type="text"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-size: 10pt;
+  padding: 2px 5px;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: left bottom 2px;
+  margin-bottom: 4px;
+}
+
+.integria_incident_options input[readonly] {
+  color: #848484;
+}
+
+.comment_title {
+  padding: 5px 10px 5px 20px;
+  background-color: rgba(130, 185, 46, 0.16);
+  border-radius: 3px;
+}
+
+.comment_body {
+  padding: 15px 20px 15px 20px;
+}

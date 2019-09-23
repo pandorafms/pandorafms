@@ -28,6 +28,8 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+require_once $config['homedir'].'/include/functions_integriaims.php';
+
 if (is_ajax()) {
     $integria_user = get_parameter('integria_user', '');
     $integria_pass = get_parameter('integria_pass', '');

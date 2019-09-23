@@ -479,7 +479,6 @@ if (check_acl($config['id_user'], 0, 'IR')
     $sub2 = [];
     $sub2['operation/incidents/incident']['text'] = __('List of Incidents');
     $sub2[$sec2sub]['text'] = __('Statistics');
-    $sub2['operation/incidents/configure_integriaims_incident']['text'] = __('Create Integria IMS Incident');
     $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS Incidents');
 
     $sub[$sec2]['sub2'] = $sub2;

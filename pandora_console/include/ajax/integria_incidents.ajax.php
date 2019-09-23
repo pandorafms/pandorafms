@@ -29,7 +29,7 @@
 if (check_login()) {
     global $config;
 
-    include_once $config['homedir'].'/include/functions.php';
+    include_once $config['homedir'].'/include/functions_integriaims.php';
 
     $get_users = get_parameter('get_users');
     $search_term = get_parameter('search_term', '');

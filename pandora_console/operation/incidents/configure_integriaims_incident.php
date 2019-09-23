@@ -14,8 +14,6 @@
 // Load global vars
 global $config;
 
-require_once 'include/functions_integriaims.php';
-
 check_login();
 
 if (!(check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0, 'IR'))) {
@@ -24,6 +22,8 @@ if (!(check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0,
     include 'general/noaccess.php';
     exit;
 }
+
+require_once $config['homedir'].'/include/functions_integriaims.php';
 
 $update = (isset($_GET['incident_id']) === true);
 

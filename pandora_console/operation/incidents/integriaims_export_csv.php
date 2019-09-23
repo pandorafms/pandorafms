@@ -16,6 +16,7 @@ global $config;
 
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
+require_once '../../include/functions_integriaims.php';
 
 check_login();
 
@@ -26,25 +27,12 @@ if (! check_acl($config['id_user'], 0, 'IR') && ! check_acl($config['id_user'], 
     exit;
 }
 
-// Get status.
-$status_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status');
-$status_incident = [];
-get_array_from_csv_data_pair($status_api_call, $status_incident);
 
-// Get group.
-$group_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups');
-$group_incident = [];
-get_array_from_csv_data_pair($group_api_call, $group_incident);
-
-// Get priority.
-$priority_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities');
-$priority_incident = [];
-get_array_from_csv_data_pair($priority_api_call, $priority_incident);
-
-// Get resolution.
-$resolution_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_resolutions');
-$resolution_incident = [];
-get_array_from_csv_data_pair($resolution_api_call, $resolution_incident);
+// API calls.
+$status_incident = integriaims_get_details('status');
+$group_incident = integriaims_get_details('group');
+$priority_incident = integriaims_get_details('priority');
+$resolution_incident = integriaims_get_details('resolution');
 
 
 // Get data to export.
@@ -82,26 +70,29 @@ foreach ($tickets_csv_array as $key => $value) {
     }
 
     $tickets_csv_array_filter[$key] = [
-        'id_incidencia'     => $tickets_csv_array[$key][0],
-        'titulo'            => $tickets_csv_array[$key][3],
-        'id_grupo'          => $tickets_csv_array[$key][8],
-        'estado_resolution' => $tickets_csv_array[$key][6].' / '.$tickets_csv_array[$key][12],
-        'prioridad'         => $tickets_csv_array[$key][7],
-        'actualizacion'     => $tickets_csv_array[$key][9],
-        'id_creator'        => $tickets_csv_array[$key][10],
-        'owner'             => $tickets_csv_array[$key][5],
+        'id_incidencia' => $tickets_csv_array[$key][0],
+        'titulo'        => $tickets_csv_array[$key][3],
+        'id_grupo'      => $tickets_csv_array[$key][8],
+        'estado'        => $tickets_csv_array[$key][6],
+        'resolution'    => $tickets_csv_array[$key][12],
+        'prioridad'     => $tickets_csv_array[$key][7],
+        'actualizacion' => $tickets_csv_array[$key][9],
+        'inicio'        => $tickets_csv_array[$key][1],
+        'id_creator'    => $tickets_csv_array[$key][10],
+        'owner'         => $tickets_csv_array[$key][5],
     ];
 }
-
 
 // Header for CSV file.
 $header = [
     __('ID Ticket'),
     __('Title'),
     __('Group/Company'),
-    __('Status/Resolution'),
+    __('Status'),
+    __('Resolution'),
     __('Priority'),
-    __('Updated/Started'),
+    __('Updated'),
+    __('Started'),
     __('Creator'),
     __('Owner'),
 ];

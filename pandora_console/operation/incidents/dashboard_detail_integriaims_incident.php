@@ -14,6 +14,8 @@
 // Load global vars
 global $config;
 
+require_once 'include/functions_integriaims.php';
+
 check_login();
 
 if (!check_acl($config['id_user'], 0, 'IR')) {
@@ -58,7 +60,11 @@ get_array_from_csv_data_all($result_api_call_list, $array_get_incidents);
 // Remove index (id)
 $array_get_incidents = $array_get_incidents[$incident_id];
 
-ui_print_page_header($array_get_incidents[3].__(' - Details'), '', false, '', false, '');
+
+// Header tabs.
+$onheader = integriaims_tabs($incident_id);
+ui_print_page_header($array_get_incidents[3].' - '.__('Details'), '', false, '', false, $onheader);
+
 
 // Data.
 $status = $array_get_incidents[6];
@@ -84,49 +90,11 @@ if ($closed_by == '') {
 
 
 // API calls.
-// Get status.
-$status_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status');
-$status_incident = [];
-get_array_from_csv_data_pair($status_api_call, $status_incident);
-
-if ($status_incident[$status] == '') {
-    $status_text = __('None');
-} else {
-    $status_text = $status_incident[$status];
-}
-
-// Get group.
-$group_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups');
-$group_incident = [];
-get_array_from_csv_data_pair($group_api_call, $group_incident);
-$group_text = $group_incident[$group];
-
-// Get priority.
-$priority_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities');
-$priority_incident = [];
-get_array_from_csv_data_pair($priority_api_call, $priority_incident);
-$priority_text = $priority_incident[$priority];
-
-// Get resolution.
-$resolution_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_resolutions');
-$resolution_incident = [];
-get_array_from_csv_data_pair($resolution_api_call, $resolution_incident);
-
-if ($resolution_incident[$resolution] == '') {
-    $resolution_text = __('None');
-} else {
-    $resolution_text = $resolution_incident[$resolution];
-}
-
-// Get types.
-$type_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types');
-$type_incident = [];
-get_array_from_csv_data_pair($type_api_call, $type_incident);
-if ($type_incident[$type] == '') {
-    $type_text = __('None');
-} else {
-    $type_text = $type_incident[$type];
-}
+$status_text = integriaims_get_details('status', $status);
+$group_text = integriaims_get_details('group', $group);
+$priority_text = integriaims_get_details('priority', $priority);
+$resolution_text = integriaims_get_details('resolution', $resolution);
+$type_text = integriaims_get_details('type', $type);
 
 if (check_acl($config['id_user'], 0, 'IW')) {
     // Incident file management.
@@ -388,7 +356,7 @@ $details_box .= '
     <div>'.html_print_image('images/heart.png', true).'</div>
     <div>'.html_print_image('images/builder.png', true).'</div>
     <div>'.html_print_image('images/user_green.png', true).'</div>
-    <div>'.ui_print_integria_incident_priority($priority, $priority_incident[$priority]).'</div>
+    <div>'.ui_print_integria_incident_priority($priority, $priority_text).'</div>
     <div>'.html_print_image('images/incidents.png', true).'</div>';
 $details_box .= '
     <div>'.$status_text.'</div>
@@ -441,7 +409,14 @@ echo '<div class="integria_details">';
 echo '</div>';
 
  // Show description.
-$description_box = '<div class="integria_details_description">'.$description.'</div>';
+$description_box = '<div class="integria_details_description">'.html_print_textarea(
+    'integria_details_description',
+    3,
+    0,
+    $description,
+    'disabled="disabled"',
+    true
+).'</div>';
 ui_toggle($description_box, __('Description'), '', '', false);
 
 if (check_acl($config['id_user'], 0, 'IW')) {

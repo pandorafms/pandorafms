@@ -116,7 +116,21 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
-('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
+('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png'),
+('integria_enabled', 0),
+('integria_user', ''),
+('integria_pass', ''),
+('integria_hostname', ''),
+('integria_api_pass', ''),
+('integria_req_timeout', 5),
+('default_group', ''),
+('default_criticity', ''),
+('default_creator', ''),
+('default_owner', ''),
+('incident_type', ''),
+('incident_status', ''),
+('incident_title', ''),
+('incident_content', '');
 UNLOCK TABLES;
 
 --

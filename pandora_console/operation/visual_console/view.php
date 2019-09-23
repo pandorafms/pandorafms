@@ -260,6 +260,7 @@ if (!users_can_manage_group_all('AR')) {
 }
 
 $ignored_params['refr'] = '';
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ui_require_javascript_file('pandora_visual_console');
 include_javascript_d3();
 visual_map_load_client_resources();
@@ -286,7 +287,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         ) {
             var pureBody = document.querySelector("body.pure");
             var pureContainer = document.querySelector("div#main_pure");
-            
+
             if (pureBody !== null) {
                 pureBody.style.backgroundColor = newProps.backgroundColor
             }

@@ -249,6 +249,28 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
   }
 }
 
+// TODO: Document
+class LabelInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const label = document.createElement("label");
+    label.textContent = t("Label");
+
+    //TODO: help.
+    label.appendChild(helpTip(t("add help")));
+
+    const labelInput = document.createElement("textarea");
+    labelInput.id = "tinyMCE_editor";
+
+    labelInput.value = `${this.currentData.label ||
+      this.initialData.label ||
+      ""}`;
+
+    label.appendChild(labelInput);
+
+    return label;
+  }
+}
+
 /**
  * Class to add item to the general items form
  * This item consists of a label and a Parent select.
@@ -2076,11 +2098,87 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     return disposable;
   }
 
+  //TODO: Document
+  public titleItem(id: number): string {
+    let title = "";
+    switch (id) {
+      case ItemType.STATIC_GRAPH:
+        title = t("Static image");
+        break;
+      case ItemType.MODULE_GRAPH:
+        title = t("Module graph");
+        break;
+      case ItemType.SIMPLE_VALUE:
+        title = t("Simple value");
+        break;
+      case ItemType.PERCENTILE_BAR:
+        title = t("Percentile item");
+        break;
+      case ItemType.LABEL:
+        title = t("Label");
+        break;
+      case ItemType.ICON:
+        title = t("Icon");
+        break;
+      case ItemType.SIMPLE_VALUE_MAX:
+        title = t("Simple value");
+        break;
+      case ItemType.SIMPLE_VALUE_MIN:
+        title = t("Simple value");
+        break;
+      case ItemType.SIMPLE_VALUE_AVG:
+        title = t("Simple value");
+        break;
+      case ItemType.PERCENTILE_BUBBLE:
+        title = t("Percentile item");
+        break;
+      case ItemType.SERVICE:
+        title = t("Service");
+        break;
+      case ItemType.GROUP_ITEM:
+        title = t("Group");
+        break;
+      case ItemType.BOX_ITEM:
+        title = t("Box");
+        break;
+      case ItemType.LINE_ITEM:
+        title = t("Line");
+        break;
+      case ItemType.AUTO_SLA_GRAPH:
+        title = t("Auto SLA graph");
+        break;
+      case ItemType.CIRCULAR_PROGRESS_BAR:
+        title = t("Percentile item");
+        break;
+      case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+        title = t("Percentile item");
+        break;
+      case ItemType.DONUT_GRAPH:
+        title = t("Serialized pie graph");
+        break;
+      case ItemType.BARS_GRAPH:
+        title = t("Bars graph");
+        break;
+      case ItemType.CLOCK:
+        title = t("Clock");
+        break;
+      case ItemType.COLOR_CLOUD:
+        title = t("Color cloud");
+        break;
+      default:
+        title = t("Item");
+        break;
+    }
+
+    return title;
+  }
+
   // TODO: Document
   public getFormContainer(): FormContainer {
     return new FormContainer(
-      t("Item"),
+      this.titleItem(this.props.type),
       [
+        new LabelInputGroup("label", this.props),
         new PositionInputGroup("position", this.props),
         new SizeInputGroup("size", this.props),
         new LinkInputGroup("link", this.props),
@@ -2090,6 +2188,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new CacheExpirationInputGroup("cache-expiration", this.props)
       ],
       [
+        "label",
         "position",
         "size",
         "link",
@@ -2108,6 +2207,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     return new FormContainer(
       t("Item"),
       [
+        new LabelInputGroup("label", props),
         new PositionInputGroup("position", props),
         new SizeInputGroup("size", props),
         new LinkInputGroup("link", props),
@@ -2117,6 +2217,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         new CacheExpirationInputGroup("cache-expiration", props)
       ],
       [
+        "label",
         "position",
         "size",
         "link",

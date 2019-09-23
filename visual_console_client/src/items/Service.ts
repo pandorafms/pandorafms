@@ -110,14 +110,8 @@ class ServiceListInputGroup extends InputGroup<Partial<ServiceProps>> {
         serviceListSelect.addEventListener("change", event => {
           if (typeof (event.target as HTMLSelectElement).value === "string") {
             const id = (event.target as HTMLSelectElement).value.split("|")[0];
-            /*
-            const metaconsoleId = (event.target as HTMLSelectElement).value.split(
-              "|"
-            )[1];
-            */
             this.updateData({
               serviceId: parseIntOr(id, 0)
-              //metaconsoleId: parseIntOr(metaconsoleId, 0)
             });
           } else {
             this.updateData({

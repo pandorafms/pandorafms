@@ -500,7 +500,6 @@ if ($getVisualConsole === true) {
     echo json_encode($result);
     return;
 } else if ($serviceListVisualConsole) {
-    // Services_get_services_no_ancestors_meta.
     if (!enterprise_installed()) {
         echo json_encode(false);
         return;

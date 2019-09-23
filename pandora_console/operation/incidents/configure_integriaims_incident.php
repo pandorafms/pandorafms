@@ -27,7 +27,8 @@ require_once $config['homedir'].'/include/functions_integriaims.php';
 
 $update = (isset($_GET['incident_id']) === true);
 
-$onheader = integriaims_tabs('create_tab');
+// Header tabs.
+$onheader = integriaims_tabs('create_tab', $_GET['incident_id']);
 if ($update) {
     ui_print_page_header(__('Update Integria IMS Incident'), '', false, '', false, $onheader);
 } else {

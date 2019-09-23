@@ -27,11 +27,12 @@ require_once $config['homedir'].'/include/functions.php';
 /**
  * Show header tabs.
  *
- * @param string $active_tab Current tab or id_incident.
+ * @param string $active_tab Current tab or false for View page.
+ * @param number $view       Id of incident. Show View tab.
  *
  * @return html Print tabs in header.
  */
-function integriaims_tabs($active_tab=false)
+function integriaims_tabs($active_tab, $view=false)
 {
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
@@ -39,45 +40,39 @@ function integriaims_tabs($active_tab=false)
     $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('List incidents')]).'</a>';
     $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New incident')]).'</a>';
 
-    if ($active_tab) {
-        switch ($active_tab) {
-            case 'setup_tab':
-                $setup_tab['active'] = true;
-                $list_tab['active'] = false;
-                $create_tab['active'] = false;
-            break;
+    switch ($active_tab) {
+        case 'setup_tab':
+            $setup_tab['active'] = true;
+            $list_tab['active'] = false;
+            $create_tab['active'] = false;
+        break;
 
-            case 'list_tab':
-                $setup_tab['active'] = false;
-                $list_tab['active'] = true;
-                $create_tab['active'] = false;
-            break;
+        case 'list_tab':
+            $setup_tab['active'] = false;
+            $list_tab['active'] = true;
+            $create_tab['active'] = false;
+        break;
 
-            case 'create_tab':
-                $setup_tab['active'] = false;
-                $list_tab['active'] = false;
-                $create_tab['active'] = true;
-            break;
+        case 'create_tab':
+            $setup_tab['active'] = false;
+            $list_tab['active'] = false;
+            $create_tab['active'] = true;
+        break;
 
-            case is_numeric($active_tab):
-                $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$active_tab.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit incident')]).'</a>';
-                $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$active_tab.'">'.html_print_image('images/operation.png', true, ['title' => __('View incident')]).'</a>';
-                $setup_tab['active'] = false;
-                $list_tab['active'] = false;
-                $create_tab['active'] = false;
-                $view_tab['active'] = true;
-            break;
+        default:
+            $setup_tab['active'] = false;
+            $list_tab['active'] = false;
+            $create_tab['active'] = false;
+        break;
+    }
 
-            default:
-                $setup_tab['active'] = false;
-                $list_tab['active'] = false;
-                $create_tab['active'] = false;
-            break;
+    if ($view) {
+        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit incident')]).'</a>';
+        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View incident')]).'</a>';
+        // When the current page is the View page.
+        if (!$active_tab) {
+            $view_tab['active'] = true;
         }
-    } else {
-        $setup_tab['active'] = false;
-        $list_tab['active'] = false;
-        $create_tab['active'] = false;
     }
 
     $onheader = [

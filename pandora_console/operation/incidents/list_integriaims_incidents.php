@@ -98,6 +98,7 @@ $resolution_incident = integriaims_get_details('resolution');
 $table = new StdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
+$table->styleTable = 'margin-bottom:0px';
 $table->cellpadding = '0';
 $table->cellspacing = '0';
 $table->data = [];
@@ -205,7 +206,7 @@ $decode_csv = base64_encode(json_encode($tickets_filters));
 
 
 // ---- PRINT TABLE FILTERS ----
-$integria_incidents_form = '<form method="post" action="'.$url.'">';
+$integria_incidents_form = '<form method="post" action="'.$url.'" style="padding:0px;">';
 $integria_incidents_form .= html_print_table($table, true);
 $integria_incidents_form .= '<div style="width:100%; text-align:right;">';
 $integria_incidents_form .= '<div style="float:right; margin-left: 5px;">'.html_print_button(

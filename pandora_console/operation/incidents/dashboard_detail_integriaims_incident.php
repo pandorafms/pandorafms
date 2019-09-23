@@ -62,7 +62,7 @@ $array_get_incidents = $array_get_incidents[$incident_id];
 
 
 // Header tabs.
-$onheader = integriaims_tabs($incident_id);
+$onheader = integriaims_tabs(false, $incident_id);
 ui_print_page_header($array_get_incidents[3].' - '.__('Details'), '', false, '', false, $onheader);
 
 

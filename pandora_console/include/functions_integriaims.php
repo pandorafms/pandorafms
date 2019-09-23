@@ -34,6 +34,8 @@ require_once $config['homedir'].'/include/functions.php';
  */
 function integriaims_tabs($active_tab, $view=false)
 {
+    global $config;
+
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
     $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS')]).'</a>';
@@ -75,12 +77,23 @@ function integriaims_tabs($active_tab, $view=false)
         }
     }
 
-    $onheader = [
-        'view'      => $view_tab,
-        'configure' => $setup_tab,
-        'list'      => $list_tab,
-        'create'    => $create_tab,
-    ];
+    $onheader = [];
+
+    if (check_acl($config['id_user'], 0, 'IR') && $view) {
+        $onheader['view'] = $view_tab;
+    }
+
+    if (check_acl($config['id_user'], 0, 'PM') && is_user_admin($config['id_user'])) {
+        $onheader['configure'] = $setup_tab;
+    }
+
+    if (check_acl($config['id_user'], 0, 'IR')) {
+        $onheader['list'] = $list_tab;
+    }
+
+    if ((check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0, 'IR'))) {
+        $onheader['create'] = $create_tab;
+    }
 
     return $onheader;
 }
@@ -221,7 +234,7 @@ function get_array_from_csv_data_pair($csv_data, &$array_values)
 
 
 /**
- * Parse CSV consisting of one or more lines of the form key-value pair into an array.
+ * Parse CSV consisting of all lines into an array.
  *
  * @param string $csv_data     Data returned of csv api call.
  * @param string $array_values Returned array.

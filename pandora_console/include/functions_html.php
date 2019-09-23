@@ -98,6 +98,23 @@ function hd($var, $file='', $oneline=false)
 }
 
 
+/**
+ * Encapsulation (ob) for debug print function.
+ *
+ * @param mixed   $var     Variable to be dumped.
+ * @param string  $file    Target file path.
+ * @param boolean $oneline Show in oneline.
+ *
+ * @return string Dump string.
+ */
+function obhd($var, $file='', $oneline=false)
+{
+    ob_start();
+    hd($var, $file, $oneline);
+    return ob_get_clean();
+}
+
+
 function debug()
 {
     $args_num = func_num_args();
@@ -1570,6 +1587,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeypress',
         'onkeydown',
         'onkeyup',
+        'class',
     ];
 
     foreach ($attrs as $attribute) {
@@ -3152,7 +3170,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : '')
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off')
             );
         break;
 

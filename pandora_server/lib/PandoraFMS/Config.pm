@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.738";
-my $pandora_build = "190913";
+my $pandora_build = "190923";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -187,6 +187,33 @@ sub pandora_get_sharedconfig ($$) {
 		[$dbh]
 	);
 	$pa_config->{'rb_product_name'} = 'Pandora FMS' unless (defined ($pa_config->{'rb_product_name'}) && $pa_config->{'rb_product_name'} ne '');
+
+	# Mail transport agent configuration. Local configuration takes precedence.
+	if ($pa_config->{"mta_local"} eq 0) {
+		$pa_config->{"mta_address"} = pandora_get_tconfig_token ($dbh, 'email_smtpServer', '');
+		$pa_config->{"mta_from"} = '"' . pandora_get_tconfig_token ($dbh, 'email_from_name', 'Pandora FMS') . '" <' . 
+		                           pandora_get_tconfig_token ($dbh, 'email_from_dir', 'pandora@pandorafms.org') . '>';
+		$pa_config->{"mta_pass"} = pandora_get_tconfig_token ($dbh, 'email_password', '');
+		$pa_config->{"mta_port"} = pandora_get_tconfig_token ($dbh, 'email_smtpPort', '');
+		$pa_config->{"mta_user"} = pandora_get_tconfig_token ($dbh, 'email_username', '');
+		$pa_config->{"mta_encryption"} = pandora_get_tconfig_token ($dbh, 'email_encryption', '');
+
+		# Auto-negotiate the auth mechanism, since it cannot be set from the console.
+		# Do not include PLAIN, it generates the following error:
+		# 451 4.5.0 SMTP protocol violation, see RFC 2821
+		$pa_config->{"mta_auth"} = 'DIGEST-MD5 CRAM-MD5 LOGIN';
+
+		# Fix the format of mta_encryption.
+		if ($pa_config->{"mta_encryption"} eq 'tls') {
+			$pa_config->{"mta_encryption"} = 'starttls';
+		}
+		elsif ($pa_config->{"mta_encryption"} =~ m/^ssl/) {
+			$pa_config->{"mta_encryption"} = 'ssl';
+		}
+		else {
+			$pa_config->{"mta_encryption"} = 'none';
+		}
+	}
 }
 
 ##########################################################################
@@ -303,12 +330,14 @@ sub pandora_load_config {
 	$pa_config->{"dynamic_constant"} = 10; # 7.0
 	
 	# Internal MTA for alerts, each server need its own config.
-	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
-	$pa_config->{"mta_port"} = '25'; # Introduced on 2.0
+	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
+	$pa_config->{"mta_port"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_user"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_pass"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0 (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
 	$pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
+	$pa_config->{"mta_encryption"} = 'none'; # 7.0 739
+	$pa_config->{"mta_local"} = 0; # 7.0 739
 	$pa_config->{"mail_in_separate"} = 1; # 1: eMail deliver alert mail in separate mails.
 					      # 0: eMail deliver 1 mail with all destination.
 
@@ -582,6 +611,7 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mta_address\s(.*)/i) { 
 			$pa_config->{'mta_address'}= clean_blank($1); 
+			$pa_config->{'mta_local'}=1;
 		}
 		elsif ($parametro =~ m/^mta_port\s(.*)/i) { 
 			$pa_config->{'mta_port'}= clean_blank($1); 
@@ -591,6 +621,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
 			$pa_config->{'mta_from'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^mta_encryption\s(.*)/i) { 
+			$pa_config->{'mta_encryption'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^mail_in_separate\s+([0-9]*)/i) { 
 			$pa_config->{'mail_in_separate'}= clean_blank($1); 

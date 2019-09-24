@@ -1475,6 +1475,14 @@ function html_print_input_password(
         $attr['class'] = $class;
     }
 
+    if ($disabled === false) {
+        // Trick to avoid password completion on most browsers.
+        if ($autocomplete !== 'on') {
+            $disabled = true;
+            $attr['onfocus'] = "this.removeAttribute('readonly');";
+        }
+    }
+
     return html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete);
 }
 

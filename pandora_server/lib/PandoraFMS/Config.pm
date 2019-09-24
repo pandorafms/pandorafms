@@ -357,7 +357,15 @@ sub pandora_load_config {
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 
+	# Winexe allows to exec commands on remote windows systems (optional)
+	$pa_config->{"winexe"} = "/usr/bin/winexe";
+
+	# PsExec allows to exec commands on remote windows systems from windows servers (optional)
+	$pa_config->{"psexec"} = 'C:\PandoraFMS\Pandora_Server\bin\PsExec.exe';
 	
+	# plink allows to exec commands on remote linux systems from windows servers (optional)
+	$pa_config->{"plink"} = 'C:\PandoraFMS\Pandora_Server\bin\plink.exe';
+
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
@@ -837,6 +845,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^winexe\s(.*)/i) {
+			$pa_config->{'winexe'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^psexec\s(.*)/i) {
+			$pa_config->{'psexec'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^plink\s(.*)/i) {
+			$pa_config->{'plink'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmpget\s(.*)/i) {
 			$pa_config->{'snmpget'}= clean_blank($1); 

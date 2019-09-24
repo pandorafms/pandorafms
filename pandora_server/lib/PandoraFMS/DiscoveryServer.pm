@@ -343,6 +343,9 @@ sub exec_recon_script ($$$) {
 sub PandoraFMS::Recon::Base::guess_os($$) {
     my ($self, $device) = @_;
 
+	$DEVNULL = '/dev/null' if (!defined($DEVNULL));
+	$DEVNULL = '/NUL' if ($^O =~ /win/i && !defined($DEVNULL));
+
     # OS detection disabled. Use the device type.
     if ($self->{'os_detection'} == 0) {
         my $device_type = $self->get_device_type($device);
@@ -354,17 +357,20 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     }
 
     # Use xprobe2 if available
-    if (-e $self->{pa_config}->{xprobe2}) {
-        my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
+    if (-x $self->{'pa_config'}->{'xprobe2'}) {
+        my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
         if ($? == 0) {
+			my ($output) = $a =~ /Running OS:(.*)/;
             return pandora_get_os($self->{'dbh'}, $output);
         }
     }
     
     # Use nmap by default
-    if (-e $self->{pa_config}->{nmap}) {
-        my $output = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL | grep 'Aggressive OS guesses'`;
+    if (-x $self->{'pa_config'}->{'nmap'}) {
+        my $return = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL`;
         return OS_OTHER if ($? != 0);
+
+        my ($output) = $return =~ /Aggressive OS guesses:\s*(.*)/;
         return pandora_get_os($self->{'dbh'}, $output);
     }
 
@@ -377,7 +383,11 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 sub PandoraFMS::Recon::Base::tcp_scan ($$) {
     my ($self, $host) = @_;
 
-    my $open_ports = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host | grep open | wc -l`;
+    my $r = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host`;
+
+    # Same as ""| grep open | wc -l" but multi-OS;
+    my $open_ports = () = $r =~ /open/gm;
+
     return $open_ports;
 }
 

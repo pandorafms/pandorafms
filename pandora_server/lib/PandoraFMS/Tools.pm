@@ -994,7 +994,8 @@ sub load_average {
 		$load_average = ((split(/\s+/, `/sbin/sysctl -n vm.loadavg`))[1]);
 	} elsif ($OSNAME eq "MSWin32") {
 		# Windows hasn't got load average.
-		$load_average = undef;
+		$load_average = `powershell "(Get-WmiObject win32_processor | Measure-Object -property LoadPercentage -Average).average"`;
+		chop($load_average);
 	}
 	# by default LINUX calls
 	else {

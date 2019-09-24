@@ -683,7 +683,21 @@ function createVisualConsole(
 
             //Danguerous empty form if necessary for cleaned IDs.
             $formElement.empty();
-          }
+          },
+          buttons: [
+            {
+              text: "Cancel",
+              click: function() {
+                $formElement.dialog("close");
+              }
+            },
+            {
+              text: "Update",
+              click: function() {
+                console.log(formContainer);
+              }
+            }
+          ]
         });
         // TODO: Add submit and reset button.
       }

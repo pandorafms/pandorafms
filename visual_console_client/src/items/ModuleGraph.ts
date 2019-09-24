@@ -246,7 +246,6 @@ class CustomGraphInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
 
       if (data instanceof Array) {
         const customGraphSelect = document.createElement("select");
-        customGraphSelect.required = true;
 
         data.forEach(option => {
           const optionElement = document.createElement("option");

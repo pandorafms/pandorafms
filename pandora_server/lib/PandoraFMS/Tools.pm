@@ -624,7 +624,7 @@ sub logger ($$;$) {
 	$message = safe_output ($message);
 
 	$level = 1 unless defined ($level);
-	return if ($level > $pa_config->{'verbosity'});
+	return if (!defined ($pa_config->{'verbosity'}) || $level > $pa_config->{'verbosity'});
 
 	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";

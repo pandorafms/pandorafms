@@ -1500,7 +1500,7 @@ function config_process_config()
 
     if (!isset($config['remote_config'])) {
         if ($is_windows) {
-            $default = 'C:\\PandoraFMS\\Pandora_Server\\data_in';
+            $default = 'C:\PandoraFMS\Pandora_Server\data_in';
         } else {
             $default = '/var/spool/pandora/data_in';
         }
@@ -1510,7 +1510,7 @@ function config_process_config()
 
     if (!isset($config['phantomjs_bin'])) {
         if ($is_windows) {
-            $default = 'C:\\PandoraFMS\\phantomjs';
+            $default = 'C:\PandoraFMS\Pandora_Server\bin';
         } else {
             $default = '/usr/bin';
         }
@@ -1760,7 +1760,13 @@ function config_process_config()
     }
 
     if (!isset($config['auditdir'])) {
-        config_update_value('auditdir', '/var/www/html/pandora_console');
+        $auditdir = '/var/www/html/pandora_console';
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $auditdir = $config['homedir'];
+        }
+
+        config_update_value('auditdir', $auditdir);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -1794,6 +1800,7 @@ function config_process_config()
      /*
       * Parse the ACL IP list for access API
       */
+
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
         if (!empty($config['list_ACL_IPs_for_API'])) {
@@ -1804,13 +1811,16 @@ function config_process_config()
     $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
-    // This is not set here. The first time, when no
-    // setup is done, update_manager extension manage it
-    // the first time make a conenction and disable itself
-    // Not Managed here !
-    // if (!isset ($config["autoupdate"])) {
-    // config_update_value ('autoupdate', true);.
-    // }
+    /*
+     * This is not set here. The first time, when no
+     * setup is done, update_manager extension manage it
+     * the first time make a conenction and disable itself
+     * Not Managed here !
+     * if (!isset ($config["autoupdate"])) {
+     * config_update_value ('autoupdate', true);.
+     * }
+     */
+
     include_once $config['homedir'].'/include/auth/mysql.php';
     include_once $config['homedir'].'/include/functions_io.php';
 
@@ -1819,10 +1829,16 @@ function config_process_config()
     // user, and should be in pandora root. By default, Pandora adds
     // /attachment to this, so by default is the pandora console home
     // dir.
+    $attachment_store_path = $config['homedir'].'/attachment';
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        // Windows.
+        $attachment_store_path = $config['homedir'].'\attachment';
+    }
+
     if (!isset($config['attachment_store'])) {
         config_update_value(
             'attachment_store',
-            io_safe_input($config['homedir']).'/attachment'
+            $attachment_store_path
         );
     } else {
         // Fixed when the user moves the pandora console to another dir
@@ -1830,16 +1846,23 @@ function config_process_config()
         if (!is_dir($config['attachment_store'])) {
             config_update_value(
                 'attachment_store',
-                $config['homedir'].'/attachment'
+                $attachment_store_path
             );
         }
     }
 
     if (!isset($config['fontpath'])) {
-        $home = str_replace('\\', '/', $config['homedir']);
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $fontpath = $config['homedir'].'\include\fonts\smallfont.ttf';
+        } else {
+            $home = str_replace('\\', '/', $config['homedir']);
+            $fontpath = $home.'/include/fonts/smallfont.ttf';
+        }
+
         config_update_value(
             'fontpath',
-            $home.'/include/fonts/smallfont.ttf'
+            $fontpath
         );
     }
 
@@ -2077,7 +2100,7 @@ function config_process_config()
 
     if (!isset($config['netflow_path'])) {
         if ($is_windows) {
-            $default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\netflow';
+            $default = 'C:\PandoraFMS\Pandora_Server\data_in\netflow';
         } else {
             $default = '/var/spool/pandora/data_in/netflow';
         }

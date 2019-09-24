@@ -1860,7 +1860,7 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3)
  *
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator> in this order
+ * @param array             $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator><recursion> in this order
  *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *              example for CSV:
  *
@@ -1889,17 +1889,25 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
     }
 
     if (isset($other['data'][0])) {
-        // Filter by SO
+        // Filter by SO.
         if ($other['data'][0] != '') {
             $where .= ' AND tconfig_os.id_os = '.$other['data'][0];
         }
     }
 
     if (isset($other['data'][1])) {
-        // Filter by group
+        // Filter by group.
         if ($other['data'][1] != '') {
-            $where .= ' AND id_grupo = '.$other['data'][1];
+            $ag_groups = $other['data'][1];
+            // Recursion.
+            if ($other['data'][6] === '1') {
+                $ag_groups = groups_get_id_recursive($ag_groups, true);
+            }
+
+            $ag_groups = implode(',', (array) $ag_groups);
         }
+
+        $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
     }
 
     if (isset($other['data'][3])) {
@@ -1933,8 +1941,8 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
         $sql = "SELECT id_agente, alias, direccion, comentarios,
 			tconfig_os.name, url_address, nombre
 		FROM tconfig_os, tmetaconsole_agent
-		LEFT JOIN tagent_secondary_group
-			ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
+		LEFT JOIN tmetaconsole_agent_secondary_group
+			ON tmetaconsole_agent.id_agente = tmetaconsole_agent_secondary_group.id_agent
 		WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
 			AND disabled = 0 $where AND $groups";
     } else {
@@ -1946,6 +1954,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
 			WHERE tagente.id_os = tconfig_os.id_os
 				AND disabled = 0 $where AND $groups";
     }
+
+    // Group by agent
+    $sql .= ' GROUP BY id_agente';
 
     $all_agents = db_get_all_rows_sql($sql);
 

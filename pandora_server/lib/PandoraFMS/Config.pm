@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.738";
-my $pandora_build = "190923";
+my $pandora_build = "190924";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -1037,7 +1037,7 @@ sub pandora_load_config {
 			$pa_config->{'console_pass'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) { # 6.0
-			$pa_config->{'encryption_passphrase'}= safe_input(clean_blank($1));
+			$pa_config->{'encryption_passphrase'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^unknown_interval\s+([0-9]*)/i) { # > 5.1SP2
 			$pa_config->{'unknown_interval'}= clean_blank($1);

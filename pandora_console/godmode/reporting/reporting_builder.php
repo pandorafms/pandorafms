@@ -1908,7 +1908,7 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
-                        if ($values['type'] = 'sumatory') {
+                        if ($values['type'] == 'sumatory') {
                             $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
                         }
 
@@ -2469,7 +2469,7 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
-                        if ($values['type'] = 'sumatory') {
+                        if ($values['type'] == 'sumatory') {
                             $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
                         }
 

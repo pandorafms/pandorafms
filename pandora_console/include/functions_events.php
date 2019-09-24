@@ -2739,6 +2739,10 @@ function events_get_agent(
         $date = time_w_fixed_tz($date);
     }
 
+    if (is_metaconsole() && $events_group === false) {
+        $id_server = true;
+    }
+
     if (empty($date)) {
         $date = get_system_time();
     }

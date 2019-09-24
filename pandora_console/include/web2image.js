@@ -61,6 +61,7 @@ page.onConsoleMessage = function(msg) {
 page.onError = function(msg) {
   console.log(msg);
   page.close();
+  phantom.exit();
 };
 
 page.onCallback = function(st) {
@@ -74,4 +75,9 @@ page.onCallback = function(st) {
   phantom.exit();
 };
 
-page.open(url, "POST", post_data, function(status) {});
+page.open(url, "POST", post_data, function(status) {
+  if (status == "fail") {
+    console.out("Failed to generate chart.");
+    phantom.exit();
+  }
+});

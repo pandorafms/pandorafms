@@ -10,7 +10,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.738"
-PI_BUILD="190913"
+PI_BUILD="190924"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -162,7 +162,15 @@ uninstall () {
 	rm -Rf $PANDORA_BASE$PANDORA_EXEC_BIN 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_REVENT_BIN 2> /dev/null
 	rm -f  $DESTDIR/etc/logrotate.d/pandora_agent
-	
+
+	# Remove systemd service if exists
+	if [ $(systemctl --v | grep systemd | wc -l) != 0 ]
+	then
+		PANDORA_AGENT_SERVICE="/etc/systemd/system/pandora_agent_daemon.service"
+		rm -f $PANDORA_AGENT_SERVICE
+		systemctl reset-failed
+	fi
+
 	#Test if exist Pandora Server in this machine
 	if [ -d $PANDORA_BASE$PANDORA_TEMP/data_in ]
 	then
@@ -464,6 +472,22 @@ install () {
 				RCDIRS="/etc/rc.d/rc2.d /etc/rc.d/rc3.d"
 			else
 				RCDIRS="/etc/rc2.d /etc/rc3.d"
+			fi
+
+			# Create systemd service
+			if [ $(systemctl --v | grep systemd | wc -l) != 0 ]
+			then
+				echo "Creating systemd service for pandora_agent_daemon"
+
+				PANDORA_AGENT_SERVICE="/etc/systemd/system/pandora_agent_daemon.service"
+				EXEC_START='ExecStart='$PANDORA_BASE$PANDORA_BIN' '$PANDORA_BASE$PANDORA_CFG
+
+				rm -f $PANDORA_AGENT_SERVICE
+				cp pandora_agent_daemon.service $PANDORA_AGENT_SERVICE
+
+				sed -i "s|^ExecStart=.*$|$EXEC_START|g" $PANDORA_AGENT_SERVICE
+
+				systemctl daemon-reload
 			fi
 		fi
 		[ "$RCDIRS" ] && for RCDIR in $RCDIRS

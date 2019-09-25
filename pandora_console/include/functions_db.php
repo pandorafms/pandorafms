@@ -46,6 +46,25 @@ function db_select_engine()
 }
 
 
+/**
+ * Connects to target DB.
+ *
+ * @param array $setup Database definition.
+ *
+ * @return mixed Dbconnection or null.
+ */
+function get_dbconnection(array $setup)
+{
+    return mysqli_connect(
+        $setup['dbhost'],
+        $setup['dbuser'],
+        $setup['dbpass'],
+        $setup['dbname'],
+        $setup['dbport']
+    );
+}
+
+
 function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $critical=true, $charset=null)
 {
     global $config;

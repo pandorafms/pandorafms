@@ -30,10 +30,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_status', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_title', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_content', '');
 
-COMMIT;
-
 ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
-
 
 COMMIT;

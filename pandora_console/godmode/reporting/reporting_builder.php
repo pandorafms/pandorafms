@@ -3174,6 +3174,10 @@ if ($resultOperationDB !== null) {
         __('Successfull action'),
         __('Unsuccessful action<br><br>'.$err)
     );
+
+    if ($resultOperationDB != null && $activeTab == 'item_editor') {
+        $activeTab = 'list_items';
+    }
 }
 
 switch ($activeTab) {

@@ -287,22 +287,23 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_sum_value($table, $item, $mini);
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 reporting_html_MTTR_value($table, $item, $mini, true, true);
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 reporting_html_MTBF_value($table, $item, $mini, true, true);
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 reporting_html_TTO_value($table, $item, $mini, false, true);
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 reporting_html_TTRT_value($table, $item, $mini, false, true);
-            break;
-
+                break;
+            */
             case 'agent_configuration':
                 reporting_html_agent_configuration($table, $item);
             break;
@@ -2728,29 +2729,30 @@ function reporting_html_agent_configuration(
 }
 
 
-function reporting_html_TTRT_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
+/*
+    function reporting_html_TTRT_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
+    {
     reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
+    }
 
 
-function reporting_html_TTO_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
+    function reporting_html_TTO_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
+    {
     reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
+    }
 
 
-function reporting_html_MTBF_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
+    function reporting_html_MTBF_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
+    {
     reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
+    }
 
 
-function reporting_html_MTTR_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
+    function reporting_html_MTTR_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
+    {
     reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
-
+    }
+*/
 
 function reporting_html_sum_value(&$table, $item, $mini)
 {

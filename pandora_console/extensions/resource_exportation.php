@@ -239,17 +239,18 @@ function output_xml_report($id)
                 echo '<column_separator><![CDATA['.io_safe_output($item['header_definition']).']]></column_separator>';
             break;
 
-            case 'TTRT':
-            break;
+            /*
+                case 'TTRT':
+                break;
 
-            case 'TTO':
-            break;
+                case 'TTO':
+                break;
 
-            case 'MTBF':
-            break;
+                case 'MTBF':
+                break;
 
-            case 'MTTR':
-            break;
+                case 'MTTR':
+            break;*/
         }
 
         echo "</item>\n";

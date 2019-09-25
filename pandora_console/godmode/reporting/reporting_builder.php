@@ -2006,10 +2006,11 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                            case 'TTRT':
-                            case 'TTO':
-                            case 'MTBF':
-                            case 'MTTR':
+                                /*
+                                    case 'TTRT':
+                                    case 'TTO':
+                                    case 'MTBF':
+                                case 'MTTR':*/
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {
@@ -2612,10 +2613,11 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                            case 'TTRT':
-                            case 'TTO':
-                            case 'MTBF':
-                            case 'MTTR':
+                                /*
+                                    case 'TTRT':
+                                    case 'TTO':
+                                    case 'MTBF':
+                                case 'MTTR':*/
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {

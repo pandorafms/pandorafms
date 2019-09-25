@@ -30,9 +30,9 @@ $update = (isset($_GET['incident_id']) === true);
 // Header tabs.
 $onheader = integriaims_tabs('create_tab', $_GET['incident_id']);
 if ($update) {
-    ui_print_page_header(__('Update Integria IMS Incident'), '', false, '', false, $onheader);
+    ui_print_page_header(__('Update Integria IMS Ticket'), '', false, '', false, $onheader);
 } else {
-    ui_print_page_header(__('Create Integria IMS Incident'), '', false, '', false, $onheader);
+    ui_print_page_header(__('Create Integria IMS Ticket'), '', false, '', false, $onheader);
 }
 
 // Check if Integria integration enabled.
@@ -237,7 +237,7 @@ $table->data[2][1] .= '<div class="label_select_parent">'.html_print_autocomplet
     true
 ).'</div>';
 
-$table->data[1][2] = '<div class="label_select"><p class="input_label">'.__('Criticity').': </p>';
+$table->data[1][2] = '<div class="label_select"><p class="input_label">'.__('Priority').': </p>';
 $table->data[1][2] .= '<div class="label_select_parent">'.html_print_select(
     $integria_criticity_values,
     'criticity',

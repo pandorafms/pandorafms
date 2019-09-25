@@ -1436,7 +1436,7 @@ function config_update_config()
 
                 case 'integria':
                     if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
-                        $error_update[] = __('Enable Integria');
+                        $error_update[] = __('Enable Integria IMS');
                     }
 
                     if (!config_update_value('integria_user', (string) get_parameter('integria_user', $config['integria_user']))) {
@@ -1464,7 +1464,7 @@ function config_update_config()
                     }
 
                     if (!config_update_value('default_criticity', (int) get_parameter('default_criticity', $config['default_criticity']))) {
-                        $error_update[] = __('Integria default criticity');
+                        $error_update[] = __('Integria default priority');
                     }
 
                     if (!config_update_value('default_creator', (string) get_parameter('default_creator', $config['default_creator']))) {
@@ -1476,19 +1476,19 @@ function config_update_config()
                     }
 
                     if (!config_update_value('incident_type', (int) get_parameter('incident_type', $config['incident_type']))) {
-                        $error_update[] = __('Integria default incident type');
+                        $error_update[] = __('Integria default ticket type');
                     }
 
                     if (!config_update_value('incident_status', (int) get_parameter('incident_status', $config['incident_status']))) {
-                        $error_update[] = __('Integria default incident status');
+                        $error_update[] = __('Integria default ticket status');
                     }
 
                     if (!config_update_value('incident_title', (string) get_parameter('incident_title', $config['incident_title']))) {
-                        $error_update[] = __('Integria default incident title');
+                        $error_update[] = __('Integria default ticket title');
                     }
 
                     if (!config_update_value('incident_content', (string) get_parameter('incident_content', $config['incident_content']))) {
-                        $error_update[] = __('Integria default incident content');
+                        $error_update[] = __('Integria default ticket content');
                     }
                 break;
 

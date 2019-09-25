@@ -39,8 +39,8 @@ function integriaims_tabs($active_tab, $view=false)
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
     $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS')]).'</a>';
-    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('List incidents')]).'</a>';
-    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New incident')]).'</a>';
+    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list')]).'</a>';
+    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket')]).'</a>';
 
     switch ($active_tab) {
         case 'setup_tab':
@@ -69,8 +69,8 @@ function integriaims_tabs($active_tab, $view=false)
     }
 
     if ($view) {
-        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit incident')]).'</a>';
-        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View incident')]).'</a>';
+        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit ticket')]).'</a>';
+        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View ticket')]).'</a>';
         // When the current page is the View page.
         if (!$active_tab) {
             $view_tab['active'] = true;
@@ -83,7 +83,7 @@ function integriaims_tabs($active_tab, $view=false)
         $onheader['view'] = $view_tab;
     }
 
-    if (check_acl($config['id_user'], 0, 'PM') && is_user_admin($config['id_user'])) {
+    if (check_acl($config['id_user'], 0, 'PM')) {
         $onheader['configure'] = $setup_tab;
     }
 
@@ -91,7 +91,7 @@ function integriaims_tabs($active_tab, $view=false)
         $onheader['list'] = $list_tab;
     }
 
-    if ((check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0, 'IR'))) {
+    if (check_acl($config['id_user'], 0, 'IW')) {
         $onheader['create'] = $create_tab;
     }
 

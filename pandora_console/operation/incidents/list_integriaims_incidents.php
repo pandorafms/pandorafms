@@ -306,7 +306,7 @@ foreach ($incidents_paginated as $key => $value) {
 // Show table incidents.
 ui_pagination(count($array_get_incidents), $url, $offset);
 if (empty($table->data) === true) {
-    ui_print_info_message(['no_close' => true, 'message' => __('No incidents to show').'.' ]);
+    ui_print_info_message(['no_close' => true, 'message' => __('No tickets to show').'.' ]);
 } else {
     html_print_table($table);
     ui_pagination(count($array_get_incidents), $url, $offset, 0, false, 'offset', true, 'pagination-bottom');

@@ -452,6 +452,9 @@ select:-internal-list-box {
 .mw120px {
   min-width: 120px;
 }
+.mw180px {
+  min-width: 180px;
+}
 .mw250px {
   min-width: 250px;
 }
@@ -3182,6 +3185,7 @@ table#policy_modules td * {
 
 #news_board {
   min-width: 530px;
+  width: 100%;
 }
 
 #right_column_logon_ok {

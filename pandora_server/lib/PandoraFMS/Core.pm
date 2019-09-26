@@ -3155,10 +3155,19 @@ sub pandora_get_config_value ($$) {
 ##########################################################################
 ## Get credential from credential store
 ##########################################################################
-sub pandora_get_credential ($$) {
-	my ($dbh, $identifier) = @_;
+sub pandora_get_credential ($$$) {
+	my ($pa_config, $dbh, $identifier) = @_;
 
 	my $key = get_db_single_row($dbh, 'SELECT * FROM tcredential_store WHERE identifier = ?', $identifier);
+
+	$key->{'username'} = pandora_output_password(
+		$pa_config,
+		safe_output($key->{'username'})
+	);
+	$key->{'password'} = pandora_output_password(
+		$pa_config,
+		safe_output($key->{'password'})
+	);
 
 	return $key;
 }

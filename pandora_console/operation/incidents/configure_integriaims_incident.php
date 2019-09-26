@@ -234,7 +234,7 @@ $table->data[2][1] .= '<div class="label_select_parent">'.html_print_input_text(
     '',
     '30',
     100,
-    false,
+    true,
     true,
     false,
     '',

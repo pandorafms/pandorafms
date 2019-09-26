@@ -29,6 +29,14 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_type', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_status', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_title', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_group', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_criticity', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_creator', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_owner', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
 
 ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';

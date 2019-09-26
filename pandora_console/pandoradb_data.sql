@@ -130,7 +130,15 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('incident_type', ''),
 ('incident_status', ''),
 ('incident_title', ''),
-('incident_content', '');
+('incident_content', ''),
+('cr_default_group', ''),
+('cr_default_criticity', ''),
+('cr_default_creator', ''),
+('cr_default_owner', ''),
+('cr_incident_type', ''),
+('cr_incident_status', ''),
+('cr_incident_title', ''),
+('cr_incident_content', '');
 UNLOCK TABLES;
 
 --

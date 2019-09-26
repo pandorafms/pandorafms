@@ -1272,6 +1272,14 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_type', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_status', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_title', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_group', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_criticity', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_creator', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_owner', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`

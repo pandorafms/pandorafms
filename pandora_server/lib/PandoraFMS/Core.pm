@@ -1505,7 +1505,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		}
 
 		# Field 7 (Ticket description);
-		my $ticket_description = $field7;
+		my $ticket_description = safe_output($field7);
 
 		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description);
 

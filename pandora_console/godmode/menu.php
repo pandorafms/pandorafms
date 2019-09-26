@@ -381,9 +381,6 @@ if (is_array($config['extensions'])) {
                 if (strlen($extmenu['fatherId']) > 0) {
                     if (array_key_exists('subfatherId', $extmenu)) {
                         if (strlen($extmenu['subfatherId']) > 0) {
-                            if ($extmenu['name'] = 'DB schema check') {
-                            }
-
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['text'] = __($extmenu['name']);
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['id'] = $extmenu['name'];
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['refr'] = 0;

@@ -124,7 +124,10 @@ $table_files->head[1] = __('Timestamp');
 $table_files->head[2] = __('Description');
 $table_files->head[3] = __('User');
 $table_files->head[4] = __('Size');
-$table_files->head[5] = __('Delete');
+
+if (check_acl($config['id_user'], 0, 'IW')) {
+    $table_files->head[5] = __('Delete');
+}
 
 $table_files->data = [];
 
@@ -237,9 +240,12 @@ foreach ($files as $key => $value) {
     $table_files->data[$i][2] = $value[12];
     $table_files->data[$i][3] = $value[8];
     $table_files->data[$i][4] = $value[13];
-    $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
+    if (check_acl($config['id_user'], 0, 'IW')) {
+        $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
                                     onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-    $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+        $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+    }
+
     $table_files->data[$i][5] .= '</a>';
 
     $i++;

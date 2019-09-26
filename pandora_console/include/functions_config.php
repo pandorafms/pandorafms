@@ -1434,6 +1434,92 @@ function config_update_config()
                     }
                 break;
 
+                case 'integria':
+                    if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
+                        $error_update[] = __('Enable Integria IMS');
+                    }
+
+                    if (!config_update_value('integria_user', (string) get_parameter('integria_user', $config['integria_user']))) {
+                        $error_update[] = __('Integria user');
+                    }
+
+                    if (!config_update_value('integria_pass', io_input_password((string) get_parameter('integria_pass', $config['integria_pass'])))) {
+                        $error_update[] = __('Integria password');
+                    }
+
+                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                        $error_update[] = __('integria API hostname');
+                    }
+
+                    if (!config_update_value('integria_api_pass', io_input_password((string) get_parameter('integria_api_pass', $config['integria_api_pass'])))) {
+                        $error_update[] = __('Integria API password');
+                    }
+
+                    if (!config_update_value('integria_req_timeout', (int) get_parameter('integria_req_timeout', $config['integria_req_timeout']))) {
+                        $error_update[] = __('Integria request timeout');
+                    }
+
+                    if (!config_update_value('default_group', (int) get_parameter('default_group', $config['default_group']))) {
+                        $error_update[] = __('Integria default group');
+                    }
+
+                    if (!config_update_value('cr_default_group', (int) get_parameter('cr_default_group', $config['cr_default_group']))) {
+                        $error_update[] = __('Integria custom response default group');
+                    }
+
+                    if (!config_update_value('default_criticity', (int) get_parameter('default_criticity', $config['default_criticity']))) {
+                        $error_update[] = __('Integria default priority');
+                    }
+
+                    if (!config_update_value('cr_default_criticity', (int) get_parameter('cr_default_criticity', $config['cr_default_criticity']))) {
+                        $error_update[] = __('Integria custom response default priority');
+                    }
+
+                    if (!config_update_value('default_creator', (string) get_parameter('default_creator', $config['default_creator']))) {
+                        $error_update[] = __('Integria default creator');
+                    }
+
+                    if (!config_update_value('default_owner', (string) get_parameter('default_owner', $config['default_owner']))) {
+                        $error_update[] = __('Integria default owner');
+                    }
+
+                    if (!config_update_value('cr_default_owner', (string) get_parameter('cr_default_owner', $config['cr_default_owner']))) {
+                        $error_update[] = __('Integria custom response default owner');
+                    }
+
+                    if (!config_update_value('incident_type', (int) get_parameter('incident_type', $config['incident_type']))) {
+                        $error_update[] = __('Integria default ticket type');
+                    }
+
+                    if (!config_update_value('cr_incident_type', (int) get_parameter('cr_incident_type', $config['cr_incident_type']))) {
+                        $error_update[] = __('Integria custom response default ticket type');
+                    }
+
+                    if (!config_update_value('incident_status', (int) get_parameter('incident_status', $config['incident_status']))) {
+                        $error_update[] = __('Integria default ticket status');
+                    }
+
+                    if (!config_update_value('cr_incident_status', (int) get_parameter('cr_incident_status', $config['cr_incident_status']))) {
+                        $error_update[] = __('Integria custom response default ticket status');
+                    }
+
+                    if (!config_update_value('incident_title', (string) get_parameter('incident_title', $config['incident_title']))) {
+                        $error_update[] = __('Integria default ticket title');
+                    }
+
+                    if (!config_update_value('cr_incident_title', (string) get_parameter('cr_incident_title', $config['cr_incident_title']))) {
+                        $error_update[] = __('Integria custom response default ticket title');
+                    }
+
+                    if (!config_update_value('incident_content', (string) get_parameter('incident_content', $config['incident_content']))) {
+                        $error_update[] = __('Integria default ticket content');
+                    }
+
+                    if (!config_update_value('cr_incident_content', (string) get_parameter('cr_incident_content', $config['cr_incident_content']))) {
+                        $error_update[] = __('Integria custom response default ticket content');
+                    }
+                break;
+
                 default:
                     // Ignore.
                 break;
@@ -2845,6 +2931,19 @@ function config_process_config()
         if (!isset($config['metaconsole_deploy_plugin_server'])) {
             config_update_value('metaconsole_deploy_plugin_server', 0);
         }
+    }
+
+    // Integria.
+    if (!isset($config['integria_enabled'])) {
+        config_update_value('integria_enabled', 0);
+    }
+
+    if (!isset($config['integria_req_timeout'])) {
+        config_update_value('integria_req_timeout', 5);
+    }
+
+    if (!isset($config['integria_hostname'])) {
+        config_update_value('integria_hostname', '');
     }
 
     // Finally, check if any value was overwritten in a form.

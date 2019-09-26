@@ -1256,10 +1256,30 @@ DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '737');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
-DELETE FROM `tconfig` WHERE `token` LIKE 'integria_enabled';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_inventory';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_url';
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_user', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_pass', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_hostname', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_api_pass', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_req_timeout', 5);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_group', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_criticity', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_creator', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_owner', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_type', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_status', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_title', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_group', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_criticity', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_creator', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_owner', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`

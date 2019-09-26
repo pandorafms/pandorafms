@@ -4095,7 +4095,7 @@ function mask2cidr($mask)
 function get_help_info($section_name)
 {
     global $config;
-    // hd($section_name);
+
     $user_language = get_user_language($id_user);
 
     $es = false;
@@ -5421,7 +5421,6 @@ function get_help_info($section_name)
         break;
     }
 
-    // hd($result);
     return $result;
 }
 

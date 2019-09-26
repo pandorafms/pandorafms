@@ -102,22 +102,6 @@ $incident_content = events_get_field_value_by_event_id($event_id, get_parameter(
 $incident_title = str_replace(',', ':::', $incident_title);
 $incident_content = str_replace(',', ':::', $incident_content);
 
-// If incident id is specified, retrieve incident values from api to populate combos with such values.
-if ($update) {
-    // Call Integria IMS API method to get details of an incident given its id.
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_details', [$incident_id_edit]);
-
-    // API call does not return indexes, therefore future modifications of API function in Integria IMS may lead to inconsistencies when accessing resulting array in this file.
-    $incident_details_separator = explode(',', $result_api_call);
-
-    $incident_details = array_map(
-        function ($item) {
-            return str_replace(':::', ',', $item);
-        },
-        $incident_details_separator
-    );
-}
-
 // Perform action.
 if ($create_incident === true) {
     // Call Integria IMS API method to create an incident.
@@ -142,6 +126,22 @@ if ($create_incident === true) {
         $incident_updated_ok,
         __('Successfully updated in Integria IMS'),
         __('Could not be updated in Integria IMS')
+    );
+}
+
+// If incident id is specified, retrieve incident values from api to populate combos with such values.
+if ($update) {
+    // Call Integria IMS API method to get details of an incident given its id.
+    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_details', [$incident_id_edit]);
+
+    // API call does not return indexes, therefore future modifications of API function in Integria IMS may lead to inconsistencies when accessing resulting array in this file.
+    $incident_details_separator = explode(',', $result_api_call);
+
+    $incident_details = array_map(
+        function ($item) {
+            return str_replace(':::', ',', $item);
+        },
+        $incident_details_separator
     );
 }
 
@@ -228,14 +228,18 @@ $table->data[1][1] .= '<div class="label_select_parent">'.html_print_select(
 ).'</div>';
 
 $table->data[2][1] = '<div class="label_select"><p class="input_label">'.__('Creator').': </p>';
-$table->data[2][1] .= '<div class="label_select_parent">'.html_print_autocomplete_users_from_integria(
+$table->data[2][1] .= '<div class="label_select_parent">'.html_print_input_text(
     'creator',
-    $update ? $incident_details[10] : $config['default_creator'],
-    true,
+    $config['integria_user'],
+    '',
     '30',
-    $update,
-    true
-).'</div>';
+    100,
+    false,
+    true,
+    false,
+    '',
+    'w100p'
+).ui_print_help_tip(__('This field corresponds to the Integria IMS user specified in Integria IMS setup'), true).'</div>';
 
 $table->data[1][2] = '<div class="label_select"><p class="input_label">'.__('Criticity').': </p>';
 $table->data[1][2] .= '<div class="label_select_parent">'.html_print_select(

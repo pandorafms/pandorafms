@@ -167,6 +167,8 @@ if (check_acl($config['id_user'], 0, 'IW')) {
                 __('File successfully added'),
                 __('File could not be added')
             );
+        } else {
+            ui_print_error_message(__('File has an invalid extension'));
         }
     }
 
@@ -258,8 +260,13 @@ if (check_acl($config['id_user'], 0, 'IW')) {
 
     $table_files_section->data[2][0] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
 
-    $upload_file_form = '<div><form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true).'<h4>'.__('Attached files').'</h4>'.html_print_table($table_files, true).'</form></div>';
+    $upload_file_form = '<div>';
 
+    if (check_acl($config['id_user'], 0, 'IW')) {
+        $upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
+    }
+
+    $upload_file_form .= '<h4>'.__('Attached files').'</h4>'.html_print_table($table_files, true).'</form></div>';
 
     // Incident comments management.
     $upload_comment = get_parameter('upload_comment');
@@ -290,21 +297,27 @@ if (check_acl($config['id_user'], 0, 'IW')) {
 
     $table_comments->data = [];
 
+    $comment_disabled = ($array_get_incidents[6] == 7);
+
+    if ($comment_disabled === true) {
+        $attribute = 'disabled=disabled';
+    }
+
     $table_comments_section->data[0][0] = '<div class="label_select"><p class="input_label">'.__('Description').':</p>';
     $table_comments_section->data[0][0] .= html_print_textarea(
         'comment_description',
         3,
         20,
         '',
-        '',
+        $attribute,
         true
     );
 
-    $table_comments_section->data[1][1] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Add'), 'accion', false, 'class="sub wand"', true).'</div>';
+    $table_comments_section->data[1][1] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
 
-    // Upload comment.
-    if ($upload_comment) {
-        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 'no', 'no', '0']);
+    // Upload comment. If ticket is closed, this action cannot be performed.
+    if ($upload_comment && $array_get_incidents[6] != 7) {
+        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0']);
 
         // API method returns id of new comment if success.
         $comment_added = ($result_api_call >= '0') ? true : false;
@@ -330,18 +343,24 @@ if (check_acl($config['id_user'], 0, 'IW')) {
         }
     }
 
-    $upload_comment_form = '';
+    $comment_table = '';
 
     if (!empty($comments)) {
         foreach ($comments as $key => $value) {
-            $upload_comment_form .= '<div class="comment_title">'.$value[3].'<span>&nbspsaid&nbsp</span>'.$value[1].'<span style="float: right;">'.$value[2].'&nbspHours</span></div>';
-            $upload_comment_form .= '<div class="comment_body">'.$value[4].'</div>';
+            $comment_table .= '<div class="comment_title">'.$value[3].'<span>&nbspsaid&nbsp</span>'.$value[1].'<span style="float: right;">'.$value[2].'&nbspHours</span></div>';
+            $comment_table .= '<div class="comment_body">'.$value[4].'</div>';
         }
     } else {
-        $upload_comment_form = __('No comments found');
+        $comment_table = __('No comments found');
     }
 
-    $upload_comment_form = '<div><form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>'.'<h4>'.__('Comments').'</h4>'.$upload_comment_form.'</div>';
+    $upload_comment_form = '<div>';
+
+    if (check_acl($config['id_user'], 0, 'IW')) {
+        $upload_comment_form .= '<form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>';
+    }
+
+    $upload_comment_form .= '<h4>'.__('Comments').'</h4>'.$comment_table.'</div>';
 }
 
 
@@ -420,33 +439,31 @@ $description_box = '<div class="integria_details_description">'.html_print_texta
 ).'</div>';
 ui_toggle($description_box, __('Description'), '', '', false);
 
-if (check_acl($config['id_user'], 0, 'IW')) {
-    echo '<div class="ui_toggle">';
-    ui_toggle(
-        $upload_file_form,
-        __('Attached files'),
-        '',
-        '',
-        true,
-        false,
-        'white_box white_box_opened',
-        'no-border flex'
-    );
-    echo '</div>';
+echo '<div class="ui_toggle">';
+ui_toggle(
+    $upload_file_form,
+    __('Attached files'),
+    '',
+    '',
+    true,
+    false,
+    'white_box white_box_opened',
+    'no-border flex'
+);
+echo '</div>';
 
-    echo '<div class="ui_toggle">';
-    ui_toggle(
-        $upload_comment_form,
-        __('Comments'),
-        '',
-        '',
-        true,
-        false,
-        'white_box white_box_opened',
-        'no-border flex'
-    );
-    echo '</div>';
-}
+echo '<div class="ui_toggle">';
+ui_toggle(
+    $upload_comment_form,
+    __('Comments'),
+    '',
+    '',
+    true,
+    false,
+    'white_box white_box_opened',
+    'no-border flex'
+);
+echo '</div>';
 
 ?>
 <script type="text/javascript">

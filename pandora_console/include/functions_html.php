@@ -3426,11 +3426,7 @@ function html_print_autocomplete_users_from_integria(
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
-    if ($disable === true) {
-        ui_print_help_tip(__('This value cannot be updated.'), false);
-    } else {
-        ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-    }
+    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>

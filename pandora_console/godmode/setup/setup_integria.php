@@ -49,7 +49,7 @@ if (is_ajax()) {
 
 $has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
 
-if ($has_connection === false) {
+if ($has_connection === false && $config['integria_enabled']) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
 }
 
@@ -86,12 +86,10 @@ if (get_parameter('update_config', 0) == 1) {
                 'talert_commands',
                 [
                     'name'                => io_safe_input('Integria IMS Ticket'),
-                    'command'             => io_safe_input('perl /usr/share/pandora_server/util/integria_rticket.pl -p '.$config['integria_hostname'].'/integria/include/api.php -u '.$config['integria_api_pass'].','.$config['integria_user'].','.$config['integria_pass'].' -create_ticket -name "_field1_" -desc "_field2_" -group _field3_ -priority _field4_ -owner _field5_ -type _field6_'),
+                    'command'             => io_safe_input('Internal type'),
                     'internal'            => 1,
                     'description'         => io_safe_input('Create an incident in Integria IMS'),
-                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket description').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'"]',
-                    'fields_values'       => '["'.io_safe_input($config['incident_title']).'", "'.io_safe_input($config['incident_content']).'", "'.io_safe_input($config['default_group']).'", "'.io_safe_input($config['default_criticity']).'", "'.io_safe_input($config['default_owner']).'", "'.io_safe_input($config['incident_type']).'"]',
-                    'fields_hidden'       => '["","","","","","","","","",""]',
+                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'"]',
                 ]
             );
 
@@ -99,44 +97,42 @@ if (get_parameter('update_config', 0) == 1) {
             $action_values = [
                 'field1'           => io_safe_input($config['incident_title']),
                 'field1_recovery'  => io_safe_input($config['incident_title']),
-                'field2'           => io_safe_input($config['incident_content']),
-                'field2_recovery'  => io_safe_input($config['incident_content']),
-                'field3'           => io_safe_input($config['default_group']),
-                'field3_recovery'  => io_safe_input($config['default_group']),
-                'field4'           => io_safe_input($config['default_criticity']),
-                'field4_recovery'  => io_safe_input($config['default_criticity']),
-                'field5'           => io_safe_input($config['default_owner']),
-                'field5_recovery'  => io_safe_input($config['default_owner']),
+                'field2'           => io_safe_input($config['default_group']),
+                'field2_recovery'  => io_safe_input($config['default_group']),
+                'field3'           => io_safe_input($config['default_criticity']),
+                'field3_recovery'  => io_safe_input($config['default_criticity']),
+                'field4'           => io_safe_input($config['default_owner']),
+                'field4_recovery'  => io_safe_input($config['default_owner']),
+                'field5'           => io_safe_input($config['incident_type']),
+                'field5_recovery'  => io_safe_input($config['incident_type']),
+                'field6'           => io_safe_input($config['incident_status']),
+                'field6_recovery'  => io_safe_input($config['incident_status']),
+                'field7'           => io_safe_input($config['incident_content']),
+                'field7_recovery'  => io_safe_input($config['incident_content']),
                 'id_group'         => 0,
                 'action_threshold' => 0,
             ];
 
             alerts_create_alert_action(io_safe_input('Create Integria IMS ticket'), $id_command_inserted, $action_values);
         } else {
-            // Update 'Integria IMS Ticket' command setup when setup data is updated, user enables IntegriaIMS integration and it does exist in database.
-            db_process_sql_update(
-                'talert_commands',
-                [
-                    'command'       => io_safe_input('perl /usr/share/pandora_server/util/integria_rticket.pl -p '.$config['integria_hostname'].'/integria/include/api.php -u '.$config['integria_api_pass'].','.$config['integria_user'].','.$config['integria_pass'].' -create_ticket -name "_field1_" -desc "_field2_" -group _field3_ -priority _field4_ -owner _field5_ -type _field6_'),
-                    'fields_values' => '["'.io_safe_input($config['incident_title']).'", "'.io_safe_input($config['incident_content']).'", "'.io_safe_input($config['default_group']).'", "'.io_safe_input($config['default_criticity']).'", "'.io_safe_input($config['default_owner']).'", "'.io_safe_input($config['incident_type']).'"]',
-                ],
-                ['name' => io_safe_input('Integria IMS Ticket')]
-            );
-
             // Update 'Create Integria IMS Ticket' action when setup data is updated, user enables IntegriaIMS integration and command does exist in database.
             db_process_sql_update(
                 'talert_actions',
                 [
                     'field1'          => io_safe_input($config['incident_title']),
                     'field1_recovery' => io_safe_input($config['incident_title']),
-                    'field2'          => io_safe_input($config['incident_content']),
-                    'field2_recovery' => io_safe_input($config['incident_content']),
-                    'field3'          => io_safe_input($config['default_group']),
-                    'field3_recovery' => io_safe_input($config['default_group']),
-                    'field4'          => io_safe_input($config['default_criticity']),
-                    'field4_recovery' => io_safe_input($config['default_criticity']),
-                    'field5'          => io_safe_input($config['default_owner']),
-                    'field5_recovery' => io_safe_input($config['default_owner']),
+                    'field2'          => io_safe_input($config['default_group']),
+                    'field2_recovery' => io_safe_input($config['default_group']),
+                    'field3'          => io_safe_input($config['default_criticity']),
+                    'field3_recovery' => io_safe_input($config['default_criticity']),
+                    'field4'          => io_safe_input($config['default_owner']),
+                    'field4_recovery' => io_safe_input($config['default_owner']),
+                    'field5'          => io_safe_input($config['incident_type']),
+                    'field5_recovery' => io_safe_input($config['incident_type']),
+                    'field6'          => io_safe_input($config['incident_status']),
+                    'field6_recovery' => io_safe_input($config['incident_status']),
+                    'field7'          => io_safe_input($config['incident_content']),
+                    'field7_recovery' => io_safe_input($config['incident_content']),
                 ],
                 ['name' => io_safe_input('Create Integria IMS ticket')]
             );
@@ -323,17 +319,6 @@ $row['control'] = html_print_select(
     false
 );
 $table_cr_settings->data['custom_response_def_criticity'] = $row;
-
-// Custom response default creator.
-$row = [];
-$row['name'] = __('Creator');
-$row['control'] = html_print_autocomplete_users_from_integria(
-    'default_creator',
-    $config['default_creator'],
-    true
-);
-
-$table_cr_settings->data['custom_response_def_creator'] = $row;
 
 // Custom response default owner.
 $row = [];

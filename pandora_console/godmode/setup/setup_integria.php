@@ -254,7 +254,7 @@ $table_alert_settings->class = 'databox filters';
 $table_alert_settings->size['name'] = '30%';
 $table_alert_settings->style['name'] = 'font-weight: bold';
 
-// Custom response incident title.
+// Alert incident title.
 $row = [];
 $row['name'] = __('Title');
 $row['control'] = html_print_input_text(
@@ -266,10 +266,10 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('response_macros', true);
+).ui_print_help_icon('alert_macros', true);
 $table_alert_settings->data['custom_response_incident_title'] = $row;
 
-// Custom response incident description.
+// Alert incident description.
 $row = [];
 $row['name'] = __('Description');
 $row['control'] = html_print_input_text(
@@ -281,10 +281,10 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('response_macros', true);
+).ui_print_help_icon('alert_macros', true);
 $table_alert_settings->data['custom_response_incident_content'] = $row;
 
-// Custom response default group.
+// Alert default group.
 $row = [];
 $row['name'] = __('Group');
 $row['control'] = html_print_select(
@@ -302,7 +302,7 @@ $row['control'] = html_print_select(
 );
 $table_alert_settings->data['custom_response_def_group'] = $row;
 
-// Custom response default criticity.
+// Alert default criticity.
 $row = [];
 $row['name'] = __('Priority');
 $row['control'] = html_print_select(
@@ -320,7 +320,7 @@ $row['control'] = html_print_select(
 );
 $table_alert_settings->data['custom_response_def_criticity'] = $row;
 
-// Custom response default owner.
+// Alert default owner.
 $row = [];
 $row['name'] = __('Owner');
 $row['control'] = html_print_autocomplete_users_from_integria(
@@ -331,7 +331,7 @@ $row['control'] = html_print_autocomplete_users_from_integria(
 
 $table_alert_settings->data['custom_response_def_owner'] = $row;
 
-// Custom response default incident type.
+// Alert default incident type.
 $row = [];
 $row['name'] = __('Type');
 $row['control'] = html_print_select(
@@ -349,7 +349,7 @@ $row['control'] = html_print_select(
 );
 $table_alert_settings->data['custom_response_incident_type'] = $row;
 
-// Custom response default incident status.
+// Alert default incident status.
 $row = [];
 $row['name'] = __('Status');
 $row['control'] = html_print_select(

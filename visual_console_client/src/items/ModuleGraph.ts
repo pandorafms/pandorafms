@@ -106,8 +106,13 @@ export function moduleGraphPropsDecoder(
  */
 class BackgroundTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const backgroundTypeLabel = document.createElement("label");
     backgroundTypeLabel.textContent = t("Background color");
+
+    generalDiv.appendChild(backgroundTypeLabel);
 
     const options: {
       value: ModuleGraphProps["backgroundType"];
@@ -141,9 +146,9 @@ class BackgroundTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
       });
     });
 
-    backgroundTypeLabel.appendChild(backgroundTypeSelect);
+    generalDiv.appendChild(backgroundTypeSelect);
 
-    return backgroundTypeLabel;
+    return generalDiv;
   }
 }
 
@@ -154,6 +159,7 @@ class BackgroundTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
 class ChooseTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
     const divContainer = document.createElement("div");
+    divContainer.className = "div-input-group";
     const radioButtonModuleLabel = document.createElement("label");
     radioButtonModuleLabel.textContent = t("Module Graph");
 
@@ -222,8 +228,16 @@ class ChooseTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
  */
 class CustomGraphInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const containerGeneralDiv = document.createElement("div");
+    containerGeneralDiv.className = "div-input-group-autocomplete-agent";
+
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const customGraphLabel = document.createElement("label");
     customGraphLabel.textContent = t("Custom graph");
+
+    generalDiv.appendChild(customGraphLabel);
 
     const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
       size: "small",
@@ -278,11 +292,13 @@ class CustomGraphInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
           }
         });
 
-        customGraphLabel.appendChild(customGraphSelect);
+        generalDiv.appendChild(customGraphSelect);
       }
     });
 
-    return customGraphLabel;
+    containerGeneralDiv.appendChild(generalDiv);
+
+    return containerGeneralDiv;
   }
 }
 
@@ -293,8 +309,13 @@ class CustomGraphInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
  */
 class GraphTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const graphTypeLabel = document.createElement("label");
     graphTypeLabel.textContent = t("Graph Type");
+
+    generalDiv.appendChild(graphTypeLabel);
 
     const options: {
       value: ModuleGraphProps["graphType"];
@@ -323,17 +344,22 @@ class GraphTypeInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
       });
     });
 
-    graphTypeLabel.appendChild(graphTypeSelect);
+    generalDiv.appendChild(graphTypeSelect);
 
-    return graphTypeLabel;
+    return generalDiv;
   }
 }
 
 // TODO: Document
 class PeriodInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const periodLabel = document.createElement("label");
     periodLabel.textContent = t("Period");
+
+    generalDiv.appendChild(periodLabel);
 
     const periodControl = periodSelector(
       this.currentData.period || this.initialData.period || 300,
@@ -355,9 +381,9 @@ class PeriodInputGroup extends InputGroup<Partial<ModuleGraphProps>> {
       value => this.updateData({ period: value })
     );
 
-    periodLabel.appendChild(periodControl);
+    generalDiv.appendChild(periodControl);
 
-    return periodLabel;
+    return generalDiv;
   }
 }
 
@@ -432,19 +458,12 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
     formContainer.addInputGroup(
-      new BackgroundTypeInputGroup("background-type", this.props)
+      new BackgroundTypeInputGroup("background-type", this.props),
+      3
     );
     formContainer.addInputGroup(
-      new GraphTypeInputGroup("graph-type", this.props)
-    );
-    formContainer.addInputGroup(
-      new PeriodInputGroup("period-graph", this.props)
-    );
-    formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
-    );
-    formContainer.addInputGroup(
-      new ChooseTypeInputGroup("show-type-graph", this.props)
+      new ChooseTypeInputGroup("show-type-graph", this.props),
+      4
     );
 
     const displayAgent = this.props.customGraphId
@@ -458,13 +477,27 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
       new AgentModuleInputGroup(
         `agent-autocomplete ${displayAgent}`,
         this.props
-      )
+      ),
+      5
     );
     formContainer.addInputGroup(
       new CustomGraphInputGroup(
         `custom-graph-list ${displayCustom}`,
         this.props
-      )
+      ),
+      6
+    );
+    formContainer.addInputGroup(
+      new GraphTypeInputGroup("graph-type", this.props),
+      7
+    );
+    formContainer.addInputGroup(
+      new PeriodInputGroup("period-graph", this.props),
+      8
+    );
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props),
+      16
     );
     return formContainer;
   }

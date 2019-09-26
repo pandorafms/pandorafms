@@ -17,7 +17,8 @@ import Item, {
   ItemType,
   ItemProps,
   itemBasePropsDecoder,
-  LinkConsoleInputGroup
+  LinkConsoleInputGroup,
+  AgentModuleInputGroup
 } from "../Item";
 import { InputGroup, FormContainer } from "../Form";
 
@@ -113,8 +114,13 @@ export function percentilePropsDecoder(
  */
 class DiameterInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const diameterLabel = document.createElement("label");
     diameterLabel.textContent = t("Diameter");
+
+    generalDiv.appendChild(diameterLabel);
 
     const diameterInput = document.createElement("input");
     diameterInput.type = "number";
@@ -128,9 +134,9 @@ class DiameterInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    diameterLabel.appendChild(diameterInput);
+    generalDiv.appendChild(diameterInput);
 
-    return diameterLabel;
+    return generalDiv;
   }
 }
 
@@ -141,8 +147,13 @@ class DiameterInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class MinValueInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const minValueLabel = document.createElement("label");
     minValueLabel.textContent = t("Min Value");
+
+    generalDiv.appendChild(minValueLabel);
 
     const minValueInput = document.createElement("input");
     minValueInput.type = "number";
@@ -158,9 +169,9 @@ class MinValueInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    minValueLabel.appendChild(minValueInput);
+    generalDiv.appendChild(minValueInput);
 
-    return minValueLabel;
+    return generalDiv;
   }
 }
 
@@ -171,8 +182,13 @@ class MinValueInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class MaxValueInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const maxValueLabel = document.createElement("label");
     maxValueLabel.textContent = t("Max Value");
+
+    generalDiv.appendChild(maxValueLabel);
 
     const maxValueInput = document.createElement("input");
     maxValueInput.type = "number";
@@ -188,9 +204,9 @@ class MaxValueInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    maxValueLabel.appendChild(maxValueInput);
+    generalDiv.appendChild(maxValueInput);
 
-    return maxValueLabel;
+    return generalDiv;
   }
 }
 
@@ -203,8 +219,13 @@ class MaxValueInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class TypePercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const typeLabel = document.createElement("label");
     typeLabel.textContent = t("Type");
+
+    generalDiv.appendChild(typeLabel);
 
     const options: {
       value: PercentileProps["percentileType"];
@@ -245,9 +266,9 @@ class TypePercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    typeLabel.appendChild(typeSelect);
+    generalDiv.appendChild(typeSelect);
 
-    return typeLabel;
+    return generalDiv;
   }
 }
 
@@ -259,8 +280,13 @@ class TypePercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class ValueToShowInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const valueToShowLabel = document.createElement("label");
     valueToShowLabel.textContent = t("Value to show");
+
+    generalDiv.appendChild(valueToShowLabel);
 
     const options: { value: PercentileProps["valueType"]; text: string }[] = [
       { value: "percent", text: t("Percent") },
@@ -285,9 +311,9 @@ class ValueToShowInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    valueToShowLabel.appendChild(valueToShowInput);
+    generalDiv.appendChild(valueToShowInput);
 
-    return valueToShowLabel;
+    return generalDiv;
   }
 }
 
@@ -298,8 +324,13 @@ class ValueToShowInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class ElementColorInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const elementColorLabel = document.createElement("label");
     elementColorLabel.textContent = t("Element color");
+
+    generalDiv.appendChild(elementColorLabel);
 
     const elementColorInput = document.createElement("input");
     elementColorInput.type = "color";
@@ -314,9 +345,9 @@ class ElementColorInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    elementColorLabel.appendChild(elementColorInput);
+    generalDiv.appendChild(elementColorInput);
 
-    return elementColorLabel;
+    return generalDiv;
   }
 }
 
@@ -327,8 +358,13 @@ class ElementColorInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class ValueColorInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const valueColorLabel = document.createElement("label");
     valueColorLabel.textContent = t("Value color");
+
+    generalDiv.appendChild(valueColorLabel);
 
     const valueColorInput = document.createElement("input");
     valueColorInput.type = "color";
@@ -343,9 +379,9 @@ class ValueColorInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    valueColorLabel.appendChild(valueColorInput);
+    generalDiv.appendChild(valueColorInput);
 
-    return valueColorLabel;
+    return generalDiv;
   }
 }
 
@@ -356,8 +392,13 @@ class ValueColorInputGroup extends InputGroup<Partial<PercentileProps>> {
  */
 class LabelPercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const labelPercentileLabel = document.createElement("label");
     labelPercentileLabel.textContent = t("Label");
+
+    generalDiv.appendChild(labelPercentileLabel);
 
     const labelPercentileInput = document.createElement("input");
     labelPercentileInput.type = "text";
@@ -373,9 +414,9 @@ class LabelPercentileInputGroup extends InputGroup<Partial<PercentileProps>> {
       });
     });
 
-    labelPercentileLabel.appendChild(labelPercentileInput);
+    generalDiv.appendChild(labelPercentileInput);
 
-    return labelPercentileLabel;
+    return generalDiv;
   }
 }
 
@@ -572,34 +613,48 @@ export default class Percentile extends Item<PercentileProps> {
     const formContainer = super.getFormContainer();
     // Delete items groups.
     formContainer.removeInputGroup("size");
-    // TODO: Remove inputGroup label this item.
-    //formContainer.removeInputGroup("label");
+    formContainer.removeInputGroup("label");
 
     // Add new items gropus.
-    formContainer.addInputGroup(new DiameterInputGroup("diameter", this.props));
     formContainer.addInputGroup(
-      new MinValueInputGroup("min-value", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", this.props),
+      1
     );
     formContainer.addInputGroup(
-      new MaxValueInputGroup("max-value", this.props)
+      new DiameterInputGroup("diameter", this.props),
+      2
     );
     formContainer.addInputGroup(
-      new TypePercentileInputGroup("type", this.props)
+      new MinValueInputGroup("min-value", this.props),
+      3
     );
     formContainer.addInputGroup(
-      new ValueToShowInputGroup("value-to-show", this.props)
+      new MaxValueInputGroup("max-value", this.props),
+      4
     );
     formContainer.addInputGroup(
-      new ElementColorInputGroup("element-color", this.props)
+      new TypePercentileInputGroup("type-percentil", this.props),
+      5
     );
     formContainer.addInputGroup(
-      new ValueColorInputGroup("value-color", this.props)
+      new ValueToShowInputGroup("value-to-show", this.props),
+      6
     );
     formContainer.addInputGroup(
-      new LabelPercentileInputGroup("label-percentile", this.props)
+      new ElementColorInputGroup("element-color", this.props),
+      7
     );
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new ValueColorInputGroup("value-color", this.props),
+      8
+    );
+    formContainer.addInputGroup(
+      new LabelPercentileInputGroup("label-percentile", this.props),
+      9
+    );
+    formContainer.addInputGroup(
+      new LinkConsoleInputGroup("link-console", this.props),
+      16
     );
     return formContainer;
   }

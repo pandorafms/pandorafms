@@ -74,31 +74,39 @@ final class ColorCloud extends Item
     {
         $return = parent::encode($data);
         $colorRanges = null;
+
+        $defaultColor = null;
+
+        if (isset($data['defaultColor']) === true) {
+            $defaultColor = static::extractDefaultColor($data);
+        }
+
         if (isset($data['colorRanges']) === true) {
-            $defaultColor = null;
-            if (isset($data['defaultColor']) === true) {
-                $defaultColor = static::extractDefaultColor($data);
-            }
-
             $colorRanges = static::encodeColorRanges($data);
+        }
 
-            if (empty($data['id']) === true) {
-                $return['label'] = json_encode(
-                    [
-                        'default_color' => $defaultColor,
-                        'color_ranges'  => $colorRanges,
-                    ]
-                );
-            } else {
-                $prevData = $this->toArray();
+        if (empty($data['id']) === true) {
+            $return['label'] = json_encode(
+                [
+                    'default_color' => $defaultColor,
+                    'color_ranges'  => $colorRanges,
+                ]
+            );
+        } else {
+            $prevData = $this->toArray();
+            $prevDataDefaultColor = static::extractDefaultColor(
+                ['defaultColor' => $prevData['defaultColor']]
+            );
+            $prevDataColorRanges = static::encodeColorRanges(
+                ['colorRanges' => $prevData['colorRanges']]
+            );
 
-                $return['label'] = json_encode(
-                    [
-                        'default_color' => ($defaultColor !== null) ? $defaultColor : $prevData['defaultColor'],
-                        'color_ranges'  => ($colorRanges !== null && (count($colorRanges) > 0)) ? $colorRanges : $prevData['colorRanges'],
-                    ]
-                );
-            }
+            $return['label'] = json_encode(
+                [
+                    'default_color' => ($defaultColor !== null) ? $defaultColor : $prevDataDefaultColor,
+                    'color_ranges'  => ($colorRanges !== null && (count($colorRanges) > 0)) ? $colorRanges : $prevDataColorRanges,
+                ]
+            );
         }
 
         return $return;

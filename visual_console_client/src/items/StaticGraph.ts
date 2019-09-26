@@ -82,8 +82,13 @@ export function staticGraphPropsDecoder(
  */
 class ShowLastValueInputGroup extends InputGroup<Partial<StaticGraphProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const showLastValueLabel = document.createElement("label");
     showLastValueLabel.textContent = t("Show Last Value");
+
+    generalDiv.appendChild(showLastValueLabel);
 
     const options: {
       value: StaticGraphProps["showLastValueTooltip"];
@@ -120,9 +125,9 @@ class ShowLastValueInputGroup extends InputGroup<Partial<StaticGraphProps>> {
       });
     });
 
-    showLastValueLabel.appendChild(showLastValueSelect);
+    generalDiv.appendChild(showLastValueSelect);
 
-    return showLastValueLabel;
+    return generalDiv;
   }
 }
 
@@ -173,16 +178,20 @@ export default class StaticGraph extends Item<StaticGraphProps> {
         ...this.props,
         imageKey: "imageSrc",
         showStatusImg: true
-      })
+      }),
+      3
     );
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", this.props),
+      4
     );
     formContainer.addInputGroup(
-      new ShowLastValueInputGroup("show-last-value", this.props)
+      new ShowLastValueInputGroup("show-last-value", this.props),
+      5
     );
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new LinkConsoleInputGroup("link-console", this.props),
+      13
     );
     return formContainer;
   }

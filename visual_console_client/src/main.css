@@ -92,20 +92,123 @@
   background: rgb(212, 215, 218);
 }
 
-form.visual-console-item-edition > .input-groups {
-  margin-bottom: 50px;
-}
-
-form.visual-console-item-edition > input[type="submit"] {
-  position: absolute;
-  bottom: 5px;
-  right: 15px;
-}
-
 .show-elements {
   display: inline-block;
 }
 
 .hide-elements {
   display: none;
+}
+
+/*Forms*/
+.div-input-group label {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 12pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: 600;
+  color: #343434;
+  margin-right: 10px;
+}
+.div-input-group label img {
+  margin-left: 4px;
+}
+
+.div-input-group input[type="text"],
+.div-input-group input[type="number"] {
+  height: 25px;
+  font-size: 10pt;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-right: 10px;
+}
+
+.div-input-group input[type="radio"] {
+  margin-right: 10px;
+  width: 17px;
+  height: 17px;
+}
+
+.div-input-group select {
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  font-size: 10pt;
+}
+
+.input-groups {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.input-group {
+  width: 100%;
+  margin-bottom: 25px;
+  padding-left: 20px;
+}
+
+.div-ranges-input-group {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: start;
+}
+
+.div-ranges-input-group > div {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.div-input-group,
+.div-input-group div div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.div-input-group h3 {
+  text-transform: initial;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  text-align: center;
+  font-style: italic;
+  text-decoration: underline;
+  margin: 0 auto;
+}
+
+.div-input-group div div a {
+  margin-left: 10px;
+}
+
+.div-input-group-autocomplete-agent {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.div-input-group-inside {
+  padding-left: 20px;
+}
+
+.input-group-link-console {
+  height: 70px;
+}
+
+.show-elements > div.div-input-group-autocomplete-agent {
+  margin-left: 20px;
+}
+
+.img-vc-elements {
+  margin-left: 10px;
 }

@@ -561,10 +561,18 @@ function createVisualConsole(
           var id = props.id;
           var data = e.data;
 
-          // Content tiny.
-          var content = tinymce.get("tinyMCE_editor").getContent();
-          // Pass the content.
-          data.label = content;
+          if (
+            props.type != 20 &&
+            props.type != 3 &&
+            props.type != 9 &&
+            props.type != 15 &&
+            props.type != 16
+          ) {
+            // Content tiny.
+            var content = tinymce.get("tinyMCE_editor").getContent();
+            // Pass content to array data.
+            data.label = content;
+          }
 
           var taskId = "visual-console-item-update-" + id;
 
@@ -636,10 +644,10 @@ function createVisualConsole(
         $formElement.dialog({
           title: formContainer.title,
           modal: true,
-          resizable: true,
+          resizable: false,
           draggable: true,
-          height: 300,
-          width: 500,
+          height: 600,
+          width: 700,
           open: function() {
             tinymce.init({
               selector: "#tinyMCE_editor",
@@ -672,9 +680,7 @@ function createVisualConsole(
                 "bold,italic, |, justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link, |, fontselect, forecolor, fontsizeselect, |,code",
               theme_advanced_buttons2: "",
               theme_advanced_buttons3: "",
-              theme_advanced_statusbar_location: "none",
-              width: "400",
-              height: "200"
+              theme_advanced_statusbar_location: "none"
             });
           },
           beforeClose: function() {
@@ -687,14 +693,19 @@ function createVisualConsole(
           buttons: [
             {
               text: "Cancel",
+              class:
+                "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
               click: function() {
                 $formElement.dialog("close");
               }
             },
             {
               text: "Update",
+              class:
+                "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
               click: function() {
-                console.log(formContainer);
+                // Trigered simulate button submit.
+                this.dispatchEvent(new Event("submit"));
               }
             }
           ]

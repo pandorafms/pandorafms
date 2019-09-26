@@ -66,8 +66,13 @@ export function colorCloudPropsDecoder(
  */
 class ColorInputGroup extends InputGroup<Partial<ColorCloudProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
-    const ColorLabel = document.createElement("label");
-    ColorLabel.textContent = t("Default color");
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
+    const colorLabel = document.createElement("label");
+    colorLabel.textContent = t("Default color");
+
+    generalDiv.appendChild(colorLabel);
 
     const ColorInput = document.createElement("input");
     ColorInput.type = "color";
@@ -83,9 +88,9 @@ class ColorInputGroup extends InputGroup<Partial<ColorCloudProps>> {
       });
     });
 
-    ColorLabel.appendChild(ColorInput);
+    generalDiv.appendChild(ColorInput);
 
-    return ColorLabel;
+    return generalDiv;
   }
 }
 
@@ -94,12 +99,18 @@ type ColorRange = ColorRanges[0];
 
 class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group div-ranges-input-group";
+
     const rangesLabel = this.createLabel("Ranges");
+
+    generalDiv.appendChild(rangesLabel);
+
     const rangesControlsContainer = document.createElement("div");
     const createdRangesContainer = document.createElement("div");
 
-    rangesControlsContainer.appendChild(createdRangesContainer);
-    rangesLabel.appendChild(rangesControlsContainer);
+    generalDiv.appendChild(createdRangesContainer);
+    generalDiv.appendChild(rangesControlsContainer);
 
     const colorRanges =
       this.currentData.colorRanges || this.initialData.colorRanges || [];
@@ -159,7 +170,7 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
       this.initialRangeContainer(handleCreate)
     );
 
-    return rangesLabel;
+    return generalDiv;
   }
 
   private initialRangeContainer(onCreate: (range: ColorRange) => void) {
@@ -217,7 +228,10 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
     // Button delete.
     const createBtn = document.createElement("a");
     createBtn.appendChild(
-      fontAwesomeIcon(faPlusCircle, t("Create color range"))
+      fontAwesomeIcon(faPlusCircle, t("Create color range"), {
+        size: "small",
+        color: "#565656"
+      })
     );
 
     const handleCreate = () => {
@@ -294,7 +308,12 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
 
     // Button delete.
     const deleteBtn = document.createElement("a");
-    deleteBtn.appendChild(fontAwesomeIcon(faTrashAlt, t("Delete color range")));
+    deleteBtn.appendChild(
+      fontAwesomeIcon(faTrashAlt, t("Delete color range"), {
+        size: "small",
+        color: "#565656"
+      })
+    );
     deleteBtn.addEventListener("click", onDelete);
 
     rangesContainer.appendChild(deleteBtn);
@@ -409,15 +428,19 @@ export default class ColorCloud extends Item<ColorCloudProps> {
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
+    formContainer.removeInputGroup("label");
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", this.props),
+      0
+    );
+
+    formContainer.addInputGroup(
+      new ColorInputGroup("color-cloud", this.props),
+      3
     );
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
-    );
-    formContainer.addInputGroup(new ColorInputGroup("color-cloud", this.props));
-    formContainer.addInputGroup(
-      new RangesInputGroup("ranges-cloud", this.props)
+      new RangesInputGroup("ranges-cloud", this.props),
+      4
     );
 
     return formContainer;

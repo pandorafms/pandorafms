@@ -102,12 +102,19 @@ export interface ItemSelectionChangedEvent {
 // TODO: Document
 class LinkInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const linkLabel = document.createElement("label");
     linkLabel.textContent = t("Link enabled");
 
+    const linkInputLabel = document.createElement("label");
+    linkInputLabel.className = "p-switch";
+    linkInputLabel.htmlFor = "checkbox-link";
+
     const linkInputChkbx = document.createElement("input");
-    linkInputChkbx.id = "checkbox-switch";
-    linkInputChkbx.className = "checkbox-switch";
+    linkInputChkbx.id = "checkbox-link";
+    linkInputChkbx.className = "checkbox-link";
     linkInputChkbx.type = "checkbox";
     linkInputChkbx.name = "checkbox-enable-link";
     linkInputChkbx.value = "1";
@@ -119,26 +126,54 @@ class LinkInputGroup extends InputGroup<Partial<ItemProps>> {
       })
     );
 
-    const linkInputLabel = document.createElement("label");
-    linkInputLabel.className = "label-switch";
-    linkInputLabel.htmlFor = "checkbox-switch";
+    const spanInputLabel = document.createElement("span");
+    spanInputLabel.className = "p-slider";
 
-    linkLabel.appendChild(linkInputChkbx);
-    linkLabel.appendChild(linkInputLabel);
+    linkInputLabel.appendChild(linkInputChkbx);
+    linkInputLabel.appendChild(spanInputLabel);
 
-    return linkLabel;
+    generalDiv.appendChild(linkLabel);
+    generalDiv.appendChild(linkInputLabel);
+
+    return generalDiv;
+  }
+}
+
+// TODO: Document
+class AdvancedOptionsInputGroup extends InputGroup<Partial<ItemProps>> {
+  protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
+    const h3 = document.createElement("h3");
+    h3.textContent = t("Advanced Options");
+
+    generalDiv.appendChild(h3);
+
+    return generalDiv;
   }
 }
 
 // TODO: Document
 class OnTopInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const onTopLabel = document.createElement("label");
     onTopLabel.textContent = t("Show on top");
 
+    onTopLabel.appendChild(
+      helpTip(
+        t(
+          "It allows the element to be superimposed to the rest of items of the visual console"
+        )
+      )
+    );
+
     const onTopInputChkbx = document.createElement("input");
-    onTopInputChkbx.id = "checkbox-switch";
-    onTopInputChkbx.className = "checkbox-switch";
+    onTopInputChkbx.id = "checkbox-on-top";
+    onTopInputChkbx.className = "checkbox-on-top";
     onTopInputChkbx.type = "checkbox";
     onTopInputChkbx.name = "checkbox-show-on-top";
     onTopInputChkbx.value = "1";
@@ -151,26 +186,27 @@ class OnTopInputGroup extends InputGroup<Partial<ItemProps>> {
     );
 
     const onTopInputLabel = document.createElement("label");
-    onTopInputLabel.className = "label-switch";
-    onTopInputLabel.htmlFor = "checkbox-switch";
+    onTopInputLabel.className = "p-switch";
+    onTopInputLabel.htmlFor = "checkbox-on-top";
 
-    onTopLabel.appendChild(
-      helpTip(
-        t(
-          "It allows the element to be superimposed to the rest of items of the visual console"
-        )
-      )
-    );
-    onTopLabel.appendChild(onTopInputChkbx);
-    onTopLabel.appendChild(onTopInputLabel);
+    const spanInputLabel = document.createElement("span");
+    spanInputLabel.className = "p-slider";
 
-    return onTopLabel;
+    onTopInputLabel.appendChild(onTopInputChkbx);
+    onTopInputLabel.appendChild(spanInputLabel);
+
+    generalDiv.appendChild(onTopLabel);
+    generalDiv.appendChild(onTopInputLabel);
+
+    return generalDiv;
   }
 }
 
 // TODO: Document
 class PositionInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
     const positionLabel = document.createElement("label");
     positionLabel.textContent = t("Position");
 
@@ -196,16 +232,19 @@ class PositionInputGroup extends InputGroup<Partial<ItemProps>> {
       })
     );
 
-    positionLabel.appendChild(positionInputX);
-    positionLabel.appendChild(positionInputY);
+    generalDiv.appendChild(positionLabel);
+    generalDiv.appendChild(positionInputX);
+    generalDiv.appendChild(positionInputY);
 
-    return positionLabel;
+    return generalDiv;
   }
 }
 
 // TODO: Document
 class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
     const sizeLabel = document.createElement("label");
     sizeLabel.textContent = t("Size");
 
@@ -242,16 +281,20 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
         )
       )
     );
-    sizeLabel.appendChild(sizeInputWidth);
-    sizeLabel.appendChild(sizeInputHeight);
 
-    return sizeLabel;
+    generalDiv.appendChild(sizeLabel);
+    generalDiv.appendChild(sizeInputWidth);
+    generalDiv.appendChild(sizeInputHeight);
+
+    return generalDiv;
   }
 }
 
 // TODO: Document
 class LabelInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
     const label = document.createElement("label");
     label.textContent = t("Label");
 
@@ -265,9 +308,10 @@ class LabelInputGroup extends InputGroup<Partial<ItemProps>> {
       this.initialData.label ||
       ""}`;
 
-    label.appendChild(labelInput);
+    generalDiv.appendChild(label);
+    generalDiv.appendChild(labelInput);
 
-    return label;
+    return generalDiv;
   }
 }
 
@@ -278,6 +322,9 @@ class LabelInputGroup extends InputGroup<Partial<ItemProps>> {
  */
 class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const parentLabel = document.createElement("label");
     parentLabel.textContent = t("Parent");
 
@@ -310,9 +357,10 @@ class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
         0}`;
     });
 
-    parentLabel.appendChild(parentSelect);
+    generalDiv.appendChild(parentLabel);
+    generalDiv.appendChild(parentSelect);
 
-    return parentLabel;
+    return generalDiv;
   }
 }
 
@@ -323,8 +371,13 @@ class ParentInputGroup extends InputGroup<Partial<ItemProps>> {
  */
 class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const aclGroupLabel = document.createElement("label");
     aclGroupLabel.textContent = t("Restrict access to group");
+
+    generalDiv.appendChild(aclGroupLabel);
 
     const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
       size: "small",
@@ -369,19 +422,24 @@ class AclGroupInputGroup extends InputGroup<Partial<ItemProps>> {
           this.initialData.aclGroupId ||
           0}`;
 
-        aclGroupLabel.appendChild(aclGroupSelect);
+        generalDiv.appendChild(aclGroupSelect);
       }
     });
 
-    return aclGroupLabel;
+    return generalDiv;
   }
 }
 
 // TODO: Document
 class CacheExpirationInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const periodLabel = document.createElement("label");
     periodLabel.textContent = t("Cache expiration");
+
+    generalDiv.appendChild(periodLabel);
 
     const periodControl = periodSelector(
       this.currentData.cacheExpiration || this.initialData.cacheExpiration || 0,
@@ -398,9 +456,9 @@ class CacheExpirationInputGroup extends InputGroup<Partial<ItemProps>> {
       value => this.updateData({ cacheExpiration: value })
     );
 
-    periodLabel.appendChild(periodControl);
+    generalDiv.appendChild(periodControl);
 
-    return periodLabel;
+    return generalDiv;
   }
 }
 
@@ -415,7 +473,9 @@ export class LinkConsoleInputGroup extends InputGroup<
   protected createContent(): HTMLElement | HTMLElement[] {
     // Create div container.
     const container = document.createElement("div");
+    container.className = "div-input-group ";
     const lvcTypeContainer = document.createElement("div");
+    lvcTypeContainer.className = "div-input-group-inside";
 
     // Create Principal element label - select.
     const linkConsoleLabel = document.createElement("label");
@@ -527,11 +587,11 @@ export class LinkConsoleInputGroup extends InputGroup<
           );
         });
 
-        // Add principal select to label.
-        linkConsoleLabel.appendChild(linkConsoleSelect);
-
         // Add weight warning field.
         container.appendChild(linkConsoleLabel);
+
+        // Add principal select to label.
+        container.appendChild(linkConsoleSelect);
 
         // Add containerType to container.
         lvcTypeContainer.appendChild(
@@ -542,8 +602,8 @@ export class LinkConsoleInputGroup extends InputGroup<
         container.appendChild(lvcTypeContainer);
       } else {
         // Add principal select to label.
-        linkConsoleLabel.appendChild(linkConsoleSelect);
         container.appendChild(linkConsoleLabel);
+        container.appendChild(linkConsoleSelect);
       }
     });
 
@@ -599,11 +659,11 @@ export class LinkConsoleInputGroup extends InputGroup<
 
     typeLinkConsoleSelect.value = value;
 
-    // Add select type link.
-    typeLinkConsoleLabel.appendChild(typeLinkConsoleSelect);
-
     // Add type link.
     containerType.appendChild(typeLinkConsoleLabel);
+
+    // Add select type link.
+    containerType.appendChild(typeLinkConsoleSelect);
 
     switch (value) {
       case "weight":
@@ -709,12 +769,11 @@ export class LinkConsoleInputGroup extends InputGroup<
       })
     );
 
-    // Add input weight.
-    weightLabel.appendChild(weightInput);
-
     // Add label weight.
     containerChildType.appendChild(weightLabel);
 
+    // Add input weight.
+    containerChildType.appendChild(weightInput);
     return containerChildType;
   };
 
@@ -796,17 +855,17 @@ export class LinkConsoleInputGroup extends InputGroup<
       })
     );
 
-    // Add input weight warning.
-    warningWeightLabel.appendChild(warningWeightInput);
-
     // Add label warning field.
     containerChildType.appendChild(warningWeightLabel);
 
-    // Add input crital weight.
-    criticalWeightLabel.appendChild(criticalWeightInput);
+    // Add input weight warning.
+    containerChildType.appendChild(warningWeightInput);
 
     // Add label weight critical.
     containerChildType.appendChild(criticalWeightLabel);
+
+    // Add input crital weight.
+    containerChildType.appendChild(criticalWeightInput);
 
     return containerChildType;
   };
@@ -829,9 +888,14 @@ export class ImageInputGroup extends InputGroup<
   }
 > {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const imageKey = this.initialData.imageKey;
     const imageLabel = document.createElement("label");
     imageLabel.textContent = t("Image");
+
+    generalDiv.appendChild(imageLabel);
 
     const divImage = document.createElement("div");
 
@@ -840,7 +904,7 @@ export class ImageInputGroup extends InputGroup<
       size: "small",
       spin: true
     });
-    imageLabel.appendChild(spinner);
+    generalDiv.appendChild(spinner);
 
     // Init request
     this.requestData("image-console", {}, (error, data) => {
@@ -850,7 +914,7 @@ export class ImageInputGroup extends InputGroup<
       // Check errors.
       if (error) {
         // Add img error.
-        imageLabel.appendChild(
+        generalDiv.appendChild(
           fontAwesomeIcon(faExclamationCircle, t("Error"), {
             size: "small",
             color: "#e63c52"
@@ -885,16 +949,16 @@ export class ImageInputGroup extends InputGroup<
 
         labelSelect.value = valueImage;
 
-        imageLabel.appendChild(labelSelect);
+        generalDiv.appendChild(labelSelect);
 
         if (valueImage != null) {
           const imageItem = data.find(item => item.name === valueImage);
-          imageLabel.appendChild(this.getImage(imageItem, divImage));
+          generalDiv.appendChild(this.getImage(imageItem, divImage));
         }
       }
     });
 
-    return imageLabel;
+    return generalDiv;
   }
 
   private getImage(
@@ -952,8 +1016,16 @@ export class AgentModuleInputGroup extends InputGroup<
   Partial<ItemProps & WithModuleProps>
 > {
   protected createContent(): HTMLElement | HTMLElement[] {
+    const generalDivAutocomplete = document.createElement("div");
+    generalDivAutocomplete.className = "div-input-group-autocomplete-agent";
+
+    const generalDiv = document.createElement("div");
+    generalDiv.className = "div-input-group";
+
     const agentLabel = document.createElement("label");
     agentLabel.textContent = t("Agent");
+
+    generalDiv.appendChild(agentLabel);
 
     const agentInput = document.createElement("input");
     agentInput.type = "text";
@@ -1026,7 +1098,7 @@ export class AgentModuleInputGroup extends InputGroup<
         ? `${item.agentAlias} - ${item.agentAddress}`
         : item.agentAlias;
 
-      agentLabel.appendChild(this.agentModuleInput(item));
+      generalDivAutocomplete.appendChild(this.agentModuleInput(item));
 
       return `${selectedItem || ""}`;
     };
@@ -1035,7 +1107,7 @@ export class AgentModuleInputGroup extends InputGroup<
       ? `${this.initialData.agentAlias} - ${this.initialData.agentAddress}`
       : this.initialData.agentAlias;
 
-    agentLabel.appendChild(
+    generalDiv.appendChild(
       autocompleteInput(
         notEmptyStringOr(initialAutocompleteInput, null),
         handleDataRequested,
@@ -1044,9 +1116,11 @@ export class AgentModuleInputGroup extends InputGroup<
       )
     );
 
+    generalDivAutocomplete.appendChild(generalDiv);
+
     const initialAgentId = parseIntOr(this.initialData.agentId, null);
     if (initialAgentId !== null) {
-      agentLabel.appendChild(
+      generalDivAutocomplete.appendChild(
         this.agentModuleInput({
           agentId: initialAgentId,
           agentName: notEmptyStringOr(this.initialData.agentName, null),
@@ -1062,7 +1136,7 @@ export class AgentModuleInputGroup extends InputGroup<
       );
     }
 
-    return agentLabel;
+    return generalDivAutocomplete;
   }
 
   private agentModuleInput(item: AgentAutocompleteData): HTMLElement {
@@ -1074,9 +1148,14 @@ export class AgentModuleInputGroup extends InputGroup<
       deleteAgentModuleItem.remove();
     }
 
+    const generalDiv = document.createElement("div");
+    generalDiv.id = "select-autocomplete-agent-module";
+    generalDiv.className = "div-input-group";
+
     const agentModuleLabel = document.createElement("label");
-    agentModuleLabel.id = "select-autocomplete-agent-module";
     agentModuleLabel.textContent = t("Module");
+
+    generalDiv.appendChild(agentModuleLabel);
 
     // Create element Spinner.
     const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {
@@ -1122,11 +1201,11 @@ export class AgentModuleInputGroup extends InputGroup<
           this.initialData.moduleId ||
           0}`;
 
-        agentModuleLabel.appendChild(agentModuleSelect);
+        generalDiv.appendChild(agentModuleSelect);
       }
     });
 
-    return agentModuleLabel;
+    return generalDiv;
   }
 }
 
@@ -2178,21 +2257,23 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     return new FormContainer(
       this.titleItem(this.props.type),
       [
-        new LabelInputGroup("label", this.props),
-        new PositionInputGroup("position", this.props),
         new SizeInputGroup("size", this.props),
+        new LabelInputGroup("label", this.props),
         new LinkInputGroup("link", this.props),
         new OnTopInputGroup("show-on-top", this.props),
+        new AdvancedOptionsInputGroup("advanced-options", this.props),
+        new PositionInputGroup("position", this.props),
         new ParentInputGroup("parent", this.props),
         new AclGroupInputGroup("acl-group", this.props),
         new CacheExpirationInputGroup("cache-expiration", this.props)
       ],
       [
-        "label",
-        "position",
         "size",
+        "label",
         "link",
         "show-on-top",
+        "advanced-options",
+        "position",
         "parent",
         "acl-group",
         "cache-expiration"
@@ -2207,21 +2288,23 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     return new FormContainer(
       t("Item"),
       [
-        new LabelInputGroup("label", props),
-        new PositionInputGroup("position", props),
         new SizeInputGroup("size", props),
+        new LabelInputGroup("label", props),
         new LinkInputGroup("link", props),
         new OnTopInputGroup("show-on-top", props),
+        new AdvancedOptionsInputGroup("advanced-options", props),
+        new PositionInputGroup("position", props),
         new ParentInputGroup("parent", props),
         new AclGroupInputGroup("acl-group", props),
         new CacheExpirationInputGroup("cache-expiration", props)
       ],
       [
-        "label",
-        "position",
         "size",
+        "label",
         "link",
         "show-on-top",
+        "advanced-options",
+        "position",
         "parent",
         "acl-group",
         "cache-expiration"

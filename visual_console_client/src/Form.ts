@@ -219,16 +219,7 @@ export class FormContainer {
       }
     });
 
-    /*
-    // Add buttons.
-    const submitBtn = document.createElement("input");
-    submitBtn.className = "sub upd";
-    submitBtn.type = "submit";
-    submitBtn.value = type === "creation" ? t("Create") : t("Update");
-    */
-
     form.appendChild(formContent);
-    //form.appendChild(submitBtn);
 
     return form;
   }

@@ -311,6 +311,22 @@ function grafico_modulo_sparse_data(
         $array_data['percentil'.$series_suffix]['unit'] = $data_module_graph['unit'];
     }
 
+    if ($params['type_mode_graph']) {
+        $array_data['min'.$series_suffix]['agent_module_id'] = $agent_module_id;
+        $array_data['min'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+        $array_data['min'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
+        $array_data['min'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
+        $array_data['min'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
+        $array_data['min'.$series_suffix]['unit'] = $data_module_graph['unit'];
+
+        $array_data['max'.$series_suffix]['agent_module_id'] = $agent_module_id;
+        $array_data['max'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+        $array_data['max'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
+        $array_data['max'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
+        $array_data['max'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
+        $array_data['max'.$series_suffix]['unit'] = $data_module_graph['unit'];
+    }
+
     // This is for a specific type of report that consists in passing
     // an interval and doing the average sum and avg.
     if ($params['force_interval'] != '') {

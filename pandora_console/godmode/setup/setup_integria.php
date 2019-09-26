@@ -55,7 +55,7 @@ if ($has_connection === false && $config['integria_enabled']) {
 
 if (get_parameter('update_config', 0) == 1) {
     // Try to retrieve event response 'Create incident in IntegriaIMS from event' to check if it exists.
-    $event_response_exists = db_get_row_filter('tevent_response', ['name' => io_safe_input('Create incident in IntegriaIMS from event')]);
+    $event_response_exists = db_get_row_filter('tevent_response', ['name' => io_safe_input('Create ticket in IntegriaIMS from event')]);
 
     // Try to retrieve command 'Integia IMS Ticket' to check if it exists.
     $command_exists = db_get_row_filter('talert_commands', ['name' => io_safe_input('Integria IMS Ticket')]);
@@ -66,8 +66,8 @@ if (get_parameter('update_config', 0) == 1) {
             db_process_sql_insert(
                 'tevent_response',
                 [
-                    'name'           => io_safe_input('Create incident in IntegriaIMS from event'),
-                    'description'    => io_safe_input('Create an incident in Integria IMS from an event'),
+                    'name'           => io_safe_input('Create ticket in IntegriaIMS from event'),
+                    'description'    => io_safe_input('Create a ticket in Integria IMS from an event'),
                     'target'         => io_safe_input('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&from_event=_event_id_'),
                     'type'           => 'url',
                     'id_group'       => '0',
@@ -88,7 +88,7 @@ if (get_parameter('update_config', 0) == 1) {
                     'name'                => io_safe_input('Integria IMS Ticket'),
                     'command'             => io_safe_input('Internal type'),
                     'internal'            => 1,
-                    'description'         => io_safe_input('Create an incident in Integria IMS'),
+                    'description'         => io_safe_input('Create a ticket in Integria IMS'),
                     'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'"]',
                 ]
             );
@@ -140,7 +140,7 @@ if (get_parameter('update_config', 0) == 1) {
     } else {
         if ($event_response_exists != false) {
             // Delete 'Create incident in IntegriaIMS from event' event response if it does exist and IntegriaIMS integration is disabled.
-            db_process_sql_delete('tevent_response', ['name' => io_safe_input('Create incident in IntegriaIMS from event')]);
+            db_process_sql_delete('tevent_response', ['name' => io_safe_input('Create ticket in IntegriaIMS from event')]);
         }
 
         if ($command_exists != false) {
@@ -197,7 +197,7 @@ $table_enable->style['name'] = 'font-weight: bold';
 
 // Enable Integria.
 $row = [];
-$row['name'] = __('Enable Integria');
+$row['name'] = __('Enable Integria IMS');
 $row['control'] = html_print_checkbox_switch('integria_enabled', 1, $config['integria_enabled'], true);
 $table_enable->data['integria_enabled'] = $row;
 
@@ -304,7 +304,7 @@ $table_cr_settings->data['custom_response_def_group'] = $row;
 
 // Custom response default criticity.
 $row = [];
-$row['name'] = __('Criticity');
+$row['name'] = __('Priority');
 $row['control'] = html_print_select(
     $integria_criticity_values,
     'default_criticity',
@@ -413,7 +413,7 @@ if ($has_connection != false) {
     // Form custom response settings.
     echo '<div id="form_custom_response_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Incident default values').'</legend>';
+    echo '<legend>'.__('Ticket default values').'</legend>';
 
     html_print_table($table_cr_settings);
 

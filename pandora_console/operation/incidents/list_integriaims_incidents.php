@@ -27,7 +27,7 @@ if (! check_acl($config['id_user'], 0, 'IR')) {
 
 // Header tabs.
 $onheader = integriaims_tabs('list_tab');
-ui_print_page_header(__('Integria IMS Incidents'), '', false, '', false, $onheader);
+ui_print_page_header(__('Integria IMS Tickets'), '', false, '', false, $onheader);
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
@@ -112,7 +112,7 @@ $table->data[0][3] = html_print_select(
     'incident_status',
     $incident_status,
     '',
-    __('Select'),
+    __('All'),
     0,
     true
 );
@@ -123,7 +123,7 @@ $table->data[0][5] = html_print_select(
     'incident_group',
     $incident_group,
     '',
-    __('Select'),
+    __('All'),
     1,
     true
 );
@@ -140,7 +140,7 @@ $table->data[1][5] = html_print_select(
     'incident_priority',
     $incident_priority,
     '',
-    __('Select'),
+    __('All'),
     -1,
     true
 );
@@ -151,7 +151,7 @@ $table->data[2][1] = html_print_select(
     'incident_resolution',
     $incident_resolution,
     '',
-    __('Select'),
+    __('All'),
     '',
     true
 );
@@ -221,7 +221,7 @@ $integria_incidents_form .= '<div>'.html_print_submit_button(__('Filter'), 'filt
 $integria_incidents_form .= '</div>';
 $integria_incidents_form .= '</form>';
 
-ui_toggle($integria_incidents_form, __('Add Custom filter'), '', '', false);
+ui_toggle($integria_incidents_form, __('Filter'), '', '', false);
 
 /*
  * Order api call 'get_incidents'.
@@ -306,7 +306,7 @@ foreach ($incidents_paginated as $key => $value) {
 // Show table incidents.
 ui_pagination(count($array_get_incidents), $url, $offset);
 if (empty($table->data) === true) {
-    ui_print_info_message(['no_close' => true, 'message' => __('No incidents to show').'.' ]);
+    ui_print_info_message(['no_close' => true, 'message' => __('No tickets to show').'.' ]);
 } else {
     html_print_table($table);
     ui_pagination(count($array_get_incidents), $url, $offset, 0, false, 'offset', true, 'pagination-bottom');

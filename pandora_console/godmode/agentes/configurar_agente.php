@@ -1383,7 +1383,7 @@ if ($update_module || $create_module) {
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
     $ff_type = (int) get_parameter('ff_type');
-    $each_ff = (int) get_parameter('each_ff');
+    $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
     $id_tag = (array) get_parameter('id_tag_selected');

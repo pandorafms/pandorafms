@@ -295,36 +295,40 @@ function grafico_modulo_sparse_data(
         return false;
     }
 
-    $array_data['sum'.$series_suffix]['agent_module_id'] = $agent_module_id;
-    $array_data['sum'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-    $array_data['sum'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
-    $array_data['sum'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
-    $array_data['sum'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
-    $array_data['sum'.$series_suffix]['unit'] = $data_module_graph['unit'];
+    $array_data = series_suffix_leyend(
+        'sum',
+        $series_suffix,
+        $agent_module_id,
+        $data_module_graph,
+        $array_data
+    );
 
     if ($params['percentil']) {
-        $array_data['percentil'.$series_suffix]['agent_module_id'] = $agent_module_id;
-        $array_data['percentil'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-        $array_data['percentil'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
-        $array_data['percentil'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
-        $array_data['percentil'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
-        $array_data['percentil'.$series_suffix]['unit'] = $data_module_graph['unit'];
+        $array_data = series_suffix_leyend(
+            'percentil',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
     }
 
     if ($params['type_mode_graph']) {
-        $array_data['min'.$series_suffix]['agent_module_id'] = $agent_module_id;
-        $array_data['min'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-        $array_data['min'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
-        $array_data['min'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
-        $array_data['min'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
-        $array_data['min'.$series_suffix]['unit'] = $data_module_graph['unit'];
+        $array_data = series_suffix_leyend(
+            'min',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
 
-        $array_data['max'.$series_suffix]['agent_module_id'] = $agent_module_id;
-        $array_data['max'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-        $array_data['max'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
-        $array_data['max'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
-        $array_data['max'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
-        $array_data['max'.$series_suffix]['unit'] = $data_module_graph['unit'];
+        $array_data = series_suffix_leyend(
+            'max',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
     }
 
     // This is for a specific type of report that consists in passing
@@ -3205,6 +3209,21 @@ function graphic_incident_source($width=320, $height=200)
         $config['fontpath'],
         $config['font_size']
     );
+}
+
+
+function series_suffix_leyend($series_name, $series_suffix, $id_agent, $data_module_graph, $array_data)
+{
+        global $config;
+
+        $array_data[$series_name.$series_suffix]['agent_module_id'] = $id_agent;
+        $array_data[$series_name.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+        $array_data[$series_name.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
+        $array_data[$series_name.$series_suffix]['module_name'] = $data_module_graph['module_name'];
+        $array_data[$series_name.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
+        $array_data[$series_name.$series_suffix]['unit'] = $data_module_graph['unit'];
+
+        return $array_data;
 }
 
 

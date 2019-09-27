@@ -295,6 +295,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=ehorus']['text'] = __('eHorus');
     $sub2['godmode/setup/setup&amp;section=ehorus']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=integria']['text'] = __('Integria IMS');
+    $sub2['godmode/setup/setup&amp;section=integria']['refr'] = 0;
+
     $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 

@@ -1137,7 +1137,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		load_module_macros ($module->{'module_macros'}, \%macros);
 	}
 	
-	# User defined alerts
+
+	#logger($pa_config, "Clean name ".$clean_name, 10);
+	# User defined alert
 	if ($action->{'internal'} == 0) {
 		$macros{_field1_} = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		$macros{_field2_} = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
@@ -1442,55 +1444,70 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Integria IMS Ticket
 	} elsif ($clean_name eq "Integria IMS Ticket") {
+		my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
+		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
+		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
+		my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
 		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
 		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
-		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
-		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
-		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
-		
+
 		# Field 1 (Integria IMS API path)
-		my $api_path = $field1;
+		my $api_path = $config_api_path . "/integria/include/api.php";
 		
 		# Field 2 (Integria IMS API pass)
-		my $api_pass = $field2;
+		my $api_pass = $config_api_pass;
 		
 		# Field 3 (Integria IMS user)
-		my $integria_user = $field3;
+		my $integria_user = $config_integria_user;
 		
 		# Field 4 (Integria IMS user password)
-		my $integria_user_pass = $field4;
+		my $integria_user_pass = $config_integria_user_pass;
 		
-		# Field 5 (Ticket name)
-		my $ticket_name = $field5;
+		# Field 1 (Ticket name)
+		my $ticket_name = safe_output($field1);
 		if ($ticket_name eq "") {
 			$ticket_name = $pa_config->{'rb_product_name'} . " alert action created by API";
 		}
 		
-		# Field 6 (Ticket group ID)
-		my $ticket_group_id = $field6;
+		# Field 2 (Ticket group ID)
+		my $ticket_group_id = $field2;
 		if ($ticket_group_id eq '') {
 			$ticket_group_id = 0;
 		}
 		
-		# Field 7 (Ticket priority);
-		my $ticket_priority = $field7;
-		if ($ticket_priority eq '') {
-			$ticket_priority = 0;
+		# Field 3 (Ticket priority);
+		my $ticket_priority = $field3;
+		if ($ticket_priority eq '0') {
+			$ticket_priority = 1;
+		}
+
+		# Field 4 (Ticket owner)
+		my $ticket_owner = $field4;
+		if ($ticket_owner eq '') {
+			$ticket_owner = 'admin';
 		}
 		
-		# Field 8 (Ticket email)
-		my $ticket_email = $field8;
-		
-		# Field 9 (Ticket owner)
-		my $ticket_owner = $field9;
-		
-		# Field 10 (Ticket description);
-		my $ticket_description = $field10;
+		# Field 5 (Ticket type)
+		my $ticket_type = $field5;
+		if ($ticket_type eq '') {
+			$ticket_type = 0;
+		}
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_email, $ticket_owner, $ticket_description);
+		# Field 6 (Ticket status)
+		my $ticket_status = $field6;
+		if ($ticket_status eq '0') {
+			$ticket_status = 1;
+		}
 
+		# Field 7 (Ticket description);
+		my $ticket_description = safe_output($field7);
+
+		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description);
 
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
@@ -5849,55 +5866,21 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 }
 
 sub pandora_create_integria_ticket ($$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$group_id,$ticket_priority,$ticket_email,$ticket_owner,$ticket_description) = @_;
-	
+	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description) = @_;
+
 	my $data_ticket;
 	my $call_api;
 
-	if ($api_path eq "") {
-		return 0;
-	}
-	if ($user_pass eq "") {
-		return 0;
-	}
-	if ($integria_user eq "") {
-		$integria_user = "admin";
-	}
-	if ($ticket_name eq "") {
-		$ticket_name = "Ticket created by " . $pa_config->{'rb_product_name'};
-	}
-	if ($group_id eq "") {
-		$group_id = 1;
-	}
-	if ($ticket_priority eq "") {
-		$ticket_priority = 1;
-	}
-	if ($ticket_owner eq "") {
-		$ticket_owner = "admin";
-	}
-	
-	#~ $data_ticket = $ticket_name .
-		#~ "|;|" . $group_id .
-		#~ "|;|" . $ticket_priority .
-		#~ "|;|" . $ticket_description .
-		#~ "|;|" . #Id inventory
-		#~ "|;|" . #Id incident type
-		#~ "|;|" . $ticket_email .
-		#~ "|;|" . $ticket_owner .
-		#~ "|;|" . #Father ticket id
-		#~ "|;|" . #Status
-		#~ "|;|" . #Extra info
-		#~ "|;|";  #Resolution
 	$data_ticket = $ticket_name .
-		"|;|" . $group_id .
+		"|;|" . $ticket_group_id .
 		"|;|" . $ticket_priority .
 		"|;|" . $ticket_description .
 		"|;|" . 
-		"|;|" . 
-		"|;|" . $ticket_email .
+		"|;|" . $ticket_type .
+		"|;|" .
 		"|;|" . $ticket_owner .
 		"|;|" . 
-		"|;|" . '1' .
+		"|;|" . $ticket_status .
 		"|;|" . 
 		"|;|";
 		
@@ -5908,9 +5891,9 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$) {
 		'op=create_incident&' .
 		'params=' . $data_ticket .'&' .
 		'token=|;|';
-	logger($pa_config, "Integria ticket call:" . $call_api . "", 3);
+
 	my $content = get($call_api);
-	logger($pa_config, "Integria ticket res:" . $content . "", 3);
+
 	if (is_numeric($content) && $content ne "-1") {
 		return $content;
 	}

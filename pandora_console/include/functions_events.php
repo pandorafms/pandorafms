@@ -6668,6 +6668,12 @@ function events_get_instructions($event)
         return '';
     }
 
+    $max_text_length = 300;
+    $over_text = io_safe_output($value);
+    if (strlen($over_text) > ($max_text_length + 3)) {
+        $over_text = substr($over_text, 0, $max_text_length).'...';
+    }
+
     $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
     $output .= ' style="display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left">';
     $output .= $value;
@@ -6676,7 +6682,7 @@ function events_get_instructions($event)
     $output .= '<span id="value_event_'.$event['id_evento'].'" style="white-space: nowrap;">';
     $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
     $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
-    $output .= html_print_image('images/default_list.png', true).'</a></span>';
+    $output .= html_print_image('images/default_list.png', true, ['title' => $over_text]).'</a></span>';
     $output .= '</center>';
 
     return $output;

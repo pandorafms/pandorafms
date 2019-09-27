@@ -502,7 +502,7 @@ $table_remote->data['integria_test'] = $row;
 
 // Print.
 echo '<div style="text-align: center; padding-bottom: 20px;">';
-echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
+echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image('images/integria_logo.png');
 echo '</a>';
 echo '<br />';

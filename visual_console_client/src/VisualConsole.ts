@@ -15,7 +15,8 @@ import Item, {
   ItemRemoveEvent,
   ItemMovedEvent,
   ItemResizedEvent,
-  ItemSelectionChangedEvent
+  ItemSelectionChangedEvent,
+  titleItem
 } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
@@ -35,6 +36,7 @@ import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 import Service, { servicePropsDecoder } from "./items/Service";
+import { FormContainer } from "./Form";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -1055,5 +1057,9 @@ export default class VisualConsole {
     }
 
     return text;
+  }
+
+  public getFormContainer(type: number): FormContainer {
+    return new FormContainer(titleItem(type));
   }
 }

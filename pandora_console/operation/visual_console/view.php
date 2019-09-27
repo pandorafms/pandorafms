@@ -1,16 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
 // Login check.
@@ -18,6 +34,38 @@ check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
+
+// TODO: include file functions.
+/**
+ * Function for return button visual console edition.
+ *
+ * @param string  $idDiv    Id button.
+ * @param string  $label    Label and title button.
+ * @param string  $class    Class button.
+ * @param boolean $disabled Disabled button.
+ *
+ * @return void Retun button.
+ */
+
+
+function visual_map_print_button_editor_refactor(
+    $idDiv,
+    $label,
+    $class='',
+    $disabled=false
+) {
+    html_print_button(
+        $label,
+        $idDiv,
+        $disabled,
+        '',
+        // "click_button_toolbox('".$idDiv."');",
+        'class="sub visual_editor_button_toolbox '.$idDiv.' '.$class.'"',
+        false,
+        true
+    );
+}
+
 
 ui_require_css_file('visual_maps');
 
@@ -165,24 +213,92 @@ if ($pure === false) {
     echo '</span>';
     echo '</div>';
     echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
-    html_print_button(
-        'delete_item',
-        'button_delete',
-        true,
-        '',
-        'class="sub visual_editor_button_toolbox delete_item delete_min"',
-        false,
-        true
-    );
-    html_print_button(
-        'copy_item',
-        'button_copy',
-        true,
-        '',
-        'class="sub visual_editor_button_toolbox copy_item delete_min"',
-        false,
-        true
-    );
+    echo '<div>';
+        visual_map_print_button_editor_refactor(
+            'static_graph',
+            __('Static Image'),
+            'camera_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'percentile_item',
+            __('Percentile Item'),
+            'percentile_item_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'module_graph',
+            __('Module Graph'),
+            'graph_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'donut_graph',
+            __('Serialized pie graph'),
+            'donut_graph_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'bars_graph',
+            __('Bars Graph'),
+            'bars_graph_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'auto_sla_graph',
+            __('Auto SLA Graph'),
+            'auto_sla_graph_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'simple_value',
+            __('Simple Value'),
+            'binary_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'label',
+            __('Label'),
+            'label_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'icon',
+            __('Icon'),
+            'icon_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'clock',
+            __('Clock'),
+            'clock_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'group_item',
+            __('Group'),
+            'group_item_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'box_item',
+            __('Box'),
+            'box_item_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'line_item',
+            __('Line'),
+            'line_item_min'
+        );
+        visual_map_print_button_editor_refactor(
+            'color_cloud',
+            __('Color cloud'),
+            'color_cloud_min'
+        );
+    echo '</div>';
+    echo '<div>';
+        visual_map_print_button_editor_refactor(
+            'button_delete',
+            __('Delete Item'),
+            'delete_item delete_min',
+            true
+        );
+        visual_map_print_button_editor_refactor(
+            'button_copy',
+            __('Copy Item'),
+            'copy_item',
+            true
+        );
+    echo '</div>';
     echo '</div>';
     echo '<br />';
 }
@@ -410,5 +526,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
                 visualConsoleManager.copyItem(item);
             }
         });
+    });
+
+    $('#button-static_graph').click(function (event){
+        console.log(visualConsoleManager.visualConsole.getFormContainer(20));
     });
 </script>

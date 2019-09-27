@@ -27,7 +27,7 @@ div#vc-controls img.vc-qr {
 
 .visual-console-edit-controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 .visual-console-edit-controls > span {

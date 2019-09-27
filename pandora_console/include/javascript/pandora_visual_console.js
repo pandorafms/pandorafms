@@ -159,559 +159,12 @@ function createVisualConsole(
       e.nativeEvent.preventDefault();
       e.nativeEvent.stopPropagation();
 
-      var item = e.item || {};
-      var props = item.props || {};
-      var meta = item.meta || {};
-
-      if (meta.editMode && !meta.isUpdating) {
-        // Item selection.
-        visualConsole.selectItem(props.id, true);
-
-        var formContainer = item.getFormContainer();
-        formContainer.onInputGroupDataRequested(function(e) {
-          var identifier = e.identifier;
-          var params = e.params;
-          var done = e.done;
-
-          switch (identifier) {
-            case "parent":
-              var data = visualConsole.elements
-                .filter(function(item) {
-                  return item.props.id !== params.id;
-                })
-                .map(function(item) {
-                  return {
-                    value: item.props.id,
-                    text: VisualConsole.itemDescriptiveName(item)
-                  };
-                });
-
-              done(null, data);
-              break;
-            case "acl-group":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var abortable = getGroupsVisualConsoleItem(
-                    baseUrl,
-                    visualConsole.props.id,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-            case "custom-graph-list":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var abortable = getCustomGraphVisualConsoleItem(
-                    baseUrl,
-                    visualConsole.props.id,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-            case "link-console":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var abortable = getAllVisualConsole(
-                    baseUrl,
-                    visualConsole.props.id,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-            case "image-console":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var abortable = getImagesVisualConsole(
-                    baseUrl,
-                    visualConsole.props.id,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-            case "autocomplete-agent":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var dataObject = {
-                    value: params.value,
-                    type: params.type
-                  };
-                  var abortable = autocompleteAgentsVisualConsole(
-                    baseUrl,
-                    visualConsole.props.id,
-                    dataObject,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-            case "autocomplete-module":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var abortable = autocompleteModuleVisualConsole(
-                    baseUrl,
-                    visualConsole.props.id,
-                    params,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-            case "service-list":
-              asyncTaskManager
-                .add(identifier + "-" + params.id, function(doneAsyncTask) {
-                  var abortable = serviceListVisualConsole(
-                    baseUrl,
-                    visualConsole.props.id,
-                    params,
-                    function(error, data) {
-                      if (error || !data) {
-                        console.log(
-                          "[ERROR]",
-                          "[VISUAL-CONSOLE-CLIENT]",
-                          "[API]",
-                          error ? error.message : "Invalid response"
-                        );
-
-                        done(error);
-                        doneAsyncTask();
-                        return;
-                      }
-
-                      if (typeof data === "string") {
-                        try {
-                          data = JSON.parse(data);
-                        } catch (error) {
-                          console.log(
-                            "[ERROR]",
-                            "[VISUAL-CONSOLE-CLIENT]",
-                            "[API]",
-                            error ? error.message : "Invalid response"
-                          );
-
-                          done(error);
-                          doneAsyncTask();
-                          return; // Stop task execution.
-                        }
-                      }
-
-                      done(null, data);
-                      doneAsyncTask();
-                    }
-                  );
-
-                  return {
-                    cancel: function() {
-                      abortable.abort();
-                    }
-                  };
-                })
-                .init();
-              break;
-
-            default:
-              done(new Error("identifier not found"));
-          }
-        });
-        // var formContainer = VisualConsole.items[props.type].getFormContainer(
-        //   props
-        // );
-        var formElement = formContainer.getFormElement();
-        var $formElement = jQuery(formElement);
-
-        formContainer.onSubmit(function(e) {
-          // Send the update.
-          var id = props.id;
-          var data = e.data;
-
-          if (
-            props.type != 20 &&
-            props.type != 3 &&
-            props.type != 9 &&
-            props.type != 15 &&
-            props.type != 16
-          ) {
-            // Content tiny.
-            var content = tinymce.get("tinyMCE_editor").getContent();
-            // Pass content to array data.
-            data.label = content;
-          }
-
-          var taskId = "visual-console-item-update-" + id;
-
-          // Show updating state.
-          item.setMeta({ isUpdating: true });
-
-          // Persist the new data.
-          asyncTaskManager
-            .add(taskId, function(done) {
-              var abortable = updateVisualConsoleItem(
-                baseUrl,
-                visualConsole.props.id,
-                id,
-                data,
-                function(error, data) {
-                  // Hide updating state.
-                  item.setMeta({ isUpdating: false });
-
-                  // if (!error && !data) return;
-                  if (error || !data) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    // TODO: Recover from error.
-
-                    done();
-                    return;
-                  }
-
-                  if (typeof data === "string") {
-                    try {
-                      data = JSON.parse(data);
-                    } catch (error) {
-                      console.log(
-                        "[ERROR]",
-                        "[VISUAL-CONSOLE-CLIENT]",
-                        "[API]",
-                        error ? error.message : "Invalid response"
-                      );
-
-                      // TODO: Recover from error.
-
-                      done();
-                      return; // Stop task execution.
-                    }
-                  }
-
-                  visualConsole.updateElement(data);
-
-                  done();
-                }
-              );
-
-              return {
-                cancel: function() {
-                  abortable.abort();
-                }
-              };
-            })
-            .init();
-          console.log("Form submit", e.data);
-          $formElement.dialog("close");
-        });
-
-        $formElement.dialog({
-          title: formContainer.title,
-          modal: true,
-          resizable: false,
-          draggable: true,
-          height: 600,
-          width: 700,
-          open: function() {
-            tinymce.init({
-              selector: "#tinyMCE_editor",
-              theme: "advanced",
-              content_css: baseUrl + "include/styles/pandora.css",
-              theme_advanced_font_sizes:
-                "4pt=.visual_font_size_4pt, " +
-                "6pt=.visual_font_size_6pt, " +
-                "8pt=.visual_font_size_8pt, " +
-                "10pt=.visual_font_size_10pt, " +
-                "12pt=.visual_font_size_12pt, " +
-                "14pt=.visual_font_size_14pt, " +
-                "18pt=.visual_font_size_18pt, " +
-                "24pt=.visual_font_size_24pt, " +
-                "28pt=.visual_font_size_28pt, " +
-                "36pt=.visual_font_size_36pt, " +
-                "48pt=.visual_font_size_48pt, " +
-                "60pt=.visual_font_size_60pt, " +
-                "72pt=.visual_font_size_72pt, " +
-                "84pt=.visual_font_size_84pt, " +
-                "96pt=.visual_font_size_96pt, " +
-                "116pt=.visual_font_size_116pt, " +
-                "128pt=.visual_font_size_128pt, " +
-                "140pt=.visual_font_size_140pt, " +
-                "154pt=.visual_font_size_154pt, " +
-                "196pt=.visual_font_size_196pt",
-              theme_advanced_toolbar_location: "top",
-              theme_advanced_toolbar_align: "left",
-              theme_advanced_buttons1:
-                "bold,italic, |, justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link, |, fontselect, forecolor, fontsizeselect, |,code",
-              theme_advanced_buttons2: "",
-              theme_advanced_buttons3: "",
-              theme_advanced_statusbar_location: "none"
-            });
-          },
-          beforeClose: function() {
-            //Remove tinyMCE.
-            tinymce.remove("#tinyMCE_editor");
-
-            //Danguerous empty form if necessary for cleaned IDs.
-            $formElement.empty();
-          },
-          buttons: [
-            {
-              text: "Cancel",
-              class:
-                "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-              click: function() {
-                $formElement.dialog("close");
-              }
-            },
-            {
-              text: "Update",
-              class:
-                "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-              click: function() {
-                // Trigered simulate button submit.
-                this.dispatchEvent(new Event("submit"));
-              }
-            }
-          ]
-        });
-        // TODO: Add submit and reset button.
-      }
+      createOrUpdateVisualConsoleItem(
+        visualConsole,
+        asyncTaskManager,
+        baseUrl,
+        e
+      );
     });
     // VC Item moved.
     visualConsole.onItemMoved(function(e) {
@@ -893,6 +346,15 @@ function createVisualConsole(
         asyncTaskManager.cancel("visual-console");
         asyncTaskManager.cancel("visual-console-start");
       }
+    },
+    createItem: function(item) {
+      //TODO:XXX
+      createOrUpdateVisualConsoleItem(
+        visualConsole,
+        asyncTaskManager,
+        baseUrl,
+        item
+      );
     },
     deleteItem: function(item) {
       var aux = item;
@@ -1808,6 +1270,568 @@ function copyVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
   return {
     abort: abort
   };
+}
+
+function createOrUpdateVisualConsoleItem(
+  visualConsole,
+  asyncTaskManager,
+  baseUrl,
+  e
+) {
+  var item = e.item || {};
+  var props = item.props || {};
+
+  var meta = item.meta || {};
+
+  if (meta.editMode && !meta.isUpdating) {
+    // Item selection.
+    visualConsole.selectItem(props.id, true);
+
+    var formContainer = item.getFormContainer();
+    formContainer.onInputGroupDataRequested(function(e) {
+      var identifier = e.identifier;
+      var params = e.params;
+      var done = e.done;
+
+      switch (identifier) {
+        case "parent":
+          var data = visualConsole.elements
+            .filter(function(item) {
+              return item.props.id !== params.id;
+            })
+            .map(function(item) {
+              return {
+                value: item.props.id,
+                text: VisualConsole.itemDescriptiveName(item)
+              };
+            });
+
+          done(null, data);
+          break;
+        case "acl-group":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var abortable = getGroupsVisualConsoleItem(
+                baseUrl,
+                visualConsole.props.id,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+        case "custom-graph-list":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var abortable = getCustomGraphVisualConsoleItem(
+                baseUrl,
+                visualConsole.props.id,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+        case "link-console":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var abortable = getAllVisualConsole(
+                baseUrl,
+                visualConsole.props.id,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+        case "image-console":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var abortable = getImagesVisualConsole(
+                baseUrl,
+                visualConsole.props.id,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+        case "autocomplete-agent":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var dataObject = {
+                value: params.value,
+                type: params.type
+              };
+              var abortable = autocompleteAgentsVisualConsole(
+                baseUrl,
+                visualConsole.props.id,
+                dataObject,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+        case "autocomplete-module":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var abortable = autocompleteModuleVisualConsole(
+                baseUrl,
+                visualConsole.props.id,
+                params,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+        case "service-list":
+          asyncTaskManager
+            .add(identifier + "-" + params.id, function(doneAsyncTask) {
+              var abortable = serviceListVisualConsole(
+                baseUrl,
+                visualConsole.props.id,
+                params,
+                function(error, data) {
+                  if (error || !data) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    done(error);
+                    doneAsyncTask();
+                    return;
+                  }
+
+                  if (typeof data === "string") {
+                    try {
+                      data = JSON.parse(data);
+                    } catch (error) {
+                      console.log(
+                        "[ERROR]",
+                        "[VISUAL-CONSOLE-CLIENT]",
+                        "[API]",
+                        error ? error.message : "Invalid response"
+                      );
+
+                      done(error);
+                      doneAsyncTask();
+                      return; // Stop task execution.
+                    }
+                  }
+
+                  done(null, data);
+                  doneAsyncTask();
+                }
+              );
+
+              return {
+                cancel: function() {
+                  abortable.abort();
+                }
+              };
+            })
+            .init();
+          break;
+
+        default:
+          done(new Error("identifier not found"));
+      }
+    });
+    // var formContainer = VisualConsole.items[props.type].getFormContainer(
+    //   props
+    // );
+    var formElement = formContainer.getFormElement();
+    var $formElement = jQuery(formElement);
+
+    formContainer.onSubmit(function(e) {
+      // Send the update.
+      var id = props.id;
+      var data = e.data;
+
+      if (
+        props.type != 20 &&
+        props.type != 3 &&
+        props.type != 9 &&
+        props.type != 15 &&
+        props.type != 16
+      ) {
+        // Content tiny.
+        var content = tinymce.get("tinyMCE_editor").getContent();
+        // Pass content to array data.
+        data.label = content;
+      }
+
+      var taskId = "visual-console-item-update-" + id;
+
+      // Show updating state.
+      item.setMeta({ isUpdating: true });
+
+      // Persist the new data.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = updateVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            data,
+            function(error, data) {
+              // Hide updating state.
+              item.setMeta({ isUpdating: false });
+
+              // if (!error && !data) return;
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // TODO: Recover from error.
+
+                done();
+                return;
+              }
+
+              if (typeof data === "string") {
+                try {
+                  data = JSON.parse(data);
+                } catch (error) {
+                  console.log(
+                    "[ERROR]",
+                    "[VISUAL-CONSOLE-CLIENT]",
+                    "[API]",
+                    error ? error.message : "Invalid response"
+                  );
+
+                  // TODO: Recover from error.
+
+                  done();
+                  return; // Stop task execution.
+                }
+              }
+
+              visualConsole.updateElement(data);
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
+      console.log("Form submit", e.data);
+      $formElement.dialog("close");
+    });
+
+    $formElement.dialog({
+      title: formContainer.title,
+      modal: true,
+      resizable: false,
+      draggable: true,
+      height: 600,
+      width: 700,
+      open: function() {
+        tinymce.init({
+          selector: "#tinyMCE_editor",
+          theme: "advanced",
+          content_css: baseUrl + "include/styles/pandora.css",
+          theme_advanced_font_sizes:
+            "4pt=.visual_font_size_4pt, " +
+            "6pt=.visual_font_size_6pt, " +
+            "8pt=.visual_font_size_8pt, " +
+            "10pt=.visual_font_size_10pt, " +
+            "12pt=.visual_font_size_12pt, " +
+            "14pt=.visual_font_size_14pt, " +
+            "18pt=.visual_font_size_18pt, " +
+            "24pt=.visual_font_size_24pt, " +
+            "28pt=.visual_font_size_28pt, " +
+            "36pt=.visual_font_size_36pt, " +
+            "48pt=.visual_font_size_48pt, " +
+            "60pt=.visual_font_size_60pt, " +
+            "72pt=.visual_font_size_72pt, " +
+            "84pt=.visual_font_size_84pt, " +
+            "96pt=.visual_font_size_96pt, " +
+            "116pt=.visual_font_size_116pt, " +
+            "128pt=.visual_font_size_128pt, " +
+            "140pt=.visual_font_size_140pt, " +
+            "154pt=.visual_font_size_154pt, " +
+            "196pt=.visual_font_size_196pt",
+          theme_advanced_toolbar_location: "top",
+          theme_advanced_toolbar_align: "left",
+          theme_advanced_buttons1:
+            "bold,italic, |, justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link, |, fontselect, forecolor, fontsizeselect, |,code",
+          theme_advanced_buttons2: "",
+          theme_advanced_buttons3: "",
+          theme_advanced_statusbar_location: "none"
+        });
+      },
+      beforeClose: function() {
+        //Remove tinyMCE.
+        tinymce.remove("#tinyMCE_editor");
+
+        //Danguerous empty form if necessary for cleaned IDs.
+        $formElement.empty();
+      },
+      buttons: [
+        {
+          text: "Cancel",
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+          click: function() {
+            $formElement.dialog("close");
+          }
+        },
+        {
+          text: "Update",
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+          click: function() {
+            // Trigered simulate button submit.
+            this.dispatchEvent(new Event("submit"));
+          }
+        }
+      ]
+    });
+    // TODO: Add submit and reset button.
+  }
 }
 
 // TODO: Delete the functions below when you can.

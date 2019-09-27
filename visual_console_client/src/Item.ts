@@ -1260,6 +1260,81 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
   };
 }
 
+//TODO: Document
+export function titleItem(id: number): string {
+  let title = "";
+  switch (id) {
+    case ItemType.STATIC_GRAPH:
+      title = t("Static image");
+      break;
+    case ItemType.MODULE_GRAPH:
+      title = t("Module graph");
+      break;
+    case ItemType.SIMPLE_VALUE:
+      title = t("Simple value");
+      break;
+    case ItemType.PERCENTILE_BAR:
+      title = t("Percentile item");
+      break;
+    case ItemType.LABEL:
+      title = t("Label");
+      break;
+    case ItemType.ICON:
+      title = t("Icon");
+      break;
+    case ItemType.SIMPLE_VALUE_MAX:
+      title = t("Simple value");
+      break;
+    case ItemType.SIMPLE_VALUE_MIN:
+      title = t("Simple value");
+      break;
+    case ItemType.SIMPLE_VALUE_AVG:
+      title = t("Simple value");
+      break;
+    case ItemType.PERCENTILE_BUBBLE:
+      title = t("Percentile item");
+      break;
+    case ItemType.SERVICE:
+      title = t("Service");
+      break;
+    case ItemType.GROUP_ITEM:
+      title = t("Group");
+      break;
+    case ItemType.BOX_ITEM:
+      title = t("Box");
+      break;
+    case ItemType.LINE_ITEM:
+      title = t("Line");
+      break;
+    case ItemType.AUTO_SLA_GRAPH:
+      title = t("Auto SLA graph");
+      break;
+    case ItemType.CIRCULAR_PROGRESS_BAR:
+      title = t("Percentile item");
+      break;
+    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+      title = t("Percentile item");
+      break;
+    case ItemType.DONUT_GRAPH:
+      title = t("Serialized pie graph");
+      break;
+    case ItemType.BARS_GRAPH:
+      title = t("Bars graph");
+      break;
+    case ItemType.CLOCK:
+      title = t("Clock");
+      break;
+    case ItemType.COLOR_CLOUD:
+      title = t("Color cloud");
+      break;
+    default:
+      title = t("Item");
+      break;
+  }
+
+  return title;
+}
+
 /**
  * Base class of the visual console items. Should be extended to use its capabilities.
  */
@@ -2177,85 +2252,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     return disposable;
   }
 
-  //TODO: Document
-  public titleItem(id: number): string {
-    let title = "";
-    switch (id) {
-      case ItemType.STATIC_GRAPH:
-        title = t("Static image");
-        break;
-      case ItemType.MODULE_GRAPH:
-        title = t("Module graph");
-        break;
-      case ItemType.SIMPLE_VALUE:
-        title = t("Simple value");
-        break;
-      case ItemType.PERCENTILE_BAR:
-        title = t("Percentile item");
-        break;
-      case ItemType.LABEL:
-        title = t("Label");
-        break;
-      case ItemType.ICON:
-        title = t("Icon");
-        break;
-      case ItemType.SIMPLE_VALUE_MAX:
-        title = t("Simple value");
-        break;
-      case ItemType.SIMPLE_VALUE_MIN:
-        title = t("Simple value");
-        break;
-      case ItemType.SIMPLE_VALUE_AVG:
-        title = t("Simple value");
-        break;
-      case ItemType.PERCENTILE_BUBBLE:
-        title = t("Percentile item");
-        break;
-      case ItemType.SERVICE:
-        title = t("Service");
-        break;
-      case ItemType.GROUP_ITEM:
-        title = t("Group");
-        break;
-      case ItemType.BOX_ITEM:
-        title = t("Box");
-        break;
-      case ItemType.LINE_ITEM:
-        title = t("Line");
-        break;
-      case ItemType.AUTO_SLA_GRAPH:
-        title = t("Auto SLA graph");
-        break;
-      case ItemType.CIRCULAR_PROGRESS_BAR:
-        title = t("Percentile item");
-        break;
-      case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
-        title = t("Percentile item");
-        break;
-      case ItemType.DONUT_GRAPH:
-        title = t("Serialized pie graph");
-        break;
-      case ItemType.BARS_GRAPH:
-        title = t("Bars graph");
-        break;
-      case ItemType.CLOCK:
-        title = t("Clock");
-        break;
-      case ItemType.COLOR_CLOUD:
-        title = t("Color cloud");
-        break;
-      default:
-        title = t("Item");
-        break;
-    }
-
-    return title;
-  }
-
   // TODO: Document
   public getFormContainer(): FormContainer {
     return new FormContainer(
-      this.titleItem(this.props.type),
+      titleItem(this.props.type),
       [
         new SizeInputGroup("size", this.props),
         new LabelInputGroup("label", this.props),

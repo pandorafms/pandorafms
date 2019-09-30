@@ -2207,12 +2207,15 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
 {
     $table1 = new stdClass();
     $table1->width = '100%';
-    $table1->head = [__('Date')];
+    $table1->head = [
+        __('Date'),
+        __('Data'),
+    ];
     if (!empty($item['keys'])) {
         $table1->head = array_merge($table1->head, $item['keys']);
     }
 
-    $table1->style[0] = 'text-align: left';
+    $table1->style[0] = 'text-align: center';
 
     $table1->data = [];
     foreach ($item['data'] as $data) {

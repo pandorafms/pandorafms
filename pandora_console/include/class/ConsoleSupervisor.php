@@ -209,6 +209,12 @@ class ConsoleSupervisor
 
         $this->getUMMessages();
 
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
+
     }
 
 
@@ -434,6 +440,12 @@ class ConsoleSupervisor
          */
 
         $this->getUMMessages();
+
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
 
     }
 
@@ -2330,6 +2342,43 @@ class ConsoleSupervisor
                     $source_id
                 );
             }
+        }
+    }
+
+
+    /**
+     * Check if the Server and Console versions are the same
+     *
+     * @return void
+     */
+    public function checkConsoleServerVersions()
+    {
+        $server_complete_version = db_get_value(
+            'version',
+            'tserver',
+            'id_server',
+            '1'
+        );
+
+        $console_version = db_get_value(
+            'value',
+            'tconfig',
+            'token',
+            'current_package_enterprise'
+        );
+
+        if (strpos($server_complete_version, $console_version) === false) {
+            $title_version_misaligned = 'Console / Server version misaligned';
+            $message_version_misaligned = 'Console and Server don\'t have the same version. This might cause several malfunctions. Please, update.';
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.SERVER.MISALIGNED',
+                    'title'   => __($title_version_misaligned),
+                    'message' => __($message_version_misaligned),
+                    'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                ]
+            );
         }
     }
 

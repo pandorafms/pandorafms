@@ -251,6 +251,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_sql($table, $item);
             break;
 
+            case 'simple_baseline_graph':
             case 'simple_graph':
                 reporting_html_graph($table, $item);
             break;
@@ -313,10 +314,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'prediction_date':
                 reporting_html_prediction_date($table, $item, $mini);
-            break;
-
-            case 'simple_baseline_graph':
-                reporting_html_graph($table, $item);
             break;
 
             case 'netflow_area':

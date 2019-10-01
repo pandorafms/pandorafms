@@ -5622,7 +5622,7 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
     return '<span class="sort_arrow">
                 <a href="'.$url_up.'">'.html_print_image($arrow_up, true, ['alt' => 'up']).'</a>
-                <a href="'.$url_down.'">'.html_print_image($arrow_.down, true, ['alt' => 'down']).'</a>
+                <a href="'.$url_down.'">'.html_print_image($arrow_down, true, ['alt' => 'down']).'</a>
             </span>';
 }
 

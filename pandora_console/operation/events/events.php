@@ -297,6 +297,10 @@ if (is_ajax()) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                         }
 
+                        if ($tmp->comments) {
+                            $tmp->comments = ui_print_comments($tmp->comments);
+                        }
+
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             $tmp->ack_utimestamp,
@@ -1600,6 +1604,17 @@ function process_datatables_callback(table, settings) {
 
 function process_datatables_item(item) {
 
+    // Show comments events.
+    item.user_comment = item.comments
+  
+    if(item.comments.length > 80){
+
+    item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+    item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
+    item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+    
+    }
+ 
     // Grouped events.
     if(item.max_id_evento) {
         item.id_evento = item.max_id_evento

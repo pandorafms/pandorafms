@@ -702,6 +702,18 @@ if (is_ajax()) {
                     if (!$return) {
                         $return_data['ent'] = false;
                         break;
+                    } else {
+                        $old_networkmap_ent = db_get_row_filter(
+                            'tnetworkmap_enterprise',
+                            ['id' => $id_ent_map]
+                        );
+
+                        $options = json_decode($old_networkmap_ent, true);
+                        $options['migrated'] = 'migrated';
+
+                        $values['options'] = json_encode($options);
+
+                        db_process_sql_update('tnetworkmap_enterprise', $values, ['id' => $id_ent_map]);
                     }
                 }
             }
@@ -716,6 +728,10 @@ if (is_ajax()) {
                 if (!$return) {
                     $return_data['open'] = false;
                     break;
+                } else {
+                    $values['text_filter'] = 'migrated';
+
+                    db_process_sql_update('tnetwork_map', $values, ['id_networkmap' => $id_open_map]);
                 }
             }
         }

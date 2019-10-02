@@ -291,7 +291,7 @@ $table_aux = new stdClass();
                     $data[5] .= html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
                 }
 
-                $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text($graph['name'], 70).'</a>';
+                $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text(io_safe_output($graph['name']), 70).'</a>';
 
                 $data[1] = ui_print_truncate_text($graph['description'], 70);
 

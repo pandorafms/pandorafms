@@ -427,21 +427,21 @@ export default class ColorCloud extends Item<ColorCloudProps> {
    * RangesInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return ColorCloud.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<ColorCloudProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.removeInputGroup("label");
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props),
+      new AgentModuleInputGroup("agent-autocomplete", props),
       0
     );
 
-    formContainer.addInputGroup(
-      new ColorInputGroup("color-cloud", this.props),
-      3
-    );
-    formContainer.addInputGroup(
-      new RangesInputGroup("ranges-cloud", this.props),
-      4
-    );
+    formContainer.addInputGroup(new ColorInputGroup("color-cloud", props), 3);
+    formContainer.addInputGroup(new RangesInputGroup("ranges-cloud", props), 4);
 
     return formContainer;
   }

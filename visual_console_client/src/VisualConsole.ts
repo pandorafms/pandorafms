@@ -15,8 +15,7 @@ import Item, {
   ItemRemoveEvent,
   ItemMovedEvent,
   ItemResizedEvent,
-  ItemSelectionChangedEvent,
-  titleItem
+  ItemSelectionChangedEvent
 } from "./Item";
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
@@ -1057,9 +1056,5 @@ export default class VisualConsole {
     }
 
     return text;
-  }
-
-  public getFormContainer(type: number): FormContainer {
-    return new FormContainer(titleItem(type));
   }
 }

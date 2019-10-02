@@ -979,6 +979,7 @@ export function autocompleteInput<T>(
 
   const input = document.createElement("input");
   input.type = "text";
+  input.required = true;
   if (initialValue !== null) input.value = initialValue;
 
   const list = document.createElement("div");

@@ -15,6 +15,7 @@ $visualConsoleId = (int) get_parameter('visualConsoleId');
 $getVisualConsole = (bool) get_parameter('getVisualConsole');
 $getVisualConsoleItems = (bool) get_parameter('getVisualConsoleItems');
 $updateVisualConsoleItem = (bool) get_parameter('updateVisualConsoleItem');
+$createVisualConsoleItem = (bool) get_parameter('createVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
 $copyVisualConsoleItem = (bool) get_parameter('copyVisualConsoleItem');
@@ -135,6 +136,37 @@ if ($getVisualConsole === true) {
 
         return;
     }
+} else if ($createVisualConsoleItem === true) {
+    // TODO: ACL.
+    $data = get_parameter('data');
+    if ($data) {
+        // Inserted data in new item.
+        $class = VisualConsole::getItemClass((int) $data['type']);
+        try {
+            // Save the new item.
+            $data['id_layout'] = $visualConsoleId;
+            $result = $class::save($data);
+        } catch (\Throwable $th) {
+            // There is no item in the database.
+            echo false;
+            return;
+        }
+
+        // Extract data new item inserted.
+        try {
+            $item = VisualConsole::getItemFromDB($result);
+        } catch (Throwable $e) {
+            // Bad params.
+            http_response_code(400);
+            return;
+        }
+
+        echo $item;
+    } else {
+        echo false;
+    }
+
+    return;
 } else if ($removeVisualConsoleItem === true) {
     $itemId = (int) get_parameter('visualConsoleItemId');
 

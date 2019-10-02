@@ -193,6 +193,7 @@ export class FormContainer {
     type: "creation" | "update" = "update"
   ): HTMLFormElement {
     const form = document.createElement("form");
+    form.id = "visual-console-item-edition";
     form.className = "visual-console-item-edition";
     form.addEventListener("submit", e => {
       e.preventDefault();

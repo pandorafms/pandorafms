@@ -69,13 +69,18 @@ export default class Icon extends Item<IconProps> {
    * LinkConsoleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return Icon.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(props: Partial<IconProps>): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new LinkConsoleInputGroup("link-console", props)
     );
     formContainer.addInputGroup(
-      new ImageInputGroup("image-console", { ...this.props, imageKey: "image" })
+      new ImageInputGroup("image-console", { ...props, imageKey: "image" })
     );
+
     return formContainer;
   }
 }

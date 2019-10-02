@@ -184,9 +184,11 @@ final class StaticGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
         if ($width === 0 || $height === 0) {
-            $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
-            $data['width'] = $sizeImage[0];
-            $data['height'] = $sizeImage[1];
+            if (isset($imagePath) && $imagePath !== false) {
+                $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
+                $data['width'] = $sizeImage[0];
+                $data['height'] = $sizeImage[1];
+            }
         }
 
         // Get last value.

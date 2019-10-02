@@ -126,16 +126,23 @@ export default class DonutGraph extends Item<DonutGraphProps> {
    * LinkConsoleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return DonutGraph.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<DonutGraphProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new LinkConsoleInputGroup("link-console", props)
     );
     formContainer.addInputGroup(
-      new LegendBackgroundColorInputGroup("legend-background-color", this.props)
+      new LegendBackgroundColorInputGroup("legend-background-color", props)
     );
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", props)
     );
+
     return formContainer;
   }
 }

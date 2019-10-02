@@ -236,18 +236,20 @@ export default class BarsGraph extends Item<BarsGraphProps> {
    * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return BarsGraph.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<BarsGraphProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new BackgroundColorInputGroup("backgroundColor-type", this.props)
+      new BackgroundColorInputGroup("backgroundColor-type", props)
     );
+    formContainer.addInputGroup(new TypeGraphInputGroup("type-graph", props));
+    formContainer.addInputGroup(new GridColorInputGroup("grid-color", props));
     formContainer.addInputGroup(
-      new TypeGraphInputGroup("type-graph", this.props)
-    );
-    formContainer.addInputGroup(
-      new GridColorInputGroup("grid-color", this.props)
-    );
-    formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", props)
     );
 
     return formContainer;

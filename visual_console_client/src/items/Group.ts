@@ -147,19 +147,26 @@ export default class Group extends Item<GroupProps> {
    */
   public getFormContainer(): FormContainer {
     const formContainer = super.getFormContainer();
+
+    return formContainer;
+  }
+
+  public static getFormContainer(props: Partial<GroupProps>): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new LinkConsoleInputGroup("link-console", props)
     );
     formContainer.addInputGroup(
       new ImageInputGroup("image-console", {
-        ...this.props,
+        ...props,
         imageKey: "imageSrc",
         showStatusImg: true
       })
     );
     formContainer.addInputGroup(
-      new ShowStatisticsInputGroup("show-statistic", this.props)
+      new ShowStatisticsInputGroup("show-statistic", props)
     );
+
     return formContainer;
   }
 }

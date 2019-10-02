@@ -137,10 +137,16 @@ export default class EventsHistory extends Item<EventsHistoryProps> {
    * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
-    formContainer.addInputGroup(new MaxTimeInputGroup("max-time", this.props));
+    return EventsHistory.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<EventsHistoryProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
+    formContainer.addInputGroup(new MaxTimeInputGroup("max-time", props));
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", props)
     );
 
     return formContainer;

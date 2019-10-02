@@ -275,16 +275,23 @@ export default class SimpleValue extends Item<SimpleValueProps> {
    * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return SimpleValue.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<SimpleValueProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new LinkConsoleInputGroup("link-console", props)
     );
     formContainer.addInputGroup(
-      new ProcessInputGroup("process-operation", this.props)
+      new ProcessInputGroup("process-operation", props)
     );
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props)
+      new AgentModuleInputGroup("agent-autocomplete", props)
     );
+
     return formContainer;
   }
 }

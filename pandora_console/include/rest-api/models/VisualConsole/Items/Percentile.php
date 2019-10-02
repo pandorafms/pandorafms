@@ -29,6 +29,108 @@ final class Percentile extends Item
 
 
     /**
+     * Encode type item.
+     *
+     * @param array $data Data for encode.
+     *
+     * @return string Return 'PERCENTILE_BAR', 'PERCENTILE_BUBBLE',
+     * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
+     * 'PERCENTILE_BAR' by default.
+     */
+    protected function encodePercentileType(array $data): ?int
+    {
+        $type = null;
+        if (isset($data['percentileType']) === true) {
+            switch ($data['percentileType']) {
+                case 'bubble':
+                    $type = PERCENTILE_BUBBLE;
+                break;
+
+                case 'circular-progress-bar':
+                    $type = CIRCULAR_PROGRESS_BAR;
+                break;
+
+                case 'circular-progress-bar-alt':
+                    $type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+                break;
+
+                default:
+                case 'progress-bar':
+                    $type = PERCENTILE_BAR;
+                break;
+            }
+        }
+
+        return $type;
+    }
+
+
+    /**
+     * Encode type item.
+     *
+     * @param array $data Data for encode.
+     *
+     * @return string Return 'PERCENTILE_BAR', 'PERCENTILE_BUBBLE',
+     * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
+     * 'PERCENTILE_BAR' by default.
+     */
+    protected function encodeValueType(array $data): ?string
+    {
+        $valueType = null;
+        if (isset($data['valueType']) === true) {
+            switch ($data['valueType']) {
+                case 'percent':
+                case 'value':
+                    $valueType = $data['valueType'];
+                break;
+
+                default:
+                    $valueType = 'percent';
+                break;
+            }
+        }
+
+        return $valueType;
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $max_value = static::parseIntOr(
+            static::issetInArray($data, ['maxValue']),
+            null
+        );
+        if ($max_value !== null) {
+            // TODO: XXX.
+            // $return['height'] = $max_value;
+        }
+
+        $percentileType = static::encodePercentileType($data);
+        if ($percentileType !== null) {
+            $return['type'] = (int) $percentileType;
+        }
+
+        $valueType = static::encodeValueType($data);
+        if ($valueType !== null) {
+            $return['image'] = (string) $valueType;
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -227,7 +329,12 @@ final class Percentile extends Item
         }
 
         // Store the module value.
-        $data['value'] = (float) \number_format((float) $moduleValue, (int) $config['graph_precision'], '.', '');
+        $data['value'] = (float) \number_format(
+            (float) $moduleValue,
+            (int) $config['graph_precision'],
+            '.',
+            ''
+        );
         $unit = \modules_get_unit($moduleId);
         if (empty($unit) === false) {
             $data['unit'] = \io_safe_output($unit);

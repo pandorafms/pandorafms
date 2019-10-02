@@ -241,7 +241,7 @@ class PositionInputGroup extends InputGroup<Partial<ItemProps>> {
 }
 
 // TODO: Document
-class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
+export class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
   protected createContent(): HTMLElement | HTMLElement[] {
     const generalDiv = document.createElement("div");
     generalDiv.className = "div-input-group";
@@ -250,7 +250,6 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
 
     const sizeInputWidth = document.createElement("input");
     sizeInputWidth.type = "number";
-    sizeInputWidth.min = "0";
     sizeInputWidth.required = true;
     sizeInputWidth.value = `${this.currentData.width ||
       this.initialData.width ||
@@ -263,7 +262,6 @@ class SizeInputGroup extends InputGroup<Partial<ItemProps>> {
 
     const sizeInputHeight = document.createElement("input");
     sizeInputHeight.type = "number";
-    sizeInputHeight.min = "0";
     sizeInputHeight.required = true;
     sizeInputHeight.value = `${this.currentData.height ||
       this.initialData.height ||
@@ -1026,14 +1024,6 @@ export class AgentModuleInputGroup extends InputGroup<
     agentLabel.textContent = t("Agent");
 
     generalDiv.appendChild(agentLabel);
-
-    const agentInput = document.createElement("input");
-    agentInput.type = "text";
-    agentInput.required = true;
-    agentInput.className = "autocomplete-agent";
-    agentInput.value = `${this.currentData.agentId ||
-      this.initialData.agentId ||
-      0}`;
 
     const handleDataRequested = (
       value: string,
@@ -2254,39 +2244,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
   // TODO: Document
   public getFormContainer(): FormContainer {
-    return new FormContainer(
-      titleItem(this.props.type),
-      [
-        new SizeInputGroup("size", this.props),
-        new LabelInputGroup("label", this.props),
-        new LinkInputGroup("link", this.props),
-        new OnTopInputGroup("show-on-top", this.props),
-        new AdvancedOptionsInputGroup("advanced-options", this.props),
-        new PositionInputGroup("position", this.props),
-        new ParentInputGroup("parent", this.props),
-        new AclGroupInputGroup("acl-group", this.props),
-        new CacheExpirationInputGroup("cache-expiration", this.props)
-      ],
-      [
-        "size",
-        "label",
-        "link",
-        "show-on-top",
-        "advanced-options",
-        "position",
-        "parent",
-        "acl-group",
-        "cache-expiration"
-      ]
-    );
-
-    //return VisualConsoleItem.getFormContainer(this.props);
+    return VisualConsoleItem.getFormContainer(this.props);
   }
 
   // TODO: Document
   public static getFormContainer(props: Partial<ItemProps>): FormContainer {
+    const title: string = props.type ? titleItem(props.type) : t("Item");
     return new FormContainer(
-      t("Item"),
+      title,
       [
         new SizeInputGroup("size", props),
         new LabelInputGroup("label", props),

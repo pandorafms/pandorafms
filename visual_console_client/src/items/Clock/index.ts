@@ -834,34 +834,35 @@ export default class Clock extends Item<ClockProps> {
    * ElementColorInputGroup,
    * ValueColorInputGroup,
    * LabelPercentileInputGroup
-   * are removed:
+   * Are removed:
    * inputgrouplabel
    * size
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return Clock.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(props: Partial<ClockProps>): FormContainer {
+    const formContainer = super.getFormContainer(props);
     // Delete items groups.
     formContainer.removeInputGroup("size");
     formContainer.removeInputGroup("link");
     formContainer.removeInputGroup("parent");
     formContainer.removeInputGroup("acl-group");
 
+    // ADD items groups.
+    formContainer.addInputGroup(new ClockTypeInputGroup("ClockType", props));
     formContainer.addInputGroup(
-      new ClockTypeInputGroup("ClockType", this.props)
-    );
-    formContainer.addInputGroup(
-      new ClockFormatInputGroup("clockFormat", this.props)
-    );
-
-    formContainer.addInputGroup(new WidthInputGroup("widthInput", this.props));
-
-    formContainer.addInputGroup(
-      new ClockTimezoneInputGroup("clockTimezone", this.props)
+      new ClockFormatInputGroup("clockFormat", props)
     );
 
+    formContainer.addInputGroup(new WidthInputGroup("widthInput", props));
+
     formContainer.addInputGroup(
-      new FIllColorInputGroup("fillColor", this.props)
+      new ClockTimezoneInputGroup("clockTimezone", props)
     );
+
+    formContainer.addInputGroup(new FIllColorInputGroup("fillColor", props));
 
     return formContainer;
   }

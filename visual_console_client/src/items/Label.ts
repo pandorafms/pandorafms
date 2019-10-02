@@ -57,10 +57,15 @@ export default class Label extends Item<LabelProps> {
    * LinkConsoleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return Label.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(props: Partial<LabelProps>): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props)
+      new LinkConsoleInputGroup("link-console", props)
     );
+
     return formContainer;
   }
 }

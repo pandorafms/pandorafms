@@ -154,16 +154,20 @@ export default class Service extends Item<ServiceProps> {
    * ServiceListInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return Service.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(props: Partial<ServiceProps>): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
       new ImageInputGroup("image-console", {
-        ...this.props,
+        ...props,
         imageKey: "imageSrc",
         showStatusImg: false
       })
     );
     formContainer.addInputGroup(
-      new ServiceListInputGroup("service-list", this.props)
+      new ServiceListInputGroup("service-list", props)
     );
 
     return formContainer;

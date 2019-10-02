@@ -456,49 +456,47 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
    * CustomGraphInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return ModuleGraph.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<ModuleGraphProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new BackgroundTypeInputGroup("background-type", this.props),
+      new BackgroundTypeInputGroup("background-type", props),
       3
     );
     formContainer.addInputGroup(
-      new ChooseTypeInputGroup("show-type-graph", this.props),
+      new ChooseTypeInputGroup("show-type-graph", props),
       4
     );
 
-    const displayAgent = this.props.customGraphId
+    const displayAgent = props.customGraphId
       ? "hide-elements"
       : "show-elements";
-    const displayCustom = this.props.customGraphId
+    const displayCustom = props.customGraphId
       ? "show-elements"
       : "hide-elements ";
 
     formContainer.addInputGroup(
-      new AgentModuleInputGroup(
-        `agent-autocomplete ${displayAgent}`,
-        this.props
-      ),
+      new AgentModuleInputGroup(`agent-autocomplete ${displayAgent}`, props),
       5
     );
     formContainer.addInputGroup(
-      new CustomGraphInputGroup(
-        `custom-graph-list ${displayCustom}`,
-        this.props
-      ),
+      new CustomGraphInputGroup(`custom-graph-list ${displayCustom}`, props),
       6
     );
     formContainer.addInputGroup(
-      new GraphTypeInputGroup("graph-type", this.props),
+      new GraphTypeInputGroup("graph-type", props),
       7
     );
+    formContainer.addInputGroup(new PeriodInputGroup("period-graph", props), 8);
     formContainer.addInputGroup(
-      new PeriodInputGroup("period-graph", this.props),
-      8
-    );
-    formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props),
+      new LinkConsoleInputGroup("link-console", props),
       16
     );
+
     return formContainer;
   }
 }

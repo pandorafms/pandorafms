@@ -215,75 +215,76 @@ if ($pure === false) {
     echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
     echo '<div>';
         visual_map_print_button_editor_refactor(
-            'static_graph',
+            'STATIC_GRAPH',
             __('Static Image'),
-            'camera_min'
+            'camera_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'percentile_item',
+            'PERCENTILE_BAR',
             __('Percentile Item'),
-            'percentile_item_min'
+            'percentile_item_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'module_graph',
+            'MODULE_GRAPH',
             __('Module Graph'),
-            'graph_min'
+            'graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'donut_graph',
+            'DONUT_GRAPH',
             __('Serialized pie graph'),
-            'donut_graph_min'
+            'donut_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'bars_graph',
+            'BARS_GRAPH',
             __('Bars Graph'),
-            'bars_graph_min'
+            'bars_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'auto_sla_graph',
+            'AUTO_SLA_GRAPH',
             __('Auto SLA Graph'),
-            'auto_sla_graph_min'
+            'auto_sla_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'simple_value',
+            'SIMPLE_VALUE',
             __('Simple Value'),
-            'binary_min'
+            'binary_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'label',
+            'LABEL',
             __('Label'),
-            'label_min'
+            'label_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'icon',
+            'ICON',
             __('Icon'),
-            'icon_min'
+            'icon_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'clock',
+            'CLOCK',
             __('Clock'),
-            'clock_min'
+            'clock_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'group_item',
+            'GROUP_ITEM',
             __('Group'),
-            'group_item_min'
+            'group_item_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'box_item',
+            'BOX_ITEM',
             __('Box'),
-            'box_item_min'
+            'box_item link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'line_item',
+            'LINE_ITEM',
             __('Line'),
-            'line_item_min'
+            'line_item link-create-item'
         );
         visual_map_print_button_editor_refactor(
-            'color_cloud',
+            'COLOR_CLOUD',
             __('Color cloud'),
-            'color_cloud_min'
+            'color_cloud_min link-create-item'
         );
+        // TODO: SERVICE.
     echo '</div>';
     echo '<div>';
         visual_map_print_button_editor_refactor(
@@ -528,7 +529,8 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         });
     });
 
-    $('#button-static_graph').click(function (event){
-        console.log(visualConsoleManager.visualConsole.getFormContainer(20));
+    $('.link-create-item').click(function (event){
+        var type = event.target.id.substr(7);
+        visualConsoleManager.createItem(type);
     });
 </script>

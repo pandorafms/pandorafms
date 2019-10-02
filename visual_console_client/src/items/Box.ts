@@ -185,16 +185,19 @@ export default class Box extends Item<BoxProps> {
    * LinkConsoleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return Box.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(props: Partial<BoxProps>): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
-      new BorderColorInputGroup("border-color", this.props)
+      new BorderColorInputGroup("border-color", props)
     );
     formContainer.addInputGroup(
-      new BorderWidthInputGroup("border-width", this.props)
+      new BorderWidthInputGroup("border-width", props)
     );
-    formContainer.addInputGroup(
-      new FillColorInputGroup("fill-width", this.props)
-    );
+    formContainer.addInputGroup(new FillColorInputGroup("fill-width", props));
+
     return formContainer;
   }
 }

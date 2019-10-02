@@ -610,50 +610,47 @@ export default class Percentile extends Item<PercentileProps> {
    * size
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return Percentile.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<PercentileProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     // Delete items groups.
     formContainer.removeInputGroup("size");
     formContainer.removeInputGroup("label");
 
     // Add new items gropus.
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props),
+      new AgentModuleInputGroup("agent-autocomplete", props),
       1
     );
+    formContainer.addInputGroup(new DiameterInputGroup("diameter", props), 2);
+    formContainer.addInputGroup(new MinValueInputGroup("min-value", props), 3);
+    formContainer.addInputGroup(new MaxValueInputGroup("max-value", props), 4);
     formContainer.addInputGroup(
-      new DiameterInputGroup("diameter", this.props),
-      2
-    );
-    formContainer.addInputGroup(
-      new MinValueInputGroup("min-value", this.props),
-      3
-    );
-    formContainer.addInputGroup(
-      new MaxValueInputGroup("max-value", this.props),
-      4
-    );
-    formContainer.addInputGroup(
-      new TypePercentileInputGroup("type-percentil", this.props),
+      new TypePercentileInputGroup("type-percentil", props),
       5
     );
     formContainer.addInputGroup(
-      new ValueToShowInputGroup("value-to-show", this.props),
+      new ValueToShowInputGroup("value-to-show", props),
       6
     );
     formContainer.addInputGroup(
-      new ElementColorInputGroup("element-color", this.props),
+      new ElementColorInputGroup("element-color", props),
       7
     );
     formContainer.addInputGroup(
-      new ValueColorInputGroup("value-color", this.props),
+      new ValueColorInputGroup("value-color", props),
       8
     );
     formContainer.addInputGroup(
-      new LabelPercentileInputGroup("label-percentile", this.props),
+      new LabelPercentileInputGroup("label-percentile", props),
       9
     );
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props),
+      new LinkConsoleInputGroup("link-console", props),
       16
     );
     return formContainer;

@@ -3272,7 +3272,8 @@ function visual_map_get_color_line_status($layoutData)
 /**
  * Get image of element in the visual console with status.
  *
- * @param array $layoutData The row of element in DB.
+ * @param array   $layoutData The row of element in DB.
+ * @param boolean $status     Status.
  *
  * @return string The image with the relative path to pandora console directory.
  */
@@ -3280,8 +3281,12 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 {
     $img = 'images/console/icons/'.$layoutData['image'];
 
+    if (empty($layoutData['image'])) {
+        return false;
+    }
+
     if ($layoutData['type'] == 5) {
-        // ICON ELEMENT
+        // ICON ELEMENT.
         $img .= '.png';
     } else {
         if ($status === false) {
@@ -3290,35 +3295,36 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
         switch ($status) {
             case 1:
-                // Critical (BAD)
+                // Critical (BAD).
                 $img .= '_bad.png';
             break;
 
             case 4:
-                // Critical (ALERT)
+                // Critical (ALERT).
                 $img = '4'.$img.'_bad.png';
             break;
 
             case 0:
-                // Normal (OK)
+                // Normal (OK).
                 $img .= '_ok.png';
             break;
 
             case 2:
-                // Warning
+                // Warning.
                 $img .= '_warning.png';
             break;
 
             case 10:
-                // Warning (ALERT)
+                // Warning (ALERT).
                 $img = '4'.$img.'_warning.png';
             break;
 
             case 3:
-                // Unknown
+                // Unknown.
             default:
                 $img .= '.png';
-                // Default is Grey (Other)
+                // Default is Grey (Other).
+            break;
         }
     }
 

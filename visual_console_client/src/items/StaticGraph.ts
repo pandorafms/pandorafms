@@ -172,27 +172,34 @@ export default class StaticGraph extends Item<StaticGraphProps> {
    * AgentModuleInputGroup
    */
   public getFormContainer(): FormContainer {
-    const formContainer = super.getFormContainer();
+    return StaticGraph.getFormContainer(this.props);
+  }
+
+  public static getFormContainer(
+    props: Partial<StaticGraphProps>
+  ): FormContainer {
+    const formContainer = super.getFormContainer(props);
     formContainer.addInputGroup(
       new ImageInputGroup("image-console", {
-        ...this.props,
+        ...props,
         imageKey: "imageSrc",
         showStatusImg: true
       }),
       3
     );
     formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", this.props),
+      new AgentModuleInputGroup("agent-autocomplete", props),
       4
     );
     formContainer.addInputGroup(
-      new ShowLastValueInputGroup("show-last-value", this.props),
+      new ShowLastValueInputGroup("show-last-value", props),
       5
     );
     formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", this.props),
+      new LinkConsoleInputGroup("link-console", props),
       13
     );
+
     return formContainer;
   }
 }

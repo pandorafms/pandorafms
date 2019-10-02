@@ -129,6 +129,7 @@
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
   margin-right: 10px;
+  padding-left: 2px;
 }
 
 .div-input-group input[type="radio"] {
@@ -211,4 +212,19 @@
 
 .img-vc-elements {
   margin-left: 10px;
+}
+
+input.error-input-validate[type="number"],
+input.error-input-validate[type="text"],
+select.error-input-validate {
+  border: 1px solid #c00;
+}
+
+select.error-input-validate:focus {
+  outline-color: #c00;
+}
+
+p.error-p-validate {
+  width: 100%;
+  color: #c00;
 }

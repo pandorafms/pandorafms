@@ -4094,7 +4094,7 @@ sub on_demand_macro($$$$$$;$) {
 		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
 
 		my $field_value = "";
-		if ($type_mod eq 3){
+		if ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 ){
 			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
 		}
 		else{

@@ -45,7 +45,7 @@ class View extends \HTML
      *
      * @return string HTML code for Form.
      *
-     * @throws Exception On error.
+     * @throws \Exception On error.
      */
     public function loadForm()
     {
@@ -64,7 +64,11 @@ class View extends \HTML
         $itemClass = VisualConsole::getItemClass($type);
 
         if (!isset($itemClass)) {
-            throw new Exception(__('Item type not valid ['.$type.']'));
+            throw new \Exception(__('Item type not valid ['.$type.']'));
+        }
+
+        if (\method_exists($itemClass, 'getFormInputs') === false) {
+            throw new \Exception(__('Item type has no getFormInputs method ['.$type.']'));
         }
 
         $form = [

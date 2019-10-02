@@ -20,7 +20,7 @@ if ($method) {
             echo $viewer->{$method}();
         }
     } catch (Exception $e) {
-        echo json_encode(['error' => $e->msg()]);
+        echo json_encode(['error' => $e->getMessage()]);
         return;
     }
 

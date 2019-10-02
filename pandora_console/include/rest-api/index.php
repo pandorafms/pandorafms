@@ -10,6 +10,22 @@ if (!is_ajax()) {
 require_once $config['homedir'].'/vendor/autoload.php';
 
 use Models\VisualConsole\Container as VisualConsole;
+use Models\VisualConsole\View as Viewer;
+
+$method = get_parameter('method');
+if ($method) {
+    $viewer = new Viewer();
+    try {
+        if (method_exists($viewer, $method)) {
+            echo $viewer->{$method}();
+        }
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->msg()]);
+        return;
+    }
+
+    return;
+}
 
 $visualConsoleId = (int) get_parameter('visualConsoleId');
 $getVisualConsole = (bool) get_parameter('getVisualConsole');

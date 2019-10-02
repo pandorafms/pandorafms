@@ -160,8 +160,6 @@ function createVisualConsole(
       e.nativeEvent.stopPropagation();
 
       var item = e.item || {};
-      var props = item.props || {};
-
       var meta = item.meta || {};
 
       if (meta.editMode && !meta.isUpdating) {
@@ -169,7 +167,6 @@ function createVisualConsole(
           visualConsole,
           asyncTaskManager,
           baseUrl,
-          props,
           item
         );
       }
@@ -421,8 +418,7 @@ function createVisualConsole(
         visualConsole,
         asyncTaskManager,
         baseUrl,
-        { type: type },
-        {}
+        { itemProps: { type: type } }
       );
     },
     deleteItem: function(item) {
@@ -1407,14 +1403,49 @@ function copyVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
   };
 }
 
+/* Defined in operations/visual_console/view.php */
+/* global showMsg,cleanupDOM,$,load_modal */
 function createOrUpdateVisualConsoleItem(
   visualConsole,
   asyncTaskManager,
   baseUrl,
-  props,
   item
 ) {
+  var title = "Create item";
+  if (item.itemProps.id) {
+    title = "Update item";
+  }
+  // var props = item.props || {};
+  load_modal({
+    target: $("#modalVCItemForm"),
+    form: "itemForm",
+    url: baseUrl + "ajax.php",
+    ajax_callback: showMsg,
+    cleanup: cleanupDOM,
+    modal: {
+      title: title,
+      ok: "OK",
+      cancel: "Cancel"
+    },
+    extradata: [
+      {
+        name: "item",
+        value: item
+      }
+    ],
+    onshow: {
+      page: "include/rest-api/index",
+      method: "loadForm"
+    },
+    onsubmit: {
+      page: "include/rest-api/index",
+      method: "processForm"
+    }
+  });
+
+  /*
   var formContainer = {};
+  
   if (props.id) {
     // Item selection.
     visualConsole.selectItem(props.id, true);
@@ -2081,6 +2112,8 @@ function createOrUpdateVisualConsoleItem(
     ]
   });
   // TODO: Add submit and reset button.
+
+  */
 }
 
 // TODO: Delete the functions below when you can.

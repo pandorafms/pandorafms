@@ -241,4 +241,26 @@ final class StaticGraph extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param object $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(object $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception('[StaticGraph]::getFormInputs parent class return is not an array');
+        }
+
+        return $inputs;
+    }
+
+
 }

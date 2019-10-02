@@ -1879,7 +1879,13 @@ function load_modal(settings) {
   var data = new FormData();
   if (settings.extradata) {
     settings.extradata.forEach(function(item) {
-      if (item.value != undefined) data.append(item.name, item.value);
+      if (item.value != undefined) {
+        if (item.value instanceof Object || item.value instanceof Array) {
+          data.append(item.name, JSON.stringify(item.value));
+        } else {
+          data.append(item.name, item.value);
+        }
+      }
     });
   }
   data.append("page", settings.onshow.page);
@@ -1946,8 +1952,16 @@ function load_modal(settings) {
               var formdata = new FormData();
               if (settings.extradata) {
                 settings.extradata.forEach(function(item) {
-                  if (item.value != undefined)
-                    formdata.append(item.name, item.value);
+                  if (item.value != undefined) {
+                    if (
+                      item.value instanceof Object ||
+                      item.value instanceof Array
+                    ) {
+                      formdata.append(item.name, JSON.stringify(item.value));
+                    } else {
+                      formdata.append(item.name, item.value);
+                    }
+                  }
                 });
               }
               formdata.append("page", settings.onsubmit.page);

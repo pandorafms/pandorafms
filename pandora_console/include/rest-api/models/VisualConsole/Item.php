@@ -1887,4 +1887,43 @@ class Item extends CachedModel
     }
 
 
+    /**
+     * Generates inputs for form (global, common).
+     *
+     * @param object $values Default values.
+     *
+     * @return array Of inputs.
+     */
+    public static function getFormInputs(object $values): array
+    {
+        $inputs = [];
+
+        // Label.
+        $inputs[] = [
+            'label'     => __('Label'),
+            'id'        => 'div-label',
+            'arguments' => [
+                'name'   => 'Label',
+                'type'   => 'text',
+                'value'  => $values->label,
+                'return' => true,
+            ],
+        ];
+
+        // Position.
+        $inputs[] = [
+            'label'     => __('Position'),
+            'id'        => 'div-label',
+            'arguments' => [
+                'name'   => 'position-x',
+                'type'   => 'text',
+                'value'  => $values->posX,
+                'return' => true,
+            ],
+        ];
+
+        return $inputs;
+    }
+
+
 }

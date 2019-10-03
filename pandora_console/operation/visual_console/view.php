@@ -541,7 +541,7 @@ ui_require_css_file('form');
     /**
      * Process ajax responses and shows a dialog with results.
      */
-    function showMsg(data) {
+    function handleFormResponse(data) {
         var title = "<?php echo __('Success'); ?>";
         var text = '';
         var failed = 0;
@@ -564,40 +564,34 @@ ui_require_css_file('form');
             });
         }
 
-        $('#modalVCItemFormMsg').empty();
-        $('#modalVCItemFormMsg').html(text);
-        $('#modalVCItemFormMsg').dialog({
-            width: 450,
-            position: {
-                my: 'center',
-                at: 'center',
-                of: window,
-                collision: 'fit'
-            },
-            title: title,
-            buttons: [
-                {
-                    class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-                    text: 'OK',
-                    click: function(e) {
-                        if (!failed) {
-                            $(".ui-dialog-content").dialog("close");
-                            $('.info').hide();
-                            cleanupDOM();
-                        } else {
+        if (failed == 1) {
+            $('#modalVCItemFormMsg').empty();
+            $('#modalVCItemFormMsg').html(text);
+            $('#modalVCItemFormMsg').dialog({
+                width: 450,
+                position: {
+                    my: 'center',
+                    at: 'center',
+                    of: window,
+                    collision: 'fit'
+                },
+                title: title,
+                buttons: [
+                    {
+                        class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+                        text: 'OK',
+                        click: function(e) {
                             $(this).dialog('close');
                         }
                     }
-                }
-            ]
-        });
-    }
-    /**
-     * When invoking modals from JS, some DOM id could be repeated.
-     * This method cleans DOM to avoid duplicated IDs.
-     */
-    function cleanupDOM() {
-        $("#modalVCItemForm").empty();
+                ]
+            });
+            // Failed.
+            return false;
+        }
+        
+        // Success, return result.
+        return data['result'];
     }
     
 </script>

@@ -1403,8 +1403,15 @@ function copyVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
   };
 }
 
+/**
+ * When invoking modals from JS, some DOM id could be repeated.
+ * This method cleans DOM to avoid duplicated IDs.
+ */
+function cleanupDOM() {
+  $("#modalVCItemForm").empty();
+}
 /* Defined in operations/visual_console/view.php */
-/* global showMsg,cleanupDOM,$,load_modal */
+/* global handleFormResponse,$,load_modal */
 function createOrUpdateVisualConsoleItem(
   visualConsole,
   asyncTaskManager,
@@ -1420,7 +1427,17 @@ function createOrUpdateVisualConsoleItem(
     target: $("#modalVCItemForm"),
     form: "itemForm",
     url: baseUrl + "ajax.php",
-    ajax_callback: showMsg,
+    ajax_callback: function(response) {
+      var item = handleFormResponse(response);
+
+      if (item == false) {
+        // Error.
+        return;
+      }
+
+      // Success.
+      console.log(item);
+    },
     cleanup: cleanupDOM,
     modal: {
       title: title,

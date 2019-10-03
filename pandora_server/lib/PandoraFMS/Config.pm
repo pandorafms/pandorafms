@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.738";
-my $pandora_build = "190920";
+my $pandora_version = "7.0NG.739";
+my $pandora_build = "191003";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -357,7 +357,15 @@ sub pandora_load_config {
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 
+	# Winexe allows to exec commands on remote windows systems (optional)
+	$pa_config->{"winexe"} = "/usr/bin/winexe";
+
+	# PsExec allows to exec commands on remote windows systems from windows servers (optional)
+	$pa_config->{"psexec"} = 'C:\PandoraFMS\Pandora_Server\bin\PsExec.exe';
 	
+	# plink allows to exec commands on remote linux systems from windows servers (optional)
+	$pa_config->{"plink"} = 'C:\PandoraFMS\Pandora_Server\bin\plink.exe';
+
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
@@ -838,6 +846,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^winexe\s(.*)/i) {
+			$pa_config->{'winexe'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^psexec\s(.*)/i) {
+			$pa_config->{'psexec'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^plink\s(.*)/i) {
+			$pa_config->{'plink'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^snmpget\s(.*)/i) {
 			$pa_config->{'snmpget'}= clean_blank($1); 
 		}
@@ -1037,7 +1054,7 @@ sub pandora_load_config {
 			$pa_config->{'console_pass'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) { # 6.0
-			$pa_config->{'encryption_passphrase'}= safe_input(clean_blank($1));
+			$pa_config->{'encryption_passphrase'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^unknown_interval\s+([0-9]*)/i) { # > 5.1SP2
 			$pa_config->{'unknown_interval'}= clean_blank($1);

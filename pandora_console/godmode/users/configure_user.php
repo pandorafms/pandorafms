@@ -828,7 +828,7 @@ $values = [
     0  => __('No'),
 ];
 
-$table->data[12][0] = __('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
+$table->data[12][0] = __('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true);
 $values = [
     'Default'        => __('Default'),
     'Visual console' => __('Visual console'),

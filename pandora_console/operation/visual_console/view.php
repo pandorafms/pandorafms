@@ -33,9 +33,10 @@ global $config;
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
+// TODO: include file functions.
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
-// TODO: include file functions.
+
 /**
  * Function for return button visual console edition.
  *
@@ -46,8 +47,6 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
  *
  * @return void Retun button.
  */
-
-
 function visual_map_print_button_editor_refactor(
     $idDiv,
     $label,

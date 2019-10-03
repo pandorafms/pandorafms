@@ -69,6 +69,57 @@ function agents_get_agent_id_by_module_id($id_agente_modulo)
 
 
 /**
+ * Search for agent data anywhere.
+ *
+ * Note: This method matches with server (perl) locate_agent.
+ * Do not change order!
+ *
+ * @param string $field Alias, name or IP address of searchable agent.
+ *
+ * @return array Agent of false if not found.
+ */
+function agents_locate_agent(string $field)
+{
+    global $config;
+
+    $table = 'tagente';
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    }
+
+    // Alias.
+    $sql = sprintf(
+        'SELECT *
+         FROM %s
+         WHERE alias = "%s"',
+        $table,
+        $field
+    );
+    $agent = db_get_row_sql($sql);
+
+    if ($agent !== false) {
+        return $agent;
+    }
+
+    // Addr.
+    $agent = agents_get_agent_with_ip($field);
+    if ($agent !== false) {
+        return $agent;
+    }
+
+    // Name.
+    $sql = sprintf(
+        'SELECT *
+         FROM %s
+         WHERE nombre = "%s"',
+        $table,
+        $field
+    );
+    return db_get_row_sql($sql);
+}
+
+
+/**
  * Get agent id from an agent alias.
  *
  * @param string $alias Agent alias.

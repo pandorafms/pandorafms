@@ -1358,7 +1358,11 @@ if ($update_module || $create_module) {
 
     $parent_module_id = (int) get_parameter('parent_module_id');
     $ip_target = (string) get_parameter('ip_target');
-    if ($ip_target == '') {
+    // No autofill if the module is a webserver module.
+    if ($ip_target == ''
+        && $id_module_type < MODULE_WEBSERVER_CHECK_LATENCY
+        && $id_module_type > MODULE_WEBSERVER_RETRIEVE_STRING_DATA
+    ) {
         $ip_target = 'auto';
     }
 
@@ -1381,11 +1385,7 @@ if ($update_module || $create_module) {
     $ff_type = (int) get_parameter('ff_type');
     $each_ff = (int) get_parameter('each_ff');
     $ff_timeout = (int) get_parameter('ff_timeout');
-    $unit = (string) get_parameter('unit_select');
-    if ($unit == 'none') {
-        $unit = (string) get_parameter('unit_text');
-    }
-
+    $unit = (string) get_parameter('unit');
     $id_tag = (array) get_parameter('id_tag_selected');
     $serialize_ops = (string) get_parameter('serialize_ops');
     $critical_instructions = (string) get_parameter('critical_instructions');
@@ -2107,8 +2107,7 @@ if ($delete_module) {
     }
 }
 
-// MODULE DUPLICATION
-// ==================.
+// MODULE DUPLICATION.
 if (!empty($duplicate_module)) {
     // DUPLICATE agent module !
     $id_duplicate_module = $duplicate_module;
@@ -2154,8 +2153,46 @@ if (!empty($duplicate_module)) {
     }
 }
 
-// UPDATE GIS
-// ==========.
+// MODULE ENABLE/DISABLE.
+if ($enable_module) {
+    $result = modules_change_disabled($enable_module, 0);
+    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
+    $modulo_nombre = $modulo_nombre['nombre'];
+
+    if ($result === NOERR) {
+        enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
+        db_pandora_audit('Module management', 'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    } else {
+        db_pandora_audit('Module management', 'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully enabled'),
+        __('Could not be enabled')
+    );
+}
+
+if ($disable_module) {
+    $result = modules_change_disabled($disable_module, 1);
+    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$disable_module.'');
+    $modulo_nombre = $modulo_nombre['nombre'];
+
+    if ($result === NOERR) {
+        enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
+        db_pandora_audit('Module management', 'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    } else {
+        db_pandora_audit('Module management', 'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully disabled'),
+        __('Could not be disabled')
+    );
+}
+
+// UPDATE GIS.
 $updateGIS = get_parameter('update_gis', 0);
 if ($updateGIS) {
     $updateGisData = get_parameter('update_gis_data');
@@ -2243,8 +2280,11 @@ switch ($tab) {
     break;
 
     case 'alert':
-        // Because $id_agente is set, it will show only agent alerts.
-        // This var is for not display create button on alert list.
+        /*
+         * Because $id_agente is set, it will show only agent alerts
+         * This var is for not display create button on alert list
+         */
+
         $dont_display_alert_create_bttn = true;
         include 'godmode/alerts/alert_list.php';
     break;

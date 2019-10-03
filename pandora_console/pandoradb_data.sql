@@ -109,14 +109,36 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 31),
+('MR', 32),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '738'),
+('current_package_enterprise', '739'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
-('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
+('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png'),
+('integria_enabled', 0),
+('integria_user', ''),
+('integria_pass', ''),
+('integria_hostname', ''),
+('integria_api_pass', ''),
+('integria_req_timeout', 5),
+('default_group', ''),
+('default_criticity', ''),
+('default_creator', ''),
+('default_owner', ''),
+('incident_type', ''),
+('incident_status', ''),
+('incident_title', ''),
+('incident_content', ''),
+('cr_default_group', ''),
+('cr_default_criticity', ''),
+('cr_default_creator', ''),
+('cr_default_owner', ''),
+('cr_incident_type', ''),
+('cr_incident_status', ''),
+('cr_incident_title', ''),
+('cr_incident_content', '');
 UNLOCK TABLES;
 
 --
@@ -1317,7 +1339,8 @@ UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20
 -- 
 INSERT INTO `tlayout`
 VALUES
-    (1, 'Demo&#x20;visual console', 0, 'fondo.jpg', 1080, 1920, 'white', 0);
+    (1, 'Demo&#x20;visual console', 0, 'fondo.jpg', 1080, 1920, 'white', 0),
+    (2,'Demo&#x20;visual console 2',0,'fondo-keep-alive.jpg',1080,1920,'#FFF',0);
 
 -- 
 -- Dumping data for table `tlayout_data`
@@ -1420,5 +1443,20 @@ VALUES
 	(94,1,580,904,0,0,'&lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Office&#x20;7&#x20;-&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Rack&#x20;2&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
 	(95,1,132,907,0,0,'&lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Office&#x20;7&#x20;-&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Rack&#x20;1&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
 	(96,1,733,20,0,0,'&lt;p&#x20;style=&quot;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_48pt&quot;&gt;&lt;strong&gt;&lt;span&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;OFFICE&#x20;RACKS&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;','white',4,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,0),
-	(97,1,1479,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60)
+	(97,1,1479,260,174,29,'','rack_server_rack',0,3600,1,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,'0.000','0.000',0,0,'analogic_1','time','Europe/Madrid',0,60),
+    (98,2,709,103,0,400,'','white',19,3600,0,0,0,0,1,0,0,0,0,'line','down','','#FFFFFF',0,0,'default',0,0.000,0.000,0,0,'digital_1','timedate','Europe/Madrid',0,0),
+    (99,2,178,481,111,111,'','status',0,3600,11556,430,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (100,2,542,481,111,111,'','status',0,3600,13,2,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (101,2,905,481,111,111,'','status',0,3600,114,11,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (102,2,1276,481,111,111,'','status',0,3600,7,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (103,2,1631,482,111,111,'','status',0,3600,11547,1,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (104,2,157,393,0,0,'<p style=\"line-height: 18px;\"><span class=\"visual_font_size_28pt\" style=\"line-height: 18px; color: #ffffff;\">Backups</span></p>\n<p style=\"line-height: 18px;\"> </p>','white',              
+4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),     
+    (105,2,512,382,96,172,'&lt;p&#x20;style=&quot;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;font-family:&#x20;opensans;&#x20;color:&#x20;#ffffff;&quot;&gt;DB&#x20;Status&lt;/span&gt;&lt;/p&gt;&#x0a;&lt;p&#x20;style=&quot;overflow:&#x20;hidden;&quot;&gt;&amp;nbsp;&lt;/p&gt;','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),            
+    (106,2,886,382,0,0,'<p style=\"line-height: 18px; overflow: hidden;\"><span class=\"visual_font_size_28pt\" style=\"color: #ffffff; font-family: opensans;\">Disk slave</span></p>\n<p style=\"line-height: 18px; overflow: hidden;\"> </p>','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (107,2,1251,382,0,0,'<p style=\"line-height: 18px; overflow: hidden;\"><span class=\"visual_font_size_28pt\" style=\"color: #ffffff; font-family: opensans;\">Disk /var</span></p>\n<p style=\"line-height: 18px; overflow: hidden;\"> </p>','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (108,2,1547,382,0,0,'&lt;p&#x20;style=&quot;line-height:&#x20;18px;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;span&#x20;class=&quot;visual_font_size_28pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Authentification&lt;/span&gt;&lt;/p&gt;','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0), 
+    (109,2,126,820,0,0,'&lt;p&#x20;style=&quot;line-height:&#x20;18px;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_36pt&quot;&#x20;style=&quot;font-family:&#x20;opensans;&#x20;color:&#x20;#ffffff;&quot;&gt;Processing&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (110,2,755,820,0,0,'&lt;p&#x20;style=&quot;line-height:&#x20;18px;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_36pt&quot;&#x20;style=&quot;font-family:&#x20;opensans;&#x20;color:&#x20;#ffffff;&quot;&gt;Network&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0),
+    (111,2,1281,820,0,0,'&lt;p&#x20;style=&quot;line-height:&#x20;18px;&#x20;overflow:&#x20;hidden;&quot;&gt;&lt;strong&gt;&lt;span&#x20;class=&quot;visual_font_size_36pt&quot;&#x20;style=&quot;color:&#x20;#ffffff;&#x20;font-family:&#x20;opensans;&quot;&gt;Storage&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;','white',4,3600,0,0,0,0,1,0,0,0,0,'line','down','','',0,0,'default',0,0.000,0.000,0,0,'analogic_1','time','Europe/Madrid',0,0)
 ;

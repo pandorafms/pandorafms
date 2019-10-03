@@ -3278,12 +3278,7 @@ function visual_map_get_color_line_status($layoutData)
  */
 function visual_map_get_image_status_element($layoutData, $status=false)
 {
-    $metaconsole_hack = '';
-    if (is_metaconsole()) {
-        $metaconsole_hack = '../../';
-    }
-
-    $img = $metaconsole_hack.'images/console/icons/'.$layoutData['image'];
+    $img = 'images/console/icons/'.$layoutData['image'];
 
     if ($layoutData['type'] == 5) {
         // ICON ELEMENT

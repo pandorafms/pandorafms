@@ -365,9 +365,11 @@ sub pandora_server_tasks ($) {
 
 		# COMMON TASKS (master and non-master) 
 		# ---------------------------------------------------------------
-
-		# Rotate Log File
 		if (($counter % 30) == 0) {
+			# Update configuration options from the console.
+			pandora_get_sharedconfig ($pa_config, $dbh);
+
+			# Rotate the log file.
 			pandora_rotate_logfile($pa_config);
 			
 			# Set event storm protection

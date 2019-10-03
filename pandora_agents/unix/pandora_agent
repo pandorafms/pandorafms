@@ -41,8 +41,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.738';
-use constant AGENT_BUILD => '190904';
+use constant AGENT_VERSION => '7.0NG.739';
+use constant AGENT_BUILD => '191003';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -238,6 +238,15 @@ my $tentacle_pid = undef;
 
 # PID of udp_server
 my $udp_server_pid = undef;
+
+# BrokerFlag
+my $BrokerFlag = 0;
+
+# Global loop counter.
+my $LoopCounter = 0;
+
+# Define a max value for loopCounter to avoid overflow.
+use constant MAX_LOOP_COUNTER => 1000000000;
 
 ################################################################################
 # Print usage information and exit.
@@ -1385,6 +1394,7 @@ sub sleep_agent {
 		exit (0);
 	}
 
+	$LoopCounter = ($LoopCounter + 1) % MAX_LOOP_COUNTER;
 	return $iter_base_time;
 }
 
@@ -1699,6 +1709,14 @@ sub exec_module {
 	}
 	
 	# Check module interval
+	if ($BrokerFlag > 0) {
+		if ($LoopCounter == 0) {
+			$module->{'counter'} = $module->{'intensive_interval'};
+		} else {
+			$module->{'counter'} = (($LoopCounter -1 ) % $module->{'intensive_interval'});
+		}
+	}
+
 	if (++($module->{'counter'}) < $module->{'intensive_interval'}) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 		return;
@@ -2985,7 +3003,6 @@ while (1) {
 	@BrokerPid = ();
 	my @broker_agents = read_config ('broker_agent');
 	foreach my $broker_agent (@broker_agents) {
-		
 		# Create broker conf file if it does not exist
 		if (! -e "$ConfDir/${broker_agent}.conf") {
 			write_broker_conf($broker_agent);
@@ -2995,7 +3012,9 @@ while (1) {
 			
 		# Broker agent
 		if ($main_agent == 0) {
-		
+			# Mark broker flag.
+			$BrokerFlag = 1;
+
 			# Set the configuration file
 			$ConfFile = "${broker_agent}.conf";
 			

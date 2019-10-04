@@ -3187,14 +3187,18 @@ function ui_print_datatable(array $parameters)
         $.fn.dataTable.ext.errMode = "none";
         $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
         dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
-            ';
+            drawCallback: function(settings) {';
     if (isset($parameters['drawCallback'])) {
-        $js .= 'drawCallback: function(settings) {
-                    '.$parameters['drawCallback'].'
-                },';
+        $js .= $parameters['drawCallback'];
     }
 
     $js .= '
+                if (dt_'.$table_id.'.page.info().pages > 1) {
+                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
+                } else {
+                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
+                }
+            },
             processing: true,
             serverSide: true,
             paging: true,
@@ -3299,6 +3303,7 @@ function ui_print_datatable(array $parameters)
             dt_'.$table_id.'.draw().page(0)
         });
     });
+
 </script>';
 
     // Order.

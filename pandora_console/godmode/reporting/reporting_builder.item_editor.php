@@ -482,7 +482,8 @@ switch ($action) {
                     $period = $item['period'];
                 break;
 
-                case 'TTRT':
+                /*
+                    case 'TTRT':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -491,9 +492,9 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
+                    break;
 
-                case 'TTO':
+                    case 'TTO':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -502,9 +503,9 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
+                    break;
 
-                case 'MTBF':
+                    case 'MTBF':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -513,9 +514,9 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
+                    break;
 
-                case 'MTTR':
+                    case 'MTTR':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -524,8 +525,8 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
-
+                    break;
+                */
                 case 'alert_report_module':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
@@ -790,10 +791,11 @@ switch ($action) {
                 case 'avg_value':
                 case 'projection_graph':
                 case 'prediction_date':
-                case 'TTRT':
-                case 'TTO':
-                case 'MTBF':
-                case 'MTTR':
+                    /*
+                        case 'TTRT':
+                        case 'TTO':
+                        case 'MTBF':
+                    case 'MTTR':*/
                 case 'simple_baseline_graph':
                 case 'event_report_log':
                 case 'increment':
@@ -3755,10 +3757,10 @@ $(document).ready (function () {
             case 'event_report_module':
             case 'simple_graph':
             case 'simple_baseline_graph':
-            case 'TTRT':
+/*          case 'TTRT':
             case 'TTO':
             case 'MTBF':
-            case 'MTTR':
+            case 'MTTR':*/
             case 'prediction_date':
             case 'projection_graph':
             case 'avg_value':
@@ -3796,10 +3798,10 @@ $(document).ready (function () {
             case 'event_report_module':
             case 'simple_graph':
             case 'simple_baseline_graph':
-            case 'TTRT':
+/*          case 'TTRT':
             case 'TTO':
             case 'MTBF':
-            case 'MTTR':
+            case 'MTTR':*/
             case 'prediction_date':
             case 'projection_graph':
             case 'avg_value':
@@ -4831,7 +4833,7 @@ function chooseType() {
             $("#row_period").show();
             $("#row_historical_db_check").hide();
             break;
-
+/*
         case 'TTRT':
             $("#row_description").show();
             $("#row_agent").show();
@@ -4862,7 +4864,7 @@ function chooseType() {
             $("#row_module").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
-            break;
+            break;*/
 
         case 'alert_report_module':
             $("#row_description").show();
@@ -5216,10 +5218,10 @@ function chooseType() {
         case 'min_value':
         case 'max_value':
         case 'avg_value':
-        case 'TTRT':
+ /*     case 'TTRT':
         case 'TTO':
         case 'MTBF':
-        case 'MTTR':
+        case 'MTTR':*/
         case 'simple_baseline_graph':
             $("#row_label").show();
             break;

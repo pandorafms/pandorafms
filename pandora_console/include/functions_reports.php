@@ -679,23 +679,24 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Module Histogram graph'),
     ];
 
-    $types['TTRT'] = [
+    /*
+        $types['TTRT'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('TTRT'),
-    ];
-    $types['TTO'] = [
+        ];
+        $types['TTO'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('TTO'),
-    ];
-    $types['MTBF'] = [
+        ];
+        $types['MTBF'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('MTBF'),
-    ];
-    $types['MTTR'] = [
+        ];
+        $types['MTTR'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('MTTR'),
-    ];
-
+        ];
+    */
     $types['SLA'] = [
         'optgroup' => __('SLA'),
         'name'     => __('S.L.A.'),

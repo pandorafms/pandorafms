@@ -505,42 +505,43 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'MTTR',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'MTBF',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'TTO',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'TTRT',
                     $pdf
                 );
-            break;
-
+                break;
+            */
             case 'agent_configuration':
                 $report['contents'][] = io_safe_output(
                     reporting_agent_configuration(
@@ -4702,21 +4703,22 @@ function reporting_value($report, $content, $type, $pdf=false)
             $return['type'] = 'sumatory';
         break;
 
-        case 'MTTR':
+        /*
+            case 'MTTR':
             $return['type'] = 'MTTR';
-        break;
+            break;
 
-        case 'MTBF':
+            case 'MTBF':
             $return['type'] = 'MTBF';
-        break;
+            break;
 
-        case 'TTO':
+            case 'TTO':
             $return['type'] = 'TTO';
-        break;
+            break;
 
-        case 'TTRT':
+            case 'TTRT':
             $return['type'] = 'TTRT';
-        break;
+        break;*/
     }
 
     if (empty($content['name'])) {
@@ -4737,21 +4739,22 @@ function reporting_value($report, $content, $type, $pdf=false)
                 $content['name'] = __('Summatory');
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 $content['name'] = __('MTTR');
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 $content['name'] = __('MTBF');
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 $content['name'] = __('TTO');
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 $content['name'] = __('TTRT');
-            break;
+            break;*/
         }
     }
 
@@ -4924,25 +4927,26 @@ function reporting_value($report, $content, $type, $pdf=false)
             }
         break;
 
-        case 'MTTR':
+        /*
+            case 'MTTR':
             $value = reporting_get_agentmodule_mttr(
                 $content['id_agent_module'],
                 $content['period'],
                 $report['datetime']
             );
             $formated_value = null;
-        break;
+            break;
 
-        case 'MTBF':
+            case 'MTBF':
             $value = reporting_get_agentmodule_mtbf(
                 $content['id_agent_module'],
                 $content['period'],
                 $report['datetime']
             );
             $formated_value = null;
-        break;
+            break;
 
-        case 'TTO':
+            case 'TTO':
             $value = reporting_get_agentmodule_tto(
                 $content['id_agent_module'],
                 $content['period'],
@@ -4953,9 +4957,9 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $formated_value = human_time_description_raw($value);
             }
-        break;
+            break;
 
-        case 'TTRT':
+            case 'TTRT':
             $value = reporting_get_agentmodule_ttr(
                 $content['id_agent_module'],
                 $content['period'],
@@ -4966,7 +4970,7 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $formated_value = human_time_description_raw($value);
             }
-        break;
+        break;*/
     }
 
     $return['data'] = [

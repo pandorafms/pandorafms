@@ -376,17 +376,18 @@ function process_upload_xml_report($xml, $group_filter=0)
                     $values['column_separator'] = io_safe_input($item['column_separator']);
                 break;
 
-                case 'TTRT':
-                break;
+                /*
+                    case 'TTRT':
+                    break;
 
-                case 'TTO':
-                break;
+                    case 'TTO':
+                    break;
 
-                case 'MTBF':
-                break;
+                    case 'MTBF':
+                    break;
 
-                case 'MTTR':
-                break;
+                    case 'MTTR':
+                break;*/
             }
 
             if (empty($agents_item)) {

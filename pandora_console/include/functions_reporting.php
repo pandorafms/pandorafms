@@ -3105,6 +3105,13 @@ function reporting_historical_data($report, $content)
         $content['name'] = __('Historical data');
     }
 
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+
+        $server = metaconsole_get_connection_by_id($id_meta);
+        $connection = metaconsole_connect($server);
+    }
+
     $id_agent = agents_get_module_id(
         $content['id_agent_module']
     );
@@ -3195,6 +3202,10 @@ function reporting_historical_data($report, $content)
     }
 
     $return['data'] = $data;
+
+    if (is_metaconsole() && $connection > 0) {
+        metaconsole_restore_db();
+    }
 
     return reporting_check_structure_content($return);
 }

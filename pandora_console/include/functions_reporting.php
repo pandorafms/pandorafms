@@ -7503,10 +7503,12 @@ function reporting_custom_graph(
 
     if ($type_report == 'custom_graph') {
         if (is_metaconsole()) {
-            $id_meta = metaconsole_get_id_server($content['server_name']);
-            $server  = metaconsole_get_connection_by_id($id_meta);
-            if (metaconsole_connect($server) != NOERR) {
-                return false;
+            $servers = metaconsole_get_connection_names();
+            foreach ($servers as $server) {
+                $connection = metaconsole_get_connection($server);
+                if (metaconsole_connect($connection) != NOERR) {
+                    continue;
+                }
             }
         }
     }

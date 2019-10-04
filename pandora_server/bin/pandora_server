@@ -97,9 +97,6 @@ sub pandora_startup () {
 	
 	# Grab config tokens shared with the console and not in the .conf	
 	pandora_get_sharedconfig (\%Config, $DBH);
-	
-	# Generate the encryption key after reading the passphrase.
-	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
 	# Kill any running server threads.
 	stop_server_threads();
@@ -211,7 +208,9 @@ sub pandora_crash () {
 		}
 		$full_error .= $error_line;
 	}
-	
+
+	# Could crash before parse configuration.
+	$Config{'rb_product_name'} = 'PandoraFMS' unless defined($Config{'rb_product_name'}) && $Config{'rb_product_name'} ne '';
 	logger (\%Config, $Config{'rb_product_name'} . ' Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
 	
 	# It's interesting show by console problems, not only in logs. This helps

@@ -1206,6 +1206,9 @@ sub pandora_load_config {
 		
 	} # end of loop for parameter #
 
+	# Generate the encryption key after reading the passphrase.
+	$pa_config->{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{"encryption_passphrase"}]);
+
 	# Set to RDBMS' standard port
 	if (!defined($pa_config->{'dbport'})) {
 		if ($pa_config->{'dbengine'} eq "mysql") {

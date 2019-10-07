@@ -1222,9 +1222,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
-		my $macro_regexp = "_modulegraph_(\\d+)h_";
-		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
-		
+		my $macro_regexp = "_modulegraph_24h_";
+		my $macro_regexp2 = "_modulegraphth_24h_";
 		# API connection
 		my $ua = new LWP::UserAgent;
 		eval {
@@ -1260,11 +1259,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			}
 
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
-			
+
 			if (! exists($module_graph_list->{$cid}) && defined $url) {
+
 				# Get the module graph image in base 64
 				my $response = $ua->post($url, $params);
-				
+
 				if ($response->is_success) {
 					$module_graph_list->{$cid} = $response->decoded_content();
 					
@@ -6076,3 +6076,4 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 
 =cut
+

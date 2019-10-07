@@ -1765,7 +1765,7 @@ function events_change_status(
 
     events_comment(
         $id_event,
-        'Event validated',
+        '',
         'Change status to '.$status_string,
         $meta,
         $history
@@ -1857,7 +1857,7 @@ function events_change_owner(
     if ($force) {
         events_comment(
             $id_event,
-            'Change owner to '.$new_owner.'',
+            '',
             'Change owner to '.$new_owner,
             $meta,
             $history

@@ -652,7 +652,9 @@ sub logger ($$;$) {
 		# Obtain the script that invoke this log
 		my $parent_caller = "";
 		if (($parent_caller = ( caller(2) )[1]) ne "") {
-			$parent_caller = " ** " . (split '/', $parent_caller)[-1] . " **:";
+			$parent_caller = (split '/', $parent_caller)[-1];
+			$parent_caller =~ s/\.[^.]+$//;
+			$parent_caller = " ** " . $parent_caller . " **:";
 		}
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)

@@ -11771,7 +11771,7 @@ function api_set_validate_event_by_id($id, $trash1=null, $trash2=null, $returnTy
         } else {
             $ack_utimestamp = time();
 
-            events_comment($id, 'Event validated', 'Change status to validated');
+            events_comment($id, '', 'Change status to validated');
 
             $values = [
                 'ack_utimestamp' => $ack_utimestamp,

@@ -1191,49 +1191,54 @@ $table_relations->data[-1][3] .= html_print_image('images/lock.png', true).'</a>
 $table_relations->data[-1][4] = '<a id="delete_relation_button" href="">';
 $table_relations->data[-1][4] .= html_print_image('images/cross.png', true).'</a>';
 
-$module_relations = modules_get_relations(['id_module' => $id_agent_module]);
-if (!$module_relations) {
-    $module_relations = [];
-}
 
 $relations_count = 0;
-foreach ($module_relations as $key => $module_relation) {
-    if ($module_relation['module_a'] == $id_agent_module) {
-        $module_id = $module_relation['module_b'];
-        $agent_id = modules_give_agent_id_from_module_id(
-            $module_relation['module_b']
-        );
-    } else {
-        $module_id = $module_relation['module_a'];
-        $agent_id = modules_give_agent_id_from_module_id(
-            $module_relation['module_a']
-        );
+if ($id_agent_module) {
+    $module_relations = modules_get_relations(['id_module' => $id_agent_module]);
+
+    if (!$module_relations) {
+        $module_relations = [];
     }
 
-    $agent_name = ui_print_agent_name($agent_id, true);
+    $relations_count = 0;
+    foreach ($module_relations as $key => $module_relation) {
+        if ($module_relation['module_a'] == $id_agent_module) {
+            $module_id = $module_relation['module_b'];
+            $agent_id = modules_give_agent_id_from_module_id(
+                $module_relation['module_b']
+            );
+        } else {
+            $module_id = $module_relation['module_a'];
+            $agent_id = modules_give_agent_id_from_module_id(
+                $module_relation['module_a']
+            );
+        }
 
-    $module_name = modules_get_agentmodule_name($module_id);
-    if (empty($module_name) || $module_name == 'false') {
-        $module_name = $module_id;
+        $agent_name = ui_print_agent_name($agent_id, true);
+
+        $module_name = modules_get_agentmodule_name($module_id);
+        if (empty($module_name) || $module_name == 'false') {
+            $module_name = $module_id;
+        }
+
+        if ($module_relation['disable_update']) {
+            $disabled_update_class = '';
+        } else {
+            $disabled_update_class = 'alpha50';
+        }
+
+        // Agent name.
+        $table_relations->data[$relations_count][0] = $agent_name;
+        // Module name.
+        $table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$agent_id.'&tab=module&edit_module=1&id_agent_module='.$module_id."'>".ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]').'</a>';
+        // Type.
+        $table_relations->data[$relations_count][2] = ($module_relation['type'] === 'direct') ? __('Direct') : __('Failover');
+        // Lock relationship updates.
+        $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/lock.png', true).'</a>';
+        // Delete relationship.
+        $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/cross.png', true).'</a>';
+        $relations_count++;
     }
-
-    if ($module_relation['disable_update']) {
-        $disabled_update_class = '';
-    } else {
-        $disabled_update_class = 'alpha50';
-    }
-
-    // Agent name.
-    $table_relations->data[$relations_count][0] = $agent_name;
-    // Module name.
-    $table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$agent_id.'&tab=module&edit_module=1&id_agent_module='.$module_id."'>".ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]').'</a>';
-    // Type.
-    $table_relations->data[$relations_count][2] = ($module_relation['type'] === 'direct') ? __('Direct') : __('Failover');
-    // Lock relationship updates.
-    $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/lock.png', true).'</a>';
-    // Delete relationship.
-    $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/cross.png', true).'</a>';
-    $relations_count++;
 }
 
 html_print_input_hidden('module_relations_count', $relations_count);

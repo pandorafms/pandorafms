@@ -584,6 +584,8 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 
     # Resolve hostnames.
     my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($device), AF_INET) : $device);
+    # Fallback to device IP if host name could not be resolved.
+    $host_name = $device if (!defined($host_name) || $host_name == '');
     my $agent = locate_agent($self->{'pa_config'}, $self->{'dbh'}, $host_name);
 
     my ($agent_id, $agent_learning);

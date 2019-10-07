@@ -431,14 +431,14 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
     my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
 
     # Get the agent for the first device.
-    my $agent_1 = get_agent_from_addr($self->{'dbh'}, $dev_1);
+    my $agent_1 = get_agent_name_from_addr($self->{'dbh'}, $dev_1);
     if (!defined($agent_1)) {
         $agent_1 = get_agent_from_name($self->{'dbh'}, $dev_1);
     }
     return unless defined($agent_1);
 
     # Get the agent for the second device.
-    my $agent_2 = get_agent_from_addr($self->{'dbh'}, $dev_2);
+    my $agent_2 = get_agent_name_from_addr($self->{'dbh'}, $dev_2);
     if (!defined($agent_2)) {
         $agent_2 = get_agent_from_name($self->{'dbh'}, $dev_2);
     }
@@ -582,44 +582,12 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
     # Clean name.
     $device = clean_blank($device);
 
-    my @agents = get_db_rows($self->{'dbh'},
-        'SELECT * FROM taddress, taddress_agent, tagente
-         WHERE tagente.id_agente = taddress_agent.id_agent
-            AND taddress_agent.id_a = taddress.id_a
-            AND ip = ?', $device
-    );
-
-    # Does the host already exist?
-    my $agent;
-    foreach my $candidate (@agents) {
-      $agent = {map {$_} %$candidate}; # copy contents, do not use shallow copy
-      # exclude $device itself, because it handle corner case when target includes NAT
-      my @registered = map {$_->{ip}} get_db_rows($self->{'dbh'},
-          'SELECT ip FROM taddress, taddress_agent, tagente
-           WHERE tagente.id_agente = taddress_agent.id_agent
-              AND taddress_agent.id_a = taddress.id_a
-              AND tagente.id_agente = ?
-            AND taddress.ip != ?', $agent->{id_agente}, $device
-      );
-      foreach my $ip_addr (@registered) {
-        my @matched = grep { $_ =~ /^$ip_addr$/ } $self->get_addresses($device);
-        if (scalar(@matched) == 0) {
-            $agent = undef;
-            last;
-        }
-      }
-      last if(defined($agent)); # exit loop if match all ip_addr
-    }
-
-    if (!defined($agent)) {
-        $agent = get_agent_from_name($self->{'dbh'}, $device);
-    }
+    # Resolve hostnames.
+    my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($device), AF_INET) : $device);
+    my $agent = locate_agent($self->{'dbh'}, $host_name);
 
     my ($agent_id, $agent_learning);
     if (!defined($agent)) {
-
-        # Resolve hostnames.
-        my $host_name = $self->{'resolve_names'} == 1 ? gethostbyaddr (inet_aton($device), AF_INET) : $device;
         $host_name = $device unless defined ($host_name);
 
         # Guess the OS.
@@ -942,14 +910,14 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
     return unless ($self->{'parent_detection'} == 1);
 
     # Get the agent for the host.
-    my $agent = get_agent_from_addr($self->{'dbh'}, $host);
+    my $agent = get_agent_name_from_addr($self->{'dbh'}, $host);
     if (!defined($agent)) {
         $agent = get_agent_from_name($self->{'dbh'}, $host);
     }
     return unless defined($agent);
 
     # Check if the parent agent exists.
-    my $agent_parent = get_agent_from_addr($self->{'dbh'}, $parent);
+    my $agent_parent = get_agent_name_from_addr($self->{'dbh'}, $parent);
     if (!defined($agent_parent)) {
         $agent_parent = get_agent_from_name($self->{'dbh'}, $parent);
     }

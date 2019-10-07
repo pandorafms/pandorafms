@@ -4382,7 +4382,7 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Event name');
-    $data[1] = events_display_name($event['evento']);
+    $data[1] = '<span style="word-break: break-word;">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
 
     $data = [];

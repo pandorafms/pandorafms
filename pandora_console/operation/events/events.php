@@ -315,6 +315,8 @@ if (is_ajax()) {
 
                         $tmp->data = format_numeric($tmp->data, 1);
 
+                        $tmp->instructions = events_get_instructions($item);
+
                         $tmp->b64 = base64_encode(json_encode($tmp));
 
                         $carry[] = $tmp;
@@ -2398,5 +2400,12 @@ function datetime_picker_callback() {
 
 datetime_picker_callback();
 
+function show_instructions(id){
+    title = "<?php echo __('Instructions'); ?>";
+    $('#hidden_event_instructions_' + id).dialog({
+        title: title,
+        width: 600
+    });
+}
 
 </script>

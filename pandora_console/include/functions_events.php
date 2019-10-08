@@ -6879,3 +6879,56 @@ function events_get_field_value_by_event_id(
     return $value;
 
 }
+
+
+function events_get_instructions($event)
+{
+    if (!is_array($event)) {
+        return '';
+    }
+
+    switch ($event['event_type']) {
+        case 'going_unknown':
+            if ($event['unknown_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']));
+            }
+        break;
+
+        case 'going_up_warning':
+        case 'going_down_warning':
+            if ($event['warning_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['warning_instructions']));
+            }
+        break;
+
+        case 'going_up_critical':
+        case 'going_down_critical':
+            if ($event['critical_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['critical_instructions']));
+            }
+        break;
+    }
+
+    if (!isset($value)) {
+        return '';
+    }
+
+    $max_text_length = 300;
+    $over_text = io_safe_output($value);
+    if (strlen($over_text) > ($max_text_length + 3)) {
+        $over_text = substr($over_text, 0, $max_text_length).'...';
+    }
+
+    $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
+    $output .= ' style="display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left">';
+    $output .= $value;
+    $output .= '</div>';
+    $output .= '<center>';
+    $output .= '<span id="value_event_'.$event['id_evento'].'" style="white-space: nowrap;">';
+    $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
+    $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
+    $output .= html_print_image('images/default_list.png', true, ['title' => $over_text]).'</a></span>';
+    $output .= '</center>';
+
+    return $output;
+}

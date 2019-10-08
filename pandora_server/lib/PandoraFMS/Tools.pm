@@ -569,7 +569,8 @@ sub is_numeric {
 	my $SIGN   = qr{ [+-] }xms;
 	my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
 	if ( $val !~ /^${NUMBER}$/ ) {
-		return 0;   #Non-numeric
+		#Non-numeric, or maybe... leave looks_like_number try
+		return looks_like_number($val);
 	}
 	else {
 		return 1;   #Numeric

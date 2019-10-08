@@ -748,7 +748,9 @@ function planned_downtimes_created($values)
             'return'  => false,
             'message' => __('Not created. Error inserting data').'. '.__('The end date must be higher than the current time'),
         ];
-    } else if ($values['type_execution'] == 'once' && $values['date_from'] >= $values['date_to']) {
+    } else if ($values['type_execution'] == 'once' && ($values['date_from'] > $values['date_to'])
+        || (($values['date_from'] == $values['date_to']) && ($values['periodically_time_from'] >= $values['periodically_time_to']))
+    ) {
         return [
             'return'  => false,
             'message' => __('Not created. Error inserting data').'. '.__('The end date must be higher than the start date'),

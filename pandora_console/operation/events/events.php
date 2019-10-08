@@ -280,7 +280,6 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
-                        $tmp->hint = '';
                         $tmp->meta = is_metaconsole();
                         if (is_metaconsole()) {
                             if ($tmp->server_name !== null) {
@@ -289,14 +288,9 @@ if (is_ajax()) {
                             }
                         }
 
+                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         if (strlen($tmp->evento) >= 255) {
-                            $tmp->hint = io_safe_output(chunk_split(substr($tmp->evento, 0, 600), 80, '<br>').'(...)');
-                            $tmp->evento = io_safe_output(substr($tmp->evento, 0, 253).'(...)');
-                            if (strpos($tmp->evento, ' ') === false) {
-                                $tmp->evento = substr($tmp->evento, 0, 80).'(...)';
-                            }
-                        } else {
-                            $tmp->evento = io_safe_output($tmp->evento);
+                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
                         }
 
                         if ($tmp->module_name) {
@@ -1678,10 +1672,6 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
-    if(item.hint !== ''){
-        let ruta = item.meta == true ? '../../images/tip_help.png' : 'images/tip_help.png';
-        evn += '&nbsp;<img src="'+ruta+'" data-title="'+item.hint+'" data-use_title_for_force_title="1" class="forced_title" alt="'+item.hint+'">';
-    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;

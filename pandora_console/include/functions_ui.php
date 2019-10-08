@@ -162,6 +162,10 @@ function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInA
         }
 
         if ($showTextInAToopTip) {
+            if (is_string($showTextInAToopTip)) {
+                $text = ui_print_truncate_text($showTextInAToopTip, ($numChars * 2), false, true, false);
+            }
+
             $truncateText = $truncateText.ui_print_help_tip(htmlspecialchars($text), true);
         } else {
             if ($style !== false) {

@@ -431,14 +431,14 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
     my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
 
     # Get the agent for the first device.
-    my $agent_1 = get_agent_name_from_addr($self->{'dbh'}, $dev_1);
+    my $agent_1 = get_agent_from_addr($self->{'dbh'}, $dev_1);
     if (!defined($agent_1)) {
         $agent_1 = get_agent_from_name($self->{'dbh'}, $dev_1);
     }
     return unless defined($agent_1);
 
     # Get the agent for the second device.
-    my $agent_2 = get_agent_name_from_addr($self->{'dbh'}, $dev_2);
+    my $agent_2 = get_agent_from_addr($self->{'dbh'}, $dev_2);
     if (!defined($agent_2)) {
         $agent_2 = get_agent_from_name($self->{'dbh'}, $dev_2);
     }
@@ -912,14 +912,14 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
     return unless ($self->{'parent_detection'} == 1);
 
     # Get the agent for the host.
-    my $agent = get_agent_name_from_addr($self->{'dbh'}, $host);
+    my $agent = get_agent_from_addr($self->{'dbh'}, $host);
     if (!defined($agent)) {
         $agent = get_agent_from_name($self->{'dbh'}, $host);
     }
     return unless defined($agent);
 
     # Check if the parent agent exists.
-    my $agent_parent = get_agent_name_from_addr($self->{'dbh'}, $parent);
+    my $agent_parent = get_agent_from_addr($self->{'dbh'}, $parent);
     if (!defined($agent_parent)) {
         $agent_parent = get_agent_from_name($self->{'dbh'}, $parent);
     }

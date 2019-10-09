@@ -1656,10 +1656,10 @@ INSERT INTO tmodule VALUES (8, 'Wux module');
 
 INSERT INTO `ttipo_modulo` VALUES
 (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
-(34,'remote_cmd', 10, 'Remote CMD command, numeric data', 'mod_remote_cmd.png'),
-(35,'remote_cmd_proc', 10, 'Remote CMD command, boolean data', 'mod_remote_cmd_proc.png'),
-(36,'remote_cmd_string', 10, 'Remote CMD command, alphanumeric data', 'mod_remote_cmd_string.png'),
-(37,'remote_cmd_inc', 10, 'Remote CMD command, incremental data', 'mod_remote_cmd_inc.png');
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`

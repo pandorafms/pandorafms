@@ -292,10 +292,10 @@ INSERT INTO `ttipo_modulo` VALUES
 (31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
 (32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','mod_web_data.png'),
 (33,'web_content_string',9,'Remote HTTP module to retrieve string data','mod_web_data.png'),
-(34,'remote_cmd', 10, 'Remote CMD command, numeric data', 'mod_remote_cmd.png'),
-(35,'remote_cmd_proc', 10, 'Remote CMD command, boolean data', 'mod_remote_cmd_proc.png'),
-(36,'remote_cmd_string', 10, 'Remote CMD command, alphanumeric data', 'mod_remote_cmd_string.png'),
-(37,'remote_cmd_inc', 10, 'Remote CMD command, incremental data', 'mod_remote_cmd_inc.png'),
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 --

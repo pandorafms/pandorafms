@@ -11558,7 +11558,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                     $return,
                     $user_comment,
                     'Added comment',
-                    defined('METACONSOLE'),
+                    is_metaconsole(),
                     $config['history_db_enabled']
                 );
                 if ($other['data'][13] != '') {
@@ -11570,7 +11570,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                             $return,
                             $owner_user,
                             true,
-                            defined('METACONSOLE'),
+                            is_metaconsole(),
                             $config['history_db_enabled']
                         );
                     }

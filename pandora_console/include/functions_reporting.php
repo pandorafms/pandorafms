@@ -282,6 +282,15 @@ function reporting_make_reporting_data(
             $agents_to_macro = $content['id_agent'];
         }
 
+        // Metaconsole connection.
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_names();
+            $connection = metaconsole_get_connection($server);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
+        }
+
         if (isset($content['style']['name_label'])) {
             // Add macros name.
             $items_label = [];
@@ -293,14 +302,6 @@ function reporting_make_reporting_data(
             $items_label['visual_format'] = $visual_format;
             $metaconsole_on = is_metaconsole();
             $server_name = $content['server_name'];
-
-            // Metaconsole connection.
-            if ($metaconsole_on && $server_name != '') {
-                $connection = metaconsole_get_connection($server_name);
-                if (!metaconsole_load_external_db($connection)) {
-                    continue;
-                }
-            }
 
             $items_label['agent_description'] = agents_get_description(
                 $content['id_agent']
@@ -2824,13 +2825,12 @@ function reporting_group_report($report, $content)
         $content['name'] = __('Group Report');
     }
 
-    if ($config['metaconsole']) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
+    if (is_metaconsole()) {
+        $server = metaconsole_get_connection_names();
+        $connection = metaconsole_get_connection($server);
     }
 
+    $return['server_name'] = $server[0];
     $return['title'] = $content['name'];
     $return['subtitle'] = groups_get_name($content['id_group'], true);
     $return['description'] = $content['description'];
@@ -3488,7 +3488,7 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     $return['failed'] = null;
     $return['data'] = [];
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole()) {
         $server_names = metaconsole_get_connection_names();
         if (isset($server_names) && is_array($server_names)) {
             foreach ($server_names as $key => $value) {
@@ -3505,7 +3505,8 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
                         $content,
                         $report,
                         $fullscale,
-                        $pdf
+                        $pdf,
+                        $id_meta
                     );
                     metaconsole_restore_db();
                 }

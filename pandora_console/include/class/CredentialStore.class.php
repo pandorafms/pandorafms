@@ -403,6 +403,8 @@ class CredentialStore extends Wizard
     {
         global $config;
 
+        $filter = [];
+
         if ($product !== false) {
             $filter['product'] = $product;
         }

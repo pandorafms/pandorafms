@@ -1350,7 +1350,6 @@ if ($update_module || $create_module) {
         );
         $custom_string_3 = (string) get_parameter('snmp3_security_level');
     } else if ($id_module_type >= 34 && $id_module_type <= 37) {
-        hd($_POST);
         $tcp_send = (string) get_parameter('command_text');
         $custom_string_1 = (string) get_parameter(
             'command_credential_identifier'

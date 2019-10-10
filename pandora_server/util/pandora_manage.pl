@@ -4003,6 +4003,37 @@ sub cli_get_agent_modules() {
 	}
 }
 
+##############################################################################
+# Show id, name and id_server of an agent given alias
+# Related option: --get_agents_id_name_by_alias
+##############################################################################
+
+sub cli_get_agents_id_name_by_alias() {
+	my $agent_alias = @ARGV[2];
+	my @agents;
+
+	if(is_metaconsole($conf) == 1) {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)","%".$agent_alias."%");
+	} else {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", "%".$agent_alias."%");
+	}
+
+	if(scalar(@agents) == 0) {
+		print "[ERROR] No agents retrieved.\n\n";
+	}
+	
+	if(is_metaconsole($conf) == 1) {
+		print "id_module, alias, id_server\n";
+	} else {
+		print "id_module, alias\n";
+	}
+
+	foreach my $agent (@agents) {
+		print $agent->{'id_agente'}.",".safe_output($agent->{'alias'}).", ".$agent->{'id_tmetaconsole_setup'}."\n";
+	}
+}
+
+
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
 	my $synthetic_type = @ARGV[3];
@@ -6284,6 +6315,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_modules') {
 			param_check($ltotal, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agents_id_name_by_alias') {
+			param_check($ltotal, 1);
+			cli_get_agents_id_name_by_alias();
 		}
 		elsif ($param eq '--get_policy_modules') {
 			param_check($ltotal, 1);

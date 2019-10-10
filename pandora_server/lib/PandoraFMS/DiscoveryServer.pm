@@ -538,7 +538,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
             return undef;
         }
 
-        if ($agent->{'address'} ne '') {
+        if (defined($agent->{'address'}) && $agent->{'address'} ne '') {
             pandora_add_agent_address(
                 $pa_config, $agent_id, $agent->{'agent_name'},
                 $agent->{'address'}, $dbh

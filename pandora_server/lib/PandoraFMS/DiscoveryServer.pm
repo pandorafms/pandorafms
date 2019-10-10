@@ -360,8 +360,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     if (-x $self->{'pa_config'}->{'xprobe2'}) {
         my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
         if ($? == 0) {
-			my ($output) = $a =~ /Running OS:(.*)/;
-            return pandora_get_os($self->{'dbh'}, $output);
+            if($return =~ /Running OS:(.*)/) {
+                return pandora_get_os($self->{'dbh'}, $1);
+            }
         }
     }
     
@@ -370,8 +371,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
         my $return = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL`;
         return OS_OTHER if ($? != 0);
 
-        my ($output) = $return =~ /Aggressive OS guesses:\s*(.*)/;
-        return pandora_get_os($self->{'dbh'}, $output);
+        if ($return =~ /Aggressive OS guesses:\s*(.*)/) {
+            return pandora_get_os($self->{'dbh'}, $1);
+        }
     }
 
     return OS_OTHER;

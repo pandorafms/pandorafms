@@ -360,8 +360,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     if (-x $self->{'pa_config'}->{'xprobe2'}) {
         my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
         if ($? == 0) {
-			my ($output) = $a =~ /Running OS:(.*)/;
-            return pandora_get_os($self->{'dbh'}, $output);
+            if($return =~ /Running OS:(.*)/) {
+                return pandora_get_os($self->{'dbh'}, $1);
+            }
         }
     }
     
@@ -370,8 +371,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
         my $return = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL`;
         return OS_OTHER if ($? != 0);
 
-        my ($output) = $return =~ /Aggressive OS guesses:\s*(.*)/;
-        return pandora_get_os($self->{'dbh'}, $output);
+        if ($return =~ /Aggressive OS guesses:\s*(.*)/) {
+            return pandora_get_os($self->{'dbh'}, $1);
+        }
     }
 
     return OS_OTHER;
@@ -536,7 +538,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
             return undef;
         }
 
-        if ($agent->{'address'} ne '') {
+        if (defined($agent->{'address'}) && $agent->{'address'} ne '') {
             pandora_add_agent_address(
                 $pa_config, $agent_id, $agent->{'agent_name'},
                 $agent->{'address'}, $dbh
@@ -582,44 +584,14 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
     # Clean name.
     $device = clean_blank($device);
 
-    my @agents = get_db_rows($self->{'dbh'},
-        'SELECT * FROM taddress, taddress_agent, tagente
-         WHERE tagente.id_agente = taddress_agent.id_agent
-            AND taddress_agent.id_a = taddress.id_a
-            AND ip = ?', $device
-    );
-
-    # Does the host already exist?
-    my $agent;
-    foreach my $candidate (@agents) {
-      $agent = {map {$_} %$candidate}; # copy contents, do not use shallow copy
-      # exclude $device itself, because it handle corner case when target includes NAT
-      my @registered = map {$_->{ip}} get_db_rows($self->{'dbh'},
-          'SELECT ip FROM taddress, taddress_agent, tagente
-           WHERE tagente.id_agente = taddress_agent.id_agent
-              AND taddress_agent.id_a = taddress.id_a
-              AND tagente.id_agente = ?
-            AND taddress.ip != ?', $agent->{id_agente}, $device
-      );
-      foreach my $ip_addr (@registered) {
-        my @matched = grep { $_ =~ /^$ip_addr$/ } $self->get_addresses($device);
-        if (scalar(@matched) == 0) {
-            $agent = undef;
-            last;
-        }
-      }
-      last if(defined($agent)); # exit loop if match all ip_addr
-    }
-
-    if (!defined($agent)) {
-        $agent = get_agent_from_name($self->{'dbh'}, $device);
-    }
+    # Resolve hostnames.
+    my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($device), AF_INET) : $device);
+    # Fallback to device IP if host name could not be resolved.
+    $host_name = $device if (!defined($host_name) || $host_name eq '');
+    my $agent = locate_agent($self->{'pa_config'}, $self->{'dbh'}, $host_name);
 
     my ($agent_id, $agent_learning);
     if (!defined($agent)) {
-
-        # Resolve hostnames.
-        my $host_name = $self->{'resolve_names'} == 1 ? gethostbyaddr (inet_aton($device), AF_INET) : $device;
         $host_name = $device unless defined ($host_name);
 
         # Guess the OS.

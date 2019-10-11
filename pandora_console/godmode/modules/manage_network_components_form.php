@@ -264,8 +264,11 @@ if ($id_component_type == 6) {
         3,
         4,
         5,
-        10,
     ];
+    if (enterprise_installed()) {
+        $categories[] = 10;
+    }
+
     include $config['homedir'].'/godmode/modules/manage_network_components_form_common.php';
     include $config['homedir'].'/godmode/modules/manage_network_components_form_network.php';
 } else {

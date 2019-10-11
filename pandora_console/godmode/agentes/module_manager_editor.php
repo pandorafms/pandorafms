@@ -575,8 +575,11 @@ switch ($moduletype) {
             3,
             4,
             5,
-            10,
         ];
+        if (enterprise_installed()) {
+            $categories[] = 10;
+        }
+
         include 'module_manager_editor_common.php';
         include 'module_manager_editor_network.php';
     break;

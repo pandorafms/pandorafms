@@ -224,7 +224,7 @@ $table->colspan['row-cmd-row-1'][1] = 3;
 push_table_row($data, 'row-cmd-row-1');
 
 require_once $config['homedir'].'/include/class/CredentialStore.class.php';
-$array_credential_identifier = CredentialStore::getKeys();
+$array_credential_identifier = CredentialStore::getKeys('CUSTOM');
 
 $data[0] = __('Credential identifier');
 $data[1] = html_print_select(

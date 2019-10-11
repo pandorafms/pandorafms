@@ -468,7 +468,7 @@ sub exec_network_module ($$$$) {
 	my $tcp_rcv = $module->{'tcp_rcv'};
 	my $timeout = $module->{'max_timeout'};
 	my $retries = $module->{'max_retries'};
-	my $target_os = $module->{'custom_string_2'};
+	my $target_os = pandora_get_os($dbh, $module->{'custom_string_2'});
 
 	if (!defined($target_os) || "$target_os" eq '0') {
 		$target_os = $agent_row->{'id_os'};

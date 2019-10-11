@@ -153,6 +153,7 @@ $checks_in_ok_status = true;
 $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
+$uncompressed_module = true;
 
 switch ($action) {
     case 'new':
@@ -231,6 +232,8 @@ switch ($action) {
             }
 
             $style = json_decode(io_safe_output($item['style']), true);
+
+            $name_from_template = $style['name_label'];
 
             $show_in_same_row = $style['show_in_same_row'];
             $show_in_landscape = $style['show_in_landscape'];
@@ -427,6 +430,7 @@ switch ($action) {
                     );
                     $idAgentModule = $item['id_agent_module'];
                     $period = $item['period'];
+                    $uncompressed_module = $item['uncompressed_module'];
                 break;
 
                 case 'historical_data':
@@ -478,7 +482,8 @@ switch ($action) {
                     $period = $item['period'];
                 break;
 
-                case 'TTRT':
+                /*
+                    case 'TTRT':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -487,9 +492,9 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
+                    break;
 
-                case 'TTO':
+                    case 'TTO':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -498,9 +503,9 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
+                    break;
 
-                case 'MTBF':
+                    case 'MTBF':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -509,9 +514,9 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
+                    break;
 
-                case 'MTTR':
+                    case 'MTTR':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
                     $idAgent = db_get_value_filter(
@@ -520,8 +525,8 @@ switch ($action) {
                         ['id_agente_modulo' => $idAgentModule]
                     );
                     $period = $item['period'];
-                break;
-
+                    break;
+                */
                 case 'alert_report_module':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
@@ -786,10 +791,11 @@ switch ($action) {
                 case 'avg_value':
                 case 'projection_graph':
                 case 'prediction_date':
-                case 'TTRT':
-                case 'TTO':
-                case 'MTBF':
-                case 'MTTR':
+                    /*
+                        case 'TTRT':
+                        case 'TTO':
+                        case 'MTBF':
+                    case 'MTTR':*/
                 case 'simple_baseline_graph':
                 case 'event_report_log':
                 case 'increment':
@@ -809,7 +815,6 @@ switch ($action) {
         }
     break;
 }
-
 
 $urlForm = $config['homeurl'].'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action='.$actionParameter.'&id_report='.$idReport;
 
@@ -868,18 +873,33 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_input_text(
-                    'name',
-                    $name,
-                    '',
-                    80,
-                    100,
-                    false,
-                    false,
-                    false,
-                    '',
-                    'fullwidth'
-                );
+                if ($name_from_template != '') {
+                    html_print_input_text(
+                        'name',
+                        $name_from_template,
+                        '',
+                        80,
+                        100,
+                        false,
+                        false,
+                        false,
+                        '',
+                        'fullwidth'
+                    );
+                } else {
+                    html_print_input_text(
+                        'name',
+                        $name,
+                        '',
+                        80,
+                        100,
+                        false,
+                        false,
+                        false,
+                        '',
+                        'fullwidth'
+                    );
+                }
                 ?>
             </td>
         </tr>
@@ -2792,6 +2812,23 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <tr id="row_uncompressed_module" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Uncompress module').ui_print_help_tip(
+                __('Use uncompressed module data.'),
+                true
+            );
+            ?>
+            </td>
+            <td style="">
+            <?php
+            html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
+            ?>
+            </td>
+        </tr>
+
     </tbody>
 </table>
 
@@ -3720,10 +3757,10 @@ $(document).ready (function () {
             case 'event_report_module':
             case 'simple_graph':
             case 'simple_baseline_graph':
-            case 'TTRT':
+/*          case 'TTRT':
             case 'TTO':
             case 'MTBF':
-            case 'MTTR':
+            case 'MTTR':*/
             case 'prediction_date':
             case 'projection_graph':
             case 'avg_value':
@@ -3761,10 +3798,10 @@ $(document).ready (function () {
             case 'event_report_module':
             case 'simple_graph':
             case 'simple_baseline_graph':
-            case 'TTRT':
+/*          case 'TTRT':
             case 'TTO':
             case 'MTBF':
-            case 'MTTR':
+            case 'MTTR':*/
             case 'prediction_date':
             case 'projection_graph':
             case 'avg_value':
@@ -4524,6 +4561,7 @@ function chooseType() {
     $('#row_select_fields').hide();
     $("#row_select_fields2").hide();
     $("#row_select_fields3").hide();
+    $("#row_uncompressed_module").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -4732,6 +4770,7 @@ function chooseType() {
             $("#row_module").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            $("#row_uncompressed_module").show();
             break;
 
         case 'historical_data':
@@ -4794,7 +4833,7 @@ function chooseType() {
             $("#row_period").show();
             $("#row_historical_db_check").hide();
             break;
-
+/*
         case 'TTRT':
             $("#row_description").show();
             $("#row_agent").show();
@@ -4825,7 +4864,7 @@ function chooseType() {
             $("#row_module").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
-            break;
+            break;*/
 
         case 'alert_report_module':
             $("#row_description").show();
@@ -5179,10 +5218,10 @@ function chooseType() {
         case 'min_value':
         case 'max_value':
         case 'avg_value':
-        case 'TTRT':
+ /*     case 'TTRT':
         case 'TTO':
         case 'MTBF':
-        case 'MTTR':
+        case 'MTTR':*/
         case 'simple_baseline_graph':
             $("#row_label").show();
             break;

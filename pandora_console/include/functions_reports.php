@@ -679,23 +679,24 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Module Histogram graph'),
     ];
 
-    $types['TTRT'] = [
+    /*
+        $types['TTRT'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('TTRT'),
-    ];
-    $types['TTO'] = [
+        ];
+        $types['TTO'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('TTO'),
-    ];
-    $types['MTBF'] = [
+        ];
+        $types['MTBF'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('MTBF'),
-    ];
-    $types['MTTR'] = [
+        ];
+        $types['MTTR'] = [
         'optgroup' => __('ITIL'),
         'name'     => __('MTTR'),
-    ];
-
+        ];
+    */
     $types['SLA'] = [
         'optgroup' => __('SLA'),
         'name'     => __('S.L.A.'),
@@ -777,13 +778,15 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Exception'),
     ];
     if ($config['metaconsole'] != 1) {
-        $types['agent_module'] = [
-            'optgroup' => __('Grouped'),
-            'name'     => __('Agents/Modules'),
-        ];
+        if (!$template) {
+            $types['agent_module'] = [
+                'optgroup' => __('Grouped'),
+                'name'     => __('Agents/Modules'),
+            ];
+        }
     }
 
-    // Only pandora managers have access to the whole database
+    // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [
             'optgroup' => __('Grouped'),

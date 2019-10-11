@@ -295,12 +295,41 @@ function grafico_modulo_sparse_data(
         return false;
     }
 
-    $array_data['sum'.$series_suffix]['agent_module_id'] = $agent_module_id;
-    $array_data['sum'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-    $array_data['sum'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
-    $array_data['sum'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
-    $array_data['sum'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
-    $array_data['sum'.$series_suffix]['unit'] = $data_module_graph['unit'];
+    $array_data = series_suffix_leyend(
+        'sum',
+        $series_suffix,
+        $agent_module_id,
+        $data_module_graph,
+        $array_data
+    );
+
+    if ($params['percentil']) {
+        $array_data = series_suffix_leyend(
+            'percentil',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+    }
+
+    if ($params['type_mode_graph']) {
+        $array_data = series_suffix_leyend(
+            'min',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+
+        $array_data = series_suffix_leyend(
+            'max',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+    }
 
     // This is for a specific type of report that consists in passing
     // an interval and doing the average sum and avg.
@@ -376,12 +405,6 @@ function grafico_modulo_sparse_data(
             1 => $acum_array_data[($i - 1)][1],
         ];
         $array_data['sum1']['data'] = $acum_array_data;
-    }
-
-    if ($params['percentil']) {
-        $percentil_value = $array_data['percentil'.$series_suffix]['data'][0][1];
-    } else {
-        $percentil_value = 0;
     }
 
     $events = [];
@@ -1471,8 +1494,6 @@ function graphic_combined_module(
                 $min = $array_data['sum'.$i]['min'];
                 $avg = $array_data['sum'.$i]['avg'];
 
-                $percentil_value = $array_data['percentil'.$i]['data'][0][1];
-
                 if ($config['fixed_graph'] == false) {
                     $water_mark = [
                         'file' => $config['homedir'].'/images/logo_vertical_water.png',
@@ -1521,7 +1542,8 @@ function graphic_combined_module(
                         $array_data,
                         $params_combined['average'],
                         $params_combined['summatory'],
-                        $params_combined['modules_series']
+                        $params_combined['modules_series'],
+                        $date_array
                     );
                 }
             }
@@ -2222,7 +2244,7 @@ function graphic_combined_module(
  * @param boolean $average        Average.
  * @param boolean $summatory      Summatory.
  * @param boolean $modules_series Series module.
- * @param boolean $baseline       Baseline data.
+ * @param array   $date_array     Date data.
  *
  * @return array Data.
  */
@@ -2231,106 +2253,82 @@ function combined_graph_summatory_average(
     $average=false,
     $summatory=false,
     $modules_series=false,
-    $baseline=false
+    $date_array=[]
 ) {
     if (isset($array_data) && is_array($array_data)) {
+        $reduce_array = [];
         foreach ($array_data as $key => $value) {
             if (strpos($key, 'sum') !== false) {
-                $data_array_reverse[$key] = array_reverse($value['data']);
-                if (!$modules_series) {
-                    unset($array_data[$key]);
-                }
+                $last = $date_array['start_date'];
+                $reduce_array = array_reduce(
+                    $value['data'],
+                    function ($carry, $item) use ($date_array, $last, $reduce_array) {
+                        $slice_start = $date_array['start_date'];
+                        $iterator = $last;
+
+                        // JS to PHP timestamp format.
+                        $item[0] /= 1000;
+                        while ($iterator <= $date_array['final_date']) {
+                            if ($item[0] >= $slice_start && $item[0] < $iterator) {
+                                $array = [];
+                                $val = 0;
+                                $n = 0;
+
+                                if (is_array($reduce_array[$slice_start])) {
+                                    $val = $reduce_array[$slice_start]['value'];
+                                    $n = ($reduce_array[$slice_start]['n'] + 1);
+                                }
+
+                                $array['value'] = ($item[1] + $val);
+                                $array['n'] = $n;
+                                $array['t'] = ($slice_start * 1000);
+
+                                $carry[$slice_start] = $array;
+                                $last = $iterator;
+                                break;
+                            } else {
+                                $slice_start = $iterator;
+                                $iterator += 300;
+                            }
+                        }
+
+                        $i++;
+                        return $carry;
+                    },
+                    $reduce_array
+                );
+            }
+
+            if (!$modules_series) {
+                unset($array_data[$key]);
             }
         }
 
-        if (isset($data_array_reverse) && is_array($data_array_reverse)) {
-            $array_sum_reverse = [];
-            $array_avg_reverse = [];
-            $data_array_prev = false;
-            $data_array_pop = [];
-            $count = 0;
+        $reduce_array_summatory = [];
+        $reduce_array_average = [];
+        $i = 0;
+        foreach ($reduce_array as $item) {
+            $reduce_array_summatory[$i][0] = $item['t'];
+            $reduce_array_summatory[$i][1] = $item['value'];
 
-            $count_data_array_reverse = count($data_array_reverse['sum0']);
-            while ($count_data_array_reverse > 0) {
-                foreach ($data_array_reverse as $key_reverse => $value_reverse) {
-                    if (is_array($value_reverse) && count($value_reverse) > 0) {
-                        $data_array_pop[$key_reverse] = array_pop(
-                            $data_array_reverse[$key_reverse]
-                        );
-                    }
-                }
+            $reduce_array_average[$i][0] = $item['t'];
+            $reduce_array_average[$i][1] = ($item['value'] / ($item['n'] + 1));
 
-                if (isset($data_array_pop) && is_array($data_array_pop)) {
-                    $acum_data  = 0;
-                    $acum_array = [];
-                    $sum_data   = 0;
-                    $count_pop  = 0;
-                    foreach ($data_array_pop as $key_pop => $value_pop) {
-                        if ($value_pop[0] > $acum_data) {
-                            if ($acum_data != 0) {
-                                $sum_data = ($sum_data + $data_array_prev[$key_pop][1]);
-                                $data_array_reverse[$key_pop][] = $value_pop;
-                                $data_array_prev[$acum_key] = $acum_array;
-                            } else {
-                                if ($data_array_prev[$key_pop] == false) {
-                                    $data_array_prev[$key_pop] = $value_pop;
-                                }
+            $i++;
+        }
 
-                                $acum_key   = $key_pop;
-                                $acum_data  = $value_pop[0];
-                                $acum_array = $value_pop;
-                                $sum_data   = $value_pop[1];
-                            }
-                        } else if ($value_pop[0] < $acum_data) {
-                            $sum_data = ($sum_data + $data_array_prev[$key_pop][1]);
-                            $data_array_reverse[$acum_key][] = $acum_array;
-                            $data_array_prev[$key_pop] = $value_pop;
-                            $acum_key   = $key_pop;
-                            $acum_data  = $value_pop[0];
-                            $acum_array = $value_pop;
-                        } else if ($value_pop[0] == $acum_data) {
-                            $data_array_prev[$key_pop] = $value_pop;
-                            $sum_data += $value_pop[1];
-                        }
+        if ($summatory && isset($reduce_array_summatory)
+            && is_array($reduce_array_summatory)
+            && count($reduce_array_summatory) > 0
+        ) {
+            $array_data['summatory']['data'] = $reduce_array_summatory;
+        }
 
-                        $count_pop++;
-                    }
-
-                    if ($summatory) {
-                        $array_sum_reverse[$count][0] = $acum_data;
-                        $array_sum_reverse[$count][1] = $sum_data;
-                    }
-
-                    if ($average) {
-                        $array_avg_reverse[$count][0] = $acum_data;
-                        $array_avg_reverse[$count][1] = ($sum_data / $count_pop);
-                    }
-                }
-
-                $count++;
-                $count_data_array_reverse--;
-            }
-
-            if ($summatory && isset($array_sum_reverse)
-                && is_array($array_sum_reverse)
-                && count($array_sum_reverse) > 0
-            ) {
-                $array_data['summatory']['data']  = $array_sum_reverse;
-                $array_data['summatory']['color'] = 'purple';
-            }
-
-            if ($average && isset($array_avg_reverse)
-                && is_array($array_avg_reverse)
-                && count($array_avg_reverse) > 0
-            ) {
-                if ($baseline) {
-                    $array_data['baseline']['data']  = $array_avg_reverse;
-                    $array_data['baseline']['color'] = 'green';
-                } else {
-                    $array_data['average']['data']  = $array_avg_reverse;
-                    $array_data['average']['color'] = 'orange';
-                }
-            }
+        if ($average && isset($reduce_array_average)
+            && is_array($reduce_array_average)
+            && count($reduce_array_average) > 0
+        ) {
+            $array_data['average']['data'] = $reduce_array_average;
         }
 
         return $array_data;
@@ -3188,6 +3186,21 @@ function graphic_incident_source($width=320, $height=200)
         $config['fontpath'],
         $config['font_size']
     );
+}
+
+
+function series_suffix_leyend($series_name, $series_suffix, $id_agent, $data_module_graph, $array_data)
+{
+        global $config;
+
+        $array_data[$series_name.$series_suffix]['agent_module_id'] = $id_agent;
+        $array_data[$series_name.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+        $array_data[$series_name.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
+        $array_data[$series_name.$series_suffix]['module_name'] = $data_module_graph['module_name'];
+        $array_data[$series_name.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
+        $array_data[$series_name.$series_suffix]['unit'] = $data_module_graph['unit'];
+
+        return $array_data;
 }
 
 

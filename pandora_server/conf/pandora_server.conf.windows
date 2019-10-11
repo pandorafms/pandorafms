@@ -214,6 +214,7 @@ recon_threads 2
 dataserver_threads 2
 
 # mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# If not set, the MTA configuration specified in the Pandora FMS Console will be used.
 
 #mta_address localhost
 
@@ -234,6 +235,10 @@ dataserver_threads 2
 # mta_from Email address that sends the mail, by default is pandora@localhost 
 #           probably you need to change it to avoid problems with your antispam
 #mta_from pandora@sampledomain.com
+
+# SMTP encryption protocol (none, ssl, starttls)
+
+#mta_encryption none
 
 # xprobe2: Optional package to detect OS types using advanced TCP/IP 
 # fingerprinting tecniques, much more accurates than stadard nmap.

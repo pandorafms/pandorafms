@@ -956,7 +956,8 @@ if ($traps !== false) {
             }
         } else {
             $agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
-            if ((check_acl($config['id_user'], $agent_trap_group, 'AW'))) {
+
+            if ((check_acl($config['id_user'], $agent_trap_group, 'IM'))) {
                 $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete')]).'</a> ';
             }
         }

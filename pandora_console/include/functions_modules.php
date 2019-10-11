@@ -2654,21 +2654,18 @@ function modules_get_relations($params=[])
     }
 
     $modules_type = '';
+    $modules_type_filter = '';
     if (isset($params['modules_type'])) {
-        $modules_type = $params['modules_type'];
+        $module_type = 'INNER JOIN ttipo_modulo ttm ON tam.id_tipo_modulo = ttm.id_tipo';
+        $modules_type_filter = sprintf(
+            "AND ttm.nombre = '%s'",
+            $params['modules_type']
+        );
     }
 
-    $sql = 'SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b,
-				tmr.disable_update, tmr.type
-			FROM tmodule_relationship tmr,
-				tagente_modulo tam,
-				tagente ta,
-				ttipo_modulo ttm
-			WHERE ';
-
-    $agent_filter = '';
-    if ($id_agent > 0) {
-        $agent_filter = sprintf('AND ta.id_agente = %d', $id_agent);
+    $distinct = '';
+    if (empty($params)) {
+        $distinct = 'DISTINCT';
     }
 
     $module_a_filter = '';
@@ -2676,6 +2673,11 @@ function modules_get_relations($params=[])
     if ($id_module > 0) {
         $module_a_filter = sprintf('AND tmr.module_a = %d', $id_module);
         $module_b_filter = sprintf('AND tmr.module_b = %d', $id_module);
+    }
+
+    $agent_filter = '';
+    if ($id_agent > 0) {
+        $agent_filter = sprintf('AND ta.id_agente = %d', $id_agent);
     }
 
     $disabled_update_filter = '';
@@ -2686,22 +2688,25 @@ function modules_get_relations($params=[])
         );
     }
 
-    $modules_type_filter = '';
-    if ($modules_type != '') {
-        $modules_type_filter = sprintf(
-            "AND (tam.id_tipo_modulo = ttm.id_tipo AND ttm.nombre = '%s')",
-            $modules_type
-        );
-    }
-
-    $sql .= "( (tmr.module_a = tam.id_agente_modulo
-					$module_a_filter)
-				OR (tmr.module_b = tam.id_agente_modulo
-					$module_b_filter) )
-				AND tam.id_agente = ta.id_agente
-					$agent_filter
-				$disabled_update_filter
-				$modules_type_filter";
+    $sql = sprintf(
+        'SELECT %s tmr.id, tmr.module_a, tmr.module_b,
+        tmr.disable_update, tmr.type 
+        FROM tmodule_relationship tmr 
+        INNER JOIN tagente_modulo tam 
+            ON (tmr.module_a = tam.id_agente_modulo %s) 
+            OR (tmr.module_b = tam.id_agente_modulo %s) 
+        INNER JOIN tagente ta 
+            ON tam.id_agente = ta.id_agente
+        %s 
+        WHERE 1=1 %s %s %s',
+        $distinct,
+        $module_a_filter,
+        $module_b_filter,
+        $module_type,
+        $agent_filter,
+        $disabled_update_filter,
+        $modules_type_filter
+    );
 
     return db_get_all_rows_sql($sql);
 }

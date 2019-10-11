@@ -505,42 +505,43 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'MTTR',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'MTBF',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'TTO',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'TTRT',
                     $pdf
                 );
-            break;
-
+                break;
+            */
             case 'agent_configuration':
                 $report['contents'][] = io_safe_output(
                     reporting_agent_configuration(
@@ -3105,6 +3106,13 @@ function reporting_historical_data($report, $content)
         $content['name'] = __('Historical data');
     }
 
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+
+        $server = metaconsole_get_connection_by_id($id_meta);
+        $connection = metaconsole_connect($server);
+    }
+
     $id_agent = agents_get_module_id(
         $content['id_agent_module']
     );
@@ -3195,6 +3203,10 @@ function reporting_historical_data($report, $content)
     }
 
     $return['data'] = $data;
+
+    if (is_metaconsole() && $connection > 0) {
+        metaconsole_restore_db();
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -4690,21 +4702,22 @@ function reporting_value($report, $content, $type, $pdf=false)
             $return['type'] = 'sumatory';
         break;
 
-        case 'MTTR':
+        /*
+            case 'MTTR':
             $return['type'] = 'MTTR';
-        break;
+            break;
 
-        case 'MTBF':
+            case 'MTBF':
             $return['type'] = 'MTBF';
-        break;
+            break;
 
-        case 'TTO':
+            case 'TTO':
             $return['type'] = 'TTO';
-        break;
+            break;
 
-        case 'TTRT':
+            case 'TTRT':
             $return['type'] = 'TTRT';
-        break;
+        break;*/
     }
 
     if (empty($content['name'])) {
@@ -4725,21 +4738,22 @@ function reporting_value($report, $content, $type, $pdf=false)
                 $content['name'] = __('Summatory');
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 $content['name'] = __('MTTR');
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 $content['name'] = __('MTBF');
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 $content['name'] = __('TTO');
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 $content['name'] = __('TTRT');
-            break;
+            break;*/
         }
     }
 
@@ -4902,7 +4916,8 @@ function reporting_value($report, $content, $type, $pdf=false)
             $value = reporting_get_agentmodule_data_sum(
                 $content['id_agent_module'],
                 $content['period'],
-                $report['datetime']
+                $report['datetime'],
+                $content['uncompressed_module']
             );
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
@@ -4911,25 +4926,26 @@ function reporting_value($report, $content, $type, $pdf=false)
             }
         break;
 
-        case 'MTTR':
+        /*
+            case 'MTTR':
             $value = reporting_get_agentmodule_mttr(
                 $content['id_agent_module'],
                 $content['period'],
                 $report['datetime']
             );
             $formated_value = null;
-        break;
+            break;
 
-        case 'MTBF':
+            case 'MTBF':
             $value = reporting_get_agentmodule_mtbf(
                 $content['id_agent_module'],
                 $content['period'],
                 $report['datetime']
             );
             $formated_value = null;
-        break;
+            break;
 
-        case 'TTO':
+            case 'TTO':
             $value = reporting_get_agentmodule_tto(
                 $content['id_agent_module'],
                 $content['period'],
@@ -4940,9 +4956,9 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $formated_value = human_time_description_raw($value);
             }
-        break;
+            break;
 
-        case 'TTRT':
+            case 'TTRT':
             $value = reporting_get_agentmodule_ttr(
                 $content['id_agent_module'],
                 $content['period'],
@@ -4953,7 +4969,7 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $formated_value = human_time_description_raw($value);
             }
-        break;
+        break;*/
     }
 
     $return['data'] = [
@@ -7486,10 +7502,12 @@ function reporting_custom_graph(
 
     if ($type_report == 'custom_graph') {
         if (is_metaconsole()) {
-            $id_meta = metaconsole_get_id_server($content['server_name']);
-            $server  = metaconsole_get_connection_by_id($id_meta);
-            if (metaconsole_connect($server) != NOERR) {
-                return false;
+            $servers = metaconsole_get_connection_names();
+            foreach ($servers as $server) {
+                $connection = metaconsole_get_connection($server);
+                if (metaconsole_connect($connection) != NOERR) {
+                    continue;
+                }
             }
         }
     }
@@ -10743,17 +10761,19 @@ function reporting_get_agentmodule_data_min($id_agent_module, $period=0, $date=0
  * @param int Agent module id to get the sumatory.
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
+ * @param boolean Show uncompressed data from module
  *
  * @return float The sumatory of the module values in the interval.
  */
 function reporting_get_agentmodule_data_sum(
     $id_agent_module,
     $period=0,
-    $date=0
+    $date=0,
+    $uncompressed_module=true
 ) {
     global $config;
 
-    // Initialize variables
+    // Initialize variables.
     if (empty($date)) {
         $date = get_system_time();
     }
@@ -10775,21 +10795,24 @@ function reporting_get_agentmodule_data_sum(
         $id_module_type
     );
     $module_interval = modules_get_interval($id_agent_module);
-    $uncompressed_module = is_module_uncompressed($module_name);
+    // Check if module must be compressed.
+    if (!$uncompressed_module) {
+        $uncompressed_module = is_module_uncompressed($module_name);
+    }
 
     // Wrong module type
     if (is_module_data_string($module_name)) {
         return 0;
     }
 
-    // Incremental modules are treated differently
+    // Incremental modules are treated differently.
     $module_inc = is_module_inc($module_name);
 
-    if ($uncompressed_module) {
-        // Get module data
+    if (!$uncompressed_module) {
+        // Get module data.
         $interval_data = db_get_all_rows_sql(
             '
-            SELECT * FROM tagente_datos 
+            SELECT * FROM tagente_datos
             WHERE id_agente_modulo = '.(int) $id_agent_module.'
                 AND utimestamp > '.(int) $datelimit.'
                 AND utimestamp < '.(int) $date.'
@@ -10810,7 +10833,7 @@ function reporting_get_agentmodule_data_sum(
         return false;
     }
 
-    // Set initial conditions
+    // Set initial conditions.
     $total = 0;
     $partial_total = 0;
     $count_sum = 0;
@@ -10819,18 +10842,9 @@ function reporting_get_agentmodule_data_sum(
         $partial_total = 0;
         $count_sum = 0;
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                // Do none
-            break;
-
-            case 'oracle':
-                $data['datos'] = oracle_format_float_to_php($data['datos']);
-            break;
-        }
-
-        if (!$module_inc) {
+        if (!$uncompressed_module) {
+            $total += $data['datos'];
+        } else if (!$module_inc) {
             foreach ($data['data'] as $val) {
                 if (is_numeric($val['datos'])) {
                     $partial_total += $val['datos'];
@@ -10842,7 +10856,7 @@ function reporting_get_agentmodule_data_sum(
                 continue;
             }
 
-            $total += ($partial_total / $count_sum);
+            $total += $partial_total;
         } else {
             $last = end($data['data']);
             $total += $last['datos'];

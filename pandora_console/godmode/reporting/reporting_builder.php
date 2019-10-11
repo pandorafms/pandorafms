@@ -1908,6 +1908,11 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
+                        if ($values['type'] == 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
+                        }
+
+
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
@@ -2001,10 +2006,11 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                            case 'TTRT':
-                            case 'TTO':
-                            case 'MTBF':
-                            case 'MTTR':
+                                /*
+                                    case 'TTRT':
+                                    case 'TTO':
+                                    case 'MTBF':
+                                case 'MTTR':*/
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {
@@ -2464,6 +2470,10 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
+                        if ($values['type'] == 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
+                        }
+
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
@@ -2603,10 +2613,11 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                            case 'TTRT':
-                            case 'TTO':
-                            case 'MTBF':
-                            case 'MTTR':
+                                /*
+                                    case 'TTRT':
+                                    case 'TTO':
+                                    case 'MTBF':
+                                case 'MTTR':*/
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {

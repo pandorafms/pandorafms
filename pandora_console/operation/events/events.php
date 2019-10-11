@@ -280,17 +280,9 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
-                        $tmp->hint = '';
-                        $tmp->meta = false;
+                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         if (strlen($tmp->evento) >= 255) {
-                            $tmp->hint = io_safe_output(chunk_split(substr($tmp->evento, 0, 600), 80, '<br>').'(...)');
-                            $tmp->meta = is_metaconsole();
-                            $tmp->evento = io_safe_output(substr($tmp->evento, 0, 253).'(...)');
-                            if (strpos($tmp->evento, ' ') === false) {
-                                $tmp->evento = substr($tmp->evento, 0, 80).'(...)';
-                            }
-                        } else {
-                            $tmp->evento = io_safe_output($tmp->evento);
+                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
                         }
 
                         if ($tmp->module_name) {
@@ -308,6 +300,8 @@ if (is_ajax()) {
                         );
 
                         $tmp->data = format_numeric($tmp->data, 1);
+
+                        $tmp->instructions = events_get_instructions($item);
 
                         $tmp->b64 = base64_encode(json_encode($tmp));
 
@@ -1247,6 +1241,14 @@ try {
         ];
     }
 
+    // Identifies column instructions to make it unsortable.
+    if (in_array('instructions', $fields) > 0) {
+        $fields[array_search('instructions', $fields)] = [
+            'text'  => 'instructions',
+            'class' => 'column-instructions',
+        ];
+    }
+
     $evento_id = array_search('evento', $fields);
     if ($evento_id !== false) {
         $fields[$evento_id] = [
@@ -1411,6 +1413,7 @@ try {
             'no_sortable_columns' => [
                 -1,
                 -2,
+                'column-instructions',
             ],
             'ajax_postprocess'    => 'process_datatables_item(item)',
             'drawCallback'        => 'process_datatables_callback(this, settings)',
@@ -1650,10 +1653,6 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
-    if(item.hint !== ''){
-        let ruta = item.meta == true ? '../../images/tip_help.png' : 'images/tip_help.png';
-        evn += '&nbsp;<img src="'+ruta+'" data-title="'+item.hint+'" data-use_title_for_force_title="1" class="forced_title" alt="'+item.hint+'">';
-    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;
@@ -2362,5 +2361,12 @@ function datetime_picker_callback() {
 
 datetime_picker_callback();
 
+function show_instructions(id){
+    title = "<?php echo __('Instructions'); ?>";
+    $('#hidden_event_instructions_' + id).dialog({
+        title: title,
+        width: 600
+    });
+}
 
 </script>

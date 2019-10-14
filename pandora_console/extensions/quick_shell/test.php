@@ -4,7 +4,7 @@ $host = '127.0.0.1';
 $port = 8080;
 
 $r = file_get_contents('http://'.$host.':'.$port.'/js/hterm.js');
-$r .= file_get_contents('http://'.$host.':'.$port.'/hterms.js');
+$r .= file_get_contents('http://'.$host.':'.$port.'/auth_token.js');
 $gotty = file_get_contents('http://'.$host.':'.$port.'/js/gotty.js');
 
 
@@ -18,11 +18,19 @@ $gotty = str_replace($url, $new, $gotty);
 <!doctype html>
 <html>
   <head>
-    <title>GoTTY</title>
-    <style>body, #terminal {position: absolute; height: 100%; width: 100%; margin: 0px;}</style>
+    <title>Quick Shell experiment</title>
+    <style>#terminal {
+        height: 590px;
+        width: 100%;
+        margin: 0px;
+        padding: 0;
+        border: 1px solid red;
+      }
+    </style>
     <link rel="icon" type="image/png" href="favicon.png">
   </head>
   <body>
+  <h1>Prueba</h1>
     <div id="terminal"></div>
     <script type="text/javascript">
     <?php echo $r; ?>

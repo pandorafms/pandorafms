@@ -132,11 +132,18 @@ abstract class WebSocketServer
     protected $headerSecWebSocketExtensionsRequired = false;
 
     /**
-     * Stored raw headers for rediretion.
+     * Stored raw headers for redirection.
      *
      * @var array
      */
     public $rawHeaders = [];
+
+    /**
+     * Raw packet for redirection.
+     *
+     * @var string
+     */
+    public $rawPacket;
 
 
     /**
@@ -148,7 +155,7 @@ abstract class WebSocketServer
      * @param integer $maxConnections Max concurrent connections.
      */
     public function __construct(
-        string $addr,
+        $addr,
         int $port,
         int $bufferLength=2048,
         int $maxConnections=20
@@ -190,7 +197,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    abstract protected function process($user, string $message);
+    abstract protected function process($user, $message);
 
 
     /**
@@ -236,7 +243,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function send($user, string $message)
+    protected function send($user, $message)
     {
         if ($user->handshake) {
             $message = $this->frame($message, $user);
@@ -394,6 +401,8 @@ abstract class WebSocketServer
                         );
                     } else {
                         $user = $this->getUserBySocket($socket);
+                        $pair = $this->getIntUserBySocket($socket);
+
                         if (!$user->handshake) {
                             $tmp = str_replace("\r", '', $buffer);
                             if (strpos($tmp, "\n\n") === false) {
@@ -405,8 +414,13 @@ abstract class WebSocketServer
 
                             $this->doHandshake($user, $buffer);
                         } else {
-                            // Split packet into frame and send it to deframe.
-                            $this->splitPacket($numBytes, $buffer, $user);
+                            if (is_array($pair) && $pair['int']) {
+                                echo '~~ RESEND!'."\n";
+                                socket_write($pair['ext']->socket, $buffer);
+                            } else {
+                                // Split packet into frame and send it to deframe.
+                                $this->splitPacket($numBytes, $buffer, $user);
+                            }
                         }
                     }
                 }
@@ -484,7 +498,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function doHandshake($user, string $buffer)
+    protected function doHandshake($user, $buffer)
     {
         $magicGUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
         $headers = [];
@@ -688,7 +702,7 @@ abstract class WebSocketServer
      *
      * @return string
      */
-    protected function processProtocol(string $protocol): string
+    protected function processProtocol($protocol): string
     {
         return '';
     }
@@ -703,7 +717,7 @@ abstract class WebSocketServer
      *
      * @return string
      */
-    protected function processExtensions(string $extensions): string
+    protected function processExtensions($extensions): string
     {
         return '';
     }
@@ -721,6 +735,28 @@ abstract class WebSocketServer
         foreach ($this->users as $user) {
             if ($user->socket == $socket) {
                 return $user;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Return INT user associated to target socket.
+     *
+     * @param Socket $socket Socket.
+     *
+     * @return object
+     */
+    protected function getIntUserBySocket($socket)
+    {
+        foreach ($this->users as $user) {
+            if ($user->intSocket == $socket) {
+                return [
+                    'ext' => $user,
+                    'int' => $user->intUser,
+                ];
             }
         }
 
@@ -750,7 +786,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    public function stderr(string $message=null)
+    public function stderr($message=null)
     {
         if ($this->interactive) {
             echo $message."\n";
@@ -769,9 +805,9 @@ abstract class WebSocketServer
      * @return string Framed message.
      */
     protected function frame(
-        string $message,
+        $message,
         $user,
-        string $messageType='text',
+        $messageType='text',
         bool $messageContinues=false
     ) {
         switch ($messageType) {
@@ -858,7 +894,8 @@ abstract class WebSocketServer
             }
         }
 
-        return chr($b1).chr($b2).$lengthField.$message;
+        $out = chr($b1).chr($b2).$lengthField.$message;
+        return $out;
     }
 
 
@@ -874,7 +911,7 @@ abstract class WebSocketServer
      */
     protected function splitPacket(
         int $length,
-        string $packet,
+        $packet,
         $user
     ) {
         // Add PartialPacket and calculate the new $length.
@@ -884,6 +921,7 @@ abstract class WebSocketServer
             $length = strlen($packet);
         }
 
+        $this->rawPacket = $packet;
         $fullpacket = $packet;
         $frame_pos = 0;
         $frame_id = 1;
@@ -958,7 +996,7 @@ abstract class WebSocketServer
      * @return boolean Process ok or not.
      */
     protected function deframe(
-        string $message,
+        $message,
         &$user
     ) {
         /*
@@ -1052,7 +1090,7 @@ abstract class WebSocketServer
      *
      * @return array Headers.
      */
-    protected function extractHeaders(string $message): array
+    protected function extractHeaders($message): array
     {
         $header = [
             'fin'     => ($message[0] & chr(128)),
@@ -1115,7 +1153,7 @@ abstract class WebSocketServer
      * @return string
      */
     protected function extractPayload(
-        string $message,
+        $message,
         array $headers
     ) {
         $offset = 2;
@@ -1143,7 +1181,7 @@ abstract class WebSocketServer
      */
     protected function applyMask(
         array $headers,
-        string $payload
+        $payload
     ) {
         $effectiveMask = '';
         if ($headers['hasmask']) {
@@ -1211,7 +1249,7 @@ abstract class WebSocketServer
      * @return string HEX string.
      */
     protected function strtohex(
-        string $str=''
+        $str=''
     ): string {
         $strout = '';
         $len = strlen($str);
@@ -1263,6 +1301,60 @@ abstract class WebSocketServer
         }
 
         echo ")\n";
+    }
+
+
+    /**
+     * View any string as a hexdump.
+     *
+     * @param string $data The string to be dumped.
+     *
+     * @return string
+     */
+    public function dump($data)
+    {
+        // Init.
+        $hexi   = '';
+        $ascii  = '';
+        $dump   = '';
+        $offset = 0;
+        $len    = strlen($data);
+
+        // Iterate string.
+        for ($i = 0, $j = 0; $i < $len; $i++) {
+            // Convert to hexidecimal.
+            $hexi .= sprintf('%02x ', ord($data[$i]));
+            // Replace non-viewable bytes with '.'.
+            if (ord($data[$i]) >= 32) {
+                $ascii .= $data[$i];
+            } else {
+                $ascii .= '.';
+            }
+
+            // Add extra column spacing.
+            if ($j === 7 && $i !== ($len - 1)) {
+                $hexi  .= ' ';
+                $ascii .= ' ';
+            }
+
+            // Add row.
+            if (++$j === 16 || $i === ($len - 1)) {
+                // Join the hexi / ascii output.
+                $dump .= sprintf('%04x  %-49s  %s', $offset, $hexi, $ascii);
+                // Reset vars.
+                $hexi   = $ascii = '';
+                $offset += 16;
+                $j      = 0;
+                // Add newline.
+                if ($i !== ($len - 1)) {
+                    $dump .= "\n";
+                }
+            }
+        }
+
+        // Finish dump.
+        $dump .= "\n";
+        return $dump;
     }
 
 

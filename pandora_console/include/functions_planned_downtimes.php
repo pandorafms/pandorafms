@@ -796,6 +796,11 @@ function planned_downtimes_created($values)
             'return'  => false,
             'message' => __('Not created. Error inserting data').'. '.__('There is no group with such id'),
         ];
+    } else if (!$values['date_from'] || !$values['date_to']) {
+        return [
+            'return'  => false,
+            'message' => __('Not created. Error inserting data').'. '.__('Date is wrong formatted'),
+        ];
     } else {
         if (trim(io_safe_output($values['name'])) != '') {
             if (!$check) {

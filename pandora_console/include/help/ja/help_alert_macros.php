@@ -83,7 +83,6 @@
     <li>_target_ip_ : モジュールの対象IPアドレス</li>
     <li>_target_port_ : モジュールの対象ポート</li>
     <li>_timestamp_ : アラートが発生した日時 (yy-mm-dd hh:mm:ss).</li>
-エージェントのすべてのセカンダリグループのリスト
     <li>_timezone_: _timestamp_ で使用されるタイムゾーン名.</li>
 <p>
 例: Agent _agent_ has fired alert _alert_ with data _data_

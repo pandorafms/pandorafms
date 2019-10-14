@@ -77,11 +77,13 @@
     <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
     <li>_prevdata_ : アラートを発報する前のモジュールデータ</li>
     <li>_rca_: Root cause analysis chain (only for services).</li>
+    <li>_secondarygroups_: エージェントのすべてのセカンダリグループのリスト</li>
     <li>_server_ip_ : エージェントが割り当てられているサーバ IP。</li>
     <li>_server_name_ : エージェントが割り当てられているサーバ名。 </li>
     <li>_target_ip_ : モジュールの対象IPアドレス</li>
     <li>_target_port_ : モジュールの対象ポート</li>
     <li>_timestamp_ : アラートが発生した日時 (yy-mm-dd hh:mm:ss).</li>
+エージェントのすべてのセカンダリグループのリスト
     <li>_timezone_: _timestamp_ で使用されるタイムゾーン名.</li>
 <p>
 例: Agent _agent_ has fired alert _alert_ with data _data_

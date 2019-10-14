@@ -1125,6 +1125,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_name_tag_ => undef,
 				_all_address_ => undef,
 				'_address_\d+_' => undef,
+				_secondarygroups_ => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -4114,6 +4115,15 @@ sub on_demand_macro($$$$$$;$) {
 		}
 		
 		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro eq '_secondarygroups_') {
+		my $field_value = '';
+
+		my @groups = get_db_rows ($dbh, 'SELECT tg.nombre from tagent_secondary_group as tsg INNER JOIN tgrupo tg ON tsg.id_group = tg.id_grupo WHERE tsg.id_agent = ?', $module->{'id_agente'});
+		foreach my $element (@groups) {
+			$field_value .= $element->{'nombre'} .",";
+		}
+		chop($field_value);
+		return(defined($field_value)) ? '('.$field_value.')' : '';
 	}
 }
 

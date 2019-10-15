@@ -1141,21 +1141,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	#logger($pa_config, "Clean name ".$clean_name, 10);
 	# User defined alert
 	if ($action->{'internal'} == 0) {
-		$macros{_field1_} = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field2_} = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field3_} = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field4_} = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field5_} = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field6_} = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field7_} = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field8_} = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field11_} = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field12_} = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field1_} = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field2_} = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field3_} = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field4_} = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field5_} = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field6_} = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field7_} = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field8_} = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field11_} = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field12_} = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		my @command_args = ();
 		# divide command into words based on quotes and whitespaces
@@ -1186,7 +1186,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Internal Audit
 	} elsif ($clean_name eq "Internal Audit") {
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
 	
 	# Email
@@ -1363,12 +1363,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Monitoring Event") {
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
-		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
-		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		# Field 1 (event text)
 		my $event_text = $field1;
@@ -1448,13 +1448,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
 		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 		my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
-		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
 		my $api_path = $config_api_path . "/integria/include/api.php";
@@ -1513,8 +1513,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	} elsif ($clean_name eq "Generate Notification") {
 
 		# Translate macros
-		$field3 = subst_alert_macros($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros($field4, \%macros, $pa_config, $dbh, $agent, $module);
+		$field3 = subst_alert_macros($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# If no targets ignore notification
 		if (defined($field1) && defined($field2) && ($field1 ne "" || $field2 ne "")) {

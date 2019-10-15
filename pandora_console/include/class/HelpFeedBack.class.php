@@ -134,7 +134,7 @@ class HelpFeedBack extends Wizard
         $inputs = [
             [
                 'wrapper'       => 'div',
-                'block_id'      => 'ejemplo',
+                'block_id'      => 'btn_section',
                 'class'         => '',
                 'direct'        => 1,
                 'block_content' => [

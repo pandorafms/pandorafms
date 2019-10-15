@@ -242,7 +242,7 @@ class HelpFeedBack extends Wizard
         $feedback_text .= '
         From '.$feedback_mail.' ';
 
-        $res = enterprise_hook('send_email_attachment', ['marcos.alconada@artica.es', $feedback_text, $subject]);
+        $res = enterprise_hook('send_email_attachment', ['feedback@artica.es', $feedback_text, $subject]);
 
         return $res;
 

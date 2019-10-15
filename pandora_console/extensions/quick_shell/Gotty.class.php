@@ -51,7 +51,7 @@ class QuickShell
      *
      * Registers class into system.
      *
-     * @return void
+     * @return boolean
      */
     public function install()
     {
@@ -66,7 +66,7 @@ class QuickShell
      */
     public function interactiveShell()
     {
-        file_get_Str
+        file_get_Str();
 
     }
 

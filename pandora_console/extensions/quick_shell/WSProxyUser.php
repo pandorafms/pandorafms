@@ -20,6 +20,13 @@ class WSProxyUser extends WebSocketUser
     public $intSocket;
 
     /**
+     * Pair resend packages.
+     *
+     * @var WSProxyUser
+     */
+    public $redirect;
+
+    /**
      * User identifier.
      *
      * @var string
@@ -30,9 +37,8 @@ class WSProxyUser extends WebSocketUser
     /**
      * Builder.
      *
-     * @param string $id        Identifier.
-     * @param socket $socket    Socket (origin).
-     * @param socket $intSocket Socket (internal).
+     * @param string $id     Identifier.
+     * @param socket $socket Socket (origin).
      */
     public function __construct($id, $socket)
     {

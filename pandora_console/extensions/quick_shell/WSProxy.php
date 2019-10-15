@@ -102,7 +102,8 @@ class WSProxy extends WebSocketServer
             return false;
         }
 
-        return $this->splitPacket($numBytes, $buffer, $user);
+        $user->lastRawPacket = $buffer;
+        return $buffer;
     }
 
 
@@ -117,10 +118,9 @@ class WSProxy extends WebSocketServer
     protected function writeSocket($user, $message)
     {
         if ($user->socket) {
-            socket_write(
-                $user->socket,
-                $message
-            );
+            if (!socket_write($user->socket, $message)) {
+                $this->disconnect($user->socket);
+            }
         } else {
             // Failed. Disconnect.
             $this->disconnect($user->socket);
@@ -186,11 +186,15 @@ class WSProxy extends WebSocketServer
     protected function connected($user)
     {
         echo '** CONNECTED'."\n";
+        // Disconnect previous sessions.
+        $this->cleanupSocketByCookie($headers['cookie']);
 
         /*
          * $user->intSocket is connected to internal.
          * $user->socket is connected to external.
          */
+
+        var_dump($user);
 
         // Create a new socket connection (internal).
         $intUser = $this->connectInt($this->rawHeaders);
@@ -199,6 +203,8 @@ class WSProxy extends WebSocketServer
         $user->intUser = $intUser;
         // And socket.
         $user->intSocket = $intUser->socket;
+        $user->redirect = $intUser;
+        $intUser->redirect = $user;
 
         $response = $this->readSocket($intUser);
 
@@ -219,6 +225,36 @@ class WSProxy extends WebSocketServer
 
 
     /**
+     * Process undecoded user message.
+     *
+     * @param object $user   User.
+     * @param string $buffer Message.
+     *
+     * @return boolean
+     */
+    protected function processRaw($user, $buffer)
+    {
+        unset($user->intUser->lastRawPacket);
+        unset($user->lastRawPacket);
+
+        echo "\n****************** REDIRECT *********************\n";
+        echo date('D M j G:i:s').' - '.$user->id.' >> '.$user->intUser->id."\n";
+        echo $this->dump($buffer);
+        $this->writeSocket(
+            $user->intUser,
+            $buffer
+        );
+
+        echo date('D M j G:i:s').' - '.$user->intUser->id.'] << '.$user->id."\n";
+        $response = $this->readSocket($user->intUser);
+        $this->writeSocket($user, $user->intUser->lastRawPacket);
+        echo $this->dump($user->intUser->lastRawPacket);
+
+        return true;
+    }
+
+
+    /**
      * From client to socket (internal);
      *
      * @param object $user    Caller.
@@ -228,21 +264,7 @@ class WSProxy extends WebSocketServer
      */
     protected function process($user, $message)
     {
-        echo '>> ['.$user->id.'] => ['.$user->intUser->id."]\n";
-        echo $this->dump($this->rawPacket);
-        $this->writeSocket(
-            $user->intUser,
-            $this->rawPacket
-        );
-
-        echo '<< ['.$user->intUser->id.'] => ['.$user->id."]\n";
-        $response = $this->readSocket($user->intUser);
-        $this->send($user, $response);
-        echo $this->dump($this->rawPacket);
-        print "\n********************************************\n";
-        print "\n\n\n";
-        print "\n\n\n";
-        print "\n\n\n";
+        echo 'Procesando..'."\n";
     }
 
 

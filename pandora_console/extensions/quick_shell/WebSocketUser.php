@@ -115,47 +115,23 @@ class WebSocketUser
     public $hasSentClose = false;
 
     /**
-     * Received raw packet, to be redirected.
+     * Raw packet for redirection.
      *
      * @var string
      */
-    public $rawPacket;
+    public $lastRawPacket;
 
 
     /**
      * Initializes a websocket user.
      *
-     * @param string $id     Id.
-     * @param Socket $socket Socket.
+     * @param string $id     Id of the new user.
+     * @param Socket $socket Socket where communication is stablished.
      */
     public function __construct($id, $socket)
     {
         $this->id = $id;
         $this->socket = $socket;
-    }
-
-
-    /**
-     * Retun last packet (raw) received
-     *
-     * @return string
-     */
-    public function getRawPacket()
-    {
-        return $this->rawPacket;
-    }
-
-
-    /**
-     * Store raw packet.
-     *
-     * @param string $packet received.
-     *
-     * @return void
-     */
-    public function setRawPacket($packet)
-    {
-        $this->rawPacket = $packet;
     }
 
 

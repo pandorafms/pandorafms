@@ -138,13 +138,6 @@ abstract class WebSocketServer
      */
     public $rawHeaders = [];
 
-    /**
-     * Raw packet for redirection.
-     *
-     * @var string
-     */
-    public $rawPacket;
-
 
     /**
      * Builder.
@@ -201,6 +194,20 @@ abstract class WebSocketServer
 
 
     /**
+     * Process undecoded user message.
+     *
+     * @param object $user   User.
+     * @param string $buffer Message.
+     *
+     * @return void
+     */
+    protected function processRaw($user, $buffer)
+    {
+
+    }
+
+
+    /**
      * Called immediately when the data is recieved.
      *
      * @param object $user User.
@@ -245,6 +252,7 @@ abstract class WebSocketServer
      */
     protected function send($user, $message)
     {
+        var_dump($user->handshake);
         if ($user->handshake) {
             $message = $this->frame($message, $user);
             $result = socket_write($user->socket, $message, strlen($message));
@@ -401,8 +409,6 @@ abstract class WebSocketServer
                         );
                     } else {
                         $user = $this->getUserBySocket($socket);
-                        $pair = $this->getIntUserBySocket($socket);
-
                         if (!$user->handshake) {
                             $tmp = str_replace("\r", '', $buffer);
                             if (strpos($tmp, "\n\n") === false) {
@@ -414,10 +420,7 @@ abstract class WebSocketServer
 
                             $this->doHandshake($user, $buffer);
                         } else {
-                            if (is_array($pair) && $pair['int']) {
-                                echo '~~ RESEND!'."\n";
-                                socket_write($pair['ext']->socket, $buffer);
-                            } else {
+                            if (!$this->processRaw($user, $buffer)) {
                                 // Split packet into frame and send it to deframe.
                                 $this->splitPacket($numBytes, $buffer, $user);
                             }
@@ -743,6 +746,24 @@ abstract class WebSocketServer
 
 
     /**
+     * Disconnects all users matching target cookie but latest one.
+     *
+     * @param string $cookie Cookie identifier.
+     *
+     * @return void
+     */
+    protected function cleanupSocketByCookie($cookie)
+    {
+        foreach ($this->users as $user) {
+            if ($user->headers['cookie'] == $cookie) {
+                $this->disconnectUser($user->socket);
+            }
+        }
+
+    }
+
+
+    /**
      * Return INT user associated to target socket.
      *
      * @param Socket $socket Socket.
@@ -921,7 +942,7 @@ abstract class WebSocketServer
             $length = strlen($packet);
         }
 
-        $this->rawPacket = $packet;
+        $user->lastRawPacket = $packet;
         $fullpacket = $packet;
         $frame_pos = 0;
         $frame_id = 1;
@@ -1130,6 +1151,22 @@ abstract class WebSocketServer
             $header['length'] += (ord($message[8]) * 256);
             $header['length'] += ord($message[9]);
         } else if ($header['hasmask']) {
+            if (!isset($message[2])) {
+                $message[2] = 0x00;
+            }
+
+            if (!isset($message[3])) {
+                $message[3] = 0x00;
+            }
+
+            if (!isset($message[4])) {
+                $message[4] = 0x00;
+            }
+
+            if (!isset($message[5])) {
+                $message[5] = 0x00;
+            }
+
             $header['mask'] = $message[2].$message[3].$message[4].$message[5];
         }
 
@@ -1325,7 +1362,7 @@ abstract class WebSocketServer
             // Convert to hexidecimal.
             $hexi .= sprintf('%02x ', ord($data[$i]));
             // Replace non-viewable bytes with '.'.
-            if (ord($data[$i]) >= 32) {
+            if (ord($data[$i]) >= 32 && ord($data[$i]) <= 255) {
                 $ascii .= $data[$i];
             } else {
                 $ascii .= '.';

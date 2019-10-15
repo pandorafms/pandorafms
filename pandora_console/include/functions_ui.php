@@ -56,7 +56,7 @@ function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
             $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="http://$1">$2</a>';
         }
 
-        // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes
+        // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes.
         $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $text);
     }
 
@@ -1405,7 +1405,7 @@ function ui_print_help_icon(
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".$url."')",
+            'onclick' => "open_help ('".ui_get_full_url('index.php?sec=view&sec2=general/help_feedback&pure=1&url='.$url)."')",
             'id'      => $id,
         ],
         false,

@@ -5655,3 +5655,63 @@ function ui_print_breadcrums($tab_name)
 
     return $section;
 }
+
+
+/**
+ * Show last comment
+ *
+ * @param array $comments array with comments
+ *
+ * @return string  HTML string with the last comment of the events.
+ */
+function ui_print_comments($comments)
+{
+    global $config;
+
+    $comments = explode('<br>', $comments);
+    $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+    if (is_array($comments)) {
+        foreach ($comments as $comm) {
+            if (empty($comm)) {
+                continue;
+            }
+
+            $comments_array[] = json_decode(io_safe_output($comm), true);
+        }
+    }
+
+    foreach ($comments_array as $comm) {
+        // Show the comments more recent first.
+        if (is_array($comm)) {
+            $last_comment[] = array_reverse($comm);
+        }
+    }
+
+    // Only show the last comment. If commment its too long,the comment will short with ...
+    // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
+    // Else show comments hours ago
+    
+    if ($last_comment[0][0]['action'] != 'Added comment'){
+        $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
+    }
+    
+    $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
+    if ($config['prominent_time'] == 'timestamp') {
+        $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+
+        if (strlen($comentario) > '200px') {
+            $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+        }
+    } else {
+        $rest_time = (time() - $last_comment[0][0]['utimestamp']);
+        $time_last = (($rest_time / 60) / 60);
+        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+
+        if (strlen($comentario) > '200px') {
+            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+        }
+    }
+
+    return io_safe_output($comentario);
+
+}

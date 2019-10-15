@@ -3142,17 +3142,19 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
         break;
     }
 
-    ui_print_page_header(
-        $textReportName,
-        'images/op_reporting.png',
-        false,
-        $helpers,
-        false,
-        $buttons,
-        false,
-        '',
-        60
-    );
+    if ($action !== 'update') {
+        ui_print_page_header(
+            $textReportName,
+            'images/op_reporting.png',
+            false,
+            $helpers,
+            false,
+            $buttons,
+            false,
+            '',
+            60
+        );
+    }
 }
 
 if ($resultOperationDB !== null) {
@@ -3175,8 +3177,22 @@ if ($resultOperationDB !== null) {
         __('Unsuccessful action<br><br>'.$err)
     );
 
-    if ($resultOperationDB != null && $activeTab == 'item_editor') {
+    if ($action == 'update') {
+        $buttons[$activeTab]['active'] = false;
         $activeTab = 'list_items';
+        $buttons[$activeTab]['active'] = true;
+
+        ui_print_page_header(
+            $textReportName,
+            'images/op_reporting.png',
+            false,
+            $helpers,
+            false,
+            $buttons,
+            false,
+            '',
+            60
+        );
     }
 }
 

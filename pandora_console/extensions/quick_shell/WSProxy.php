@@ -1,5 +1,45 @@
 <?php
+/**
+ * PHP WebSocketServer Proxy.
+ *
+ * Adapted to PandoraFMS by Fco de Borja Sanchez <fborja.sanchez@artica.es>
+ * Compatible with PHP >= 7.0
+ *
+ * @category   External library
+ * @package    Pandora FMS
+ * @subpackage WebSocketServer
+ * @version    1.0.0
+ * @license    See below
+ * @filesource https://github.com/ghedipunk/PHP-Websockets
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of PHP WebSockets nor the names of its contributors may
+ *   be used to endorse or promote products derived from this software without
+ *   specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 
+// Begin.
 require_once __DIR__.'/WebSocketServer.php';
 require_once __DIR__.'/WSProxyUser.php';
 
@@ -48,6 +88,13 @@ class WSProxy extends WebSocketServer
      */
     protected $interative = false;
 
+    /**
+     * Use a timeout of 0.1 second to search for messages..
+     *
+     * @var integer
+     */
+    public $timeout = 0.1;
+
 
     /**
      * Builder.
@@ -80,9 +127,9 @@ class WSProxy extends WebSocketServer
 
 
     /**
-     * Read from socket
+     * Read from user's socket.
      *
-     * @param socket $socket Target connection.
+     * @param object $user Target user connection.
      *
      * @return string Buffer.
      */
@@ -98,7 +145,13 @@ class WSProxy extends WebSocketServer
         );
         if ($numBytes === false) {
             // Failed. Disconnect.
+            $this->handleSocketError($user->socket);
+            return false;
+        } else if ($numBytes == 0) {
             $this->disconnect($user->socket);
+            $this->stderr(
+                'Client disconnected. TCP connection lost: '.$user->socket
+            );
             return false;
         }
 
@@ -110,20 +163,21 @@ class WSProxy extends WebSocketServer
     /**
      * Write to socket.
      *
-     * @param socket $socket  Target socket.
+     * @param object $user    Target user connection.
      * @param string $message Target message to be sent.
      *
      * @return void
      */
     protected function writeSocket($user, $message)
     {
-        if ($user->socket) {
+        if (is_resource($user->socket)) {
             if (!socket_write($user->socket, $message)) {
                 $this->disconnect($user->socket);
             }
         } else {
-            // Failed. Disconnect.
+            // Failed. Disconnect all.
             $this->disconnect($user->socket);
+            $this->disconnect($user->redirect->socket);
         }
 
     }
@@ -185,19 +239,20 @@ class WSProxy extends WebSocketServer
      */
     protected function connected($user)
     {
-        echo '** CONNECTED'."\n";
         // Disconnect previous sessions.
-        $this->cleanupSocketByCookie($headers['cookie']);
+        $this->cleanupSocketByCookie($user);
 
         /*
          * $user->intSocket is connected to internal.
          * $user->socket is connected to external.
          */
 
-        var_dump($user);
-
         // Create a new socket connection (internal).
         $intUser = $this->connectInt($this->rawHeaders);
+        if ($intUser === null) {
+            $this->disconnect($user);
+            return;
+        }
 
         // Map user.
         $user->intUser = $intUser;
@@ -206,8 +261,12 @@ class WSProxy extends WebSocketServer
         $user->redirect = $intUser;
         $intUser->redirect = $user;
 
-        $response = $this->readSocket($intUser);
+        // Keep an eye on changes.
+        $this->remoteSockets[$intUser->id] = $intUser->socket;
+        $this->remoteUsers[$intUser->id] = $intUser;
 
+        // Ignore. Cleanup socket.
+        $response = $this->readSocket($user->intUser);
     }
 
 
@@ -234,37 +293,25 @@ class WSProxy extends WebSocketServer
      */
     protected function processRaw($user, $buffer)
     {
-        unset($user->intUser->lastRawPacket);
-        unset($user->lastRawPacket);
-
-        echo "\n****************** REDIRECT *********************\n";
-        echo date('D M j G:i:s').' - '.$user->id.' >> '.$user->intUser->id."\n";
-        echo $this->dump($buffer);
-        $this->writeSocket(
-            $user->intUser,
-            $buffer
-        );
-
-        echo date('D M j G:i:s').' - '.$user->intUser->id.'] << '.$user->id."\n";
-        $response = $this->readSocket($user->intUser);
-        $this->writeSocket($user, $user->intUser->lastRawPacket);
-        echo $this->dump($user->intUser->lastRawPacket);
+        $this->stdout(date('D M j G:i:s').' - '.$user->id.' >> '.$user->redirect->id);
+        $this->stdout($this->dump($buffer));
+        $this->writeSocket($user->redirect, $buffer);
 
         return true;
     }
 
 
     /**
-     * From client to socket (internal);
+     * Process user message. Implement.
      *
-     * @param object $user    Caller.
+     * @param object $user    User.
      * @param string $message Message.
      *
      * @return void
      */
     protected function process($user, $message)
     {
-        echo 'Procesando..'."\n";
+
     }
 
 
@@ -277,22 +324,8 @@ class WSProxy extends WebSocketServer
      */
     protected function closed($user)
     {
-        $response = 'GET '.$this->intUrl." HTTP/1.1\r\n";
-        $response .= 'Host: '.$this->intHost."\r\n";
-        $response .= "Connection: Close\r\n\r\n";
-        $this->writeSocket($user->intUser, $response);
-        $response = $this->readSocket($user->intUser);
-
-        $this->disconnect($user->intSocket);
-        $this->disconnect($user->socket);
-
-    }
-
-
-    public function out($ss, $str)
-    {
-        echo $ss."\n";
-        echo $this->dump($str);
+        $this->disconnect($user);
+        $this->disconnect($user->redirect);
     }
 
 

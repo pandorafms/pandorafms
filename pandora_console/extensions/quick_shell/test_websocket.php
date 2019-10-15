@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 require_once __DIR__.'/WSProxy.php';
 
-$wsproxy = new WSProxy('0.0.0.0', '8081', '127.0.0.1', '8080');
+$wsproxy = new WSProxy('0.0.0.0', '8081', '127.0.0.1', '8080', '/ws', 1048576, true);
 
 try {
     echo "Server running \n";

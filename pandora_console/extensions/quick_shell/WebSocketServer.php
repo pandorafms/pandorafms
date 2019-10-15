@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP WebocketServer from:
+ * PHP WebSocketServer from:
  *
  * Copyright (c) 2012, Adam Alexander
  * All rights reserved.
@@ -83,18 +83,32 @@ abstract class WebSocketServer
     protected $master;
 
     /**
-     * Undocumented variable
+     * Incoming sockets.
      *
      * @var array
      */
     protected $sockets = [];
 
     /**
-     * Undocumented variable
+     * Outgoing sockets.
+     *
+     * @var array
+     */
+    protected $remoteSockets = [];
+
+    /**
+     * Client list.
      *
      * @var array
      */
     protected $users = [];
+
+    /**
+     * Servers list.
+     *
+     * @var array
+     */
+    protected $remoteUsers = [];
 
     /**
      * Undocumented variable
@@ -137,6 +151,13 @@ abstract class WebSocketServer
      * @var array
      */
     public $rawHeaders = [];
+
+    /**
+     * Use a timeout of 1 second to search for messages..
+     *
+     * @var integer
+     */
+    public $timeout = 1;
 
 
     /**
@@ -310,6 +331,75 @@ abstract class WebSocketServer
 
 
     /**
+     * Manage behaviour on socket error.
+     *
+     * @param socket $socket Target socket.
+     *
+     * @return void
+     */
+    public function handleSocketError($socket)
+    {
+        $sockErrNo = socket_last_error($socket);
+        switch ($sockErrNo) {
+            case 102:
+                // ENETRESET
+                // Network dropped connection because of reset.
+            case 103:
+                // ECONNABORTED
+                // Software caused connection abort.
+            case 104:
+                // ECONNRESET
+                // Connection reset by peer.
+            case 108:
+                // ESHUTDOWN
+                // Cannot send after transport endpoint shutdown
+                // Probably more of an error on our side,
+                // if we're trying to write after the socket is
+                // closed.  Probably not a critical error,
+                // though.
+            case 110:
+                // ETIMEDOUT
+                // Connection timed out.
+            case 111:
+                // ECONNREFUSED
+                // Connection refused
+                // We shouldn't see this one, since we're
+                // listening... Still not a critical error.
+            case 112:
+                // EHOSTDOWN
+                // Host is down.
+                // Again, we shouldn't see this, and again,
+                // not critical because it's just one connection
+                // and we still want to listen to/for others.
+            case 113:
+                // EHOSTUNREACH
+                // No route to host.
+            case 121:
+                // EREMOTEIO
+                // Rempte I/O error
+                // Their hard drive just blew up.
+            case 125:
+                // ECANCELED
+                // Operation canceled.
+                $this->stderr(
+                    'Unusual disconnect on socket '.$socket
+                );
+                // Disconnect before clearing error, in case
+                // someone with their own implementation wants
+                // to check for error conditions on the socket.
+                $this->disconnect($socket, true, $sockErrNo);
+            break;
+
+            default:
+                $this->stderr(
+                    'Socket error: '.socket_strerror($sockErrNo)
+                );
+            break;
+        }
+    }
+
+
+    /**
      * Main processing loop
      *
      * @return void
@@ -326,9 +416,10 @@ abstract class WebSocketServer
             $write = null;
             $this->pTick();
             $this->tick();
-            socket_select($read, $write, $except, 1);
+            socket_select($read, $write, $except, $this->timeout);
             foreach ($read as $socket) {
                 if ($socket == $this->master) {
+                    // External to master connection. New client.
                     $client = socket_accept($socket);
                     if ($client < 0) {
                         $this->stderr('Failed: socket_accept()');
@@ -338,6 +429,7 @@ abstract class WebSocketServer
                         $this->stdout('Client connected. '.$client);
                     }
                 } else {
+                    // Updates on 'read' socket.
                     $numBytes = socket_recv(
                         $socket,
                         $buffer,
@@ -345,63 +437,7 @@ abstract class WebSocketServer
                         0
                     );
                     if ($numBytes === false) {
-                        $sockErrNo = socket_last_error($socket);
-                        switch ($sockErrNo) {
-                            case 102:
-                                // ENETRESET
-                                // Network dropped connection because of reset.
-                            case 103:
-                                // ECONNABORTED
-                                // Software caused connection abort.
-                            case 104:
-                                // ECONNRESET
-                                // Connection reset by peer.
-                            case 108:
-                                // ESHUTDOWN
-                                // Cannot send after transport endpoint shutdown
-                                // Probably more of an error on our side,
-                                // if we're trying to write after the socket is
-                                // closed.  Probably not a critical error,
-                                // though.
-                            case 110:
-                                // ETIMEDOUT
-                                // Connection timed out.
-                            case 111:
-                                // ECONNREFUSED
-                                // Connection refused
-                                // We shouldn't see this one, since we're
-                                // listening... Still not a critical error.
-                            case 112:
-                                // EHOSTDOWN
-                                // Host is down.
-                                // Again, we shouldn't see this, and again,
-                                // not critical because it's just one connection
-                                // and we still want to listen to/for others.
-                            case 113:
-                                // EHOSTUNREACH
-                                // No route to host.
-                            case 121:
-                                // EREMOTEIO
-                                // Rempte I/O error
-                                // Their hard drive just blew up.
-                            case 125:
-                                // ECANCELED
-                                // Operation canceled.
-                                $this->stderr(
-                                    'Unusual disconnect on socket '.$socket
-                                );
-                                // Disconnect before clearing error, in case
-                                // someone with their own implementation wants
-                                // to check for error conditions on the socket.
-                                $this->disconnect($socket, true, $sockErrNo);
-                            break;
-
-                            default:
-                                $this->stderr(
-                                    'Socket error: '.socket_strerror($sockErrNo)
-                                );
-                            break;
-                        }
+                        $this->handleSocketError($socket);
                     } else if ($numBytes == 0) {
                         $this->disconnect($socket);
                         $this->stderr(
@@ -422,8 +458,56 @@ abstract class WebSocketServer
                         } else {
                             if (!$this->processRaw($user, $buffer)) {
                                 // Split packet into frame and send it to deframe.
-                                $this->splitPacket($numBytes, $buffer, $user);
+                                $this->splitPacket(
+                                    $numBytes,
+                                    $buffer,
+                                    $user
+                                );
                             }
+                        }
+                    }
+                }
+            }
+
+            // Remote updates.
+            $remotes = $this->remoteSockets;
+            if (count($remotes) > 0) {
+                socket_select($remotes, $write, $except, $this->timeout);
+                foreach ($remotes as $socket) {
+                    // Remote updates - internal. We're client of this sockets.
+                    if (!$socket) {
+                        continue;
+                    }
+
+                    $numBytes = socket_recv(
+                        $socket,
+                        $buffer,
+                        $this->maxBufferSize,
+                        0
+                    );
+                    if ($numBytes === false) {
+                        $this->handleSocketError($socket);
+                    } else if ($numBytes == 0) {
+                        $this->disconnect($socket);
+                        $this->stderr(
+                            'Client disconnected. TCP connection lost: '.$socket
+                        );
+                    } else {
+                        $user = $this->getUserBySocket($socket);
+                        echo '>>>>> EEH, recibo:['.$user->id."]\n";
+                        echo $this->dump($buffer);
+                        if (!$user) {
+                            $this->disconnect($socket);
+                            $this->stderr(
+                                'User was not connected: '.$socket
+                            );
+                        } else if (!$this->processRaw($user, $buffer)) {
+                            // Split packet into frame and send it to deframe.
+                            $this->splitPacket(
+                                $numBytes,
+                                $buffer,
+                                $user
+                            );
                         }
                     }
                 }
@@ -462,13 +546,22 @@ abstract class WebSocketServer
         bool $triggerClosed=true,
         $sockErrNo=null
     ) {
-        $disconnectedUser = $this->getUserBySocket($socket);
+        $user = $this->getUserBySocket($socket);
+        if ($user !== null) {
+            if (array_key_exists($user->id, $this->users)) {
+                unset($this->users[$user->id]);
+            }
 
-        if ($disconnectedUser !== null) {
-            unset($this->users[$disconnectedUser->id]);
+            if (array_key_exists($user->id, $this->remoteUsers)) {
+                unset($this->remoteUsers[$user->id]);
+            }
 
-            if (array_key_exists($disconnectedUser->id, $this->sockets)) {
-                unset($this->sockets[$disconnectedUser->id]);
+            if (array_key_exists($user->id, $this->sockets)) {
+                unset($this->sockets[$user->id]);
+            }
+
+            if (array_key_exists($user->id, $this->remoteSockets)) {
+                unset($this->remoteSockets[$user->id]);
             }
 
             if ($sockErrNo !== null) {
@@ -476,15 +569,15 @@ abstract class WebSocketServer
             }
 
             if ($triggerClosed) {
-                $this->closed($disconnectedUser);
+                $this->closed($user);
                 $this->stdout(
-                    'Client disconnected. '.$disconnectedUser->socket
+                    'Client disconnected. '.$user->socket
                 );
-                socket_close($disconnectedUser->socket);
+                socket_close($user->socket);
             } else {
-                $message = $this->frame('', $disconnectedUser, 'close');
+                $message = $this->frame('', $user, 'close');
                 socket_write(
-                    $disconnectedUser->socket,
+                    $user->socket,
                     $message,
                     strlen($message)
                 );
@@ -741,22 +834,31 @@ abstract class WebSocketServer
             }
         }
 
+        foreach ($this->remoteUsers as $user) {
+            if ($user->socket == $socket) {
+                return $user;
+            }
+        }
+
         return null;
     }
 
 
     /**
-     * Disconnects all users matching target cookie but latest one.
+     * Disconnects all users matching target cookie but given one.
      *
-     * @param string $cookie Cookie identifier.
+     * @param object $user Latest user.
      *
      * @return void
      */
-    protected function cleanupSocketByCookie($cookie)
+    protected function cleanupSocketByCookie($user)
     {
-        foreach ($this->users as $user) {
-            if ($user->headers['cookie'] == $cookie) {
-                $this->disconnectUser($user->socket);
+        $cookie = $user->headers['cookie'];
+        foreach ($this->users as $u) {
+            if ($u->id != $user->id
+                && $u->headers['cookie'] == $cookie
+            ) {
+                $this->disconnect($u->socket);
             }
         }
 
@@ -1379,7 +1481,8 @@ abstract class WebSocketServer
                 // Join the hexi / ascii output.
                 $dump .= sprintf('%04x  %-49s  %s', $offset, $hexi, $ascii);
                 // Reset vars.
-                $hexi   = $ascii = '';
+                $hexi = '';
+                $ascii = '';
                 $offset += 16;
                 $j      = 0;
                 // Add newline.

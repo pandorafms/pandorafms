@@ -462,6 +462,8 @@ $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
 $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['enterprise/dashboard/main_dashboard'] = 'Dashboard';
 $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+$autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
+
 $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
@@ -1150,7 +1152,7 @@ function ehorus_connection_test(host, port) {
         var user = $('input#text-ehorus_user_level_user').val();
         var pass = $('input#password-ehorus_user_level_pass').val();
     
-        debugger;
+        
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
         var notFoundMessage = '<?php echo __('User not found'); ?>';
         var invalidPassMessage = '<?php echo __('Invalid password'); ?>';

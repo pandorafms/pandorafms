@@ -5681,6 +5681,11 @@ function ui_print_comments($comments)
     // Only show the last comment. If commment its too long,the comment will short with ...
     // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
     // Else show comments hours ago
+    
+    if ($last_comment[0][0]['action'] != 'Added comment'){
+        $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
+    }
+    
     $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
     if ($config['prominent_time'] == 'timestamp') {
         $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';

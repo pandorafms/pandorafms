@@ -135,14 +135,14 @@ class HelpFeedBack extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'btn_section',
-                'class'         => '',
+                'class'         => 'btn_section',
                 'direct'        => 1,
                 'block_content' => [
                     [
                         'arguments' => [
                             'label'      => __('Sugesstion'),
                             'type'       => 'button',
-                            'attributes' => 'class="sub ok btn_sug"',
+                            'attributes' => 'class="btn_sug"',
                             'name'       => 'option_1',
                             'id'         => 'option_1',
                             'script'     => 'change_option1()',
@@ -152,7 +152,7 @@ class HelpFeedBack extends Wizard
                         'arguments' => [
                             'label'      => __('Something is not quite right'),
                             'type'       => 'button',
-                            'attributes' => 'class="sub ok btn_something"',
+                            'attributes' => 'class="btn_something"',
                             'name'       => 'option_2',
                             'id'         => 'option_2',
                             'script'     => 'change_option2()',
@@ -258,16 +258,17 @@ class HelpFeedBack extends Wizard
     var option_selected = "";
     function change_option1() {
         option_selected = "<?php echo __('Suggestion'); ?>";
-        document.getElementById("button-option_2").className = "btn_sug_not_selected";
-        document.getElementById("button-option_1").className = "sub ok btn_sug";
+        document.getElementById("button-option_1").className = "btn_sug_not_selected";
+        document.getElementById("button-option_2").className = "btn_sug";
+;
 
 
         }
 
     function change_option2() {
         option_selected = "<?php echo __('Something is not quite rigth'); ?>";
-        document.getElementById("button-option_1").className = "btn_sug_not_selected";
-        document.getElementById("button-option_2").className = "sub ok btn_sug";
+        document.getElementById("button-option_2").className = "btn_sug_not_selected";
+        document.getElementById("button-option_1").className = "btn_sug";
 
     }
 

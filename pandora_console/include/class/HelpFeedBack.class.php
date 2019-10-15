@@ -135,7 +135,7 @@ class HelpFeedBack extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'ejemplo',
-                'class'         => 'flex movida o lo que quieras',
+                'class'         => '',
                 'direct'        => 1,
                 'block_content' => [
                     [

@@ -272,7 +272,6 @@ class HelpFeedBack extends Wizard
 
     }
 
-    console.log(option_selected);
         // Set values to data.
         $("#feedback_form").on('submit', function() {
             // Make the AJAX call to send mails.

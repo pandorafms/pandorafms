@@ -39,7 +39,7 @@ if (isset($config['homedir'])) {
 
 
 /**
- * Transform bbcode to HTML.
+ * Transform bbcode to HTML and truncate log.
  *
  * @param string $text         Text.
  * @param array  $allowed_tags Allowed_tags.
@@ -48,16 +48,22 @@ if (isset($config['homedir'])) {
  */
 function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
 {
-    if (array_search('[url]', $allowed_tags) !== false) {
-        // If link hasn't http, add it.
-        if (preg_match('/https?:\/\//', $text)) {
-            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="$1">$2</a>';
-        } else {
-            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="http://$1">$2</a>';
-        }
-
+    if (array_search('[url]', $allowed_tags) !== false || a) {
         // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes
-        $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $text);
+        preg_match('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $text, $matches);
+        if ($matches) {
+            $url = $matches[1];
+            // Truncate text
+            $t_text = ui_print_truncate_text($matches[2]);
+             // If link hasn't http, add it.
+            if (preg_match('/https?:\/\//', $text)) {
+                $return = '<a target="_blank" rel="noopener noreferrer" href="'.$matches[1].'">'.$t_text.'</a>';
+            } else {
+                $return = '<a target="_blank" rel="noopener noreferrer" href="http://'.$matches[1].'">'.$t_text.'</a>';
+            }
+        } else {
+            $return = ui_print_truncate_text($text);
+        }
     }
 
     return $return;

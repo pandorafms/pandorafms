@@ -762,7 +762,7 @@ sub transfer_xml {
 	my $file_path;
 
 	if (! (empty ($name))) {
-		$file_name = $name . "." . sprintf("%d",time()) . ".data";
+		$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
 	}
 	else {
 		# Inherit file name

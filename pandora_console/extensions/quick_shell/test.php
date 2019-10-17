@@ -24,7 +24,10 @@ $gotty = str_replace($url, $new, $gotty);
         width: 100%;
         margin: 0px;
         padding: 0;
-        border: 1px solid red;
+        max-height: 590px; 
+      }
+      #terminal > iframe {
+        position: relative!important;
       }
     </style>
     <link rel="icon" type="image/png" href="favicon.png">

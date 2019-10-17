@@ -48,26 +48,59 @@ function mainWetty()
 
     ui_print_page_header(__('Wetty'), 'images/extensions.png', false, '', true, $buttons);
 
-    $table->width = '100%';
-    $table->class = 'databox data';
-    $table->data = [];
-    $table->head = [];
-    $table->align = [];
-    // $table->align[3] = 'left';
-    $table->style = [];
-    $table->size = [];
-    // $table->size[3] = '10%';
-    $table->style[0] = 'font-weight: bold';
+    $host = '127.0.0.1';
+    $port = 8080;
 
-    $table->head[0] = __('Wetty');
+    $r = file_get_contents('http://'.$host.':'.$port.'/js/hterm.js');
+    $r .= file_get_contents('http://'.$host.':'.$port.'/auth_token.js');
+    $gotty = file_get_contents('http://'.$host.':'.$port.'/js/gotty.js');
 
-    // $data[0] = '<iframe scrolling="auto" frameborder="0" width="100%" height="600px" src="http://192.168.70.64:3000/"></iframe>';
-    $data[0] = '<iframe scrolling="auto" frameborder="0" width="100%" height="600px" src="http://'.$config['wetty_ip'].':'.$config['wetty_port'].'/"></iframe>';
+    $url = "var url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';";
+    $new = "var url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + ':8081' + window.location.pathname;";
 
-    // $data[0] .= '<div id="terminal" style="background-color:black;width:100%;height:600px;overflow: hidden;"><div>';
-    array_push($table->data, $data);
+    $gotty = str_replace($url, $new, $gotty);
 
-    html_print_table($table);
+    ?>
+    <style>#terminal {
+        height: 650px;
+        width: 100%;
+        margin: 0px;
+        padding: 0;
+      }
+      #terminal > iframe {
+        position: relative!important;
+      }
+    </style>
+    <div id="terminal"></div>
+    <script type="text/javascript">
+    <?php echo $r; ?>
+    </script>
+    <script type="text/javascript">
+    <?php echo $gotty; ?>
+    </script>
+    <?php
+    /*
+        $table->width = '100%';
+        $table->class = 'databox data';
+        $table->data = [];
+        $table->head = [];
+        $table->align = [];
+        // $table->align[3] = 'left';
+        $table->style = [];
+        $table->size = [];
+        // $table->size[3] = '10%';
+        $table->style[0] = 'font-weight: bold';
+
+        $table->head[0] = __('Wetty');
+
+        // $data[0] = '<iframe scrolling="auto" frameborder="0" width="100%" height="600px" src="http://192.168.70.64:3000/"></iframe>';
+        $data[0] = '<iframe scrolling="auto" frameborder="0" width="100%" height="600px" src="http://'.$config['wetty_ip'].':'.$config['wetty_port'].'/"></iframe>';
+
+        // $data[0] .= '<div id="terminal" style="background-color:black;width:100%;height:600px;overflow: hidden;"><div>';
+        array_push($table->data, $data);
+
+        html_print_table($table);
+    */
 
 }
 

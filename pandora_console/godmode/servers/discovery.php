@@ -4,7 +4,14 @@ global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'AW')) {
+if (! check_acl($config['id_user'], 0, 'AR')
+    && ! check_acl($config['id_user'], 0, 'AW')
+    && ! check_acl($config['id_user'], 0, 'AM')
+    && ! check_acl($config['id_user'], 0, 'RR')
+    && ! check_acl($config['id_user'], 0, 'RW')
+    && ! check_acl($config['id_user'], 0, 'RM')
+    && ! check_acl($config['id_user'], 0, 'PM')
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Server Management'
@@ -134,11 +141,18 @@ if ($classname_selected === null) {
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
 
+        $button = $obj->load();
+
+        if ($button === false) {
+            // No acess, skip.
+            continue;
+        }
+
         // DiscoveryTaskList must be first button.
         if ($classname == 'DiscoveryTaskList') {
-            array_unshift($wiz_data, $obj->load());
+            array_unshift($wiz_data, $button);
         } else {
-            $wiz_data[] = $obj->load();
+            $wiz_data[] = $button;
         }
     }
 

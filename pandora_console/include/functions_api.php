@@ -1492,7 +1492,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
     global $config;
 
     if (!check_acl($config['id_user'], 0, 'AW')) {
-        returnError('forbidden', 'string');
+        returnError('forbidden', 'you havent got permissions to do this');
         return;
     }
 
@@ -1500,127 +1500,101 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    $alias = $other['data'][0];
-    $ip = $other['data'][1];
-    $idParent = $other['data'][2];
-    $idGroup = $other['data'][3];
-    $cascadeProtection = $other['data'][4];
-    $cascadeProtectionModule = $other['data'][5];
-    $intervalSeconds = $other['data'][6];
-    $idOS = $other['data'][7];
-    // $idServer = $other['data'][7];
-    $nameServer = $other['data'][8];
-    $customId = $other['data'][9];
-    $learningMode = $other['data'][10];
-    $disabled = $other['data'][11];
-    $description = $other['data'][12];
-    $alias_as_name = $other['data'][13];
+    $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
+    $direccion_agente          = io_safe_input($other['data'][1]);
+    $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
+    $id_parent                 = (int) $other['data'][2];
+    $grupo                     = (int) $other['data'][3];
+    $cascade_protection        = (int) $other['data'][4];
+    $cascade_protection_module = (int) $other['data'][5];
+    $intervalo                 = (string) $other['data'][6];
+    $id_os                     = (int) $other['data'][7];
+    $server_name               = (string) $other['data'][8];
+    $custom_id                 = (string) $other['data'][9];
+    $modo                      = (int) $other['data'][10];
+    $disabled                  = (int) $other['data'][11];
+    $comentarios               = (string) $other['data'][12];
+    $alias_as_name             = (int) $other['data'][13];
+    $update_module_count       = (int) $config['metaconsole_agent_cache'] == 1;
 
-    if ($alias_as_name && !empty($alias)) {
-        $name = $alias;
-    } else {
-        $name = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
-        if (empty($alias)) {
-            $alias = $name;
-        }
-    }
-
-    if ($cascadeProtection == 1) {
-        if (($idParent != 0) && (db_get_value_sql(
+    if ($cascade_protection == 1) {
+        if (($id_parent != 0) && (db_get_value_sql(
             'SELECT id_agente_modulo
-									FROM tagente_modulo
-									WHERE id_agente = '.$idParent.' AND id_agente_modulo = '.$cascadeProtectionModule
+            FROM tagente_modulo
+			WHERE id_agente = '.$id_parent.' AND id_agente_modulo = '.$cascade_protection_module
         ) === false)
         ) {
                 returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+                return;
         }
     } else {
         $cascadeProtectionModule = 0;
     }
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql1 = 'SELECT name
-				FROM tserver WHERE BINARY name LIKE "'.$nameServer.'"';
-        break;
+    $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$server_name.'"');
 
-        case 'postgresql':
-        case 'oracle':
-            $sql1 = 'SELECT name
-				FROM tserver WHERE name LIKE \''.$nameServer.'\'';
-        break;
-    }
-
-    $nameServer = db_get_value_sql($sql1);
-
-    // Check ACL group
-    if (!check_acl($config['id_user'], $idGroup, 'AW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
-    // Check selected parent
-    if ($idParent != 0) {
-        $parentCheck = agents_check_access_agent($idParent);
-        if ($parentCheck === null) {
-            returnError('parent_agent_not_exist', __('The agent parent don`t exist.'));
-            return;
-        }
-
-        if ($parentCheck === false) {
-            returnError('parent_agent_forbidden', __('The user cannot access to parent agent.'));
-            return;
-        }
-    }
-
-    if (agents_get_agent_id($name)) {
+    // Check if agent exists (BUG WC-50518-2).
+    if ($alias == '' && $alias_as_name === 0) {
+        returnError('alias_not_specified', 'No agent alias specified');
+    } else if (agents_get_agent_id($name)) {
         returnError('agent_name_exist', 'The name of agent yet exist in DB.');
-    } else if (db_get_value_sql(
-        'SELECT id_grupo
-		FROM tgrupo
-		WHERE id_grupo = '.$idGroup
-    ) === false
-    ) {
+    } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('id_grupo_not_exist', 'The group don`t exist.');
-    } else if (db_get_value_sql(
-        'SELECT id_os
-		FROM tconfig_os
-		WHERE id_os = '.$idOS
-    ) === false
-    ) {
+    } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
         returnError('id_os_not_exist', 'The OS don`t exist.');
-    } else if (db_get_value_sql($sql1) === false) {
+    } else if ($server_name === false) {
         returnError('server_not_exist', 'The '.get_product_name().' Server don`t exist.');
     } else {
-        $idAgente = db_process_sql_insert(
-            'tagente',
-            [
-                'nombre'                    => $name,
-                'alias'                     => $alias,
-                'direccion'                 => $ip,
-                'id_grupo'                  => $idGroup,
-                'intervalo'                 => $intervalSeconds,
-                'comentarios'               => $description,
-                'modo'                      => $learningMode,
-                'id_os'                     => $idOS,
-                'disabled'                  => $disabled,
-                'cascade_protection'        => $cascadeProtection,
-                'cascade_protection_module' => $cascadeProtectionModule,
-                'server_name'               => $nameServer,
-                'id_parent'                 => $idParent,
-                'custom_id'                 => $customId,
-            ]
-        );
-
-        if (!empty($idAgente) && !empty($ip)) {
-            // register ip for this agent in 'taddress'
-            agents_add_address($idAgente, $ip);
+        if ($alias_as_name === 1) {
+            $exists_alias  = db_get_row_sql('SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"');
+            $nombre_agente = $alias;
         }
 
-        if ($idGroup && !empty($idAgente)) {
+        if ($direccion_agente != '') {
+            $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
+        }
+
+        if (!$exists_alias && !$exists_ip) {
+            $id_agente = db_process_sql_insert(
+                'tagente',
+                [
+                    'nombre'                    => $nombre_agente,
+                    'alias'                     => $alias,
+                    'alias_as_name'             => $alias_as_name,
+                    'direccion'                 => $direccion_agente,
+                    'id_grupo'                  => $grupo,
+                    'intervalo'                 => $intervalo,
+                    'comentarios'               => $comentarios,
+                    'modo'                      => $modo,
+                    'id_os'                     => $id_os,
+                    'disabled'                  => $disabled,
+                    'cascade_protection'        => $cascade_protection,
+                    'cascade_protection_module' => $cascade_protection_module,
+                    'server_name'               => $server_name,
+                    'id_parent'                 => $id_parent,
+                    'custom_id'                 => $custom_id,
+                    'os_version'                => '',
+                    'agent_version'             => '',
+                    'timezone_offset'           => 0,
+                    'icon_path'                 => '',
+                    'url_address'               => '',
+                    'update_module_count'       => $update_module_count,
+                ]
+            );
+            enterprise_hook('update_agent', [$id_agente]);
+        } else {
+            $id_agente = false;
+        }
+
+        if ($id_agente !== false) {
+            // Create address for this agent in taddress.
+            if ($direccion_agente != '') {
+                agents_add_address($id_agente, $direccion_agente);
+            }
+
             $tpolicy_group_old = db_get_all_rows_sql(
                 'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$idGroup
+				WHERE id_group = '.$grupo
             );
 
             if ($tpolicy_group_old) {
@@ -1629,18 +1603,54 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
                         'tpolicy_agents',
                         [
                             'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $idAgente,
+                            'id_agent'  => $id_agente,
                         ]
                     );
                 }
             }
+
+            $info = '{"Name":"'.$nombre_agente.'",
+				"IP":"'.$direccion_agente.'",
+				"Group":"'.$grupo.'",
+				"Interval":"'.$intervalo.'",
+				"Comments":"'.$comentarios.'",
+				"Mode":"'.$modo.'",
+				"ID_parent:":"'.$id_parent.'",
+				"Server":"'.$server_name.'",
+				"ID os":"'.$id_os.'",
+				"Disabled":"'.$disabled.'",
+				"Custom ID":"'.$custom_id.'",
+				"Cascade protection":"'.$cascade_protection.'",
+				"Cascade protection module":"'.$cascade_protection_module.'"}';
+
+            $unsafe_alias = io_safe_output($alias);
+            db_pandora_audit(
+                'Agent management',
+                'Created agent '.$unsafe_alias,
+                false,
+                true,
+                $info
+            );
+        } else {
+            $id_agente = 0;
+
+            if ($exists_alias) {
+                $agent_creation_error = __('Could not be created, because name already exists');
+            } else if ($exists_ip) {
+                $agent_creation_error = __('Could not be created, because IP already exists');
+            } else {
+                $agent_creation_error = __('Could not be created for unknown reason');
+            }
+
+            returnError('generic error', $agent_creation_error);
+            return;
         }
 
         returnData(
             'string',
             [
                 'type' => 'string',
-                'data' => $idAgente,
+                'data' => $id_agente,
             ]
         );
     }

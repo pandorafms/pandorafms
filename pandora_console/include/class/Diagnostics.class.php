@@ -4,7 +4,7 @@
  *
  * @category   Console Class
  * @package    Pandora FMS
- * @subpackage Supervisor
+ * @subpackage Diagnostics
  * @version    1.0.0
  * @license    See below
  *
@@ -37,16 +37,81 @@ require_once $config['homedir'].'/include/functions_io.php';
 class Diagnostics
 {
 
+    /**
+     * Ajax controller page.
+     *
+     * @var string
+     */
+    public $ajaxController;
+
 
     /**
-     * Constructor.
+     * Constructor
      *
-     * @return class This object
+     * @param string $page Page.
+     *
+     * @return void
      */
-    public function __construct()
+    public function __construct(string $page)
     {
-        echo 'hola';
-        return $this;
+        global $config;
+
+        // Check access.
+        check_login();
+
+        // Check Acl.
+        if (!check_acl($config['id_user'], 0, 'PM')) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access diagnostic info'
+            );
+
+            if (is_ajax()) {
+                echo json_encode(['error' => 'noaccess']);
+            }
+
+            include 'general/noaccess.php';
+            exit;
+        }
+
+        $this->ajaxController = $page;
+    }
+
+
+    /**
+     * Allowed methods to be called using AJAX request.
+     *
+     * @var array
+     */
+    public $AJAXMethods = [
+        'getStatusInfo',
+        'getPHPSetup',
+        'getDatabaseSizeStats',
+        'getDatabaseHealthStatus',
+        'getDatabaseStatusInfo',
+        'getSystemInfo',
+        'getMySQLPerformanceMetrics',
+        'getTablesFragmentation',
+        'getPandoraFMSLogsDates',
+        'getLicenceInformation',
+        'getAttachmentFolder',
+        'getInfoTagenteDatos',
+        'getServerThreads',
+        'datatablesDraw',
+        'getChartAjax',
+    ];
+
+
+    /**
+     * Checks if target method is available to be called using AJAX.
+     *
+     * @param string $method Target method.
+     *
+     * @return boolean True allowed, false not.
+     */
+    public function ajaxMethod(string $method):bool
+    {
+        return in_array($method, $this->AJAXMethods);
     }
 
 
@@ -59,167 +124,218 @@ class Diagnostics
     {
         global $config;
 
+        $textPdf = '<a href="index.php?sec=gextensions&sec2='.$this->ajaxController.'">';
+        $textPdf .= html_print_image(
+            'images/pdf.png',
+            true,
+            ['title' => __('PDF Report')]
+        );
+        $textPdf .= '</a>';
+
+        $textCsv = '<a href="index.php?sec=gextensions&sec2='.$this->ajaxController.'">';
+        $textCsv .= html_print_image(
+            'images/csv.png',
+            true,
+            ['title' => __('Csv Report')]
+        );
+        $textCsv .= '</a>';
+
+        $buttonsHeader = [
+            'diagnosticsPdf' => [
+                'text'   => $textPdf,
+                'active' => false,
+            ],
+            'diagnosticsCsv' => [
+                'text'   => $textCsv,
+                'active' => false,
+            ],
+        ];
+
+        // Header.
+        ui_print_page_header(
+            __('Pandora FMS Diagnostic tool'),
+            'images/gm_massive_operations.png',
+            false,
+            'diagnostic_tool_tab',
+            true,
+            $buttonsHeader,
+            true
+        );
+
         /*
          * Info status pandoraFms.
-         */
-
-        $statusInfo = $this->getStatusInfo();
-
-        /*
-         * Print table in this case info.
-         */
-
-        $this->printTable($statusInfo);
-
-        /*
          * PHP setup.
-         */
-
-        $phpSetup = $this->getPHPSetup();
-
-        /*
-         * Print table in this case PHP SETUP.
-         */
-
-        $this->printTable($phpSetup);
-
-        /*
          * Database size stats.
-         */
-
-        $dataBaseSizeStats = $this->getDatabaseSizeStats();
-
-        /*
-         * Print table in this case Database size stats.
-         */
-
-        $this->printTable($dataBaseSizeStats);
-
-        /*
          * Database health status.
-         */
-
-        $databaseHealthStatus = $this->getDatabaseHealthStatus();
-
-        /*
-         * Print table in this case Database health status.
-         */
-
-        $this->printTable($databaseHealthStatus);
-
-        /*
-         * Database health status.
-         */
-
-        $getDatabaseStatusInfo = $this->getDatabaseStatusInfo();
-
-        /*
-         * Print table in this case Database status info.
-         */
-
-        $this->printTable($getDatabaseStatusInfo);
-
-        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-            /*
-             * System Info.
-             */
-
-            $getSystemInfo = $this->getSystemInfo();
-
-            /*
-             * Print table in this case System Info.
-             */
-
-            $this->printTable($getSystemInfo);
-        }
-
-        /*
+         * Database status info.
          * System Info.
-         */
-
-        $getMySQLPerformanceMetrics = $this->getMySQLPerformanceMetrics();
-
-        /*
-         * Print table in this case System Info.
-         */
-
-        $this->printTable($getMySQLPerformanceMetrics);
-
-        /*
+         * MySQL Performance metrics.
          * Tables fragmentation in the Pandora FMS database.
-         */
-
-        $getTablesFragmentation = $this->getTablesFragmentation();
-
-        /*
-         * Print table in this case Tables fragmentation in
-         * the Pandora FMS database.
-         */
-
-        $this->printTable($getTablesFragmentation);
-
-        /*
-         * Tables fragmentation in the Pandora FMS database.
-         */
-
-        $getPandoraFMSLogsDates = $this->getPandoraFMSLogsDates();
-
-        /*
-         * Print table in this case Tables fragmentation in
-         * the Pandora FMS database.
-         */
-
-        $this->printTable($getPandoraFMSLogsDates);
-
-        /*
+         * Pandora FMS logs dates.
          * Pandora FMS Licence Information.
-         */
-
-        $getLicenceInformation = $this->getLicenceInformation();
-
-        /*
-         * Print table in this case Pandora FMS Licence Information.
-         */
-
-        $this->printTable($getLicenceInformation);
-
-        /*
          * Status of the attachment folder.
-         */
-
-        $getAttachmentFolder = $this->getAttachmentFolder();
-
-        /*
-         * Print table in this case Status of the attachment folder.
-         */
-
-        $this->printTable($getAttachmentFolder);
-
-        /*
          * Information from the tagente_datos table.
+         * Pandora FMS server threads.
          */
 
-        $getInfoTagenteDatos = $this->getInfoTagenteDatos();
+        foreach ($this->AJAXMethods as $key => $method) {
+            switch ($method) {
+                case 'getStatusInfo':
+                    $title = __('Info status pandoraFms');
+                break;
+
+                case 'getPHPSetup':
+                    $title = __('PHP setup');
+                break;
+
+                case 'getDatabaseSizeStats':
+                    $title = __('Database size stats');
+                break;
+
+                case 'getDatabaseHealthStatus':
+                    $title = __('Database health status');
+                break;
+
+                case 'getDatabaseStatusInfo':
+                    $title = __('Database status info');
+                break;
+
+                case 'getSystemInfo':
+                    $title = __('System Info');
+                break;
+
+                case 'getMySQLPerformanceMetrics':
+                    $title = __('MySQL Performance metrics');
+                break;
+
+                case 'getTablesFragmentation':
+                    $title = __(
+                        'Tables fragmentation in the Pandora FMS database'
+                    );
+                break;
+
+                case 'getPandoraFMSLogsDates':
+                    $title = __('Pandora FMS logs dates');
+                break;
+
+                case 'getLicenceInformation':
+                    $title = __('Pandora FMS Licence Information');
+                break;
+
+                case 'getAttachmentFolder':
+                    $title = __('Status of the attachment folder');
+                break;
+
+                case 'getInfoTagenteDatos':
+                    $title = __('Information from the tagente_datos table');
+                break;
+
+                case 'getServerThreads':
+                    $title = __('Pandora FMS server threads');
+                break;
+
+                default:
+                    // Not possible.
+                    $title = '';
+                break;
+            }
+
+            if ($method !== 'datatablesDraw' && $method !== 'getChartAjax') {
+                echo '<div style="margin-bottom: 30px;">';
+                    $this->printData($method, $title);
+                echo '</div>';
+            }
+        }
 
         /*
-         * Print table in this case Information from the tagente_datos table.
+         * Agent id with name Master Server.
          */
 
-        $this->printTable($getInfoTagenteDatos);
+        $agentIdMasterServer = $this->getAgentIdMasterServer();
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        if ($agentIdMasterServer !== 0) {
+            $agentMonitoring = [
+                'chartAgentsUnknown'    => [
+                    'title'      => __(
+                        'Graph of the Agents Unknown module.'
+                    ),
+                    'nameModule' => 'Agents_Unknown',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartDatabaseMain'     => [
+                    'title'      => __(
+                        'Graph of the Database Maintenance module.'
+                    ),
+                    'nameModule' => 'Database&#x20;Maintenance',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartFreeDiskSpoolDir' => [
+                    'title'      => __(
+                        'Graph of the Free Disk Spool Dir module.'
+                    ),
+                    'nameModule' => 'FreeDisk_SpoolDir',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartFreeRAM'          => [
+                    'title'      => __('Graph of the Free RAM module.'),
+                    'nameModule' => 'Free_RAM',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartQueuedModules'    => [
+                    'title'      => __(
+                        'Graph of the Queued Modules module.'
+                    ),
+                    'nameModule' => 'Queued_Modules',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartStatus'           => [
+                    'title'      => __('Graph of the Status module.'),
+                    'nameModule' => 'Status',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartSystemLoadAVG'    => [
+                    'title'      => __(
+                        'Graph of the System Load AVG module.'
+                    ),
+                    'nameModule' => 'System_Load_AVG',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartExecutionTime'    => [
+                    'title'      => __(
+                        'Graph of the Execution Time module.'
+                    ),
+                    'nameModule' => 'Execution_time',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+            ];
+
             /*
-             * Pandora FMS server threads.
+             * Print table graps:
+             * Graph of the Agents Unknown module.
+             * Graph of the Database Maintenance module.
+             * Graph of the Free Disk Spool Dir module.
+             * Graph of the Free RAM module.
+             * Graph of the Queued Modules module.
+             * Graph of the Status module.
+             * Graph of the System Load AVG module.
+             * Graph of the Execution Time module.
              */
 
-            $getServerThreads = $this->getServerThreads();
+            echo '<div class="title-self-monitoring">';
+            echo __('Graphs modules that represent the self-monitoring system');
+            echo '</div>';
+            echo '<div class="container-self-monitoring">';
+            foreach ($agentMonitoring as $key => $value) {
+                $this->printDataCharts($value);
+            }
 
-            /*
-             * Print table in this case Pandora FMS server threads.
-             */
-
-            $this->printTable($getServerThreads);
+            echo '</div>';
         }
+
+        echo '<div class="footer-self-monitoring">';
+        echo $this->checkPandoraDB();
+        echo '</div>';
+
     }
 
 
@@ -531,23 +647,26 @@ class Diagnostics
     {
         global $config;
 
-        $cpuModelName = 'cat /proc/cpuinfo | grep "model name" | tail -1 | cut -f 2 -d ":"';
-        $cpuProcessor = 'cat /proc/cpuinfo | grep "processor" | wc -l';
-        $ramMemTotal = 'cat /proc/meminfo | grep "MemTotal"';
+        $result = [];
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $cpuModelName = 'cat /proc/cpuinfo | grep "model name" | tail -1 | cut -f 2 -d ":"';
+            $cpuProcessor = 'cat /proc/cpuinfo | grep "processor" | wc -l';
+            $ramMemTotal = 'cat /proc/meminfo | grep "MemTotal"';
 
-        $result = [
-            'error' => false,
-            'data'  => [
-                'cpuInfo' => [
-                    'name'  => __('CPU'),
-                    'value' => exec($cpuModelName).' x '.exec($cpuProcessor),
+            $result = [
+                'error' => false,
+                'data'  => [
+                    'cpuInfo' => [
+                        'name'  => __('CPU'),
+                        'value' => exec($cpuModelName).' x '.exec($cpuProcessor),
+                    ],
+                    'ramInfo' => [
+                        'name'  => __('RAM'),
+                        'value' => exec($ramMemTotal),
+                    ],
                 ],
-                'ramInfo' => [
-                    'name'  => __('RAM'),
-                    'value' => exec($ramMemTotal),
-                ],
-            ],
-        ];
+            ];
+        }
 
         return json_encode($result);
     }
@@ -562,13 +681,20 @@ class Diagnostics
     {
         global $config;
 
-        $variablesMsql = db_get_all_rows_sql('SHOW variables');
+        $variablesMsql = db_get_all_rows_sql('SHOW VARIABLES');
         $variablesMsql = array_reduce(
             $variablesMsql,
             function ($carry, $item) {
                 $bytes = 1048576;
                 $mega = 1024;
                 switch ($item['Variable_name']) {
+                    case 'sql_mode':
+                        $name = __('Sql mode');
+                        $value = ($item['Value']);
+                        $status = (empty($item['Value']) === true) ? 1 : 0;
+                        $message = __('Must be empty');
+                    break;
+
                     case 'innodb_log_file_size':
                         $name = __('InnoDB log file size');
                         $value = ($item['Value'] / $bytes);
@@ -594,20 +720,16 @@ class Diagnostics
                         $name = __('Maximun allowed packet');
                         $value = ($item['Value'] / $bytes);
                         $status = (($item['Value'] / $bytes) >= 32) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 32';
+                        $message = __('Min. Recommended Value').' 32M';
                     break;
 
                     case 'innodb_buffer_pool_size':
-                        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-                            $min = shell_exec(
-                                "cat /proc/meminfo | grep -i total | head -1 | awk '{print $(NF-1)*0.4/1024}'"
-                            );
-                        }
-
                         $name = __('InnoDB buffer pool size');
                         $value = ($item['Value'] / $mega);
-                        $status = (($item['Value'] / $bytes) >= $min) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' '.$min;
+                        $status = (($item['Value'] / $mega) >= 250) ? 1 : 0;
+                        $message = __(
+                            'It has to be 40% of the server memory not recommended to be greater or less'
+                        );
                     break;
 
                     case 'sort_buffer_size':
@@ -634,22 +756,22 @@ class Diagnostics
                     case 'query_cache_size':
                         $name = __('Query cache size');
                         $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 24) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 24';
+                        $status = (($item['Value'] / $bytes) >= 32) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 32MB';
                     break;
 
                     case 'query_cache_limit':
                         $name = __('Query cache limit');
                         $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 2) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 2';
+                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 256K';
                     break;
 
                     case 'innodb_lock_wait_timeout':
                         $name = __('InnoDB lock wait timeout');
                         $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 120) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 120';
+                        $status = (($item['Value'] / $bytes) >= 90) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 90s';
                     break;
 
                     case 'thread_cache_size':
@@ -663,14 +785,14 @@ class Diagnostics
                         $name = __('Thread stack');
                         $value = ($item['Value'] / $bytes);
                         $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 256';
+                        $message = __('Min. Recommended Value').' 256K';
                     break;
 
                     case 'max_connections':
                         $name = __('Maximun connections');
                         $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 150) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 150';
+                        $status = (($item['Value'] / $bytes) >= 90) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 90';
                     break;
 
                     case 'key_buffer_size':
@@ -698,14 +820,14 @@ class Diagnostics
                         $name = __('Query cache min-res-unit');
                         $value = ($item['Value'] / $bytes);
                         $status = (($item['Value'] / $bytes) >= 2) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 2';
+                        $message = __('Min. Recommended Value').' 2k';
                     break;
 
                     case 'innodb_file_per_table':
                         $name = __('InnoDB file per table');
                         $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 1) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 1';
+                        $status = ($item['Value'] === 'ON') ? 1 : 0;
+                        $message = __('Recommended ON');
                     break;
 
                     default:
@@ -912,10 +1034,15 @@ class Diagnostics
             WHERE id_tipo_modulo
             BETWEEN 6 AND 18'
         );
-        $averageTime = number_format(
-            ((int) $totalModuleIntervalTime / (int) $totalNetworkModules),
-            3
-        );
+
+        $averageTime = 0;
+        if ($totalModuleIntervalTime !== false) {
+            $averageTime = number_format(
+                ((int) $totalModuleIntervalTime / (int) $totalNetworkModules),
+                3
+            );
+        }
+
         $moduleNetworkmsg = __(
             sprintf(
                 'The system is not overloaded (average time %d)',
@@ -1075,31 +1202,17 @@ class Diagnostics
             $taStatus = 1;
         }
 
-        /*
-            $times = db_get_all_rows_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = 29 ORDER BY utimestamp DESC LIMIT 2');
-            hd($times);
-            if ($times[0]['datos'] > ($times[1]['datos'] * 1.2)) {
-            __('The execution time could be degrading. For a more extensive information of this data consult the  Execution Time graph');
-            } else {
-            __('The execution time is correct. For more information about this data, check the Execution Time graph');
-            }
-        */
-
         $result = [
             'error' => false,
             'data'  => [
-                'agentDataCount'     => [
+                'agentDataCount'  => [
                     'name'  => __('Total data in tagente_datos table'),
                     'value' => $agentDataCount,
                 ],
-                'agentDataStatus'    => [
+                'agentDataStatus' => [
                     'name'   => __('Tagente_datos table status'),
                     'value'  => $taMsg,
                     'status' => $taStatus,
-                ],
-                'agentDataExecution' => [
-                    'name'  => __('Execution time degradation when executing a count'),
-                    'value' => 1,
                 ],
             ],
         ];
@@ -1117,6 +1230,10 @@ class Diagnostics
     {
         global $config;
 
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            return [];
+        }
+
         $totalServerThreads = shell_exec(
             'ps -T aux | grep pandora_server | grep -v grep | wc -l'
         );
@@ -1130,7 +1247,7 @@ class Diagnostics
         $result = [
             'error' => false,
             'data'  => [
-                'totalServerThreads'   => [
+                [
                     'name'  => __('Total server threads'),
                     'value' => $totalServerThreads,
                 ],
@@ -1150,17 +1267,252 @@ class Diagnostics
 
 
     /**
-     * Paint table.
+     * Agent Id whit name is equal to Server Name.
      *
-     * @param string $statusInfo Json width status info.
-     *
-     * @return void
+     * @return integer Id agent module.
      */
-    public function printTable(string $statusInfo): void
+    public function getAgentIdMasterServer(): int
     {
         global $config;
 
-        hd($statusInfo);
+        $serverName = db_get_value_sql(
+            'SELECT `name`
+            FROM tserver
+            WHERE `name` IS NOT NULL
+            AND `master` > 0
+            ORDER BY `master` DESC'
+        );
+        $agentId = (int) db_get_value_sql(
+            sprintf(
+                'SELECT id_agente
+                FROM tagente
+                WHERE nombre = "%s"',
+                $serverName
+            )
+        );
+
+        if (isset($agentId) === false || is_numeric($agentId) === false) {
+            $agentId = 0;
+        }
+
+        return $agentId;
+    }
+
+
+    /**
+     * Graph.
+     *
+     * @param integer $id     Id agent.
+     * @param string  $name   Name module.
+     * @param boolean $image  Chart interactive or only image.
+     * @param boolean $base64 Image or base64.
+     *
+     * @return string
+     */
+    public function getChart(
+        int $id,
+        string $name,
+        bool $image=false,
+        bool $base64=false
+    ): string {
+        global $config;
+
+        include_once $config['homedir'].'/include/functions_graph.php';
+        $data = modules_get_agentmodule_id($name, $id);
+        $params = [
+            'agent_module_id'    => $data['id_agente_modulo'],
+            'period'             => SECONDS_1MONTH,
+            'date'               => time(),
+            'height'             => '200',
+            'only_image'         => $image,
+            'return_img_base_64' => $base64,
+        ];
+
+        return grafico_modulo_sparse($params);
+    }
+
+
+    /**
+     * Check pandoradb installed.
+     *
+     * @return string
+     */
+    public function checkPandoraDB(): string
+    {
+        global $config;
+        $result = '';
+
+        if (isset($config['db_maintenance']) === false) {
+            $result .= '(*) ';
+            $result .= __(
+                'Please check your Pandora Server setup and make sure that the database maintenance daemon is running.'
+            );
+            $result .= ' ';
+            $result .= __(
+                'It\' is very important to keep the database up-to-date to get the best performance and results in Pandora'
+            );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Draw table.
+     *
+     * @param string $method Method.
+     * @param string $title  Title.
+     *
+     * @return void
+     */
+    public function printData(string $method, string $title): void
+    {
+        global $config;
+
+        if (is_ajax()) {
+            // TODO: Call method.
+            echo $method;
+        } else {
+            // Datatables list.
+            try {
+                $columns = [
+                    [
+                        'class' => 'datatables-td-title',
+                        'text'  => 'name',
+                    ],
+                    [
+                        'class' => 'datatables-td-max',
+                        'text'  => 'value',
+                    ],
+                    'message',
+                ];
+
+                $columnNames = [
+                    [
+                        'style' => 'display:none;',
+                        'text'  => '',
+                    ],
+                    [
+                        'style' => 'display:none',
+                        'text'  => '',
+                    ],
+                    [
+                        'style' => 'display:none',
+                        'text'  => '',
+                    ],
+                ];
+
+                $tableId = $method.'_'.uniqid();
+                // Load datatables user interface.
+                ui_print_datatable(
+                    [
+                        'id'                  => $tableId,
+                        'class'               => 'info_table caption_table',
+                        'style'               => 'width: 100%',
+                        'columns'             => $columns,
+                        'column_names'        => $columnNames,
+                        'ajax_data'           => [
+                            'method' => 'datatablesDraw',
+                            'name'   => $method,
+                        ],
+                        'ajax_url'            => $this->ajaxController,
+                        'paging'              => 0,
+                        'no_sortable_columns' => [-1],
+                        'caption'             => $title,
+                    ]
+                );
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
+    }
+
+
+    /**
+     * Prepare params for getCarts.
+     *
+     * @return void
+     */
+    public function getChartAjax():void
+    {
+        global $config;
+
+        $params = json_decode(
+            io_safe_output(get_parameter('params', '')),
+            true
+        );
+
+        $return = '';
+        if (isset($params['idAgent']) === true
+            && empty($params['idAgent']) === false
+            && isset($params['nameModule'])
+            && empty($params['nameModule']) === false
+        ) {
+            $return = $this->getChart(
+                $params['idAgent'],
+                $params['nameModule']
+            );
+        }
+
+        exit($return);
+    }
+
+
+    /**
+     * Paint table with charts.
+     *
+     * @param array $params Info charts.
+     *
+     * @return void
+     */
+    public function printDataCharts(array $params): void
+    {
+        global $config;
+
+        if (!$params) {
+            $params = get_parameter('params');
+        }
+
+        if (is_ajax()) {
+            // TODO: Call method.
+            echo $method;
+        } else {
+            // Datatables list.
+            try {
+                $id = str_replace(
+                    ' ',
+                    '',
+                    io_safe_output($params['nameModule'])
+                );
+                echo '<div id="'.$id.'" class="element-self-monitoring"></div>';
+                $settings = [
+                    'type'     => 'POST',
+                    'dataType' => 'html',
+                    'url'      => ui_get_full_url(
+                        'ajax.php',
+                        false,
+                        false,
+                        false
+                    ),
+                    'data'     => [
+                        'page'   => $this->ajaxController,
+                        'method' => 'getChartAjax',
+                        'params' => json_encode($params),
+                    ],
+                ];
+
+                ?>
+                    <script type="text/javascript">
+                        ajaxRequest(
+                            '<?php echo $id; ?>',
+                            <?php echo json_encode($settings); ?>
+                        );
+                    </script>
+                <?php
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
     }
 
 
@@ -1206,6 +1558,109 @@ class Diagnostics
         }
 
         return $result;
+    }
+
+
+    /**
+     * Transforms a json object into a Datatables format.
+     *
+     * @return void
+     */
+    public function datatablesDraw()
+    {
+        $method = get_parameter('name', '');
+        if (method_exists($this, $method) === true) {
+            $data = json_decode($this->{$method}(), true);
+        }
+
+        if (isset($data) === true && is_array($data) === true) {
+            $items = $data['data'];
+            $dataReduce = array_reduce(
+                array_keys($data['data']),
+                function ($carry, $key) use ($items) {
+                    // Transforms array of arrays $data into an array
+                    // of objects, making a post-process of certain fields.
+                    if (isset($items[$key]['status']) === true) {
+                        $acumValue = $items[$key]['value'];
+                        if ($items[$key]['status'] === 1) {
+                            $items[$key]['value'] = html_print_image(
+                                'images/exito.png',
+                                true,
+                                [
+                                    'title' => __('Succesfuly'),
+                                    'style' => 'width:15px;',
+                                ]
+                            );
+                        } else {
+                            $items[$key]['value'] = html_print_image(
+                                'images/error_1.png',
+                                true,
+                                [
+                                    'title' => __('Error'),
+                                    'style' => 'width:15px;',
+                                ]
+                            );
+                        }
+
+                        $items[$key]['value'] .= ' '.$acumValue;
+                    }
+
+                    // FIX for customer key.
+                    if ($key === 'customerKey') {
+                        $spanValue = '<span>'.$items[$key]['value'].'</span>';
+                        $items[$key]['value'] = $spanValue;
+                    }
+
+                    if (isset($items[$key]['message']) === false) {
+                        $items[$key]['message'] = '';
+                    }
+
+                    $carry[] = (object) $items[$key];
+                    return $carry;
+                }
+            );
+        }
+
+        // Datatables format: RecordsTotal && recordsfiltered.
+        echo json_encode(
+            [
+                'data'            => $dataReduce,
+                'recordsTotal'    => count($dataReduce),
+                'recordsFiltered' => count($dataReduce),
+            ]
+        );
+    }
+
+
+    /**
+     * Transforms a json object into a Datatables format.
+     *
+     * @return void
+     */
+    public function exportPDF()
+    {
+        // TODO: TO BE CONTINUED.
+        $pdf = new PDFTranslator();
+
+        // Set font from font defined in report.
+        $pdf->custom_font = $report['custom_font'];
+
+        $product_name = io_safe_output(get_product_name());
+        $pdf->setMetadata(
+            __('Diagnostics Info'),
+            $product_name.' Enteprise',
+            $product_name,
+            __('Automated %s report for user defined report', $product_name)
+        );
+
+        $filename = '';
+
+        if ($filename !== '') {
+            $pdfObject->writePDFfile($filename);
+        } else {
+            $pdfObject->showPDF();
+        }
+
     }
 
 

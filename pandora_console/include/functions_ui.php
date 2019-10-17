@@ -2996,6 +2996,10 @@ function ui_print_datatable(array $parameters)
         $parameters['default_pagination'] = $config['block_size'];
     }
 
+    if (!isset($parameters['paging'])) {
+        $parameters['paging'] = true;
+    }
+
     $no_sortable_columns = [];
     if (isset($parameters['no_sortable_columns'])) {
         $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
@@ -3156,7 +3160,7 @@ function ui_print_datatable(array $parameters)
     $table = '<table id="'.$table_id.'" ';
     $table .= 'class="'.$parameters['class'].'"';
     $table .= 'style="'.$parameters['style'].'">';
-    $table .= '<thead><tr>';
+    $table .= '<thead><tr class="datatables_thead_tr">';
 
     if (isset($parameters['column_names'])
         && is_array($parameters['column_names'])
@@ -3205,7 +3209,7 @@ function ui_print_datatable(array $parameters)
             },
             processing: true,
             serverSide: true,
-            paging: true,
+            paging: '.$parameters['paging'].',
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
@@ -3305,10 +3309,18 @@ function ui_print_datatable(array $parameters)
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
-        });
-    });
+        });';
 
-</script>';
+    if (isset($parameters['caption']) === true
+        && empty($parameters['caption']) === false
+    ) {
+        $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
+        $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    $js .= '});';
+
+    $js .= '</script>';
 
     // Order.
     $err_msg = '<div id="error-'.$table_id.'"></div>';

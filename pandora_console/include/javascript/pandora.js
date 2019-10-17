@@ -1,3 +1,6 @@
+/* global $ */
+/* exported load_modal */
+
 var ENTERPRISE_DIR = "enterprise";
 
 /* Function to hide/unhide a specific Div id */
@@ -1872,8 +1875,6 @@ function logo_preview(icon_name, icon_path, incoming_options) {
 }
 
 // Advanced Form control.
-/* global $ */
-/* exported load_modal */
 function load_modal(settings) {
   var AJAX_RUNNING = 0;
   var data = new FormData();
@@ -1984,6 +1985,26 @@ function load_modal(settings) {
           $(".ui-dialog-titlebar-close").hide();
         }
       });
+    }
+  });
+}
+
+/**
+ * Function for AJAX request.
+ *
+ * @param {string} id Id container append data.
+ * @param {json} settings Json with settings.
+ *
+ * @return {void}
+ */
+function ajaxRequest(id, settings) {
+  $.ajax({
+    type: settings.type,
+    dataType: settings.html,
+    url: settings.url,
+    data: settings.data,
+    success: function(data) {
+      $("#" + id).append(data);
     }
   });
 }

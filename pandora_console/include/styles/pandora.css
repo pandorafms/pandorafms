@@ -5903,3 +5903,49 @@ table.table_modal_alternate tr td:first-child {
 .flot-text {
   width: 101%;
 }
+
+.title-self-monitoring,
+.caption_table caption {
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bolder;
+  color: #fff;
+  background: #282828;
+  padding: 8px;
+}
+
+.datatables-td-title {
+  width: 25% !important;
+  font-weight: bolder;
+}
+
+.datatables-td-max {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.datatables-td-max img {
+  margin-right: 10px;
+}
+
+.datatables-td-max span {
+  width: 400px;
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+.container-self-monitoring {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.element-self-monitoring {
+  flex: 2 1 600px;
+}
+
+.footer-self-monitoring {
+  margin: 30px;
+  font-style: italic;
+}

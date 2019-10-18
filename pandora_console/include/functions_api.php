@@ -13459,16 +13459,22 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
  * @param $trash2
  * @param string $returnType
  *  Example:
- *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora
+ *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora&id=pandrora&id2=strict
  */
-function api_get_agents_id_name_by_alias($alias, $trash1, $trash2, $returnType)
+function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
 {
     global $config;
 
-    if (is_metaconsole()) {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+    if ($strict == 'strict') {
+        $where_clause = " alias = '$alias'";
     } else {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente from tagente WHERE upper(alias) LIKE upper('%$alias%')");
+        $where_clause = " upper(alias) LIKE upper('%$alias%')";
+    }
+
+    if (is_metaconsole()) {
+        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup, server_name FROM tmetaconsole_agent WHERE $where_clause");
+    } else {
+        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente from tagente WHERE $where_clause");
     }
 
     if ($all_agents !== false) {

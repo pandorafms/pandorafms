@@ -121,6 +121,7 @@ sub help_screen{
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
+	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
 	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
@@ -4010,27 +4011,41 @@ sub cli_get_agent_modules() {
 
 sub cli_get_agents_id_name_by_alias() {
 	my $agent_alias = @ARGV[2];
+	my $strict = @ARGV[3];
 	my @agents;
+	my $where_value;
 
-	if(is_metaconsole($conf) == 1) {
-		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)","%".$agent_alias."%");
+	    use Data::Dumper;
+		print Dumper($agent_alias ,$strict);
+	if($strict eq 'strict') {
+		$where_value = $agent_alias;
 	} else {
-		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", "%".$agent_alias."%");
+		$where_value = "%".$agent_alias."%";
 	}
 
+	if(is_metaconsole($conf) == 1) {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	} else {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	}
 	if(scalar(@agents) == 0) {
 		print "[ERROR] No agents retrieved.\n\n";
-	}
-	
-	if(is_metaconsole($conf) == 1) {
-		print "id_module, alias, id_server\n";
 	} else {
-		print "id_module, alias\n";
-	}
+		if(is_metaconsole($conf) == 1) {
+			print "id_module, alias, id_server\n";
 
-	foreach my $agent (@agents) {
-		print $agent->{'id_agente'}.",".safe_output($agent->{'alias'}).", ".$agent->{'id_tmetaconsole_setup'}."\n";
-	}
+				foreach my $agent (@agents) {
+			
+				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'}).", ".$agent->{'id_tmetaconsole_setup'}."\n";
+			}
+		} else {
+			print "id_module, alias\n";
+
+			foreach my $agent (@agents) {
+				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";
+			}
+		}
+	}	
 }
 
 
@@ -6317,7 +6332,7 @@ sub pandora_manage_main ($$$) {
 			cli_get_agent_modules();
 		}
 		elsif ($param eq '--get_agents_id_name_by_alias') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2,1);
 			cli_get_agents_id_name_by_alias();
 		}
 		elsif ($param eq '--get_policy_modules') {

@@ -13472,7 +13472,7 @@ function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
     }
 
     if (is_metaconsole()) {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup, server_name FROM tmetaconsole_agent WHERE $where_clause");
+        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE $where_clause");
     } else {
         $all_agents = db_get_all_rows_sql("SELECT alias, id_agente from tagente WHERE $where_clause");
     }

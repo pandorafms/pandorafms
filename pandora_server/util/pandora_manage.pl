@@ -4015,8 +4015,6 @@ sub cli_get_agents_id_name_by_alias() {
 	my @agents;
 	my $where_value;
 
-	    use Data::Dumper;
-		print Dumper($agent_alias ,$strict);
 	if($strict eq 'strict') {
 		$where_value = $agent_alias;
 	} else {
@@ -4024,22 +4022,22 @@ sub cli_get_agents_id_name_by_alias() {
 	}
 
 	if(is_metaconsole($conf) == 1) {
-		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente, id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
 	} else {
-		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
 	}
 	if(scalar(@agents) == 0) {
 		print "[ERROR] No agents retrieved.\n\n";
 	} else {
 		if(is_metaconsole($conf) == 1) {
-			print "id_module, alias, id_server\n";
+			print "alias, id_agente, id_tagente, id_server, server_name\n";
 
 				foreach my $agent (@agents) {
 			
-				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'}).", ".$agent->{'id_tmetaconsole_setup'}."\n";
+				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
 			}
 		} else {
-			print "id_module, alias\n";
+			print "alias, id_agente\n";
 
 			foreach my $agent (@agents) {
 				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";

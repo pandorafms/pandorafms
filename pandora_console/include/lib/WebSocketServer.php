@@ -116,11 +116,18 @@ abstract class WebSocketServer
     protected $heldMessages = [];
 
     /**
-     * Undocumented variable
+     * Show output.
      *
-     * @var array
+     * @var boolean
      */
     protected $interactive = true;
+
+    /**
+     * Debug.
+     *
+     * @var boolean
+     */
+    protected $debug = false;
 
     /**
      * Undocumented variable
@@ -195,8 +202,8 @@ abstract class WebSocketServer
         $__tmp || die('Failed: socket_listen()');
 
         $this->sockets['m'] = $this->master;
-        $this->stdout("Server started\nListening on: ".$addr.':'.$port."\n");
-        $this->stdout('Master socket: '.$this->master."\n");
+        $this->stderr('Listening on: '.$addr.':'.$port);
+        $this->stderr('Master socket: '.$this->master."\n");
 
     }
 
@@ -204,12 +211,13 @@ abstract class WebSocketServer
     /**
      * Process user message. Implement.
      *
-     * @param object $user    User.
-     * @param string $message Message.
+     * @param object  $user        User.
+     * @param string  $message     Message.
+     * @param boolean $str_message String message or not.
      *
      * @return void
      */
-    abstract protected function process($user, $message);
+    abstract protected function process($user, $message, $str_message);
 
 
     /**
@@ -414,7 +422,7 @@ abstract class WebSocketServer
             $write = null;
             $this->pTick();
             $this->tick();
-            socket_select($read, $write, $except, $this->timeout);
+            socket_select($read, $write, $except, 0, $this->timeout);
             foreach ($read as $socket) {
                 if ($socket == $this->master) {
                     // External to master connection. New client.
@@ -424,9 +432,14 @@ abstract class WebSocketServer
                         continue;
                     } else {
                         $this->connect($client);
-                        $this->stdout('Client connected. '.$client);
+                        $this->stderr('Client connected. '.$client);
                     }
                 } else {
+                    if (!$socket) {
+                        $this->disconnect($socket);
+                        continue;
+                    }
+
                     // Updates on 'read' socket.
                     $numBytes = socket_recv(
                         $socket,
@@ -454,7 +467,7 @@ abstract class WebSocketServer
 
                             $this->doHandshake($user, $buffer);
                         } else {
-                            if (!$this->processRaw($user, $buffer)) {
+                            if ($this->processRaw($user, $buffer)) {
                                 // Split packet into frame and send it to deframe.
                                 $this->splitPacket(
                                     $numBytes,
@@ -470,7 +483,7 @@ abstract class WebSocketServer
             // Remote updates.
             $remotes = $this->remoteSockets;
             if (count($remotes) > 0) {
-                socket_select($remotes, $write, $except, $this->timeout);
+                socket_select($remotes, $write, $except, 0, $this->timeout);
                 foreach ($remotes as $socket) {
                     // Remote updates - internal. We're client of this sockets.
                     if (!$socket) {
@@ -492,8 +505,6 @@ abstract class WebSocketServer
                         );
                     } else {
                         $user = $this->getUserBySocket($socket);
-                        echo '>>>>> EEH, recibo:['.$user->id."]\n";
-                        echo $this->dump($buffer);
                         if (!$user) {
                             $this->disconnect($socket);
                             $this->stderr(
@@ -571,7 +582,7 @@ abstract class WebSocketServer
 
             if ($triggerClosed) {
                 $this->closed($user);
-                $this->stdout(
+                $this->stderr(
                     'Client disconnected. '.$user->socket
                 );
                 socket_close($user->socket);
@@ -912,8 +923,10 @@ abstract class WebSocketServer
      */
     public function stderr($message=null)
     {
-        if ($this->interactive) {
-            echo $message."\n";
+        if ($this->interactive === true
+            && $this->debug === true
+        ) {
+            echo date('D M j G:i:s').' - '.$message."\n";
         }
     }
 
@@ -1064,18 +1077,17 @@ abstract class WebSocketServer
                 if ($user->hasSentClose) {
                     $this->disconnect($user->socket);
                 } else {
+                    $str_message = false;
                     if ((preg_match('//u', $message))
                         || ($headers['opcode'] == 2)
                     ) {
-                        /*
-                         * Debug purposes.
-                         * $this->stdout("Text msg encoded UTF-8 or Binary msg\n".$message);
-                         */
-
-                        $this->process($user, $message);
+                        $str_message = true;
                     } else {
                         $this->stderr("not UTF-8\n");
+                        $str_message = false;
                     }
+
+                    $this->process($user, $message, $str_message);
                 }
             }
 
@@ -1152,7 +1164,7 @@ abstract class WebSocketServer
             default:
                 /*
                  * TODO: fail connection.
-                 * $this->disconnect($user);
+                 * $this->disconnect($user->socket);
                  */
 
                 $willClose = true;
@@ -1371,7 +1383,7 @@ abstract class WebSocketServer
         if ($len > 0) {
             /*
              * TODO: fail connection.
-             * $this->disconnect($user);
+             * $this->disconnect($user->socket);
              */
 
             return true;

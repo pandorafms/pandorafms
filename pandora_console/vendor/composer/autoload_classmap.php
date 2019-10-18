@@ -307,6 +307,7 @@ return array(
     'Mpdf\\Utils\\NumericString' => $vendorDir . '/mpdf/mpdf/src/Utils/NumericString.php',
     'Mpdf\\Utils\\PdfDate' => $vendorDir . '/mpdf/mpdf/src/Utils/PdfDate.php',
     'Mpdf\\Utils\\UtfString' => $vendorDir . '/mpdf/mpdf/src/Utils/UtfString.php',
+    'PandoraFMS\\User' => $baseDir . '/include/lib/User.php',
     'PandoraFMS\\WebSockets\\WSProxy' => $baseDir . '/include/lib/WSProxy.php',
     'PandoraFMS\\WebSockets\\WSProxyUser' => $baseDir . '/include/lib/WSProxyUser.php',
     'PandoraFMS\\Websockets\\WebSocketServer' => $baseDir . '/include/lib/WebSocketServer.php',

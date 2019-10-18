@@ -129,6 +129,20 @@ class WebSocketUser
      */
     public $redirect;
 
+    /**
+     * Pandora FMS user account.
+     *
+     * @var User
+     */
+    public $account;
+
+    /**
+     * Remote address.
+     *
+     * @var string
+     */
+    public $address;
+
 
     /**
      * Initializes a websocket user.
@@ -138,6 +152,7 @@ class WebSocketUser
      */
     public function __construct($id, $socket)
     {
+        socket_getpeername($socket, $this->address);
         $this->id = $id;
         $this->socket = $socket;
     }

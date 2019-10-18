@@ -44,7 +44,10 @@ namespace PandoraFMS\WebSockets;
 
 use \PandoraFMS\Websockets\WebSocketServer;
 use \PandoraFMS\Websockets\WebSocketUser;
+use \PandoraFMS\User;
 
+
+require_once __DIR__.'/../functions.php';
 
 /**
  * Redirects ws communication between two endpoints.
@@ -86,14 +89,14 @@ class WSProxy extends WebSocketServer
      *
      * @var boolean
      */
-    protected $interative = false;
+    protected $interative = true;
 
     /**
-     * Use a timeout of 0.1 second to search for messages..
+     * Use a timeout of 100 milliseconds to search for messages..
      *
      * @var integer
      */
-    public $timeout = 0.1;
+    public $timeout = 250;
 
 
     /**
@@ -120,7 +123,7 @@ class WSProxy extends WebSocketServer
         $this->intPort = $to_port;
         $this->intUrl = $to_url;
         $this->maxBufferSize = $bufferLength;
-        $this->interactive = $debug;
+        $this->debug = $debug;
         $this->userClass = '\\PandoraFMS\\Websockets\\WebSocketUser';
         parent::__construct($listen_addr, $listen_port, $bufferLength);
     }
@@ -239,6 +242,36 @@ class WSProxy extends WebSocketServer
      */
     protected function connected($user)
     {
+        global $config;
+
+        $php_session_id = \str_replace(
+            'PHPSESSID=',
+            '',
+            $user->headers['cookie']
+        );
+
+        $user->account = new User(['phpsessionid' => $php_session_id]);
+        $_SERVER['REMOTE_ADDR'] = $user->address;
+
+        // Ensure user is allowed to connect.
+        if (\check_login(false) === false) {
+            $this->disconnect($user->socket);
+            \db_pandora_audit(
+                'WebSockets engine',
+                'Trying to access websockets engine without a valid session',
+                'N/A'
+            );
+            return;
+        }
+
+        // User exists, and session is valid.
+        \db_pandora_audit(
+            'WebSockets engine',
+            'WebSocket connection started',
+            $user->account->idUser
+        );
+        $this->stderr('ONLINE '.$user->address.'('.$user->account->idUser.')');
+
         // Disconnect previous sessions.
         $this->cleanupSocketByCookie($user);
 
@@ -250,7 +283,7 @@ class WSProxy extends WebSocketServer
         // Create a new socket connection (internal).
         $intUser = $this->connectInt($this->rawHeaders);
         if ($intUser === null) {
-            $this->disconnect($user);
+            $this->disconnect($user->socket);
             return;
         }
 
@@ -293,8 +326,13 @@ class WSProxy extends WebSocketServer
      */
     protected function processRaw($user, $buffer)
     {
-        $this->stdout(date('D M j G:i:s').' - '.$user->id.' >> '.$user->redirect->id);
-        $this->stdout($this->dump($buffer));
+        if (!isset($user->redirect)) {
+            $this->disconnect($user->socket);
+            return false;
+        }
+
+        $this->stderr($user->id.' >> '.$user->redirect->id);
+        $this->stderr($this->dump($buffer));
         $this->writeSocket($user->redirect, $buffer);
 
         return true;
@@ -304,14 +342,18 @@ class WSProxy extends WebSocketServer
     /**
      * Process user message. Implement.
      *
-     * @param object $user    User.
-     * @param string $message Message.
+     * @param object  $user        User.
+     * @param string  $message     Message.
+     * @param boolean $str_message String message or not.
      *
      * @return void
      */
-    protected function process($user, $message)
+    protected function process($user, $message, $str_message)
     {
-
+        if ($str_message === true) {
+            $remmitent = $user->address.'('.$user->account->idUser.')';
+            $this->stderr($remmitent.': '.$message);
+        }
     }
 
 
@@ -324,8 +366,22 @@ class WSProxy extends WebSocketServer
      */
     protected function closed($user)
     {
-        $this->disconnect($user);
-        $this->disconnect($user->redirect);
+        if ($user->account) {
+            $_SERVER['REMOTE_ADDR'] = $user->address;
+            \db_pandora_audit(
+                'WebSockets engine',
+                'WebSocket connection finished',
+                $user->account->idUser
+            );
+
+            $this->stderr('OFFLINE '.$user->address.'('.$user->account->idUser.')');
+        }
+
+        // Ensure both sockets are disconnected.
+        $this->disconnect($user->socket);
+        if ($user->redirect) {
+            $this->disconnect($user->redirect->socket);
+        }
     }
 
 

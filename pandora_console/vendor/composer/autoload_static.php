@@ -389,6 +389,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Mpdf\\Utils\\NumericString' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/NumericString.php',
         'Mpdf\\Utils\\PdfDate' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/PdfDate.php',
         'Mpdf\\Utils\\UtfString' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/UtfString.php',
+        'PandoraFMS\\User' => __DIR__ . '/../..' . '/include/lib/User.php',
         'PandoraFMS\\WebSockets\\WSProxy' => __DIR__ . '/../..' . '/include/lib/WSProxy.php',
         'PandoraFMS\\WebSockets\\WSProxyUser' => __DIR__ . '/../..' . '/include/lib/WSProxyUser.php',
         'PandoraFMS\\Websockets\\WebSocketServer' => __DIR__ . '/../..' . '/include/lib/WebSocketServer.php',

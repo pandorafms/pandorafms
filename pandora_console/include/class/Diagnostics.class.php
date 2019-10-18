@@ -124,7 +124,10 @@ class Diagnostics
     {
         global $config;
 
-        $textPdf = '<a href="index.php?sec=gextensions&sec2='.$this->ajaxController.'">';
+        $urlPdf = ui_get_full_url(false, false, false, false);
+        $urlPdf .= 'enterprise/operation/reporting/reporting_viewer_pdf.php';
+        $textPdf = '<a href="'.$urlPdf.'" target="_new">';
+
         $textPdf .= html_print_image(
             'images/pdf.png',
             true,
@@ -1639,28 +1642,16 @@ class Diagnostics
      */
     public function exportPDF()
     {
+        global $config;
+
         // TODO: TO BE CONTINUED.
-        $pdf = new PDFTranslator();
-
-        // Set font from font defined in report.
-        $pdf->custom_font = $report['custom_font'];
-
-        $product_name = io_safe_output(get_product_name());
-        $pdf->setMetadata(
-            __('Diagnostics Info'),
-            $product_name.' Enteprise',
-            $product_name,
-            __('Automated %s report for user defined report', $product_name)
-        );
-
-        $filename = '';
-
-        if ($filename !== '') {
-            $pdfObject->writePDFfile($filename);
-        } else {
-            $pdfObject->showPDF();
-        }
-
+        enterprise_include_once('/include/class/Pdf.class.php');
+        $pdf = new Pdf([]);
+        $pdf->setMetadata('el titulo', 'daniel', 'pepe', 'el sujeto');
+        $pdf->setHeaderHTML('esto es el codigo html del header');
+        $pdf->writeHTML('esto es el html del contenido');
+        $pdf->setFooterHTML('esto es el footer');
+        $pdf->writePDFfile();
     }
 
 

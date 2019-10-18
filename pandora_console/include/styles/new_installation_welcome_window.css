@@ -1,0 +1,144 @@
+/* 
+// Pandora FMS - the Flexible Monitoring System
+// =============================================
+// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+label {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+.content_position {
+  display: flex;
+  margin-top: 5px;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+
+.learn_content_position {
+  display: flex;
+  margin-left: 50px;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+
+#lbl_learn {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+
+.btn_email_conf {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 461px;
+  width: 25px;
+  border: none;
+}
+
+.btn_agent {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 469px;
+  width: 25px;
+  border: none;
+}
+.btn_agent_online {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 314px;
+  width: 25px;
+  border: none;
+}
+.btn_alert_module {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 304px;
+  width: 25px;
+  border: none;
+}
+.btn_remote-command {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 297px;
+  width: 25px;
+  border: none;
+}
+
+.btn_discover {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 321px;
+  width: 25px;
+  border: none;
+}
+
+.btn_is_not_ok {
+  background-image: url(../../images/icono_warning.png);
+  margin-left: 288px;
+  width: 25px;
+  border: none;
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
+
+.btn_agent_ok {
+  background-image: url(../../images/input_tick.png);
+  background-repeat: no-repeat;
+  margin-left: 469px;
+  width: 20px;
+  border: none;
+}
+
+.btn_agent_online_ok {
+  background-image: url(../../images/input_tick.png);
+  background-repeat: no-repeat;
+  margin-left: 314px;
+  width: 20px;
+  border: none;
+}
+
+.btn_alert_module_ok {
+  background-image: url(../../images/input_tick.png);
+  background-repeat: no-repeat;
+  margin-left: 304px;
+  width: 20px;
+  border: none;
+}
+
+.btn_remote-command_ok {
+  background-image: url(../../images/input_tick.png);
+  background-repeat: no-repeat;
+  margin-left: 297px;
+  width: 20px;
+  border: none;
+}
+
+.btn_discover_ok {
+  background-image: url(../../images/input_tick.png);
+  background-repeat: no-repeat;
+  margin-left: 321px;
+  width: 25px;
+  border: none;
+}
+
+.btn_email_conf_ok {
+  background-image: url(../../images/input_tick.png);
+  background-repeat: no-repeat;
+  margin-left: 461px;
+  width: 20px;
+  border: none;
+}

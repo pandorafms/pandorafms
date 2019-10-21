@@ -328,9 +328,26 @@ if ($config['menu_type'] == 'classic') {
         $header_autorefresh_counter .= $autorefresh_additional;
         $header_autorefresh_counter .= '</div>';
 
+        // Button for feedback pandora.
+        if (enterprise_installed()) {
+            $header_feedback = '<div id="feedback-icon-header">';
+            $header_feedback .= '<div id="modal-feedback-form" style="display:none;"></div>';
+            $header_feedback .= html_print_image(
+                '/images/icono_warning.png',
+                true,
+                [
+                    'title' => __('Feedback'),
+                    'id'    => 'feedback-header',
+                    'alt'   => __('Feedback'),
+                    'style' => 'cursor: pointer; width: 28px;',
+                ]
+            );
+            $header_feedback .= '</div>';
+        }
+
 
         // Support.
-        if (defined('PANDORA_ENTERPRISE')) {
+        if (enterprise_installed()) {
             $header_support_link = 'https://support.artica.es/';
         } else {
             $header_support_link = 'https://pandorafms.com/forums/';
@@ -388,9 +405,9 @@ if ($config['menu_type'] == 'classic') {
 
         echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
-    </div>    <!-- Closes #table_header_inner -->        
+    </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
 
 
@@ -612,6 +629,44 @@ if ($config['menu_type'] == 'classic') {
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
     
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
+
+    /**
+    * Loads modal from AJAX to add feedback.
+    */
+    function show_feedback() {
+        <?php
+        // Require specific CSS and JS.
+        ui_require_css_file('wizard');
+        ui_require_css_file('discovery');
+        ?>
+        var btn_ok_text = '<?php echo __('Send'); ?>';
+        var btn_cancel_text = '<?php echo __('Cancel'); ?>';
+        var title = '<?php echo __('Report an issue'); ?>';
+        var url = '<?php echo 'tools/diagnostics'; ?>';
+
+        console.log('entra');
+
+        load_modal({
+            target: $('#modal-feedback-form'),
+            form: 'modal_form_feedback',
+            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+            modal: {
+                title: title,
+                ok: btn_ok_text,
+                cancel: btn_cancel_text,
+            },
+            onshow: {
+                page: url,
+                method: 'formFeedback',
+            },
+            onsubmit: {
+                page: url,
+                method: 'createdScheduleFeedbackTask',
+            }
+        });
+
+    }
+
     $(document).ready (function () {
 
         // Check new notifications on a periodic way
@@ -661,7 +716,12 @@ if ($config['menu_type'] == 'classic') {
         $("#ui_close_dialog_titlebar").click(function () {
             $("#agent_access").css("display","");
         });
-        
+
+        // Feedback.
+        $("#feedback-header").click(function () {
+            show_feedback();
+        });
+
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
         }

@@ -30,11 +30,12 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
+require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
 
 /**
  * Base class Diagnostics.
  */
-class Diagnostics
+class Diagnostics extends Wizard
 {
 
     /**
@@ -44,15 +45,21 @@ class Diagnostics
      */
     public $ajaxController;
 
+    /**
+     * Print Html or Pdf view.
+     *
+     * @var boolean
+     */
+    public $pdf;
+
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string $page Page.
-     *
-     * @return void
+     * @param string  $page Page.
+     * @param boolean $pdf  PDF View.
      */
-    public function __construct(string $page)
+    public function __construct(string $page, bool $pdf)
     {
         global $config;
 
@@ -75,6 +82,7 @@ class Diagnostics
         }
 
         $this->ajaxController = $page;
+        $this->pdf = $pdf;
     }
 
 
@@ -99,6 +107,8 @@ class Diagnostics
         'getServerThreads',
         'datatablesDraw',
         'getChartAjax',
+        'formFeedback',
+        'createdScheduleFeedbackTask',
     ];
 
 
@@ -165,23 +175,58 @@ class Diagnostics
             true
         );
 
-        /*
-         * Info status pandoraFms.
-         * PHP setup.
-         * Database size stats.
-         * Database health status.
-         * Database status info.
-         * System Info.
-         * MySQL Performance metrics.
-         * Tables fragmentation in the Pandora FMS database.
-         * Pandora FMS logs dates.
-         * Pandora FMS Licence Information.
-         * Status of the attachment folder.
-         * Information from the tagente_datos table.
-         * Pandora FMS server threads.
-         */
+        // Print all Methods Diagnostic Info.
+        echo $this->printMethodsDiagnostigsInfo();
 
-        foreach ($this->AJAXMethods as $key => $method) {
+        // Print all charts Monitoring.
+        echo $this->printCharts();
+
+        echo '<div class="footer-self-monitoring">';
+        echo $this->checkPandoraDB();
+        echo '</div>';
+
+    }
+
+
+    /**
+     * Print Methods:
+     * Info status pandoraFms.
+     * PHP setup.
+     * Database size stats.
+     * Database health status.
+     * Database status info.
+     * System Info.
+     * MySQL Performance metrics.
+     * Tables fragmentation in the Pandora FMS database.
+     * Pandora FMS logs dates.
+     * Pandora FMS Licence Information.
+     * Status of the attachment folder.
+     * Information from the tagente_datos table.
+     * Pandora FMS server threads.
+     *
+     * @return string Html.
+     */
+    public function printMethodsDiagnostigsInfo():string
+    {
+        $infoMethods = [
+            'getStatusInfo',
+            'getPHPSetup',
+            'getDatabaseSizeStats',
+            'getDatabaseHealthStatus',
+            'getDatabaseStatusInfo',
+            'getSystemInfo',
+            'getMySQLPerformanceMetrics',
+            'getTablesFragmentation',
+            'getPandoraFMSLogsDates',
+            'getLicenceInformation',
+            'getAttachmentFolder',
+            'getInfoTagenteDatos',
+            'getServerThreads',
+        ];
+
+        $return = '';
+
+        foreach ($infoMethods as $key => $method) {
             switch ($method) {
                 case 'getStatusInfo':
                     $title = __('Info status pandoraFms');
@@ -243,19 +288,37 @@ class Diagnostics
                 break;
             }
 
-            if ($method !== 'datatablesDraw' && $method !== 'getChartAjax') {
-                echo '<div style="margin-bottom: 30px;">';
-                    $this->printData($method, $title);
-                echo '</div>';
-            }
+            $return .= '<div style="margin-bottom: 30px;">';
+            $return .= $this->printData($method, $title);
+            $return .= '</div>';
         }
 
+        return $return;
+    }
+
+
+    /**
+     * Print table graps:
+     * Graph of the Agents Unknown module.
+     * Graph of the Database Maintenance module.
+     * Graph of the Free Disk Spool Dir module.
+     * Graph of the Free RAM module.
+     * Graph of the Queued Modules module.
+     * Graph of the Status module.
+     * Graph of the System Load AVG module.
+     * Graph of the Execution Time module.
+     *
+     * @return string
+     */
+    public function printCharts()
+    {
         /*
          * Agent id with name Master Server.
          */
 
         $agentIdMasterServer = $this->getAgentIdMasterServer();
 
+        $result = '';
         if ($agentIdMasterServer !== 0) {
             $agentMonitoring = [
                 'chartAgentsUnknown'    => [
@@ -312,33 +375,18 @@ class Diagnostics
                 ],
             ];
 
-            /*
-             * Print table graps:
-             * Graph of the Agents Unknown module.
-             * Graph of the Database Maintenance module.
-             * Graph of the Free Disk Spool Dir module.
-             * Graph of the Free RAM module.
-             * Graph of the Queued Modules module.
-             * Graph of the Status module.
-             * Graph of the System Load AVG module.
-             * Graph of the Execution Time module.
-             */
-
-            echo '<div class="title-self-monitoring">';
-            echo __('Graphs modules that represent the self-monitoring system');
-            echo '</div>';
-            echo '<div class="container-self-monitoring">';
+            $return .= '<div class="title-self-monitoring">';
+            $return .= __('Graphs modules that represent the self-monitoring system');
+            $return .= '</div>';
+            $return .= '<div class="container-self-monitoring">';
             foreach ($agentMonitoring as $key => $value) {
-                $this->printDataCharts($value);
+                $return .= $this->printDataCharts($value);
             }
 
-            echo '</div>';
+            $return .= '</div>';
         }
 
-        echo '<div class="footer-self-monitoring">';
-        echo $this->checkPandoraDB();
-        echo '</div>';
-
+        return $return;
     }
 
 
@@ -1366,15 +1414,15 @@ class Diagnostics
      * @param string $method Method.
      * @param string $title  Title.
      *
-     * @return void
+     * @return string Return html.
      */
-    public function printData(string $method, string $title): void
+    public function printData(string $method, string $title): string
     {
         global $config;
 
         if (is_ajax()) {
             // TODO: Call method.
-            echo $method;
+            $result = $method;
         } else {
             // Datatables list.
             try {
@@ -1407,27 +1455,57 @@ class Diagnostics
 
                 $tableId = $method.'_'.uniqid();
                 // Load datatables user interface.
-                ui_print_datatable(
-                    [
-                        'id'                  => $tableId,
-                        'class'               => 'info_table caption_table',
-                        'style'               => 'width: 100%',
-                        'columns'             => $columns,
-                        'column_names'        => $columnNames,
-                        'ajax_data'           => [
-                            'method' => 'datatablesDraw',
-                            'name'   => $method,
-                        ],
-                        'ajax_url'            => $this->ajaxController,
-                        'paging'              => 0,
-                        'no_sortable_columns' => [-1],
-                        'caption'             => $title,
-                    ]
-                );
+                if ($this->pdf === false) {
+                    $result = ui_print_datatable(
+                        [
+                            'id'                  => $tableId,
+                            'class'               => 'info_table caption_table',
+                            'style'               => 'width: 100%',
+                            'columns'             => $columns,
+                            'column_names'        => $columnNames,
+                            'ajax_data'           => [
+                                'method' => 'datatablesDraw',
+                                'name'   => $method,
+                            ],
+                            'ajax_url'            => $this->ajaxController,
+                            'paging'              => 0,
+                            'no_sortable_columns' => [-1],
+                            'caption'             => $title,
+                            'print'               => true,
+                        ]
+                    );
+                } else {
+                    $data = json_decode(
+                        $this->datatablesDraw($method, true),
+                        true
+                    );
+
+                    $table = new stdClass();
+                    $table->width = '100%';
+                    $table->class = '';
+                    $table->head = [];
+                    $table->head_colspan[0] = 3;
+                    $table->head[0] = $title;
+                    $table->data = [];
+
+                    if (isset($data) === true && is_array($data) === true) {
+                        $i = 0;
+                        foreach ($data['data'] as $key => $value) {
+                            $table->data[$i][0] = $value['name'];
+                            $table->data[$i][1] = $value['value'];
+                            $table->data[$i][2] = $value['message'];
+                            $i++;
+                        }
+                    }
+
+                    $result = html_print_table($table, true);
+                }
             } catch (Exception $e) {
-                echo $e->getMessage();
+                $result = $e->getMessage();
             }
         }
+
+        return $result;
     }
 
 
@@ -1466,9 +1544,9 @@ class Diagnostics
      *
      * @param array $params Info charts.
      *
-     * @return void
+     * @return string Html.
      */
-    public function printDataCharts(array $params): void
+    public function printDataCharts(array $params): string
     {
         global $config;
 
@@ -1478,7 +1556,7 @@ class Diagnostics
 
         if (is_ajax()) {
             // TODO: Call method.
-            echo $method;
+            $return = $method;
         } else {
             // Datatables list.
             try {
@@ -1487,35 +1565,49 @@ class Diagnostics
                     '',
                     io_safe_output($params['nameModule'])
                 );
-                echo '<div id="'.$id.'" class="element-self-monitoring"></div>';
-                $settings = [
-                    'type'     => 'POST',
-                    'dataType' => 'html',
-                    'url'      => ui_get_full_url(
-                        'ajax.php',
-                        false,
-                        false,
-                        false
-                    ),
-                    'data'     => [
-                        'page'   => $this->ajaxController,
-                        'method' => 'getChartAjax',
-                        'params' => json_encode($params),
-                    ],
-                ];
 
-                ?>
-                    <script type="text/javascript">
-                        ajaxRequest(
-                            '<?php echo $id; ?>',
-                            <?php echo json_encode($settings); ?>
-                        );
-                    </script>
-                <?php
+                if ($this->pdf === false) {
+                    $return = '<div id="'.$id.'" class="element-self-monitoring"></div>';
+                    $settings = [
+                        'type'     => 'POST',
+                        'dataType' => 'html',
+                        'url'      => ui_get_full_url(
+                            'ajax.php',
+                            false,
+                            false,
+                            false
+                        ),
+                        'data'     => [
+                            'page'   => $this->ajaxController,
+                            'method' => 'getChartAjax',
+                            'params' => json_encode($params),
+                        ],
+                    ];
+
+                    ?>
+                        <script type="text/javascript">
+                            ajaxRequest(
+                                '<?php echo $id; ?>',
+                                <?php echo json_encode($settings); ?>
+                            );
+                        </script>
+                    <?php
+                } else {
+                    $return = '<div id="'.$id.'" class="element-self-monitoring">';
+                    $return .= $this->getChart(
+                        $params['idAgent'],
+                        $params['nameModule'],
+                        true,
+                        false
+                    );
+                    $return .= '</div>';
+                }
             } catch (Exception $e) {
-                echo $e->getMessage();
+                $return = $e->getMessage();
             }
         }
+
+        return $return;
     }
 
 
@@ -1565,13 +1657,21 @@ class Diagnostics
 
 
     /**
-     * Transforms a json object into a Datatables format.
+     * Undocumented function
      *
-     * @return void
+     * @param string|null $method Method data requested.
+     * @param boolean     $return Type return.
+     *
+     * @return string|null
      */
-    public function datatablesDraw()
-    {
-        $method = get_parameter('name', '');
+    public function datatablesDraw(
+        ?string $method=null,
+        bool $return=false
+    ):?string {
+        if (isset($method) === false) {
+            $method = get_parameter('name', '');
+        }
+
         if (method_exists($this, $method) === true) {
             $data = json_decode($this->{$method}(), true);
         }
@@ -1624,34 +1724,162 @@ class Diagnostics
             );
         }
 
-        // Datatables format: RecordsTotal && recordsfiltered.
-        echo json_encode(
+        $result = json_encode(
             [
                 'data'            => $dataReduce,
                 'recordsTotal'    => count($dataReduce),
                 'recordsFiltered' => count($dataReduce),
             ]
         );
+
+        // Datatables format: RecordsTotal && recordsfiltered.
+        if ($return === false) {
+            echo $result;
+            return null;
+        } else {
+            return $result;
+        }
+    }
+
+
+    public function createdScheduleFeedbackTask()
+    {
+        global $config;
+
+        $email = 'daniel.barbero@artica.es';
+        $subject = 'PandoraFMS Report '.$config['pandora_uid'];
+        $text = get_parameter('what-happened', '');
+        $type = get_parameter('include-installation-data', '');
+
+        $idUserTask = db_get_value(
+            'id',
+            'tuser_task',
+            'function_name',
+            'cron_task_feedback_send_mail'
+        );
+
+        $parameters = [
+            0                 => '0',
+            1                 => $email,
+            2                 => $subject,
+            3                 => $text,
+            4                 => $type,
+            'first_execution' => strtotime('now'),
+        ];
+
+        $values = [
+            'id_usuario'   => $config['id_user'],
+            'id_user_task' => $idUserTask,
+            'args'         => serialize($parameters),
+            'scheduled'    => 'no',
+            'id_grupo'     => 0,
+        ];
+
+        $result = db_process_sql_insert('tuser_task_scheduled', $values);
     }
 
 
     /**
-     * Transforms a json object into a Datatables format.
+     * Print Diagnostics PDF report.
      *
      * @return void
      */
-    public function exportPDF()
+    public static function exportPDF($filename=false)
     {
         global $config;
 
-        // TODO: TO BE CONTINUED.
         enterprise_include_once('/include/class/Pdf.class.php');
         $pdf = new Pdf([]);
-        $pdf->setMetadata('el titulo', 'daniel', 'pepe', 'el sujeto');
-        $pdf->setHeaderHTML('esto es el codigo html del header');
-        $pdf->writeHTML('esto es el html del contenido');
-        $pdf->setFooterHTML('esto es el footer');
-        $pdf->writePDFfile();
+        $diagnostics = new Diagnostics('tools/diagnostics', true);
+        $product_name = io_safe_output(get_product_name());
+        $pdf->setMetadata(
+            __('Diagnostics Info'),
+            $product_name.' Enteprise',
+            $product_name,
+            __(
+                'Automated %s report for user defined report',
+                $product_name
+            )
+        );
+        $pdf->setHeaderHTML(__('Diagnostics Info'));
+
+        $pdf->addHTML(
+            $diagnostics->printMethodsDiagnostigsInfo()
+        );
+
+        $pdf->addHTML(
+            $diagnostics->printCharts()
+        );
+
+        $pdf->setFooterHTML();
+        $pdf->writePDFfile($filename);
+    }
+
+
+    /**
+     * Print Diagnostics Form feedback.
+     *
+     * @return void
+     */
+    public function formFeedback(): void
+    {
+        $form = [
+            'action'   => '#',
+            'id'       => 'modal_form_feedback',
+            'onsubmit' => 'return false;',
+            'class'    => 'modal',
+        ];
+
+        $inputs = [];
+
+        $inputs[] = [
+            'label'     => __('What happened').'?',
+            'id'        => 'div-what-happened',
+            'class'     => 'flex-row',
+            'arguments' => [
+                'name'    => 'what-happened',
+                'type'    => 'textarea',
+                'value'   => '',
+                'return'  => true,
+                'rows'    => 1,
+                'columns' => 1,
+                'size'    => 25,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Your email'),
+            'class'     => 'flex-row-baseline',
+            'arguments' => [
+                'name'   => 'email',
+                'id'     => 'email',
+                'type'   => 'text',
+                'return' => true,
+                'size'   => 40,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('include installation data'),
+            'class'     => 'flex-row-vcenter',
+            'arguments' => [
+                'name'   => 'include-installation-data',
+                'id'     => 'include-installation-data',
+                'type'   => 'switch',
+                'return' => true,
+                'value'  => 1,
+            ],
+        ];
+
+        exit(
+            $this->printForm(
+                [
+                    'form'   => $form,
+                    'inputs' => $inputs,
+                ],
+                true
+            )
+        );
     }
 
 

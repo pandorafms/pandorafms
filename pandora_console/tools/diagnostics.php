@@ -32,11 +32,13 @@ global $config;
 require_once $config['homedir'].'/include/class/Diagnostics.class.php';
 
 $ajaxPage = 'tools/diagnostics';
+$pdf = false;
+
 
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
-    $cs = new Diagnostics($ajaxPage);
+    $cs = new Diagnostics($ajaxPage, $pdf);
 } catch (Exception $e) {
     if (is_ajax()) {
         echo json_encode(['error' => '[Diagnostics]'.$e->getMessage() ]);

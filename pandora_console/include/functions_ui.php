@@ -3336,7 +3336,7 @@ function ui_print_datatable(array $parameters)
     $output = $include.$output;
 
     // Print datatable if needed.
-    if (!(isset($parameters['print']) && $parameters['print'] === false)) {
+    if (isset($parameters['print']) === false || $parameters['print'] === false) {
         echo $output;
     }
 

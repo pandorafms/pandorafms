@@ -44,7 +44,7 @@ function quickShell()
 
     check_login();
 
-    if (! check_acl($config['id_user'], 0, 'PM')) {
+    if (check_acl($config['id_user'], 0, 'PM') === false) {
         db_pandora_audit(
             'ACL Violation',
             'Trying to access Profile Management'
@@ -102,6 +102,7 @@ function quickShell()
                                 'ssh'    => __('SSH'),
                                 'telnet' => __('Telnet'),
                             ],
+                            'script' => "p=22; if(this.value == 'telnet') { p=23; } $('#text-port').val(p);",
                         ],
                     ],
                     [
@@ -129,6 +130,7 @@ function quickShell()
         config_update_value('ws_port', 8080);
     }
 
+    // Gotty settings. Internal communication (WS).
     if (isset($config['gotty_host']) === false) {
         config_update_value('gotty_host', '127.0.0.1');
     }
@@ -141,6 +143,7 @@ function quickShell()
         config_update_value('gotty_ssh_port', 8081);
     }
 
+    // Initialize Gotty Client.
     $host = $config['gotty_host'];
     if ($method == 'ssh') {
         // SSH.
@@ -151,20 +154,21 @@ function quickShell()
         // Telnet.
         $port = $config['gotty_telnet_port'];
         $command_arguments = "var args = '?arg=-l ".$username;
-        $command_arguments .= '&arg= '.$address;
-        $command_arguments .= '&arg= '.$method_port."';";
+        $command_arguments .= '&arg='.$address;
+        $command_arguments .= '&arg='.$method_port."';";
     } else {
         ui_print_error_message(__('Please use SSH or Telnet.'));
         return;
     }
 
     $r = file_get_contents('http://'.$host.':'.$port.'/js/hterm.js');
-
     if (empty($r) === true) {
-        echo 'No hay nadie al volante, peligro constante';
+        ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
+        echo $wiz->printGoBackButton('#');
         return;
     }
 
+    // Override gotty client settings.
     if (empty($config['gotty_user'])
         && empty($config['gotty_pass'])
     ) {
@@ -174,9 +178,8 @@ function quickShell()
         $r .= $config['gotty_user'].':'.$gotty_pass."';";
     }
 
+    // Set websocket target and method.
     $gotty = file_get_contents('http://'.$host.':'.$port.'/js/gotty.js');
-
-    // Set websocket target.
     $url = "var url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';";
     if (empty($config['ws_proxy_url']) === true) {
         $new = "var url = (httpsEnabled ? 'wss://' : 'ws://')";

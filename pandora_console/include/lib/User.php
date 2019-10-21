@@ -85,25 +85,31 @@ class User
                 return null;
             }
 
-            if (isset($data['id_usuario']) === true) {
-                // TODO: Here a login must be processed.
-                $this->idUser = $data['id_usuario'];
+            if (isset($data['id_usuario']) === true
+                && isset($data['password']) === true
+            ) {
+                $user_in_db = process_user_login($user, $password, true);
+                if ($user_in_db !== false) {
+                    $config['id_usuario'] = $user_in_db;
+                    $correctLogin = true;
+
+                    // Originally at api.php.
+                    if (session_status() === PHP_SESSION_NONE) {
+                        session_start();
+                    }
+
+                    $_SESSION['id_usuario'] = $user;
+                    session_write_close();
+
+                    $this->idUser = $data['id_usuario'];
+                    // Valid session.
+                    return $this;
+                }
             }
         }
 
         return null;
 
-    }
-
-
-    /**
-     * Tries to perform a login with current data.
-     *
-     * @return boolean Allowed or not.
-     */
-    public function login()
-    {
-        return false;
     }
 
 

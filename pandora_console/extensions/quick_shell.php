@@ -235,6 +235,3 @@ extensions_add_opemode_tab_agent(
     // Acl.
     'PM'
 );
-
-// extensions_add_godmode_menu_option(__('Quick Shell'), 'AW', 'gextensions', null, 'v1');
-// extensions_add_godmode_function('quickShell');

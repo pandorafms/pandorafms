@@ -19,7 +19,7 @@ Usage:
 
 $0 -server <smsc_server:port> -user <user_id> -password <user_password> -source <source_number> -destination <destination_numbers> -message <short_message> [OPTIONS]
 
-- <destination_numbers>            Comma separated list of destination numbers (+123456789,+234567891,...)
+- <destination_numbers>            Comma separated list of destination numbers (123456789,234567891,...)
 
 OPTIONS:
 
@@ -45,7 +45,7 @@ OPTIONS:
 
 Example:
 
-$0 -server 192.168.1.50:2775 -user myuser -password mypassword -source +123456789 -destination +234567891 -message "Content of SMS message"
+$0 -server 192.168.1.50:2775 -user myuser -password mypassword -source 123456789 -destination 234567891 -message "Content of SMS message"
 
 EO_H
 
@@ -85,7 +85,7 @@ if (!$config->{'message'}){
 
 my ($smsc_server, $smsc_port) = split /:/, $config->{'server'};
 
-my @destination_numbers = $config->{'destination'};
+my @destination_numbers = split /,/, $config->{'destination'};
 
 if (!$smsc_port){
 	$smsc_port = 2775;

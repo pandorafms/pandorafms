@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.739";
-my $pandora_build = "190927";
+my $pandora_build = "191018";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -1205,6 +1205,9 @@ sub pandora_load_config {
 		}
 		
 	} # end of loop for parameter #
+
+	# Generate the encryption key after reading the passphrase.
+	$pa_config->{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{"encryption_passphrase"}]);
 
 	# Set to RDBMS' standard port
 	if (!defined($pa_config->{'dbport'})) {

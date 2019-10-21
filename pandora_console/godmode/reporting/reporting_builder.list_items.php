@@ -489,11 +489,18 @@ foreach ($items as $item) {
         $row[4] = '-';
     }
 
-    if ($item['name'] == '' && $item['description'] == '') {
-        $row[5] = '-';
-    } else {
-        $text = empty($item['name']) ? $item['description'] : $item['name'];
+    $style = json_decode(io_safe_output($item['style']), true);
+
+    if ($style['name_label'] != '') {
+        $text = empty($style['name_label']) ? $item['description'] : $style['name_label'];
         $row[5] = ui_print_truncate_text($text, 'description', true, true);
+    } else {
+        if ($item['name'] == '' && $item['description'] == '') {
+            $row[5] = '-';
+        } else {
+            $text = empty($item['name']) ? $item['description'] : $item['name'];
+            $row[5] = ui_print_truncate_text($text, 'description', true, true);
+        }
     }
 
     $row[6] = '';

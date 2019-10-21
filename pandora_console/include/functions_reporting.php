@@ -505,42 +505,43 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'MTTR',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'MTBF',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'TTO',
                     $pdf
                 );
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 $report['contents'][] = reporting_value(
                     $report,
                     $content,
                     'TTRT',
                     $pdf
                 );
-            break;
-
+                break;
+            */
             case 'agent_configuration':
                 $report['contents'][] = io_safe_output(
                     reporting_agent_configuration(
@@ -3105,6 +3106,13 @@ function reporting_historical_data($report, $content)
         $content['name'] = __('Historical data');
     }
 
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+
+        $server = metaconsole_get_connection_by_id($id_meta);
+        $connection = metaconsole_connect($server);
+    }
+
     $id_agent = agents_get_module_id(
         $content['id_agent_module']
     );
@@ -3195,6 +3203,10 @@ function reporting_historical_data($report, $content)
     }
 
     $return['data'] = $data;
+
+    if (is_metaconsole() && $connection > 0) {
+        metaconsole_restore_db();
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -4181,6 +4193,7 @@ function reporting_sql_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $return['chart'] = graph_custom_sql_graph(
                 $content['id_rc'],
                 $width,
@@ -4191,9 +4204,6 @@ function reporting_sql_graph(
                 $ttl,
                 $content['top_n_value']
             );
-        break;
-
-        case 'data':
         break;
     }
 
@@ -4394,6 +4404,7 @@ function reporting_netflow(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $return['chart'] = netflow_draw_item(
                 ($report['datetime'] - $content['period']),
                 $report['datetime'],
@@ -4691,21 +4702,22 @@ function reporting_value($report, $content, $type, $pdf=false)
             $return['type'] = 'sumatory';
         break;
 
-        case 'MTTR':
+        /*
+            case 'MTTR':
             $return['type'] = 'MTTR';
-        break;
+            break;
 
-        case 'MTBF':
+            case 'MTBF':
             $return['type'] = 'MTBF';
-        break;
+            break;
 
-        case 'TTO':
+            case 'TTO':
             $return['type'] = 'TTO';
-        break;
+            break;
 
-        case 'TTRT':
+            case 'TTRT':
             $return['type'] = 'TTRT';
-        break;
+        break;*/
     }
 
     if (empty($content['name'])) {
@@ -4726,21 +4738,22 @@ function reporting_value($report, $content, $type, $pdf=false)
                 $content['name'] = __('Summatory');
             break;
 
-            case 'MTTR':
+            /*
+                case 'MTTR':
                 $content['name'] = __('MTTR');
-            break;
+                break;
 
-            case 'MTBF':
+                case 'MTBF':
                 $content['name'] = __('MTBF');
-            break;
+                break;
 
-            case 'TTO':
+                case 'TTO':
                 $content['name'] = __('TTO');
-            break;
+                break;
 
-            case 'TTRT':
+                case 'TTRT':
                 $content['name'] = __('TTRT');
-            break;
+            break;*/
         }
     }
 
@@ -4865,22 +4878,23 @@ function reporting_value($report, $content, $type, $pdf=false)
 
                 if ($content['visual_format'] != 2) {
                     $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
-                    for ($i = $report['datetime']; $i > ($report['datetime'] - $content['period']); $i -= $content['lapse']) {
+
+                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
                         $row = [];
-                        $row[__('Lapse')] = date('Y-m-d H:i:s', ($i - $content['lapse'] + 1)).' to '.date('Y-m-d H:i:s', $i);
+                        $row[__('Lapse')] = date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) ));
 
                         if ($i > $time_begin['utimestamp']) {
                             switch ($type) {
                                 case 'max':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], $i), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
                                 break;
 
                                 case 'min':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], $i), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
                                 break;
 
                                 case 'avg':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], $i), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
                                 break;
                             }
                         } else {
@@ -4913,25 +4927,26 @@ function reporting_value($report, $content, $type, $pdf=false)
             }
         break;
 
-        case 'MTTR':
+        /*
+            case 'MTTR':
             $value = reporting_get_agentmodule_mttr(
                 $content['id_agent_module'],
                 $content['period'],
                 $report['datetime']
             );
             $formated_value = null;
-        break;
+            break;
 
-        case 'MTBF':
+            case 'MTBF':
             $value = reporting_get_agentmodule_mtbf(
                 $content['id_agent_module'],
                 $content['period'],
                 $report['datetime']
             );
             $formated_value = null;
-        break;
+            break;
 
-        case 'TTO':
+            case 'TTO':
             $value = reporting_get_agentmodule_tto(
                 $content['id_agent_module'],
                 $content['period'],
@@ -4942,9 +4957,9 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $formated_value = human_time_description_raw($value);
             }
-        break;
+            break;
 
-        case 'TTRT':
+            case 'TTRT':
             $value = reporting_get_agentmodule_ttr(
                 $content['id_agent_module'],
                 $content['period'],
@@ -4955,7 +4970,7 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $formated_value = human_time_description_raw($value);
             }
-        break;
+        break;*/
     }
 
     $return['data'] = [
@@ -7488,10 +7503,12 @@ function reporting_custom_graph(
 
     if ($type_report == 'custom_graph') {
         if (is_metaconsole()) {
-            $id_meta = metaconsole_get_id_server($content['server_name']);
-            $server  = metaconsole_get_connection_by_id($id_meta);
-            if (metaconsole_connect($server) != NOERR) {
-                return false;
+            $servers = metaconsole_get_connection_names();
+            foreach ($servers as $server) {
+                $connection = metaconsole_get_connection($server);
+                if (metaconsole_connect($connection) != NOERR) {
+                    continue;
+                }
             }
         }
     }
@@ -7543,8 +7560,26 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
     $return['title'] = $content['name'];
     $return['subtitle'] = io_safe_output($graph['name']);
+    $return['agent_name'] = $agent_alias;
+    $return['module_name'] = $module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text(
         $report,
@@ -7558,6 +7593,7 @@ function reporting_custom_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $params = [
                 'period'     => $content['period'],
                 'width'      => $width,

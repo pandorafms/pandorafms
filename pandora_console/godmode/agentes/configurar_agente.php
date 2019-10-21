@@ -2266,6 +2266,10 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
+if (!$_SESSION['create_module']) {
+    $edit_module = true;
+}
+
 switch ($tab) {
     case 'main':
         include 'agent_manager.php';

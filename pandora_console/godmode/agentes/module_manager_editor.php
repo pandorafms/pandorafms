@@ -321,6 +321,9 @@ if ($id_agent_module) {
 } else {
     if (!isset($moduletype)) {
         $moduletype = (string) get_parameter('moduletype');
+        if (!$_SESSION['create_module']) {
+            $moduletype = 'networkserver';
+        }
 
         // Clean up specific network modules fields
         $name = '';

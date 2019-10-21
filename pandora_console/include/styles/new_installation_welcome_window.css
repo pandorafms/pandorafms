@@ -16,11 +16,18 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+.modal {
+  overflow: hidden;
+}
+
+.welcome_modal_window {
+  overflow: hidden;
+}
 label {
   font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
-  font-weight: 800;
+  font-weight: 900;
 }
 .content_position {
   display: flex;
@@ -49,39 +56,39 @@ label {
 
 .btn_email_conf {
   background-image: url(../../images/darrowright.png);
-  margin-left: 461px;
+  margin-left: 269px;
   width: 25px;
   border: none;
 }
 
 .btn_agent {
-  background-image: url(../../images/darrowright.png);
+  background-image: url(../../images/go_next_g.png);
   margin-left: 469px;
   width: 25px;
   border: none;
 }
 .btn_agent_online {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 314px;
+  background-image: url(../../images/go_next_g.png);
+  margin-left: 213px;
   width: 25px;
   border: none;
 }
 .btn_alert_module {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 304px;
+  background-image: url(../../images/go_next_g.png);
+  margin-left: 120px;
   width: 25px;
   border: none;
 }
 .btn_remote-command {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 297px;
+  background-image: url(../../images/go_next_g.png);
+  margin-left: 295px;
   width: 25px;
   border: none;
 }
 
 .btn_discover {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 321px;
+  background-image: url(../../images/go_next_g.png);
+  margin-left: 323px;
   width: 25px;
   border: none;
 }
@@ -106,7 +113,7 @@ label {
 .btn_agent_online_ok {
   background-image: url(../../images/input_tick.png);
   background-repeat: no-repeat;
-  margin-left: 314px;
+  margin-left: 213px;
   width: 20px;
   border: none;
 }
@@ -114,7 +121,7 @@ label {
 .btn_alert_module_ok {
   background-image: url(../../images/input_tick.png);
   background-repeat: no-repeat;
-  margin-left: 304px;
+  margin-left: 120px;
   width: 20px;
   border: none;
 }
@@ -122,7 +129,7 @@ label {
 .btn_remote-command_ok {
   background-image: url(../../images/input_tick.png);
   background-repeat: no-repeat;
-  margin-left: 297px;
+  margin-left: 295px;
   width: 20px;
   border: none;
 }
@@ -130,7 +137,7 @@ label {
 .btn_discover_ok {
   background-image: url(../../images/input_tick.png);
   background-repeat: no-repeat;
-  margin-left: 321px;
+  margin-left: 323px;
   width: 25px;
   border: none;
 }
@@ -138,7 +145,7 @@ label {
 .btn_email_conf_ok {
   background-image: url(../../images/input_tick.png);
   background-repeat: no-repeat;
-  margin-left: 461px;
+  margin-left: 269px;
   width: 20px;
   border: none;
 }

@@ -173,13 +173,9 @@ if (!$config['disabled_newsletter']) {
     }
 }
 
-$welcome = !$registration && $initial;
-$welcome = true;
-if ($welcome && users_is_admin()) {
-    $welcome = new NewInstallationWelcomeWindow(
-        'general/new_installation_welcome_window'
-    );
-    $welcome->run();
+$welcome = !$registration && !$initial;
+if ($welcome) {
+    $welcome = NewInstallationWelcomeWindow::actions_done($welcome);
 }
 
 $newsletter = null;

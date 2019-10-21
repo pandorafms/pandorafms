@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP WebSocketServer Proxy.
+ * PHP WebSocketServer Manager.
  *
  * Adapted to PandoraFMS by Fco de Borja Sanchez <fborja.sanchez@artica.es>
  * Compatible with PHP >= 7.0
@@ -52,7 +52,7 @@ require_once __DIR__.'/../functions.php';
 /**
  * Redirects ws communication between two endpoints.
  */
-class WSProxy extends WebSocketServer
+class WSManager extends WebSocketServer
 {
 
     /**
@@ -82,14 +82,14 @@ class WSProxy extends WebSocketServer
      *
      * @var integer
      */
-    protected $maxBufferSize = 1048576;
+    public $maxBufferSize = 1048576;
 
     /**
      * Interactive mode.
      *
      * @var boolean
      */
-    protected $interative = true;
+    public $interative = true;
 
     /**
      * Use a timeout of 100 milliseconds to search for messages..
@@ -98,34 +98,101 @@ class WSProxy extends WebSocketServer
      */
     public $timeout = 250;
 
+    /**
+     * Handlers for connected step:
+     *   'protocol' => 'function';
+     *
+     * @var array
+     */
+    public $handlerConnected = [];
+
+    /**
+     * Handlers for process step:
+     *   'protocol' => 'function';
+     *
+     * @var array
+     */
+    public $handlerProcess = [];
+
+    /**
+     * Handlers for processRaw step:
+     *   'protocol' => 'function';
+     *
+     * @var array
+     */
+    public $handlerProcessRaw = [];
+
+    /**
+     * Handlers for tick step:
+     *   'protocol' => 'function';
+     *
+     * @var array
+     */
+    public $handlerTick = [];
+
 
     /**
      * Builder.
      *
      * @param string  $listen_addr  Target address (external).
      * @param integer $listen_port  Target port (external).
-     * @param string  $to_addr      Target address (internal).
-     * @param integer $to_port      Target port (internal).
-     * @param integer $to_url       Target url (internal).
+     * @param array   $connected    Handlers for <connected> step.
+     * @param array   $process      Handlers for <process> step.
+     * @param array   $processRaw   Handlers for <processRaw> step.
+     * @param array   $tick         Handlers for <tick> step.
      * @param integer $bufferLength Max buffer size.
      * @param boolean $debug        Enable traces.
      */
     public function __construct(
         $listen_addr,
         $listen_port,
-        $to_addr,
-        $to_port,
-        $to_url='/ws',
+        $connected=[],
+        $process=[],
+        $processRaw=[],
+        $tick=[],
         $bufferLength=1048576,
         $debug=false
     ) {
-        $this->intHost = $to_addr;
-        $this->intPort = $to_port;
-        $this->intUrl = $to_url;
         $this->maxBufferSize = $bufferLength;
         $this->debug = $debug;
+
+        // Configure handlers.
+        $this->handlerConnected = $connected;
+        $this->handlerProcess = $process;
+        $this->handlerProcessRaw = $processRaw;
+        $this->handlerTick = $tick;
+
         $this->userClass = '\\PandoraFMS\\Websockets\\WebSocketUser';
         parent::__construct($listen_addr, $listen_port, $bufferLength);
+    }
+
+
+    /**
+     * Call a target handler function.
+     *
+     * @param User  $user      User.
+     * @param array $handler   Internal handler.
+     * @param array $arguments Arguments for handler function.
+     *
+     * @return mixed handler return or null.
+     */
+    public function callHandler($user, $handler, $arguments)
+    {
+        if (isset($user->headers['sec-websocket-protocol'])) {
+            $proto = $user->headers['sec-websocket-protocol'];
+            if (isset($handler[$proto])
+                && function_exists($handler[$proto])
+            ) {
+                // Launch configured handler.
+                $this->stderr('Calling '.$handler[$proto]);
+                return call_user_func_array(
+                    $handler[$proto],
+                    $arguments
+                );
+            }
+        }
+
+        return null;
     }
 
 
@@ -136,7 +203,7 @@ class WSProxy extends WebSocketServer
      *
      * @return string Buffer.
      */
-    protected function readSocket($user)
+    public function readSocket($user)
     {
         $buffer;
 
@@ -171,7 +238,7 @@ class WSProxy extends WebSocketServer
      *
      * @return void
      */
-    protected function writeSocket($user, $message)
+    public function writeSocket($user, $message)
     {
         if (is_resource($user->socket)) {
             if (!socket_write($user->socket, $message)) {
@@ -187,60 +254,13 @@ class WSProxy extends WebSocketServer
 
 
     /**
-     * Connects to internal socket.
-     *
-     * @param array $headers Communication headers.
-     *
-     * @return socket Active socket or null.
-     */
-    protected function connectInt($headers)
-    {
-        $intSocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        $connect = socket_connect(
-            $intSocket,
-            $this->intHost,
-            $this->intPort
-        );
-        if (!$connect) {
-            return null;
-        }
-
-        $c_str = 'GET '.$this->intUrl." HTTP/1.1\r\n";
-        $c_str .= 'Host: '.$this->intHost."\r\n";
-        $c_str .= "Upgrade: websocket\r\n";
-        $c_str .= "Connection: Upgrade\r\n";
-        $c_str .= 'Origin: http://'.$this->intHost."\r\n";
-        $c_str .= 'Sec-WebSocket-Key: '.$headers['Sec-WebSocket-Key']."\r\n";
-        $c_str .= 'Sec-WebSocket-Version: '.$headers['Sec-WebSocket-Version']."\r\n";
-        if (isset($headers['Sec-WebSocket-Protocol'])) {
-            $c_str .= 'Sec-WebSocket-Protocol: '.$headers['Sec-WebSocket-Protocol']."\r\n";
-        }
-
-        $c_str .= "\r\n";
-
-        // Send.
-        // Register user - internal.
-        $intUser = new $this->userClass('INTERNAL-'.uniqid('u'), $intSocket);
-
-        $intUser->headers = [
-            'get'    => $this->intUrl.' HTTP/1.1',
-            'host'   => $this->intHost,
-            'origin' => $this->intHost,
-        ];
-        $this->writeSocket($intUser, $c_str);
-
-        return $intUser;
-    }
-
-
-    /**
      * User already connected.
      *
      * @param object $user User.
      *
      * @return void
      */
-    protected function connected($user)
+    public function connected($user)
     {
         global $config;
 
@@ -275,31 +295,15 @@ class WSProxy extends WebSocketServer
         // Disconnect previous sessions.
         $this->cleanupSocketByCookie($user);
 
-        /*
-         * $user->intSocket is connected to internal.
-         * $user->socket is connected to external.
-         */
-
-        // Create a new socket connection (internal).
-        $intUser = $this->connectInt($this->rawHeaders);
-        if ($intUser === null) {
-            $this->disconnect($user->socket);
-            return;
-        }
-
-        // Map user.
-        $user->intUser = $intUser;
-        // And socket.
-        $user->intSocket = $intUser->socket;
-        $user->redirect = $intUser;
-        $intUser->redirect = $user;
-
-        // Keep an eye on changes.
-        $this->remoteSockets[$intUser->id] = $intUser->socket;
-        $this->remoteUsers[$intUser->id] = $intUser;
-
-        // Ignore. Cleanup socket.
-        $response = $this->readSocket($user->intUser);
+        // Launch registered handler.
+        $this->callHandler(
+            $user,
+            $this->handlerConnected,
+            [
+                $this,
+                $user,
+            ]
+        );
     }
 
 
@@ -310,9 +314,31 @@ class WSProxy extends WebSocketServer
      *
      * @return string
      */
-    protected function processProtocol($protocol): string
+    public function processProtocol($protocol): string
     {
         return 'Sec-Websocket-Protocol: '.$protocol."\r\n";
+    }
+
+
+    /**
+     * Process programattic function
+     *
+     * @return void
+     */
+    public function tick()
+    {
+        foreach ($this->users as $user) {
+            // Launch registered handler.
+            $this->callHandler(
+                $user,
+                $this->handlerTick,
+                [
+                    $this,
+                    $user,
+                ]
+            );
+        }
+
     }
 
 
@@ -324,18 +350,18 @@ class WSProxy extends WebSocketServer
      *
      * @return boolean
      */
-    protected function processRaw($user, $buffer)
+    public function processRaw($user, $buffer)
     {
-        if (!isset($user->redirect)) {
-            $this->disconnect($user->socket);
-            return false;
-        }
-
-        $this->stderr($user->id.' >> '.$user->redirect->id);
-        $this->stderr($this->dump($buffer));
-        $this->writeSocket($user->redirect, $buffer);
-
-        return true;
+        // Launch registered handler.
+        return $this->callHandler(
+            $user,
+            $this->handlerProcessRaw,
+            [
+                $this,
+                $user,
+                $buffer,
+            ]
+        );
     }
 
 
@@ -348,12 +374,24 @@ class WSProxy extends WebSocketServer
      *
      * @return void
      */
-    protected function process($user, $message, $str_message)
+    public function process($user, $message, $str_message)
     {
         if ($str_message === true) {
             $remmitent = $user->address.'('.$user->account->idUser.')';
             $this->stderr($remmitent.': '.$message);
         }
+
+        // Launch registered handler.
+        $this->callHandler(
+            $user,
+            $this->handlerProcess,
+            [
+                $this,
+                $user,
+                $message,
+                $str_message,
+            ]
+        );
     }
 
 
@@ -364,7 +402,7 @@ class WSProxy extends WebSocketServer
      *
      * @return void
      */
-    protected function closed($user)
+    public function closed($user)
     {
         if ($user->account) {
             $_SERVER['REMOTE_ADDR'] = $user->address;

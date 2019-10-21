@@ -56,7 +56,7 @@ abstract class WebSocketServer
      *
      * @var string
      */
-    protected $userClass = 'WebSocketUser';
+    public $userClass = 'WebSocketUser';
 
     /**
      * Redefine this if you want a custom user class.  The custom user class
@@ -64,91 +64,91 @@ abstract class WebSocketServer
      *
      * @var integer
      */
-    protected $maxBufferSize;
+    public $maxBufferSize;
 
     /**
      * Max. concurrent connections.
      *
      * @var integer
      */
-    protected $maxConnections = 20;
+    public $maxConnections = 20;
 
     /**
      * Undocumented variable
      *
      * @var [type]
      */
-    protected $master;
+    public $master;
 
     /**
      * Incoming sockets.
      *
      * @var array
      */
-    protected $sockets = [];
+    public $sockets = [];
 
     /**
      * Outgoing sockets.
      *
      * @var array
      */
-    protected $remoteSockets = [];
+    public $remoteSockets = [];
 
     /**
      * Client list.
      *
      * @var array
      */
-    protected $users = [];
+    public $users = [];
 
     /**
      * Servers list.
      *
      * @var array
      */
-    protected $remoteUsers = [];
+    public $remoteUsers = [];
 
     /**
      * Undocumented variable
      *
      * @var array
      */
-    protected $heldMessages = [];
+    public $heldMessages = [];
 
     /**
      * Show output.
      *
      * @var boolean
      */
-    protected $interactive = true;
+    public $interactive = true;
 
     /**
      * Debug.
      *
      * @var boolean
      */
-    protected $debug = false;
+    public $debug = false;
 
     /**
      * Undocumented variable
      *
      * @var array
      */
-    protected $headerOriginRequired = false;
+    public $headerOriginRequired = false;
 
     /**
      * Undocumented variable
      *
      * @var array
      */
-    protected $headerSecWebSocketProtocolRequired = false;
+    public $headerSecWebSocketProtocolRequired = false;
 
     /**
      * Undocumented variable
      *
      * @var array
      */
-    protected $headerSecWebSocketExtensionsRequired = false;
+    public $headerSecWebSocketExtensionsRequired = false;
 
     /**
      * Stored raw headers for redirection.
@@ -217,7 +217,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    abstract protected function process($user, $message, $str_message);
+    abstract public function process($user, $message, $str_message);
 
 
     /**
@@ -228,7 +228,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function processRaw($user, $buffer)
+    public function processRaw($user, $buffer)
     {
 
     }
@@ -241,7 +241,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    abstract protected function connected($user);
+    abstract public function connected($user);
 
 
     /**
@@ -251,7 +251,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    abstract protected function closed($user);
+    abstract public function closed($user);
 
 
     /**
@@ -263,7 +263,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function connecting($user)
+    public function connecting($user)
     {
         // Optional implementation.
     }
@@ -277,9 +277,8 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function send($user, $message)
+    public function send($user, $message)
     {
-        var_dump($user->handshake);
         if ($user->handshake) {
             $message = $this->frame($message, $user);
             $result = socket_write($user->socket, $message, strlen($message));
@@ -301,7 +300,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function tick()
+    public function tick()
     {
         // Optional implementation.
     }
@@ -312,7 +311,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function pTick()
+    public function pTick()
     {
         // Core maintenance processes, such as retrying failed messages.
         foreach ($this->heldMessages as $key => $hm) {
@@ -532,7 +531,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function connect($socket)
+    public function connect($socket)
     {
         $user = new $this->userClass(
             uniqid('u'),
@@ -553,7 +552,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function disconnect(
+    public function disconnect(
         $socket,
         bool $triggerClosed=true,
         $sockErrNo=null
@@ -606,7 +605,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function doHandshake($user, $buffer)
+    public function doHandshake($user, $buffer)
     {
         $magicGUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
         $headers = [];
@@ -742,7 +741,7 @@ abstract class WebSocketServer
      *
      * @return boolean Ok or not.
      */
-    protected function checkHost($hostName): bool
+    public function checkHost($hostName): bool
     {
         // Override and return false if host is not one that you would expect.
         // Ex: You only want to accept hosts from the my-domain.com domain,
@@ -758,7 +757,7 @@ abstract class WebSocketServer
      *
      * @return boolean Allowed or not.
      */
-    protected function checkOrigin($origin): bool
+    public function checkOrigin($origin): bool
     {
         // Override and return false if origin is not one that you would expect.
         return true;
@@ -772,7 +771,7 @@ abstract class WebSocketServer
      *
      * @return boolean Expected or not.
      */
-    protected function checkWebsocProtocol($protocol): bool
+    public function checkWebsocProtocol($protocol): bool
     {
         // Override and return false if a protocol is not found that you
         // would expect.
@@ -787,7 +786,7 @@ abstract class WebSocketServer
      *
      * @return boolean Allowed or not.
      */
-    protected function checkWebsocExtensions($extensions): bool
+    public function checkWebsocExtensions($extensions): bool
     {
         // Override and return false if an extension is not found that you
         // would expect.
@@ -810,7 +809,7 @@ abstract class WebSocketServer
      *
      * @return string
      */
-    protected function processProtocol($protocol): string
+    public function processProtocol($protocol): string
     {
         return '';
     }
@@ -825,7 +824,7 @@ abstract class WebSocketServer
      *
      * @return string
      */
-    protected function processExtensions($extensions): string
+    public function processExtensions($extensions): string
     {
         return '';
     }
@@ -838,7 +837,7 @@ abstract class WebSocketServer
      *
      * @return object
      */
-    protected function getUserBySocket($socket)
+    public function getUserBySocket($socket)
     {
         foreach ($this->users as $user) {
             if ($user->socket == $socket) {
@@ -863,7 +862,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function cleanupSocketByCookie($user)
+    public function cleanupSocketByCookie($user)
     {
         $cookie = $user->headers['cookie'];
         foreach ($this->users as $u) {
@@ -884,7 +883,7 @@ abstract class WebSocketServer
      *
      * @return object
      */
-    protected function getIntUserBySocket($socket)
+    public function getIntUserBySocket($socket)
     {
         foreach ($this->users as $user) {
             if ($user->intSocket == $socket) {
@@ -941,7 +940,7 @@ abstract class WebSocketServer
      *
      * @return string Framed message.
      */
-    protected function frame(
+    public function frame(
         $message,
         $user,
         $messageType='text',
@@ -1046,7 +1045,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function splitPacket(
+    public function splitPacket(
         int $length,
         $packet,
         $user
@@ -1106,7 +1105,7 @@ abstract class WebSocketServer
      *
      * @return integer Calculated offset.
      */
-    protected function calcOffset(array $headers): int
+    public function calcOffset(array $headers): int
     {
         $offset = 2;
         if ($headers['hasmask']) {
@@ -1131,7 +1130,7 @@ abstract class WebSocketServer
      *
      * @return boolean Process ok or not.
      */
-    protected function deframe(
+    public function deframe(
         $message,
         &$user
     ) {
@@ -1226,7 +1225,7 @@ abstract class WebSocketServer
      *
      * @return array Headers.
      */
-    protected function extractHeaders($message): array
+    public function extractHeaders($message): array
     {
         $header = [
             'fin'     => ($message[0] & chr(128)),
@@ -1304,7 +1303,7 @@ abstract class WebSocketServer
      *
      * @return string
      */
-    protected function extractPayload(
+    public function extractPayload(
         $message,
         array $headers
     ) {
@@ -1331,7 +1330,7 @@ abstract class WebSocketServer
      *
      * @return string Xor.
      */
-    protected function applyMask(
+    public function applyMask(
         array $headers,
         $payload
     ) {
@@ -1373,7 +1372,7 @@ abstract class WebSocketServer
      *
      * @return boolean OK or not.
      */
-    protected function checkRSVBits(
+    public function checkRSVBits(
         array $headers,
         $user
     ): bool {
@@ -1400,7 +1399,7 @@ abstract class WebSocketServer
      *
      * @return string HEX string.
      */
-    protected function strtohex(
+    public function strtohex(
         $str=''
     ): string {
         $strout = '';
@@ -1441,7 +1440,7 @@ abstract class WebSocketServer
      *
      * @return void
      */
-    protected function printHeaders($headers)
+    public function printHeaders($headers)
     {
         echo "Array\n(\n";
         foreach ($headers as $key => $value) {
@@ -1468,7 +1467,7 @@ abstract class WebSocketServer
         // Init.
         $hexi   = '';
         $ascii  = '';
-        $dump   = '';
+        $dump   = "Hex Message:\n";
         $offset = 0;
         $len    = strlen($data);
 

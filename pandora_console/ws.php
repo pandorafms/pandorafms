@@ -28,7 +28,7 @@
 
 // Begin.
 require_once __DIR__.'/vendor/autoload.php';
-use \PandoraFMS\WebSockets\WSProxy;
+use \PandoraFMS\WebSockets\WSManager;
 
 // Set to true to get full output.
 $debug = false;
@@ -48,10 +48,11 @@ $_SERVER['DOCUMENT_ROOT'] = __DIR__.'/../';
 
 // Don't start a session before this import.
 // The session is configured and started inside the config process.
-require_once 'include/config.php';
-require_once 'include/functions.php';
-require_once 'include/functions_db.php';
-require_once 'include/auth/mysql.php';
+require_once __DIR__.'/include/config.php';
+require_once __DIR__.'/include/functions.php';
+require_once __DIR__.'/include/functions_db.php';
+require_once __DIR__.'/include/auth/mysql.php';
+require_once __DIR__.'/include/websocket_registrations.php';
 
 // Enterprise support.
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true) {
@@ -67,7 +68,23 @@ if (isset($_SERVER['REMOTE_ADDR']) === true) {
 
 
 if (isset($config['ws_port']) === false) {
-    config_update_value('ws_port', 8081);
+    config_update_value('ws_port', 8080);
+}
+
+if (isset($config['ws_bind_address']) === false) {
+    config_update_value('ws_bind_address', '0.0.0.0');
+}
+
+if (isset($config['gotty_host']) === false) {
+    config_update_value('gotty_host', '127.0.0.1');
+}
+
+if (isset($config['gotty_telnet_port']) === false) {
+    config_update_value('gotty_telnet_port', 8082);
+}
+
+if (isset($config['gotty_ssh_port']) === false) {
+    config_update_value('gotty_ssh_port', 8081);
 }
 
 if (isset($config['gotty']) === false) {
@@ -80,25 +97,44 @@ error_reporting(E_ALL);
 
 $os = strtolower(PHP_OS);
 if (substr($os, 0, 3) !== 'win') {
-    // Launch gotty.
-    $cmd = 'nohup "'.$config['gotty'].'" -a 127.0.0.1 -w /bin/bash';
-    $cmd .= ' >> '.__DIR__.'/pandora_console.log 2>&1 &';
+    // Kill previous gotty running.
+    shell_exec('killall "'.$config['gotty'].'" >/dev/null 2>&1');
+
+    // Common.
+    $base_cmd = 'nohup "'.$config['gotty'].'"';
+    $base_cmd .= ' --permit-arguments -a 127.0.0.1 -w ';
+
+    // Launch gotty - SSH.
+    $cmd = $base_cmd.' --port '.$config['gotty_ssh_port'];
+    $cmd .= ' ssh >> '.__DIR__.'/pandora_console.log 2>&1 &';
+    shell_exec($cmd);
+
+    // Launch gotty - telnet.
+    $cmd = $base_cmd.' --port '.$config['gotty_telnet_port'];
+    $cmd .= ' telnet >> '.__DIR__.'/pandora_console.log 2>&1 &';
     shell_exec($cmd);
 }
 
 // Start Web SocketProxy.
-$wsproxy = new WSProxy(
-    '0.0.0.0',
+$ws = new WSManager(
+    // Bind address.
+    $config['ws_bind_address'],
+    // Bind port.
     $config['ws_port'],
-    '127.0.0.1',
-    '8080',
-    '/ws',
+    // Connected handlers.
+    ['gotty' => 'proxyConnected'],
+    // Process handlers.
+    [],
+    // ProcessRaw handlers.
+    ['gotty' => 'proxyProcessRaw'],
+    // Tick handlers.
+    [],
     $bufferSize,
     $debug
 );
 
 try {
-    $wsproxy->run();
+    $ws->run();
 } catch (Exception $e) {
-    $wsproxy->stdout($e->getMessage());
+    $ws->stdout($e->getMessage());
 }

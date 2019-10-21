@@ -46,21 +46,19 @@ $apiPassword = io_output_password(db_get_value_filter('value', 'tconfig', ['toke
 $correctLogin = false;
 $no_login_msg = '';
 
-// Clean unwanted output
+// Clean unwanted output.
 ob_clean();
 
 // READ THIS:
 // Special call without checks to retrieve version and build of the Pandora FMS
 // This info is avalable from the web console without login
 // Don't change the format, it is parsed by applications
-switch ($info) {
-    case 'version':
-        if (!$config['MR']) {
-            $config['MR'] = 0;
-        }
+if ($info == 'version') {
+    if (!$config['MR']) {
+        $config['MR'] = 0;
+    }
 
-        echo 'Pandora FMS '.$pandora_version.' - '.$build_version.' MR'.$config['MR'];
-
+    echo 'Pandora FMS '.$pandora_version.' - '.$build_version.' MR'.$config['MR'];
     exit;
 }
 
@@ -68,6 +66,8 @@ if (isInACL($ipOrigin)) {
     if (empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
         $user_in_db = process_user_login($user, $password, true);
         if ($user_in_db !== false) {
+            $config['id_usuario'] = $user_in_db;
+            // Compat.
             $config['id_user'] = $user_in_db;
             $correctLogin = true;
 
@@ -76,6 +76,8 @@ if (isInACL($ipOrigin)) {
             }
 
             $_SESSION['id_usuario'] = $user;
+
+            config_prepare_session();
             session_write_close();
         } else {
             $no_login_msg = 'Incorrect user credentials';
@@ -220,3 +222,8 @@ if ($correctLogin) {
     // Protection on DoS attacks
     echo 'auth error';
 }
+
+// Logout.
+session_destroy();
+header_remove('Set-Cookie');
+setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');

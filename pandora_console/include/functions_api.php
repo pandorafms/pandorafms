@@ -1522,7 +1522,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         if (($id_parent != 0) && (db_get_value_sql(
             'SELECT id_agente_modulo
             FROM tagente_modulo
-			WHERE id_agente = '.$id_parent.' AND id_agente_modulo = '.$cascade_protection_module
+            WHERE id_agente = '.$id_parent.' AND id_agente_modulo = '.$cascade_protection_module
         ) === false)
         ) {
                 returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
@@ -1595,7 +1595,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
 
             $tpolicy_group_old = db_get_all_rows_sql(
                 'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$grupo
+                WHERE id_group = '.$grupo
             );
 
             if ($tpolicy_group_old) {
@@ -1611,18 +1611,18 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             }
 
             $info = '{"Name":"'.$nombre_agente.'",
-				"IP":"'.$direccion_agente.'",
-				"Group":"'.$grupo.'",
-				"Interval":"'.$intervalo.'",
-				"Comments":"'.$comentarios.'",
-				"Mode":"'.$modo.'",
-				"ID_parent:":"'.$id_parent.'",
-				"Server":"'.$server_name.'",
-				"ID os":"'.$id_os.'",
-				"Disabled":"'.$disabled.'",
-				"Custom ID":"'.$custom_id.'",
-				"Cascade protection":"'.$cascade_protection.'",
-				"Cascade protection module":"'.$cascade_protection_module.'"}';
+                "IP":"'.$direccion_agente.'",
+                "Group":"'.$grupo.'",
+                "Interval":"'.$intervalo.'",
+                "Comments":"'.$comentarios.'",
+                "Mode":"'.$modo.'",
+                "ID_parent:":"'.$id_parent.'",
+                "Server":"'.$server_name.'",
+                "ID os":"'.$id_os.'",
+                "Disabled":"'.$disabled.'",
+                "Custom ID":"'.$custom_id.'",
+                "Cascade protection":"'.$cascade_protection.'",
+                "Cascade protection module":"'.$cascade_protection_module.'"}';
 
             $unsafe_alias = io_safe_output($alias);
             db_pandora_audit(

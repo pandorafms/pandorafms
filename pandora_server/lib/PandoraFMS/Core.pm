@@ -5118,7 +5118,7 @@ sub pandora_self_monitoring ($$) {
 	my $timezone_offset = 0; # PENDING (TODO) !
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-	logger($pa_config, "Self monitoring activated.", 1);
+
 	my $xml_output = "";
 	
 	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
@@ -5270,47 +5270,42 @@ Pandora agent for make sample data
 sub pandora_sample_agent ($) {
 	
 	my ($pa_config) = @_;
-	logger($pa_config, "Sample agent activated.", 1);
+
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	# First line	
 	my $xml_output = "<?xml version='1.0' encoding='UTF-8'?>\n";
 	# Header
-	$xml_output = "<agent_data description='Agent for sample generation purposes' group='Servers' os_name='$OS' os_version='$OS_VERSION' interval='".$pa_config->{"sample_agent_interval"}."' version='" . $pa_config->{'version'} . "' timestamp='".$timestamp."' agent_name='Sample_Agent' agent_alias='Sample_Agent' timezone_offset='0' custom_id='' url_address='' address='172.16.0.1'>\n";
-	# Boolean_True -> generic_proc siempre a 1
-	$xml_output .= xml_module_template ("Siempre a uno", "generic_proc","1");
-	# Boolean_MostlyTrue -> generic_proc un 80% de veces a 1
+	$xml_output = "<agent_data agent_name='Sample_Agent' agent_alias='Sample_Agent' description='Agent for sample generation purposes' group='Servers' os_name='$OS' os_version='$OS_VERSION' interval='".$pa_config->{'sample_agent_interval'}."' version='" . $pa_config->{'version'} . "' timestamp='".$timestamp."'>\n";
+	# Boolean ever return TRUE
+	$xml_output .= xml_module_template ("Boolean ever true", "generic_proc","1");
+	# Boolean return TRUE at 80% of times
 	my $sample_boolean_mostly_true = 1;
 	$sample_boolean_mostly_true = 0 if rand(9) > 7;
 	$xml_output .= xml_module_template ("Boolean mostly true", "generic_proc",$sample_boolean_mostly_true);
-	# Boolean_MostlyFalse -> generic_proc un 80% de veces a 1
+	# Boolean return false at 80% of times
 	my $sample_boolean_mostly_false = 0;
 	$sample_boolean_mostly_false = 1 if rand(9) > 7;
-	$xml_output .= xml_module_template ("Siempre a uno", "generic_proc", $sample_boolean_mostly_false);
-	# Boolean_False -> generic_proc siempre a 0
-	$xml_output .= xml_module_template ("Siempre_false", "generic_proc","0");
-	# Data_Series_Scatter -> Valores random de 0 a 100 
-	$xml_output .= xml_module_template ("Random_integer_values", "generic_data",int(rand(100)));
-	# Data_Series_Curve -> Valores en curvas senoidales o similares de 0 a 100
-	# (utilizar funcion matemática que use timestamp actual, para no tener que
-	# guardar valores anteriores)
+	$xml_output .= xml_module_template ("Boolean mostly false", "generic_proc", $sample_boolean_mostly_false);
+	# Boolean ever return FALSE
+	$xml_output .= xml_module_template ("Boolean ever false", "generic_proc","0");
+	# Random integer between 0 and 100
+	$xml_output .= xml_module_template ("Random integer values", "generic_data",int(rand(100)));
+	# Random values obtained with sinusoidal curves between 0 and 100 values
 	my $b = 1;
 	my $sample_serie_curve = 1 + cos(deg2rad($b));
 	$b = $b + rand(20)/10;
 	$b = 0 if ($b > 180);
 	$sample_serie_curve = $sample_serie_curve * $b * 10;
 	$sample_serie_curve =~ s/\,/\./g;
-	$xml_output .= xml_module_template ("Random text", "generic_string", $sample_serie_curve);	
-	# Text -> generic_string > Con una cadena de texto aleatorio de 
-	# 10 caracteres, idealmente con espacios y caracteres ascii 
-	# basicos (letras).
+	$xml_output .= xml_module_template ("Random serie curve", "generic_data", $sample_serie_curve);
 	# String with 10 random characters
 	my $sample_random_text = "";
 	my @characters = ('a'..'z','A'..'Z');
 	for (1...10){
 		$sample_random_text .= $characters[int(rand(@characters))];
 	}
-	$xml_output .= xml_module_template ("Random text", "generic_string", $sample_random_text);
+	$xml_output .= xml_module_template ("Random text", "generic_data_string", $sample_random_text);
 	# End of xml
 	$xml_output .= "</agent_data>";
 	# File path definition

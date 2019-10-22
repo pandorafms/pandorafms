@@ -71,10 +71,12 @@ switch ($activeTab) {
     break;
 }
 
-$buttons['graph_container'] = [
-    'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graphs containers')]).'</a>',
-];
+if ($enterpriseEnable) {
+    $buttons['graph_container'] = [
+        'active' => false,
+        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graphs containers')]).'</a>',
+    ];
+}
 
 $delete_graph = (bool) get_parameter('delete_graph');
 $view_graph = (bool) get_parameter('view_graph');

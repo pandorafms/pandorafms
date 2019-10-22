@@ -280,6 +280,14 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
+                        $tmp->meta = is_metaconsole();
+                        if (is_metaconsole()) {
+                            if ($tmp->server_name !== null) {
+                                $tmp->data_server = metaconsole_get_servers($tmp->server_id);
+                                $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
+                            }
+                        }
+
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         if (strlen($tmp->evento) >= 255) {
                             $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
@@ -1598,6 +1606,17 @@ function process_datatables_callback(table, settings) {
 
 function process_datatables_item(item) {
 
+    // Url to go to node from meta.
+    var server_url = '';
+    var hashdata = '';
+    if(item.meta === true){
+        if(typeof item.data_server !== 'undefined' && typeof item.server_url_hash !== 'undefined'){
+            server_url = item.data_server.server_url;
+            hashdata = item.server_url_hash;
+        }
+    }
+
+
     // Show comments events.
     item.user_comment = item.comments
   
@@ -1843,9 +1862,19 @@ function process_datatables_item(item) {
 
     /* Update column content now to avoid json poisoning. */
 
+
+    // Url to agent view.
+    var url_link = '<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>';
+    var url_link_hash = '';
+    if(item.meta === true){   
+        url_link = server_url+'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
+        url_link_hash = hashdata;
+    }
+
+
     /* Agent name link */
     if (item.id_agente > 0) {
-        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
+        item.agent_name = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
     } else {
         item.agent_name = '';
     }
@@ -1855,11 +1884,11 @@ function process_datatables_item(item) {
         <?php
         if (in_array('agent_name', $fields)) {
             ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
+            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
             <?php
         } else {
             ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
+            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
             <?php
         }
         ?>

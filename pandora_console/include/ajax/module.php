@@ -1113,7 +1113,7 @@ if (check_login()) {
             }
 
             if ($module['id_tipo_modulo'] != 25) {
-                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical']);
+                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse']);
             } else {
                 $data[6] = '';
             }

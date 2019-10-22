@@ -32,7 +32,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.739";
-my $pandora_build = "191017";
+my $pandora_build = "191022";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -762,7 +762,7 @@ sub transfer_xml {
 	my $file_path;
 
 	if (! (empty ($name))) {
-		$file_name = $name . "." . sprintf("%d",time()) . ".data";
+		$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
 	}
 	else {
 		# Inherit file name

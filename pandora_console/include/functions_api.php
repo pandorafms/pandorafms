@@ -6225,9 +6225,8 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $date_from = strtotime(html_entity_decode($other['data'][1]));
-    $date_to = strtotime(html_entity_decode($other['data'][2]));
-
+    $date_from = strtotime(html_entity_decode($other['data'][1].' '.$other['data'][11]));
+    $date_to = strtotime(html_entity_decode($other['data'][2].' '.$other['data'][12]));
     $values = [];
     $values['name'] = $id;
     $values = [

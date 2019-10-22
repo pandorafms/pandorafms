@@ -765,7 +765,7 @@ $table_adv_agent_icon .= html_print_select(
 ).'</div>';
 
 if ($config['activate_gis']) {
-    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Ignore new GIS data:').'</p>';
+    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Update new GIS data:').'</p>';
     if ($new_agent) {
         $update_gis_data = true;
     }

@@ -3144,7 +3144,7 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
         break;
     }
 
-    if ($action !== 'update') {
+    if ($action !== 'update' && !is_metaconsole()) {
         ui_print_page_header(
             $textReportName,
             'images/op_reporting.png',
@@ -3184,17 +3184,19 @@ if ($resultOperationDB !== null) {
         $activeTab = 'list_items';
         $buttons[$activeTab]['active'] = true;
 
-        ui_print_page_header(
-            $textReportName,
-            'images/op_reporting.png',
-            false,
-            $helpers,
-            false,
-            $buttons,
-            false,
-            '',
-            60
-        );
+        if (!is_metaconsole()) {
+            ui_print_page_header(
+                $textReportName,
+                'images/op_reporting.png',
+                false,
+                $helpers,
+                false,
+                $buttons,
+                false,
+                '',
+                60
+            );
+        }
     }
 }
 

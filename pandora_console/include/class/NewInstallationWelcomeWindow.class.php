@@ -456,7 +456,7 @@ class NewInstallationWelcomeWindow extends Wizard
 
 
     if( '.<?php echo $_SESSION['create_alert']; ?>.') {
-        document.getElementById("button-btn_create_alert").className =   "btn_alert_module__ok";
+        document.getElementById("button-btn_create_alert").className =   "btn_alert_module_ok";
         document.getElementById("button-btn_create_alert").onclick =   "";
 
 

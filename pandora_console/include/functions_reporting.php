@@ -4190,10 +4190,22 @@ function reporting_sql_graph(
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
+    $module_source = db_get_all_rows_sql(
+        'SELECT id_agent_module
+         FROM tgraph_source
+         WHERE id_graph = '.$content['id_gs']
+    );
+
+    if (isset($module_source) && is_array($module_source)) {
+        $modules = [];
+        foreach ($module_source as $key => $value) {
+            $modules[$key] = $value['id_agent_module'];
+        }
+    }
+
     switch ($type) {
         case 'dinamic':
         case 'static':
-        case 'data':
             $return['chart'] = graph_custom_sql_graph(
                 $content['id_rc'],
                 $width,
@@ -4204,6 +4216,19 @@ function reporting_sql_graph(
                 $ttl,
                 $content['top_n_value']
             );
+        break;
+
+        case 'data':
+            $data = [];
+            foreach ($modules as $key => $value) {
+                $data[$value] = modules_get_agentmodule_data(
+                    $value,
+                    $content['period'],
+                    $report['datetime']
+                );
+            }
+
+            $return['chart'] = $data;
         break;
     }
 
@@ -7560,10 +7585,19 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
-    $id_agent = agents_get_module_id(
-        $content['id_agent_module']
+    $module_source = db_get_all_rows_sql(
+        'SELECT id_agent_module
+         FROM tgraph_source
+         WHERE id_graph = '.$content['id_gs']
     );
-    $id_agent_module = $content['id_agent_module'];
+
+    if (isset($module_source) && is_array($module_source)) {
+        $modules = [];
+        foreach ($module_source as $key => $value) {
+            $modules[$key] = $value['id_agent_module'];
+        }
+    }
+
     $agent_description = agents_get_description($id_agent);
     $agent_group = agents_get_agent_group($id_agent);
     $agent_address = agents_get_address($id_agent);
@@ -7593,7 +7627,6 @@ function reporting_custom_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
-        case 'data':
             $params = [
                 'period'     => $content['period'],
                 'width'      => $width,
@@ -7623,6 +7656,19 @@ function reporting_custom_graph(
                 $params_combined
             );
 
+        break;
+
+        case 'data':
+            $data = [];
+            foreach ($modules as $key => $value) {
+                $data[$value] = modules_get_agentmodule_data(
+                    $value,
+                    $content['period'],
+                    $report['datetime']
+                );
+            }
+
+            $return['chart'] = $data;
         break;
     }
 

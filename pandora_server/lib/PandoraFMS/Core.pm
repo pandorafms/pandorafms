@@ -5273,9 +5273,10 @@ sub pandora_sample_agent ($) {
 	logger($pa_config, "Sample agent activated.", 1);
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-
 	# First line	
-	my $xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	my $xml_output = "<?xml version='1.0' encoding='UTF-8'?>\n";
+	# Header
+	$xml_output = "<agent_data description='Agent for sample generation purposes' group='Servers' os_name='$OS' os_version='$OS_VERSION' interval='".$pa_config->{"sample_agent_interval"}."' version='" . $pa_config->{'version'} . "' timestamp='".$timestamp."' agent_name='Sample_Agent' agent_alias='Sample_Agent' timezone_offset='0' custom_id='' url_address='' address='172.16.0.1'>\n";
 	# Boolean_True -> generic_proc siempre a 1
 	$xml_output .= xml_module_template ("Siempre a uno", "generic_proc","1");
 	# Boolean_MostlyTrue -> generic_proc un 80% de veces a 1
@@ -5312,7 +5313,7 @@ sub pandora_sample_agent ($) {
 	$xml_output .= xml_module_template ("Random text", "generic_string", $sample_random_text);
 	# End of xml
 	$xml_output .= "</agent_data>";
-	# File definition
+	# File path definition
 	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".sample.".$utimestamp.".data";
 	# Opening, Writing and closing of XML
 	open (my $xmlfile, ">", $filename) or die "[FATAL] Could not open sample XML file for deploying monitorization at '$filename'";

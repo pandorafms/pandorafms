@@ -618,10 +618,6 @@ if ($id_agente) {
 
         case 'module':
             $type_module_t = get_parameter('moduletype', '');
-            if ($_SESSION['create_module']) {
-                $type_module_t = 'Networking';
-            }
-
             $tab_description = '- '.__('Modules');
             $tab_name = 'Modules';
             if ($type_module_t == 'webux') {
@@ -2270,7 +2266,7 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
-if ($_SESSION['create_module']) {
+if (!$_SESSION['create_module']) {
     $edit_module = true;
 }
 

@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Report item list.
  *
  * @category   Reporting
  * @package    Pandora FMS
@@ -290,13 +289,6 @@ if ($agentFilter != 0) {
 
 if ($moduleFilter != 0) {
     $where .= ' AND id_agent_module = '.$moduleFilter;
-}
-
-// Filter report items created from metaconsole in normal console list and the opposite.
-if (is_metaconsole()) {
-    $where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\',\'text\',\'group_report\'))';
-} else {
-    $where .= ' AND ((server_name IS NULL OR length(server_name) = 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 }
 
 switch ($config['dbtype']) {

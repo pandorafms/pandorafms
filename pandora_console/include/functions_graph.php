@@ -3598,9 +3598,29 @@ function graph_custom_sql_graph(
     if (is_metaconsole()) {
         $server = metaconsole_get_connection_names();
         $connection = metaconsole_get_connection($server);
+        metaconsole_connect($connection);
     }
 
     $report_content = db_get_row('treport_content', 'id_rc', $id);
+
+    if ($report_content == false || $report_content == '') {
+        $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+    }
+
+    if ($report_content == false || $report_content == '') {
+        enterprise_hook('metaconsole_restore_db');
+        $report_content = db_get_row('treport_content', 'id_rc', $id);
+        if ($report_content == false || $report_content == '') {
+            $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        }
+
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_names();
+            $connection = metaconsole_get_connection($server);
+            metaconsole_connect($connection);
+        }
+    }
+
     if ($id != null) {
         $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$id);
     } else {

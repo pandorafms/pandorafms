@@ -365,6 +365,7 @@ class NewInstallationWelcomeWindow extends Wizard
     {
         $sec2 = get_parameter('sec2', '');
         $mail_user = get_parameter('email_username', '');
+        $mail_configured = db_get_value('value', 'tconfig', 'token', 'email_username');
         $_SESSION['agente'] = db_get_value('MAX(id_agente)', 'tagente');
 
         if ($sec2 == '' && $config['initial_wizard'] == false) {
@@ -374,7 +375,7 @@ class NewInstallationWelcomeWindow extends Wizard
             $welcome->run();
         }
 
-        if ($mail_user !== '' && $sec2 === 'godmode/setup/setup' && !$_SESSION['mail_configured']) {
+        if ($mail_user !== '' && $sec2 === 'godmode/setup/setup' && !$_SESSION['mail_configured'] && $mail_configured) {
             $welcome = new NewInstallationWelcomeWindow(
                 'general/new_installation_welcome_window'
             );
@@ -383,7 +384,6 @@ class NewInstallationWelcomeWindow extends Wizard
         }
 
         $create_agent = (bool) get_parameter('create_agent');
-        $_SESSION['create_module'] = false;
         if ($create_agent && $sec2 === 'godmode/agentes/configurar_agente' && $_SESSION['create_agent']) {
             $welcome = new NewInstallationWelcomeWindow(
                 'general/new_installation_welcome_window'
@@ -395,7 +395,7 @@ class NewInstallationWelcomeWindow extends Wizard
         $create_module = (bool) get_parameter('create_module');
         $sec2_module = explode('&', ui_get_full_url());
 
-        if ($create_agent && $sec2_module[2] === 'tab=module' && $_SESSION['create_module']) {
+        if ($create_agent && $sec2_module[2] === 'tab=module' && !$_SESSION['create_module']) {
             $welcome = new NewInstallationWelcomeWindow(
                 'general/new_installation_welcome_window'
             );
@@ -407,16 +407,14 @@ class NewInstallationWelcomeWindow extends Wizard
 
         $create_alert = (int) get_parameter('create_alert', 0);
 
-        $check_module = db_get_value('MAX(id_module)', 'tmodule');
-        if ($create_alert && $sec2_alert[2] == 'tab=alert' && $_SESSION['create_alert']) {
+        // $check_module = db_get_value('MAX(id_module)', 'tmodule');
+        if ($create_alert && $sec2_alert[2] == 'tab=alert' && !$_SESSION['create_alert']) {
             $welcome = new NewInstallationWelcomeWindow(
                 'general/new_installation_welcome_window'
             );
             $welcome->run();
             $_SESSION['create_alert'] = true;
         }
-
-        $_SESSION['create_module'] = true;
 
     }
 
@@ -430,27 +428,46 @@ class NewInstallationWelcomeWindow extends Wizard
     if( '.<?php echo $_SESSION['mail_configured']; ?>.') {
         document.getElementById("button-btn_email_conf").className = "btn_email_conf_ok";
         document.getElementById("button-btn_email_conf").onclick = "";
-        document.getElementById("button-btn_create_agent").className = "btn_email_conf";
+
+        document.getElementById("button-btn_create_agent").className = "btn_agent_on";
         document.getElementById("button-btn_create_agent").setAttribute('onclick', 'createNewAgent()');
         <?php $_SESSION['mail_configured'] = false; ?>
     }
 
-    if( '.<?php echo $_SESSION['create_module']; ?>.') {
+    if( '.<?php echo $_SESSION['create_agent']; ?>.') {
         document.getElementById("button-btn_create_agent").className = "btn_agent_ok";
-        document.getElementById("button-btn_check_agent").className = "btn_email_conf";
+        document.getElementById("button-btn_create_agent").onclick = "";
+
+        document.getElementById("button-btn_check_agent").className = "btn_agent_online_on";
         document.getElementById("button-btn_check_agent").setAttribute('onclick', 'checkAgentOnline()');
-        <?php $_SESSION['create_module'] = false; ?>
+        <?php $_SESSION['create_agent'] = false; ?>
     }
     
 
+    if( '.<?php echo $_SESSION['create_module']; ?>.') {
+        document.getElementById("button-btn_check_agent").className =   "btn_agent_online_ok";
+        document.getElementById("button-btn_check_agent").onclick =   "";
+
+
+        document.getElementById("button-btn_create_alert").className = "btn_alert_module_on";
+        document.getElementById("button-btn_create_alert").setAttribute('onclick', 'createAlertModule()');
+        <?php $_SESSION['create_module'] = false; ?>
+    }
+
+
     if( '.<?php echo $_SESSION['create_alert']; ?>.') {
-        document.getElementById("button-btn_create_alert").className = "btn_alert_module_ok";
-        document.getElementById("button-btn_create_alert").onclick = "";
-        document.getElementById("button-btn_discover_devices").className = "btn_email_conf";
+        document.getElementById("button-btn_create_alert").className =   "btn_alert_module__ok";
+        document.getElementById("button-btn_create_alert").onclick =   "";
+
+
+        document.getElementById("button-btn_discover_devices").className =   "btn_discover_on";
         document.getElementById("button-btn_discover_devices").setAttribute('onclick', 'discoverDevicesNetwork()');
         <?php $_SESSION['create_alert'] = false; ?>
     }
-
+    if('.<?php echo $_SESSION['discover']; ?>.'){
+        document.getElementById("button-btn_discover_devices").className =   "btn_discover_ok";
+        document.getElementById("button-btn_discover_devices").onclick = "";
+    }
 
 
     function configureEmail() {
@@ -484,7 +501,7 @@ class NewInstallationWelcomeWindow extends Wizard
     {
 
         window.open('<?php echo ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan'); ?>');
-
+        <?php $_SESSION['discover'] = true; ?>
 
     }
 

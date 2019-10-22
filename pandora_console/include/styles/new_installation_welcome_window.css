@@ -75,7 +75,7 @@ label {
 }
 .btn_alert_module {
   background-image: url(../../images/go_next_g.png);
-  margin-left: 120px;
+  margin-left: 115px;
   width: 25px;
   border: none;
 }
@@ -93,6 +93,37 @@ label {
   border: none;
 }
 
+.btn_agent_on {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 469px;
+  width: 25px;
+  border: none;
+}
+.btn_agent_online_on {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 213px;
+  width: 25px;
+  border: none;
+}
+.btn_alert_module_on {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 115px;
+  width: 25px;
+  border: none;
+}
+.btn_remote-command_on {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 295px;
+  width: 25px;
+  border: none;
+}
+
+.btn_discover_on {
+  background-image: url(../../images/darrowright.png);
+  margin-left: 323px;
+  width: 25px;
+  border: none;
+}
 .btn_is_not_ok {
   background-image: url(../../images/icono_warning.png);
   margin-left: 288px;
@@ -121,7 +152,7 @@ label {
 .btn_alert_module_ok {
   background-image: url(../../images/input_tick.png);
   background-repeat: no-repeat;
-  margin-left: 120px;
+  margin-left: 115px;
   width: 20px;
   border: none;
 }

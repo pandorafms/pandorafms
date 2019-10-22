@@ -5888,3 +5888,18 @@ table.table_modal_alternate tr td:first-child {
 .fullwidth {
   width: 100%;
 }
+
+.slicebar-box-hover-styles {
+  position: absolute;
+  background-color: #fff;
+  width: 80px;
+  height: 20px;
+  text-align: center;
+  font-family: arial, sans-serif, verdana;
+  padding: 3px;
+  border: 1px solid black;
+}
+
+.flot-text {
+  width: 101%;
+}

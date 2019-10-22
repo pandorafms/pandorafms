@@ -3144,17 +3144,19 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
         break;
     }
 
-    ui_print_page_header(
-        $textReportName,
-        'images/op_reporting.png',
-        false,
-        $helpers,
-        false,
-        $buttons,
-        false,
-        '',
-        60
-    );
+    if ($action !== 'update' && !is_metaconsole()) {
+        ui_print_page_header(
+            $textReportName,
+            'images/op_reporting.png',
+            false,
+            $helpers,
+            false,
+            $buttons,
+            false,
+            '',
+            60
+        );
+    }
 }
 
 if ($resultOperationDB !== null) {
@@ -3176,6 +3178,26 @@ if ($resultOperationDB !== null) {
         __('Successfull action'),
         __('Unsuccessful action<br><br>'.$err)
     );
+
+    if ($action == 'update') {
+        $buttons[$activeTab]['active'] = false;
+        $activeTab = 'list_items';
+        $buttons[$activeTab]['active'] = true;
+
+        if (!is_metaconsole()) {
+            ui_print_page_header(
+                $textReportName,
+                'images/op_reporting.png',
+                false,
+                $helpers,
+                false,
+                $buttons,
+                false,
+                '',
+                60
+            );
+        }
+    }
 }
 
 switch ($activeTab) {

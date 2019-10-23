@@ -432,6 +432,16 @@ $t->data[1][2] = html_print_input_text(
     true
 );
 
+$t->data[2][0] = __('WebSocket proxy url').ui_print_help_tip(__('If you had configured a wsproxy set here target URL (for instance ws://your.public.fqdn/ws).'), true);
+$t->data[2][2] = html_print_input_text(
+    'ws_proxy_url',
+    $config['ws_proxy_url'],
+    '',
+    30,
+    100,
+    true
+);
+
 html_print_input_hidden('update_config', 1);
 html_print_table($t);
 

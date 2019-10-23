@@ -78,7 +78,11 @@ function quickShell()
         $ws_url = 'http://'.$config['ws_host'].':'.$config['ws_port'];
     } else {
         preg_match('/\/\/(.*)/', $config['ws_proxy_url'], $matches);
-        $ws_url = 'ws://'.$matches[1];
+        if (isset($_SERVER['HTTPS']) === true) {
+            $ws_url = 'https://'.$matches[1];
+        } else {
+            $ws_url = 'http://'.$matches[1];
+        }
     }
 
     // Gotty settings. Internal communication (WS).
@@ -129,7 +133,6 @@ function quickShell()
         $wiz->printForm(
             [
                 'form'   => [
-                    'id'     => 'pene',
                     'action' => '#',
                     'class'  => 'wizard',
                     'method' => 'post',
@@ -275,17 +278,166 @@ function quickShell()
 }
 
 
-extensions_add_opemode_tab_agent(
-    // TabId.
-    'quick_shell',
-    // TabName.
-    __('QuickShell'),
-    // TabIcon.
+/**
+ * Provide an interface where configure all settings.
+ *
+ * @return void
+ */
+function quickShellSettings()
+{
+    global $config;
+
+    ui_require_css_file('wizard');
+    ui_require_css_file('discovery');
+
+    // Parser.
+    // Gotty settings. Internal communication (WS).
+    $gotty = get_parameter(
+        'gotty',
+        $config['gotty']
+    );
+    $gotty_host = get_parameter(
+        'gotty_host',
+        $config['gotty_host']
+    );
+    $gotty_ssh_port = get_parameter(
+        'gotty_ssh_port',
+        $config['gotty_ssh_port']
+    );
+    $gotty_telnet_port = get_parameter(
+        'gotty_telnet_port',
+        $config['gotty_telnet_port']
+    );
+
+    $changes = 0;
+    if ($config['gotty'] != $gotty) {
+        config_update_value('gotty', $gotty);
+        $changes++;
+    }
+
+    if ($config['gotty_host'] != $gotty_host) {
+        config_update_value('gotty_host', $gotty_host);
+        $changes++;
+    }
+
+    if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
+        config_update_value('gotty_telnet_port', $gotty_telnet_port);
+        $changes++;
+    }
+
+    if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
+        config_update_value('gotty_ssh_port', $gotty_ssh_port);
+        $changes++;
+    }
+
+    // Interface.
+    ui_print_page_header(__('QuickShell settings'));
+
+    if ($changes > 0) {
+        ui_print_success_message(
+            __('%d Updated, please restart WebSocket engine service', $changes)
+        );
+    }
+
+    // Form.
+    $wiz = new Wizard();
+
+    $wiz->printForm(
+        [
+            'form'   => [
+                'action' => '#',
+                'class'  => 'wizard',
+                'method' => 'post',
+            ],
+            'inputs' => [
+                [
+                    'label'     => __('Gotty path'),
+                    'arguments' => [
+                        'type'  => 'text',
+                        'name'  => 'gotty',
+                        'value' => $config['gotty'],
+                    ],
+                ],
+                [
+                    'label'     => __('Gotty host'),
+                    'arguments' => [
+                        'type'  => 'text',
+                        'name'  => 'gotty_host',
+                        'value' => $config['gotty_host'],
+                    ],
+                ],
+                [
+                    'label'     => __('Gotty ssh port'),
+                    'arguments' => [
+                        'type'  => 'text',
+                        'name'  => 'gotty_ssh_port',
+                        'value' => $config['gotty_ssh_port'],
+                    ],
+                ],
+                [
+                    'label'     => __('Gotty telnet port'),
+                    'arguments' => [
+                        'type'  => 'text',
+                        'name'  => 'gotty_telnet_port',
+                        'value' => $config['gotty_telnet_port'],
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'type'       => 'submit',
+                        'label'      => __('Update'),
+                        'attributes' => 'class="sub next"',
+                    ],
+                ],
+            ],
+        ],
+        false,
+        true
+    );
+
+    return;
+
+}
+
+
+// This extension is usefull only if the agent has associated IP.
+$agent_id = get_parameter('id_agente');
+if (empty($agent_id) === false
+    && get_parameter('sec2', '') == 'operation/agentes/ver_agente'
+) {
+    $address = agents_get_address($agent_id);
+    if (empty($address) === false) {
+        // Extension registration.
+        extensions_add_opemode_tab_agent(
+            // TabId.
+            'quick_shell',
+            // TabName.
+            __('QuickShell'),
+            // TabIcon.
+            'images/ehorus/terminal.png',
+            // TabFunction.
+            'quickShell',
+            // Version.
+            'N/A',
+            // Acl.
+            'PM'
+        );
+    }
+}
+
+extensions_add_godmode_menu_option(
+    // Name.
+    __('QuickShell settings'),
+    // Acl.
+    'PM',
+    // FatherId.
+    'gextensions',
+    // Icon.
     'images/ehorus/terminal.png',
-    // TabFunction.
-    'quickShell',
     // Version.
     'N/A',
-    // Acl.
-    'PM'
+    // SubfatherId.
+    null
 );
+
+extensions_add_godmode_function('quickShellSettings');

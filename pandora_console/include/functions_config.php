@@ -361,6 +361,10 @@ function config_update_config()
                     if (!config_update_value('ws_port', get_parameter('ws_port'))) {
                         $error_update[] = __('WebSocket port');
                     }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
+                    }
                 break;
 
                 case 'enterprise':

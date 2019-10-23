@@ -1,5 +1,7 @@
 var system = require("system");
 
+/* global phantom */
+
 if (system.args.length < 3 || system.args.length > 11) {
   phantom.exit(1);
 }
@@ -14,6 +16,7 @@ var viewport_width = system.args[7];
 var viewport_height = system.args[8];
 var session_id = system.args[9];
 var base_64 = system.args[10];
+var post_data = "";
 
 if (!viewport_width) {
   viewport_width = 750;
@@ -64,7 +67,7 @@ page.onError = function(msg) {
   phantom.exit();
 };
 
-page.onCallback = function(st) {
+page.onCallback = function() {
   if (!base_64) {
     page.render(output_filename, { format: "png" });
   } else {

@@ -64,10 +64,67 @@ function quickShell()
     ui_require_css_file('wizard');
     ui_require_css_file('discovery');
 
+    // Settings.
+    // WebSocket host, where to connect.
+    if (isset($config['ws_host']) === false) {
+        config_update_value('ws_host', $_SERVER['SERVER_ADDR']);
+    }
+
+    if (isset($config['ws_port']) === false) {
+        config_update_value('ws_port', 8080);
+    }
+
+    if (isset($config['ws_url']) === false) {
+        $ws_url = 'http://'.$config['ws_host'].':'.$config['ws_port'];
+    } else {
+        $ws_url = $config['ws_url'];
+    }
+
+    // Gotty settings. Internal communication (WS).
+    if (isset($config['gotty_host']) === false) {
+        config_update_value('gotty_host', '127.0.0.1');
+    }
+
+    if (isset($config['gotty_telnet_port']) === false) {
+        config_update_value('gotty_telnet_port', 8082);
+    }
+
+    if (isset($config['gotty_ssh_port']) === false) {
+        config_update_value('gotty_ssh_port', 8081);
+    }
+
     // Username. Retrieve from form.
     if (empty($username) === true) {
         // No username provided, ask for it.
         $wiz = new Wizard();
+
+        $test = file_get_contents($ws_url);
+        if ($test === false) {
+            ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
+            $wiz->printForm(
+                [
+                    'form'   => [
+                        'method' => 'POST',
+                        'action' => '#',
+                    ],
+                    'inputs' => [
+                        [
+                            'class'     => 'w100p',
+                            'arguments' => [
+                                'name'       => 'submit',
+                                'label'      => __('Retry'),
+                                'type'       => 'submit',
+                                'attributes' => 'class="sub next"',
+                                'return'     => true,
+                            ],
+                        ],
+                    ],
+                ]
+            );
+
+            return;
+        }
+
         $wiz->printForm(
             [
                 'form'   => [
@@ -121,28 +178,6 @@ function quickShell()
         return;
     }
 
-    // WebSocket host, where to connect.
-    if (isset($config['ws_host']) === false) {
-        config_update_value('ws_host', $_SERVER['SERVER_ADDR']);
-    }
-
-    if (isset($config['ws_port']) === false) {
-        config_update_value('ws_port', 8080);
-    }
-
-    // Gotty settings. Internal communication (WS).
-    if (isset($config['gotty_host']) === false) {
-        config_update_value('gotty_host', '127.0.0.1');
-    }
-
-    if (isset($config['gotty_telnet_port']) === false) {
-        config_update_value('gotty_telnet_port', 8082);
-    }
-
-    if (isset($config['gotty_ssh_port']) === false) {
-        config_update_value('gotty_ssh_port', 8081);
-    }
-
     // Initialize Gotty Client.
     $host = $config['gotty_host'];
     if ($method == 'ssh') {
@@ -161,9 +196,24 @@ function quickShell()
         return;
     }
 
+    $test = file_get_contents($ws_url);
+    if ($test === false) {
+        if (empty($wiz) === true) {
+            $wiz = new Wizard();
+        }
+
+        ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
+        echo $wiz->printGoBackButton('#');
+        return;
+    }
+
     $r = file_get_contents('http://'.$host.':'.$port.'/js/hterm.js');
     if (empty($r) === true) {
-        ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
+        if (empty($wiz) === true) {
+            $wiz = new Wizard();
+        }
+
+        ui_print_error_message(__('WebService engine is not working properly, please check documentation.'));
         echo $wiz->printGoBackButton('#');
         return;
     }

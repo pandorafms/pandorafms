@@ -74,10 +74,11 @@ function quickShell()
         config_update_value('ws_port', 8080);
     }
 
-    if (isset($config['ws_url']) === false) {
+    if (isset($config['ws_proxy_url']) === false) {
         $ws_url = 'http://'.$config['ws_host'].':'.$config['ws_port'];
     } else {
-        $ws_url = $config['ws_url'];
+        preg_match('/\/\/(.*)/', $config['ws_proxy_url'], $matches);
+        $ws_url = 'ws://'.$matches[1];
     }
 
     // Gotty settings. Internal communication (WS).
@@ -196,7 +197,8 @@ function quickShell()
         return;
     }
 
-    $test = file_get_contents($ws_url);
+    // If rediretion is enabled, we will try to connect to http:// or https:// endpoint.
+    $test = get_headers($ws_url);
     if ($test === false) {
         if (empty($wiz) === true) {
             $wiz = new Wizard();
@@ -236,9 +238,8 @@ function quickShell()
         $new .= " + window.location.host + ':";
         $new .= $config['ws_port'].'/'.$method."';";
     } else {
-        $new = "var url = (httpsEnabled ? 'wss://' : 'ws://') + ";
-        $new .= 'window.location.host + ';
-        $new .= "'".$config['ws_proxy_url'].'/'.$method."';";
+        $new = "var url = '";
+        $new .= $config['ws_proxy_url'].'/'.$method."';";
     }
 
     // Update url.

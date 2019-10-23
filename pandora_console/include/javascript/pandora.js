@@ -1944,6 +1944,10 @@ function load_modal(settings) {
               if (settings.onsubmit.preaction != undefined) {
                 settings.onsubmit.preaction();
               }
+              if (settings.onsubmit.dataType == undefined) {
+                settings.onsubmit.dataType = "html";
+              }
+
               var formdata = new FormData();
               if (settings.extradata) {
                 settings.extradata.forEach(function(item) {
@@ -1960,7 +1964,13 @@ function load_modal(settings) {
                     formdata.append(this.name, $(this).prop("files")[0]);
                   }
                 } else {
-                  formdata.append(this.name, $(this).val());
+                  if ($(this).attr("type") == "checkbox") {
+                    if (this.checked) {
+                      formdata.append(this.name, "on");
+                    }
+                  } else {
+                    formdata.append(this.name, $(this).val());
+                  }
                 }
               });
 
@@ -1970,9 +1980,14 @@ function load_modal(settings) {
                 processData: false,
                 contentType: false,
                 data: formdata,
+                dataType: settings.onsubmit.dataType,
                 success: function(data) {
                   if (settings.ajax_callback != undefined) {
-                    settings.ajax_callback(data);
+                    if (settings.idMsgCallback != undefined) {
+                      settings.ajax_callback(data, settings.idMsgCallback);
+                    } else {
+                      settings.ajax_callback(data);
+                    }
                   }
                   AJAX_RUNNING = 0;
                 }
@@ -1986,6 +2001,58 @@ function load_modal(settings) {
         }
       });
     }
+  });
+}
+
+/**
+ * Function to show modal with message Validation.
+ *
+ * @param {json} data Json example:
+ * $return = [
+ *  'error' => 0 or 1,
+ *  'title' => [
+ *    Failed,
+ *    Success,
+ *  ],
+ *  'text'  => [
+ *    Failed,
+ *    Success,
+ *  ],
+ *];
+ * @param {string} idMsg ID div charge modal.
+ *
+ * @return {void}
+ */
+function generalShowMsg(data, idMsg) {
+  var title = data.title[data.error];
+  var text = data.text[data.error];
+  var failed = !data.error;
+
+  $("#" + idMsg).empty();
+  $("#" + idMsg).html(text);
+  $("#" + idMsg).dialog({
+    width: 450,
+    position: {
+      my: "center",
+      at: "center",
+      of: window,
+      collision: "fit"
+    },
+    title: title,
+    buttons: [
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+        text: "OK",
+        click: function(e) {
+          if (!failed) {
+            $(".ui-dialog-content").dialog("close");
+          } else {
+            $(this).dialog("close");
+          }
+        }
+      }
+    ]
   });
 }
 

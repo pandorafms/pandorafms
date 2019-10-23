@@ -59,8 +59,10 @@ class Diagnostics extends Wizard
      * @param string  $page Page.
      * @param boolean $pdf  PDF View.
      */
-    public function __construct(string $page, bool $pdf)
-    {
+    public function __construct(
+        string $page='tools/diagnostics',
+        bool $pdf=false
+    ) {
         global $config;
 
         // Check access.
@@ -105,6 +107,7 @@ class Diagnostics extends Wizard
         'getAttachmentFolder',
         'getInfoTagenteDatos',
         'getServerThreads',
+        'getShowEngine',
         'datatablesDraw',
         'getChartAjax',
         'formFeedback',
@@ -134,35 +137,7 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        $urlPdf = ui_get_full_url(false, false, false, false);
-        $urlPdf .= 'enterprise/operation/reporting/reporting_viewer_pdf.php';
-        $textPdf = '<a href="'.$urlPdf.'" target="_new">';
-
-        $textPdf .= html_print_image(
-            'images/pdf.png',
-            true,
-            ['title' => __('PDF Report')]
-        );
-        $textPdf .= '</a>';
-
-        $textCsv = '<a href="index.php?sec=gextensions&sec2='.$this->ajaxController.'">';
-        $textCsv .= html_print_image(
-            'images/csv.png',
-            true,
-            ['title' => __('Csv Report')]
-        );
-        $textCsv .= '</a>';
-
-        $buttonsHeader = [
-            'diagnosticsPdf' => [
-                'text'   => $textPdf,
-                'active' => false,
-            ],
-            'diagnosticsCsv' => [
-                'text'   => $textCsv,
-                'active' => false,
-            ],
-        ];
+        ui_require_css_file('diagnostics');
 
         // Header.
         ui_print_page_header(
@@ -170,8 +145,6 @@ class Diagnostics extends Wizard
             'images/gm_massive_operations.png',
             false,
             'diagnostic_tool_tab',
-            true,
-            $buttonsHeader,
             true
         );
 
@@ -184,7 +157,6 @@ class Diagnostics extends Wizard
         echo '<div class="footer-self-monitoring">';
         echo $this->checkPandoraDB();
         echo '</div>';
-
     }
 
 
@@ -223,6 +195,10 @@ class Diagnostics extends Wizard
             'getInfoTagenteDatos',
             'getServerThreads',
         ];
+
+        if ($this->pdf === true) {
+            $infoMethods[] = 'getShowEngine';
+        }
 
         $return = '';
 
@@ -280,6 +256,10 @@ class Diagnostics extends Wizard
 
                 case 'getServerThreads':
                     $title = __('Pandora FMS server threads');
+                break;
+
+                case 'getShowEngine':
+                    $title = __('SQL show engine innodb status');
                 break;
 
                 default:
@@ -376,7 +356,9 @@ class Diagnostics extends Wizard
             ];
 
             $return .= '<div class="title-self-monitoring">';
-            $return .= __('Graphs modules that represent the self-monitoring system');
+            $return .= __(
+                'Graphs modules that represent the self-monitoring system'
+            );
             $return .= '</div>';
             $return .= '<div class="container-self-monitoring">';
             foreach ($agentMonitoring as $key => $value) {
@@ -1298,7 +1280,7 @@ class Diagnostics extends Wizard
         $result = [
             'error' => false,
             'data'  => [
-                [
+                'totalServerThreads'   => [
                     'name'  => __('Total server threads'),
                     'value' => $totalServerThreads,
                 ],
@@ -1312,6 +1294,52 @@ class Diagnostics extends Wizard
                 ],
             ],
         ];
+
+        return json_encode($result);
+    }
+
+
+    /**
+     * SQL show engine innodb status.
+     *
+     * @return string
+     */
+    public function getShowEngine(): string
+    {
+        global $config;
+
+        try {
+            // Trick to avoid showing error in case
+            // you don't have enough permissions.
+            $backup = error_reporting();
+            error_reporting(0);
+            $innodb = db_get_all_rows_sql('show engine innodb status');
+            error_reporting($backup);
+        } catch (Exception $e) {
+            $innodb['Status'] = $e->getMessage();
+        }
+
+        $result = [];
+        if (isset($innodb[0]['Status']) === true
+            && $innodb[0]['Status'] !== false
+        ) {
+            $lenght = strlen($innodb[0]['Status']);
+
+            $data = [];
+            for ($i = 0; $i < $lenght; $i = ($i + 500)) {
+                $str = substr($innodb[0]['Status'], $i, ($i + 500));
+                $data['showEngine-'.$i] = [
+                    'name'  => '',
+                    'value' => '<pre>'.$str.'</pre>',
+                ];
+            }
+
+            $result = [
+                'error' => false,
+                'data'  => $data,
+                'id'    => 'showEngine',
+            ];
+        }
 
         return json_encode($result);
     }
@@ -1482,13 +1510,26 @@ class Diagnostics extends Wizard
 
                     $table = new stdClass();
                     $table->width = '100%';
-                    $table->class = '';
+                    $table->class = 'pdf-report';
+                    $table->style = [];
+                    $table->style[0] = 'font-weight: bolder;';
+
+                    // FIX tables break content.
+                    if ($data['idTable'] === 'showEngine') {
+                        $table->styleTable = 'page-break-inside: auto;';
+                    } else {
+                        $table->autosize = 1;
+                    }
+
                     $table->head = [];
                     $table->head_colspan[0] = 3;
                     $table->head[0] = $title;
                     $table->data = [];
 
-                    if (isset($data) === true && is_array($data) === true) {
+                    if (isset($data) === true
+                        && is_array($data) === true
+                        && count($data) > 0
+                    ) {
                         $i = 0;
                         foreach ($data['data'] as $key => $value) {
                             $table->data[$i][0] = $value['name'];
@@ -1676,7 +1717,11 @@ class Diagnostics extends Wizard
             $data = json_decode($this->{$method}(), true);
         }
 
-        if (isset($data) === true && is_array($data) === true) {
+        $result = [];
+        if (isset($data) === true
+            && is_array($data) === true
+            && count($data) > 0
+        ) {
             $items = $data['data'];
             $dataReduce = array_reduce(
                 array_keys($data['data']),
@@ -1711,6 +1756,17 @@ class Diagnostics extends Wizard
                     // FIX for customer key.
                     if ($key === 'customerKey') {
                         $spanValue = '<span>'.$items[$key]['value'].'</span>';
+                        if ($this->pdf === true) {
+                            $spanValue = '<span>';
+                            $spanValue .= wordwrap(
+                                $items[$key]['value'],
+                                10,
+                                "\n",
+                                true
+                            );
+                            $spanValue .= '</span>';
+                        }
+
                         $items[$key]['value'] = $spanValue;
                     }
 
@@ -1722,34 +1778,37 @@ class Diagnostics extends Wizard
                     return $carry;
                 }
             );
-        }
 
-        $result = json_encode(
-            [
+            $result = [
                 'data'            => $dataReduce,
                 'recordsTotal'    => count($dataReduce),
                 'recordsFiltered' => count($dataReduce),
-            ]
-        );
+                'idTable'         => (isset($data['id']) === true) ? $data['id'] : '',
+            ];
+        }
 
         // Datatables format: RecordsTotal && recordsfiltered.
         if ($return === false) {
-            echo $result;
+            echo json_encode($result);
             return null;
         } else {
-            return $result;
+            return json_encode($result);
         }
     }
 
 
-    public function createdScheduleFeedbackTask()
+    /**
+     * Create cron task form feedback.
+     *
+     * @return void Json result AJAX request.
+     */
+    public function createdScheduleFeedbackTask():void
     {
         global $config;
-
         $email = 'daniel.barbero@artica.es';
         $subject = 'PandoraFMS Report '.$config['pandora_uid'];
         $text = get_parameter('what-happened', '');
-        $type = get_parameter('include-installation-data', '');
+        $attachment = get_parameter_switch('include_installation_data', 0);
 
         $idUserTask = db_get_value(
             'id',
@@ -1758,15 +1817,17 @@ class Diagnostics extends Wizard
             'cron_task_feedback_send_mail'
         );
 
+        // Params for send mail with cron.
         $parameters = [
             0                 => '0',
             1                 => $email,
             2                 => $subject,
             3                 => $text,
-            4                 => $type,
+            4                 => $attachment,
             'first_execution' => strtotime('now'),
         ];
 
+        // Values insert task cron.
         $values = [
             'id_usuario'   => $config['id_user'],
             'id_user_task' => $idUserTask,
@@ -1775,24 +1836,54 @@ class Diagnostics extends Wizard
             'id_grupo'     => 0,
         ];
 
-        $result = db_process_sql_insert('tuser_task_scheduled', $values);
+        $result = db_process_sql_insert(
+            'tuser_task_scheduled',
+            $values
+        );
+
+        $error = 1;
+        if ($result === false) {
+            $error = 0;
+        }
+
+        $return = [
+            'error' => $error,
+            'title' => [
+                __('Failed'),
+                __('Success'),
+            ],
+            'text'  => [
+                ui_print_error_message(__('Mal'), '', true),
+                ui_print_success_message(__('bien'), '', true),
+            ],
+        ];
+
+        exit(json_encode($return));
     }
 
 
     /**
      * Print Diagnostics PDF report.
      *
+     * @param string|null $filename Filename.
+     *
      * @return void
      */
-    public static function exportPDF($filename=false)
+    public function exportPDF(?string $filename=null):void
     {
         global $config;
 
+        $this->pdf = true;
+
         enterprise_include_once('/include/class/Pdf.class.php');
-        $pdf = new Pdf([]);
-        $diagnostics = new Diagnostics('tools/diagnostics', true);
+        $mpdf = new Pdf([]);
+
+        // ADD style.
+        $mpdf->addStyle($config['homedir'].'/include/styles/diagnostics.css');
+
+        // ADD Metadata.
         $product_name = io_safe_output(get_product_name());
-        $pdf->setMetadata(
+        $mpdf->setMetadata(
             __('Diagnostics Info'),
             $product_name.' Enteprise',
             $product_name,
@@ -1801,18 +1892,24 @@ class Diagnostics extends Wizard
                 $product_name
             )
         );
-        $pdf->setHeaderHTML(__('Diagnostics Info'));
 
-        $pdf->addHTML(
-            $diagnostics->printMethodsDiagnostigsInfo()
+        // ADD Header.
+        $mpdf->setHeaderHTML(__('Diagnostics Info'));
+
+        // ADD content to report.
+        $mpdf->addHTML(
+            $this->printMethodsDiagnostigsInfo()
         );
 
-        $pdf->addHTML(
-            $diagnostics->printCharts()
+        $mpdf->addHTML(
+            $this->printCharts()
         );
 
-        $pdf->setFooterHTML();
-        $pdf->writePDFfile($filename);
+        // ADD Footer.
+        $mpdf->setFooterHTML();
+
+        // Write html filename.
+        $mpdf->writePDFfile($filename);
     }
 
 
@@ -1860,14 +1957,13 @@ class Diagnostics extends Wizard
         ];
 
         $inputs[] = [
-            'label'     => __('include installation data'),
+            'label'     => __('Include installation data'),
             'class'     => 'flex-row-vcenter',
             'arguments' => [
-                'name'   => 'include-installation-data',
-                'id'     => 'include-installation-data',
-                'type'   => 'switch',
-                'return' => true,
-                'value'  => 1,
+                'name'  => 'include_installation_data',
+                'id'    => 'include_installation_data',
+                'type'  => 'switch',
+                'value' => 1,
             ],
         ];
 
@@ -1880,6 +1976,69 @@ class Diagnostics extends Wizard
                 true
             )
         );
+    }
+
+
+    /**
+     * Send Csv md5 files.
+     *
+     * @return string
+     */
+    public function csvMd5Files():string
+    {
+        global $config;
+
+        // Extract files.
+        $files = $this->recursiveDirValidation($config['homedir']);
+
+        // Type divider.
+        $divider = html_entity_decode($config['csv_divider']);
+
+        // BOM.
+        $result = pack('C*', 0xEF, 0xBB, 0xBF);
+
+        $result .= __('Path').$divider.__('MD5')."\n";
+        foreach ($files as $key => $value) {
+            $result .= $key.$divider.$value."\n";
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Function to return array with name file -> MD%.
+     *
+     * @param string $dir Directory.
+     *
+     * @return array Result all files in directory recursively.
+     */
+    private function recursiveDirValidation(string $dir):array
+    {
+        $result = [];
+
+        $dir_content = scandir($dir);
+
+        // Dont check attachment.
+        if (strpos($dir, $config['homedir'].'/attachment') === false) {
+            if (is_array($dir_content) === true) {
+                foreach (scandir($dir) as $file) {
+                    if ('.' === $file || '..' === $file) {
+                        continue;
+                    }
+
+                    if (is_dir($dir.'/'.$file) === true) {
+                        $result += $this->recursiveDirValidation(
+                            $dir.'/'.$file
+                        );
+                    } else {
+                        $result[$dir.'/'.$file] = md5_file($dir.'/'.$file);
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
 

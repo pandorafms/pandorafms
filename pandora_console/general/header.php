@@ -332,6 +332,7 @@ if ($config['menu_type'] == 'classic') {
         if (enterprise_installed()) {
             $header_feedback = '<div id="feedback-icon-header">';
             $header_feedback .= '<div id="modal-feedback-form" style="display:none;"></div>';
+            $header_feedback .= '<div id="msg-header" style="display: none"></div>';
             $header_feedback .= html_print_image(
                 '/images/icono_warning.png',
                 true,
@@ -627,7 +628,7 @@ if ($config['menu_type'] == 'classic') {
     });
 
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
-    
+
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
 
     /**
@@ -643,8 +644,6 @@ if ($config['menu_type'] == 'classic') {
         var btn_cancel_text = '<?php echo __('Cancel'); ?>';
         var title = '<?php echo __('Report an issue'); ?>';
         var url = '<?php echo 'tools/diagnostics'; ?>';
-
-        console.log('entra');
 
         load_modal({
             target: $('#modal-feedback-form'),
@@ -662,9 +661,11 @@ if ($config['menu_type'] == 'classic') {
             onsubmit: {
                 page: url,
                 method: 'createdScheduleFeedbackTask',
-            }
+                dataType: 'json',
+            },
+            ajax_callback: generalShowMsg,
+            idMsgCallback: 'msg-header',
         });
-
     }
 
     $(document).ready (function () {
@@ -719,6 +720,9 @@ if ($config['menu_type'] == 'classic') {
 
         // Feedback.
         $("#feedback-header").click(function () {
+            // Clean DOM.
+            $("#feedback-header").empty();
+            // Function charge Modal.
             show_feedback();
         });
 

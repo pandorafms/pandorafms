@@ -97,6 +97,11 @@ error_reporting(E_ALL);
 
 $os = strtolower(PHP_OS);
 if (substr($os, 0, 3) !== 'win') {
+    if (is_executable($config['gotty']) === false) {
+        echo 'Failed to execute gotty ['.$config['gotty']."]\n";
+        exit(1);
+    }
+
     // Kill previous gotty running.
     shell_exec('killall "'.$config['gotty'].'" >/dev/null 2>&1');
 

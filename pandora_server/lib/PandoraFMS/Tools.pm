@@ -641,19 +641,29 @@ sub logger ($$;$) {
 		# Set the security level
 		my $security_level = 'info';
 		if ($level < 2) {
-			$security = 'crit';
+			$security_level = 'crit';
 		} elsif ($level < 5) {
-			$security = 'warn';
+			$security_level = 'warn';
 		}
 
 		openlog('pandora_server', 'ndelay', 'daemon');
 		syslog($security_level, $message);
 		closelog();
 	} else {
+		# Obtain the script that invoke this log
+		my $parent_caller = "";
+		$parent_caller = ( caller(2) )[1];
+		if (defined $parent_caller) {
+			$parent_caller = (split '/', $parent_caller)[-1];
+			$parent_caller =~ s/\.[^.]+$//;
+			$parent_caller = " ** " . $parent_caller . " **: ";
+		} else {
+			$parent_caller = " ";
+		}
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)
 		flock (FILE, 2);
-		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . $parent_caller . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
 		close (FILE);
 	}
 }

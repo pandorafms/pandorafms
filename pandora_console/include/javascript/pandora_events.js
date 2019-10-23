@@ -63,6 +63,20 @@ function show_event_dialog(event, dialog_page, result) {
           height: 600
         })
         .show();
+      $.post({
+        url: "ajax.php",
+        data: {
+          page: "include/ajax/events",
+          get_comments: 1,
+          event: event,
+          filter: values
+        },
+        dataType: "html",
+        success: function(data) {
+          $("#extended_event_comments_page").empty();
+          $("#extended_event_comments_page").html(data);
+        }
+      });
 
       $("#refrcounter").countdown("pause");
       $("div.vc-countdown").countdown("pause");

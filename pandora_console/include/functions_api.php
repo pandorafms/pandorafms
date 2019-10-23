@@ -6225,9 +6225,8 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $date_from = strtotime(html_entity_decode($other['data'][1]));
-    $date_to = strtotime(html_entity_decode($other['data'][2]));
-
+    $date_from = strtotime(html_entity_decode($other['data'][1].' '.$other['data'][11]));
+    $date_to = strtotime(html_entity_decode($other['data'][2].' '.$other['data'][12]));
     $values = [];
     $values['name'] = $id;
     $values = [
@@ -8294,12 +8293,16 @@ function otherParameter2Filter($other, $return_as_array=false)
         $filter['criticity'] = $other['data'][1];
     }
 
-    $idAgent = null;
     if (isset($other['data'][2]) && $other['data'][2] != '') {
         $idAgents = agents_get_agent_id_by_alias($other['data'][2]);
 
-        if (!empty($idAgent)) {
-            $filter[] = 'id_agente IN ('.explode(',', $idAgents).')';
+        if (!empty($idAgents)) {
+            $idAgent = [];
+            foreach ($idAgents as $key => $value) {
+                $idAgent[] .= $value['id_agente'];
+            }
+
+            $filter[] = 'id_agente IN ('.implode(',', $idAgent).')';
         } else {
             $filter['sql'] = '1=0';
         }
@@ -8312,9 +8315,21 @@ function otherParameter2Filter($other, $return_as_array=false)
             $filterModule['id_agente'] = $idAgent;
         }
 
-        $idAgentModulo = db_get_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
-        if ($idAgentModulo !== false) {
-            $filter['id_agentmodule'] = $idAgentModulo;
+        $idAgentModulo = db_get_all_rows_filter('tagente_modulo', $filterModule, 'id_agente_modulo');
+
+        if (!empty($idAgentModulo)) {
+            $id_agentmodule = [];
+            foreach ($idAgentModulo as $key => $value) {
+                $id_agentmodule[] .= $value['id_agente_modulo'];
+            }
+
+            $idAgentModulo = $id_agentmodule;
+            if ($idAgentModulo !== false) {
+                $filter['id_agentmodule'] = $idAgentModulo;
+            }
+        } else {
+            // If the module doesn't exist or doesn't exist in that agent.
+            $filter['sql'] = '1=0';
         }
     }
 
@@ -8403,13 +8418,11 @@ function otherParameter2Filter($other, $return_as_array=false)
             if ($other['data'][12] == 'more_criticity') {
                 $filter['more_criticity'] = true;
             }
-        } else {
         }
     } else {
         if ($return_as_array) {
             $filter['total'] = false;
             $filter['more_criticity'] = false;
-        } else {
         }
     }
 
@@ -8417,7 +8430,7 @@ function otherParameter2Filter($other, $return_as_array=false)
         if ($return_as_array) {
             $filter['id_group'] = $other['data'][13];
         } else {
-            $filterString .= ' AND id_grupo ='.$other['data'][13];
+            $filterString .= ' AND id_grupo = '.$other['data'][13];
         }
     }
 
@@ -10046,8 +10059,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $data['type'] = 'array';
     $data['data'] = $result;
 
-    returnData($returnType, $data, $separator);
-
+    // returnData($returnType, $data, $separator);
     if (empty($result)) {
         return false;
     }
@@ -10087,8 +10099,6 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
                 returnError('ERROR_API_PANDORAFMS', $returnType);
             }
         }
-
-        return;
     }
 
     if ($other['type'] == 'string') {
@@ -10105,7 +10115,7 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
         $filterString = otherParameter2Filter($other);
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
     } else {
         $dataRows = db_get_all_rows_filter('tevento', $filterString);

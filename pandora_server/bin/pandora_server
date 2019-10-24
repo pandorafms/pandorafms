@@ -383,14 +383,13 @@ sub pandora_server_tasks ($) {
 		}
 
 		# Pandora sample agent
-		if (defined($pa_config->{"sample_agent"}) 
-			&& $pa_config->{"sample_agent"} == 1
+		if (defined($pa_config->{'sample_agent'})) {
+			if ($pa_config->{'sample_agent'} == 1
 			&& !is_metaconsole($pa_config)
-			&& $counter % $pa_config->{"sample_agent_interval"} == 0) {
-				pandora_update_config_token ($dbh, 'sample_agent', 1);
+			&& $counter % $pa_config->{'sample_agent_interval'} == 0){
 				pandora_sample_agent ($pa_config);
-		} else {
-			pandora_update_config_token ($dbh, 'sample_agent', 0);
+			}
+			pandora_update_config_token ($dbh, 'sample_agent', $pa_config->{'sample_agent'});
 		}
 
 		# Avoid counter overflow

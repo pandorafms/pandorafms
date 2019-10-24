@@ -277,6 +277,11 @@ class WSManager extends WebSocketServer
             $user->headers['cookie']
         );
 
+        // If being redirected from proxy.
+        if (isset($user->headers['x-forwarded-for']) === true) {
+            $user->address = $user->headers['x-forwarded-for'];
+        }
+
         $user->account = new User(['phpsessionid' => $php_session_id]);
         $_SERVER['REMOTE_ADDR'] = $user->address;
 

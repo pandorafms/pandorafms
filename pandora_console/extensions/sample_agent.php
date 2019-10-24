@@ -60,11 +60,7 @@ if ($config['sample_agent'] == 1 && !isset($config['sample_agent_deployed'])) {
     db_process_sql($query);
 
     // This setting will avoid regenerate all the times the visual consoles.
-    $values = [
-        'token' => 'sample_agent_deployed',
-        'value' => '1',
-    ];
-    db_process_sql_insert('tconfig', $values);
+    config_update_value('sample_agent_deployed', 1);
 }
 
 extensions_add_main_function('sample_agent_deployment');

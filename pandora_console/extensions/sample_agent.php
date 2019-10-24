@@ -47,15 +47,15 @@ if ($config['sample_agent'] == 1 && !isset($config['sample_agent_deployed'])) {
     db_process_sql($query);
     // Update of layout 2 (Dashboard).
     $query = 'UPDATE `tlayout_data` SET `id_agent`= '.$id_agente.', `id_agente_modulo` = CASE ';
-    $query .= 'WHEN `id` = 99 THEN '.$modules[0]['id_agente_modulo'].' ';
-    $query .= 'WHEN `id` = 100 THEN '.$modules[1]['id_agente_modulo'].' ';
-    $query .= 'WHEN `id` = 101 THEN '.$modules[2]['id_agente_modulo'].' ';
-    $query .= 'WHEN `id` = 102 THEN '.$modules[2]['id_agente_modulo'].' ';
-    $query .= 'WHEN `id` = 103 THEN '.$modules[3]['id_agente_modulo'].' ';
+    $query .= 'WHEN `id` = 107 THEN '.$modules[0]['id_agente_modulo'].' ';
+    $query .= 'WHEN `id` = 108 THEN '.$modules[1]['id_agente_modulo'].' ';
+    $query .= 'WHEN `id` = 109 THEN '.$modules[2]['id_agente_modulo'].' ';
+    $query .= 'WHEN `id` = 110 THEN '.$modules[2]['id_agente_modulo'].' ';
+    $query .= 'WHEN `id` = 111 THEN '.$modules[3]['id_agente_modulo'].' ';
     $query .= 'WHEN `id` = 112 THEN '.$modules[4]['id_agente_modulo'].' ';
     $query .= 'WHEN `id` = 113 THEN '.$modules[5]['id_agente_modulo'].' ';
     $query .= 'WHEN `id` = 114 THEN '.$modules[6]['id_agente_modulo'].' ';
-    $query .= 'END WHERE `id_layout` = 2 AND `id` IN (99,100,101,102,103,112,113,114);';
+    $query .= 'END WHERE `id_layout` = 2 AND `id` IN (107,108,109,110,111,112,113,114);';
 
     db_process_sql($query);
 

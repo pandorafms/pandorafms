@@ -1958,7 +1958,14 @@ function load_modal(settings) {
               formdata.append("page", settings.onsubmit.page);
               formdata.append("method", settings.onsubmit.method);
 
+              var flagError = false;
               $("#" + settings.form + " :input").each(function() {
+                if (this.checkValidity() === false) {
+                  // TODO: Tooltip msg.
+                  console.log(this.validationMessage);
+                  flagError = true;
+                }
+
                 if (this.type == "file") {
                   if ($(this).prop("files")[0]) {
                     formdata.append(this.name, $(this).prop("files")[0]);
@@ -1974,24 +1981,28 @@ function load_modal(settings) {
                 }
               });
 
-              $.ajax({
-                method: "post",
-                url: settings.url,
-                processData: false,
-                contentType: false,
-                data: formdata,
-                dataType: settings.onsubmit.dataType,
-                success: function(data) {
-                  if (settings.ajax_callback != undefined) {
-                    if (settings.idMsgCallback != undefined) {
-                      settings.ajax_callback(data, settings.idMsgCallback);
-                    } else {
-                      settings.ajax_callback(data);
+              if (flagError === false) {
+                $.ajax({
+                  method: "post",
+                  url: settings.url,
+                  processData: false,
+                  contentType: false,
+                  data: formdata,
+                  dataType: settings.onsubmit.dataType,
+                  success: function(data) {
+                    if (settings.ajax_callback != undefined) {
+                      if (settings.idMsgCallback != undefined) {
+                        settings.ajax_callback(data, settings.idMsgCallback);
+                      } else {
+                        settings.ajax_callback(data);
+                      }
                     }
+                    AJAX_RUNNING = 0;
                   }
-                  AJAX_RUNNING = 0;
-                }
-              });
+                });
+              } else {
+                AJAX_RUNNING = 0;
+              }
             }
           }
         ],

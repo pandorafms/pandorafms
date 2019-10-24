@@ -5910,3 +5910,7 @@ table.table_modal_alternate tr td:first-child {
 .flot-text {
   width: 101%;
 }
+
+input:invalid {
+  border-color: #c00;
+}

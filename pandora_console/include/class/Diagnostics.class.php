@@ -68,8 +68,10 @@ class Diagnostics extends Wizard
         // Check access.
         check_login();
 
-        // Check Acl.
-        if (!check_acl($config['id_user'], 0, 'PM')) {
+        // TODO:XXX
+        /*
+            // Check Acl.
+            if (!check_acl($config['id_user'], 0, 'PM')) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access diagnostic info'
@@ -81,7 +83,8 @@ class Diagnostics extends Wizard
 
             include 'general/noaccess.php';
             exit;
-        }
+            }
+        */
 
         $this->ajaxController = $page;
         $this->pdf = $pdf;
@@ -1755,18 +1758,14 @@ class Diagnostics extends Wizard
 
                     // FIX for customer key.
                     if ($key === 'customerKey') {
-                        $spanValue = '<span>'.$items[$key]['value'].'</span>';
-                        if ($this->pdf === true) {
-                            $spanValue = '<span>';
-                            $spanValue .= wordwrap(
-                                $items[$key]['value'],
-                                10,
-                                "\n",
-                                true
-                            );
-                            $spanValue .= '</span>';
-                        }
-
+                        $customerKey = ui_print_truncate_text(
+                            $items[$key]['value'],
+                            30,
+                            false,
+                            true,
+                            false
+                        );
+                        $spanValue = '<span>'.$customerKey.'</span>';
                         $items[$key]['value'] = $spanValue;
                     }
 
@@ -1805,10 +1804,100 @@ class Diagnostics extends Wizard
     public function createdScheduleFeedbackTask():void
     {
         global $config;
+
+        // TODO: feedback@artica.es
+        $mail_feedback = 'feedback@artica.es';
         $email = 'daniel.barbero@artica.es';
         $subject = 'PandoraFMS Report '.$config['pandora_uid'];
         $text = get_parameter('what-happened', '');
         $attachment = get_parameter_switch('include_installation_data', 0);
+        $email_from = get_parameter_switch('email', '');
+
+        if (!check_acl($config['id_user'], 0, 'PM')) {
+            // TODO: MAIL TO ADMIN.
+            $email = get_mail_admin();
+            $email = 'daniel.barbero@artica.es';
+            $product_name = io_safe_output(get_product_name());
+            $name_admin = get_name_admin();
+
+            $subject = __('Feedback').' '.$product_name.' '.$config['pandora_uid'];
+
+            $title = __('Hello').' '.$name_admin;
+            $p1 = __(
+                'User %s is reporting an issue in its %s experience',
+                $email_from,
+                $product_name
+            );
+            $p1 .= ':';
+
+            $p2 = $text;
+
+            if ($attachment === 1) {
+                $msg_attch = __('Find some files attached to this mail');
+                $msg_attch .= '. ';
+                $msg_attch .= __(
+                    'PDF is the diagnostic information retrieved at report time'
+                );
+                $msg_attch .= '. ';
+                $msg_attch .= __('CSV contains the statuses of every product file');
+                $msg_attch .= '. ';
+            }
+
+            $p3 = __(
+                'If you think this report must be escalated, feel free to forward this mail to "%s"',
+                $mail_feedback
+            );
+
+            $legal = __('LEGAL WARNING');
+            $legal1 = __(
+                'The information contained in this transmission is privileged and confidential information intended only for the use of the individual or entity named above'
+            );
+            $legal1 .= '. ';
+            $legal2 = __(
+                'If the reader of this message is not the intended recipient, you are hereby notified that any dissemination, distribution or copying of this communication is strictly prohibited'
+            );
+            $legal2 .= '. ';
+            $legal3 = __(
+                'If you have received this transmission in error, do not read it'
+            );
+            $legal3 .= '. ';
+            $legal4 = __(
+                'Please immediately reply to the sender that you have received this communication in error and then delete it'
+            );
+            $legal4 .= '.';
+
+            $patterns = [
+                '/__title__/',
+                '/__p1__/',
+                '/__p2__/',
+                '/__attachment__/',
+                '/__p3__/',
+                '/__legal__/',
+                '/__legal1__/',
+                '/__legal2__/',
+                '/__legal3__/',
+                '/__legal4__/',
+            ];
+
+            $substitutions = [
+                $title,
+                $p1,
+                $p2,
+                $msg_attch,
+                $p3,
+                $legal,
+                $legal1,
+                $legal2,
+                $legal3,
+                $legal4,
+            ];
+
+            $html_template = file_get_contents(
+                $config['homedir'].'/include/templates/feedback_send_mail.html'
+            );
+
+            $text = preg_replace($patterns, $substitutions, $html_template);
+        }
 
         $idUserTask = db_get_value(
             'id',
@@ -1948,11 +2037,11 @@ class Diagnostics extends Wizard
             'label'     => __('Your email'),
             'class'     => 'flex-row-baseline',
             'arguments' => [
-                'name'   => 'email',
-                'id'     => 'email',
-                'type'   => 'text',
-                'return' => true,
-                'size'   => 40,
+                'name'     => 'email',
+                'id'       => 'email',
+                'type'     => 'email',
+                'size'     => 40,
+                'required' => 'required',
             ],
         ];
 

@@ -38,9 +38,9 @@ label {
   font-weight: 800;
 }
 
-.learn_content_position {
-  display: flex;
-  margin-left: 50px;
+.learn_content_indented {
+  margin-top: 0.5em;
+  text-indent: 2em;
   font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
@@ -54,129 +54,18 @@ label {
   font-weight: 800;
 }
 
-.btn_email_conf {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 269px;
-  width: 25px;
-  border: none;
-}
-
-.btn_agent {
+.go {
   background-image: url(../../images/go_next_g.png);
-  margin-left: 469px;
+  background-repeat: no-repeat;
   width: 25px;
-  border: none;
-}
-.btn_agent_online {
-  background-image: url(../../images/go_next_g.png);
-  margin-left: 213px;
-  width: 25px;
-  border: none;
-}
-.btn_alert_module {
-  background-image: url(../../images/go_next_g.png);
-  margin-left: 115px;
-  width: 25px;
-  border: none;
-}
-.btn_remote-command {
-  background-image: url(../../images/go_next_g.png);
-  margin-left: 295px;
-  width: 25px;
+  height: 25px;
   border: none;
 }
 
-.btn_discover {
-  background-image: url(../../images/go_next_g.png);
-  margin-left: 323px;
-  width: 25px;
-  border: none;
-}
-
-.btn_agent_on {
+.pending {
   background-image: url(../../images/darrowright.png);
-  margin-left: 469px;
-  width: 25px;
-  border: none;
-}
-.btn_agent_online_on {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 213px;
-  width: 25px;
-  border: none;
-}
-.btn_alert_module_on {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 115px;
-  width: 25px;
-  border: none;
-}
-.btn_remote-command_on {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 295px;
-  width: 25px;
-  border: none;
 }
 
-.btn_discover_on {
-  background-image: url(../../images/darrowright.png);
-  margin-left: 323px;
-  width: 25px;
-  border: none;
-}
-.btn_is_not_ok {
-  background-image: url(../../images/icono_warning.png);
-  margin-left: 288px;
-  width: 25px;
-  border: none;
-  background-size: 20px;
-  background-repeat: no-repeat;
-}
-
-.btn_agent_ok {
+.completed {
   background-image: url(../../images/input_tick.png);
-  background-repeat: no-repeat;
-  margin-left: 469px;
-  width: 20px;
-  border: none;
-}
-
-.btn_agent_online_ok {
-  background-image: url(../../images/input_tick.png);
-  background-repeat: no-repeat;
-  margin-left: 213px;
-  width: 20px;
-  border: none;
-}
-
-.btn_alert_module_ok {
-  background-image: url(../../images/input_tick.png);
-  background-repeat: no-repeat;
-  margin-left: 115px;
-  width: 20px;
-  border: none;
-}
-
-.btn_remote-command_ok {
-  background-image: url(../../images/input_tick.png);
-  background-repeat: no-repeat;
-  margin-left: 295px;
-  width: 20px;
-  border: none;
-}
-
-.btn_discover_ok {
-  background-image: url(../../images/input_tick.png);
-  background-repeat: no-repeat;
-  margin-left: 323px;
-  width: 25px;
-  border: none;
-}
-
-.btn_email_conf_ok {
-  background-image: url(../../images/input_tick.png);
-  background-repeat: no-repeat;
-  margin-left: 269px;
-  width: 20px;
-  border: none;
 }

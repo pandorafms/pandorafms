@@ -1,6 +1,6 @@
 <?php
 /**
- * Credential store
+ * Welcome window ajax controller.
  *
  * @category   WelcomeWindow
  * @package    Pandora FMS
@@ -27,51 +27,37 @@
  */
 
 // Begin.
-
-/**
- * Class WelcomeWindow.
- */
-
 global $config;
 
 require_once $config['homedir'].'/include/class/WelcomeWindow.class.php';
+if (is_ajax() === false) {
+    exit;
+}
 
-$ajaxPage = 'general/new_installation_welcome_window';
+$ajaxPage = 'include/ajax/welcome_window';
 
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
     $welcome_actions = new WelcomeWindow($ajaxPage);
 } catch (Exception $e) {
-    if (is_ajax()) {
-        echo json_encode(['error' => '[WelcomeWindow]'.$e->getMessage() ]);
-        exit;
-    } else {
-        echo '[WelcomeWindow]'.$e->getMessage();
-    }
-
-    // Stop this execution, but continue 'globally'.
-    return;
+    echo json_encode(['error' => '[WelcomeWindow]'.$e->getMessage() ]);
+    exit;
 }
 
 // Ajax controller.
-if (is_ajax()) {
-    $method = get_parameter('method', '');
+$method = get_parameter('method', '');
 
-    if (method_exists($welcome_actions, $method) === true) {
-        if ($welcome_actions->ajaxMethod($method) === true) {
-            $welcome_actions->{$method}();
-        } else {
-            $welcome_actions->error('Unavailable method.');
-        }
+if (method_exists($welcome_actions, $method) === true) {
+    if ($welcome_actions->ajaxMethod($method) === true) {
+        $welcome_actions->{$method}();
     } else {
-        $welcome_actions->error('Method not found. ['.$method.']');
+        $welcome_actions->error('Unavailable method.');
     }
-
-
-    // Stop any execution.
-    exit;
 } else {
-    // Run.
-    $welcome_actions->run();
+    $welcome_actions->error('Method not found. ['.$method.']');
 }
+
+
+// Stop any execution.
+exit;

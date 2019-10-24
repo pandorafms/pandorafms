@@ -29,12 +29,18 @@
 // Begin.
 global $config;
 
+
+defined('WELCOME_STARTED') || define('WELCOME_STARTED', 1);
+defined('WELCOME_FINISHED') || define('WELCOME_FINISHED', 2);
+
+
+
 require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
 ui_require_css_file('pandora');
 /**
- * Class NewInstallationWelcomeWindow.
+ * Class WelcomeWindow.
  */
-class NewInstallationWelcomeWindow extends Wizard
+class WelcomeWindow extends Wizard
 {
 
     /**
@@ -52,14 +58,20 @@ class NewInstallationWelcomeWindow extends Wizard
     public $ajaxController;
 
     /**
+     * Current step.
+     *
+     * @var string
+     */
+    public $step;
+
+
+    /**
      * Checks if target method is available to be called using AJAX.
      *
      * @param string $method Target method.
      *
      * @return boolean True allowed, false not.
      */
-
-
     public function ajaxMethod($method)
     {
         global $config;
@@ -92,8 +104,9 @@ class NewInstallationWelcomeWindow extends Wizard
      *
      * @return object
      */
-    public function __construct($ajax_controller)
-    {
+    public function __construct(
+        $ajax_controller='include/ajax/welcome_window'
+    ) {
         $this->ajaxController = $ajax_controller;
         return $this;
     }
@@ -120,6 +133,7 @@ class NewInstallationWelcomeWindow extends Wizard
             modal: {
                 title: "<?php echo __('Welcome to Pandora FMS'); ?>",
                 ok: '<?php echo __('OK'); ?>',
+                cancel: '<?php echo __('Cancel'); ?>',
             },
             onshow: {
                 page: '<?php echo $this->ajaxController; ?>',
@@ -143,6 +157,43 @@ class NewInstallationWelcomeWindow extends Wizard
     public function loadWelcomeWindow()
     {
         global $config;
+        $btn_configure_mail_class = '';
+        $btn_create_agent_class = '';
+        $btn_create_module_class = '';
+        $btn_create_alert_class = '';
+        $btn_create_discovery_class = '';
+        $action = '';
+
+        if (($_SESSION['step'] === 'create_mail') || $_SESSION['step'] === null) {
+            // Pending mail.
+            $btn_configure_mail_class = ' pending';
+        } else if ($_SESSION['step'] === 'create_agent') {
+            $this->step = 'create_agent';
+            $btn_configure_mail_class = ' completed';
+            $btn_create_agent_class = ' pending';
+        } else if ($_SESSION['step'] === 'create_module') {
+            $btn_configure_mail_class = ' completed';
+            $btn_create_agent_class = ' completed';
+            $btn_create_module_class = ' pending';
+        } else if ($_SESSION['step'] === 'create_alert') {
+            $btn_configure_mail_class = ' completed';
+            $btn_create_agent_class = ' completed';
+            $btn_create_module_class = ' completed';
+            $btn_create_alert_class = ' pending';
+        } else if ($_SESSION['step'] === 'create_discovery') {
+            $btn_configure_mail_class = ' completed';
+            $btn_create_agent_class = ' completed';
+            $btn_create_module_class = ' completed';
+            $btn_create_alert_class = ' completed';
+            $btn_create_discovery_class = ' pending';
+        } else if ($_SESSION['step'] === 'end') {
+            // Nothing left to do.
+            $btn_configure_mail_class = ' completed';
+            $btn_create_agent_class = ' completed';
+            $btn_create_module_class = ' completed';
+            $btn_create_alert_class = ' completed';
+            $btn_create_discovery_class = ' completed';
+        }
 
         $form = [
             'action'   => '#',
@@ -155,7 +206,7 @@ class NewInstallationWelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_configure_mail',
-                'class'         => 'content_position',
+                'class'         => 'flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -168,19 +219,18 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_email_conf"',
+                            'attributes' => 'class="go '.$btn_configure_mail_class.'"',
                             'name'       => 'btn_email_conf',
                             'id'         => 'btn_email_conf',
-                            'script'     => 'configureEmail()',
                         ],
                     ],
                 ],
             ],[
                 'wrapper'       => 'div',
                 'block_id'      => 'div_create_agent',
-                'class'         => 'content_position',
+                'class'         => 'flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -193,12 +243,11 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_agent"',
+                            'attributes' => 'class="go '.$btn_create_agent_class.'"',
                             'name'       => 'btn_create_agent',
                             'id'         => 'btn_create_agent',
-                            'script'     => 'createNewAgent()',
                         ],
                     ],
                 ],
@@ -214,7 +263,7 @@ class NewInstallationWelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_position',
+                'class'         => 'learn_content_indented flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -227,12 +276,11 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_agent_online"',
-                            'name'       => 'btn_check_agent',
-                            'id'         => 'btn_check_agent',
-                            'script'     => 'checkAgentOnline()',
+                            'attributes' => 'class="go '.$btn_create_module_class.'"',
+                            'name'       => 'btn_create_module',
+                            'id'         => 'btn_create_module',
                         ],
                     ],
                 ],
@@ -240,7 +288,7 @@ class NewInstallationWelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_position',
+                'class'         => 'learn_content_indented flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -253,12 +301,11 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_alert_module"',
+                            'attributes' => 'class="go '.$btn_create_alert_class.'"',
                             'name'       => 'btn_create_alert',
                             'id'         => 'btn_create_alert',
-                            'script'     => 'createAlertModule()',
                         ],
                     ],
                 ],
@@ -267,7 +314,7 @@ class NewInstallationWelcomeWindow extends Wizard
                 [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_position',
+                'class'         => 'learn_content_indented flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -280,12 +327,11 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_remote-command"',
+                            'attributes' => 'class="go '.$btn_create.'"',
                             'name'       => 'btn_monitor_commmands',
                             'id'         => 'btn_monitor_commmands',
-                            'script'     => 'monitorRemoteCommands()',
                         ],
                     ],
                 ],
@@ -293,7 +339,7 @@ class NewInstallationWelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_discover',
-                'class'         => 'content_position',
+                'class'         => 'flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -306,12 +352,11 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_discover"',
+                            'attributes' => 'class="go '.$btn_create_discovery_class.'"',
                             'name'       => 'btn_discover_devices',
                             'id'         => 'btn_discover_devices',
-                            'script'     => 'discoverDevicesNetwork()',
                         ],
                     ],
                 ],
@@ -320,7 +365,7 @@ class NewInstallationWelcomeWindow extends Wizard
                 [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
-                'class'         => 'content_position',
+                'class'         => 'flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -333,12 +378,11 @@ class NewInstallationWelcomeWindow extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __(''),
+                            'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="btn_is_not_ok"',
+                            'attributes' => 'class="go pending '.$btn_create.'"',
                             'name'       => 'btn_not_working',
                             'id'         => 'btn_not_working',
-                            'script'     => 'reportIsNotWorking()',
                         ],
                     ],
                 ],
@@ -361,162 +405,171 @@ class NewInstallationWelcomeWindow extends Wizard
     }
 
 
-    public static function actions_done()
+    /**
+     * Esto es un constructor realmente...
+     * se llama desde la navegación normal , no ajax
+     */
+    public static function initialize($must_run)
     {
+        global $config;
+
+        if ($must_run === false) {
+            // Do not start unless already started.
+            if ($config['welcome_started'] != WELCOME_STARTED) {
+                return false;
+            }
+        }
+
+        // Calculate steps.
         $sec2 = get_parameter('sec2', '');
         $mail_user = get_parameter('email_username', '');
         $mail_configured = db_get_value('value', 'tconfig', 'token', 'email_username');
-        $_SESSION['agente'] = '';
-        if ($sec2 == '' && $config['initial_wizard'] == false) {
-            $welcome = new NewInstallationWelcomeWindow(
-                'general/new_installation_welcome_window'
-            );
-            $welcome->run();
-        }
-
-        if (($mail_user !== '' || $mail_configured ) && $sec2 === 'godmode/setup/setup') {
-            $welcome = new NewInstallationWelcomeWindow(
-                'general/new_installation_welcome_window'
-            );
-            $welcome->run();
-            $_SESSION['mail_configured'] = true;
-        }
-
         $create_agent = (bool) get_parameter('create_agent');
-        if ($create_agent && $sec2 === 'godmode/agentes/configurar_agente') {
-            $welcome = new NewInstallationWelcomeWindow(
-                'general/new_installation_welcome_window'
-            );
+        $create_module = (bool) get_parameter('create_module');
+        $sec2_url = explode('&', ui_get_full_url());
+        $create_alert = (int) get_parameter('create_alert', 0);
+        $task_id = get_parameter('task', null);
+        $_SESSION['agent'] = db_get_value(
+            'MAX(id_agente)',
+            'tagente'
+        );
+
+        if ($sec2 === '') {
+            $welcome = new WelcomeWindow();
+            $welcome->run();
+            // Nothing done yet. Launch mail.
+            $_SESSION['step'] = null;
+        } else if (($mail_user !== ''
+            || $mail_configured )
+            && $sec2 === 'godmode/setup/setup'
+        ) {
+            $welcome = new WelcomeWindow();
             $welcome->run();
             $_SESSION['create_agent'] = true;
-        }
-
-        $create_module = (bool) get_parameter('create_module');
-        $sec2_module = explode('&', ui_get_full_url());
-
-        if ($create_module && $sec2_module[2] == 'tab=module') {
-            $welcome = new NewInstallationWelcomeWindow(
-                'general/new_installation_welcome_window'
-            );
+            $_SESSION['step'] = 'create_agent';
+            // Mail configured.
+        } else if ($create_agent
+            && $sec2 === 'godmode/agentes/configurar_agente'
+        ) {
+            $welcome = new WelcomeWindow();
             $welcome->run();
+            // Agent created.
+            // Store id_agent created.
             $_SESSION['create_module'] = true;
-        }
-
-        $sec2_alert = explode('&', ui_get_full_url());
-
-        $create_alert = (int) get_parameter('create_alert', 0);
-
-        // $check_module = db_get_value('MAX(id_module)', 'tmodule');
-        if ($create_alert && $sec2_alert[2] == 'tab=alert') {
-            $welcome = new NewInstallationWelcomeWindow(
-                'general/new_installation_welcome_window'
-            );
+            $_SESSION['step'] = 'create_module';
+        } else if ($create_module
+            && $sec2_url[2] == 'tab=module'
+        ) {
+            $welcome = new WelcomeWindow();
             $welcome->run();
+            // Module created.
             $_SESSION['create_alert'] = true;
-        }
-
-        $sec2_discover = explode('&', ui_get_full_url());
-        $task_id = get_parameter('task', null);
-        if ($sec2_discover[4] === 'mode=netscan') {
-            $welcome = new NewInstallationWelcomeWindow(
-                'general/new_installation_welcome_window'
-            );
+            $_SESSION['step'] = 'create_alert';
+        } else if ($create_alert && $sec2_url[2] == 'tab=alert') {
+            $welcome = new WelcomeWindow();
             $welcome->run();
-            $_SESSION['discover'] = true;
+            // Alert created.
+            $_SESSION['create_discovery'];
+            $_SESSION['step'] = 'create_discovery';
+        } else if ($sec2_url[3] === 'mode=netscan') {
+            // Discovery task created.
+            $_SESSION['step'] = 'end';
+
+            // Welcome is finished.
+            config_update_value('welcome_started', WELCOME_FINISHED);
+
+            // No more 'welcomes' to show.
+            return false;
+        } else {
+            // No step found. Retrieve from session.
+            $_SESSION['step'] = null;
+            if (empty($_SESSION['create_mail'] === true)) {
+                $_SESSION['step'] = 'create_mail';
+            }
+
+            if (empty($_SESSION['create_mail']) === false) {
+                $_SESSION['step'] = 'create_agent';
+            }
+
+            if (empty($_SESSION['create_agent']) === false) {
+                $_SESSION['step'] = 'create_module';
+            }
+
+            if (empty($_SESSION['create_module']) === false) {
+                $_SESSION['step'] = 'create_alert';
+            }
+
+            if (empty($_SESSION['create_alert']) === false) {
+                $_SESSION['step'] = 'create_discovery';
+            }
+
+            if (empty($_SESSION['create_discovery']) === false) {
+                // No more 'welcomes' to show.
+                return false;
+            }
         }
 
+        // Return a reference to the new object.
+        return $welcome;
     }
 
 
+    /**
+     * DOCUMENTA!!!
+     */
     public function loadJS()
     {
         ob_start();
         ?>
     <script type="text/javascript">
-
-if( '.<?php echo $_SESSION['mail_configured']; ?>.') {
-        document.getElementById("button-btn_email_conf").className = "btn_email_conf_ok";
-        document.getElementById("button-btn_email_conf").onclick = "";
-
-        document.getElementById("button-btn_create_agent").className = "btn_agent_on";
+    console.log('vale');
+    if('.<?php echo $_SESSION['step'] == 'create_mail'; ?>.'){
+        document.getElementById("button-btn_email_conf").setAttribute('onclick', 'configureEmail()');
+        console.log('mail');
+    }
+    if( '.<?php echo $_SESSION['step'] == 'create_agent'; ?>.') {
         document.getElementById("button-btn_create_agent").setAttribute('onclick', 'createNewAgent()');
-        <?php $_SESSION['mail_configured'] = false; ?>
+        console.log('agente true');
     }
-if( '.<?php echo $_SESSION['create_agent']; ?>.') {
-        document.getElementById("button-btn_create_agent").className = "btn_agent_ok";
-        document.getElementById("button-btn_create_agent").onclick = "";
-
-        document.getElementById("button-btn_check_agent").className = "btn_agent_online_on";
-        document.getElementById("button-btn_check_agent").setAttribute('onclick', 'checkAgentOnline()');
-        <?php $_SESSION['create_agent'] = false; ?>
+    if( '.<?php echo $_SESSION['step'] == 'create_module'; ?>.') {
+        document.getElementById("button-btn_create_module").setAttribute('onclick', 'checkAgentOnline()');
+        console.log('modulo entra true');
     }
-
-    if( '.<?php echo $_SESSION['create_module']; ?>.') {
-        document.getElementById("button-btn_check_agent").className =   "btn_agent_online_ok";
-        document.getElementById("button-btn_check_agent").onclick =   "";
-
-
-        document.getElementById("button-btn_create_alert").className = "btn_alert_module_on";
+    if( '.<?php echo $_SESSION['step'] == 'create_alert'; ?>.') {
+        
         document.getElementById("button-btn_create_alert").setAttribute('onclick', 'createAlertModule()');
-        <?php $_SESSION['create_module'] = false; ?>
     }
-
-
-    if( '.<?php echo $_SESSION['create_alert']; ?>.') {
-        document.getElementById("button-btn_create_alert").className =   "btn_alert_module_ok";
-        document.getElementById("button-btn_create_alert").onclick =   "";
-
-
-        document.getElementById("button-btn_discover_devices").className =   "btn_discover_on";
+     if( '.<?php echo $_SESSION['step'] == 'create_discover'; ?>.') {
         document.getElementById("button-btn_discover_devices").setAttribute('onclick', 'discoverDevicesNetwork()');
-        <?php $_SESSION['create_alert'] = false; ?>
-    }
-
-    if('.<?php echo $_SESSION['discover']; ?>.'){
-        document.getElementById("button-btn_discover_devices").className =   "btn_discover_ok";
-        document.getElementById("button-btn_discover_devices").onclick = "";
+    }else if('.<?php echo $_SESSION['create_discovery']; ?>.'){
+        document.getElementById("button-btn_discover_devices").onclick= '';
     }
 
     function configureEmail() {
-        window.open('<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table3'); ?>');
+        window.location = '<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table3'); ?>';
     }
 
-    function createNewAgent()
-    {
-        window.open('<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&crt-2=Create+agent'); ?>');
+    function createNewAgent() {
+        window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&crt-2=Create+agent'); ?>';
     }
 
-    function checkAgentOnline()
-    {
-        <?php $_SESSION['agente'] = db_get_value('MAX(id_agente)', 'tagente'); ?>
-        window.open('<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$_SESSION['agente'].''); ?>');
-
+    function checkAgentOnline() {
+        window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$_SESSION['agent'].''); ?>';
     }
 
-    function createAlertModule()
-    {
-        <?php $_SESSION['agente'] = db_get_value('MAX(id_agente)', 'tagente'); ?>
-        window.open('<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$_SESSION['agente'].''); ?>');
+    function createAlertModule() {
+        window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$_SESSION['agent'].''); ?>';
     }
 
-    function monitorRemoteCommands()
-    {        
-        window.open('<?php echo ui_get_full_url(''); ?>'); 
-
+    function monitorRemoteCommands() {        
+        window.location = '<?php echo ui_get_full_url(''); ?>'; 
     }
 
-    function discoverDevicesNetwork()
-    {
-
-        window.open('<?php echo ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan'); ?>');
-        <?php $_SESSION['discover'] = true; ?>
-
+    function discoverDevicesNetwork() {
+        window.location = '<?php echo ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan'); ?>';
     }
 
-    function reportIsNotWorking()
-    {
-      
-
+    function reportIsNotWorking() {
     }
 
 

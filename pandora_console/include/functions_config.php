@@ -1883,6 +1883,10 @@ function config_process_config()
         config_update_value('unique_ip', 0);
     }
 
+    if (!isset($config['welcome_started'])) {
+        config_update_value('welcome_started', 2);
+    }
+
      /*
       * Parse the ACL IP list for access API
       */

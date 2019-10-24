@@ -30,7 +30,7 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
-require_once $config['homedir'].'/include/class/NewInstallationWelcomeWindow.class.php';
+require_once $config['homedir'].'/include/class/WelcomeWindow.class.php';
 
 
 if (is_ajax()) {
@@ -173,9 +173,10 @@ if (!$config['disabled_newsletter']) {
     }
 }
 
-$welcome = !$registration && !$initial;
-if ($welcome) {
-    $welcome = NewInstallationWelcomeWindow::actions_done($welcome);
+$welcome = !$registration && !$show_newsletter && !$initial;
+$welcome_window = WelcomeWindow::initialize($welcome);
+if ($welcome_window && $config['welcome_started'] === 1) {
+    $welcome_window->run();
 }
 
 $newsletter = null;

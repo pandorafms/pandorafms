@@ -112,7 +112,10 @@ if (substr($os, 0, 3) !== 'win') {
         }
 
         // Kill previous gotty running.
-        shell_exec('ps aux | grep "'.$config['gotty'].'" | grep -v grep | awk \'{print $2}\' | xargs kill -9 ');
+        $clean_cmd = 'ps aux | grep "'.$config['gotty'].'"';
+        $clean_cmd .= '| grep -v grep | awk \'{print $2}\'';
+        $clean_cmd .= '| xargs kill -9 ';
+        shell_exec($clean_cmd);
 
         // Common.
         $base_cmd = 'nohup "'.$config['gotty'].'" '.$gotty_creds;

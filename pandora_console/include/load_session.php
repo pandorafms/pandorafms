@@ -91,11 +91,6 @@ function pandora_session_write($session_id, $data)
 {
     $session_id = addslashes($session_id);
 
-    // If it's an api call, the session must not be created.
-    if (get_parameter('op', false) && get_parameter('op2', false)) {
-        return true;
-    }
-
     if (is_ajax()) {
         // Avoid session upadte while processing ajax responses - notifications.
         if (get_parameter('check_new_notifications', false)) {

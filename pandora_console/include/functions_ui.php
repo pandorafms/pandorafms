@@ -2527,9 +2527,22 @@ function ui_print_module_warn_value(
     $str_warning,
     $max_critical,
     $min_critical,
-    $str_critical
+    $str_critical,
+    $warning_inverse=0,
+    $critical_inverse=0
 ) {
-    $data = "<span title='".__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical."'>";
+    $war_inv = '';
+    $crit_inv = '';
+
+    if ($warning_inverse == 1) {
+        $war_inv = ' (inv)';
+    }
+
+    if ($critical_inverse == 1) {
+        $crit_inv = ' (inv)';
+    }
+
+    $data = "<span title='".__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.$war_inv.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical.$crit_inv."'>";
 
     if ($max_warning != $min_warning) {
         $data .= format_for_graph($max_warning).'/'.format_for_graph($min_warning);

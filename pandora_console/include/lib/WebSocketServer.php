@@ -164,6 +164,21 @@ abstract class WebSocketServer
      */
     public $timeout = 1;
 
+    /**
+     * Do not call tick every iteration, use a minimum time lapse.
+     * Measure: seconds.
+     *
+     * @var integer
+     */
+    public $tickInterval = 1;
+
+    /**
+     * Last tick call. (unix timestamp).
+     *
+     * @var integer
+     */
+    public $lastTickTimestamp = 0;
+
 
     /**
      * Builder.
@@ -420,7 +435,12 @@ abstract class WebSocketServer
             $except = null;
             $write = null;
             $this->pTick();
-            $this->tick();
+
+            if ((time() - $this->lastTickTimestamp) > $this->tickInterval) {
+                $this->lastTickTimestamp = time();
+                $this->tick();
+            }
+
             socket_select($read, $write, $except, 0, $this->timeout);
             foreach ($read as $socket) {
                 if ($socket == $this->master) {

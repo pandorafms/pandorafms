@@ -130,6 +130,13 @@ class WSManager extends WebSocketServer
      */
     public $handlerTick = [];
 
+    /**
+     * Allow only one connection per user session.
+     *
+     * @var boolean
+     */
+    public $socketPerSession = false;
+
 
     /**
      * Builder.
@@ -292,8 +299,10 @@ class WSManager extends WebSocketServer
         );
         $this->stderr('ONLINE '.$user->address.'('.$user->account->idUser.')');
 
-        // Disconnect previous sessions.
-        $this->cleanupSocketByCookie($user);
+        if ($this->socketPerSession === true) {
+            // Disconnect previous sessions.
+            $this->cleanupSocketByCookie($user);
+        }
 
         // Launch registered handler.
         $this->callHandler(

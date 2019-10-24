@@ -97,27 +97,37 @@ error_reporting(E_ALL);
 
 $os = strtolower(PHP_OS);
 if (substr($os, 0, 3) !== 'win') {
-    if (is_executable($config['gotty']) === false) {
-        echo 'Failed to execute gotty ['.$config['gotty']."]\n";
-        exit(1);
+    if (empty($config['gotty']) === false) {
+        // Allow start without gotty binary. External service.
+        if (is_executable($config['gotty']) === false) {
+            echo 'Failed to execute gotty ['.$config['gotty']."]\n";
+            exit(1);
+        }
+
+        $gotty_creds = '';
+        if (empty($config['gotty_user']) === false
+            && empty($config['gotty_pass']) === false
+        ) {
+            $gotty_creds = " -c '".$gotty_user.':'.$gotty_pass."'";
+        }
+
+        // Kill previous gotty running.
+        shell_exec('killall "'.$config['gotty'].'" >/dev/null 2>&1');
+
+        // Common.
+        $base_cmd = 'nohup "'.$config['gotty'].'" '.$gotty_creds;
+        $base_cmd .= ' --permit-arguments -a 127.0.0.1 -w ';
+
+        // Launch gotty - SSH.
+        $cmd = $base_cmd.' --port '.$config['gotty_ssh_port'];
+        $cmd .= ' ssh >> '.__DIR__.'/pandora_console.log 2>&1 &';
+        shell_exec($cmd);
+
+        // Launch gotty - telnet.
+        $cmd = $base_cmd.' --port '.$config['gotty_telnet_port'];
+        $cmd .= ' telnet >> '.__DIR__.'/pandora_console.log 2>&1 &';
+        shell_exec($cmd);
     }
-
-    // Kill previous gotty running.
-    shell_exec('killall "'.$config['gotty'].'" >/dev/null 2>&1');
-
-    // Common.
-    $base_cmd = 'nohup "'.$config['gotty'].'"';
-    $base_cmd .= ' --permit-arguments -a 127.0.0.1 -w ';
-
-    // Launch gotty - SSH.
-    $cmd = $base_cmd.' --port '.$config['gotty_ssh_port'];
-    $cmd .= ' ssh >> '.__DIR__.'/pandora_console.log 2>&1 &';
-    shell_exec($cmd);
-
-    // Launch gotty - telnet.
-    $cmd = $base_cmd.' --port '.$config['gotty_telnet_port'];
-    $cmd .= ' telnet >> '.__DIR__.'/pandora_console.log 2>&1 &';
-    shell_exec($cmd);
 }
 
 // Start Web SocketProxy.

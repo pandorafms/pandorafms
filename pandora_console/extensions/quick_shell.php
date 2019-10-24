@@ -230,7 +230,7 @@ function quickShell()
         $r .= "var gotty_auth_token = '';";
     } else {
         $r .= "var gotty_auth_token = '";
-        $r .= $config['gotty_user'].':'.$gotty_pass."';";
+        $r .= $config['gotty_user'].':'.$config['gotty_pass']."';";
     }
 
     // Set websocket target and method.
@@ -309,10 +309,22 @@ function quickShellSettings()
         $config['gotty_telnet_port']
     );
 
+    $gotty_user = get_parameter(
+        'gotty_user',
+        $config['gotty_user']
+    );
+
+    $gotty_pass = get_parameter(
+        'gotty_pass',
+        $config['gotty_pass']
+    );
+
     $changes = 0;
+    $critical = 0;
     if ($config['gotty'] != $gotty) {
         config_update_value('gotty', $gotty);
         $changes++;
+        $critical++;
     }
 
     if ($config['gotty_host'] != $gotty_host) {
@@ -330,13 +342,31 @@ function quickShellSettings()
         $changes++;
     }
 
+    if ($config['gotty_user'] != $gotty_user) {
+        config_update_value('gotty_user', $gotty_user);
+        $changes++;
+        $critical++;
+    }
+
+    if ($config['gotty_pass'] != $gotty_pass) {
+        config_update_value('gotty_pass', $gotty_pass);
+        $changes++;
+        $critical++;
+    }
+
     // Interface.
     ui_print_page_header(__('QuickShell settings'));
 
     if ($changes > 0) {
-        ui_print_success_message(
-            __('%d Updated, please restart WebSocket engine service', $changes)
+        $msg = __(
+            '%d Updated, please restart WebSocket engine service',
+            $changes
         );
+        if ($critical > 0) {
+            $msg = __('%d Updated', $changes);
+        }
+
+        ui_print_success_message($msg);
     }
 
     // Form.
@@ -380,6 +410,22 @@ function quickShellSettings()
                         'type'  => 'text',
                         'name'  => 'gotty_telnet_port',
                         'value' => $config['gotty_telnet_port'],
+                    ],
+                ],
+                [
+                    'label'     => __('Gotty user'),
+                    'arguments' => [
+                        'type'  => 'text',
+                        'name'  => 'gotty_user',
+                        'value' => $config['gotty_user'],
+                    ],
+                ],
+                [
+                    'label'     => __('Gotty password'),
+                    'arguments' => [
+                        'type'  => 'text',
+                        'name'  => 'gotty_pass',
+                        'value' => $config['gotty_pass'],
                     ],
                 ],
                 [

@@ -212,7 +212,17 @@ function quickShell()
         return;
     }
 
-    $r = file_get_contents('http://'.$host.':'.$port.'/js/hterm.js');
+    // Check credentials.
+    $auth_str = '';
+    $gotty_url = $host.':'.$port;
+    if (empty($config['gotty_user']) === false
+        && empty($config['gotty_pass']) === false
+    ) {
+        $auth_str = $config['gotty_user'].':'.$config['gotty_pass'];
+        $gotty_url = $auth_str.'@'.$host.':'.$port;
+    }
+
+    $r = file_get_contents('http://'.$gotty_url.'/js/hterm.js');
     if (empty($r) === true) {
         if (empty($wiz) === true) {
             $wiz = new Wizard();
@@ -224,17 +234,15 @@ function quickShell()
     }
 
     // Override gotty client settings.
-    if (empty($config['gotty_user'])
-        && empty($config['gotty_pass'])
-    ) {
+    if (empty($auth_str) === true) {
         $r .= "var gotty_auth_token = '';";
     } else {
         $r .= "var gotty_auth_token = '";
-        $r .= $config['gotty_user'].':'.$config['gotty_pass']."';";
+        $r .= $auth_str."';";
     }
 
     // Set websocket target and method.
-    $gotty = file_get_contents('http://'.$host.':'.$port.'/js/gotty.js');
+    $gotty = file_get_contents('http://'.$gotty_url.'/js/gotty.js');
     $url = "var url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';";
     if (empty($config['ws_proxy_url']) === true) {
         $new = "var url = (httpsEnabled ? 'wss://' : 'ws://')";
@@ -316,8 +324,10 @@ function quickShellSettings()
 
     $gotty_pass = get_parameter(
         'gotty_pass',
-        $config['gotty_pass']
+        io_output_password($config['gotty_pass'])
     );
+
+    $gotty_pass = io_input_password($gotty_pass);
 
     $changes = 0;
     $critical = 0;
@@ -358,12 +368,12 @@ function quickShellSettings()
     ui_print_page_header(__('QuickShell settings'));
 
     if ($changes > 0) {
-        $msg = __(
-            '%d Updated, please restart WebSocket engine service',
-            $changes
-        );
+        $msg = __('%d Updated', $changes);
         if ($critical > 0) {
-            $msg = __('%d Updated', $changes);
+            $msg = __(
+                '%d Updated, please restart WebSocket engine service',
+                $changes
+            );
         }
 
         ui_print_success_message($msg);
@@ -423,9 +433,9 @@ function quickShellSettings()
                 [
                     'label'     => __('Gotty password'),
                     'arguments' => [
-                        'type'  => 'text',
+                        'type'  => 'password',
                         'name'  => 'gotty_pass',
-                        'value' => $config['gotty_pass'],
+                        'value' => io_output_password($config['gotty_pass']),
                     ],
                 ],
                 [
@@ -440,8 +450,6 @@ function quickShellSettings()
         false,
         true
     );
-
-    return;
 
 }
 

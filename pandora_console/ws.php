@@ -108,7 +108,8 @@ if (substr($os, 0, 3) !== 'win') {
         if (empty($config['gotty_user']) === false
             && empty($config['gotty_pass']) === false
         ) {
-            $gotty_creds = " -c '".$gotty_user.':'.$gotty_pass."'";
+            $gotty_pass = io_output_password($config['gotty_pass']);
+            $gotty_creds = " -c '".$config['gotty_user'].':'.$gotty_pass."'";
         }
 
         // Kill previous gotty running.

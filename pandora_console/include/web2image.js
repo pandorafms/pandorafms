@@ -50,6 +50,44 @@ if (type_graph_pdf == "combined") {
 
 var page = require("webpage").create();
 
+page.settings.resourceTimeout = 3600000; // 1 hour
+page.onResourceTimeout = function(e) {
+  console.log(e.errorCode);
+  console.log(e.errorString);
+  console.log(e.url);
+  phantom.exit(1);
+};
+
+page.onResourceError = function(resourceError) {
+  console.log(
+    "Unable to load resource (#" +
+      resourceError.id +
+      "URL:" +
+      resourceError.url +
+      ")"
+  );
+  console.log(
+    "Error code: " +
+      resourceError.errorCode +
+      ". Description: " +
+      resourceError.errorString
+  );
+  phantom.exit(1);
+};
+
+page.onUrlChanged = function(targetUrl) {
+  if (url == targetUrl) {
+    phantom.exit(1);
+  }
+  url = targetUrl;
+};
+
+// Not supposed to be prompted messages.
+page.onPrompt = function() {
+  console.log("Prompt message detected.");
+  phantom.exit(1);
+};
+
 page.viewportSize = {
   width: viewport_width,
   height: viewport_height
@@ -84,3 +122,21 @@ page.open(url, "POST", post_data, function(status) {
     phantom.exit();
   }
 });
+
+phantom.onError = function(msg, trace) {
+  var msgStack = ["PHANTOM ERROR: " + msg];
+  if (trace && trace.length) {
+    msgStack.push("TRACE:");
+    trace.forEach(function(t) {
+      msgStack.push(
+        " -> " +
+          (t.file || t.sourceURL) +
+          ": " +
+          t.line +
+          (t.function ? " (in function " + t.function + ")" : "")
+      );
+    });
+  }
+  console.log(msgStack.join("\n"));
+  phantom.exit(1);
+};

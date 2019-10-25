@@ -68,24 +68,6 @@ class Diagnostics extends Wizard
         // Check access.
         check_login();
 
-        // TODO:XXX
-        /*
-            // Check Acl.
-            if (!check_acl($config['id_user'], 0, 'PM')) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access diagnostic info'
-            );
-
-            if (is_ajax()) {
-                echo json_encode(['error' => 'noaccess']);
-            }
-
-            include 'general/noaccess.php';
-            exit;
-            }
-        */
-
         $this->ajaxController = $page;
         $this->pdf = $pdf;
     }
@@ -1637,14 +1619,25 @@ class Diagnostics extends Wizard
                         </script>
                     <?php
                 } else {
-                    $return = '<div id="'.$id.'" class="element-self-monitoring">';
-                    $return .= $this->getChart(
+                    $table = new stdClass();
+                    $table->width = '100%';
+                    $table->class = 'pdf-report';
+                    $table->style = [];
+                    $table->style[0] = 'font-weight: bolder;';
+                    $table->autosize = 1;
+
+                    $table->head = [];
+                    $table->head[0] = $params['nameModule'];
+
+                    $table->data = [];
+                    $table->data[0] = $this->getChart(
                         $params['idAgent'],
                         $params['nameModule'],
                         true,
                         false
                     );
-                    $return .= '</div>';
+
+                    $return = html_print_table($table, true);
                 }
             } catch (Exception $e) {
                 $return = $e->getMessage();
@@ -1797,212 +1790,6 @@ class Diagnostics extends Wizard
 
 
     /**
-     * Create cron task form feedback.
-     *
-     * @return void Json result AJAX request.
-     */
-    public function createdScheduleFeedbackTask():void
-    {
-        global $config;
-
-        // TODO: feedback@artica.es
-        $mail_feedback = 'feedback@artica.es';
-        $email = 'daniel.barbero@artica.es';
-        $subject = 'PandoraFMS Report '.$config['pandora_uid'];
-        $text = get_parameter('what-happened', '');
-        $attachment = get_parameter_switch('include_installation_data', 0);
-        $email_from = get_parameter_switch('email', '');
-
-        if (!check_acl($config['id_user'], 0, 'PM')) {
-            // TODO: MAIL TO ADMIN.
-            $email = get_mail_admin();
-            $email = 'daniel.barbero@artica.es';
-            $product_name = io_safe_output(get_product_name());
-            $name_admin = get_name_admin();
-
-            $subject = __('Feedback').' '.$product_name.' '.$config['pandora_uid'];
-
-            $title = __('Hello').' '.$name_admin;
-            $p1 = __(
-                'User %s is reporting an issue in its %s experience',
-                $email_from,
-                $product_name
-            );
-            $p1 .= ':';
-
-            $p2 = $text;
-
-            if ($attachment === 1) {
-                $msg_attch = __('Find some files attached to this mail');
-                $msg_attch .= '. ';
-                $msg_attch .= __(
-                    'PDF is the diagnostic information retrieved at report time'
-                );
-                $msg_attch .= '. ';
-                $msg_attch .= __('CSV contains the statuses of every product file');
-                $msg_attch .= '. ';
-            }
-
-            $p3 = __(
-                'If you think this report must be escalated, feel free to forward this mail to "%s"',
-                $mail_feedback
-            );
-
-            $legal = __('LEGAL WARNING');
-            $legal1 = __(
-                'The information contained in this transmission is privileged and confidential information intended only for the use of the individual or entity named above'
-            );
-            $legal1 .= '. ';
-            $legal2 = __(
-                'If the reader of this message is not the intended recipient, you are hereby notified that any dissemination, distribution or copying of this communication is strictly prohibited'
-            );
-            $legal2 .= '. ';
-            $legal3 = __(
-                'If you have received this transmission in error, do not read it'
-            );
-            $legal3 .= '. ';
-            $legal4 = __(
-                'Please immediately reply to the sender that you have received this communication in error and then delete it'
-            );
-            $legal4 .= '.';
-
-            $patterns = [
-                '/__title__/',
-                '/__p1__/',
-                '/__p2__/',
-                '/__attachment__/',
-                '/__p3__/',
-                '/__legal__/',
-                '/__legal1__/',
-                '/__legal2__/',
-                '/__legal3__/',
-                '/__legal4__/',
-            ];
-
-            $substitutions = [
-                $title,
-                $p1,
-                $p2,
-                $msg_attch,
-                $p3,
-                $legal,
-                $legal1,
-                $legal2,
-                $legal3,
-                $legal4,
-            ];
-
-            $html_template = file_get_contents(
-                $config['homedir'].'/include/templates/feedback_send_mail.html'
-            );
-
-            $text = preg_replace($patterns, $substitutions, $html_template);
-        }
-
-        $idUserTask = db_get_value(
-            'id',
-            'tuser_task',
-            'function_name',
-            'cron_task_feedback_send_mail'
-        );
-
-        // Params for send mail with cron.
-        $parameters = [
-            0                 => '0',
-            1                 => $email,
-            2                 => $subject,
-            3                 => $text,
-            4                 => $attachment,
-            'first_execution' => strtotime('now'),
-        ];
-
-        // Values insert task cron.
-        $values = [
-            'id_usuario'   => $config['id_user'],
-            'id_user_task' => $idUserTask,
-            'args'         => serialize($parameters),
-            'scheduled'    => 'no',
-            'id_grupo'     => 0,
-        ];
-
-        $result = db_process_sql_insert(
-            'tuser_task_scheduled',
-            $values
-        );
-
-        $error = 1;
-        if ($result === false) {
-            $error = 0;
-        }
-
-        $return = [
-            'error' => $error,
-            'title' => [
-                __('Failed'),
-                __('Success'),
-            ],
-            'text'  => [
-                ui_print_error_message(__('Mal'), '', true),
-                ui_print_success_message(__('bien'), '', true),
-            ],
-        ];
-
-        exit(json_encode($return));
-    }
-
-
-    /**
-     * Print Diagnostics PDF report.
-     *
-     * @param string|null $filename Filename.
-     *
-     * @return void
-     */
-    public function exportPDF(?string $filename=null):void
-    {
-        global $config;
-
-        $this->pdf = true;
-
-        enterprise_include_once('/include/class/Pdf.class.php');
-        $mpdf = new Pdf([]);
-
-        // ADD style.
-        $mpdf->addStyle($config['homedir'].'/include/styles/diagnostics.css');
-
-        // ADD Metadata.
-        $product_name = io_safe_output(get_product_name());
-        $mpdf->setMetadata(
-            __('Diagnostics Info'),
-            $product_name.' Enteprise',
-            $product_name,
-            __(
-                'Automated %s report for user defined report',
-                $product_name
-            )
-        );
-
-        // ADD Header.
-        $mpdf->setHeaderHTML(__('Diagnostics Info'));
-
-        // ADD content to report.
-        $mpdf->addHTML(
-            $this->printMethodsDiagnostigsInfo()
-        );
-
-        $mpdf->addHTML(
-            $this->printCharts()
-        );
-
-        // ADD Footer.
-        $mpdf->setFooterHTML();
-
-        // Write html filename.
-        $mpdf->writePDFfile($filename);
-    }
-
-
-    /**
      * Print Diagnostics Form feedback.
      *
      * @return void
@@ -2069,6 +1856,215 @@ class Diagnostics extends Wizard
 
 
     /**
+     * Create cron task form feedback.
+     *
+     * @return void Json result AJAX request.
+     */
+    public function createdScheduleFeedbackTask():void
+    {
+        global $config;
+
+        // TODO: feedback@artica.es
+        $mail_feedback = 'feedback@artica.es';
+        $email = 'daniel.barbero@artica.es';
+        $subject = 'PandoraFMS Report '.$config['pandora_uid'];
+        $text = get_parameter('what-happened', '');
+        $attachment = get_parameter_switch('include_installation_data', 0);
+        $email_from = get_parameter_switch('email', '');
+        $title = __('Hello Feedback-Men');
+
+        $product_name = io_safe_output(get_product_name());
+
+        if (check_acl($config['id_user'], 0, 'PM') !== 1) {
+            // TODO: MAIL TO ADMIN.
+            $email = get_mail_admin();
+            $email = 'daniel.barbero@artica.es';
+            $name_admin = get_name_admin();
+
+            $subject = __('Feedback').' '.$product_name.' '.$config['pandora_uid'];
+
+            $title = __('Hello').' '.$name_admin;
+        }
+
+        $p1 = __(
+            'User %s is reporting an issue in its %s experience',
+            $email_from,
+            $product_name
+        );
+        $p1 .= ':';
+
+        $p2 = $text;
+
+        if ($attachment === 1) {
+            $msg_attch = __('Find some files attached to this mail');
+            $msg_attch .= '. ';
+            $msg_attch .= __(
+                'PDF is the diagnostic information retrieved at report time'
+            );
+            $msg_attch .= '. ';
+            $msg_attch .= __('CSV contains the statuses of every product file');
+            $msg_attch .= '. ';
+        }
+
+        $p3 = __(
+            'If you think this report must be escalated, feel free to forward this mail to "%s"',
+            $mail_feedback
+        );
+
+        $legal = __('LEGAL WARNING');
+        $legal1 = __(
+            'The information contained in this transmission is privileged and confidential information intended only for the use of the individual or entity named above'
+        );
+        $legal1 .= '. ';
+        $legal2 = __(
+            'If the reader of this message is not the intended recipient, you are hereby notified that any dissemination, distribution or copying of this communication is strictly prohibited'
+        );
+        $legal2 .= '. ';
+        $legal3 = __(
+            'If you have received this transmission in error, do not read it'
+        );
+        $legal3 .= '. ';
+        $legal4 = __(
+            'Please immediately reply to the sender that you have received this communication in error and then delete it'
+        );
+        $legal4 .= '.';
+
+        $patterns = [
+            '/__title__/',
+            '/__p1__/',
+            '/__p2__/',
+            '/__attachment__/',
+            '/__p3__/',
+            '/__legal__/',
+            '/__legal1__/',
+            '/__legal2__/',
+            '/__legal3__/',
+            '/__legal4__/',
+        ];
+
+        $substitutions = [
+            $title,
+            $p1,
+            $p2,
+            $msg_attch,
+            $p3,
+            $legal,
+            $legal1,
+            $legal2,
+            $legal3,
+            $legal4,
+        ];
+
+        $html_template = file_get_contents(
+            $config['homedir'].'/include/templates/feedback_send_mail.html'
+        );
+
+        $text = preg_replace($patterns, $substitutions, $html_template);
+
+        $idUserTask = db_get_value(
+            'id',
+            'tuser_task',
+            'function_name',
+            'cron_task_feedback_send_mail'
+        );
+
+        // Params for send mail with cron.
+        $parameters = [
+            0                 => '0',
+            1                 => $email,
+            2                 => $subject,
+            3                 => $text,
+            4                 => $attachment,
+            'first_execution' => strtotime('now'),
+        ];
+
+        // Values insert task cron.
+        $values = [
+            'id_usuario'   => $config['id_user'],
+            'id_user_task' => $idUserTask,
+            'args'         => serialize($parameters),
+            'scheduled'    => 'no',
+            'id_grupo'     => 0,
+        ];
+
+        $result = db_process_sql_insert(
+            'tuser_task_scheduled',
+            $values
+        );
+
+        $error = 1;
+        if ($result === false) {
+            $error = 0;
+        }
+
+        $return = [
+            'error' => $error,
+            'title' => [
+                __('Failed'),
+                __('Success'),
+            ],
+            'text'  => [
+                ui_print_error_message(__('Invalid cron task'), '', true),
+                ui_print_success_message(__('Cron task generated'), '', true),
+            ],
+        ];
+
+        exit(json_encode($return));
+    }
+
+
+    /**
+     * Print Diagnostics PDF report.
+     *
+     * @param string|null $filename Filename.
+     *
+     * @return void
+     */
+    public function exportPDF(?string $filename=null):void
+    {
+        global $config;
+
+        $this->pdf = true;
+
+        enterprise_include_once('/include/class/Pdf.class.php');
+        $mpdf = new Pdf([]);
+
+        // ADD style.
+        $mpdf->addStyle($config['homedir'].'/include/styles/diagnostics.css');
+
+        // ADD Metadata.
+        $product_name = io_safe_output(get_product_name());
+        $mpdf->setMetadata(
+            __('Diagnostics Info'),
+            $product_name.' Enteprise',
+            $product_name,
+            __(
+                'Automated %s report for user defined report',
+                $product_name
+            )
+        );
+
+        // ADD Header.
+        $mpdf->setHeaderHTML(__('Diagnostics Info'));
+
+        // ADD content to report.
+        $mpdf->addHTML(
+            $this->printMethodsDiagnostigsInfo()
+        );
+
+        $mpdf->addHTML(
+            $this->printCharts()
+        );
+
+        // ADD Footer.
+        $mpdf->setFooterHTML();
+
+        // Write html filename.
+        $mpdf->writePDFfile($filename);
+    }
+
+
+    /**
      * Send Csv md5 files.
      *
      * @return string
@@ -2128,6 +2124,53 @@ class Diagnostics extends Wizard
         }
 
         return $result;
+    }
+
+
+    /**
+     * Send PHP info in report.
+     *
+     * @param string $filename Download dir report.
+     *
+     * @return void
+     */
+    public function phpInfoReports(string $filename)
+    {
+        global $config;
+
+        $this->pdf = true;
+
+        // Extract info PHP.
+        ob_start();
+        phpinfo();
+        $php_info = ob_get_clean();
+
+        enterprise_include_once('/include/class/Pdf.class.php');
+        $mpdf = new Pdf([]);
+
+        // ADD Metadata.
+        $product_name = io_safe_output(get_product_name());
+        $mpdf->setMetadata(
+            __('PHP Info'),
+            $product_name.' Enteprise',
+            $product_name,
+            __(
+                'Automated %s report for user defined report',
+                $product_name
+            )
+        );
+
+        // ADD Header.
+        $mpdf->setHeaderHTML(__('PHP Info'));
+
+        // ADD content to report.
+        $mpdf->addHTML($php_info);
+
+        // ADD Footer.
+        $mpdf->setFooterHTML();
+
+        // Write html filename.
+        $mpdf->writePDFfile($filename);
     }
 
 

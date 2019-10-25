@@ -1959,10 +1959,16 @@ function load_modal(settings) {
               formdata.append("method", settings.onsubmit.method);
 
               var flagError = false;
+
               $("#" + settings.form + " :input").each(function() {
                 if (this.checkValidity() === false) {
-                  // TODO: Tooltip msg.
-                  console.log(this.validationMessage);
+                  $(this).prop("title", this.validationMessage);
+                  $(this).tooltip({
+                    tooltipClass: "uitooltip",
+                    position: { my: "right bottom", at: "right bottom" },
+                    show: { duration: 200 }
+                  });
+                  $(this).tooltip("open");
                   flagError = true;
                 }
 

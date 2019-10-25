@@ -1810,13 +1810,14 @@ class Diagnostics extends Wizard
             'id'        => 'div-what-happened',
             'class'     => 'flex-row',
             'arguments' => [
-                'name'    => 'what-happened',
-                'type'    => 'textarea',
-                'value'   => '',
-                'return'  => true,
-                'rows'    => 1,
-                'columns' => 1,
-                'size'    => 25,
+                'name'       => 'what-happened',
+                'type'       => 'textarea',
+                'value'      => '',
+                'return'     => true,
+                'rows'       => 1,
+                'columns'    => 1,
+                'size'       => 25,
+                'attributes' => 'required="required"',
             ],
         ];
 
@@ -1827,7 +1828,7 @@ class Diagnostics extends Wizard
                 'name'     => 'email',
                 'id'       => 'email',
                 'type'     => 'email',
-                'size'     => 40,
+                'size'     => 42,
                 'required' => 'required',
             ],
         ];

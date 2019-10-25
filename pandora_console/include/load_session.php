@@ -191,8 +191,7 @@ function pandora_session_gc($max_lifetime=300)
     );
 
     // Deleting cron and empty sessions.
-    $sql = "DELETE FROM tsessions_php WHERE 
-        data IS NULL OR id_session REGEXP '^cron-'";
+    $sql = 'DELETE FROM tsessions_php WHERE data IS NULL';
     db_process_sql($sql);
 
     return $retval;

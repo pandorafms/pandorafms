@@ -50,14 +50,6 @@ if (type_graph_pdf == "combined") {
 
 var page = require("webpage").create();
 
-page.settings.resourceTimeout = 3600000; // 1 hour
-page.onResourceTimeout = function(e) {
-  console.log(e.errorCode);
-  console.log(e.errorString);
-  console.log(e.url);
-  phantom.exit(1);
-};
-
 page.onResourceError = function(resourceError) {
   console.log(
     "Unable to load resource (#" +
@@ -73,13 +65,6 @@ page.onResourceError = function(resourceError) {
       resourceError.errorString
   );
   phantom.exit(1);
-};
-
-page.onUrlChanged = function(targetUrl) {
-  if (url == targetUrl) {
-    phantom.exit(1);
-  }
-  url = targetUrl;
 };
 
 // Not supposed to be prompted messages.

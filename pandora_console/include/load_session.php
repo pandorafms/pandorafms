@@ -161,7 +161,7 @@ function pandora_session_gc($max_lifetime=300)
     if (isset($config['session_timeout'])) {
         $session_timeout = $config['session_timeout'];
     } else {
-        // if $config doesn`t work ...
+        // If $config doesn`t work ...
         $session_timeout = db_get_value(
             'value',
             'tconfig',
@@ -170,9 +170,9 @@ function pandora_session_gc($max_lifetime=300)
         );
     }
 
-    if (!empty($session_timeout)) {
+    if (empty($session_timeout) === false) {
         if ($session_timeout == -1) {
-            // The session expires in 10 years
+            // The session expires in 10 years.
             $session_timeout = 315576000;
         } else {
             $session_timeout *= 60;
@@ -198,7 +198,7 @@ function pandora_session_gc($max_lifetime=300)
 }
 
 
-// FIXME: SAML should work with pandora session handlers
+// TODO: SAML should work with pandora session handlers.
 if (db_get_value('value', 'tconfig', 'token', 'auth') != 'saml') {
     $result_handler = session_set_save_handler(
         'pandora_session_open',

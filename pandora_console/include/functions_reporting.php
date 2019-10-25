@@ -4221,14 +4221,7 @@ function reporting_sql_graph(
 
         case 'data':
             $data = [];
-            foreach ($modules as $key => $value) {
-                $data[$value] = modules_get_agentmodule_data(
-                    $value,
-                    $content['period'],
-                    $report['datetime']
-                );
-            }
-
+            $data = db_get_all_rows_sql($content['external_source']);
             $return['chart'] = $data;
         break;
     }

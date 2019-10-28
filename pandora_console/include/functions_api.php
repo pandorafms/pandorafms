@@ -6009,14 +6009,12 @@ function api_set_delete_module_template_by_names($id, $id2, $other, $trash1)
 
             $result = db_process_sql_delete('talert_template_modules', $values);
 
-            $delete_count++;
-
             if ($result != 0) {
                 $delete_count++;
             }
         }
 
-        returnError('error_delete_module_template_by_name', __('Module template have been deleted in %d agents.', $delete_count));
+        returnError('error_delete_module_template_by_name', __('Module template has been deleted in %d agents.', $delete_count));
     } else {
         $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data'][0]]);
 
@@ -8999,67 +8997,41 @@ function api_set_delete_module($id, $id2, $other, $trash1)
         return;
     }
 
-    if ($other['type'] == 'string') {
-        $simulate = false;
-        if ($other['data'][0] == 'simulate') {
-            $simulate = true;
-        }
+    $simulate = false;
+    if ($other['data'][0] == 'simulate') {
+        $simulate = true;
+    }
 
-        $agent_by_alias = false;
+    $agent_by_alias = false;
 
-        if ($other['data'][1] === '1') {
-            $agent_by_alias = true;
-        }
+    if ($other['data'][1] === '1') {
+        $agent_by_alias = true;
+    }
 
-        if ($agent_by_alias) {
-            $idsAgents = agents_get_agent_id_by_alias($id);
-        } else {
-            $idAgent = agents_get_agent_id($id);
-        }
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+    } else {
+        $idAgent = agents_get_agent_id($id);
+    }
 
-        if ($agent_by_alias) {
-            foreach ($idsAgents as $id) {
-                if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
-                    return;
-                }
-            }
-        } else {
-            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
+    if ($agent_by_alias) {
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
                 return;
             }
         }
-
-        if ($agent_by_alias) {
-            foreach ($idsAgents as $id) {
-                $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $id2]);
-
-                if ($idAgentModule === false) {
-                    continue;
-                }
-
-                if (!$simulate) {
-                    $return = modules_delete_agent_module($idAgentModule);
-                } else {
-                    $return = true;
-                }
-
-                $data['type'] = 'string';
-                if ($return === false) {
-                    $data['data'] = 0;
-                } else {
-                    $data['data'] = $return;
-                }
-
-                returnData('string', $data);
-            }
-
+    } else {
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
             return;
-        } else {
-            $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $id2]);
+        }
+    }
+
+    if ($agent_by_alias) {
+        foreach ($idsAgents as $id) {
+            $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $id2]);
 
             if ($idAgentModule === false) {
-                returnError('error_parameter', 'Error in the parameters.');
-                return;
+                continue;
             }
 
             if (!$simulate) {
@@ -9076,10 +9048,31 @@ function api_set_delete_module($id, $id2, $other, $trash1)
             }
 
             returnData('string', $data);
+        }
+
+        return;
+    } else {
+        $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $id2]);
+
+        if ($idAgentModule === false) {
+            returnError('error_parameter', 'Error in the parameters.');
             return;
         }
-    } else {
-        returnError('error_parameter', 'Error in the parameters.');
+
+        if (!$simulate) {
+            $return = modules_delete_agent_module($idAgentModule);
+        } else {
+            $return = true;
+        }
+
+        $data['type'] = 'string';
+        if ($return === false) {
+            $data['data'] = 0;
+        } else {
+            $data['data'] = $return;
+        }
+
+        returnData('string', $data);
         return;
     }
 }

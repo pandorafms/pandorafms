@@ -104,8 +104,8 @@ sub help_screen{
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval> <alias_as_name>]", 'Create agent');
-	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
-	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
+	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value> [<use_alias>]', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
+	help_screen_line('--delete_agent', '<agent_name> [<use_alias>]', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
 	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
 	help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon> <description>]', 'Create an agent group');
@@ -118,14 +118,14 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
-	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
-	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
-	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
-	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
-	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
-	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
+	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
+	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
+	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
+	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
+	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
-	help_screen_line('--locate_agent', '<agent_name>', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
+	help_screen_line('--locate_agent', '<agent_name> [<use_alias>]', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
 	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
 	help_screen_line('--migration_agent', '<id_node> ', 'Is migrating the agent only metaconsole');
 	help_screen_line('--apply_module_template', '<id_template> <id_agent>', 'Apply module template to agent');	
@@ -139,29 +139,29 @@ sub help_screen{
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
 	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
 	print "\nMODULES:\n\n" unless $param ne '';
-	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
-	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
-	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>
+	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add data server module to agent');
+	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
+	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias>]", 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries> <use_alias>]
 	\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to agent');
+	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias>]", 'Add plug-in module to agent');
     help_screen_line('--get_module_group', '[<module_group_name>]', 'Dysplay all module groups');
     help_screen_line('--create_module_group', '<module_group_name>');
     help_screen_line('--module_group_synch', "<server_name1|server_name2|server_name3...> [<return_type>]", 'Synchronize metaconsole module groups');
-	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
-    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
-    help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
-    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
-	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
+	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name> [<use_alias>]');
+    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime> <use_alias>]", 'Insert data to module');
+    help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator> <use_alias>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
+    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name> [<use_alias>]', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
+	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value> [<use_alias>]', 'Update a module field');
     help_screen_line('--get_agents_module_current_data', '<module_name>', "Get the agent and current data \n\t  of all the modules with a given name");
-	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', "Create a new network \n\t  module from a network component");
+	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name> [<use_alias>]', "Create a new network \n\t  module from a network component");
 	help_screen_line('--create_network_component', "<network_component_name> <network_component_group> <network_component_type> \n\t [<description> <module_interval> <max_value> <min_value> \n\t <snmp_community> <id_module_group> <max_timeout> \n\t <history_data> <min_warning> <max_warning> \n\t <str_warning> <min_critical> <max_critical> \n\t <str_critical> <min_ff_event> <post_process> \n\t <disabled_types_event> <each_ff> <min_ff_event_normal> \n\t <min_ff_event_warning> <min_ff_event_critical>]", "Create a new network component");	
-	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> ]", "Create a new Synthetic module");
+	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> <use_alias>]", "Create a new Synthetic module");
 	print "\nALERTS:\n\n" unless $param ne '';
-    help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
-    help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
-    help_screen_line('--create_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template");
-    help_screen_line('--delete_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name>", 'Delete alert action from module-template');
+    help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name> [<use_alias>]', 'Add alert template to module');
+    help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name> [<use_alias>]', 'Delete alert template from module');
+    help_screen_line('--create_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<fires_min> <fires_max> <use_alias>]', 'Add alert action to module-template");
+    help_screen_line('--delete_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<use_alias>]", 'Delete alert action from module-template');
 	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups (system wide)');
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
 	help_screen_line('--create_alert_template', "<template_name> <condition_type_serialized>\n\t   <time_from> <time_to> [<description> <group_name> <field1> <field2> \n\t  <field3> <priority>  <default_action> <days> <time_threshold> <min_alerts> \n\t  <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> \n\t  <condition_type_separator>]", 'Create alert template');
@@ -175,7 +175,7 @@ sub help_screen{
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
-	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name>', "Create a new data \n\t  module from a local component");
+	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name> [<use_alias>]', "Create a new data \n\t  module from a local component");
 	help_screen_line('--create_local_component', "<component_name> <data> [<description> <id_os> <os_version> \n\t  <id_network_component_group> <type> <min> <max> <module_interval> <id_module_group> <history_data> <min_warning> \n\t <max_warning> <str_warning> <min_critical> <max_critical>\n\t  <str_critical> <min_ff_event> <post_process> <unit>\n\t  <wizard_level> <critical_instructions>\n\t  <warning_instructions> <unknown_instructions> <critical_inverse>\n\t  <warning_inverse> <id_category> <disabled_types_event>\n\t  <tags> <min_ff_event_normal> <min_ff_event_warning>\n\t  <min_ff_event_critical> <each_ff> <ff_timeout>]", 'Create local component');
 	
 	print "\nUSERS:\n\n" unless $param ne '';
@@ -193,17 +193,17 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent>]", 'Add event');
-  help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
-  help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
-  help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
-  help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent> <use_alias>]", 'Add event');
+  	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
+ 	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
+  	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
+  	help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
 	print "\nINCIDENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
 	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
-	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
+	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name> [<use_alias>]', 'Add an agent to a policy');
 	help_screen_line('--remove_agent_from_policy', '<policy_id> <agent_id>', 'Delete an agent to a policy');
 	help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
 	help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
@@ -218,7 +218,7 @@ sub help_screen{
 	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
-	help_screen_line('--get_policies', '[<agent_name>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
+	help_screen_line('--get_policies', '[<agent_name> <use_alias>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
 	help_screen_line('--recreate_collection', '<collection_id>', 'Recreate the files of a collection');
 	
 	print "\nNETFLOW:\n\n" unless $param ne '';
@@ -2684,6 +2684,7 @@ sub cli_create_template_module() {
 			exist_check($id_agent,'agent',$agent_name);
 			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
 			if ($module_id == -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
 				next;
 			}
 
@@ -2726,6 +2727,7 @@ sub cli_delete_template_module() {
 			exist_check($id_agent,'agent',$agent_name);
 			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
 			if ($module_id eq -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
 				next;
 			}
 			my $template_id = get_template_id($dbh,$template_name);
@@ -2773,6 +2775,7 @@ sub cli_create_template_action() {
 			exist_check($id_agent,'agent',$agent_name);
 			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
 			if ($module_id eq -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
 				next;
 			}
 			my $template_id = get_template_id($dbh,$template_name);
@@ -2840,6 +2843,7 @@ sub cli_delete_template_action() {
 			exist_check($id_agent,'agent',$agent_name);
 			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
 			if ($module_id eq -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
 				next;
 			}
 			my $template_id = get_template_id($dbh,$template_name);
@@ -4390,7 +4394,7 @@ sub cli_delete_data($) {
 			
 				print_log "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
 				
-				pandora_delete_data($dbh, 'module', $id_module);	
+				pandora_delete_data($dbh, 'module', $id_module);
 			}
 		} else {
 			# Delete module data

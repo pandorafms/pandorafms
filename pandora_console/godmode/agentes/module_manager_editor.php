@@ -100,7 +100,6 @@ if (is_ajax()) {
         $component['warning_inverse'] = (bool) $component['warning_inverse'];
         $component['critical_inverse'] = (bool) $component['critical_inverse'];
 
-        hd($component, true);
         echo io_json_mb_encode($component);
         return;
     }

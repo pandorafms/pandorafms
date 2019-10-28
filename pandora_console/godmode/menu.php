@@ -346,6 +346,9 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['godmode/setup/links']['id'] = 'Links';
         $sub['extras/pandora_diag']['text'] = __('Diagnostic info');
         $sub['extras/pandora_diag']['id'] = 'Diagnostic info';
+
+        enterprise_hook('omnishell');
+
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';
         $sub['godmode/setup/file_manager']['text'] = __('File manager');

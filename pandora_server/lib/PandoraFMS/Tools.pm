@@ -141,6 +141,7 @@ our @EXPORT = qw(
 	long_to_ip
 	ip_to_long
 	get_enabled_servers
+	dateTimeToTimestamp
 );
 
 # ID of the different servers

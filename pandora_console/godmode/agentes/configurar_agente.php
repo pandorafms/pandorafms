@@ -2266,7 +2266,7 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
-if (!$_SESSION['create_module']) {
+if ($_SESSION['create_module'] && $config['welcome_started'] == 1) {
     $edit_module = true;
 }
 

@@ -48,7 +48,10 @@ class WelcomeWindow extends Wizard
      *
      * @var array
      */
-    public $AJAXMethods = ['loadWelcomeWindow'];
+    public $AJAXMethods = [
+        'loadWelcomeWindow',
+        'cancelWelcome',
+    ];
 
     /**
      * Url of controller.
@@ -63,6 +66,21 @@ class WelcomeWindow extends Wizard
      * @var string
      */
     public $step;
+
+
+    /**
+     * Generates a JSON error.
+     *
+     * @param string $msg Error message.
+     *
+     * @return void
+     */
+    public function error($msg)
+    {
+        echo json_encode(
+            ['error' => $msg]
+        );
+    }
 
 
     /**
@@ -137,13 +155,44 @@ class WelcomeWindow extends Wizard
             },
             onshow: {
                 page: '<?php echo $this->ajaxController; ?>',
-                method: 'loadWelcomeWindow'
+                method: 'loadWelcomeWindow',
             },
+            oncancel: {
+                page: '<?php echo $this->ajaxController; ?>',
+                title: "<?php echo __('Cancel Configuration Window'); ?>",
+                method: 'cancelWelcome',
+                confirm: function (fn) {
+                    confirmDialog({
+                        title: '<?php echo __('Are you sure?'); ?>',
+                        message: '<?php echo __('Are you sure you want to cancel this tutorial?'); ?>',
+                        ok: '<?php echo __('OK'); ?>',
+                        cancel: '<?php echo __('Cancel'); ?>',
+                        onAccept: function() {
+                            // Continue execution.
+                            fn();
+                        }
+                    })
+                },
+                callback: function(data) {
+                       console.log(data);
+                }
+            }
         });
+
     </script>
 
         <?php
         echo '</div>';
+    }
+
+
+    /**
+     * cancelWelcome is method to cancel welcome modal window
+     */
+    public function cancelWelcome()
+    {
+        // config update value.
+        config_update_value('welcome_started', WELCOME_FINISHED);
     }
 
 
@@ -162,10 +211,9 @@ class WelcomeWindow extends Wizard
         $btn_create_module_class = '';
         $btn_create_alert_class = '';
         $btn_create_discovery_class = '';
-        $action = '';
 
-        if (($_SESSION['step'] === 'create_mail') || $_SESSION['step'] === null) {
-            // Pending mail.
+        if (($_SESSION['step'] === null )) {
+            // Nothing done yet
             $btn_configure_mail_class = ' pending';
         } else if ($_SESSION['step'] === 'create_agent') {
             $this->step = 'create_agent';
@@ -406,18 +454,16 @@ class WelcomeWindow extends Wizard
 
 
     /**
-     * Esto es un constructor realmente...
-     * se llama desde la navegación normal , no ajax
+     * This function acts as a constructor.
+     * Receive the condition to check with the global config (welcome_started) if continues
      */
     public static function initialize($must_run)
     {
         global $config;
 
-        if ($must_run === false) {
+        if ($must_run === false || $config['welcome_started'] != WELCOME_STARTED) {
             // Do not start unless already started.
-            if ($config['welcome_started'] != WELCOME_STARTED) {
                 return false;
-            }
         }
 
         // Calculate steps.
@@ -515,25 +561,22 @@ class WelcomeWindow extends Wizard
 
 
     /**
-     * DOCUMENTA!!!
+     * function that enables the functions to the buttons when its action is completed.
+     * * Assign the url of each button
      */
     public function loadJS()
     {
         ob_start();
         ?>
     <script type="text/javascript">
-    console.log('vale');
     if('.<?php echo $_SESSION['step'] == 'create_mail'; ?>.'){
         document.getElementById("button-btn_email_conf").setAttribute('onclick', 'configureEmail()');
-        console.log('mail');
     }
     if( '.<?php echo $_SESSION['step'] == 'create_agent'; ?>.') {
         document.getElementById("button-btn_create_agent").setAttribute('onclick', 'createNewAgent()');
-        console.log('agente true');
     }
     if( '.<?php echo $_SESSION['step'] == 'create_module'; ?>.') {
         document.getElementById("button-btn_create_module").setAttribute('onclick', 'checkAgentOnline()');
-        console.log('modulo entra true');
     }
     if( '.<?php echo $_SESSION['step'] == 'create_alert'; ?>.') {
         
@@ -572,7 +615,9 @@ class WelcomeWindow extends Wizard
     function reportIsNotWorking() {
     }
 
-
+    function cierre_dialog(){
+        this.dialog("close");
+    }
     </script>   
         <?php
         return ob_get_clean();

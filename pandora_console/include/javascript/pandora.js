@@ -1899,17 +1899,48 @@ function load_modal(settings) {
       buttons: []
     })
     .show();
-
   var required_buttons = [];
   if (settings.modal.cancel != undefined) {
+    //The variable contains a function
+    // that is responsible for executing the method it receives from settings
+    // which confirms the closure of a modal
+    var cancelModal = function() {
+      if (AJAX_RUNNING) return;
+      AJAX_RUNNING = 1;
+      var formdata = new FormData();
+
+      formdata.append("page", settings.oncancel.page);
+      formdata.append("method", settings.oncancel.method);
+
+      $.ajax({
+        method: "post",
+        url: settings.url,
+        processData: false,
+        contentType: false,
+        data: formdata,
+        success: function(data) {
+          if (typeof settings.oncancel.callback == "function") {
+            settings.oncancel.callback(data);
+          }
+          AJAX_RUNNING = 0;
+        },
+        error: function(data) {
+          console.log(data);
+          AJAX_RUNNING = 0;
+        }
+      });
+    };
+
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
       text: settings.modal.cancel,
       click: function() {
-        $(this).dialog("close");
-        if (typeof settings.cleanup == "function") {
-          settings.cleanup();
+        if (typeof settings.oncancel.confirm == "function") {
+          //receive function
+          settings.oncancel.confirm(cancelModal);
+        } else if (settings.oncancel != undefined) {
+          cancelModal();
         }
       }
     });
@@ -1958,9 +1989,13 @@ function load_modal(settings) {
           contentType: false,
           data: formdata,
           success: function(data) {
-            if (settings.ajax_callback != undefined) {
+            if (typeof settings.ajax_callback == "function") {
               settings.ajax_callback(data);
             }
+            AJAX_RUNNING = 0;
+          },
+          error: function(data) {
+            console.log(data);
             AJAX_RUNNING = 0;
           }
         });
@@ -1995,6 +2030,53 @@ function load_modal(settings) {
           $(".ui-dialog-titlebar-close").hide();
         }
       });
+    },
+    error: function(data) {
+      console.log(data);
     }
   });
+}
+
+//Function that shows a dialog box to confirm closures of generic manners. The modal id is random
+function confirmDialog(settings) {
+  var randomStr =
+    Math.random()
+      .toString(36)
+      .substring(2, 15) +
+    Math.random()
+      .toString(36)
+      .substring(2, 15);
+
+  $("body").append(
+    '<div id="confirm_' + randomStr + '">' + settings.message + "</div>"
+  );
+  $("#confirm_" + randomStr);
+  $("#confirm_" + randomStr)
+    .dialog({
+      title: settings.title,
+      close: false,
+      width: 350,
+      modal: true,
+      buttons: [
+        {
+          text: "Cancel",
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+          click: function() {
+            $(this).dialog("close");
+            if (typeof settings.onDeny == "function") settings.onDeny();
+          }
+        },
+        {
+          text: "Ok",
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+          click: function() {
+            $(this).dialog("close");
+            if (typeof settings.onAccept == "function") settings.onAccept();
+          }
+        }
+      ]
+    })
+    .show();
 }

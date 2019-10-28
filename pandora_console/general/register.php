@@ -175,7 +175,7 @@ if (!$config['disabled_newsletter']) {
 
 $welcome = !$registration && !$show_newsletter && !$initial;
 $welcome_window = WelcomeWindow::initialize($welcome);
-if ($welcome_window && $config['welcome_started'] === 1) {
+if ($welcome_window) {
     $welcome_window->run();
 }
 

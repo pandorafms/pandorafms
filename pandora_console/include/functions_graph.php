@@ -3595,7 +3595,32 @@ function graph_custom_sql_graph(
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
 
+    if (is_metaconsole()) {
+        $server = metaconsole_get_connection_names();
+        $connection = metaconsole_get_connection($server);
+        metaconsole_connect($connection);
+    }
+
     $report_content = db_get_row('treport_content', 'id_rc', $id);
+
+    if ($report_content == false || $report_content == '') {
+        $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+    }
+
+    if ($report_content == false || $report_content == '') {
+        enterprise_hook('metaconsole_restore_db');
+        $report_content = db_get_row('treport_content', 'id_rc', $id);
+        if ($report_content == false || $report_content == '') {
+            $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        }
+
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_names();
+            $connection = metaconsole_get_connection($server);
+            metaconsole_connect($connection);
+        }
+    }
+
     if ($id != null) {
         $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$id);
     } else {
@@ -3609,22 +3634,9 @@ function graph_custom_sql_graph(
         $sql = io_safe_output($sql['sql']);
     }
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE') && $report_content['server_name'] != '' && $report_content['server_name'] != '0') {
-        $metaconsole_connection = enterprise_hook('metaconsole_get_connection', [$report_content['server_name']]);
-
-        if ($metaconsole_connection === false) {
-            return false;
-        }
-
-        if (enterprise_hook('metaconsole_load_external_db', [$metaconsole_connection]) != NOERR) {
-            // ui_print_error_message ("Error connecting to ".$server_name);
-            return false;
-        }
-    }
-
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE') && $report_content['server_name'] != '' && $report_content['server_name'] != '0') {
+    if (is_metaconsole()) {
         enterprise_hook('metaconsole_restore_db');
     }
 

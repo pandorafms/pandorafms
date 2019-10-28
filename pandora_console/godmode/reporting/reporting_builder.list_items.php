@@ -1,18 +1,34 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Report item list.
+ *
+ * @category   Reporting
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'RW')) {
@@ -39,12 +55,16 @@ switch ($config['dbtype']) {
             'type'
         );
     break;
+
+    default:
+        // Default.
+    break;
 }
 
 $report_w = check_acl($config['id_user'], 0, 'RW');
 $report_m = check_acl($config['id_user'], 0, 'RM');
 
-if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
+if (is_metaconsole()) {
     $agents = [];
     $agents = metaconsole_get_report_agents($idReport);
     $modules = [];
@@ -52,7 +72,7 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
     $types = [];
     $types = metaconsole_get_report_types($idReport);
 } else {
-    // FORM FILTER
+    // FORM FILTER.
     switch ($config['dbtype']) {
         case 'mysql':
         case 'postgresql':
@@ -87,7 +107,10 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 				WHERE t4.id_report = '.$idReport
             );
+        break;
 
+        default:
+             // Default.
         break;
     }
 
@@ -124,6 +147,10 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 				WHERE t1.id_report = '.$idReport
             );
         break;
+
+        default:
+            // Default.
+        break;
     }
 
     if ($rows === false) {
@@ -135,8 +162,8 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
         $modules[$row['id_agent_module']] = $row['nombre'];
     }
 
-    // Filter report items created from metaconsole in normal console list and the opposite
-    if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
+    // Filter report items created from metaconsole in normal console list and the opposite.
+    if (is_metaconsole()) {
         $where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR '.$type_escaped.' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
     } else {
         $where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR '.$type_escaped.' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
@@ -184,7 +211,6 @@ if (!defined('METACONSOLE')) {
     $table->data[0][1] .= html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
     $table->data[0][2] = __('Type');
     $table->data[0][2] .= html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
-    // $table->data[1][2] = $table->data[1][3] = '';
     $form = '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report='.$idReport.'">';
     $form .= html_print_table($table, true);
     $form .= '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -265,13 +291,6 @@ if ($moduleFilter != 0) {
     $where .= ' AND id_agent_module = '.$moduleFilter;
 }
 
-// Filter report items created from metaconsole in normal console list and the opposite
-if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-    $where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\',\'text\'))';
-} else {
-    $where .= ' AND ((server_name IS NULL OR length(server_name) = 0) '.'OR '.$type_escaped.' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
-}
-
 switch ($config['dbtype']) {
     case 'mysql':
         $items = db_get_all_rows_sql(
@@ -306,12 +325,16 @@ switch ($config['dbtype']) {
             'AND',
             false
         );
-        // Delete rnum row generated by oracle_recode_query() function
+        // Delete rnum row generated by oracle_recode_query() function.
         if ($items !== false) {
             for ($i = 0; $i < count($items); $i++) {
                 unset($items[$i]['rnum']);
             }
         }
+    break;
+
+    default:
+        // Default.
     break;
 }
 
@@ -421,29 +444,30 @@ foreach ($items as $item) {
 
     $row[1] = get_report_name($item['type']);
 
-    if ($item['type'] == 'custom_graph') {
-        $custom_graph_name = db_get_row_sql('select name from tgraph where id_graph = '.$item['id_gs']);
-        $row[1] = get_report_name($item['type']).' ('.$custom_graph_name['name'].')';
-    }
-
     $server_name = $item['server_name'];
 
-    if (($config['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $connection = metaconsole_get_connection($server_name);
         if (metaconsole_load_external_db($connection) != NOERR) {
             // ui_print_error_message ("Error connecting to ".$server_name);
         }
     }
 
+    if ($item['type'] == 'custom_graph') {
+        $custom_graph_name = db_get_row_sql('SELECT name FROM tgraph WHERE id_graph = '.$item['id_gs']);
+        $row[1] = get_report_name($item['type']).' ('.$custom_graph_name['name'].')';
+    }
+
+
     if ($item['id_agent'] == 0) {
         $is_inventory_item = $item['type'] == 'inventory' || $item['type'] == 'inventory_changes';
 
-        // Due to SLA or top N or general report items
+        // Due to SLA or top N or general report items.
         if (!$is_inventory_item && ($item['id_agent_module'] == '' || $item['id_agent_module'] == 0)) {
             $row[2] = '';
             $row[3] = '';
         } else {
-            // The inventory items have the agents and modules in json format in the field external_source
+            // The inventory items have the agents and modules in json format in the field external_source.
             if ($is_inventory_item) {
                 $external_source = json_decode($item['external_source'], true);
                 $agents = $external_source['id_agents'];
@@ -522,7 +546,7 @@ foreach ($items as $item) {
 
     $table->data[] = $row;
     $count++;
-    // Restore db connection
+    // Restore db connection.
     if (($config['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
         metaconsole_restore_db();
     }

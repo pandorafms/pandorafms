@@ -87,6 +87,7 @@ class HostDevices extends Wizard
     ) {
         $this->setBreadcrum([]);
 
+        $this->access = 'AW';
         $this->task = [];
         $this->msg = $msg;
         $this->icon = $icon;
@@ -97,6 +98,32 @@ class HostDevices extends Wizard
         );
 
         return $this;
+    }
+
+
+    /**
+     * Checks if environment is ready,
+     * returns array
+     *   icon: icon to be displayed
+     *   label: label to be displayed
+     *
+     * @return array With data.
+     **/
+    public function load()
+    {
+        global $config;
+        // Check access.
+        check_login();
+
+        if (! $this->aclMulticheck('AW|PM')) {
+            return false;
+        }
+
+        return [
+            'icon'  => $this->icon,
+            'label' => $this->label,
+            'url'   => $this->url,
+        ];
     }
 
 
@@ -116,37 +143,42 @@ class HostDevices extends Wizard
 
         if ($mode === null) {
             $buttons = [];
-            $buttons[] = [
-                'url'   => $this->url.'&mode=netscan',
-                'icon'  => 'images/wizard/netscan.png',
-                'label' => __('Net Scan'),
-            ];
 
-            if (enterprise_installed()) {
+            if (check_acl($config['id_user'], 0, $this->access)) {
                 $buttons[] = [
-                    'url'   => $this->url.'&mode=importcsv',
-                    'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
-                    'label' => __('Import CSV'),
+                    'url'   => $this->url.'&mode=netscan',
+                    'icon'  => 'images/wizard/netscan.png',
+                    'label' => __('Net Scan'),
                 ];
 
+                if (enterprise_installed()) {
+                    $buttons[] = [
+                        'url'   => $this->url.'&mode=importcsv',
+                        'icon'  => ENTERPRISE_DIR.'/images/wizard/csv.png',
+                        'label' => __('Import CSV'),
+                    ];
+
+                    $buttons[] = [
+                        'url'   => $this->url.'&mode=deploy',
+                        'icon'  => ENTERPRISE_DIR.'/images/wizard/deployment.png',
+                        'label' => __('Agent deployment'),
+                    ];
+                }
+
                 $buttons[] = [
-                    'url'   => $this->url.'&mode=deploy',
-                    'icon'  => ENTERPRISE_DIR.'/images/wizard/deployment.png',
-                    'label' => __('Agent deployment'),
+                    'url'   => $this->url.'&mode=customnetscan',
+                    'icon'  => '/images/wizard/customnetscan.png',
+                    'label' => __('Custom NetScan'),
                 ];
             }
 
-            $buttons[] = [
-                'url'   => $this->url.'&mode=customnetscan',
-                'icon'  => '/images/wizard/customnetscan.png',
-                'label' => __('Custom NetScan'),
-            ];
-
-            $buttons[] = [
-                'url'   => $this->url.'&mode=managenetscanscripts',
-                'icon'  => '/images/wizard/managenetscanscripts.png',
-                'label' => __('Manage NetScan scripts'),
-            ];
+            if (check_acl($config['id_user'], 0, 'PM')) {
+                $buttons[] = [
+                    'url'   => $this->url.'&mode=managenetscanscripts',
+                    'icon'  => '/images/wizard/managenetscanscripts.png',
+                    'label' => __('Manage NetScan scripts'),
+                ];
+            }
 
             $this->prepareBreadcrum(
                 [
@@ -311,11 +343,11 @@ class HostDevices extends Wizard
             ) {
                 // Default values, no data received.
                 // User is accesing directly to this page.
-                if (users_is_admin() !== true && check_acl(
+                if (check_acl(
                     $config['id_usuario'],
                     $this->task['id_group'],
-                    'PM'
-                ) !== true
+                    $this->access
+                ) != true
                 ) {
                     $this->msg = __('You have no access to edit this task.');
                     return false;
@@ -487,7 +519,7 @@ class HostDevices extends Wizard
 
         check_login();
 
-        if (! check_acl($config['id_user'], 0, 'PM')) {
+        if (! check_acl($config['id_user'], 0, $this->access)) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Agent Management'
@@ -529,11 +561,11 @@ class HostDevices extends Wizard
 
             // Check ACL. If user is not able to manage target task,
             // redirect him to main page.
-            if (users_is_admin() !== true && check_acl(
+            if (check_acl(
                 $config['id_usuario'],
                 $this->task['id_group'],
-                'PM'
-            ) !== true
+                $this->access
+            ) != true
             ) {
                 $form['form']['action'] = $this->url.'&mode=netscan&page='.($this->page - 1);
             }
@@ -750,7 +782,7 @@ class HostDevices extends Wizard
                     [
                         'name'                    => 'id_group',
                         'returnAllGroup'          => false,
-                        'privilege'               => 'PM',
+                        'privilege'               => $this->access,
                         'type'                    => 'select_groups',
                         'selected'                => $this->task['id_group'],
                         'return'                  => true,

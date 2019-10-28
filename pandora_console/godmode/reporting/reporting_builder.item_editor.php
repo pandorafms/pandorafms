@@ -240,7 +240,7 @@ switch ($action) {
             $hide_notinit_agents = $style['hide_notinit_agents'];
             $dyn_height = $style['dyn_height'];
             $type = $item['type'];
-            $name = $item['name'];
+            $name = $style['name_label'];
 
             switch ($type) {
                 case 'event_report_log':

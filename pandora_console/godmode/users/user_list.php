@@ -420,7 +420,9 @@ else {
         $u = get_user_info($key);
         $g = users_get_groups($key, 'AR', $u['is_admin']);
         $result = array_intersect($g, $own_groups);
-        if (!$usr['is_admin'] && !empty($result)) {
+
+        // Show users without profile too.
+        if (!$usr['is_admin'] && !empty($result) || (!$usr['is_admin'] && db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $usr['id_user']) === false)) {
             $info[$key] = $usr;
         }
 

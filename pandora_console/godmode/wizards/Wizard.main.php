@@ -87,6 +87,13 @@ class Wizard
      */
     public $msg;
 
+    /**
+     * Defines access level to use this util.
+     *
+     * @var string
+     */
+    public $access = 'AR';
+
 
     /**
      * Setter for breadcrum
@@ -234,6 +241,42 @@ class Wizard
     public function run()
     {
         ui_require_css_file('wizard');
+        // Check access.
+        check_login();
+
+        if (! $this->aclMulticheck()) {
+            return;
+        }
+    }
+
+
+    /**
+     * Check multiple acl perms.
+     *
+     * @param string $access Access in PM|AR|RR format. Optional.
+     *
+     * @return boolean Alowed or not.
+     */
+    public function aclMulticheck($access=null)
+    {
+        global $config;
+
+        if (isset($access)) {
+            $perms = explode('|', $access);
+        } else {
+            $perms = explode('|', $this->access);
+        }
+
+        $allowed = false;
+        foreach ($perms as $perm) {
+            $allowed = $allowed || (bool) check_acl(
+                $config['id_user'],
+                0,
+                $perm
+            );
+        }
+
+        return $allowed;
     }
 
 
@@ -247,6 +290,14 @@ class Wizard
      **/
     public function load()
     {
+        global $config;
+        // Check access.
+        check_login();
+
+        if (! $this->aclMulticheck()) {
+            return false;
+        }
+
         return [
             'icon'  => $this->icon,
             'label' => $this->label,

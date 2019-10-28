@@ -1541,7 +1541,9 @@ if (!empty($result)) {
                 $row['str_warning'],
                 $row['max_critical'],
                 $row['min_critical'],
-                $row['str_critical']
+                $row['str_critical'],
+                $row['warning_inverse'],
+                $row['critical_inverse']
             );
 
             if (is_numeric($row['datos']) && !modules_is_string_type($row['module_type'])) {

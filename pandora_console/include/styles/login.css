@@ -261,6 +261,7 @@ div.login_button_saml input:hover {
 .login_back input {
   background-image: url("../../images/back_login.png");
   background-position: left 5% center;
+  background-repeat: no-repeat;
 }
 
 .login_back input:hover {

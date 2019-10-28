@@ -1,16 +1,32 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Global & session manageme
+/**
+ * Generate charts with given parameters.
+ *
+ * @category   ChartGenerator.
+ * @package    Pandora FMS
+ * @subpackage Opensource.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 require_once 'config.php';
 
 require_once __DIR__.'/config.php';
@@ -24,6 +40,29 @@ require_once $config['homedir'].'/include/functions_custom_graphs.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
+
+
+/**
+ * Echo to stdout a PhantomJS callback call.
+ *
+ * @return void
+ */
+function echoPhantomCallback()
+{
+    ?>
+    <script type="text/javascript">
+        $('document').ready(function () {
+            setTimeout(function () {
+                try {
+                    var status = window.callPhantom({ status: "loaded" });
+                } catch (error) {
+                    console.log("CALLBACK ERROR", error.message)
+                }
+            }, 100);
+        });
+    </script>
+    <?php
+}
 
 
 // Initialize session.
@@ -48,17 +87,7 @@ if (check_login(false) === false) {
 </head>
 <body>
     <h1>Access is not granted</h1>
-    <script type="text/javascript">
-        $('document').ready(function () {
-            setTimeout(function () {
-                try {
-                    var status = window.callPhantom({ status: "loaded" });
-                } catch (error) {
-                    console.log("CALLBACK ERROR", error.message)
-                }
-            }, 100);
-        });
-    </script>
+    <?php echoPhantomCallback(); ?>
 </body>
 </html>
 
@@ -76,11 +105,18 @@ if ($config['metaconsole'] && !empty($server_id)) {
     $server = metaconsole_get_connection_by_id($server_id);
     // Error connecting.
     if (metaconsole_connect($server) !== NOERR) {
-        echo '<html>';
-            echo '<body>';
-                ui_print_error_message(__('There was a problem connecting with the node'));
-            echo '</body>';
-        echo '</html>';
+        ?>
+        <html>
+        <body>
+        <?php
+        ui_print_error_message(
+            __('There was a problem connecting with the node')
+        );
+        echoPhantomCallback();
+        ?>
+        </body>
+        </html>
+        <?php
         exit;
     }
 }
@@ -125,16 +161,18 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     <body bgcolor="#ffffff" style='background:#ffffff;'>
     <?php
     $params['only_image'] = false;
-        $params['width']      = (int) $_REQUEST['viewport_width'];
-        $params['menu']       = false;
+    $params['width'] = (int) $_REQUEST['viewport_width'];
+    $params['menu'] = false;
 
-    if ((!isset($params['width']) || ($params['width'] <= 0))) {
+    if ((isset($params['width']) === false
+        || ($params['width'] <= 0))
+    ) {
         $params['width'] = 650;
     }
 
         $params_combined = json_decode($_REQUEST['data_combined'], true);
-        $module_list     = json_decode($_REQUEST['data_module_list'], true);
-        $type_graph_pdf  = $_REQUEST['type_graph_pdf'];
+        $module_list = json_decode($_REQUEST['data_module_list'], true);
+        $type_graph_pdf = $_REQUEST['type_graph_pdf'];
 
         echo '<div>';
     switch ($type_graph_pdf) {
@@ -253,20 +291,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     }
 
         echo '</div>';
-
+        echoPhantomCallback();
     ?>
-
-    <script type="text/javascript">
-        $('document').ready(function () {
-            setTimeout(function () {
-                try {
-                    var status = window.callPhantom({ status: "loaded" });
-                } catch (error) {
-                    console.log("CALLBACK ERROR", error.message)
-                }
-            }, 100);
-        });
-    </script>
-
     </body>
 </html>

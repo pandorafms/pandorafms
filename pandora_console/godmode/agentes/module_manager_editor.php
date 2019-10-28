@@ -57,11 +57,50 @@ if (is_ajax()) {
             $component['plugin_pass']
         );
 
+        if ($component['type'] >= 15
+            && $component['type'] <= 18
+        ) {
+            // New support for snmp v3.
+            $component['snmp_version'] = $component['tcp_send'];
+            $component['snmp3_auth_user'] = io_safe_output(
+                $component['plugin_user']
+            );
+            // Must use io_output_password.
+            $component['snmp3_auth_pass'] = io_safe_output(
+                $component['plugin_pass']
+            );
+            $component['snmp3_auth_method'] = io_safe_output(
+                $component['plugin_parameter']
+            );
+            $component['snmp3_privacy_method'] = io_safe_output(
+                $component['custom_string_1']
+            );
+            $component['snmp3_privacy_pass'] = io_safe_output(
+                $component['custom_string_2']
+            );
+            $component['snmp3_security_level'] = io_safe_output(
+                $component['custom_string_3']
+            );
+        } else if ($component['type'] >= 34
+            && $component['type'] <= 37
+        ) {
+            $component['command_text'] = io_safe_output(
+                $component['tcp_send']
+            );
+            $component['command_credential_identifier'] = io_safe_output(
+                $component['custom_string_1']
+            );
+            $component['command_os'] = io_safe_output(
+                $component['custom_string_2']
+            );
+        }
+
         $component['str_warning'] = io_safe_output($component['str_warning']);
         $component['str_critical'] = io_safe_output($component['str_critical']);
         $component['warning_inverse'] = (bool) $component['warning_inverse'];
         $component['critical_inverse'] = (bool) $component['critical_inverse'];
 
+        hd($component, true);
         echo io_json_mb_encode($component);
         return;
     }

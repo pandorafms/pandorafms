@@ -1,0 +1,24 @@
+div.modal_form_omnishell {
+  max-width: 200px;
+  margin-left: 39px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bolder;
+}
+div.btn_section {
+  max-width: 200px;
+  margin-left: 39px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bolder;
+}
+
+.darrow_style {
+  vertical-align: center;
+  text-align: center;
+  width: 100px;
+}
+.add_agent {
+  background-image: url("../../images/darrowright.png");
+  background-repeat: no-repeat;
+}

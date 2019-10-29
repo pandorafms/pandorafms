@@ -409,15 +409,14 @@ class WelcomeWindow extends Wizard
                     ],
                 ],
             ],
-            /*
-                [
+            [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
                 'class'         => 'flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
-                        'label'     => __('If something is not working as expected... Report!'),
+                        'label'     => __('If something is not working as expected, look for this icon and report!'),
                         'arguments' => [
                             'class' => 'first_lbl',
                             'name'  => 'lbl_not_working',
@@ -425,16 +424,11 @@ class WelcomeWindow extends Wizard
                         ],
                     ],
                     [
-                        'arguments' => [
-                            'label'      => '',
-                            'type'       => 'button',
-                            'attributes' => 'class="go pending '.$btn_create.'"',
-                            'name'       => 'btn_not_working',
-                            'id'         => 'btn_not_working',
-                        ],
+                        'label' => html_print_image('images/feedback-header.png', true),
+
                     ],
                 ],
-            ],*/
+            ],
         ];
 
         $output = $this->printForm(

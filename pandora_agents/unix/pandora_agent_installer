@@ -9,8 +9,8 @@
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.739"
-PI_BUILD="191009"
+PI_VERSION="7.0NG.740"
+PI_BUILD="191029"
 OS_NAME=`uname -s`
 
 FORCE=0

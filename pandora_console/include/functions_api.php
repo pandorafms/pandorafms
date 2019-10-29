@@ -401,10 +401,11 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType)
 {
     $idAgent = agents_get_agent_id($agentName);
+
     $sql = sprintf(
         'SELECT id_agente_modulo
-		FROM tagente_modulo
-		WHERE id_agente = %d AND nombre LIKE "%s"',
+        FROM tagente_modulo
+        WHERE id_agente = %d AND nombre LIKE "%s"',
         $idAgent,
         $moduleName
     );
@@ -418,8 +419,8 @@ function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=
 {
     $sql = sprintf(
         'SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo
-			INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente
-			WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"',
+            INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente
+            WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"',
         $alias,
         $moduleName
     );
@@ -444,8 +445,8 @@ function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnT
 
     $sql = sprintf(
         'SELECT datos
-		FROM tagente_estado
-		WHERE id_agente_modulo = %d',
+        FROM tagente_estado
+        WHERE id_agente_modulo = %d',
         $idAgentModule
     );
     $value = db_get_value_sql($sql);
@@ -892,9 +893,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
         $id_group = $group['group_id'];
         $agents = db_get_all_rows_sql(
             "SELECT id_agente AS agent_id, id_grupo AS agent_id_group , alias $agent_additional_columns
-			FROM tagente ta LEFT JOIN tagent_secondary_group tasg
-				ON ta.id_agente = tasg.id_agent
-			WHERE ta.id_grupo = $id_group OR tasg.id_group = $id_group"
+            FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+                ON ta.id_agente = tasg.id_agent
+            WHERE ta.id_grupo = $id_group OR tasg.id_group = $id_group"
         );
         if ($agents === false) {
             $agents = [];
@@ -916,13 +917,13 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 
             $modules = db_get_all_rows_sql(
                 'SELECT *
-				FROM (SELECT id_agente_modulo as module_id_agent_modulo '.$module_additional_columns.'
-						FROM tagente_modulo 
-						WHERE id_agente = '.$agent['agent_id'].') t1 
-					INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo '.$estado_additional_columns.'
-						FROM tagente_estado
-						WHERE id_agente = '.$agent['agent_id'].') t2
-					ON t1.module_id_agent_modulo = t2.module_id_agent_modulo'
+                FROM (SELECT id_agente_modulo as module_id_agent_modulo '.$module_additional_columns.'
+                        FROM tagente_modulo 
+                        WHERE id_agente = '.$agent['agent_id'].') t1 
+                    INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo '.$estado_additional_columns.'
+                        FROM tagente_estado
+                        WHERE id_agente = '.$agent['agent_id'].') t2
+                    ON t1.module_id_agent_modulo = t2.module_id_agent_modulo'
             );
 
             if ($modules === false) {
@@ -947,16 +948,16 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 
                 $alerts = db_get_all_rows_sql(
                     'SELECT t1.id_agent_module as alert_id_agent_module '.$alert_additional_columns.'
-					FROM (SELECT * FROM talert_template_modules
-						WHERE id_agent_module = '.$module['module_id_agent_modulo'].') t1 
-					INNER JOIN talert_templates t2
-						ON t1.id_alert_template = t2.id
-					LEFT JOIN talert_template_module_actions t3
-						ON t1.id = t3.id_alert_template_module
-					LEFT JOIN talert_actions t4
-						ON t3.id_alert_action = t4.id
-					LEFT JOIN talert_commands t5
-						ON t4.id_alert_command = t5.id'
+                    FROM (SELECT * FROM talert_template_modules
+                        WHERE id_agent_module = '.$module['module_id_agent_modulo'].') t1 
+                    INNER JOIN talert_templates t2
+                        ON t1.id_alert_template = t2.id
+                    LEFT JOIN talert_template_module_actions t3
+                        ON t1.id = t3.id_alert_template_module
+                    LEFT JOIN talert_actions t4
+                        ON t3.id_alert_action = t4.id
+                    LEFT JOIN talert_commands t5
+                        ON t4.id_alert_command = t5.id'
                 );
 
                 if ($alerts === false) {
@@ -1141,8 +1142,8 @@ function api_get_module_properties_by_alias($alias, $module_name, $other, $retur
 
     $sql = sprintf(
         'SELECT tagente_modulo.id_agente_modulo, tagente.id_agente FROM tagente_modulo 
-					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
-					WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"',
+                    INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
+                    WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"',
         $alias,
         $module_name
     );
@@ -1258,13 +1259,13 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
     $returnVar = [];
     $modules = db_get_all_rows_sql(
         'SELECT *
-		FROM (SELECT id_agente_modulo as module_id_agent_modulo '.$module_additional_columns.'
-				FROM tagente_modulo 
-				WHERE id_agente_modulo = '.$id_module.') t1 
-			INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo '.$estado_additional_columns.'
-				FROM tagente_estado
-				WHERE id_agente_modulo = '.$id_module.') t2
-			ON t1.module_id_agent_modulo = t2.module_id_agent_modulo'
+        FROM (SELECT id_agente_modulo as module_id_agent_modulo '.$module_additional_columns.'
+                FROM tagente_modulo 
+                WHERE id_agente_modulo = '.$id_module.') t1 
+            INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo '.$estado_additional_columns.'
+                FROM tagente_estado
+                WHERE id_agente_modulo = '.$id_module.') t2
+            ON t1.module_id_agent_modulo = t2.module_id_agent_modulo'
     );
 
     if ($modules === false) {
@@ -1328,8 +1329,8 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     if ($cascadeProtection == 1) {
         if (($idParent != 0) && (db_get_value_sql(
             'SELECT id_agente_modulo
-									FROM tagente_modulo
-									WHERE id_agente = '.$idParent.' AND id_agente_modulo = '.$cascadeProtectionModule
+                                    FROM tagente_modulo
+                                    WHERE id_agente = '.$idParent.' AND id_agente_modulo = '.$cascadeProtectionModule
         ) === false)
         ) {
                 returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
@@ -1368,7 +1369,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     );
     $tpolicy_group_old = db_get_all_rows_sql(
         'SELECT id_policy FROM tpolicy_groups
-			WHERE id_group = '.$values_old['id_grupo']
+            WHERE id_group = '.$values_old['id_grupo']
     );
 
     $return = db_process_sql_update(
@@ -1413,7 +1414,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             foreach ($tpolicy_group_old as $key => $value) {
                 $tpolicy_agents_old = db_get_sql(
                     'SELECT * FROM tpolicy_agents 
-					WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agent
+                    WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$id_agent
                 );
 
                 if ($tpolicy_agents_old) {
@@ -1431,14 +1432,14 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
 
         $tpolicy_group = db_get_all_rows_sql(
             'SELECT id_policy FROM tpolicy_groups 
-			WHERE id_group = '.$idGroup
+            WHERE id_group = '.$idGroup
         );
 
         if ($tpolicy_group) {
             foreach ($tpolicy_group as $key => $value) {
                 $tpolicy_agents = db_get_sql(
                     'SELECT * FROM tpolicy_agents 
-					WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agent
+                    WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$id_agent
                 );
 
                 if (!$tpolicy_agents) {
@@ -1492,7 +1493,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
     global $config;
 
     if (!check_acl($config['id_user'], 0, 'AW')) {
-        returnError('forbidden', 'string');
+        returnError('forbidden', 'you havent got permissions to do this');
         return;
     }
 
@@ -1500,127 +1501,101 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    $alias = $other['data'][0];
-    $ip = $other['data'][1];
-    $idParent = $other['data'][2];
-    $idGroup = $other['data'][3];
-    $cascadeProtection = $other['data'][4];
-    $cascadeProtectionModule = $other['data'][5];
-    $intervalSeconds = $other['data'][6];
-    $idOS = $other['data'][7];
-    // $idServer = $other['data'][7];
-    $nameServer = $other['data'][8];
-    $customId = $other['data'][9];
-    $learningMode = $other['data'][10];
-    $disabled = $other['data'][11];
-    $description = $other['data'][12];
-    $alias_as_name = $other['data'][13];
+    $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
+    $direccion_agente          = io_safe_input($other['data'][1]);
+    $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
+    $id_parent                 = (int) $other['data'][2];
+    $grupo                     = (int) $other['data'][3];
+    $cascade_protection        = (int) $other['data'][4];
+    $cascade_protection_module = (int) $other['data'][5];
+    $intervalo                 = (string) $other['data'][6];
+    $id_os                     = (int) $other['data'][7];
+    $server_name               = (string) $other['data'][8];
+    $custom_id                 = (string) $other['data'][9];
+    $modo                      = (int) $other['data'][10];
+    $disabled                  = (int) $other['data'][11];
+    $comentarios               = (string) $other['data'][12];
+    $alias_as_name             = (int) $other['data'][13];
+    $update_module_count       = (int) $config['metaconsole_agent_cache'] == 1;
 
-    if ($alias_as_name && !empty($alias)) {
-        $name = $alias;
-    } else {
-        $name = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
-        if (empty($alias)) {
-            $alias = $name;
-        }
-    }
-
-    if ($cascadeProtection == 1) {
-        if (($idParent != 0) && (db_get_value_sql(
+    if ($cascade_protection == 1) {
+        if (($id_parent != 0) && (db_get_value_sql(
             'SELECT id_agente_modulo
-									FROM tagente_modulo
-									WHERE id_agente = '.$idParent.' AND id_agente_modulo = '.$cascadeProtectionModule
+            FROM tagente_modulo
+            WHERE id_agente = '.$id_parent.' AND id_agente_modulo = '.$cascade_protection_module
         ) === false)
         ) {
                 returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+                return;
         }
     } else {
         $cascadeProtectionModule = 0;
     }
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql1 = 'SELECT name
-				FROM tserver WHERE BINARY name LIKE "'.$nameServer.'"';
-        break;
+    $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$server_name.'"');
 
-        case 'postgresql':
-        case 'oracle':
-            $sql1 = 'SELECT name
-				FROM tserver WHERE name LIKE \''.$nameServer.'\'';
-        break;
-    }
-
-    $nameServer = db_get_value_sql($sql1);
-
-    // Check ACL group
-    if (!check_acl($config['id_user'], $idGroup, 'AW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
-    // Check selected parent
-    if ($idParent != 0) {
-        $parentCheck = agents_check_access_agent($idParent);
-        if ($parentCheck === null) {
-            returnError('parent_agent_not_exist', __('The agent parent don`t exist.'));
-            return;
-        }
-
-        if ($parentCheck === false) {
-            returnError('parent_agent_forbidden', __('The user cannot access to parent agent.'));
-            return;
-        }
-    }
-
-    if (agents_get_agent_id($name)) {
+    // Check if agent exists (BUG WC-50518-2).
+    if ($alias == '' && $alias_as_name === 0) {
+        returnError('alias_not_specified', 'No agent alias specified');
+    } else if (agents_get_agent_id($name)) {
         returnError('agent_name_exist', 'The name of agent yet exist in DB.');
-    } else if (db_get_value_sql(
-        'SELECT id_grupo
-		FROM tgrupo
-		WHERE id_grupo = '.$idGroup
-    ) === false
-    ) {
+    } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('id_grupo_not_exist', 'The group don`t exist.');
-    } else if (db_get_value_sql(
-        'SELECT id_os
-		FROM tconfig_os
-		WHERE id_os = '.$idOS
-    ) === false
-    ) {
+    } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
         returnError('id_os_not_exist', 'The OS don`t exist.');
-    } else if (db_get_value_sql($sql1) === false) {
+    } else if ($server_name === false) {
         returnError('server_not_exist', 'The '.get_product_name().' Server don`t exist.');
     } else {
-        $idAgente = db_process_sql_insert(
-            'tagente',
-            [
-                'nombre'                    => $name,
-                'alias'                     => $alias,
-                'direccion'                 => $ip,
-                'id_grupo'                  => $idGroup,
-                'intervalo'                 => $intervalSeconds,
-                'comentarios'               => $description,
-                'modo'                      => $learningMode,
-                'id_os'                     => $idOS,
-                'disabled'                  => $disabled,
-                'cascade_protection'        => $cascadeProtection,
-                'cascade_protection_module' => $cascadeProtectionModule,
-                'server_name'               => $nameServer,
-                'id_parent'                 => $idParent,
-                'custom_id'                 => $customId,
-            ]
-        );
-
-        if (!empty($idAgente) && !empty($ip)) {
-            // register ip for this agent in 'taddress'
-            agents_add_address($idAgente, $ip);
+        if ($alias_as_name === 1) {
+            $exists_alias  = db_get_row_sql('SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"');
+            $nombre_agente = $alias;
         }
 
-        if ($idGroup && !empty($idAgente)) {
+        if ($direccion_agente != '') {
+            $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
+        }
+
+        if (!$exists_alias && !$exists_ip) {
+            $id_agente = db_process_sql_insert(
+                'tagente',
+                [
+                    'nombre'                    => $nombre_agente,
+                    'alias'                     => $alias,
+                    'alias_as_name'             => $alias_as_name,
+                    'direccion'                 => $direccion_agente,
+                    'id_grupo'                  => $grupo,
+                    'intervalo'                 => $intervalo,
+                    'comentarios'               => $comentarios,
+                    'modo'                      => $modo,
+                    'id_os'                     => $id_os,
+                    'disabled'                  => $disabled,
+                    'cascade_protection'        => $cascade_protection,
+                    'cascade_protection_module' => $cascade_protection_module,
+                    'server_name'               => $server_name,
+                    'id_parent'                 => $id_parent,
+                    'custom_id'                 => $custom_id,
+                    'os_version'                => '',
+                    'agent_version'             => '',
+                    'timezone_offset'           => 0,
+                    'icon_path'                 => '',
+                    'url_address'               => '',
+                    'update_module_count'       => $update_module_count,
+                ]
+            );
+            enterprise_hook('update_agent', [$id_agente]);
+        } else {
+            $id_agente = false;
+        }
+
+        if ($id_agente !== false) {
+            // Create address for this agent in taddress.
+            if ($direccion_agente != '') {
+                agents_add_address($id_agente, $direccion_agente);
+            }
+
             $tpolicy_group_old = db_get_all_rows_sql(
                 'SELECT id_policy FROM tpolicy_groups 
-				WHERE id_group = '.$idGroup
+                WHERE id_group = '.$grupo
             );
 
             if ($tpolicy_group_old) {
@@ -1629,18 +1604,54 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
                         'tpolicy_agents',
                         [
                             'id_policy' => $old_group['id_policy'],
-                            'id_agent'  => $idAgente,
+                            'id_agent'  => $id_agente,
                         ]
                     );
                 }
             }
+
+            $info = '{"Name":"'.$nombre_agente.'",
+                "IP":"'.$direccion_agente.'",
+                "Group":"'.$grupo.'",
+                "Interval":"'.$intervalo.'",
+                "Comments":"'.$comentarios.'",
+                "Mode":"'.$modo.'",
+                "ID_parent:":"'.$id_parent.'",
+                "Server":"'.$server_name.'",
+                "ID os":"'.$id_os.'",
+                "Disabled":"'.$disabled.'",
+                "Custom ID":"'.$custom_id.'",
+                "Cascade protection":"'.$cascade_protection.'",
+                "Cascade protection module":"'.$cascade_protection_module.'"}';
+
+            $unsafe_alias = io_safe_output($alias);
+            db_pandora_audit(
+                'Agent management',
+                'Created agent '.$unsafe_alias,
+                false,
+                true,
+                $info
+            );
+        } else {
+            $id_agente = 0;
+
+            if ($exists_alias) {
+                $agent_creation_error = __('Could not be created, because name already exists');
+            } else if ($exists_ip) {
+                $agent_creation_error = __('Could not be created, because IP already exists');
+            } else {
+                $agent_creation_error = __('Could not be created for unknown reason');
+            }
+
+            returnError('generic error', $agent_creation_error);
+            return;
         }
 
         returnData(
             'string',
             [
                 'type' => 'string',
-                'data' => $idAgente,
+                'data' => $id_agente,
             ]
         );
     }
@@ -1803,16 +1814,22 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType)
 
 
 /**
- * Delete a agent with the name pass as parameter.
+ * Delete an agent with the name as parameter.
  *
  * @param string            $id Name of agent to delete.
  * @param $thrash1 Don't use.
  * @param $thrast2 Don't use.
  * @param $thrash3 Don't use.
  */
-function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3)
+function api_set_delete_agent($id, $thrash1, $other, $thrash3)
 {
     global $config;
+
+    $agent_by_alias = false;
+
+    if ($other['data'][0] === '1') {
+        $agent_by_alias = true;
+    }
 
     if (is_metaconsole()) {
         if (!check_acl($config['id_user'], 0, 'PM')) {
@@ -1822,8 +1839,8 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3)
 
         $servers = db_get_all_rows_sql(
             'SELECT *
-			FROM tmetaconsole_setup
-				WHERE disabled = 0'
+            FROM tmetaconsole_setup
+                WHERE disabled = 0'
         );
 
         if ($servers === false) {
@@ -1832,19 +1849,47 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3)
 
         foreach ($servers as $server) {
             if (metaconsole_connect($server) == NOERR) {
-                $idAgent[0] = agents_get_agent_id($id, true);
+                if ($other['data'][0] === '1') {
+                    $idAgent[0] = agents_get_agent_id_by_alias($id);
+                } else {
+                    $idAgent[0] = agents_get_agent_id($id, true);
+                }
+
                 if ($idAgent[0]) {
                     $result = agents_delete_agent($idAgent, true);
                 }
+
+                metaconsole_restore_db();
             }
         }
     } else {
-        $idAgent = agents_get_agent_id($id);
-        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
-            return;
+        if ($agent_by_alias) {
+            $idsAgents = agents_get_agent_id_by_alias(io_safe_input($id));
+        } else {
+            $idAgent = agents_get_agent_id($id, true);
         }
 
-        $result = agents_delete_agent($idAgent, true);
+        if (!$agent_by_alias) {
+            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
+                return;
+            }
+        }
+
+        if ($agent_by_alias) {
+            foreach ($idsAgents as $id) {
+                if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
+                    continue;
+                }
+
+                $result = agents_delete_agent($id['id_agente'], true);
+
+                if (!$result) {
+                    break;
+                }
+            }
+        } else {
+            $result = agents_delete_agent($idAgent, true);
+        }
     }
 
     if (!$result) {
@@ -1931,20 +1976,20 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
     // Filter by state
     if (defined('METACONSOLE')) {
         $sql = "SELECT id_agente, alias, direccion, comentarios,
-			tconfig_os.name, url_address, nombre
-		FROM tconfig_os, tmetaconsole_agent
-		LEFT JOIN tagent_secondary_group
-			ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
-		WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
-			AND disabled = 0 $where AND $groups";
+            tconfig_os.name, url_address, nombre
+        FROM tconfig_os, tmetaconsole_agent
+        LEFT JOIN tagent_secondary_group
+            ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
+        WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
+            AND disabled = 0 $where AND $groups";
     } else {
         $sql = "SELECT id_agente, alias, direccion, comentarios,
-				tconfig_os.name, url_address, nombre
-			FROM tconfig_os, tagente
-			LEFT JOIN tagent_secondary_group
-				ON tagente.id_agente = tagent_secondary_group.id_agent
-			WHERE tagente.id_os = tconfig_os.id_os
-				AND disabled = 0 $where AND $groups";
+                tconfig_os.name, url_address, nombre
+            FROM tconfig_os, tagente
+            LEFT JOIN tagent_secondary_group
+                ON tagente.id_agente = tagent_secondary_group.id_agent
+            WHERE tagente.id_os = tconfig_os.id_os
+                AND disabled = 0 $where AND $groups";
     }
 
     $all_agents = db_get_all_rows_sql($sql);
@@ -2068,9 +2113,9 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT id_agente, id_agente_modulo, nombre 
-		FROM tagente_modulo
-		WHERE id_agente = %d AND disabled = 0
-			AND delete_pending = 0',
+        FROM tagente_modulo
+        WHERE id_agente = %d AND disabled = 0
+            AND delete_pending = 0',
         $other['data'][0]
     );
 
@@ -2417,9 +2462,9 @@ function api_get_module_id($id, $thrash1, $name, $thrash3)
 
     $sql = sprintf(
         'SELECT id_agente_modulo
-		FROM tagente_modulo WHERE id_agente = %d
-		AND nombre = "%s" AND disabled = 0
-		AND delete_pending = 0',
+        FROM tagente_modulo WHERE id_agente = %d
+        AND nombre = "%s" AND disabled = 0
+        AND delete_pending = 0',
         $id,
         $name['data']
     );
@@ -2459,10 +2504,10 @@ function api_get_group_agent($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT groups.nombre nombre 
-		FROM tagente agents, tgrupo groups
-		WHERE id_agente = %d AND agents.disabled = 0
-			AND groups.disabled = 0
-			AND agents.id_grupo = groups.id_grupo',
+        FROM tagente agents, tgrupo groups
+        WHERE id_agente = %d AND agents.disabled = 0
+            AND groups.disabled = 0
+            AND agents.id_grupo = groups.id_grupo',
         $other['data'][0]
     );
 
@@ -2501,8 +2546,8 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3)
     if (is_metaconsole()) {
         $servers = db_get_all_rows_sql(
             'SELECT *
-			FROM tmetaconsole_setup
-				WHERE disabled = 0'
+            FROM tmetaconsole_setup
+                WHERE disabled = 0'
         );
 
         if ($servers === false) {
@@ -2516,9 +2561,9 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3)
                 if ($agent_id) {
                     $sql = sprintf(
                         'SELECT groups.nombre nombre 
-						FROM tagente agents, tgrupo groups
-						WHERE id_agente = %d 
-							AND agents.id_grupo = groups.id_grupo',
+                        FROM tagente agents, tgrupo groups
+                        WHERE id_agente = %d 
+                            AND agents.id_grupo = groups.id_grupo',
                         $agent_id
                     );
                     $group_server_names = db_get_all_rows_sql($sql);
@@ -2541,9 +2586,9 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3)
 
         $sql = sprintf(
             'SELECT groups.nombre nombre 
-			FROM tagente agents, tgrupo groups
-			WHERE id_agente = %d 
-				AND agents.id_grupo = groups.id_grupo',
+            FROM tagente agents, tgrupo groups
+            WHERE id_agente = %d 
+                AND agents.id_grupo = groups.id_grupo',
             $agent_id
         );
         $group_names = db_get_all_rows_sql($sql);
@@ -2593,8 +2638,8 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
     if (is_metaconsole()) {
         $servers = db_get_all_rows_sql(
             'SELECT *
-			FROM tmetaconsole_setup
-				WHERE disabled = 0'
+            FROM tmetaconsole_setup
+                WHERE disabled = 0'
         );
 
         if ($servers === false) {
@@ -2609,9 +2654,9 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
                 foreach ($agent_id as &$id) {
                     $sql = sprintf(
                         'SELECT groups.nombre nombre 
-						FROM tagente agents, tgrupo groups
-						WHERE id_agente = %d 
-							AND agents.id_grupo = groups.id_grupo',
+                        FROM tagente agents, tgrupo groups
+                        WHERE id_agente = %d 
+                            AND agents.id_grupo = groups.id_grupo',
                         $id['id_agente']
                     );
                     $group_server_names = db_get_all_rows_sql($sql);
@@ -2637,9 +2682,9 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
 
             $sql = sprintf(
                 'SELECT groups.nombre nombre 
-			FROM tagente agents, tgrupo groups
-			WHERE id_agente = %d 
-				AND agents.id_grupo = groups.id_grupo',
+            FROM tagente agents, tgrupo groups
+            WHERE id_agente = %d 
+                AND agents.id_grupo = groups.id_grupo',
                 $id['id_agente']
             );
             $group_name = db_get_all_rows_sql($sql);
@@ -2682,8 +2727,8 @@ function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3)
 
     $servers = db_get_all_rows_sql(
         'SELECT *
-		FROM tmetaconsole_setup
-			WHERE disabled = 0'
+        FROM tmetaconsole_setup
+            WHERE disabled = 0'
     );
 
     if ($servers === false) {
@@ -2740,8 +2785,8 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3)
     if (is_metaconsole()) {
         $servers = db_get_all_rows_sql(
             'SELECT *
-			FROM tmetaconsole_setup
-				WHERE disabled = 0'
+            FROM tmetaconsole_setup
+                WHERE disabled = 0'
         );
 
         if ($servers === false) {
@@ -2755,9 +2800,9 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3)
                 if ($agent_id) {
                     $sql = sprintf(
                         'SELECT groups.id_grupo id_group 
-						FROM tagente agents, tgrupo groups
-						WHERE id_agente = %d 
-							AND agents.id_grupo = groups.id_grupo',
+                        FROM tagente agents, tgrupo groups
+                        WHERE id_agente = %d 
+                            AND agents.id_grupo = groups.id_grupo',
                         $agent_id
                     );
                     $group_server_names = db_get_all_rows_sql($sql);
@@ -2781,9 +2826,9 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3)
 
         $sql = sprintf(
             'SELECT groups.id_grupo id_group
-			FROM tagente agents, tgrupo groups
-			WHERE id_agente = %d 
-				AND agents.id_grupo = groups.id_grupo',
+            FROM tagente agents, tgrupo groups
+            WHERE id_agente = %d 
+                AND agents.id_grupo = groups.id_grupo',
             $agent_id
         );
         $group_names = db_get_all_rows_sql($sql);
@@ -2833,8 +2878,8 @@ function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
     if (is_metaconsole()) {
         $servers = db_get_all_rows_sql(
             'SELECT *
-			FROM tmetaconsole_setup
-				WHERE disabled = 0'
+            FROM tmetaconsole_setup
+                WHERE disabled = 0'
         );
 
         if ($servers === false) {
@@ -2849,9 +2894,9 @@ function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
                 foreach ($agent_id as &$id) {
                     $sql = sprintf(
                         'SELECT groups.id_grupo id_group 
-						FROM tagente agents, tgrupo groups
-						WHERE id_agente = %d 
-							AND agents.id_grupo = groups.id_grupo',
+                        FROM tagente agents, tgrupo groups
+                        WHERE id_agente = %d 
+                            AND agents.id_grupo = groups.id_grupo',
                         $id['id_agente']
                     );
                     $group_server_names = db_get_all_rows_sql($sql);
@@ -2877,9 +2922,9 @@ function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
 
             $sql = sprintf(
                 'SELECT groups.id_grupo id_group
-			FROM tagente agents, tgrupo groups
-			WHERE id_agente = %d 
-				AND agents.id_grupo = groups.id_grupo',
+            FROM tagente agents, tgrupo groups
+            WHERE id_agente = %d 
+                AND agents.id_grupo = groups.id_grupo',
                 $id['id_agente']
             );
             $group_name = db_get_all_rows_sql($sql);
@@ -2937,8 +2982,8 @@ function api_get_policies($thrash1, $thrash2, $other, $thrash3)
 
         $sql = sprintf(
             'SELECT policy.id, name, id_agent
-			FROM tpolicies AS policy, tpolicy_agents AS pol_agents 
-			WHERE policy.id = pol_agents.id_policy %s AND id_group IN (%s)',
+            FROM tpolicies AS policy, tpolicy_agents AS pol_agents 
+            WHERE policy.id = pol_agents.id_policy %s AND id_group IN (%s)',
             $where,
             $user_groups
         );
@@ -3036,12 +3081,22 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $agentName = $id;
+    $agent_by_alias = false;
 
-    $idAgent = agents_get_agent_id($agentName);
+    if ($other['data'][30] === '1') {
+        $agent_by_alias = true;
+    }
 
-    if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-        return;
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+    } else {
+        $idAgent = agents_get_agent_id($id);
+    }
+
+    if (!$agent_by_alias) {
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+            return;
+        }
     }
 
     if ($other['data'][2] < 6 or $other['data'][2] > 18) {
@@ -3059,7 +3114,6 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
     $disabled_types_event = json_encode($disabled_types_event);
 
     $values = [
-        'id_agente'             => $idAgent,
         'disabled'              => $other['data'][1],
         'id_tipo_modulo'        => $other['data'][2],
         'id_module_group'       => $other['data'][3],
@@ -3102,7 +3156,27 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         // Column 'module_macros' cannot be null
     }
 
-    $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                continue;
+            }
+
+            $idModule = modules_create_agent_module($id['id_agente'], $name, $values, true);
+
+            if (!is_error($idModule)) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => $agents_affected.' agents affected']);
+
+        return;
+    } else {
+        $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    }
 
     if (is_error($idModule)) {
         // TODO: Improve the error returning more info
@@ -3270,17 +3344,27 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $agentName = $id;
-
     if ($other['data'][22] == '') {
         returnError('error_create_plugin_module', __('Error in creation plugin module. Id_plugin cannot be left blank.'));
         return;
     }
 
-    $idAgent = agents_get_agent_id($agentName);
+    $agent_by_alias = false;
 
-    if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-        return;
+    if ($other['data'][36] === '1') {
+        $agent_by_alias = true;
+    }
+
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+    } else {
+        $idAgent = agents_get_agent_id($id);
+    }
+
+    if (!$agent_by_alias) {
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+            return;
+        }
     }
 
     $disabled_types_event = [];
@@ -3290,7 +3374,6 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
     $name = $other['data'][0];
 
     $values = [
-        'id_agente'             => $idAgent,
         'disabled'              => $other['data'][1],
         'id_tipo_modulo'        => $other['data'][2],
         'id_module_group'       => $other['data'][3],
@@ -3338,7 +3421,27 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         // Column 'module_macros' cannot be null
     }
 
-    $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                continue;
+            }
+
+            $idModule = modules_create_agent_module($id['id_agente'], $name, $values, true);
+
+            if (!is_error($idModule)) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => $agents_affected.' agents affected']);
+
+        return;
+    } else {
+        $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    }
 
     if (is_error($idModule)) {
         // TODO: Improve the error returning more info
@@ -3499,17 +3602,27 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $agentName = $id;
-
     if ($other['data'][0] == '') {
         returnError('error_create_data_module', __('Error in creation data module. Module_name cannot be left blank.'));
         return;
     }
 
-    $idAgent = agents_get_agent_id($agentName);
+    $agent_by_alias = false;
 
-    if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-        return;
+    if ($other['data'][27] === '1') {
+        $agent_by_alias = true;
+    }
+
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+    } else {
+        $idAgent = agents_get_agent_id($id);
+    }
+
+    if (!$agent_by_alias) {
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+            return;
+        }
     }
 
     $name = $other['data'][0];
@@ -3519,7 +3632,6 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
     $disabled_types_event = json_encode($disabled_types_event);
 
     $values = [
-        'id_agente'             => $idAgent,
         'disabled'              => $other['data'][1],
         'id_tipo_modulo'        => $other['data'][2],
         'descripcion'           => $other['data'][3],
@@ -3558,7 +3670,27 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         // Column 'module_macros' cannot be null
     }
 
-    $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                continue;
+            }
+
+            $idModule = modules_create_agent_module($id['id_agente'], $name, $values, true);
+
+            if (!is_error($idModule)) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => $agents_affected.' agents affected']);
+
+        return;
+    } else {
+        $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    }
 
     if (is_error($idModule)) {
         // TODO: Improve the error returning more info
@@ -3583,15 +3715,13 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
  *
  * @param $thrash3 Don't use
  */
-function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3)
+function api_set_create_synthetic_module($id, $agent_by_alias, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
         return;
     }
 
     global $config;
-
-    $agentName = $id;
 
     io_safe_input_array($other);
 
@@ -3600,15 +3730,34 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $idAgent = agents_get_agent_id(io_safe_output($agentName), true);
+    if ($agent_by_alias == '1') {
+        $ids_agents = agents_get_agent_id_by_alias(io_safe_output($id));
 
-    if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-        return;
+        foreach ($ids_agents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                return;
+            }
+        }
+    } else {
+        $idAgent = agents_get_agent_id(io_safe_output($id), true);
+
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+            return;
+        }
     }
 
-    if (!$idAgent) {
-        returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exist.'));
-        return;
+    if ($agent_by_alias) {
+        foreach ($ids_agents as $id) {
+            if (!$id['id_agente']) {
+                returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exist.'));
+                return;
+            }
+        }
+    } else {
+        if (!$idAgent) {
+            returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exist.'));
+            return;
+        }
     }
 
     $name = io_safe_output($other['data'][0]);
@@ -3616,7 +3765,6 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3)
     $id_tipo_modulo = db_get_row_sql("SELECT id_tipo FROM ttipo_modulo WHERE nombre = 'generic_data'");
 
     $values = [
-        'id_agente'         => $idAgent,
         'id_modulo'         => 5,
         'custom_integer_1'  => 0,
         'custom_integer_2'  => 0,
@@ -3629,151 +3777,312 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3)
         // Column 'descripcion' cannot be null
     }
 
-    $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    if ($agent_by_alias) {
+        foreach ($ids_agents as $id) {
+            $idAgent = $id['id_agente'];
 
-    if (is_error($idModule)) {
-        // TODO: Improve the error returning more info
-        returnError('error_create_data_module', __('Error in creation data module.'));
-    } else {
-        $synthetic_type = $other['data'][1];
-        unset($other['data'][0]);
-        unset($other['data'][1]);
+            $idModule = modules_create_agent_module($idAgent, $name, $values, true);
 
-        $filterdata = [];
-        foreach ($other['data'] as $data) {
-            $data = str_replace(['ADD', 'SUB', 'MUL', 'DIV'], ['+', '-', '*', '/'], $data);
-            $split_data = explode(';', $data);
+            if (is_error($idModule)) {
+                // TODO: Improve the error returning more info
+                returnError('error_create_data_module', __('Error in creation data module.'));
+            } else {
+                $synthetic_type = $other['data'][1];
+                unset($other['data'][0]);
+                unset($other['data'][1]);
 
-            if (preg_match('/[x\/+*-]/', $split_data[0]) && strlen($split_data[0]) == 1) {
-                if (preg_match('/[\/|+|*|-]/', $split_data[0]) && $synthetic_type === 'average') {
-                    returnError('', "[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+                $filterdata = [];
+                foreach ($other['data'] as $data) {
+                    $data = str_replace(['ADD', 'SUB', 'MUL', 'DIV'], ['+', '-', '*', '/'], $data);
+                    $data = io_safe_output($data);
+                    // Double safe output is necessary.
+                    $split_data = explode(';', io_safe_output($data));
+
+                    if (preg_match('/[x\/+*-]/', $split_data[0]) && strlen($split_data[0]) == 1) {
+                        if (preg_match('/[\/|+|*|-]/', $split_data[0]) && $synthetic_type === 'average') {
+                            returnError('', "[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+                        }
+
+                        $operator = strtolower($split_data[0]);
+                        $data_module = [
+                            '',
+                            $operator,
+                            $split_data[1],
+                        ];
+
+                        $text_data = implode('_', $data_module);
+                        array_push($filterdata, $text_data);
+                    } else {
+                        if (count($split_data) == 2) {
+                            $idAgent = agents_get_agent_id($split_data[0], true);
+                            $data_module = [
+                                $idAgent,
+                                '',
+                                $split_data[1],
+                            ];
+                            $text_data = implode('_', $data_module);
+                            array_push($filterdata, $text_data);
+                        } else {
+                            if (strlen($split_data[1]) > 1 && $synthetic_type != 'average') {
+                                returnError('', "[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+                                return;
+                            }
+
+                            if (preg_match('/[\/|+|*|-]/', $split_data[1]) && $synthetic_type === 'average') {
+                                returnError('', "[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+                                return;
+                            }
+
+                            $idAgent = agents_get_agent_id(io_safe_output($split_data[0]), true);
+                            $operator = strtolower($split_data[1]);
+                            $data_module = [
+                                $idAgent,
+                                $operator,
+                                $split_data[2],
+                            ];
+                            $text_data = implode('_', $data_module);
+                            array_push($filterdata, $text_data);
+                        }
+                    }
                 }
 
-                $operator = strtolower($split_data[0]);
-                $data_module = [
-                    '',
-                    $operator,
-                    $split_data[1],
-                ];
+                $serialize_ops = implode(',', $filterdata);
 
-                $text_data = implode('_', $data_module);
-                array_push($filterdata, $text_data);
-            } else {
-                if (count($split_data) == 2) {
-                    $idAgent = agents_get_agent_id(io_safe_output($split_data[0]), true);
-                    $data_module = [
-                        $idAgent,
-                        '',
-                        $split_data[1],
-                    ];
-                    $text_data = implode('_', $data_module);
-                    array_push($filterdata, $text_data);
+                // modules_create_synthetic_operations
+                $synthetic = enterprise_hook(
+                    'modules_create_synthetic_operations',
+                    [
+                        $idModule,
+                        $serialize_ops,
+                    ]
+                );
+
+                if ($synthetic === ENTERPRISE_NOT_HOOK) {
+                    returnError('error_synthetic_modules', 'Error Synthetic modules.');
+                    db_process_sql_delete(
+                        'tagente_modulo',
+                        ['id_agente_modulo' => $idModule]
+                    );
+
+                    return;
                 } else {
-                    if (strlen($split_data[1]) > 1 && $synthetic_type != 'average') {
-                        returnError('', "[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
-                        return;
+                    $status = AGENT_MODULE_STATUS_NO_DATA;
+                    switch ($config['dbtype']) {
+                        case 'mysql':
+                            $result = db_process_sql_insert(
+                                'tagente_estado',
+                                [
+                                    'id_agente_modulo'  => $idModule,
+                                    'datos'             => 0,
+                                    'timestamp'         => '01-01-1970 00:00:00',
+                                    'estado'            => $status,
+                                    'id_agente'         => (int) $idAgent,
+                                    'utimestamp'        => 0,
+                                    'status_changes'    => 0,
+                                    'last_status'       => $status,
+                                    'last_known_status' => $status,
+                                ]
+                            );
+                        break;
+
+                        case 'postgresql':
+                            $result = db_process_sql_insert(
+                                'tagente_estado',
+                                [
+                                    'id_agente_modulo'  => $idModule,
+                                    'datos'             => 0,
+                                    'timestamp'         => null,
+                                    'estado'            => $status,
+                                    'id_agente'         => (int) $idAgent,
+                                    'utimestamp'        => 0,
+                                    'status_changes'    => 0,
+                                    'last_status'       => $status,
+                                    'last_known_status' => $status,
+                                ]
+                            );
+                        break;
+
+                        case 'oracle':
+                            $result = db_process_sql_insert(
+                                'tagente_estado',
+                                [
+                                    'id_agente_modulo'  => $idModule,
+                                    'datos'             => 0,
+                                    'timestamp'         => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
+                                    'estado'            => $status,
+                                    'id_agente'         => (int) $idAgent,
+                                    'utimestamp'        => 0,
+                                    'status_changes'    => 0,
+                                    'last_status'       => $status,
+                                    'last_known_status' => $status,
+                                ]
+                            );
+                        break;
                     }
 
-                    if (preg_match('/[\/|+|*|-]/', $split_data[1]) && $synthetic_type === 'average') {
-                        returnError('', "[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
-                        return;
+                    if ($result === false) {
+                        db_process_sql_delete(
+                            'tagente_modulo',
+                            ['id_agente_modulo' => $idModule]
+                        );
+                        returnError('error_synthetic_modules', 'Error Synthetic modules.');
+                    } else {
+                        db_process_sql('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente='.(int) $idAgent);
+                        returnData('string', ['type' => 'string', 'data' => __('Synthetic module created ID: '.$idModule)]);
                     }
-
-                    $idAgent = agents_get_agent_id(io_safe_output($split_data[0]), true);
-                    $operator = strtolower($split_data[1]);
-                    $data_module = [
-                        $idAgent,
-                        $operator,
-                        $split_data[2],
-                    ];
-                    $text_data = implode('_', $data_module);
-                    array_push($filterdata, $text_data);
                 }
             }
         }
+    } else {
+        $idModule = modules_create_agent_module($idAgent, $name, $values, true);
 
-        $serialize_ops = implode(',', $filterdata);
-
-        // modules_create_synthetic_operations
-        $synthetic = enterprise_hook(
-            'modules_create_synthetic_operations',
-            [
-                $idModule,
-                $serialize_ops,
-            ]
-        );
-
-        if ($synthetic === ENTERPRISE_NOT_HOOK) {
-            returnError('error_synthetic_modules', 'Error Synthetic modules.');
-            db_process_sql_delete(
-                'tagente_modulo',
-                ['id_agente_modulo' => $idModule]
-            );
-            return;
+        if (is_error($idModule)) {
+            // TODO: Improve the error returning more info
+            returnError('error_create_data_module', __('Error in creation data module.'));
         } else {
-            $status = AGENT_MODULE_STATUS_NO_DATA;
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $result = db_process_sql_insert(
-                        'tagente_estado',
-                        [
-                            'id_agente_modulo'  => $idModule,
-                            'datos'             => 0,
-                            'timestamp'         => '01-01-1970 00:00:00',
-                            'estado'            => $status,
-                            'id_agente'         => (int) $idAgent,
-                            'utimestamp'        => 0,
-                            'status_changes'    => 0,
-                            'last_status'       => $status,
-                            'last_known_status' => $status,
-                        ]
-                    );
-                break;
+            $synthetic_type = $other['data'][1];
+            unset($other['data'][0]);
+            unset($other['data'][1]);
 
-                case 'postgresql':
-                    $result = db_process_sql_insert(
-                        'tagente_estado',
-                        [
-                            'id_agente_modulo'  => $idModule,
-                            'datos'             => 0,
-                            'timestamp'         => null,
-                            'estado'            => $status,
-                            'id_agente'         => (int) $idAgent,
-                            'utimestamp'        => 0,
-                            'status_changes'    => 0,
-                            'last_status'       => $status,
-                            'last_known_status' => $status,
-                        ]
-                    );
-                break;
+            $filterdata = [];
+            foreach ($other['data'] as $data) {
+                $data = str_replace(['ADD', 'SUB', 'MUL', 'DIV'], ['+', '-', '*', '/'], $data);
+                $data = io_safe_output($data);
+                // Double safe output is necessary.
+                $split_data = explode(';', io_safe_output($data));
 
-                case 'oracle':
-                    $result = db_process_sql_insert(
-                        'tagente_estado',
-                        [
-                            'id_agente_modulo'  => $idModule,
-                            'datos'             => 0,
-                            'timestamp'         => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
-                            'estado'            => $status,
-                            'id_agente'         => (int) $idAgent,
-                            'utimestamp'        => 0,
-                            'status_changes'    => 0,
-                            'last_status'       => $status,
-                            'last_known_status' => $status,
-                        ]
-                    );
-                break;
+                if (preg_match('/[x\/+*-]/', $split_data[0]) && strlen($split_data[0]) == 1) {
+                    if (preg_match('/[\/|+|*|-]/', $split_data[0]) && $synthetic_type === 'average') {
+                        returnError('', "[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+                    }
+
+                    $operator = strtolower($split_data[0]);
+                    $data_module = [
+                        '',
+                        $operator,
+                        $split_data[1],
+                    ];
+
+                    $text_data = implode('_', $data_module);
+                    array_push($filterdata, $text_data);
+                } else {
+                    if (count($split_data) == 2) {
+                        $idAgent = agents_get_agent_id($split_data[0], true);
+                        $data_module = [
+                            $idAgent,
+                            '',
+                            $split_data[1],
+                        ];
+                        $text_data = implode('_', $data_module);
+                        array_push($filterdata, $text_data);
+                    } else {
+                        if (strlen($split_data[1]) > 1 && $synthetic_type != 'average') {
+                            returnError('', "[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+                            return;
+                        }
+
+                        if (preg_match('/[\/|+|*|-]/', $split_data[1]) && $synthetic_type === 'average') {
+                            returnError('', "[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+                            return;
+                        }
+
+                        $idAgent = agents_get_agent_id(io_safe_output($split_data[0]), true);
+                        $operator = strtolower($split_data[1]);
+                        $data_module = [
+                            $idAgent,
+                            $operator,
+                            $split_data[2],
+                        ];
+                        $text_data = implode('_', $data_module);
+                        array_push($filterdata, $text_data);
+                    }
+                }
             }
 
-            if ($result === false) {
+            $serialize_ops = implode(',', $filterdata);
+
+            // modules_create_synthetic_operations
+            $synthetic = enterprise_hook(
+                'modules_create_synthetic_operations',
+                [
+                    $idModule,
+                    $serialize_ops,
+                ]
+            );
+
+            if ($synthetic === ENTERPRISE_NOT_HOOK) {
+                returnError('error_synthetic_modules', 'Error Synthetic modules.');
                 db_process_sql_delete(
                     'tagente_modulo',
                     ['id_agente_modulo' => $idModule]
                 );
-                returnError('error_synthetic_modules', 'Error Synthetic modules.');
+
+                return;
             } else {
-                db_process_sql('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente='.(int) $idAgent);
-                returnData('string', ['type' => 'string', 'data' => __('Synthetic module created ID: '.$idModule)]);
+                $status = AGENT_MODULE_STATUS_NO_DATA;
+                switch ($config['dbtype']) {
+                    case 'mysql':
+                        $result = db_process_sql_insert(
+                            'tagente_estado',
+                            [
+                                'id_agente_modulo'  => $idModule,
+                                'datos'             => 0,
+                                'timestamp'         => '01-01-1970 00:00:00',
+                                'estado'            => $status,
+                                'id_agente'         => (int) $idAgent,
+                                'utimestamp'        => 0,
+                                'status_changes'    => 0,
+                                'last_status'       => $status,
+                                'last_known_status' => $status,
+                            ]
+                        );
+                    break;
+
+                    case 'postgresql':
+                        $result = db_process_sql_insert(
+                            'tagente_estado',
+                            [
+                                'id_agente_modulo'  => $idModule,
+                                'datos'             => 0,
+                                'timestamp'         => null,
+                                'estado'            => $status,
+                                'id_agente'         => (int) $idAgent,
+                                'utimestamp'        => 0,
+                                'status_changes'    => 0,
+                                'last_status'       => $status,
+                                'last_known_status' => $status,
+                            ]
+                        );
+                    break;
+
+                    case 'oracle':
+                        $result = db_process_sql_insert(
+                            'tagente_estado',
+                            [
+                                'id_agente_modulo'  => $idModule,
+                                'datos'             => 0,
+                                'timestamp'         => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
+                                'estado'            => $status,
+                                'id_agente'         => (int) $idAgent,
+                                'utimestamp'        => 0,
+                                'status_changes'    => 0,
+                                'last_status'       => $status,
+                                'last_known_status' => $status,
+                            ]
+                        );
+                    break;
+                }
+
+                if ($result === false) {
+                    db_process_sql_delete(
+                        'tagente_modulo',
+                        ['id_agente_modulo' => $idModule]
+                    );
+                    returnError('error_synthetic_modules', 'Error Synthetic modules.');
+                } else {
+                    db_process_sql('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente='.(int) $idAgent);
+                    returnData('string', ['type' => 'string', 'data' => __('Synthetic module created ID: '.$idModule)]);
+                }
             }
         }
     }
@@ -3923,8 +4232,6 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $agentName = $id;
-
     if ($other['data'][0] == '') {
         returnError('error_create_snmp_module', __('Error in creation SNMP module. Module_name cannot be left blank.'));
         return;
@@ -3935,10 +4242,22 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $idAgent = agents_get_agent_id($agentName);
+    $agent_by_alias = false;
 
-    if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-        return;
+    if ($other['data'][35] === '1') {
+        $agent_by_alias = true;
+    }
+
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+    } else {
+        $idAgent = agents_get_agent_id($id);
+    }
+
+    if (!$agent_by_alias) {
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+            return;
+        }
     }
 
     $name = $other['data'][0];
@@ -3965,7 +4284,6 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
         }
 
         $values = [
-            'id_agente'             => $idAgent,
             'disabled'              => $other['data'][1],
             'id_tipo_modulo'        => $other['data'][2],
             'id_module_group'       => $other['data'][3],
@@ -4003,7 +4321,6 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
         ];
     } else {
         $values = [
-            'id_agente'             => $idAgent,
             'disabled'              => $other['data'][1],
             'id_tipo_modulo'        => $other['data'][2],
             'id_module_group'       => $other['data'][3],
@@ -4040,7 +4357,27 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
         // Column 'descripcion' cannot be null
     }
 
-    $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                continue;
+            }
+
+            $idModule = modules_create_agent_module($id['id_agente'], $name, $values, true);
+
+            if (!is_error($idModule)) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => $agents_affected.' agents affected']);
+
+        return;
+    } else {
+        $idModule = modules_create_agent_module($idAgent, $name, $values, true);
+    }
 
     if (is_error($idModule)) {
         // TODO: Improve the error returning more info
@@ -4743,9 +5080,9 @@ function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2)
 
     $sql = sprintf(
         "SELECT agent.id_agente, agent.alias, module_state.datos, agent.nombre
-		FROM tagente agent LEFT JOIN tagent_secondary_group tasg ON agent.id_agente = tasg.id_agent, tagente_modulo module, tagente_estado module_state
-		WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'
-		AND %s",
+        FROM tagente agent LEFT JOIN tagent_secondary_group tasg ON agent.id_agente = tasg.id_agent, tagente_modulo module, tagente_estado module_state
+        WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'
+        AND %s",
         $id,
         $groups
     );
@@ -5372,20 +5709,48 @@ function api_get_plugins($thrash1, $thrash2, $other, $thrash3)
  * @param $thrash1 Don't use
  * @param $thrash2 Don't use
  */
-function api_set_create_network_module_from_component($agent_name, $component_name, $thrash1, $thrash2)
+function api_set_create_network_module_from_component($agent_name, $component_name, $other, $thrash2)
 {
     if (defined('METACONSOLE')) {
         return;
     }
 
-    $agent_id = agents_get_agent_id($agent_name);
-    if (!util_api_check_agent_and_print_error($agent_id, 'string', 'AW')) {
-        return;
+    $agent_by_alias = false;
+
+    if ($other['data'][0] === '1') {
+        $agent_by_alias = true;
     }
 
-    if (!$agent_id) {
-        returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exist.'));
-        return;
+    if ($agent_by_alias) {
+        $ids_agents = agents_get_agent_id_by_alias($agent_name);
+    } else {
+        $agent_id = agents_get_agent_id($agent_name);
+    }
+
+    if ($agent_by_alias) {
+        foreach ($ids_agents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                return;
+            }
+        }
+    } else {
+        if (!util_api_check_agent_and_print_error($agent_id, 'string', 'AW')) {
+            return;
+        }
+    }
+
+    if ($agent_by_alias) {
+        foreach ($ids_agents as $id) {
+            if (!$id['id_agente']) {
+                returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exist.'));
+                return;
+            }
+        }
+    } else {
+        if (!$agent_id) {
+            returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exist.'));
+            return;
+        }
     }
 
     $component = db_get_row('tnetwork_component', 'name', $component_name);
@@ -5406,14 +5771,29 @@ function api_set_create_network_module_from_component($agent_name, $component_na
     $component['ip_target'] = agents_get_address($agent_id);
 
     // Create module
-    $module_id = modules_create_agent_module($agent_id, $component_name, $component, true);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
 
-    if (!$module_id) {
-        returnError('error_network_module_from_component', __('Error creating module from network component. Error creating module.'));
+        foreach ($ids_agents as $id) {
+            $module_id = modules_create_agent_module($id['id_agente'], $component_name, $component, true);
+
+            if ($module_id) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => __('%d agents affected', $agents_affected)]);
         return;
-    }
+    } else {
+        $module_id = modules_create_agent_module($agent_id, $component_name, $component, true);
 
-    return $module_id;
+        if (!$module_id) {
+            returnError('error_network_module_from_component', __('Error creating module from network component. Error creating module.'));
+            return;
+        }
+
+        return $module_id;
+    }
 }
 
 
@@ -5552,7 +5932,7 @@ function api_set_delete_module_template($id, $thrash1, $other, $thrash3)
 
 
 /**
- * Delete an module assigned to a template. And return a message with the result of the operation.
+ * Delete a module assigned to a template and return a message with the result of the operation.
  *
  * @param $id        Agent Name
  * @param $id2        Alert Template Name
@@ -5573,11 +5953,6 @@ function api_set_delete_module_template_by_names($id, $id2, $other, $trash1)
 
     $result = 0;
 
-    if ($other['type'] != 'string') {
-        returnError('error_parameter', 'Error in the parameters.');
-        return;
-    }
-
     if (! check_acl($config['id_user'], 0, 'AD')
         && ! check_acl($config['id_user'], 0, 'LM')
     ) {
@@ -5585,10 +5960,26 @@ function api_set_delete_module_template_by_names($id, $id2, $other, $trash1)
         return;
     }
 
-    $idAgent = agents_get_agent_id($id);
+    $agent_by_alias = false;
 
-    if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
-        return;
+    if ($other['data'][1] === '1') {
+        $agent_by_alias = true;
+    }
+
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
+                return;
+            }
+        }
+    } else {
+        $idAgent = agents_get_agent_id($id);
+
+        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
+            return;
+        }
     }
 
     $row = db_get_row_filter('talert_templates', ['name' => $id2]);
@@ -5601,25 +5992,50 @@ function api_set_delete_module_template_by_names($id, $id2, $other, $trash1)
     $idTemplate = $row['id'];
     $idActionTemplate = $row['id_alert_action'];
 
-    $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data']]);
+    $delete_count = 0;
 
-    if ($idAgentModule === false) {
-        returnError('error_parameter', 'Error in the parameters.');
-        return;
-    }
+    if ($agent_by_alias) {
+        foreach ($idsAgents as $id) {
+            $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $other['data'][0]]);
 
-    $values = [
-        'id_agent_module'   => $idAgentModule,
-        'id_alert_template' => $idTemplate,
-    ];
+            if ($idAgentModule === false) {
+                continue;
+            }
 
-    $result = db_process_sql_delete('talert_template_modules', $values);
+            $values = [
+                'id_agent_module'   => $idAgentModule,
+                'id_alert_template' => $idTemplate,
+            ];
 
-    if ($result == 0) {
-        // TODO: Improve the error returning more info
-        returnError('error_delete_module_template_by_name', __('Error deleting module template.'));
+            $result = db_process_sql_delete('talert_template_modules', $values);
+
+            if ($result != 0) {
+                $delete_count++;
+            }
+        }
+
+        returnError('error_delete_module_template_by_name', __('Module template has been deleted in %d agents.', $delete_count));
     } else {
-        returnData('string', ['type' => 'string', 'data' => __('Correct deleting of module template.')]);
+        $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data'][0]]);
+
+        if ($idAgentModule === false) {
+            returnError('error_parameter', 'Error in the parameters1.');
+            return;
+        }
+
+        $values = [
+            'id_agent_module'   => $idAgentModule,
+            'id_alert_template' => $idTemplate,
+        ];
+
+        $result = db_process_sql_delete('talert_template_modules', $values);
+
+        if ($result == 0) {
+            // TODO: Improve the error returning more info
+            returnError('error_delete_module_template_by_name', __('Error deleting module template.'));
+        } else {
+            returnData('string', ['type' => 'string', 'data' => __('Correct deleting of module template.')]);
+        }
     }
 }
 
@@ -5662,15 +6078,15 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3)
 
     $sql = sprintf(
         '
-		SELECT talert_template_modules.id
-		FROM talert_template_modules
-			INNER JOIN tagente_modulo t2
-				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-			INNER JOIN tagente t3
-				ON t2.id_agente = t3.id_agente
-			INNER JOIN talert_templates t4
-				ON talert_template_modules.id_alert_template = t4.id
-		WHERE t3.id_agente in (%s)',
+        SELECT talert_template_modules.id
+        FROM talert_template_modules
+            INNER JOIN tagente_modulo t2
+                ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+            INNER JOIN tagente t3
+                ON t2.id_agente = t3.id_agente
+            INNER JOIN talert_templates t4
+                ON talert_template_modules.id_alert_template = t4.id
+        WHERE t3.id_agente in (%s)',
         $agents_string
     );
 
@@ -5758,9 +6174,9 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3)
         if (count($result_pol_alerts) != 0) {
             $sql = sprintf(
                 '
-				SELECT id
-				FROM talert_template_modules 
-				WHERE id_policy_alerts IN (%s)',
+                SELECT id
+                FROM talert_template_modules 
+                WHERE id_policy_alerts IN (%s)',
                 $id_pol_alerts
             );
 
@@ -6215,9 +6631,8 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    $date_from = strtotime(html_entity_decode($other['data'][1]));
-    $date_to = strtotime(html_entity_decode($other['data'][2]));
-
+    $date_from = strtotime(html_entity_decode($other['data'][1].' '.$other['data'][11]));
+    $date_to = strtotime(html_entity_decode($other['data'][2].' '.$other['data'][12]));
     $values = [];
     $values['name'] = $id;
     $values = [
@@ -7645,8 +8060,8 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
         if (defined('METACONSOLE')) {
             $servers = db_get_all_rows_sql(
                 'SELECT *
-				FROM tmetaconsole_setup
-				WHERE disabled = 0'
+                FROM tmetaconsole_setup
+                WHERE disabled = 0'
             );
 
             if ($servers === false) {
@@ -7935,10 +8350,10 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
 
         $sql = sprintf(
             'SELECT utimestamp, datos 
-			FROM tagente_datos 
-			WHERE id_agente_modulo = %d AND utimestamp > %d 
-			AND utimestamp < %d 
-			ORDER BY utimestamp DESC',
+            FROM tagente_datos 
+            WHERE id_agente_modulo = %d AND utimestamp > %d 
+            AND utimestamp < %d 
+            ORDER BY utimestamp DESC',
             $id,
             $date_start,
             $date_end
@@ -7947,17 +8362,17 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         if ($periodSeconds == null) {
             $sql = sprintf(
                 'SELECT utimestamp, datos 
-				FROM tagente_datos 
-				WHERE id_agente_modulo = %d 
-				ORDER BY utimestamp DESC',
+                FROM tagente_datos 
+                WHERE id_agente_modulo = %d 
+                ORDER BY utimestamp DESC',
                 $id
             );
         } else {
             $sql = sprintf(
                 'SELECT utimestamp, datos 
-				FROM tagente_datos 
-				WHERE id_agente_modulo = %d AND utimestamp > %d 
-				ORDER BY utimestamp DESC',
+                FROM tagente_datos 
+                WHERE id_agente_modulo = %d AND utimestamp > %d 
+                ORDER BY utimestamp DESC',
                 $id,
                 (get_system_time() - $periodSeconds)
             );
@@ -8276,7 +8691,7 @@ function api_set_enable_disable_user($id, $thrash2, $other, $thrash3)
 }
 
 
-function otherParameter2Filter($other, $return_as_array=false)
+function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=false)
 {
     $filter = [];
 
@@ -8284,14 +8699,28 @@ function otherParameter2Filter($other, $return_as_array=false)
         $filter['criticity'] = $other['data'][1];
     }
 
-    $idAgent = null;
     if (isset($other['data'][2]) && $other['data'][2] != '') {
-        $idAgents = agents_get_agent_id_by_alias($other['data'][2]);
+        if ($use_agent_name === false) {
+            $idAgents = agents_get_agent_id_by_alias($other['data'][2]);
 
-        if (!empty($idAgent)) {
-            $filter[] = 'id_agente IN ('.explode(',', $idAgents).')';
+            if (!empty($idAgents)) {
+                $idAgent = [];
+                foreach ($idAgents as $key => $value) {
+                    $idAgent[] .= $value['id_agente'];
+                }
+
+                $filter[] = 'id_agente IN ('.implode(',', $idAgent).')';
+            } else {
+                $filter['sql'] = '1=0';
+            }
         } else {
-            $filter['sql'] = '1=0';
+            $idAgent = agents_get_agent_id($other['data'][2]);
+
+            if (!empty($idAgent)) {
+                $filter[] = 'id_agente = '.$idAgent;
+            } else {
+                $filter['sql'] = '1=0';
+            }
         }
     }
 
@@ -8302,9 +8731,21 @@ function otherParameter2Filter($other, $return_as_array=false)
             $filterModule['id_agente'] = $idAgent;
         }
 
-        $idAgentModulo = db_get_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
-        if ($idAgentModulo !== false) {
-            $filter['id_agentmodule'] = $idAgentModulo;
+        $idAgentModulo = db_get_all_rows_filter('tagente_modulo', $filterModule, 'id_agente_modulo');
+
+        if (!empty($idAgentModulo)) {
+            $id_agentmodule = [];
+            foreach ($idAgentModulo as $key => $value) {
+                $id_agentmodule[] .= $value['id_agente_modulo'];
+            }
+
+            $idAgentModulo = $id_agentmodule;
+            if ($idAgentModulo !== false) {
+                $filter['id_agentmodule'] = $idAgentModulo;
+            }
+        } else {
+            // If the module doesn't exist or doesn't exist in that agent.
+            $filter['sql'] = '1=0';
         }
     }
 
@@ -8393,13 +8834,11 @@ function otherParameter2Filter($other, $return_as_array=false)
             if ($other['data'][12] == 'more_criticity') {
                 $filter['more_criticity'] = true;
             }
-        } else {
         }
     } else {
         if ($return_as_array) {
             $filter['total'] = false;
             $filter['more_criticity'] = false;
-        } else {
         }
     }
 
@@ -8407,7 +8846,7 @@ function otherParameter2Filter($other, $return_as_array=false)
         if ($return_as_array) {
             $filter['id_group'] = $other['data'][13];
         } else {
-            $filterString .= ' AND id_grupo ='.$other['data'][13];
+            $filterString .= ' AND id_grupo = '.$other['data'][13];
         }
     }
 
@@ -8427,7 +8866,7 @@ function otherParameter2Filter($other, $return_as_array=false)
 
             if ($event_type == 'not_normal') {
                 $filterString .= " AND ( event_type LIKE '%warning%'
-					OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
+                    OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
             } else {
                 $filterString .= ' AND event_type LIKE "%'.$event_type.'%"';
             }
@@ -8463,48 +8902,91 @@ function api_set_new_alert_template($id, $id2, $other, $trash1)
     }
 
     if ($other['type'] == 'string') {
-        returnError('error_parameter', 'Error in the parameters.');
+        returnError('error_parameter', 'Error in the parameters0.');
         return;
     } else if ($other['type'] == 'array') {
-        $idAgent = agents_get_agent_id($id);
+        $agent_by_alias = false;
 
-        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-            return;
+        if ($other['data'][1] === '1') {
+            $agent_by_alias = true;
+        }
+
+        if ($agent_by_alias) {
+            $idsAgents = agents_get_agent_id_by_alias($id);
+        } else {
+            $idAgent = agents_get_agent_id($id);
+        }
+
+        if ($agent_by_alias) {
+            foreach ($idsAgents as $id) {
+                if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                    return;
+                }
+            }
+        } else {
+            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+                return;
+            }
         }
 
         $row = db_get_row_filter('talert_templates', ['name' => $id2]);
 
         if ($row === false) {
-            returnError('error_parameter', 'Error in the parameters.');
+            returnError('error_parameter', 'Error in the parameters1.');
             return;
         }
 
         $idTemplate = $row['id'];
         $idActionTemplate = $row['id_alert_action'];
 
-        $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data'][0]]);
+        $inserted_count = 0;
 
-        if ($idAgentModule === false) {
-            returnError('error_parameter', 'Error in the parameters.');
+        if ($agent_by_alias) {
+            foreach ($idsAgents as $id) {
+                $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $other['data'][0]]);
+
+                if ($idAgentModule === false) {
+                    continue;
+                }
+
+                $values = [
+                    'id_agent_module'   => $idAgentModule,
+                    'id_alert_template' => $idTemplate,
+                ];
+
+                $return = db_process_sql_insert('talert_template_modules', $values);
+
+                if ($return != false) {
+                    $inserted_count++;
+                }
+            }
+
+            returnData('string', ['type' => 'string', 'data' => __('Template have been inserted in %d agents.', $inserted_count)]);
+        } else {
+            $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data'][0]]);
+
+            if ($idAgentModule === false) {
+                returnError('error_parameter', 'Error in the parameter2s.');
+                return;
+            }
+
+            $values = [
+                'id_agent_module'   => $idAgentModule,
+                'id_alert_template' => $idTemplate,
+            ];
+
+            $return = db_process_sql_insert('talert_template_modules', $values);
+
+            $data['type'] = 'string';
+            if ($return === false) {
+                $data['data'] = 0;
+            } else {
+                $data['data'] = $return;
+            }
+
+            returnData('string', $data);
             return;
         }
-
-        $values = [
-            'id_agent_module'   => $idAgentModule,
-            'id_alert_template' => $idTemplate,
-        ];
-
-        $return = db_process_sql_insert('talert_template_modules', $values);
-
-        $data['type'] = 'string';
-        if ($return === false) {
-            $data['data'] = 0;
-        } else {
-            $data['data'] = $return;
-        }
-
-        returnData('string', $data);
-        return;
     }
 }
 
@@ -8515,18 +8997,61 @@ function api_set_delete_module($id, $id2, $other, $trash1)
         return;
     }
 
-    if ($other['type'] == 'string') {
-        $simulate = false;
-        if ($other['data'] == 'simulate') {
-            $simulate = true;
-        }
+    $simulate = false;
+    if ($other['data'][0] == 'simulate') {
+        $simulate = true;
+    }
 
+    $agent_by_alias = false;
+
+    if ($other['data'][1] === '1') {
+        $agent_by_alias = true;
+    }
+
+    if ($agent_by_alias) {
+        $idsAgents = agents_get_agent_id_by_alias($id);
+    } else {
         $idAgent = agents_get_agent_id($id);
+    }
 
+    if ($agent_by_alias) {
+        foreach ($idsAgents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
+                return;
+            }
+        }
+    } else {
         if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
             return;
         }
+    }
 
+    if ($agent_by_alias) {
+        foreach ($idsAgents as $id) {
+            $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $id2]);
+
+            if ($idAgentModule === false) {
+                continue;
+            }
+
+            if (!$simulate) {
+                $return = modules_delete_agent_module($idAgentModule);
+            } else {
+                $return = true;
+            }
+
+            $data['type'] = 'string';
+            if ($return === false) {
+                $data['data'] = 0;
+            } else {
+                $data['data'] = $return;
+            }
+
+            returnData('string', $data);
+        }
+
+        return;
+    } else {
         $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $id2]);
 
         if ($idAgentModule === false) {
@@ -8548,9 +9073,6 @@ function api_set_delete_module($id, $id2, $other, $trash1)
         }
 
         returnData('string', $data);
-        return;
-    } else {
-        returnError('error_parameter', 'Error in the parameters.');
         return;
     }
 }
@@ -8582,14 +9104,14 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
             $agent = db_get_row_filter('tagente', ['id_agente' => $agentModule['id_agente']]);
 
             $xmlTemplate = "<?xml version='1.0' encoding='ISO-8859-1'?>
-				<agent_data description='' group='' os_name='%s' "." os_version='%s' interval='%d' version='%s' timestamp='%s' agent_name='%s' timezone_offset='%d'>
-					<module>
-						<name><![CDATA[%s]]></name>
-						<description><![CDATA[%s]]></description>
-						<type><![CDATA[%s]]></type>
-						<data><![CDATA[%s]]></data>
-					</module>
-				</agent_data>";
+                <agent_data description='' group='' os_name='%s' "." os_version='%s' interval='%d' version='%s' timestamp='%s' agent_name='%s' timezone_offset='%d'>
+                    <module>
+                        <name><![CDATA[%s]]></name>
+                        <description><![CDATA[%s]]></description>
+                        <type><![CDATA[%s]]></type>
+                        <data><![CDATA[%s]]></data>
+                    </module>
+                </agent_data>";
 
             $xml = sprintf(
                 $xmlTemplate,
@@ -8631,9 +9153,29 @@ function api_set_new_module($id, $id2, $other, $trash1)
         return;
     } else if ($other['type'] == 'array') {
         $values = [];
-        $values['id_agente'] = agents_get_agent_id($id);
-        if (!util_api_check_agent_and_print_error($values['id_agente'], 'string', 'AW')) {
-            return;
+
+        $agent_by_alias = false;
+
+        if ($other['data'][15] === '1') {
+            $agent_by_alias = true;
+        }
+
+        if ($agent_by_alias) {
+            $idsAgents = agents_get_agent_id_by_alias($id);
+        } else {
+            $values['id_agente'] = agents_get_agent_id($id);
+        }
+
+        if ($agent_by_alias) {
+            foreach ($idsAgents as $id) {
+                if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                    return;
+                }
+            }
+        } else {
+            if (!util_api_check_agent_and_print_error($values['id_agente'], 'string', 'AW')) {
+                return;
+            }
         }
 
         $values['nombre'] = $id2;
@@ -8713,11 +9255,30 @@ function api_set_new_module($id, $id2, $other, $trash1)
 
         $values['id_modulo'] = 2;
 
-        $return = modules_create_agent_module(
-            $values['id_agente'],
-            $values['nombre'],
-            $values
-        );
+        if ($agent_by_alias) {
+            $agents_module_created = 0;
+
+            foreach ($idsAgents as $id) {
+                $return = modules_create_agent_module(
+                    $id['id_agente'],
+                    $values['nombre'],
+                    $values
+                );
+
+                if ($return != false) {
+                    $agents_module_created++;
+                }
+            }
+
+            returnData('string', ['type' => 'string', 'data' => __('Module has been created in %d agents.', $agents_module_created)]);
+            return;
+        } else {
+                $return = modules_create_agent_module(
+                    $values['id_agente'],
+                    $values['nombre'],
+                    $values
+                );
+        }
 
         $data['type'] = 'string';
         if ($return === false) {
@@ -8753,66 +9314,133 @@ function api_set_alert_actions($id, $id2, $other, $trash1)
     }
 
     if ($other['type'] == 'string') {
-        returnError('error_parameter', 'Error in the parameters.');
+        returnError('error_parameter', 'Error in the parameters0.');
         return;
     } else if ($other['type'] == 'array') {
-        $idAgent = agents_get_agent_id($id);
-        if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
-            return;
+        $agent_by_alias = false;
+
+        if ($other['data'][4] === '1') {
+            $agent_by_alias = true;
+        }
+
+        if ($agent_by_alias) {
+            $idsAgents = agents_get_agent_id_by_alias($id);
+        } else {
+            $idAgent = agents_get_agent_id($id);
+        }
+
+        if ($agent_by_alias) {
+            foreach ($idsAgents as $id) {
+                if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                    return;
+                }
+            }
+        } else {
+            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
+                return;
+            }
         }
 
         $row = db_get_row_filter('talert_templates', ['name' => $id2]);
         if ($row === false) {
-            returnError('error_parameter', 'Error in the parameters.');
+            returnError('error_parameter', 'Error in the parameters1.');
             return;
         }
 
         $idTemplate = $row['id'];
 
-        $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data'][0]]);
-        if ($idAgentModule === false) {
-            returnError('error_parameter', 'Error in the parameters.');
-            return;
-        }
+        if ($agent_by_alias) {
+            $actions_set = 0;
 
-        $idAlertTemplateModule = db_get_value_filter('id', 'talert_template_modules', ['id_alert_template' => $idTemplate, 'id_agent_module' => $idAgentModule]);
-        if ($idAlertTemplateModule === false) {
-            returnError('error_parameter', 'Error in the parameters.');
-            return;
-        }
+            foreach ($idsAgents as $id) {
+                $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $other['data'][0]]);
+                if ($idAgentModule === false) {
+                    continue;
+                }
 
-        if ($other['data'][1] != '') {
-            $idAction = db_get_value_filter('id', 'talert_actions', ['name' => $other['data'][1]]);
-            if ($idAction === false) {
+                $idAlertTemplateModule = db_get_value_filter('id', 'talert_template_modules', ['id_alert_template' => $idTemplate, 'id_agent_module' => $idAgentModule]);
+                if ($idAlertTemplateModule === false) {
+                    returnError('error_parameter', 'Error in the parameters.');
+                    return;
+                }
+
+                if ($other['data'][1] != '') {
+                    $idAction = db_get_value_filter('id', 'talert_actions', ['name' => $other['data'][1]]);
+                    if ($idAction === false) {
+                        returnError('error_parameter', 'Error in the parameters.');
+                        return;
+                    }
+                } else {
+                    returnError('error_parameter', 'Error in the parameters.');
+                    return;
+                }
+
+                $firesMin = $other['data'][2];
+                $firesMax = $other['data'][3];
+
+                $values = [
+                    'id_alert_template_module' => $idAlertTemplateModule,
+                    'id_alert_action'          => $idAction,
+                    'fires_min'                => $firesMin,
+                    'fires_max'                => $firesMax,
+                ];
+
+                $return = db_process_sql_insert('talert_template_module_actions', $values);
+
+                if ($return != false) {
+                    $actions_set++;
+                }
+            }
+
+            returnData('string', ['type' => 'string', 'data' => __('Action has been set for %d agents.', $actions_set)]);
+
+            return;
+        } else {
+            $idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $idAgent, 'nombre' => $other['data'][0]]);
+            if ($idAgentModule === false) {
                 returnError('error_parameter', 'Error in the parameters.');
                 return;
             }
-        } else {
-            returnError('error_parameter', 'Error in the parameters.');
+
+            $idAlertTemplateModule = db_get_value_filter('id', 'talert_template_modules', ['id_alert_template' => $idTemplate, 'id_agent_module' => $idAgentModule]);
+            if ($idAlertTemplateModule === false) {
+                returnError('error_parameter', 'Error in the parameters.');
+                return;
+            }
+
+            if ($other['data'][1] != '') {
+                $idAction = db_get_value_filter('id', 'talert_actions', ['name' => $other['data'][1]]);
+                if ($idAction === false) {
+                    returnError('error_parameter', 'Error in the parameters.');
+                    return;
+                }
+            } else {
+                returnError('error_parameter', 'Error in the parameters.');
+                return;
+            }
+
+            $firesMin = $other['data'][2];
+            $firesMax = $other['data'][3];
+
+            $values = [
+                'id_alert_template_module' => $idAlertTemplateModule,
+                'id_alert_action'          => $idAction,
+                'fires_min'                => $firesMin,
+                'fires_max'                => $firesMax,
+            ];
+
+            $return = db_process_sql_insert('talert_template_module_actions', $values);
+
+            $data['type'] = 'string';
+            if ($return === false) {
+                $data['data'] = 0;
+            } else {
+                $data['data'] = $return;
+            }
+
+            returnData('string', $data);
             return;
         }
-
-        $firesMin = $other['data'][2];
-        $firesMax = $other['data'][3];
-
-        $values = [
-            'id_alert_template_module' => $idAlertTemplateModule,
-            'id_alert_action'          => $idAction,
-            'fires_min'                => $firesMin,
-            'fires_max'                => $firesMax,
-        ];
-
-        $return = db_process_sql_insert('talert_template_module_actions', $values);
-
-        $data['type'] = 'string';
-        if ($return === false) {
-            $data['data'] = 0;
-        } else {
-            $data['data'] = $return;
-        }
-
-        returnData('string', $data);
-        return;
     }
 }
 
@@ -9141,11 +9769,11 @@ function api_set_new_event($trash1, $trash2, $other, $trash3)
         } else {
             $idAlert = db_get_value_sql(
                 "SELECT t1.id 
-				FROM talert_template_modules t1 
-					INNER JOIN talert_templates t2 
-						ON t1.id_alert_template = t2.id 
-				WHERE t1.id_agent_module = 1
-					AND t2.name LIKE '".$other['data'][7]."'"
+                FROM talert_template_modules t1 
+                    INNER JOIN talert_templates t2 
+                        ON t1.id_alert_template = t2.id 
+                WHERE t1.id_agent_module = 1
+                    AND t2.name LIKE '".$other['data'][7]."'"
             );
 
             if ($idAlert === false) {
@@ -9299,7 +9927,9 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
             }
         }
 
-        $filterString = otherParameter2Filter($other);
+        $use_agent_name = ($other['data'][8] === '1') ? true : false;
+
+        $filterString = otherParameter2Filter($other, false, $use_agent_name);
 
         if (!users_can_manage_group_all('EW')) {
             $user_groups = implode(
@@ -9382,9 +10012,9 @@ function api_get_gis_agent($id_agent, $trash1, $tresh2, $return_type, $user_in_d
 
     $agent_gis_data = db_get_row_sql(
         '
-		SELECT *
-		FROM tgis_data_status
-		WHERE tagente_id_agente = '.$id_agent
+        SELECT *
+        FROM tgis_data_status
+        WHERE tagente_id_agente = '.$id_agent
     );
 
     if ($agent_gis_data) {
@@ -9616,7 +10246,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $utimestamp_upper = 0;
     $utimestamp_bottom = 0;
 
-    $filter = otherParameter2Filter($other, true);
+    $use_agent_name = ($other['data'][16] === '1') ? true : false;
+
+    $filter = otherParameter2Filter($other, true, $use_agent_name);
 
     if (isset($filter['criticity'])) {
         $severity = $filter['criticity'];
@@ -9751,7 +10383,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
             $sql_post .= " AND event_type LIKE '%$event_type%' ";
         } else if ($event_type == 'not_normal') {
             $sql_post .= " AND ( event_type LIKE '%warning%'
-				OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
+                OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
         } else {
             $sql_post .= " AND event_type = '".$event_type."'";
         }
@@ -9810,48 +10442,48 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
             case 'mysql':
                 if ($filter['total']) {
                     $sql = 'SELECT COUNT(*)
-						FROM '.$table_events.'
-						WHERE 1=1 '.$sql_post;
+                        FROM '.$table_events.'
+                        WHERE 1=1 '.$sql_post;
                 } else if ($filter['more_criticity']) {
                     $sql = 'SELECT criticity
-						FROM '.$table_events.'
-						WHERE 1=1 '.$sql_post.'
-						ORDER BY criticity DESC
-						LIMIT 1';
+                        FROM '.$table_events.'
+                        WHERE 1=1 '.$sql_post.'
+                        ORDER BY criticity DESC
+                        LIMIT 1';
                 } else {
                     if (defined('METACONSOLE')) {
                         $sql = 'SELECT *,
-							(SELECT t2.nombre
-								FROM tgrupo t2
-								WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_name,
-							(SELECT t2.icon
-								FROM tgrupo t2
-								WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_icon
-							FROM '.$table_events.'
-							WHERE 1=1 '.$sql_post.'
-							ORDER BY utimestamp DESC
-							LIMIT '.$offset.','.$pagination;
+                            (SELECT t2.nombre
+                                FROM tgrupo t2
+                                WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_name,
+                            (SELECT t2.icon
+                                FROM tgrupo t2
+                                WHERE t2.id_grupo = '.$table_events.'.id_grupo) AS group_icon
+                            FROM '.$table_events.'
+                            WHERE 1=1 '.$sql_post.'
+                            ORDER BY utimestamp DESC
+                            LIMIT '.$offset.','.$pagination;
                     } else {
                         $sql = 'SELECT *,
-							(SELECT t1.alias
-								FROM tagente t1
-								WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-							(SELECT t2.nombre
-								FROM tgrupo t2
-								WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-							(SELECT t2.icon
-								FROM tgrupo t2
-								WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-							(SELECT tmodule.name
-								FROM tmodule
-								WHERE id_module IN (
-									SELECT tagente_modulo.id_modulo
-									FROM tagente_modulo
-									WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-							FROM '.$table_events.'
-							WHERE 1=1 '.$sql_post.'
-							ORDER BY utimestamp DESC
-							LIMIT '.$offset.','.$pagination;
+                            (SELECT t1.alias
+                                FROM tagente t1
+                                WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+                            (SELECT t2.nombre
+                                FROM tgrupo t2
+                                WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+                            (SELECT t2.icon
+                                FROM tgrupo t2
+                                WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
+                            (SELECT tmodule.name
+                                FROM tmodule
+                                WHERE id_module IN (
+                                    SELECT tagente_modulo.id_modulo
+                                    FROM tagente_modulo
+                                    WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
+                            FROM '.$table_events.'
+                            WHERE 1=1 '.$sql_post.'
+                            ORDER BY utimestamp DESC
+                            LIMIT '.$offset.','.$pagination;
                     }
                 }
             break;
@@ -9859,25 +10491,25 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
             case 'postgresql':
                 // TODO TOTAL
                 $sql = 'SELECT *,
-					(SELECT t1.alias
-						FROM tagente t1
-						WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-					(SELECT t2.nombre
-						FROM tgrupo t2
-						WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-					(SELECT t2.icon
-						FROM tgrupo t2
-						WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-					(SELECT tmodule.name
-						FROM tmodule
-						WHERE id_module IN (
-							SELECT tagente_modulo.id_modulo
-							FROM tagente_modulo
-							WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-					FROM tevento
-					WHERE 1=1 '.$sql_post.'
-					ORDER BY utimestamp DESC
-					LIMIT '.$pagination.' OFFSET '.$offset;
+                    (SELECT t1.alias
+                        FROM tagente t1
+                        WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+                    (SELECT t2.nombre
+                        FROM tgrupo t2
+                        WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+                    (SELECT t2.icon
+                        FROM tgrupo t2
+                        WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
+                    (SELECT tmodule.name
+                        FROM tmodule
+                        WHERE id_module IN (
+                            SELECT tagente_modulo.id_modulo
+                            FROM tagente_modulo
+                            WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
+                    FROM tevento
+                    WHERE 1=1 '.$sql_post.'
+                    ORDER BY utimestamp DESC
+                    LIMIT '.$pagination.' OFFSET '.$offset;
             break;
 
             case 'oracle':
@@ -9887,26 +10519,26 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                 $set['offset'] = $offset;
 
                 $sql = 'SELECT *,
-					(SELECT t1.alias
-						FROM tagente t1
-						WHERE t1.id_agente = tevento.id_agente) AS alias,
-					(SELECT t1.nombre
-						FROM tagente t1
-						WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-					(SELECT t2.nombre
-						FROM tgrupo t2
-						WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-					(SELECT t2.icon
-						FROM tgrupo t2
-						WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
-					(SELECT tmodule.name
-						FROM tmodule
-						WHERE id_module IN (
-							SELECT tagente_modulo.id_modulo
-							FROM tagente_modulo
-							WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
-					FROM tevento
-					WHERE 1=1 '.$sql_post.' ORDER BY utimestamp DESC';
+                    (SELECT t1.alias
+                        FROM tagente t1
+                        WHERE t1.id_agente = tevento.id_agente) AS alias,
+                    (SELECT t1.nombre
+                        FROM tagente t1
+                        WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+                    (SELECT t2.nombre
+                        FROM tgrupo t2
+                        WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+                    (SELECT t2.icon
+                        FROM tgrupo t2
+                        WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
+                    (SELECT tmodule.name
+                        FROM tmodule
+                        WHERE id_module IN (
+                            SELECT tagente_modulo.id_modulo
+                            FROM tagente_modulo
+                            WHERE tagente_modulo.id_agente_modulo=tevento.id_agentmodule)) AS module_name
+                    FROM tevento
+                    WHERE 1=1 '.$sql_post.' ORDER BY utimestamp DESC';
                 $sql = oracle_recode_query($sql, $set);
             break;
         }
@@ -9916,26 +10548,26 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                 db_process_sql('SET group_concat_max_len = 9999999');
 
                 $sql = "SELECT *, MAX(id_evento) AS id_evento,
-						GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-						MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-					FROM ".$table_events.'
-					WHERE 1=1 '.$sql_post.'
-					GROUP BY evento, id_agentmodule
-					ORDER BY timestamp_rep DESC
-					LIMIT '.$offset.','.$pagination;
+                        GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+                    FROM ".$table_events.'
+                    WHERE 1=1 '.$sql_post.'
+                    GROUP BY evento, id_agentmodule
+                    ORDER BY timestamp_rep DESC
+                    LIMIT '.$offset.','.$pagination;
             break;
 
             case 'postgresql':
                 $sql = "SELECT *, MAX(id_evento) AS id_evento,
-						array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-						MIN(estado) AS min_estado, MAX(estado) AS max_estado,
-						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-					FROM ".$table_events.'
-					WHERE 1=1 '.$sql_post.'
-					GROUP BY evento, id_agentmodule
-					ORDER BY timestamp_rep DESC
-					LIMIT '.$pagination.' OFFSET '.$offset;
+                        array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
+                        MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+                        COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+                    FROM ".$table_events.'
+                    WHERE 1=1 '.$sql_post.'
+                    GROUP BY evento, id_agentmodule
+                    ORDER BY timestamp_rep DESC
+                    LIMIT '.$pagination.' OFFSET '.$offset;
             break;
 
             case 'oracle':
@@ -9944,21 +10576,21 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
                 $set['offset'] = $offset;
                 // TODO: Remove duplicate user comments
                 $sql = 'SELECT a.*, b.event_rep, b.timestamp_rep
-					FROM (SELECT *
-						FROM tevento
-						WHERE 1=1 '.$sql_post.") a, 
-					(SELECT MAX (id_evento) AS id_evento,
-						to_char(evento) AS evento, id_agentmodule,
-						COUNT(*) AS event_rep, MIN(estado) AS min_estado,
-						MAX(estado) AS max_estado,
-						LISTAGG(user_comment, '') AS user_comment,
-						MAX(utimestamp) AS timestamp_rep 
-					FROM ".$table_events.' 
-					WHERE 1=1 '.$sql_post.' 
-					GROUP BY to_char(evento), id_agentmodule) b 
-					WHERE a.id_evento=b.id_evento AND 
-						to_char(a.evento)=to_char(b.evento) AND
-						a.id_agentmodule=b.id_agentmodule';
+                    FROM (SELECT *
+                        FROM tevento
+                        WHERE 1=1 '.$sql_post.") a, 
+                    (SELECT MAX (id_evento) AS id_evento,
+                        to_char(evento) AS evento, id_agentmodule,
+                        COUNT(*) AS event_rep, MIN(estado) AS min_estado,
+                        MAX(estado) AS max_estado,
+                        LISTAGG(user_comment, '') AS user_comment,
+                        MAX(utimestamp) AS timestamp_rep 
+                    FROM ".$table_events.' 
+                    WHERE 1=1 '.$sql_post.' 
+                    GROUP BY to_char(evento), id_agentmodule) b 
+                    WHERE a.id_evento=b.id_evento AND 
+                        to_char(a.evento)=to_char(b.evento) AND
+                        a.id_agentmodule=b.id_agentmodule';
                 $sql = oracle_recode_query($sql, $set);
             break;
         }
@@ -10036,8 +10668,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $data['type'] = 'array';
     $data['data'] = $result;
 
-    returnData($returnType, $data, $separator);
-
+    // returnData($returnType, $data, $separator);
     if (empty($result)) {
         return false;
     }
@@ -10077,8 +10708,6 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
                 returnError('ERROR_API_PANDORAFMS', $returnType);
             }
         }
-
-        return;
     }
 
     if ($other['type'] == 'string') {
@@ -10092,10 +10721,13 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
     } else if ($other['type'] == 'array') {
         $separator = $other['data'][0];
 
-        $filterString = otherParameter2Filter($other);
+        // By default it uses agent alias.
+        $use_agent_name = ($other['data'][16] === '1') ? true : false;
+
+        $filterString = otherParameter2Filter($other, false, $use_agent_name);
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $dataRows = db_get_all_rows_filter('tmetaconsole_event', $filterString);
     } else {
         $dataRows = db_get_all_rows_filter('tevento', $filterString);
@@ -10576,25 +11208,58 @@ function api_set_new_note_incident($id, $id2, $other, $thrash2)
  */
 
 
-function api_set_disable_module($agent_name, $module_name, $thrast3, $thrash4)
+function api_set_disable_module($agent_name, $module_name, $other, $thrash4)
 {
     if (defined('METACONSOLE')) {
         return;
     }
 
-    $id_agent = agents_get_agent_id($agent_name);
-    if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AD')) {
-        return;
+    $agent_by_alias = false;
+
+    if ($other['data'][0] === '1') {
+        $agent_by_alias = true;
     }
 
-    $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+    if ($agent_by_alias) {
+        $ids_agents = agents_get_agent_id_by_alias($agent_name);
 
-    $result = modules_change_disabled($id_agent_module, 1);
-
-    if ($result === NOERR) {
-        returnData('string', ['type' => 'string', 'data' => __('Correct module disable')]);
+        foreach ($ids_agents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
+                return;
+            }
+        }
     } else {
-        returnData('string', ['type' => 'string', 'data' => __('Error disabling module')]);
+        $id_agent = agents_get_agent_id($agent_name);
+
+        if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AD')) {
+            return;
+        }
+    }
+
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($ids_agents as $id) {
+            $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $module_name]);
+
+            $result = modules_change_disabled($id_agent_module, 1);
+
+            if ($result === NOERR) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => __('%d agents affected', $agents_affected)]);
+    } else {
+        $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+
+        $result = modules_change_disabled($id_agent_module, 1);
+
+        if ($result === NOERR) {
+            returnData('string', ['type' => 'string', 'data' => __('Correct module disable')]);
+        } else {
+            returnData('string', ['type' => 'string', 'data' => __('Error disabling module')]);
+        }
     }
 }
 
@@ -10609,25 +11274,58 @@ function api_set_disable_module($agent_name, $module_name, $thrast3, $thrash4)
  */
 
 
-function api_set_enable_module($agent_name, $module_name, $thrast3, $thrash4)
+function api_set_enable_module($agent_name, $module_name, $other, $thrash4)
 {
     if (defined('METACONSOLE')) {
         return;
     }
 
-    $id_agent = agents_get_agent_id($agent_name);
-    if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AD')) {
-        return;
+    $agent_by_alias = false;
+
+    if ($other['data'][0] === '1') {
+        $agent_by_alias = true;
     }
 
-    $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+    if ($agent_by_alias) {
+        $ids_agents = agents_get_agent_id_by_alias($agent_name);
 
-    $result = modules_change_disabled($id_agent_module, 0);
-
-    if ($result === NOERR) {
-        returnData('string', ['type' => 'string', 'data' => __('Correct module enable')]);
+        foreach ($ids_agents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
+                return;
+            }
+        }
     } else {
-        returnData('string', ['type' => 'string', 'data' => __('Error enabling module')]);
+        $id_agent = agents_get_agent_id($agent_name);
+
+        if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AD')) {
+            return;
+        }
+    }
+
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($ids_agents as $id) {
+            $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $module_name]);
+
+            $result = modules_change_disabled($id_agent_module, 0);
+
+            if ($result === NOERR) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => __('%d agents affected', $agents_affected)]);
+    } else {
+        $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+
+        $result = modules_change_disabled($id_agent_module, 0);
+
+        if ($result === NOERR) {
+            returnData('string', ['type' => 'string', 'data' => __('Correct module enable')]);
+        } else {
+            returnData('string', ['type' => 'string', 'data' => __('Error enabling module')]);
+        }
     }
 }
 
@@ -10667,8 +11365,8 @@ function api_set_disable_alert($agent_name, $module_name, $template_name, $thras
 
     $result = db_process_sql(
         "UPDATE talert_template_modules
-		SET disabled = 1
-		WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
+        SET disabled = 1
+        WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
     );
 
     if ($result) {
@@ -10716,8 +11414,8 @@ function api_set_disable_alert_alias($agent_alias, $module_name, $template_name,
 
         $result = db_process_sql(
             "UPDATE talert_template_modules
-			SET disabled = 1
-			WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
+            SET disabled = 1
+            WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
         );
 
         if ($result) {
@@ -10767,8 +11465,8 @@ function api_set_enable_alert($agent_name, $module_name, $template_name, $thrash
 
     $result = db_process_sql(
         "UPDATE talert_template_modules
-		SET disabled = 0
-		WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
+        SET disabled = 0
+        WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
     );
 
     if ($result) {
@@ -10816,8 +11514,8 @@ function api_set_enable_alert_alias($agent_alias, $module_name, $template_name, 
 
         $result = db_process_sql(
             "UPDATE talert_template_modules
-			SET disabled = 0
-			WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
+            SET disabled = 0
+            WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template"
         );
 
         if ($result) {
@@ -10844,7 +11542,7 @@ function api_set_enable_alert_alias($agent_alias, $module_name, $template_name, 
  */
 
 
-function api_set_disable_module_alerts($agent_name, $module_name, $thrash3, $thrash4)
+function api_set_disable_module_alerts($agent_name, $module_name, $other, $thrash4)
 {
     global $config;
 
@@ -10857,20 +11555,59 @@ function api_set_disable_module_alerts($agent_name, $module_name, $thrash3, $thr
         return;
     }
 
-    $id_agent = agents_get_agent_id($agent_name);
-    if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AW')) {
-        return;
+    $agent_by_alias = false;
+
+    if ($other['data'][0] === '1') {
+        $agent_by_alias = true;
     }
 
-    $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+    if ($agent_by_alias) {
+        $ids_agents = agents_get_agent_id_by_alias($agent_name);
+    } else {
+        $id_agent = agents_get_agent_id($agent_name);
+    }
 
-    db_process_sql(
-        "UPDATE talert_template_modules
-		SET disabled = 1
-		WHERE id_agent_module = $id_agent_module"
-    );
+    if ($agent_by_alias) {
+        foreach ($ids_agents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                return;
+            }
+        }
+    } else {
+        if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AW')) {
+            return;
+        }
+    }
 
-    returnData('string', ['type' => 'string', 'data' => 'Correct alerts disable']);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($ids_agents as $id) {
+            $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $module_name]);
+
+            $return_value = db_process_sql(
+                "UPDATE talert_template_modules
+                SET disabled = 1
+                WHERE id_agent_module = $id_agent_module"
+            );
+
+            if ($return_value != false) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => __('%d agents affected', $agents_affected)]);
+    } else {
+        $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+
+        db_process_sql(
+            "UPDATE talert_template_modules
+            SET disabled = 1
+            WHERE id_agent_module = $id_agent_module"
+        );
+
+        returnData('string', ['type' => 'string', 'data' => 'Correct alerts disable']);
+    }
 }
 
 
@@ -10886,7 +11623,7 @@ function api_set_disable_module_alerts($agent_name, $module_name, $thrash3, $thr
  */
 
 
-function api_set_enable_module_alerts($agent_name, $module_name, $thrash3, $thrash4)
+function api_set_enable_module_alerts($agent_name, $module_name, $other, $thrash4)
 {
     global $config;
 
@@ -10899,20 +11636,59 @@ function api_set_enable_module_alerts($agent_name, $module_name, $thrash3, $thra
         return;
     }
 
-    $id_agent = agents_get_agent_id($agent_name);
-    if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AW')) {
-        return;
+    $agent_by_alias = false;
+
+    if ($other['data'][0] === '1') {
+        $agent_by_alias = true;
     }
 
-    $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+    if ($agent_by_alias) {
+        $ids_agents = agents_get_agent_id_by_alias($agent_name);
+    } else {
+        $id_agent = agents_get_agent_id($agent_name);
+    }
 
-    db_process_sql(
-        "UPDATE talert_template_modules
-		SET disabled = 0
-		WHERE id_agent_module = $id_agent_module"
-    );
+    if ($agent_by_alias) {
+        foreach ($ids_agents as $id) {
+            if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AW')) {
+                return;
+            }
+        }
+    } else {
+        if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AW')) {
+            return;
+        }
+    }
 
-    returnData('string', ['type' => 'string', 'data' => 'Correct alerts enable']);
+    if ($agent_by_alias) {
+        $agents_affected = 0;
+
+        foreach ($ids_agents as $id) {
+            $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id['id_agente'], 'nombre' => $module_name]);
+
+            $return_value = db_process_sql(
+                "UPDATE talert_template_modules
+                SET disabled = 0
+                WHERE id_agent_module = $id_agent_module"
+            );
+
+            if ($return_value != false) {
+                $agents_affected++;
+            }
+        }
+
+        returnData('string', ['type' => 'string', 'data' => __('%d agents affected', $agents_affected)]);
+    } else {
+        $id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['id_agente' => $id_agent, 'nombre' => $module_name]);
+
+        db_process_sql(
+            "UPDATE talert_template_modules
+            SET disabled = 0
+            WHERE id_agent_module = $id_agent_module"
+        );
+
+        returnData('string', ['type' => 'string', 'data' => 'Correct alerts enable']);
+    }
 }
 
 
@@ -10984,11 +11760,11 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
     }
 
     $sql = "SELECT COUNT(DISTINCT(id_agente_modulo))
-		FROM tagente_modulo tam, tagente ta
-		LEFT JOIN tagent_secondary_group tasg
-			ON ta.id_agente = tasg.id_agent
-		WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
-			AND delete_pending = 0 AND $groups_clause";
+        FROM tagente_modulo tam, tagente ta
+        LEFT JOIN tagent_secondary_group tasg
+            ON ta.id_agente = tasg.id_agent
+        WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
+            AND delete_pending = 0 AND $groups_clause";
 
     $total = db_get_value_sql($sql);
 
@@ -11049,8 +11825,8 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType)
 
     $sql = sprintf(
         'SELECT nombre
-		FROM tagente
-		WHERE id_agente = %d',
+        FROM tagente
+        WHERE id_agente = %d',
         $id_agent
     );
     $value = db_get_value_sql($sql);
@@ -11126,8 +11902,8 @@ function api_get_agent_alias($id_agent, $id_node, $trash1, $returnType)
 
     $sql = sprintf(
         'SELECT alias
-		FROM '.$table_agent_alias.'
-		WHERE id_agente = %d',
+        FROM '.$table_agent_alias.'
+        WHERE id_agente = %d',
         $id_agent
     );
     $value = db_get_value_sql($sql);
@@ -11159,8 +11935,8 @@ function api_get_module_name($id_module, $trash1, $trash2, $returnType)
 
     $sql = sprintf(
         'SELECT nombre
-		FROM tagente_modulo
-		WHERE id_agente_modulo = %d',
+        FROM tagente_modulo
+        WHERE id_agente_modulo = %d',
         $id_module
     );
 
@@ -11201,15 +11977,15 @@ function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnTy
     }
 
     $sql = "SELECT SUM(internal_counter)
-		FROM
-			talert_template_modules tatm,
-			tagente ta LEFT JOIN tagent_secondary_group tasg
-				ON ta.id_agente = tasg.id_agent,
-			tagente_modulo tam
-		WHERE tam.id_agente = ta.id_agente
-			AND tatm.id_agent_module = tam.id_agente_modulo
-			AND ta.disabled = 0
-			AND $filter_groups";
+        FROM
+            talert_template_modules tatm,
+            tagente ta LEFT JOIN tagent_secondary_group tasg
+                ON ta.id_agente = tasg.id_agent,
+            tagente_modulo tam
+        WHERE tam.id_agente = ta.id_agente
+            AND tatm.id_agent_module = tam.id_agente_modulo
+            AND ta.disabled = 0
+            AND $filter_groups";
 
     $value = db_get_value_sql($sql);
 
@@ -11239,8 +12015,8 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType)
     }
 
     $sql = 'SELECT *
-		FROM '.$table_events."
-		WHERE id_evento=$id_event";
+        FROM '.$table_events."
+        WHERE id_evento=$id_event";
     $event_data = db_get_row_sql($sql);
 
     // Check the access to group
@@ -13808,8 +14584,8 @@ function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
         } else {
             $sql = sprintf(
                 'SELECT alias
-				FROM tagente
-				WHERE id_agente = %d',
+                FROM tagente
+                WHERE id_agente = %d',
                 $agent[0]['id_agente']
             );
 
@@ -13852,8 +14628,8 @@ function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 
         $agents = db_get_all_rows_sql(
             'SELECT id_agente
-			FROM tagente
-			WHERE id_grupo IN ('.$id_groups.')'
+            FROM tagente
+            WHERE id_grupo IN ('.$id_groups.')'
         );
 
         if ($agents === false) {
@@ -14022,8 +14798,8 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                         } else {
                             $sql = sprintf(
                                 'SELECT alias
-								FROM tagente
-								WHERE id_agente = %d',
+                                FROM tagente
+                                WHERE id_agente = %d',
                                 $agent[0]['id_agente']
                             );
 
@@ -14065,12 +14841,10 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                 break;
 
                 case 14:
-                    print_r('14444444');
                     $values['tag_with'] = (preg_match('/^\[(("\d+"((,|\])("\d+"))+)|"\d+")\]$/', io_safe_output($other['data'][14]))) ? $other['data'][14] : '[]';
                 break;
 
                 case 15:
-                    print_r('1555555555');
                     $values['tag_without'] = (preg_match('/^\[(("\d+"((,|\])("\d+"))+)|"\d+")\]$/', io_safe_output($other['data'][15]))) ? $other['data'][15] : '[]';
                 break;
 
@@ -14095,8 +14869,8 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
 
                         $agents = db_get_all_rows_sql(
                             'SELECT id_agente
-							FROM tagente
-							WHERE id_grupo IN ('.$id_groups.')'
+                            FROM tagente
+                            WHERE id_grupo IN ('.$id_groups.')'
                         );
 
                         if ($agents === false) {
@@ -14129,7 +14903,6 @@ function api_set_update_event_filter($id_event_filter, $thrash1, $other, $thrash
                 break;
 
                 case 20:
-                    print_r('adadadasds');
                     $values['user_comment'] = $other['data'][20];
                 break;
             }
@@ -14518,7 +15291,7 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT id_grupo
-		FROM tgrupo WHERE nombre = "'.$other['data'].'"'
+        FROM tgrupo WHERE nombre = "'.$other['data'].'"'
     );
 
     $group_id = db_get_all_rows_sql($sql);
@@ -14544,7 +15317,7 @@ function api_get_timezone($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT value
-		FROM tconfig WHERE token = "timezone"'
+        FROM tconfig WHERE token = "timezone"'
     );
 
     $timezone = db_get_all_rows_sql($sql);
@@ -14570,7 +15343,7 @@ function api_get_language($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT value
-		FROM tconfig WHERE token = "language"'
+        FROM tconfig WHERE token = "language"'
     );
 
     $language = db_get_all_rows_sql($sql);
@@ -14596,7 +15369,7 @@ function api_get_session_timeout($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT value
-		FROM tconfig WHERE token = "session_timeout"'
+        FROM tconfig WHERE token = "session_timeout"'
     );
 
     $language = db_get_all_rows_sql($sql);

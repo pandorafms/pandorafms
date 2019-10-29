@@ -3258,7 +3258,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
-	                                                 'alias' => $alias,
+	                                                 'alias' => safe_input($alias),
 													 'update_module_count' => 1, # Force to replicate in metaconsole
 	                                                });                           
 	                                                

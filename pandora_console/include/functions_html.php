@@ -1536,6 +1536,89 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
 
 
 /**
+ * Render an input email element.
+ *
+ * @param array $settings Array with attributes input.
+ * only name is necessary.
+ *
+ * @return string Html input.
+ */
+function html_print_input_email(array $settings):string
+{
+    // TODO: const.
+    $valid_attrs = [
+        'accept',
+        'disabled',
+        'maxlength',
+        'name',
+        'readonly',
+        'placeholder',
+        'size',
+        'value',
+        'accesskey',
+        'class',
+        'dir',
+        'id',
+        'lang',
+        'style',
+        'tabindex',
+        'title',
+        'xml:lang',
+        'onfocus',
+        'onblur',
+        'onselect',
+        'onchange',
+        'onclick',
+        'ondblclick',
+        'onmousedown',
+        'onmouseup',
+        'onmouseover',
+        'onmousemove',
+        'onmouseout',
+        'onkeypress',
+        'onkeydown',
+        'onkeyup',
+        'required',
+        'pattern',
+        'autocomplete',
+    ];
+
+    $output = '';
+    if (isset($settings) === true && is_array($settings) === true) {
+        // Check Name is necessary.
+        if (isset($settings['name']) === true) {
+            $output = '<input type="email" ';
+
+            // Check Max length.
+            if (isset($settings['maxlength']) === false) {
+                $settings['maxlength'] = 255;
+            }
+
+            // Check Size.
+            if (isset($settings['size']) === false
+                || $settings['size'] === 0
+            ) {
+                $settings['size'] = 255;
+            }
+
+            foreach ($settings as $attribute => $attr_value) {
+                // Check valid attribute.
+                if (in_array($attribute, $valid_attrs) === false) {
+                    continue;
+                }
+
+                $output .= $attribute.'="'.$attr_value.'" ';
+            }
+
+            $output .= $function.'/>';
+        }
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input image element.
  *
  * The element will have an id like: "image-$name"
@@ -1898,6 +1981,7 @@ function html_get_predefined_table($model='transparent', $columns=4)
  *    $table->titlestyle - Title style
  *    $table->titleclass - Title class
  *    $table->styleTable - Table style
+ *    $table->autosize - Autosize
  *  $table->caption - Table title
  * @param bool Whether to return an output string or echo now
  *
@@ -2008,6 +2092,12 @@ function html_print_table(&$table, $return=false)
         // $table->width = '80%';
     }
 
+    if (isset($table->autosize) === true) {
+        $table->autosize = 'autosize = "1"';
+    } else {
+        $table->autosize = '';
+    }
+
     if (empty($table->border)) {
         if (empty($table)) {
             $table = new stdClass();
@@ -2042,9 +2132,9 @@ function html_print_table(&$table, $return=false)
     $tableid = empty($table->id) ? 'table'.$table_count : $table->id;
 
     if (!empty($table->width)) {
-        $output .= '<table style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
     } else {
-        $output .= '<table style="'.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="'.$styleTable.' '.$table->tablealign;
     }
 
     $output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
@@ -3003,23 +3093,24 @@ function html_print_csrf_error()
 
 
 /**
- * Print an swith button
+ * Print an swith button.
  *
- * @param  array $atributes. Valid params:
- *         name: Usefull to handle in forms
- *         value: If is checked or not
- *         disabled: Disabled. Cannot be pressed.
- *         id: Optional id for the switch.
- *         class: Additional classes (string).
- * @return string with HTML of button
+ * @param array $attributes Valid params.
+ * name: Usefull to handle in forms.
+ * value: If is checked or not.
+ * disabled: Disabled. Cannot be pressed.
+ * id: Optional id for the switch.
+ * class: Additional classes (string).
+ *
+ * @return string with HTML of button.
  */
 function html_print_switch($attributes=[])
 {
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) $attributes['value'] ? ' checked' : '';
-    $html_expand .= (bool) $attributes['disabled'] ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -3042,7 +3133,7 @@ function html_print_switch($attributes=[])
     }
 
     return "<label class='p-switch' style='".$attributes['style']."'>
-			<input type='checkbox' $html_expand>
+			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider'></span>
 		</label>";
 }
@@ -3198,6 +3289,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
             );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
         break;
 
         case 'hidden':

@@ -133,6 +133,11 @@ $buttons['notifications'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications').'">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
 ];
 
+$buttons['gis'] = [
+    'active' => false,
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=gis').'">'.html_print_image('images/gis_tab.png', true, ['title' => __('GIS Map connection')]).'</a>',
+];
+
 $help_header = '';
 if (enterprise_installed()) {
     $subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
@@ -176,6 +181,11 @@ switch ($section) {
         $buttons['integria']['active'] = true;
         $subpage = ' &raquo '.__('Integria IMS');
         $help_header = 'setup_integria_tab';
+    break;
+
+    case 'gis':
+        $buttons['gis']['active'] = true;
+        $subpage = ' &raquo '.__('Map conections GIS');
     break;
 
     case 'notifications':
@@ -241,6 +251,10 @@ switch ($section) {
 
     case 'integria':
         include_once $config['homedir'].'/godmode/setup/setup_integria.php';
+    break;
+
+    case 'gis':
+        include_once $config['homedir'].'/godmode/setup/gis.php';
     break;
 
     case 'notifications':

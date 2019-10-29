@@ -317,7 +317,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
     if ($config['activate_gis']) {
-        $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');
+        $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
 
     $sub['general']['sub2'] = $sub2;

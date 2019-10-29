@@ -1411,7 +1411,7 @@ function ui_print_help_icon(
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".$url."')",
+            'onclick' => "open_help ('".ui_get_full_url('index.php?sec=view&sec2=general/help_feedback&pure=1&url='.$url)."')",
             'id'      => $id,
         ],
         false,

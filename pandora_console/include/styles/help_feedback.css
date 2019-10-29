@@ -1,0 +1,105 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+div.help_feedback {
+  position: fixed;
+  bottom: 0;
+  background: white;
+  height: auto;
+  width: 365px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.btn_sug {
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+
+  font-weight: normal;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-size: 1.2em;
+  background-repeat: no-repeat;
+  background-position: 92% 10px;
+  color: #000;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
+  border: none;
+  font-family: "lato", "Open Sans", sans-serif;
+  cursor: pointer;
+  padding-right: 30px;
+}
+
+.btn_something {
+  margin-top: 10px;
+  margin-left: 10px;
+
+  font-weight: normal;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-size: 1.2em;
+  background-repeat: no-repeat;
+  background-position: 92% 10px;
+  color: #000;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
+  border: none;
+  font-family: "lato", "Open Sans", sans-serif;
+  cursor: pointer;
+  padding-right: 30px;
+}
+
+.textarea_feedback {
+  margin-left: 11px;
+  max-width: 200px;
+  margin-top: 10px;
+  font-weight: bolder;
+}
+
+.email_feedback {
+  max-width: 200px;
+  margin-left: 39px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bolder;
+}
+
+.btn_submit_feed_back {
+  margin-right: 50px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.btn_sug_not_selected {
+  font-weight: normal;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-size: 1.2em;
+  background-repeat: no-repeat;
+  background-position: 92% 10px;
+  color: #000;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
+  border: 1px solid #888;
+  font-family: "lato", "Open Sans", sans-serif;
+  cursor: pointer;
+  margin-right: 20px;
+  margin-top: 10px;
+  margin-left: 10px;
+  background-image: url(../../images/input_tick.png);
+  padding-right: 30px;
+}
+
+.btn_section {
+  display: flex;
+}

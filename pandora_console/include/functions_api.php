@@ -14261,7 +14261,7 @@ function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
 
         returnData('json', $data, JSON_FORCE_OBJECT);
     } else {
-        returnError('error_agents', 'No agents retrieved.');
+        returnError('error_agents', 'Alias did not match any agent.');
     }
 }
 

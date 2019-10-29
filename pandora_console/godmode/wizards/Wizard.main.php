@@ -404,13 +404,42 @@ class Wizard
 
     /**
      * Print a block of inputs.
+     * Example, using direct to 'anidate' inputs directly to wrapper:
+     * [
+     *     'wrapper'       => 'div',
+     *     'block_id'      => 'example_id',
+     *     'class'         => 'your class',
+     *     'direct'        => 1,
+     *     'block_content' => [
+     *         [
+     *             'arguments' => [
+     *                 'label'      => __('Sugesstion'),
+     *                 'type'       => 'button',
+     *                 'attributes' => 'class="sub ok btn_sug"',
+     *                 'name'       => 'option_1',
+     *                 'id'         => 'option_1',
+     *                 'script'     => 'change_option1()',
+     *             ],
+     *         ],
+     *         [
+     *             'arguments' => [
+     *                 'label'      => __('Something is not quite right'),
+     *                 'type'       => 'button',
+     *                 'attributes' => 'class="sub ok btn_something"',
+     *                 'name'       => 'option_2',
+     *                 'id'         => 'option_2',
+     *                 'script'     => 'change_option2()',
+     *             ],
+     *         ],
+     *     ],
+     * ].
      *
      * @param array   $input  Definition of target block to be printed.
      * @param boolean $return Return as string or direct output.
      *
      * @return string HTML content.
      */
-    public function printBlock(array $input, bool $return=false)
+    public function printBlock(array $input, bool $return=false, bool $not_direct=false)
     {
         $output = '';
         if ($input['hidden'] == 1) {
@@ -424,33 +453,47 @@ class Wizard
         }
 
         if (is_array($input['block_content']) === true) {
+            $not_direct = (bool) $input['direct'];
+
             // Print independent block of inputs.
+            $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
+
             if ($input['wrapper']) {
-                $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
                 $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
-            } else {
-                $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             }
 
-            $output .= '<ul class="wizard '.$input['block_class'].'">';
+            if (!$not_direct) {
+                // Avoid encapsulation if input is direct => 1.
+                $output .= '<ul class="wizard '.$input['block_class'].'">';
+            }
+
             foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlock($input, $return);
+                $output .= $this->printBlock($input, $return, (bool) $not_direct);
             }
 
             // Close block.
-            if ($input['wrapper']) {
-                $output .= '</ul></'.$input['wrapper'].'>';
-            } else {
-                $output .= '</ul></li>';
+            if (!$not_direct) {
+                $output .= '</ul>';
             }
+
+            if ($input['wrapper']) {
+                $output .= '</'.$input['wrapper'].'>';
+            }
+
+            $output .= '</li>';
         } else {
             if ($input['arguments']['type'] != 'hidden') {
-                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+                if (!$not_direct) {
+                    $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+                }
+
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
-                $output .= '</li>';
+                if (!$not_direct) {
+                    $output .= '</li>';
+                }
             } else {
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.

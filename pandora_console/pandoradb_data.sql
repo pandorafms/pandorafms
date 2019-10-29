@@ -138,7 +138,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('cr_incident_type', ''),
 ('cr_incident_status', ''),
 ('cr_incident_title', ''),
-('cr_incident_content', '');
+('cr_incident_content', ''),
+('gotty', '/usr/bin/gotty');
 UNLOCK TABLES;
 
 --
@@ -268,7 +269,7 @@ INSERT INTO `torigen` VALUES
 --
 
 -- Identifiers 30 and 31 are reserved for Enterprise data types
-INSERT INTO `ttipo_modulo` VALUES 
+INSERT INTO `ttipo_modulo` VALUES
 (1,'generic_data',0,'Generic numeric','mod_data.png'),
 (2,'generic_proc',1,'Generic boolean','mod_proc.png'),
 (3,'generic_data_string',2,'Generic string','mod_string.png'),
@@ -283,15 +284,19 @@ INSERT INTO `ttipo_modulo` VALUES
 (15,'remote_snmp',3,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),
 (16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
 (17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
-(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), 
-(21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
-(22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
+(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'),
+(21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'),
+(22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'),
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
 (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
 (30,'web_data',9,'Remote HTTP module to check latency','mod_web_data.png'),
 (31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
 (32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','mod_web_data.png'),
 (33,'web_content_string',9,'Remote HTTP module to retrieve string data','mod_web_data.png'),
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 --

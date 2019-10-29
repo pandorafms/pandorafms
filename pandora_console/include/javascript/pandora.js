@@ -1,3 +1,6 @@
+/* global $ */
+/* exported load_modal */
+
 var ENTERPRISE_DIR = "enterprise";
 
 /* Function to hide/unhide a specific Div id */
@@ -1872,8 +1875,6 @@ function logo_preview(icon_name, icon_path, incoming_options) {
 }
 
 // Advanced Form control.
-/* global $ */
-/* exported load_modal */
 function load_modal(settings) {
   var AJAX_RUNNING = 0;
   var data = new FormData();
@@ -1943,6 +1944,10 @@ function load_modal(settings) {
               if (settings.onsubmit.preaction != undefined) {
                 settings.onsubmit.preaction();
               }
+              if (settings.onsubmit.dataType == undefined) {
+                settings.onsubmit.dataType = "html";
+              }
+
               var formdata = new FormData();
               if (settings.extradata) {
                 settings.extradata.forEach(function(item) {
@@ -1953,29 +1958,57 @@ function load_modal(settings) {
               formdata.append("page", settings.onsubmit.page);
               formdata.append("method", settings.onsubmit.method);
 
+              var flagError = false;
+
               $("#" + settings.form + " :input").each(function() {
+                if (this.checkValidity() === false) {
+                  $(this).prop("title", this.validationMessage);
+                  $(this).tooltip({
+                    tooltipClass: "uitooltip",
+                    position: { my: "right bottom", at: "right bottom" },
+                    show: { duration: 200 }
+                  });
+                  $(this).tooltip("open");
+                  flagError = true;
+                }
+
                 if (this.type == "file") {
                   if ($(this).prop("files")[0]) {
                     formdata.append(this.name, $(this).prop("files")[0]);
                   }
                 } else {
-                  formdata.append(this.name, $(this).val());
+                  if ($(this).attr("type") == "checkbox") {
+                    if (this.checked) {
+                      formdata.append(this.name, "on");
+                    }
+                  } else {
+                    formdata.append(this.name, $(this).val());
+                  }
                 }
               });
 
-              $.ajax({
-                method: "post",
-                url: settings.url,
-                processData: false,
-                contentType: false,
-                data: formdata,
-                success: function(data) {
-                  if (settings.ajax_callback != undefined) {
-                    settings.ajax_callback(data);
+              if (flagError === false) {
+                $.ajax({
+                  method: "post",
+                  url: settings.url,
+                  processData: false,
+                  contentType: false,
+                  data: formdata,
+                  dataType: settings.onsubmit.dataType,
+                  success: function(data) {
+                    if (settings.ajax_callback != undefined) {
+                      if (settings.idMsgCallback != undefined) {
+                        settings.ajax_callback(data, settings.idMsgCallback);
+                      } else {
+                        settings.ajax_callback(data);
+                      }
+                    }
+                    AJAX_RUNNING = 0;
                   }
-                  AJAX_RUNNING = 0;
-                }
-              });
+                });
+              } else {
+                AJAX_RUNNING = 0;
+              }
             }
           }
         ],
@@ -1984,6 +2017,78 @@ function load_modal(settings) {
           $(".ui-dialog-titlebar-close").hide();
         }
       });
+    }
+  });
+}
+
+/**
+ * Function to show modal with message Validation.
+ *
+ * @param {json} data Json example:
+ * $return = [
+ *  'error' => 0 or 1,
+ *  'title' => [
+ *    Failed,
+ *    Success,
+ *  ],
+ *  'text'  => [
+ *    Failed,
+ *    Success,
+ *  ],
+ *];
+ * @param {string} idMsg ID div charge modal.
+ *
+ * @return {void}
+ */
+function generalShowMsg(data, idMsg) {
+  var title = data.title[data.error];
+  var text = data.text[data.error];
+  var failed = !data.error;
+
+  $("#" + idMsg).empty();
+  $("#" + idMsg).html(text);
+  $("#" + idMsg).dialog({
+    width: 450,
+    position: {
+      my: "center",
+      at: "center",
+      of: window,
+      collision: "fit"
+    },
+    title: title,
+    buttons: [
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+        text: "OK",
+        click: function(e) {
+          if (!failed) {
+            $(".ui-dialog-content").dialog("close");
+          } else {
+            $(this).dialog("close");
+          }
+        }
+      }
+    ]
+  });
+}
+
+/**
+ * Function for AJAX request.
+ *
+ * @param {string} id Id container append data.
+ * @param {json} settings Json with settings.
+ *
+ * @return {void}
+ */
+function ajaxRequest(id, settings) {
+  $.ajax({
+    type: settings.type,
+    dataType: settings.html,
+    url: settings.url,
+    data: settings.data,
+    success: function(data) {
+      $("#" + id).append(data);
     }
   });
 }

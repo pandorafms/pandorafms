@@ -334,13 +334,13 @@ if ($config['menu_type'] == 'classic') {
             $header_feedback .= '<div id="modal-feedback-form" style="display:none;"></div>';
             $header_feedback .= '<div id="msg-header" style="display: none"></div>';
             $header_feedback .= html_print_image(
-                '/images/icono_warning.png',
+                '/images/feedback-header.png',
                 true,
                 [
                     'title' => __('Feedback'),
                     'id'    => 'feedback-header',
                     'alt'   => __('Feedback'),
-                    'style' => 'cursor: pointer; width: 28px;',
+                    'style' => 'cursor: pointer; width: 27px;',
                 ]
             );
             $header_feedback .= '</div>';

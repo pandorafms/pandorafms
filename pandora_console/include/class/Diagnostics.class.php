@@ -1865,9 +1865,8 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        // TODO: feedback@artica.es
         $mail_feedback = 'feedback@artica.es';
-        $email = 'daniel.barbero@artica.es';
+        $email = $mail_feedback;
         $subject = 'PandoraFMS Report '.$config['pandora_uid'];
         $text = get_parameter('what-happened', '');
         $attachment = get_parameter_switch('include_installation_data', 0);
@@ -1877,9 +1876,7 @@ class Diagnostics extends Wizard
         $product_name = io_safe_output(get_product_name());
 
         if (check_acl($config['id_user'], 0, 'PM') !== 1) {
-            // TODO: MAIL TO ADMIN.
             $email = get_mail_admin();
-            $email = 'daniel.barbero@artica.es';
             $name_admin = get_name_admin();
 
             $subject = __('Feedback').' '.$product_name.' '.$config['pandora_uid'];

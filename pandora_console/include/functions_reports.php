@@ -769,22 +769,34 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Grouped'),
         'name'     => __('General'),
     ];
-    $types['group_report'] = [
-        'optgroup' => __('Grouped'),
-        'name'     => __('Group report'),
-    ];
+    if (is_metaconsole()) {
+        if ($template === false) {
+            $types['group_report'] = [
+                'optgroup' => __('Grouped'),
+                'name'     => __('Group report'),
+            ];
+        }
+    } else {
+        $types['group_report'] = [
+            'optgroup' => __('Grouped'),
+            'name'     => __('Group report'),
+        ];
+    }
+
     $types['exception'] = [
         'optgroup' => __('Grouped'),
         'name'     => __('Exception'),
     ];
     if ($config['metaconsole'] != 1) {
-        $types['agent_module'] = [
-            'optgroup' => __('Grouped'),
-            'name'     => __('Agents/Modules'),
-        ];
+        if (!$template) {
+            $types['agent_module'] = [
+                'optgroup' => __('Grouped'),
+                'name'     => __('Agents/Modules'),
+            ];
+        }
     }
 
-    // Only pandora managers have access to the whole database
+    // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [
             'optgroup' => __('Grouped'),
@@ -878,7 +890,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    if ($config['enterprise_installed']) {
+    if ($config['enterprise_installed'] && $template === false) {
         $types['event_report_log'] = [
             'optgroup' => __('Log'),
             'name'     => __('Log report'),

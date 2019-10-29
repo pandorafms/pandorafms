@@ -166,6 +166,19 @@ class ModuleGraph
                         $time_compare = 'overlapped';
                     }
 
+                    // Graph TIP view.
+                    if (!isset($config['full_scale_option']) || $config['full_scale_option'] == 0) {
+                        $fullscale = 0;
+                    } else if ($config['full_scale_option'] == 1) {
+                        $fullscale = 1;
+                    } else if ($config['full_scale_option'] == 2) {
+                        if ($this->graph_type == 'boolean') {
+                            $fullscale = 1;
+                        } else {
+                            $fullscale = 0;
+                        }
+                    }
+
                     ob_start();
                     switch ($this->graph_type) {
                         case 'boolean':
@@ -188,6 +201,7 @@ class ModuleGraph
                                 'menu'            => false,
                                 'type_graph'      => $config['type_module_charts'],
                                 'vconsole'        => true,
+                                'fullscale'       => $fullscale,
                             ];
 
                             $graph = grafico_modulo_sparse($params);

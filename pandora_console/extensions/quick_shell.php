@@ -74,7 +74,7 @@ function quickShell()
         config_update_value('ws_port', 8080);
     }
 
-    if (isset($config['ws_proxy_url']) === false) {
+    if (empty($config['ws_proxy_url']) === true) {
         $ws_url = 'http://'.$config['ws_host'].':'.$config['ws_port'];
     } else {
         preg_match('/\/\/(.*)/', $config['ws_proxy_url'], $matches);

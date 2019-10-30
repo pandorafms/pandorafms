@@ -20,13 +20,14 @@ CREATE TABLE `tremote_command` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tremote_command_target` (
-  `rcmd_id` SERIAL,
+  `id` SERIAL,
+  `rcmd_id` bigint unsigned NOT NULL unique,
   `id_agente` int(10) unsigned NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
   `stdout` text,
   `stderr` text,
   `errorlevel` int(10) unsigned NOT NULL default 0,
-  PRIMARY KEY (`rcmd_id`),
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

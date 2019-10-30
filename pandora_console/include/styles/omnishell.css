@@ -4,8 +4,28 @@
   border: none;
 }
 
+.remove_agent {
+  background-image: url("../../images/darrowleft.png");
+  background-repeat: no-repeat;
+  border: none;
+}
+
 .edit_yaml {
   margin-left: 39px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+li > input[type="text"] {
+  border: 1px solid lightgrey;
+  border-radius: 0;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+}
+
+.margin_button {
+  margin-right: 5px;
 }

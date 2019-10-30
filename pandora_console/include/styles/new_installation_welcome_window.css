@@ -1,0 +1,70 @@
+/* 
+// Pandora FMS - the Flexible Monitoring System
+// =============================================
+// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+.modal {
+  overflow: hidden;
+}
+
+.welcome_modal_window {
+  overflow: hidden;
+}
+label {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 900;
+}
+.content_position {
+  display: flex;
+  margin-top: 5px;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+
+.learn_content_indented {
+  margin-top: 0.5em;
+  text-indent: 2em;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+
+#lbl_learn {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  font-weight: 800;
+}
+
+.go {
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  border: none;
+}
+
+.pending {
+  background-image: url(../../images/darrowright.png);
+}
+
+.completed {
+  background-image: url(../../images/input_tick.png);
+}

@@ -142,7 +142,8 @@ class WelcomeWindow extends Wizard
             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
             modal: {
                 title: "<?php echo __('Welcome to Pandora FMS'); ?>",
-                cancel: '<?php echo __('Cancel'); ?>',
+                cancel: '<?php echo __('Ignore'); ?>',
+                ok: '<?php echo __('Cancel'); ?>'
             },
             onshow: {
                 page: '<?php echo $this->ajaxController; ?>',
@@ -251,11 +252,11 @@ class WelcomeWindow extends Wizard
     public function loadWelcomeWindow()
     {
         global $config;
-        $btn_configure_mail_class = '';
-        $btn_create_agent_class = '';
+        $btn_configure_mail_class = 'pending';
+        $btn_create_agent_class = 'pending';
         $btn_create_module_class = '';
         $btn_create_alert_class = '';
-        $btn_create_discovery_class = '';
+        $btn_create_discovery_class = 'pending';
 
         switch ($this->step) {
             case W_CREATE_AGENT:
@@ -455,7 +456,14 @@ class WelcomeWindow extends Wizard
                         ],
                     ],
                     [
-                        'label' => html_print_image('images/feedback-header.png', true),
+                        'label' => html_print_image(
+                            'images/feedback-header.png',
+                            true,
+                            [
+                                'onclick' => '$(\'#feedback-header\').click()',
+                                'style'   => 'cursor: pointer;',
+                            ]
+                        ),
 
                     ],
                 ],
@@ -490,24 +498,22 @@ class WelcomeWindow extends Wizard
     {
         global $config;
 
+        if (isset($config['welcome_state']) === false) {
+            $this->setStep(W_CONFIGURE_MAIL);
+        }
+
+        // Check current page.
+        $sec2 = get_parameter('sec2', '');
+
         if ($must_run === false
-            || (isset($config['welcome_state']) === true
-            && $config['welcome_state'] === WELCOME_FINISHED)
+            || $config['welcome_state'] === WELCOME_FINISHED
         ) {
-            // Do not start unless not finished.
+            // Do not show if finished.
             return false;
         }
 
-        $sec2 = get_parameter('sec2', '');
         $this->step = $this->getStep();
         $this->agent = $this->getWelcomeAgent();
-
-        if ($sec2 === '') {
-            // Unless finished.
-            if ($this->step !== WELCOME_FINISHED) {
-                return true;
-            }
-        }
 
         /*
          * Configure mail. Control current flow.
@@ -530,8 +536,8 @@ class WelcomeWindow extends Wizard
             ) {
                 // Mail configuration is being processed.
                 return false;
-            } else {
-                // Any other page, show welcome.
+            } else if (empty($sec2) === true) {
+                // If at main page, show welcome.
                 return true;
             }
         }
@@ -561,8 +567,8 @@ class WelcomeWindow extends Wizard
             } else if ($sec2 === 'godmode/agentes/configurar_agente') {
                 // Agent is being created.
                 return false;
-            } else {
-                // Any other page, show welcome.
+            } else if (empty($sec2) === true) {
+                // If at main page, show welcome.
                 return true;
             }
         }
@@ -589,8 +595,8 @@ class WelcomeWindow extends Wizard
             ) {
                 // Module is being created.
                 return false;
-            } else {
-                // Any other page, show welcome.
+            } else if (empty($sec2) === true) {
+                // If at main page, show welcome.
                 return true;
             }
         }
@@ -617,8 +623,8 @@ class WelcomeWindow extends Wizard
             ) {
                 // Alert is being created.
                 return false;
-            } else {
-                // Any other page, show welcome.
+            } else if (empty($sec2) === true) {
+                // If at main page, show welcome.
                 return true;
             }
         }
@@ -645,8 +651,8 @@ class WelcomeWindow extends Wizard
             } else if ($sec2 == 'godmode/servers/discovery') {
                 // Discovery task is being created.
                 return false;
-            } else {
-                // Any other page, show welcome.
+            } else if (empty($sec2) === true) {
+                // If at main page, show welcome.
                 return true;
             }
         }
@@ -675,58 +681,45 @@ class WelcomeWindow extends Wizard
         ?>
     <script type="text/javascript">
         <?php
-        switch ($this->step) {
-            case W_CONFIGURE_MAIL:
-                ?>
-                document.getElementById("button-btn_email_conf").setAttribute(
-                    'onclick',
-                    'configureEmail()'
-                );
-                <?php
-            break;
-
-            case W_CREATE_AGENT:
-                ?>
-                document.getElementById("button-btn_create_agent").setAttribute(
-                    'onclick',
-                    'createNewAgent()'
-                );
-                <?php
-            break;
-
-            case W_CREATE_MODULE:
-                ?>
+        if ($this->step > W_CREATE_AGENT) {
+            switch ($this->step) {
+                case W_CREATE_MODULE:
+                    ?>
                 document.getElementById("button-btn_create_module").setAttribute(
                     'onclick',
                     'checkAgentOnline()'
                 );
-                <?php
-            break;
+                    <?php
+                break;
 
-            case W_CREATE_ALERT:
-                ?>
+                case W_CREATE_ALERT:
+                    ?>
                 document.getElementById("button-btn_create_alert").setAttribute(
                     'onclick',
                     'createAlertModule()'
                 );
-                <?php
-            break;
+                    <?php
+                break;
 
-            case W_CREATE_TASK:
-                ?>
-                document.getElementById("button-btn_discover_devices").setAttribute(
-                    'onclick',
-                    'discoverDevicesNetwork()'
-                );
-                <?php
-            break;
-
-            case WELCOME_FINISHED:
-            default:
-                // Do not enable anything.
-            break;
+                default:
+                    // Ignore.
+                break;
+            }
         }
         ?>
+
+    document.getElementById("button-btn_email_conf").setAttribute(
+        'onclick',
+        'configureEmail()'
+    );
+    document.getElementById("button-btn_create_agent").setAttribute(
+        'onclick',
+        'createNewAgent()'
+    );
+    document.getElementById("button-btn_discover_devices").setAttribute(
+        'onclick',
+        'discoverDevicesNetwork()'
+    );
 
     function configureEmail() {
         window.location = '<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table3'); ?>';

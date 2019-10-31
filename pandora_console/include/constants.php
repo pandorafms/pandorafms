@@ -537,7 +537,7 @@ define('NODE_GENERIC', 3);
 define('STATUS_OK', 0);
 define('STATUS_ERROR', 1);
 
-// Maps (new networkmaps and  new visualmaps).
+// Maps new networkmaps and  new visualmaps.
 define('MAP_TYPE_NETWORKMAP', 0);
 define('MAP_TYPE_VISUALMAP', 1);
 

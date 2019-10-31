@@ -806,8 +806,11 @@ class Wizard
                     $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
                     $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
                     $extra_styles = isset($column['style']) ? $column['style'] : '';
+                    $class = isset($column['class']) ? $column['class'] : '';
 
-                    $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
+                    $output .= '<div class="'.$class.'" ';
+                    $output .= ' style="'.$width.$padding_left.$padding_right;
+                    $output .= $extra_styles.'">';
 
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {

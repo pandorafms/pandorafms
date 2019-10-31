@@ -773,6 +773,9 @@ class DiscoveryTaskList extends Wizard
             case DISCOVERY_CLOUD_AWS_RDS:
             return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=rds&page=0';
 
+            case DISCOVERY_APP_SAP:
+            return 'wiz=app&mode=SAP&page=0';
+
             default:
                 if ($task['description'] == 'console_task') {
                     return 'wiz=ctask';

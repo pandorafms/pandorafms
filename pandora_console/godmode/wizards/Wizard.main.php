@@ -436,11 +436,15 @@ class Wizard
      *
      * @param array   $input  Definition of target block to be printed.
      * @param boolean $return Return as string or direct output.
+     * @param boolean $direct Avoid encapsulation if input print is direct.
      *
      * @return string HTML content.
      */
-    public function printBlock(array $input, bool $return=false, bool $not_direct=false)
-    {
+    public function printBlock(
+        array $input,
+        bool $return=false,
+        bool $direct=false
+    ) {
         $output = '';
         if ($input['hidden'] == 1) {
             $class = ' hidden';
@@ -453,7 +457,7 @@ class Wizard
         }
 
         if (is_array($input['block_content']) === true) {
-            $not_direct = (bool) $input['direct'];
+            $direct = (bool) $input['direct'];
 
             // Print independent block of inputs.
             $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
@@ -462,17 +466,21 @@ class Wizard
                 $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
             }
 
-            if (!$not_direct) {
+            if (!$direct) {
                 // Avoid encapsulation if input is direct => 1.
                 $output .= '<ul class="wizard '.$input['block_class'].'">';
             }
 
             foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlock($input, $return, (bool) $not_direct);
+                $output .= $this->printBlock(
+                    $input,
+                    $return,
+                    (bool) $direct
+                );
             }
 
             // Close block.
-            if (!$not_direct) {
+            if (!$direct) {
                 $output .= '</ul>';
             }
 
@@ -483,7 +491,7 @@ class Wizard
             $output .= '</li>';
         } else {
             if ($input['arguments']['type'] != 'hidden') {
-                if (!$not_direct) {
+                if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
 
@@ -491,7 +499,7 @@ class Wizard
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
-                if (!$not_direct) {
+                if (!$direct) {
                     $output .= '</li>';
                 }
             } else {

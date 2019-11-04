@@ -2915,10 +2915,10 @@ function ui_progress(
  * Generates a progress bar CSS based.
  * Requires css progress.css
  *
- * @param integer $progress Progress.
+ * @param array   $progress Progress.
  * @param string  $width    Width.
  * @param integer $height   Height in 'em'.
- * @param string  $color    Color.
+ * @param array   $color    status color.
  * @param boolean $return   Return or paint (if false).
  * @param boolean $text     Text to be displayed,by default progress %.
  * @param array   $ajax     Ajax: [ 'page' => 'page', 'data' => 'data' ] Sample:
@@ -2942,27 +2942,36 @@ function ui_progress_extend(
     $text='',
     $ajax=false
 ) {
-    if (!$progress) {
+    if (!$progress['total']) {
         $progress = 0;
     }
 
-    if ($progress > 100) {
-        $progress = 100;
+    if ($progress['total'] > 100) {
+        $progress['total'] = 100;
     }
 
-    if ($progress < 0) {
-        $progress = 0;
+    if ($progress['total'] < 0) {
+        $progress['total'] = 0;
     }
 
     if (empty($text)) {
-        $text = $progress.'%';
+        $text = $progress['total'].'%';
     }
 
+    $totalW = ($progress['total'] * 10);
+    $badW = ($progress['bad'] * 10);
+    $goodW = ($progress['good'] * 10);
+    $unknownW = ($progress['unknown'] * 10);
     ui_require_css_file('progress');
-    $output .= '<span class="progress_main" data-label="'.$text;
-    $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
-    $output .= '<span class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
-    $output .= '</span>';
+    $output .= '<div class="progress_main" data-label="total"';
+    $output .= '" style="width: '.$totalW.'%;display:flex; height: '.$height.'em;">';
+    $output .= '<div class="progress_main" data-label="Pending"';
+    $output .= '" style="width:  '.$unknownW.'%; height: '.$height.'em; background-color: '.COL_UNKNOWN.'; "></div>';
+    $output .= '<div class="progress_main" data-label="Success"';
+    $output .= '" style="width: '.$goodW.'%;  height: '.$height.'em; background-color: '.COL_NORMAL.';"></div>';
+    $output .= '<div class="progress_main" data-label="Error"';
+    $output .= '" style="width: '.$badW.'%; height: '.$height.'em; background-color: '.COL_CRITICAL.';"></div>';
+    $output .= '</div>';
 
     if ($ajax !== false && is_array($ajax)) {
         $output .= '<script type="text/javascript">

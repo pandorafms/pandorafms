@@ -224,7 +224,12 @@ function reporting_make_reporting_data(
 
         // General reports with 0 period means last value
         // Avoid to overwrite it by template value.
-        if (!empty($period) && ($content['type'] !== 'general' && $content['period'] != 0)) {
+        $general_last_value = false;
+        if ($content['type'] === 'general' && $content['period'] == 0) {
+            $general_last_value = true;
+        }
+
+        if (!empty($period) && $general_last_value === false) {
             $content['period'] = $period;
         }
 

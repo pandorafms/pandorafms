@@ -3625,10 +3625,10 @@ function reporting_html_general($table, $item, $pdf=0)
                     }
 
                     $table1->head[3] = __('Value');
-                    $table1->style[0] = 'text-align: left';
-                    $table1->style[1] = 'text-align: left';
-                    $table1->style[2] = 'text-align: left';
-                    $table1->style[3] = 'text-align: left';
+                    $table1->style[0] = 'text-align: center';
+                    $table1->style[1] = 'text-align: center';
+                    $table1->style[2] = 'text-align: center';
+                    $table1->style[3] = 'text-align: center';
 
                     // Begin - Order by agent.
                     foreach ($item['data'] as $key => $row) {
@@ -3759,12 +3759,16 @@ function reporting_html_general($table, $item, $pdf=0)
         $table_summary->head = [];
         $table_summary->head_colspan = [];
         $table_summary->align = [];
+        $table_summary->headstyle = [];
+        $table_summary->headstyle[0] = 'text-align: center;';
+        $table_summary->headstyle[1] = 'text-align: center;';
+        $table_summary->headstyle[2] = 'text-align: center;';
 
-        $table_summary->align[0] = 'left';
-        $table_summary->align[1] = 'right';
-        $table_summary->align[2] = 'right';
-        $table_summary->align[3] = 'left';
-        $table_summary->align[4] = 'right';
+        $table_summary->align[0] = 'center';
+        $table_summary->align[1] = 'center';
+        $table_summary->align[2] = 'center';
+        $table_summary->align[3] = 'center';
+        $table_summary->align[4] = 'center';
 
         $table_summary->head_colspan[0] = 2;
         $table_summary->head[0] = __('Min Value');
@@ -3772,11 +3776,11 @@ function reporting_html_general($table, $item, $pdf=0)
         $table_summary->head_colspan[2] = 2;
         $table_summary->head[2] = __('Max Value');
 
-        $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'];
-        $table_summary->data[0][1] = $item['min']['formated_value'];
+        $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'].str_repeat('&nbsp;', 20).$item['min']['formated_value'];
+        $table_summary->data[0][1] = '';
         $table_summary->data[0][2] = format_for_graph($item['avg_value'], 2);
-        $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'];
-        $table_summary->data[0][4] = $item['max']['formated_value'];
+        $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'].str_repeat('&nbsp;', 20).$item['max']['formated_value'];
+        $table_summary->data[0][4] = '';
 
         if ($pdf !== 0) {
             $return_pdf .= html_print_table($table_summary, true);

@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tlayout_template_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+
+COMMIT;

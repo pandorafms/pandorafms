@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.738
+# Version 7.0NG.740
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -226,8 +226,9 @@ recon_threads 1
 dataserver_threads 1
 
 # mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# If not set, the MTA configuration specified in the Pandora FMS Console will be used.
 
-mta_address localhost
+#mta_address localhost
 
 # mta_port, this is the mail server port (default 25)
 
@@ -249,6 +250,10 @@ mta_address localhost
 #           probably you need to change it to avoid problems with your antispam
 
 #mta_from Pandora FMS <pandora@mydomain.com>
+
+# SMTP encryption protocol (none, ssl, starttls)
+
+#mta_encryption none
 
 # Set 1 if want eMail deliver alert in separate mail  (default). 
 # Set 0 if want eMail deliver shared mail by all destination.
@@ -370,6 +375,15 @@ self_monitoring 1
 
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
+
+# Pandora Sample Agent. If enabled, every 10 minutes, this embedded agent 
+# will make sample data. Disabled by default.
+
+sample_agent 0
+
+# Pandora Sample Agent interval (in seconds).
+
+sample_agent_interval 600
 
 # Update parent from the agent xml
 

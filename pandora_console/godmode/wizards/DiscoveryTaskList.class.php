@@ -200,7 +200,7 @@ class DiscoveryTaskList extends Wizard
     {
         global $config;
 
-        if (! check_acl($config['id_user'], 0, 'PM')) {
+        if (! check_acl($config['id_user'], 0, 'AW')) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access recon task viewer'
@@ -241,7 +241,7 @@ class DiscoveryTaskList extends Wizard
     {
         global $config;
 
-        if (! check_acl($config['id_user'], 0, 'PM')) {
+        if (!$this->aclMulticheck('RR|RW|RM|PM')) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access recon task viewer'
@@ -270,7 +270,7 @@ class DiscoveryTaskList extends Wizard
     {
         global $config;
 
-        if (! check_acl($config['id_user'], 0, 'PM')) {
+        if (! check_acl($config['id_user'], 0, 'RM')) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access recon task viewer'
@@ -313,13 +313,9 @@ class DiscoveryTaskList extends Wizard
 
         check_login();
 
-        if (! check_acl($config['id_user'], 0, 'PM')) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access recon task viewer'
-            );
-            include 'general/noaccess.php';
-            return false;
+        if (!$this->aclMulticheck('AR|AW|AM')) {
+            // Tasklist are allowed only of agent managers.
+            return '';
         }
 
         // Get all discovery servers.
@@ -341,7 +337,7 @@ class DiscoveryTaskList extends Wizard
             // --------------------------------
             // FORCE A RECON TASK
             // --------------------------------
-            if (check_acl($config['id_user'], 0, 'PM')) {
+            if (check_acl($config['id_user'], 0, 'AW')) {
                 if (isset($_GET['force'])) {
                     $id = (int) get_parameter_get('force', 0);
                     servers_force_recon_task($id);
@@ -387,8 +383,10 @@ class DiscoveryTaskList extends Wizard
             // Operations.
             $table->headstyle[9] .= 'min-width: 150px; width: 150px;';
 
-            $table->head[0] = __('Force');
-            $table->align[0] = 'left';
+            if (check_acl($config['id_user'], 0, 'AW')) {
+                $table->head[0] = __('Force');
+                $table->align[0] = 'left';
+            }
 
             $table->head[1] = __('Task name');
             $table->align[1] = 'left';
@@ -455,11 +453,13 @@ class DiscoveryTaskList extends Wizard
                 }
 
                 if ($task['disabled'] == 0 && $server_name !== '') {
-                    $data[0] = '<a href="'.ui_get_full_url(
-                        'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
-                    ).'">';
-                    $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
-                    $data[0] .= '</a>';
+                    if (check_acl($config['id_user'], 0, 'AW')) {
+                        $data[0] = '<a href="'.ui_get_full_url(
+                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
+                        ).'">';
+                        $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
+                        $data[0] .= '</a>';
+                    }
                 } else if ($task['disabled'] == 2) {
                     $data[0] = ui_print_help_tip(
                         __('This task has not been completely defined, please edit it'),
@@ -622,18 +622,20 @@ class DiscoveryTaskList extends Wizard
                         && $task['type'] != DISCOVERY_APP_ORACLE
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                     ) {
-                        $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
-                        $data[9] .= html_print_image(
-                            'images/dynamic_network_icon.png',
-                            true
-                        );
-                        $data[9] .= '</a>';
+                        if (check_acl($config['id_user'], 0, 'MR')) {
+                            $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
+                            $data[9] .= html_print_image(
+                                'images/dynamic_network_icon.png',
+                                true
+                            );
+                            $data[9] .= '</a>';
+                        }
                     }
 
                     if (check_acl(
                         $config['id_user'],
                         $task['id_group'],
-                        'PM'
+                        'AW'
                     )
                     ) {
                         if ($ipam === true) {
@@ -733,6 +735,16 @@ class DiscoveryTaskList extends Wizard
     {
         if ($script !== false) {
             switch ($script['type']) {
+                case DISCOVERY_SCRIPT_APP_VMWARE:
+                return 'wiz=app&mode=vmware&page=0';
+
+                case DISCOVERY_SCRIPT_IPAM_RECON:
+                return '';
+
+                case DISCOVERY_SCRIPT_IPMI_RECON:
+                default:
+                return 'wiz=hd&mode=customnetscan';
+
                 case DISCOVERY_SCRIPT_CLOUD_AWS:
                     switch ($task['type']) {
                         case DISCOVERY_CLOUD_AWS_EC2:
@@ -744,16 +756,6 @@ class DiscoveryTaskList extends Wizard
                         default:
                         return 'wiz=cloud';
                     }
-
-                case DISCOVERY_SCRIPT_APP_VMWARE:
-                return 'wiz=app&mode=vmware&page=0';
-
-                case DISCOVERY_SCRIPT_IPAM_RECON:
-                return '';
-
-                case DISCOVERY_SCRIPT_IPMI_RECON:
-                default:
-                return 'wiz=hd&mode=customnetscan';
             }
         }
 

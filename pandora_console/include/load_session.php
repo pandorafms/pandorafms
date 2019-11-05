@@ -91,11 +91,6 @@ function pandora_session_write($session_id, $data)
 {
     $session_id = addslashes($session_id);
 
-    // If it's an api call, the session must not be created.
-    if (get_parameter('op', false) && get_parameter('op2', false)) {
-        return true;
-    }
-
     if (is_ajax()) {
         // Avoid session upadte while processing ajax responses - notifications.
         if (get_parameter('check_new_notifications', false)) {
@@ -166,7 +161,7 @@ function pandora_session_gc($max_lifetime=300)
     if (isset($config['session_timeout'])) {
         $session_timeout = $config['session_timeout'];
     } else {
-        // if $config doesn`t work ...
+        // If $config doesn`t work ...
         $session_timeout = db_get_value(
             'value',
             'tconfig',
@@ -175,9 +170,9 @@ function pandora_session_gc($max_lifetime=300)
         );
     }
 
-    if (!empty($session_timeout)) {
+    if (empty($session_timeout) === false) {
         if ($session_timeout == -1) {
-            // The session expires in 10 years
+            // The session expires in 10 years.
             $session_timeout = 315576000;
         } else {
             $session_timeout *= 60;
@@ -196,15 +191,14 @@ function pandora_session_gc($max_lifetime=300)
     );
 
     // Deleting cron and empty sessions.
-    $sql = "DELETE FROM tsessions_php WHERE 
-        data IS NULL OR id_session REGEXP '^cron-'";
+    $sql = 'DELETE FROM tsessions_php WHERE data IS NULL';
     db_process_sql($sql);
 
     return $retval;
 }
 
 
-// FIXME: SAML should work with pandora session handlers
+// TODO: SAML should work with pandora session handlers.
 if (db_get_value('value', 'tconfig', 'token', 'auth') != 'saml') {
     $result_handler = session_set_save_handler(
         'pandora_session_open',

@@ -713,11 +713,7 @@ if (is_ajax()) {
 
                         $values['options'] = json_encode($options);
 
-                        $return_update = db_process_sql_update('tnetworkmap_enterprise', $values, ['id' => $id_ent_map]);
-                        if (!$return_update) {
-                            $return_data['ent'] = false;
-                            break;
-                        }
+                        db_process_sql_update('tnetworkmap_enterprise', $values, ['id' => $id_ent_map]);
                     }
                 }
             }
@@ -735,11 +731,7 @@ if (is_ajax()) {
                 } else {
                     $values['text_filter'] = 'migrated';
 
-                    $return_update = db_process_sql_update('tnetwork_map', $values, ['id_networkmap' => $id_open_map]);
-                    if (!$return_update) {
-                        $return_data['open'] = false;
-                        break;
-                    }
+                    db_process_sql_update('tnetwork_map', $values, ['id_networkmap' => $id_open_map]);
                 }
             }
         }

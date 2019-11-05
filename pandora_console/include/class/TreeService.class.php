@@ -104,7 +104,7 @@ class TreeService extends Tree
                 break;
 
                 case SERVICE_STATUS_WARNING:
-                    $processed_items[$row['id']][$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
                 break;
 
                 case SERVICE_STATUS_UNKNOWN:

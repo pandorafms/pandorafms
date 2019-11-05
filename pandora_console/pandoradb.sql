@@ -1455,6 +1455,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`uncompressed_module` TINYINT DEFAULT '0',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2438,14 +2439,17 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 -- Table `tdatabase`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdatabase` (
-	`id` int(10) unsigned NOT NULL auto_increment,
-	`host` varchar(100) default '',
-	`os_port` int(4) unsigned default '22',
-	`os_user` varchar(100) default '',
-	`db_port` int(4) unsigned default '3306',
+	`id` INT(10) unsigned NOT NULL auto_increment,
+	`host` VARCHAR(255) default '',
+	`label` VARCHAR(255) default '',
+	`os_port` INT UNSIGNED NOT NULL DEFAULT 22,
+	`os_user` VARCHAR(255) default '',
+	`db_port` INT UNSIGNED NOT NULL DEFAULT 3306,
 	`status` tinyint(1) unsigned default '0',
 	`action` tinyint(1) unsigned default '0',
-	`last_error` varchar(255) default '',
+	`ssh_key` TEXT,
+	`ssh_pubkey` TEXT,
+	`last_error` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
@@ -2998,6 +3002,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`uncompressed_module` TINYINT DEFAULT '0',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3517,6 +3522,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

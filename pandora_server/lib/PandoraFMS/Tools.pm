@@ -140,6 +140,8 @@ our @EXPORT = qw(
 	generate_agent_name_hash
 	long_to_ip
 	ip_to_long
+	get_enabled_servers
+	dateTimeToTimestamp
 );
 
 # ID of the different servers
@@ -518,7 +520,14 @@ sub pandora_sendmail {
 		Smtp		=> $pa_config->{"mta_address"},
 		Port		=> $pa_config->{"mta_port"},
 		From		=> $pa_config->{"mta_from"},
+		Encryption	=> $pa_config->{"mta_encryption"},
 	);
+
+	# Set the timeout.
+	$PandoraFMS::Sendmail::mailcfg{'timeout'} = $pa_config->{"tcp_timeout"};
+
+	# Enable debugging.
+	$PandoraFMS::Sendmail::mailcfg{'debug'} = $pa_config->{"verbosity"};
 	
 	if (defined($content_type)) {
 		$mail{'Content-Type'} = $content_type;
@@ -535,15 +544,12 @@ sub pandora_sendmail {
 		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
 	}
 
-	if (sendmail %mail) { 
-		return;
-	}
-	else {
-		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-		if (defined($Mail::Sendmail::error)){
-			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+	eval {
+		if (!sendmail(%mail)) { 
+			logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
+			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5) if (defined($Mail::Sendmail::error));
 		}
-	}
+	};
 }
 
 ##########################################################################
@@ -564,7 +570,8 @@ sub is_numeric {
 	my $SIGN   = qr{ [+-] }xms;
 	my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
 	if ( $val !~ /^${NUMBER}$/ ) {
-		return 0;   #Non-numeric
+		#Non-numeric, or maybe... leave looks_like_number try
+		return looks_like_number($val);
 	}
 	else {
 		return 1;   #Numeric
@@ -619,7 +626,7 @@ sub logger ($$;$) {
 	$message = safe_output ($message);
 
 	$level = 1 unless defined ($level);
-	return if ($level > $pa_config->{'verbosity'});
+	return if (!defined ($pa_config->{'verbosity'}) || $level > $pa_config->{'verbosity'});
 
 	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
@@ -635,19 +642,29 @@ sub logger ($$;$) {
 		# Set the security level
 		my $security_level = 'info';
 		if ($level < 2) {
-			$security = 'crit';
+			$security_level = 'crit';
 		} elsif ($level < 5) {
-			$security = 'warn';
+			$security_level = 'warn';
 		}
 
 		openlog('pandora_server', 'ndelay', 'daemon');
 		syslog($security_level, $message);
 		closelog();
 	} else {
+		# Obtain the script that invoke this log
+		my $parent_caller = "";
+		$parent_caller = ( caller(2) )[1];
+		if (defined $parent_caller) {
+			$parent_caller = (split '/', $parent_caller)[-1];
+			$parent_caller =~ s/\.[^.]+$//;
+			$parent_caller = " ** " . $parent_caller . " **: ";
+		} else {
+			$parent_caller = " ";
+		}
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)
 		flock (FILE, 2);
-		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . $parent_caller . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
 		close (FILE);
 	}
 }
@@ -989,7 +1006,8 @@ sub load_average {
 		$load_average = ((split(/\s+/, `/sbin/sysctl -n vm.loadavg`))[1]);
 	} elsif ($OSNAME eq "MSWin32") {
 		# Windows hasn't got load average.
-		$load_average = undef;
+		$load_average = `powershell "(Get-WmiObject win32_processor | Measure-Object -property LoadPercentage -Average).average"`;
+		chop($load_average);
 	}
 	# by default LINUX calls
 	else {
@@ -2049,6 +2067,25 @@ sub long_to_ip {
 	return inet_ntoa pack("N", ($ip_long));
 }
 
+###############################################################################
+# Returns a list with enabled servers.
+###############################################################################
+sub get_enabled_servers {
+	my $conf = shift;
+
+	if (ref($conf) ne "HASH") {
+		return ();
+	}
+
+	my @server_list = map {
+		if ($_ =~ /server$/i && $conf->{$_} > 0) {
+			$_
+		} else {
+		}
+	} keys %{$conf};
+
+	return @server_list;
+}
 # End of function declaration
 # End of defined Code
 

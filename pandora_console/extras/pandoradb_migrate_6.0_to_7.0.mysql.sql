@@ -219,14 +219,17 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 -- Table `tdatabase`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdatabase` (
-	`id` int(10) unsigned NOT NULL auto_increment,
-	`host` varchar(100) default '',
-	`os_port` int(4) unsigned default '22',
-	`os_user` varchar(100) default '',
-	`db_port` int(4) unsigned default '3306',
+	`id` INT(10) unsigned NOT NULL auto_increment,
+	`host` VARCHAR(255) default '',
+	`label` VARCHAR(255) default '',
+	`os_port` INT UNSIGNED NOT NULL DEFAULT 22,
+	`os_user` VARCHAR(255) default '',
+	`db_port` INT UNSIGNED NOT NULL DEFAULT 3306,
 	`status` tinyint(1) unsigned default '0',
 	`action` tinyint(1) unsigned default '0',
-	`last_error` varchar(255) default '',
+	`ssh_key` TEXT,
+	`ssh_pubkey` TEXT,
+	`last_error` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
@@ -798,6 +801,7 @@ ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) D
 ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -1243,19 +1247,39 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 31);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 32);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '737');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '739');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
-DELETE FROM `tconfig` WHERE `token` LIKE 'integria_enabled';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_inventory';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_url';
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_user', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_pass', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_hostname', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_api_pass', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('integria_req_timeout', 5);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_group', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_criticity', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_creator', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('default_owner', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_type', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_status', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_title', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_group', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_criticity', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_creator', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_default_owner', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1454,6 +1478,7 @@ ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
 ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
+ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1882,6 +1907,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_node_id` INT(10) NOT NULL default 0,
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

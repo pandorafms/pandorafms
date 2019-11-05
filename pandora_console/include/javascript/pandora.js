@@ -1890,6 +1890,16 @@ function load_modal(settings) {
     width = settings.onshow.width;
   }
 
+  settings.target.html("Loading modal...");
+  settings.target
+    .dialog({
+      title: "Loading",
+      close: false,
+      width: 200,
+      buttons: []
+    })
+    .show();
+
   $.ajax({
     method: "post",
     url: settings.url,
@@ -1898,6 +1908,9 @@ function load_modal(settings) {
     data: data,
     success: function(data) {
       settings.target.html(data);
+      if (settings.onload != undefined) {
+        settings.onload(data);
+      }
       settings.target.dialog({
         resizable: true,
         draggable: true,
@@ -1915,7 +1928,9 @@ function load_modal(settings) {
             text: settings.modal.cancel,
             click: function() {
               $(this).dialog("close");
-              settings.cleanup();
+              if (typeof settings.cleanup == "function") {
+                settings.cleanup();
+              }
             }
           },
           {
@@ -1925,6 +1940,9 @@ function load_modal(settings) {
             click: function() {
               if (AJAX_RUNNING) return;
               AJAX_RUNNING = 1;
+              if (settings.onsubmit.preaction != undefined) {
+                settings.onsubmit.preaction();
+              }
               var formdata = new FormData();
               if (settings.extradata) {
                 settings.extradata.forEach(function(item) {
@@ -1952,7 +1970,9 @@ function load_modal(settings) {
                 contentType: false,
                 data: formdata,
                 success: function(data) {
-                  settings.ajax_callback(data);
+                  if (settings.ajax_callback != undefined) {
+                    settings.ajax_callback(data);
+                  }
                   AJAX_RUNNING = 0;
                 }
               });

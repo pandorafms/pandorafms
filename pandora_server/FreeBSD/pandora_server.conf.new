@@ -348,6 +348,15 @@ self_monitoring 1
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
 
+# Pandora Sample Agent. If enabled, every 10 minutes, this embedded agent 
+# will make sample data. Disabled by default.
+
+sample_agent 0
+
+# Pandora Sample Agent interval (in seconds).
+
+sample_agent_interval 600
+
 # Update parent from the agent xml
 
 #update_parent 1

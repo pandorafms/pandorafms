@@ -209,6 +209,12 @@ class ConsoleSupervisor
 
         $this->getUMMessages();
 
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
+
     }
 
 
@@ -434,6 +440,12 @@ class ConsoleSupervisor
          */
 
         $this->getUMMessages();
+
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
 
     }
 
@@ -873,18 +885,20 @@ class ConsoleSupervisor
     {
         global $config;
 
+        $remote_config_dir = io_safe_output($config['remote_config']);
+
         if (enterprise_installed()
             && isset($config['license_nms'])
             && $config['license_nms'] != 1
         ) {
-            if (is_readable($config['remote_config']) !== true) {
+            if (is_readable($remote_config_dir) !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG',
                         'title'   => __('Remote configuration directory is not readable'),
                         'message' => __(
                             'Remote configuration directory %s is not readable. Please, adjust configuration.',
-                            $config['remote_config']
+                            $remote_config_dir
                         ),
                         'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
@@ -896,14 +910,14 @@ class ConsoleSupervisor
                 );
             }
 
-            if (is_writable($config['remote_config'].'/conf') !== true) {
+            if (is_writable($remote_config_dir.'/conf') !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.CONF',
                         'title'   => __('Remote configuration directory is not writable'),
                         'message' => __(
                             'Remote configuration directory %s is not writable. Please, adjust configuration.',
-                            $config['remote_config'].'/conf'
+                            $remote_config_dir.'/conf'
                         ),
                         'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
@@ -914,14 +928,14 @@ class ConsoleSupervisor
                 );
             }
 
-            if (is_writable($config['remote_config'].'/collections') !== true) {
+            if (is_writable($remote_config_dir.'/collections') !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.COLLECTIONS',
                         'title'   => __('Remote collections directory is not writable'),
                         'message' => __(
                             'Collections directory %s is not writable. Please, adjust configuration.',
-                            $config['remote_config'].'/collections'
+                            $remote_config_dir.'/collections'
                         ),
                         'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
@@ -932,14 +946,14 @@ class ConsoleSupervisor
                 );
             }
 
-            if (is_writable($config['remote_config'].'/md5') !== true) {
+            if (is_writable($remote_config_dir.'/md5') !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.MD5',
                         'title'   => __('Remote md5 directory is not writable'),
                         'message' => __(
                             'MD5 directory %s is not writable. Please, adjust configuration.',
-                            $config['remote_config'].'/md5'
+                            $remote_config_dir.'/md5'
                         ),
                         'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
@@ -957,7 +971,7 @@ class ConsoleSupervisor
         $MAX_BADXML_FILES_DATA_IN = 150;
 
         $filecount = $this->countFiles(
-            $config['remote_config'],
+            $remote_config_dir,
             '',
             $MAX_FILES_DATA_IN
         );
@@ -970,7 +984,7 @@ class ConsoleSupervisor
                     'message' => __(
                         'There are more than %d files in %s. Consider checking DataServer performance',
                         $MAX_FILES_DATA_IN,
-                        $config['remote_config']
+                        $remote_config_dir
                     ),
                     'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                 ]
@@ -980,7 +994,7 @@ class ConsoleSupervisor
         }
 
         $filecount = $this->countFiles(
-            $config['remote_config'],
+            $remote_config_dir,
             '/^.*BADXML$/',
             $MAX_BADXML_FILES_DATA_IN
         );
@@ -993,7 +1007,7 @@ class ConsoleSupervisor
                     'message' => __(
                         'There are more than %d files in %s. Consider checking software agents.',
                         $MAX_BADXML_FILES_DATA_IN,
-                        $config['remote_config']
+                        $remote_config_dir
                     ),
                     'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                 ]
@@ -1266,7 +1280,8 @@ class ConsoleSupervisor
         $PHPSerialize_precision = ini_get('serialize_precision');
 
         // PhantomJS status.
-        $result_ejecution = exec($config['phantomjs_bin'].'/phantomjs --version');
+        $phantomjs_dir = io_safe_output($config['phantomjs_bin']);
+        $result_ejecution = exec($phantomjs_dir.'/phantomjs --version');
 
         // PHP version checks.
         $php_version = phpversion();
@@ -1451,8 +1466,9 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.PHP.SERIALIZE_PRECISION',
                     'title'   => sprintf(
                         __("Not recommended '%s' value in PHP configuration"),
-                        'serialze_precision'
-                    ),                    'message' => sprintf(
+                        'serialize_precision'
+                    ),
+                    'message' => sprintf(
                         __('Recommended value is: %s'),
                         sprintf('-1')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
@@ -2061,8 +2077,10 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if (($config['fontpath'] == '')
-            || (file_exists($config['fontpath']) === false)
+        $fontpath = io_safe_output($config['fontpath']);
+
+        if (($fontpath == '')
+            || (file_exists($fontpath) === false)
         ) {
             $this->notify(
                 [
@@ -2322,6 +2340,37 @@ class ConsoleSupervisor
                         'url'     => $message['url'],
                     ],
                     $source_id
+                );
+            }
+        }
+    }
+
+
+    /**
+     * Check if all servers and console versions are the same
+     *
+     * @return void
+     */
+    public function checkConsoleServerVersions()
+    {
+        global $config;
+        // List all servers except satellite server
+        $server_version_list = db_get_all_rows_sql(
+            'SELECT name, version FROM tserver WHERE server_type != '.SERVER_TYPE_ENTERPRISE_SATELLITE
+        );
+
+        foreach ($server_version_list as $server) {
+            if (strpos($server['version'], $config['current_package_enterprise']) === false) {
+                $title_ver_misaligned = $server['name'].' version misaligned with Console';
+                $message_ver_misaligned = 'Server '.$server['name'].' and this console have different versions. This might cause several malfunctions. Please, update this server.';
+
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.SERVER.MISALIGNED',
+                        'title'   => __($title_ver_misaligned),
+                        'message' => __($message_ver_misaligned),
+                        'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                    ]
                 );
             }
         }

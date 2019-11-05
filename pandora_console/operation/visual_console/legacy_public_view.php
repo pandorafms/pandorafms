@@ -115,6 +115,7 @@ echo '</li>';
 // Countdown.
 echo '<li class="nomn">';
 echo '<div class="vc-refr">';
+echo '<div class="vc-countdown style="display: inline;"></div>';
 echo '<div id="vc-refr-form">';
 echo __('Refresh').':';
 echo html_print_select(
@@ -187,7 +188,7 @@ $ignored_params['refr'] = '';
         var controls = document.getElementById('vc-controls');
         autoHideElement(controls, 1000);
         
-        $('select#refr').change(function (event) {
+        $('#vc-controls').change(function (event) {
             refr = Number.parseInt(event.target.value, 10);
             startCountDown(refr, false);
         });

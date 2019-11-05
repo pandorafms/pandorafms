@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.738
-%define release     190913
+%define version     7.0NG.740
+%define release     191029
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -24,7 +24,7 @@ Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools perl-XML-Twig
 Requires:           nmap sudo perl-HTML-Tree perl-XML-Simple perl-Net-Telnet
-Requires:           perl-IO-Socket-INET6 perl-Socket6 snmp-mibs perl-JSON
+Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-IO-Socket-SSL snmp-mibs perl-JSON
 Requires:           perl-Encode-Locale perl-Geo-IP
 
 %description

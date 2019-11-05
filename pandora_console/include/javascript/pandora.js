@@ -1962,13 +1962,34 @@ function load_modal(settings) {
 
               $("#" + settings.form + " :input").each(function() {
                 if (this.checkValidity() === false) {
-                  $(this).prop("title", this.validationMessage);
+                  $(this).attr("title", this.validationMessage);
                   $(this).tooltip({
                     tooltipClass: "uitooltip",
-                    position: { my: "right bottom", at: "right bottom" },
-                    show: { duration: 200 }
+                    position: {
+                      my: "right bottom",
+                      at: "right top",
+                      using: function(position, feedback) {
+                        $(this).css(position);
+                        $("<div>")
+                          .addClass("arrow")
+                          .addClass(feedback.vertical)
+                          .addClass(feedback.horizontal)
+                          .appendTo(this);
+                      }
+                    }
                   });
                   $(this).tooltip("open");
+
+                  var element = $(this);
+                  setTimeout(
+                    function(element) {
+                      element.tooltip("destroy");
+                      element.removeAttr("title");
+                    },
+                    3000,
+                    element
+                  );
+
                   flagError = true;
                 }
 

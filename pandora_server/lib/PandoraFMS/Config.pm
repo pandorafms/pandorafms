@@ -79,7 +79,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-20".substr($pandora_build,0,2)." " . pandora_get_initial_copyright_notice() . "\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	print "You can download latest versions and documentation at official web page.\n\n";
 
@@ -403,6 +403,12 @@ sub pandora_load_config {
 
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
+
+	# Sample Agent
+	$pa_config->{'sample_agent'} = 0; 
+	
+	# Sample agent interval
+	$pa_config->{'sample_agent_interval'} = 600;
 
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
@@ -961,6 +967,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sample_agent\s+([0-1])/i) {
+			$pa_config->{'sample_agent'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sample_agent_interval\s+([0-9]*)/i) {
+			$pa_config->{'sample_agent_interval'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);

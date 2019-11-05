@@ -827,7 +827,7 @@ $table->data[5][1] = "
 		</table>
 	</div>';
 
-echo '<form method="POST" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor">';
+echo '<form method="POST" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
 
 if ($id_downtime > 0) {
     echo '<table width=100% border=0 cellpadding=4 >';
@@ -929,7 +929,7 @@ if ($id_downtime > 0) {
         $disabled_add_button = true;
     }
 
-    echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
+    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
     html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'min-width:180px;margin-right:15px;');
 
     html_print_checkbox('recursion', 1, $recursion, false, false, '');
@@ -939,7 +939,7 @@ if ($id_downtime > 0) {
     echo '</form>';
     // Show available agents to include into downtime
     echo '<h4>'.__('Available agents').':</h4>';
-    echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
+    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 
     echo html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, false, true, true, '', false, 'width: 180px;');
 
@@ -1085,7 +1085,7 @@ if ($id_downtime > 0) {
                     $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
                 }
 
-                $data[5] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+                $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
             }
 
             $table->data['agent_'.$downtime_agent['id_agente']] = $data;

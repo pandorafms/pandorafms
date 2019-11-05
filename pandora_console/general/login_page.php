@@ -96,16 +96,16 @@ echo '<div id="header_login">';
 
         echo '<div id="list_icon_docs_support"><ul>';
 if ($docs_logo !== false) {
-    echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
 }
 
-            echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank">'.__('Docs').'</li>';
+            echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($support_logo !== false) {
-        echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+        echo '<li id="li_margin_left"><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
     }
 
-    echo '<li><a href="'.$config['custom_support_url'].'" target="_blank">'.__('Support').'</li>';
+    echo '<li><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
 } else {
     echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
     echo '<li>'.__('Support').'</li>';

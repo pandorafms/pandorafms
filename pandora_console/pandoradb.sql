@@ -3681,7 +3681,7 @@ CREATE TABLE `tremote_command` (
 CREATE TABLE `tremote_command_target` (
   `id` SERIAL,
   `rcmd_id` bigint unsigned NOT NULL,
-  `id_agente` int(10) unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
   `stdout` text,
   `stderr` text,

@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.738";
-my $pandora_build = "190923";
+my $pandora_version = "7.0NG.740";
+my $pandora_build = "191029";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -79,7 +79,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-20".substr($pandora_build,0,2)." " . pandora_get_initial_copyright_notice() . "\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	print "You can download latest versions and documentation at official web page.\n\n";
 
@@ -357,7 +357,15 @@ sub pandora_load_config {
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 
+	# Winexe allows to exec commands on remote windows systems (optional)
+	$pa_config->{"winexe"} = "/usr/bin/winexe";
+
+	# PsExec allows to exec commands on remote windows systems from windows servers (optional)
+	$pa_config->{"psexec"} = 'C:\PandoraFMS\Pandora_Server\bin\PsExec.exe';
 	
+	# plink allows to exec commands on remote linux systems from windows servers (optional)
+	$pa_config->{"plink"} = 'C:\PandoraFMS\Pandora_Server\bin\plink.exe';
+
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
@@ -388,6 +396,12 @@ sub pandora_load_config {
 
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
+
+	# Sample Agent
+	$pa_config->{'sample_agent'} = 0; 
+	
+	# Sample agent interval
+	$pa_config->{'sample_agent_interval'} = 600;
 
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
@@ -838,6 +852,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^winexe\s(.*)/i) {
+			$pa_config->{'winexe'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^psexec\s(.*)/i) {
+			$pa_config->{'psexec'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^plink\s(.*)/i) {
+			$pa_config->{'plink'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^snmpget\s(.*)/i) {
 			$pa_config->{'snmpget'}= clean_blank($1); 
 		}
@@ -928,6 +951,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sample_agent\s+([0-1])/i) {
+			$pa_config->{'sample_agent'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sample_agent_interval\s+([0-9]*)/i) {
+			$pa_config->{'sample_agent_interval'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
@@ -1037,7 +1066,7 @@ sub pandora_load_config {
 			$pa_config->{'console_pass'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) { # 6.0
-			$pa_config->{'encryption_passphrase'}= safe_input(clean_blank($1));
+			$pa_config->{'encryption_passphrase'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^unknown_interval\s+([0-9]*)/i) { # > 5.1SP2
 			$pa_config->{'unknown_interval'}= clean_blank($1);
@@ -1188,6 +1217,9 @@ sub pandora_load_config {
 		}
 		
 	} # end of loop for parameter #
+
+	# Generate the encryption key after reading the passphrase.
+	$pa_config->{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{"encryption_passphrase"}]);
 
 	# Set to RDBMS' standard port
 	if (!defined($pa_config->{'dbport'})) {

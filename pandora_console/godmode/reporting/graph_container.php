@@ -16,10 +16,10 @@ global $config;
 // Check user credentials
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'RR')) {
+if (! check_acl($config['id_user'], 0, 'RR') || enterprise_installed() === false) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access Inventory Module Management'
+        'Trying to access Graph container'
     );
     include 'general/noaccess.php';
     return;

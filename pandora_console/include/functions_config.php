@@ -1895,6 +1895,10 @@ function config_process_config()
         config_update_value('unique_ip', 0);
     }
 
+    if (!isset($config['welcome_state'])) {
+        config_update_value('welcome_state', WELCOME_STARTED);
+    }
+
      /*
       * Parse the ACL IP list for access API
       */

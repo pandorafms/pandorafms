@@ -639,6 +639,7 @@ if ($config['menu_type'] == 'classic') {
         // Require specific CSS and JS.
         ui_require_css_file('wizard');
         ui_require_css_file('discovery');
+        ui_require_css_file('diagnostics');
         ?>
         var btn_ok_text = '<?php echo __('Send'); ?>';
         var btn_cancel_text = '<?php echo __('Cancel'); ?>';

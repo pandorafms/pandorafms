@@ -391,6 +391,9 @@ if ($id_agent_module) {
 } else {
     if (isset($moduletype) === false) {
         $moduletype = (string) get_parameter('moduletype');
+        if ($_SESSION['create_module'] && $config['welcome_state'] == 1) {
+            $moduletype = 'networkserver';
+        }
 
         // Clean up specific network modules fields.
         $name = '';

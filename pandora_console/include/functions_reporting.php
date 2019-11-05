@@ -224,7 +224,12 @@ function reporting_make_reporting_data(
 
         // General reports with 0 period means last value
         // Avoid to overwrite it by template value.
-        if (!empty($period) && ($content['type'] !== 'general' && $content['period'] != 0)) {
+        $general_last_value = false;
+        if ($content['type'] === 'general' && $content['period'] == 0) {
+            $general_last_value = true;
+        }
+
+        if (!empty($period) && $general_last_value === false) {
             $content['period'] = $period;
         }
 
@@ -506,43 +511,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            /*
-                case 'MTTR':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'MTTR',
-                    $pdf
-                );
-                break;
-
-                case 'MTBF':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'MTBF',
-                    $pdf
-                );
-                break;
-
-                case 'TTO':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'TTO',
-                    $pdf
-                );
-                break;
-
-                case 'TTRT':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'TTRT',
-                    $pdf
-                );
-                break;
-            */
             case 'agent_configuration':
                 $report['contents'][] = io_safe_output(
                     reporting_agent_configuration(
@@ -3276,6 +3244,7 @@ function reporting_database_serialized($report, $content)
     }
 
     $return['keys'] = $keys;
+    $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
 
@@ -4303,6 +4272,7 @@ function reporting_monitor_report($report, $content)
         );
     }
 
+    $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
 
@@ -4475,6 +4445,7 @@ function reporting_prediction_date($report, $content)
     $agent_name = io_safe_output(
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
+    $agent_name_db = io_safe_output(modules_get_agentmodule_agent_name($content['id_agent_module']));
 
     $return['title'] = $content['name'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
@@ -4482,6 +4453,7 @@ function reporting_prediction_date($report, $content)
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
+    $return['agent_name_db'] = $agent_name_db;
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
 
@@ -4526,12 +4498,14 @@ function reporting_projection_graph(
 
     $module_name = io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
     $agent_name = io_safe_output(modules_get_agentmodule_agent_alias($content['id_agent_module']));
+    $agent_name_db = io_safe_output(modules_get_agentmodule_agent_name($content['id_agent_module']));
 
     $return['title']       = $content['name'];
     $return['subtitle']    = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date']        = reporting_get_date_text($report, $content);
     $return['label']       = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['agent_name_db'] = $agent_name_db;
     $return['agent_name']  = $agent_name;
     $return['module_name'] = $module_name;
 
@@ -4727,23 +4701,6 @@ function reporting_value($report, $content, $type, $pdf=false)
         case 'sum':
             $return['type'] = 'sumatory';
         break;
-
-        /*
-            case 'MTTR':
-            $return['type'] = 'MTTR';
-            break;
-
-            case 'MTBF':
-            $return['type'] = 'MTBF';
-            break;
-
-            case 'TTO':
-            $return['type'] = 'TTO';
-            break;
-
-            case 'TTRT':
-            $return['type'] = 'TTRT';
-        break;*/
     }
 
     if (empty($content['name'])) {
@@ -4763,23 +4720,6 @@ function reporting_value($report, $content, $type, $pdf=false)
             case 'sum':
                 $content['name'] = __('Summatory');
             break;
-
-            /*
-                case 'MTTR':
-                $content['name'] = __('MTTR');
-                break;
-
-                case 'MTBF':
-                $content['name'] = __('MTBF');
-                break;
-
-                case 'TTO':
-                $content['name'] = __('TTO');
-                break;
-
-                case 'TTRT':
-                $content['name'] = __('TTRT');
-            break;*/
         }
     }
 
@@ -4795,6 +4735,9 @@ function reporting_value($report, $content, $type, $pdf=false)
     );
     $agent_name = io_safe_output(
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
+    );
+    $agent_name_db = io_safe_output(
+        modules_get_agentmodule_agent_name($content['id_agent_module'])
     );
     $unit = db_get_value(
         'unit',
@@ -4812,6 +4755,7 @@ function reporting_value($report, $content, $type, $pdf=false)
     $return['id_agent'] = $content['id_agent'];
     $return['id_agent_module'] = $content['id_agent_module'];
 
+    $return['agent_name_db'] = $agent_name_db;
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
 
@@ -4952,51 +4896,6 @@ function reporting_value($report, $content, $type, $pdf=false)
                 $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
             }
         break;
-
-        /*
-            case 'MTTR':
-            $value = reporting_get_agentmodule_mttr(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            $formated_value = null;
-            break;
-
-            case 'MTBF':
-            $value = reporting_get_agentmodule_mtbf(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            $formated_value = null;
-            break;
-
-            case 'TTO':
-            $value = reporting_get_agentmodule_tto(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            if ($value == 0) {
-                $formated_value = null;
-            } else {
-                $formated_value = human_time_description_raw($value);
-            }
-            break;
-
-            case 'TTRT':
-            $value = reporting_get_agentmodule_ttr(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            if ($value == 0) {
-                $formated_value = null;
-            } else {
-                $formated_value = human_time_description_raw($value);
-            }
-        break;*/
     }
 
     $return['data'] = [
@@ -7755,6 +7654,7 @@ function reporting_simple_graph(
 
     $return['title'] = $content['name'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
+    $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];

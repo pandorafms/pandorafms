@@ -139,6 +139,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('cr_incident_status', ''),
 ('cr_incident_title', ''),
 ('cr_incident_content', ''),
+('sample_agent', '0'),
 ('gotty', '/usr/bin/gotty');
 UNLOCK TABLES;
 

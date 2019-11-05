@@ -382,6 +382,16 @@ sub pandora_server_tasks ($) {
 			pandora_self_monitoring ($pa_config, $dbh);
 		}
 
+		# Pandora sample agent
+		if (defined($pa_config->{'sample_agent'})) {
+			if ($pa_config->{'sample_agent'} == 1
+			&& !is_metaconsole($pa_config)
+			&& $counter % $pa_config->{'sample_agent_interval'} == 0){
+				pandora_sample_agent ($pa_config);
+			}
+			pandora_update_config_token ($dbh, 'sample_agent', $pa_config->{'sample_agent'});
+		}
+
 		# Avoid counter overflow
 		if ($counter >= ~0){
 			$counter = 0;

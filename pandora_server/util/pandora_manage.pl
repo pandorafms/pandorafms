@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.740 PS191028";
+my $version = "7.0NG.740 PS191029";
 
 # save program name for logging
 my $progname = basename($0);
@@ -5895,9 +5895,16 @@ sub cli_stop_downtime () {
 	exist_check($downtime_id,'planned downtime',$downtime_id);
 	
 	my $current_time = time;
-	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	if($current_time >= $downtime_date_to) {
+	my $data = get_db_single_row ($dbh, 'SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
+
+	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
+		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
+		print_log "[INFO] Periodical and running planned downtime cannot be stopped.\n\n";
+		exit;
+	}
+	
+	if($current_time >= $data->{'date_to'}) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}

@@ -121,12 +121,9 @@ function html_do_report_info($report)
             </tr>
             <tr>
                 <td><b>'.__('Report date').': </b></td>';
-    if (isset($report['period'])) {
-        if (is_numeric($report['datetime']) && is_numeric($report['period'])) {
-            $html .= '<td>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</td>';
-        }
-
-        $html .= '<td></td>';
+    if (is_numeric($report['datetime']) && is_numeric($report['period']) && ($report['period'] != 0)) {
+        $html .= '<td>'.__('From').' <b>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</b></td>';
+        $html .= '<td>'.__('to').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     } else {
         $html .= '<td>'.__('Items period before').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     }

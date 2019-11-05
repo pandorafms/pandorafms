@@ -353,6 +353,18 @@ function config_update_config()
                     if (!config_update_value('email_password', get_parameter('email_password'))) {
                         $error_update[] = __('Email password');
                     }
+
+                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
+                        $error_update[] = __('WebSocket bind address');
+                    }
+
+                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
+                        $error_update[] = __('WebSocket port');
+                    }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
+                    }
                 break;
 
                 case 'enterprise':
@@ -1881,6 +1893,10 @@ function config_process_config()
 
     if (!isset($config['unique_ip'])) {
         config_update_value('unique_ip', 0);
+    }
+
+    if (!isset($config['welcome_state'])) {
+        config_update_value('welcome_state', WELCOME_STARTED);
     }
 
      /*

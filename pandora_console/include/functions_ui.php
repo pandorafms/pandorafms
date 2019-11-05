@@ -2946,26 +2946,26 @@ function ui_progress_extend(
         $progress = 0;
     }
 
-    if ($progress['total'] > 100) {
-        $progress['total'] = 100;
+    $totalW = ($progress['total'] * 100);
+    if ($totalW > 100) {
+        $totalW = 100;
     }
 
-    if ($progress['total'] < 0) {
-        $progress['total'] = 0;
+    if ($totalW < 0) {
+        $totalW = 0;
     }
 
     if (empty($text)) {
-        $text = $progress['total'].'%';
+        $text = $totalW.'%';
     }
 
-    $totalW = ($progress['total'] * 10);
-    $badW = ($progress['bad'] * 10);
-    $goodW = ($progress['good'] * 10);
-    $unknownW = ($progress['unknown'] * 10);
+    $badW = (($progress['bad'] * 100 ) / $progress['total']);
+    $goodW = (($progress['good'] * 100 ) / $progress['total']);
+    $unknownW = (($progress['unknown'] * 100 ) / $progress['total']);
     ui_require_css_file('progress');
     $output .= '<div class="progress_main" data-label="total"';
     $output .= '" style="width: '.$totalW.'%;display:flex; height: '.$height.'em;">';
-    $output .= '<div class="progress_main" data-label="Pending"';
+    $output .= '<div id="unknow_div" onmouseover="Mouseover()" class="progress_main text_over" data-label="Pending"';
     $output .= '" style="width:  '.$unknownW.'%; height: '.$height.'em; background-color: '.COL_UNKNOWN.'; "></div>';
     $output .= '<div class="progress_main" data-label="Success"';
     $output .= '" style="width: '.$goodW.'%;  height: '.$height.'em; background-color: '.COL_NORMAL.';"></div>';
@@ -2975,7 +2975,15 @@ function ui_progress_extend(
 
     if ($ajax !== false && is_array($ajax)) {
         $output .= '<script type="text/javascript">
-    $(document).ready(function() {
+         
+        $(document).ready(function() {
+            function 
+            document.getElementById("#unknow_div").onmouseover = function() {
+            document.getElementById("#unknow_div").append( $( "<span> ***</span>" ) );
+  }
+        
+     
+        }
         setInterval(() => {
                 last = $(".progress_main").attr("data-label").split(" ")[0]*1;
                 width = $(".progress").width() / $(".progress").parent().width() * 100;

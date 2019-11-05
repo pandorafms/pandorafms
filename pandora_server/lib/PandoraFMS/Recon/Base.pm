@@ -1441,10 +1441,11 @@ sub cloud_scan($) {
 
 	my $type = '';
 
-	if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
-	|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+	if (   $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
+		|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
 		$type = 'Aws';
 	} else {
+
 		# Unrecognized task type.
 		call('message', 'Unrecognized task type', 1);
 		$self->call('update_progress', -1);
@@ -1466,9 +1467,11 @@ sub cloud_scan($) {
 	);
 
 	if (!$cloudObj) {
+
 		# Failed to initialize, check Cloud credentials or anything.
 		call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
 	} else {
+
 		# Let Cloud object manage scan.
 		$cloudObj->scan();
 	}
@@ -1535,10 +1538,12 @@ sub database_scan($$$) {
 		if (ref($__data) eq "ARRAY") {
 			if (defined($dbObjCfg->{'agent_per_database'})
 				&& $dbObjCfg->{'agent_per_database'} == 1) {
+
 				# Agent per database detected.
 				push @data, @{$__data};
 
 			} else {
+
 				# Merge modules into engine agent.
 				my @_modules = map {
 					map { $_ }
@@ -1587,6 +1592,13 @@ sub app_scan($) {
 	my $global_percent = 0;
 	my $i = 0;
 	foreach my $target (@targets) {
+		if (   !defined($target)
+			|| $target eq ''
+			|| $target =~ /^#/) {
+			# Ignore empty target or commented one.
+			next;
+		}
+
 		my @data;
 		my @modules;
 
@@ -1617,12 +1629,14 @@ sub app_scan($) {
 		);
 
 		if (defined($obj)) {
+
 			# Verify if object is connected. If cannot connect to current target
 			# return with module.
 			if (!$obj->is_connected()) {
 				call('message', 'Cannot connect to target ' . $target, 3);
 				$global_percent += $global_step;
 				$self->{'c_network_percent'} = 90;
+
 				# Update progress
 				$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
 				$self->{'summary'}->{'not_alive'} += 1;
@@ -1639,30 +1653,39 @@ sub app_scan($) {
 				#   @modules => 'global' modules.
 				#   @data => {
 				#	    'agent_data' => {}
-				#       'module_data' => []
+				#     'module_data' => []
 				#   }
 				my $results;
 
 				# Scan connected obj.
-				if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
-					|| $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
-				) {
+				if (   $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
+					|| $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
+
 					# Database.
 					$results = $self->database_scan($type, $obj, $global_percent, \@targets);
 
 				} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
+
 					# SAP scan
 					$results = $obj->scan();
 
 				}
 
-				push @modules, $results->{'modules'};
-				push @data, $results->{'data'};
+				# Add results.
+				if (ref($results) eq 'HASH') {
+					if (defined($results->{'modules'})) {
+						push @modules, $results->{'modules'};
+					}
+
+					if (defined($results->{'data'})) {
+						push @data, $results->{'data'};
+					}
+				}
 			}
 
 			# Put engine agent at the beginning of the list.
 			my $version = $obj->get_version();
-			unshift @data,{
+			unshift @data, {
 				'agent_data' => {
 					'agent_name' => $obj->get_agent_name(),
 					'os' => $type,
@@ -1714,9 +1737,11 @@ sub deploy_scan($) {
 	);
 
 	if (!$deployer) {
+
 		# Failed to initialize, check Cloud credentials or anything.
 		call('message', 'Unable to initialize PandoraFMS::Recon::Deployer', 3);
 	} else {
+
 		# Let deployer object manage scan.
 		$deployer->scan();
 	}
@@ -1739,14 +1764,16 @@ sub scan($) {
 	$self->call('update_progress', 1);
 
 	if (defined($self->{'task_data'})) {
-		if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
-		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
-		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
+		if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
+			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
+			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
+
 			# Application scan.
 			return $self->app_scan();
 		}
 
 		if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+
 			# Cloud scan.
 			return $self->cloud_scan();
 		}

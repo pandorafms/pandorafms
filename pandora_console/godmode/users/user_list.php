@@ -418,7 +418,7 @@ if ($own_info['is_admin']) {
 else {
     foreach ($info1 as $key => $usr) {
         $u = get_user_info($key);
-        $g = users_get_groups($key, 'AR', $u['is_admin']);
+        $g = users_get_groups($key, false, $u['is_admin']);
         $result = array_intersect($g, $own_groups);
 
         // Show users without profile too.

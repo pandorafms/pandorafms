@@ -1801,6 +1801,7 @@ class Diagnostics extends Wizard
             'id'       => 'modal_form_feedback',
             'onsubmit' => 'return false;',
             'class'    => 'modal',
+            'extra'    => 'novalidate',
         ];
 
         $inputs = [];

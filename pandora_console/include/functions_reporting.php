@@ -179,7 +179,7 @@ function reporting_make_reporting_data(
     $report['group_name'] = groups_get_name($report['id_group']);
     $report['contents'] = [];
 
-    if (empty($report['period']) && $pdf === false) {
+    if (empty($report['period'])) {
         $report['period'] = $period;
     }
 

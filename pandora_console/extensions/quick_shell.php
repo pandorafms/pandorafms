@@ -392,7 +392,8 @@ function quickShellSettings()
             'inputs' => [
                 [
                     'label'     => __('Gotty path').ui_print_help_tip(
-                        __('Leave blank if using an external Gotty service')
+                        __('Leave blank if using an external Gotty service'),
+                        true
                     ),
                     'arguments' => [
                         'type'  => 'text',
@@ -426,7 +427,8 @@ function quickShellSettings()
                 ],
                 [
                     'label'     => __('Gotty user').ui_print_help_tip(
-                        __('Optional, set a user to access gotty service')
+                        __('Optional, set a user to access gotty service'),
+                        true
                     ),
                     'arguments' => [
                         'type'  => 'text',
@@ -436,7 +438,8 @@ function quickShellSettings()
                 ],
                 [
                     'label'     => __('Gotty password').ui_print_help_tip(
-                        __('Optional, set a password to access gotty service')
+                        __('Optional, set a password to access gotty service'),
+                        true
                     ),
                     'arguments' => [
                         'type'  => 'password',

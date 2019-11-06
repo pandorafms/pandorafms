@@ -3777,11 +3777,14 @@ $(document).ready (function () {
     });
 
     $("#checkbox-checkbox_show_resume").change(function(){
-        if($(this).is(":checked")){
+        type = $("#type").val();
+        if($(this).is(":checked") && type !== 'general'){
             $("#row_select_fields2").show();
+            $("#row_select_fields3").show();
         }
         else{
             $("#row_select_fields2").hide();
+            $("#row_select_fields3").hide();
         }
     });
 

@@ -1018,7 +1018,7 @@ $adv_inputs[] = $in;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    true
 );
 
 $data = html_print_select(

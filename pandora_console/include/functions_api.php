@@ -9091,7 +9091,9 @@ function api_set_delete_module($id, $id2, $other, $trash1)
 
 function api_set_module_data($id, $thrash2, $other, $trash1)
 {
-    if (defined('METACONSOLE')) {
+    global $config;
+
+    if (is_metaconsole()) {
         return;
     }
 
@@ -9140,8 +9142,9 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
             );
 
             if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$time.'.data', $xml)) {
-                returnError('error_file', 'Can save agent data xml.');
+                returnError('error_file', 'XML file could not be generated in path: '.$config['remote_config']);
             } else {
+                echo __('XML file was generated successfully in path: ').$config['remote_config'];
                 returnData('string', ['type' => 'string', 'data' => $xml]);
                 return;
             }

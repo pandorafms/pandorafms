@@ -141,6 +141,7 @@ our @EXPORT = qw(
 	long_to_ip
 	ip_to_long
 	get_enabled_servers
+	dateTimeToTimestamp
 );
 
 # ID of the different servers
@@ -569,7 +570,8 @@ sub is_numeric {
 	my $SIGN   = qr{ [+-] }xms;
 	my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
 	if ( $val !~ /^${NUMBER}$/ ) {
-		return 0;   #Non-numeric
+		#Non-numeric, or maybe... leave looks_like_number try
+		return looks_like_number($val);
 	}
 	else {
 		return 1;   #Numeric
@@ -640,19 +642,29 @@ sub logger ($$;$) {
 		# Set the security level
 		my $security_level = 'info';
 		if ($level < 2) {
-			$security = 'crit';
+			$security_level = 'crit';
 		} elsif ($level < 5) {
-			$security = 'warn';
+			$security_level = 'warn';
 		}
 
 		openlog('pandora_server', 'ndelay', 'daemon');
 		syslog($security_level, $message);
 		closelog();
 	} else {
+		# Obtain the script that invoke this log
+		my $parent_caller = "";
+		$parent_caller = ( caller(2) )[1];
+		if (defined $parent_caller) {
+			$parent_caller = (split '/', $parent_caller)[-1];
+			$parent_caller =~ s/\.[^.]+$//;
+			$parent_caller = " ** " . $parent_caller . " **: ";
+		} else {
+			$parent_caller = " ";
+		}
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)
 		flock (FILE, 2);
-		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . $parent_caller . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
 		close (FILE);
 	}
 }

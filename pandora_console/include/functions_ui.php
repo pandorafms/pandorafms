@@ -39,7 +39,7 @@ if (isset($config['homedir'])) {
 
 
 /**
- * Transform bbcode to HTML.
+ * Transform bbcode to HTML and truncate log.
  *
  * @param string $text         Text.
  * @param array  $allowed_tags Allowed_tags.
@@ -48,16 +48,22 @@ if (isset($config['homedir'])) {
  */
 function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
 {
-    if (array_search('[url]', $allowed_tags) !== false) {
-        // If link hasn't http, add it.
-        if (preg_match('/https?:\/\//', $text)) {
-            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="$1">$2</a>';
-        } else {
-            $html_bbcode = '<a target="_blank" rel="noopener noreferrer" href="http://$1">$2</a>';
-        }
-
+    if (array_search('[url]', $allowed_tags) !== false || a) {
         // Replace bbcode format [url=www.example.org] String [/url] with or without http and slashes
-        $return = preg_replace('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $html_bbcode, $text);
+        preg_match('/\[url(?|](((?:https?:\/\/)?[^[]+))|(?:=[\'"]?((?:https?:\/\/)?[^]]+?)[\'"]?)](.+?))\[\/url]/', $text, $matches);
+        if ($matches) {
+            $url = $matches[1];
+            // Truncate text
+            $t_text = ui_print_truncate_text($matches[2]);
+             // If link hasn't http, add it.
+            if (preg_match('/https?:\/\//', $text)) {
+                $return = '<a target="_blank" rel="noopener noreferrer" href="'.$matches[1].'">'.$t_text.'</a>';
+            } else {
+                $return = '<a target="_blank" rel="noopener noreferrer" href="http://'.$matches[1].'">'.$t_text.'</a>';
+            }
+        } else {
+            $return = ui_print_truncate_text($text);
+        }
     }
 
     return $return;
@@ -162,6 +168,10 @@ function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInA
         }
 
         if ($showTextInAToopTip) {
+            if (is_string($showTextInAToopTip)) {
+                $text = ui_print_truncate_text($showTextInAToopTip, ($numChars * 2), false, true, false);
+            }
+
             $truncateText = $truncateText.ui_print_help_tip(htmlspecialchars($text), true);
         } else {
             if ($style !== false) {
@@ -2517,9 +2527,22 @@ function ui_print_module_warn_value(
     $str_warning,
     $max_critical,
     $min_critical,
-    $str_critical
+    $str_critical,
+    $warning_inverse=0,
+    $critical_inverse=0
 ) {
-    $data = "<span title='".__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical."'>";
+    $war_inv = '';
+    $crit_inv = '';
+
+    if ($warning_inverse == 1) {
+        $war_inv = ' (inv)';
+    }
+
+    if ($critical_inverse == 1) {
+        $crit_inv = ' (inv)';
+    }
+
+    $data = "<span title='".__('Warning').': '.__('Max').$max_warning.'/'.__('Min').$min_warning.$war_inv.' - '.__('Critical').': '.__('Max').$max_critical.'/'.__('Min').$min_critical.$crit_inv."'>";
 
     if ($max_warning != $min_warning) {
         $data .= format_for_graph($max_warning).'/'.format_for_graph($min_warning);
@@ -3187,14 +3210,18 @@ function ui_print_datatable(array $parameters)
         $.fn.dataTable.ext.errMode = "none";
         $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
         dt_'.$table_id.' = $("#'.$table_id.'").DataTable({
-            ';
+            drawCallback: function(settings) {';
     if (isset($parameters['drawCallback'])) {
-        $js .= 'drawCallback: function(settings) {
-                    '.$parameters['drawCallback'].'
-                },';
+        $js .= $parameters['drawCallback'];
     }
 
     $js .= '
+                if (dt_'.$table_id.'.page.info().pages > 1) {
+                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
+                } else {
+                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
+                }
+            },
             processing: true,
             serverSide: true,
             paging: true,
@@ -3206,6 +3233,8 @@ function ui_print_datatable(array $parameters)
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
+                    title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
+                    fieldSeparator: "'.$config['csv_divider'].'",
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3299,6 +3328,7 @@ function ui_print_datatable(array $parameters)
             dt_'.$table_id.'.draw().page(0)
         });
     });
+
 </script>';
 
     // Order.
@@ -5645,4 +5675,83 @@ function ui_print_breadcrums($tab_name)
     }
 
     return $section;
+}
+
+
+/**
+ * Show last comment
+ *
+ * @param array $comments array with comments
+ *
+ * @return string  HTML string with the last comment of the events.
+ */
+function ui_print_comments($comments)
+{
+    global $config;
+
+    $comments = explode('<br>', $comments);
+    $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+    if (is_array($comments)) {
+        foreach ($comments as $comm) {
+            if (empty($comm)) {
+                continue;
+            }
+
+            $comments_array[] = json_decode(io_safe_output($comm), true);
+        }
+    }
+
+    foreach ($comments_array as $comm) {
+        // Show the comments more recent first.
+        if (is_array($comm)) {
+            $last_comment[] = array_reverse($comm);
+        }
+    }
+
+    // Only show the last comment. If commment its too long,the comment will short with ...
+    // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
+    // Else show comments hours ago
+    if ($last_comment[0][0]['action'] != 'Added comment') {
+        $last_comment[0][0]['comment'] = $last_comment[0][0]['action'];
+    }
+
+    $short_comment = substr($last_comment[0][0]['comment'], 0, '80px');
+    if ($config['prominent_time'] == 'timestamp') {
+        $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+
+        if (strlen($comentario) > '200px') {
+            $comentario = '<i>'.date($config['date_format'], $last_comment[0][0]['utimestamp']).'&nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+        }
+    } else {
+        $rest_time = (time() - $last_comment[0][0]['utimestamp']);
+        $time_last = (($rest_time / 60) / 60);
+        $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$last_comment[0][0]['comment'].'';
+
+        if (strlen($comentario) > '200px') {
+            $comentario = '<i>'.number_format($time_last, 0).'&nbsp; Hours &nbsp;('.$last_comment[0][0]['id_user'].'):&nbsp;'.$short_comment.'...';
+        }
+    }
+
+    return io_safe_output($comentario);
+
+}
+
+
+/**
+ * Get complete external pandora url.
+ *
+ * @param string $url Url to be parsed.
+ *
+ * @return string Full url.
+ */
+function ui_get_full_external_url(string $url)
+{
+    $url_parsed = parse_url($url);
+    if ($url_parsed) {
+        if (!isset($url_parsed['scheme'])) {
+            $url = 'http://'.$url;
+        }
+    }
+
+        return $url;
 }

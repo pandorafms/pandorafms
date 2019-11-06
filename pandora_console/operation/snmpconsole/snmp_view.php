@@ -430,15 +430,38 @@ if ($date_to_trap != '') {
 }
 
 if ($filter_severity != -1) {
-    // Test if install the enterprise to search oid in text or oid field in ttrap.
-    if ($config['enterprise_installed']) {
-        $whereSubquery .= ' AND (
-			(alerted = 0 AND severity = '.$filter_severity.') OR
-			(alerted = 1 AND priority = '.$filter_severity.'))';
-    } else {
-        $whereSubquery .= ' AND (
-			(alerted = 0 AND 1 = '.$filter_severity.') OR
-			(alerted = 1 AND priority = '.$filter_severity.'))';
+    // There are two special severity values aimed to match two different trap standard severities in database: warning/critical and critical/normal.
+    if ($filter_severity != EVENT_CRIT_OR_NORMAL && $filter_severity != EVENT_CRIT_WARNING_OR_CRITICAL) {
+        // Test if enterprise is installed to search oid in text or oid field in ttrap.
+        if ($config['enterprise_installed']) {
+            $whereSubquery .= ' AND (
+    			(alerted = 0 AND severity = '.$filter_severity.') OR
+    			(alerted = 1 AND priority = '.$filter_severity.'))';
+        } else {
+            $whereSubquery .= ' AND (
+    			(alerted = 0 AND 1 = '.$filter_severity.') OR
+    			(alerted = 1 AND priority = '.$filter_severity.'))';
+        }
+    } else if ($filter_severity === EVENT_CRIT_WARNING_OR_CRITICAL) {
+        // Test if enterprise is installed to search oid in text or oid field in ttrap.
+        if ($config['enterprise_installed']) {
+            $whereSubquery .= ' AND (
+                (alerted = 0 AND (severity = '.EVENT_CRIT_WARNING.' OR severity = '.EVENT_CRIT_CRITICAL.')) OR
+                (alerted = 1 AND (priority = '.EVENT_CRIT_WARNING.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+        } else {
+            $whereSubquery .= ' AND (
+                (alerted = 1 AND (priority = '.EVENT_CRIT_WARNING.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+        }
+    } else if ($filter_severity === EVENT_CRIT_OR_NORMAL) {
+        // Test if enterprise is installed to search oid in text or oid field in ttrap.
+        if ($config['enterprise_installed']) {
+            $whereSubquery .= ' AND (
+                (alerted = 0 AND (severity = '.EVENT_CRIT_NORMAL.' OR severity = '.EVENT_CRIT_CRITICAL.')) OR
+                (alerted = 1 AND (priority = '.EVENT_CRIT_NORMAL.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+        } else {
+            $whereSubquery .= ' AND (
+                (alerted = 1 AND (priority = '.EVENT_CRIT_NORMAL.' OR priority = '.EVENT_CRIT_CRITICAL.')))';
+        }
     }
 }
 
@@ -956,7 +979,8 @@ if ($traps !== false) {
             }
         } else {
             $agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
-            if ((check_acl($config['id_user'], $agent_trap_group, 'AW'))) {
+
+            if ((check_acl($config['id_user'], $agent_trap_group, 'IM'))) {
                 $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete')]).'</a> ';
             }
         }

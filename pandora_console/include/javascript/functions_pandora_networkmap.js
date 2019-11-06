@@ -14,6 +14,7 @@
 /* global holding_area_dimensions */
 /* global networkmap_id */
 /* global enterprise_installed */
+/* global networkmap_write */
 /* global force */
 /* global layer_graph_nodes */
 /* global layer_graph_links */
@@ -2087,7 +2088,12 @@ function show_menu(item, data) {
         icon: "add_node",
         disabled: function() {
           if (enterprise_installed) {
-            return false;
+            // Check if user can write network maps.
+            if (networkmap_write) {
+              return false;
+            } else {
+              return true;
+            }
           } else {
             return true;
           }
@@ -2099,6 +2105,14 @@ function show_menu(item, data) {
       items_list["center"] = {
         name: set_center_menu,
         icon: "center",
+        disabled: function() {
+          // Check if user can write network maps.
+          if (networkmap_write) {
+            return false;
+          } else {
+            return true;
+          }
+        },
         callback: function(key, options) {
           set_center(networkmap_id);
         }
@@ -2136,7 +2150,12 @@ function show_menu(item, data) {
         icon: "restart_map",
         disabled: function() {
           if (enterprise_installed) {
-            return false;
+            // Check if user can write network maps.
+            if (networkmap_write) {
+              return false;
+            } else {
+              return true;
+            }
           } else {
             return true;
           }

@@ -1075,6 +1075,8 @@ class Tree
 				ON ta.id_agente = tasg.id_agent
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
+                AND tatm.id_alert_template = 1 
+				OR tatm.id_alert_template = NULL
 			$inner
 			WHERE tam.disabled = 0 AND ta.disabled = 0
 				$condition

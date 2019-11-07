@@ -4,11 +4,23 @@ body {
   height: 100%;
 }
 
+div#main_pure {
+  background-color: #fefefe;
+  text-align: left;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  width: 100%;
+  position: static;
+}
+
 div.help_feedback {
   position: fixed;
   bottom: 0;
   height: auto;
   background-color: #fff;
+  right: 3em;
 }
 
 .help_feedback label {

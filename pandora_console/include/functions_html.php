@@ -1536,6 +1536,89 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
 
 
 /**
+ * Render an input email element.
+ *
+ * @param array $settings Array with attributes input.
+ * only name is necessary.
+ *
+ * @return string Html input.
+ */
+function html_print_input_email(array $settings):string
+{
+    // TODO: const.
+    $valid_attrs = [
+        'accept',
+        'disabled',
+        'maxlength',
+        'name',
+        'readonly',
+        'placeholder',
+        'size',
+        'value',
+        'accesskey',
+        'class',
+        'dir',
+        'id',
+        'lang',
+        'style',
+        'tabindex',
+        'title',
+        'xml:lang',
+        'onfocus',
+        'onblur',
+        'onselect',
+        'onchange',
+        'onclick',
+        'ondblclick',
+        'onmousedown',
+        'onmouseup',
+        'onmouseover',
+        'onmousemove',
+        'onmouseout',
+        'onkeypress',
+        'onkeydown',
+        'onkeyup',
+        'required',
+        'pattern',
+        'autocomplete',
+    ];
+
+    $output = '';
+    if (isset($settings) === true && is_array($settings) === true) {
+        // Check Name is necessary.
+        if (isset($settings['name']) === true) {
+            $output = '<input type="email" ';
+
+            // Check Max length.
+            if (isset($settings['maxlength']) === false) {
+                $settings['maxlength'] = 255;
+            }
+
+            // Check Size.
+            if (isset($settings['size']) === false
+                || $settings['size'] === 0
+            ) {
+                $settings['size'] = 255;
+            }
+
+            foreach ($settings as $attribute => $attr_value) {
+                // Check valid attribute.
+                if (in_array($attribute, $valid_attrs) === false) {
+                    continue;
+                }
+
+                $output .= $attribute.'="'.$attr_value.'" ';
+            }
+
+            $output .= $function.'/>';
+        }
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input image element.
  *
  * The element will have an id like: "image-$name"
@@ -3397,6 +3480,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['message']) === true) ? $data['message'] : 'visualmodal'),
                 ((isset($data['id']) === true) ? $data['id'] : null)
             );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
+        break;
 
         default:
             // Ignore.

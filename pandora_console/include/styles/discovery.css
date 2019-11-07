@@ -206,6 +206,7 @@ label {
 
 li > input[type="text"],
 li > input[type="password"],
+li > input[type="email"],
 .discovery_text_input > input[type="password"],
 .discovery_text_input > input[type="text"],
 #interval_manual > input[type="text"] {

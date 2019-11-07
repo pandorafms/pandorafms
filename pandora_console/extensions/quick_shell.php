@@ -315,7 +315,7 @@ function quickShellSettings()
     // Gotty settings. Internal communication (WS).
     $gotty = get_parameter(
         'gotty',
-        null
+        ''
     );
     $gotty_host = get_parameter(
         'gotty_host',

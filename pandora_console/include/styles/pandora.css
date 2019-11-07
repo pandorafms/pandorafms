@@ -5896,6 +5896,12 @@ table.table_modal_alternate tr td:first-child {
   width: 100%;
 }
 
+/*
+ * ---------------------------------------------------------------------
+ * - VISUAL STYLES FOR HISTOGRAM GRAPHS
+ * ---------------------------------------------------------------------
+ */
+
 .slicebar-box-hover-styles {
   position: absolute;
   background-color: #fff;
@@ -5909,4 +5915,16 @@ table.table_modal_alternate tr td:first-child {
 
 .flot-text {
   width: 101%;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - FONT SIZES IN AGENT VIEW. This changes the font size of the agent
+ * name and the description when the language is Japanese or Chinese
+ * ---------------------------------------------------------------------
+ */
+
+.custom_font_size {
+  font-size: 14px;
+  font-weight: bold;
 }

@@ -348,20 +348,20 @@ if ($config['menu_type'] == 'classic') {
 
 
         // Support.
-        if (enterprise_installed()) {
-            $header_support_link = 'https://support.artica.es/';
+        if (defined('PANDORA_ENTERPRISE')) {
+            $header_support_link = $config['custom_support_url'];
         } else {
             $header_support_link = 'https://pandorafms.com/forums/';
         }
 
         $header_support = '<div id="header_support">';
-        $header_support .= '<a href="'.$header_support_link.'" target="_blank">';
+        $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
         $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
         $header_support .= '</a></div>';
 
         // Documentation.
         $header_docu = '<div id="header_docu">';
-        $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
+        $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
         $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
         $header_docu .= '</a></div>';
 

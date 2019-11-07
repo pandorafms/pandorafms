@@ -294,8 +294,7 @@ class HelpFeedBack extends Wizard
         $res = enterprise_hook(
             'send_email_attachment',
             [
-                // 'feedback@artica.es',
-                'fborja.sanchez@artica.es',
+                'feedback@artica.es',
                 $body,
                 $subject,
             ]

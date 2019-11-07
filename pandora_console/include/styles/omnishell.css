@@ -29,3 +29,32 @@ li > input[type="text"] {
 .margin_button {
   margin-right: 5px;
 }
+
+.container-target {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.element-target {
+  width: 20px;
+  margin: 2px;
+  height: 20px;
+}
+
+.status-normal {
+  background-color: #add570;
+}
+
+.status-critical {
+  background-color: #e3485e;
+}
+
+.status-notinit {
+  background-color: #8bbbdd;
+}
+
+h4 {
+  color: #343434;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  line-height: 18pt;
+}

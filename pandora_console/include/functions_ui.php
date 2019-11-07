@@ -5697,7 +5697,7 @@ function ui_print_comments($comments)
                 continue;
             }
 
-            $comments_array[] = json_decode(io_safe_output($comm), true);
+            $comments_array[] = io_safe_output(json_decode($comm, true));
         }
     }
 

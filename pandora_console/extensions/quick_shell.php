@@ -298,6 +298,19 @@ function quickShellSettings()
     ui_require_css_file('wizard');
     ui_require_css_file('discovery');
 
+    // Gotty settings. Internal communication (WS).
+    if (isset($config['gotty_host']) === false) {
+        config_update_value('gotty_host', '127.0.0.1');
+    }
+
+    if (isset($config['gotty_telnet_port']) === false) {
+        config_update_value('gotty_telnet_port', 8082);
+    }
+
+    if (isset($config['gotty_ssh_port']) === false) {
+        config_update_value('gotty_ssh_port', 8081);
+    }
+
     // Parser.
     // Gotty settings. Internal communication (WS).
     $gotty = get_parameter(

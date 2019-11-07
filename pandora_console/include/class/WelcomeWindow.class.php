@@ -48,6 +48,19 @@ class WelcomeWindow extends Wizard
     ];
 
     /**
+     * Tasks.
+     *
+     * @var array
+     */
+    private $tasks = [
+        'welcome_mail_configured',
+        'welcome_id_agent',
+        'welcome_module',
+        'welcome_alert',
+        'welcome_task',
+    ];
+
+    /**
      * Url of controller.
      *
      * @var string
@@ -197,6 +210,19 @@ class WelcomeWindow extends Wizard
         global $config;
         $this->step = $config['welcome_state'];
 
+        // Get step available.
+        if (empty($config['welcome_id_agent']) === true) {
+            $this->step = W_CREATE_AGENT;
+        } else if (empty($config['welcome_module']) === true) {
+            $this->step = W_CREATE_MODULE;
+        } else if (empty($config['welcome_alert']) === true) {
+            $this->step = W_CREATE_ALERT;
+        } else if (empty($config['welcome_task']) === true) {
+            $this->step = W_CREATE_TASK;
+        } else if (empty($config['welcome_mail_configured']) === true) {
+            $this->step = W_CONFIGURE_MAIL;
+        }
+
         return $this->step;
     }
 
@@ -212,7 +238,61 @@ class WelcomeWindow extends Wizard
     {
         $this->step = $step;
         config_update_value('welcome_state', $step);
+    }
 
+
+    /**
+     * Completes current step.
+     *
+     * @return void
+     */
+    public function completeStep()
+    {
+        switch ($this->step) {
+            case W_CONFIGURE_MAIL:
+                config_update_value('welcome_mail_configured', true);
+            break;
+
+            case W_CREATE_AGENT:
+                config_update_value('welcome_id_agent', true);
+            break;
+
+            case W_CREATE_MODULE:
+                config_update_value('welcome_module', true);
+            break;
+
+            case W_CREATE_ALERT:
+                config_update_value('welcome_alert', true);
+            break;
+
+            case W_CREATE_TASK:
+                config_update_value('welcome_task', true);
+            break;
+
+            default:
+                // Ignore.
+            break;
+        }
+
+    }
+
+
+    /**
+     * Check if all tasks had been completed.
+     *
+     * @return boolean All completed or not.
+     */
+    public function checkAllTasks()
+    {
+        global $config;
+
+        foreach ($this->tasks as $t) {
+            if (empty($config[$t]) === true) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -264,56 +344,40 @@ class WelcomeWindow extends Wizard
         $li_create_alert_class = 'grey';
         $li_create_discovery_class = 'green';
 
-        switch ($this->step) {
-            case W_CREATE_AGENT:
-                $btn_configure_mail_class = ' completed';
-                $btn_create_agent_class = ' pending';
-                $li_create_module_class = 'green';
-            break;
+        if (empty($config['welcome_mail_configured']) === false) {
+            $btn_configure_mail_class = ' completed';
+        }
 
-            case W_CREATE_MODULE:
-                $btn_configure_mail_class = ' completed';
-                $btn_create_agent_class = ' completed';
-                $btn_create_module_class = ' pending';
-                $li_create_module_class = 'green';
-                $li_create_alert_class = 'green';
-            break;
+        if (empty($config['welcome_id_agent']) === false) {
+            $btn_create_agent_class = ' completed';
+            $btn_create_module_class = ' pending';
+            $li_create_module_class = 'green';
+        }
 
-            case W_CREATE_ALERT:
-                $btn_configure_mail_class = ' completed';
-                $btn_create_agent_class = ' completed';
-                $btn_create_module_class = ' completed';
-                $btn_create_alert_class = ' pending';
-                $li_create_module_class = 'green';
-                $li_create_alert_class = 'green';
-            break;
+        if (empty($config['welcome_module']) === false) {
+            $btn_create_module_class = ' completed';
+            $btn_create_alert_class = ' pending';
+            $li_create_module_class = 'green';
+        }
 
-            case W_CREATE_TASK:
-                $btn_configure_mail_class = ' completed';
-                $btn_create_agent_class = ' completed';
-                $btn_create_module_class = ' completed';
-                $btn_create_alert_class = ' completed';
-                $btn_create_discovery_class = ' pending';
-                $li_create_module_class = 'green';
-                $li_create_alert_class = 'green';
-            break;
+        if (empty($config['welcome_alert']) === false) {
+            $btn_create_alert_class = ' completed';
+            $li_create_alert_class = 'green';
+        }
 
-            case WELCOME_FINISHED:
-                // Nothing left to do.
-                $btn_configure_mail_class = ' completed';
-                $btn_create_agent_class = ' completed';
-                $btn_create_module_class = ' completed';
-                $btn_create_alert_class = ' completed';
-                $btn_create_discovery_class = ' completed';
-                $li_create_module_class = 'green';
-                $li_create_alert_class = 'green';
-            break;
+        if (empty($config['welcome_task']) === false) {
+            $btn_create_discovery_class = ' completed';
+        }
 
-            default:
-            case W_CONFIGURE_MAIL:
-                // Nothing done yet.
-                $btn_configure_mail_class = ' pending';
-            break;
+        if ((int) $config['welcome_state'] === WELCOME_FINISHED) {
+            // Nothing left to do.
+            $btn_configure_mail_class = ' completed';
+            $btn_create_agent_class = ' completed';
+            $btn_create_module_class = ' completed';
+            $btn_create_alert_class = ' completed';
+            $btn_create_discovery_class = ' completed';
+            $li_create_module_class = 'green';
+            $li_create_alert_class = 'green';
         }
 
         $form = [
@@ -537,6 +601,7 @@ class WelcomeWindow extends Wizard
         global $config;
 
         if (isset($config['welcome_state']) === false) {
+            $this->completeStep();
             $this->setStep(W_CONFIGURE_MAIL);
         }
 
@@ -549,7 +614,7 @@ class WelcomeWindow extends Wizard
         }
 
         if ($must_run === false
-            || $config['welcome_state'] === WELCOME_FINISHED
+            || ((int) $config['welcome_state']) === WELCOME_FINISHED
         ) {
             // Do not show if finished.
             return false;
@@ -566,13 +631,14 @@ class WelcomeWindow extends Wizard
          * After mail configuration: enable agent step.
          */
 
-        if ($this->step == W_CONFIGURE_MAIL) {
+        if ($this->step === W_CONFIGURE_MAIL) {
             if ($sec2 === 'godmode/setup/setup'
                 && get_parameter('section', '') == 'general'
                 && get_parameter('update_config', false) !== false
             ) {
                 // Mail configuration have been processed.
-                $_SESSION['configured_mail'] = true;
+                $this->step = W_CONFIGURE_MAIL;
+                $this->completeStep();
                 $this->setStep(W_CREATE_AGENT);
             } else if ($sec2 === 'godmode/setup/setup'
                 && get_parameter('section', '') === 'general'
@@ -580,7 +646,7 @@ class WelcomeWindow extends Wizard
                 // Mail configuration is being processed.
                 return false;
             } else if (empty($sec2) === true) {
-                // If at main page, show welcome.
+                // Show main page.
                 return true;
             }
         }
@@ -598,10 +664,19 @@ class WelcomeWindow extends Wizard
                 && get_parameter('create_agent', false) !== false
             ) {
                 // Agent have been created. Store.
+                // Here complete step is not needed because is already done
+                // by setWelcomeAgent.
                 $this->setWelcomeAgent(
-                    db_get_value(
-                        'MAX(id_agente)',
-                        'tagente'
+                    // Non yet processed. Get next available ID.
+                    db_get_value_sql(
+                        sprintf(
+                            'SELECT AUTO_INCREMENT
+                            FROM information_schema.TABLES
+                            WHERE TABLE_SCHEMA = "%s"
+                            AND TABLE_NAME = "%s"',
+                            $config['dbname'],
+                            'tagente'
+                        )
                     )
                 );
                 $this->setStep(W_CREATE_MODULE);
@@ -613,6 +688,8 @@ class WelcomeWindow extends Wizard
                 // If at main page, show welcome.
                 return true;
             }
+        } else if ($this->step === W_CREATE_AGENT) {
+            $this->step = W_CREATE_MODULE;
         }
 
         /*
@@ -630,6 +707,7 @@ class WelcomeWindow extends Wizard
                 && get_parameter('create_module', false) !== false
             ) {
                 // Module have been created.
+                $this->completeStep();
                 $this->setStep(W_CREATE_ALERT);
                 return true;
             } else if ($sec2 === 'godmode/agentes/configurar_agente'
@@ -658,6 +736,7 @@ class WelcomeWindow extends Wizard
                 && get_parameter('create_alert', false) !== false
             ) {
                 // Alert have been created.
+                $this->completeStep();
                 $this->setStep(W_CREATE_TASK);
                 return true;
             } else if ($sec2 === 'godmode/agentes/configurar_agente'
@@ -679,24 +758,33 @@ class WelcomeWindow extends Wizard
          * After discovery task creation: finish.
          */
 
-        if ($this->step === W_CREATE_TASK) {
-            // Create Discovery task is pending.
-            // Host&Devices finishses on page 2.
-            if ($sec2 === 'godmode/servers/discovery'
-                && get_parameter('page', 0) == 2
-            ) {
-                // Discovery task have been created.
-                $this->setStep(WELCOME_FINISHED);
+        // Create Discovery task is pending.
+        // Host&Devices finishses on page 2.
+        if ($sec2 === 'godmode/servers/discovery'
+            && get_parameter('page', 0) == 2
+        ) {
+            // Discovery task have been created.
+            $this->step = W_CREATE_TASK;
+            $this->completeStep();
 
+            // Check if all other tasks had been completed.
+            if ($this->checkAllTasks() === true) {
                 // Finished! do not show.
+                $this->setStep(WELCOME_FINISHED);
                 return false;
-            } else if ($sec2 == 'godmode/servers/discovery') {
-                // Discovery task is being created.
-                return false;
-            } else if (empty($sec2) === true) {
-                // If at main page, show welcome.
-                return true;
             }
+
+            return true;
+        } else if ($sec2 == 'godmode/servers/discovery') {
+            // Discovery task is being created.
+            return false;
+        }
+
+        // Check if all other tasks had been completed.
+        if ($this->checkAllTasks() === true) {
+            // Finished! do not show.
+            $this->setStep(WELCOME_FINISHED);
+            return false;
         }
 
         if ($this->step === WELCOME_FINISHED) {

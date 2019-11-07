@@ -105,6 +105,11 @@ class HelpFeedBack extends Wizard
             <?php
         }
 
+        $hidden = '<input type="hidden" value="'.$help_url.'" ';
+        $hidden .= ' form="feedback_form" name="help_url" />';
+
+        echo $hidden;
+
         echo '<div class="help_feedback">';
         // Load feedback form.
         echo $this->loadFeedbackForm();
@@ -178,7 +183,8 @@ class HelpFeedBack extends Wizard
                     'name'        => 'feedback_email',
                     'input_class' => 'email_feedback',
                     'class'       => 'email_feedback',
-                    'type'        => 'text',
+                    'type'        => 'email',
+                    'required'    => true,
                 ],
             ],
             [
@@ -232,11 +238,19 @@ class HelpFeedBack extends Wizard
         $suggestion = get_parameter('type', 'false');
         $feedback_text = get_parameter('feedback_text', null);
         $feedback_mail = get_parameter('feedback_email', null);
+        $help_url = get_parameter('help_url', 'unknown');
+
+        $section = explode('title=', $help_url, 2);
+
+        $subject = '';
+        if (is_array($section) === true && isset($section[1]) === true) {
+            $subject = '['.$section[1].']';
+        }
 
         if ($suggestion !== 'false') {
-            $subject = __('[pandorafms wiki] New suggestion');
+            $subject .= __('[pandorafms wiki] New suggestion');
         } else {
-            $subject = __('[pandorafms wiki] New report');
+            $subject .= __('[pandorafms wiki] New report');
         }
 
         if (empty($feedback_mail) === true) {
@@ -271,14 +285,17 @@ class HelpFeedBack extends Wizard
             $uid = 'not registered';
         }
 
-        $body = '<b>User mail</b> '.$feedback_mail.'<br />';
-        $body .= '<b>console</b> <i>'.$uid.'</i>';
+        $body = '<ul><li><b>User mail</b> '.$feedback_mail.'</li>';
+        $body .= '<li><b>Console</b> <i>'.$uid.'</i></li>';
+        $body .= '<li><b>URL</b> '.$help_url.'</li></ul>';
+        $body .= '<h2>Message</h2>';
         $body .= '<p>'.$feedback_text.'</p>';
 
         $res = enterprise_hook(
             'send_email_attachment',
             [
-                'feedback@artica.es',
+                // 'feedback@artica.es',
+                'fborja.sanchez@artica.es',
                 $body,
                 $subject,
             ]
@@ -323,7 +340,8 @@ class HelpFeedBack extends Wizard
                     method: 'sendMailMethod',
                     type: $('#suggestion').prop('checked'),
                     feedback_text: $("textarea[name=feedback_text]").val(),
-                    feedback_email: $("input[name=feedback_email]").val()
+                    feedback_email: $("input[name=feedback_email]").val(),
+                    help_url: $("input[name=help_url]").val(),
                 },
                 success: function (data) {
                     var title;

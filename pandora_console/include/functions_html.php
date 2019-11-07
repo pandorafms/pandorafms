@@ -3492,6 +3492,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['message']) === true) ? $data['message'] : 'visualmodal'),
                 ((isset($data['id']) === true) ? $data['id'] : null)
             );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
+        break;
 
         default:
             // Ignore.

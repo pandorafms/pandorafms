@@ -142,8 +142,8 @@ class WelcomeWindow extends Wizard
             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
             modal: {
                 title: "<?php echo __('Welcome to Pandora FMS'); ?>",
-                cancel: '<?php echo __('Ignore'); ?>',
-                ok: '<?php echo __('Cancel'); ?>'
+                cancel: '<?php echo __('Do not show anymore'); ?>',
+                ok: '<?php echo __('Close'); ?>'
             },
             onshow: {
                 page: '<?php echo $this->ajaxController; ?>',
@@ -258,16 +258,25 @@ class WelcomeWindow extends Wizard
         $btn_create_alert_class = '';
         $btn_create_discovery_class = 'pending';
 
+        $li_configure_mail_class = 'green';
+        $li_create_agent_class = 'green';
+        $li_create_module_class = 'grey';
+        $li_create_alert_class = 'grey';
+        $li_create_discovery_class = 'green';
+
         switch ($this->step) {
             case W_CREATE_AGENT:
                 $btn_configure_mail_class = ' completed';
                 $btn_create_agent_class = ' pending';
+                $li_create_module_class = 'green';
             break;
 
             case W_CREATE_MODULE:
                 $btn_configure_mail_class = ' completed';
                 $btn_create_agent_class = ' completed';
                 $btn_create_module_class = ' pending';
+                $li_create_module_class = 'green';
+                $li_create_alert_class = 'green';
             break;
 
             case W_CREATE_ALERT:
@@ -275,6 +284,8 @@ class WelcomeWindow extends Wizard
                 $btn_create_agent_class = ' completed';
                 $btn_create_module_class = ' completed';
                 $btn_create_alert_class = ' pending';
+                $li_create_module_class = 'green';
+                $li_create_alert_class = 'green';
             break;
 
             case W_CREATE_TASK:
@@ -283,6 +294,8 @@ class WelcomeWindow extends Wizard
                 $btn_create_module_class = ' completed';
                 $btn_create_alert_class = ' completed';
                 $btn_create_discovery_class = ' pending';
+                $li_create_module_class = 'green';
+                $li_create_alert_class = 'green';
             break;
 
             case WELCOME_FINISHED:
@@ -292,6 +305,8 @@ class WelcomeWindow extends Wizard
                 $btn_create_module_class = ' completed';
                 $btn_create_alert_class = ' completed';
                 $btn_create_discovery_class = ' completed';
+                $li_create_module_class = 'green';
+                $li_create_alert_class = 'green';
             break;
 
             default:
@@ -308,11 +323,32 @@ class WelcomeWindow extends Wizard
             'class'    => 'modal',
         ];
 
+        $logo_url = '';
+        if (enterprise_installed()) {
+            $logo_url = ENTERPRISE_DIR.'/';
+        }
+
+        $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
+
         $inputs = [
+            [
+                'class'         => 'white_box',
+                'block_content' => [
+                    [
+                        'class'     => 'centered_full',
+                        'arguments' => [
+                            'type'   => 'image',
+                            'src'    => $logo_url,
+                            'value'  => 1,
+                            'return' => true,
+                        ],
+                    ],
+                ],
+            ],
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_configure_mail',
-                'class'         => 'flex-row w100p',
+                'class'         => 'hole flex-row w100p '.$li_configure_mail_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -333,10 +369,20 @@ class WelcomeWindow extends Wizard
                         ],
                     ],
                 ],
-            ],[
+            ],
+            [
+                'label'     => 'Learn to monitor',
+                'class'     => 'extra',
+                'arguments' => [
+                    'class' => 'class="lbl_learn"',
+                    'name'  => 'lbl_learn',
+                    'id'    => 'lbl_learn',
+                ],
+            ],
+            [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_create_agent',
-                'class'         => 'flex-row w100p',
+                'class'         => 'learn_content_indented flex-row w100p '.$li_create_agent_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -359,17 +405,9 @@ class WelcomeWindow extends Wizard
                 ],
             ],
             [
-                'label'     => 'Learn to monitor',
-                'arguments' => [
-                    'class' => 'class="lbl_learn"',
-                    'name'  => 'lbl_learn',
-                    'id'    => 'lbl_learn',
-                ],
-            ],
-            [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_indented flex-row w100p',
+                'class'         => 'learn_content_indented flex-row w100p '.$li_create_module_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -394,7 +432,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_indented flex-row w100p',
+                'class'         => 'hole learn_content_indented flex-row w100p '.$li_create_alert_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -419,7 +457,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_discover',
-                'class'         => 'flex-row w100p',
+                'class'         => 'hole flex-row w100p '.$li_create_discovery_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -444,7 +482,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
-                'class'         => 'flex-row w100p',
+                'class'         => 'hole flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -505,6 +543,11 @@ class WelcomeWindow extends Wizard
         // Check current page.
         $sec2 = get_parameter('sec2', '');
 
+        // Search also does not fulfill sec2.
+        if (empty($sec2) === true) {
+            $sec2 = get_parameter('keywords', '');
+        }
+
         if ($must_run === false
             || $config['welcome_state'] === WELCOME_FINISHED
         ) {
@@ -545,12 +588,11 @@ class WelcomeWindow extends Wizard
         /*
          * Create agent. Control current flow.
          *
-         * On empty sec2: show current step.
-         * On agent creation page: do not show.
-         * After agent creation: enable module step.
+         * Welcome wizard is shown if you create your first agent.
+         *
          */
 
-        if ($this->step === W_CREATE_AGENT) {
+        if (empty($config['welcome_id_agent']) === true) {
             // Create agent is pending.
             if ($sec2 === 'godmode/agentes/configurar_agente'
                 && get_parameter('create_agent', false) !== false

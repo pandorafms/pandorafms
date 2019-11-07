@@ -54,6 +54,7 @@ class HelpFeedBack extends Wizard
      */
     public $ajaxController;
 
+
     /**
      * Checks if target method is available to be called using AJAX.
      *
@@ -61,8 +62,6 @@ class HelpFeedBack extends Wizard
      *
      * @return boolean True allowed, false not.
      */
-
-
     public function ajaxMethod($method)
     {
         return in_array($method, $this->AJAXMethods);
@@ -109,7 +108,7 @@ class HelpFeedBack extends Wizard
         echo '<div class="help_feedback">';
         // Load feedback form.
         echo $this->loadFeedbackForm();
-        echo '</div>';
+        echo '</div><div id="back" style="display: none"></div>';
     }
 
 
@@ -196,6 +195,7 @@ class HelpFeedBack extends Wizard
 
         $output = ui_print_toggle(
             [
+                'id'      => 'toggle_help_feedback',
                 'content' => $this->printForm(
                     [
                         'form'   => $form,
@@ -225,33 +225,83 @@ class HelpFeedBack extends Wizard
      * @param​ ​string​ $feedback_text text mail.
      * @param​ ​string​ $feedback_mail costumer mail.
      *
-     * @return integer Status of the email send task.
+     * @return void.
      */
     public function sendMailMethod()
     {
-        $subject = get_parameter('feedback_option', null);
+        $suggestion = get_parameter('type', 'false');
         $feedback_text = get_parameter('feedback_text', null);
         $feedback_mail = get_parameter('feedback_email', null);
 
-        $subject;
+        if ($suggestion !== 'false') {
+            $subject = __('[pandorafms wiki] New suggestion');
+        } else {
+            $subject = __('[pandorafms wiki] New report');
+        }
 
-        if ($subject === null) {
-            echo json_encode(['error' => __('No ha seleccionado una opcion')]);
+        if (empty($feedback_mail) === true) {
+            $error = [
+                'error' => __(
+                    'Please provide your email address, we promise not to bother you'
+                ),
+            ];
+        }
+
+        if (empty($feedback_text) === true) {
+            if ($suggestion !== 'false') {
+                $msg = 'Please provide some feedback. Write something awesome!';
+            } else {
+                $msg = 'Please provide some feedback. We\'ll appreciate it!';
+            }
+
+            $error = [
+                'error' => __($msg),
+            ];
+        }
+
+        if ($error !== null) {
+            echo json_encode($error);
             exit;
         }
 
         enterprise_include_once('include/functions_cron.php');
 
-        $feedback_text .= '
-        From '.$feedback_mail.' ';
+        $uid = $config['pandora_uid'];
+        if (empty($uid) === true) {
+            $uid = 'not registered';
+        }
 
-        $res = enterprise_hook('send_email_attachment', ['feedback@artica.es', $feedback_text, $subject]);
+        $body = '<b>User mail</b> '.$feedback_mail.'<br />';
+        $body .= '<b>console</b> <i>'.$uid.'</i>';
+        $body .= '<p>'.$feedback_text.'</p>';
 
-        return $res;
+        $res = enterprise_hook(
+            'send_email_attachment',
+            [
+                'feedback@artica.es',
+                $body,
+                $subject,
+            ]
+        );
 
+        // Response.
+        if ($res == 1) {
+            $r = ['error' => ''];
+        } else {
+            $r = ['error' => __('Something went wrong while sending the report.')];
+        }
+
+        echo json_encode($r);
+
+        exit;
     }
 
 
+    /**
+     * Load extra JS.
+     *
+     * @return string JS content.
+     */
     public function loadJS()
     {
         ob_start();
@@ -267,24 +317,49 @@ class HelpFeedBack extends Wizard
             $.ajax({
                 type: "POST",
                 url: "ajax.php",
-                dataType: "html",
+                dataType: "json",
                 data: {
                     page: "<?php echo $this->ajaxController; ?>",
                     method: 'sendMailMethod',
-                    type: $('#suggestion').checked(),
+                    type: $('#suggestion').prop('checked'),
                     feedback_text: $("textarea[name=feedback_text]").val(),
                     feedback_email: $("input[name=feedback_email]").val()
                 },
                 success: function (data) {
-                    console.log(data);
-                    if (data == 1) {
-                        alert('Message sent');
+                    var title;
+                    var content;
+                    var failed = 0;
+                    var className='submit-next';
+
+                    if (data.error != "") {
+                        title = '<?php echo __('Failed'); ?>';
+                        content = data.error;
+                        failed = 1;
+                        className='submit-cancel';
                     } else {
-                        console.error("Error in AJAX call to send help feedback mail")
+                        title = '<?php echo __('Success'); ?>';
+                        content = '<?php echo __('Your report had been successfully sent to Artica.').'<br>'.__('Thank you!'); ?>';
                     }
+                    $('#back').html(content);
+                    $('#back').dialog({
+                        title: title,
+                        buttons: [
+                            {
+                                class:
+                                "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd " + className,
+                                text: '<?php echo __('OK'); ?>',
+                                click: function() {
+                                    $(this).dialog("close");
+                                    if (failed == 0) {
+                                        $('#toggle_help_feedback').empty();
+                                    }
+                                }
+                            },
+                        ]
+                    })
                 },
                 error: function (data) {
-                        console.error("Fatal error in AJAX call to send help feedback mail")
+                    console.error("Fatal error in AJAX call to send help feedback mail")
                 }
             });
         });

@@ -312,69 +312,71 @@ function quickShellSettings()
     }
 
     // Parser.
-    // Gotty settings. Internal communication (WS).
-    $gotty = get_parameter(
-        'gotty',
-        ''
-    );
-    $gotty_host = get_parameter(
-        'gotty_host',
-        $config['gotty_host']
-    );
-    $gotty_ssh_port = get_parameter(
-        'gotty_ssh_port',
-        $config['gotty_ssh_port']
-    );
-    $gotty_telnet_port = get_parameter(
-        'gotty_telnet_port',
-        $config['gotty_telnet_port']
-    );
+    if (get_parameter('qs_update', false) !== false) {
+        // Gotty settings. Internal communication (WS).
+        $gotty = get_parameter(
+            'gotty',
+            ''
+        );
+        $gotty_host = get_parameter(
+            'gotty_host',
+            $config['gotty_host']
+        );
+        $gotty_ssh_port = get_parameter(
+            'gotty_ssh_port',
+            $config['gotty_ssh_port']
+        );
+        $gotty_telnet_port = get_parameter(
+            'gotty_telnet_port',
+            $config['gotty_telnet_port']
+        );
 
-    $gotty_user = get_parameter(
-        'gotty_user',
-        $config['gotty_user']
-    );
+        $gotty_user = get_parameter(
+            'gotty_user',
+            $config['gotty_user']
+        );
 
-    $gotty_pass = get_parameter(
-        'gotty_pass',
-        io_output_password($config['gotty_pass'])
-    );
+        $gotty_pass = get_parameter(
+            'gotty_pass',
+            io_output_password($config['gotty_pass'])
+        );
 
-    $gotty_pass = io_input_password($gotty_pass);
+        $gotty_pass = io_input_password($gotty_pass);
 
-    $changes = 0;
-    $critical = 0;
-    if ($config['gotty'] != $gotty) {
-        config_update_value('gotty', $gotty);
-        $changes++;
-        $critical++;
-    }
+        $changes = 0;
+        $critical = 0;
+        if ($config['gotty'] != $gotty) {
+            config_update_value('gotty', $gotty);
+            $changes++;
+            $critical++;
+        }
 
-    if ($config['gotty_host'] != $gotty_host) {
-        config_update_value('gotty_host', $gotty_host);
-        $changes++;
-    }
+        if ($config['gotty_host'] != $gotty_host) {
+            config_update_value('gotty_host', $gotty_host);
+            $changes++;
+        }
 
-    if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
-        config_update_value('gotty_telnet_port', $gotty_telnet_port);
-        $changes++;
-    }
+        if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
+            config_update_value('gotty_telnet_port', $gotty_telnet_port);
+            $changes++;
+        }
 
-    if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
-        config_update_value('gotty_ssh_port', $gotty_ssh_port);
-        $changes++;
-    }
+        if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
+            config_update_value('gotty_ssh_port', $gotty_ssh_port);
+            $changes++;
+        }
 
-    if ($config['gotty_user'] != $gotty_user) {
-        config_update_value('gotty_user', $gotty_user);
-        $changes++;
-        $critical++;
-    }
+        if ($config['gotty_user'] != $gotty_user) {
+            config_update_value('gotty_user', $gotty_user);
+            $changes++;
+            $critical++;
+        }
 
-    if ($config['gotty_pass'] != $gotty_pass) {
-        config_update_value('gotty_pass', $gotty_pass);
-        $changes++;
-        $critical++;
+        if ($config['gotty_pass'] != $gotty_pass) {
+            config_update_value('gotty_pass', $gotty_pass);
+            $changes++;
+            $critical++;
+        }
     }
 
     // Interface.
@@ -458,6 +460,13 @@ function quickShellSettings()
                         'type'  => 'password',
                         'name'  => 'gotty_pass',
                         'value' => io_output_password($config['gotty_pass']),
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'type'  => 'hidden',
+                        'name'  => 'qs_update',
+                        'value' => 1,
                     ],
                 ],
                 [

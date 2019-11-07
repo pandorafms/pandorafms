@@ -2189,33 +2189,47 @@ function html_print_table(&$table, $return=false)
 
 
 /**
- * Render a radio button input. Extended version, use html_print_radio_button() to simplify.
+ * Render a radio button input. Extended version, use html_print_input()
+ * to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
-    inserted into the HTML tag, use it carefully (optional).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string $name         Input name.
+ * @param string $value        Input value.
+ * @param string $label        Set the button to be marked (optional, unmarked by default).
+ * @param string $checkedvalue Checked value.
+ * @param string $disabled     Disable the button (optional, button enabled by default).
+ * @param string $script       Script to execute when onClick event is triggered (optional).
+ * @param string $attributes   Optional HTML attributes. It's a free string which will be inserted tag, use it carefully (optional).
+ * @param string $returnparam  Whether to return an output string or echo now (optional, echo by default).
+ * @param string $modalparam   Modal param.
+ * @param string $message      Message.
+ * @param string $id           Use custom id.
  *
  * @return string HTML code if return parameter is true.
  */
- /*
-     Hello there! :)
-     We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-     You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
- */
-
-function html_print_radio_button_extended($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return=false, $modal=false, $message='visualmodal')
-{
+function html_print_radio_button_extended(
+    $name,
+    $value,
+    $label,
+    $checkedvalue,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $modal=false,
+    $message='visualmodal',
+    $id=null
+) {
     static $idcounter = 0;
 
     $output = '';
 
     $output = '<input type="radio" name="'.$name.'" value="'.$value.'"';
-    $htmlid = 'radiobtn'.sprintf('%04d', ++$idcounter);
+    if (empty($id) === false) {
+        $htmlid = $id;
+    } else {
+        $htmlid = 'radiobtn'.sprintf('%04d', ++$idcounter);
+    }
+
     $output .= ' id="'.$htmlid.'"';
 
     if ($value == $checkedvalue) {
@@ -3368,6 +3382,21 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['message']) === true) ? $data['message'] : '')
             );
         break;
+
+        case 'radio_button':
+            $output .= html_print_radio_button_extended(
+                $data['name'],
+                $data['value'],
+                $data['label'],
+                ((isset($data['checkedvalue']) === true) ? $data['checkedvalue'] : 1),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : true),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : 'visualmodal'),
+                ((isset($data['id']) === true) ? $data['id'] : null)
+            );
 
         default:
             // Ignore.

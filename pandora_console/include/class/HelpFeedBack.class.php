@@ -91,6 +91,7 @@ class HelpFeedBack extends Wizard
      */
     public function run()
     {
+        ui_require_css_File('discovery');
         ui_require_css_file('help_feedback');
 
         $help_url = get_parameter('url', null);
@@ -123,8 +124,6 @@ class HelpFeedBack extends Wizard
     {
         global $config;
 
-        ui_require_css_file('helper');
-
         $form = [
             'action'   => '#',
             'id'       => 'feedback_form',
@@ -134,35 +133,38 @@ class HelpFeedBack extends Wizard
         $inputs = [
             [
                 'wrapper'       => 'div',
-                'block_id'      => 'btn_section',
-                'class'         => 'btn_section',
+                'block_id'      => 'flex-row-baseline w100p',
+                'class'         => 'flex-row-baseline w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [
                         'arguments' => [
                             'label'      => __('Sugesstion'),
-                            'type'       => 'button',
-                            'attributes' => 'class="btn_sug"',
-                            'name'       => 'option_1',
-                            'id'         => 'option_1',
-                            'script'     => 'change_option1()',
+                            'type'       => 'radio_button',
+                            'attributes' => 'class="btn"',
+                            'name'       => 'suggestion',
+                            'id'         => 'suggestion',
+                            'script'     => 'disableRadio(\'report\')',
+                            'return'     => true,
                         ],
                     ],
                     [
                         'arguments' => [
                             'label'      => __('Something is not quite right'),
-                            'type'       => 'button',
-                            'attributes' => 'class="btn_something"',
-                            'name'       => 'option_2',
-                            'id'         => 'option_2',
-                            'script'     => 'change_option2()',
+                            'type'       => 'radio_button',
+                            'attributes' => 'class="btn"',
+                            'name'       => 'report',
+                            'id'         => 'report',
+                            'script'     => 'disableRadio(\'suggestion\')',
+                            'return'     => true,
                         ],
                     ],
                 ],
             ],
             [
 
-                'label'     => __('What Happend?'),
+                'label'     => __('What happened?'),
+                'class'     => 'explain',
                 'arguments' => [
                     'class' => 'textarea_feedback',
                     'id'    => 'feedback_text',
@@ -192,21 +194,22 @@ class HelpFeedBack extends Wizard
             ],
         ];
 
-        $output = ui_toggle(
-            $this->printForm(
-                [
-                    'form'   => $form,
-                    'inputs' => $inputs,
-                ],
-                true
-            ),
-            __('Feedback'),
-            '',
-            '',
-            true,
-            false,
-            '',
-            'no-border'
+        $output = ui_print_toggle(
+            [
+                'content' => $this->printForm(
+                    [
+                        'form'   => $form,
+                        'inputs' => $inputs,
+                    ],
+                    true
+                ),
+                'name'    => __('Feedback'),
+                'return'  => true,
+                'class'   => 'no-border',
+                'img_a'   => 'images/arrow_down_white.png',
+                'img_b'   => 'images/arrow_up_white.png',
+
+            ]
         );
 
         $output .= $this->loadJS();
@@ -254,23 +257,9 @@ class HelpFeedBack extends Wizard
         ob_start();
         ?>
     <script type="text/javascript">
-
-    var option_selected = "";
-    function change_option1() {
-        option_selected = "<?php echo __('Suggestion'); ?>";
-        document.getElementById("button-option_1").className = "btn_sug_not_selected";
-        document.getElementById("button-option_2").className = "btn_sug";
-;
-
-
+        function disableRadio(id) {
+            $('#'+id).prop('checked', false)
         }
-
-    function change_option2() {
-        option_selected = "<?php echo __('Something is not quite rigth'); ?>";
-        document.getElementById("button-option_2").className = "btn_sug_not_selected";
-        document.getElementById("button-option_1").className = "btn_sug";
-
-    }
 
         // Set values to data.
         $("#feedback_form").on('submit', function() {
@@ -282,7 +271,7 @@ class HelpFeedBack extends Wizard
                 data: {
                     page: "<?php echo $this->ajaxController; ?>",
                     method: 'sendMailMethod',
-                    feedback_option: option_selected,
+                    type: $('#suggestion').checked(),
                     feedback_text: $("textarea[name=feedback_text]").val(),
                     feedback_email: $("input[name=feedback_email]").val()
                 },
@@ -307,4 +296,3 @@ class HelpFeedBack extends Wizard
 
 
 }
-

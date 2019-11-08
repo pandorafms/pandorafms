@@ -99,6 +99,11 @@ if [ ! -e /etc/pandora/collections ]; then
 	ln -s /usr/share/pandora_agent/collections /etc/pandora
 fi
 
+if [ ! -e /etc/pandora/commands ]; then
+	mkdir -p /usr/share/pandora_agent/commands
+	ln -s /usr/share/pandora_agent/commands /etc/pandora
+fi
+
 mkdir -p /var/spool/pandora/data_out
 if [ ! -d /var/log/pandora ]; then
 	mkdir -p /var/log/pandora

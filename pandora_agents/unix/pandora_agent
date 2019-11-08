@@ -32,6 +32,18 @@ use IO::Socket;
 use Sys::Syslog;
 use Time::Local;
 
+my $YAML = 0;
+# Dynamic load. Avoid unwanted behaviour.
+eval {
+	eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');
+};
+if ($@) {
+	$YAML = 0;
+	print STDERR $@;
+} else {
+	$YAML = 1;
+}
+
 # Agent XML data
 my $Xml;
 
@@ -187,6 +199,7 @@ my %DefaultConf = (
 	'custom_id' => '',
 	'url_address' => '',
 	'standby' => 0,
+	'cmd_file' => undef,
 );
 my %Conf = %DefaultConf;
 
@@ -282,6 +295,28 @@ sub valid_regexp ($) {
 	return 0 if ($@);
 	
 	return 1;
+}
+
+################################################################################
+# Reads a file and returns entire content or undef if error.
+################################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<".$path) ) {
+		print ">> Failed to open $path ".`whoami`."\n";
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
 }
 
 ################################################################################
@@ -682,6 +717,13 @@ sub parse_conf_modules($) {
 		# Macros
 		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;
+		# Commands
+		} elsif ($line =~ /^\s*cmd_file\s+(.+)$/) {
+			if (ref ($Conf{'commands'}) ne "HASH") {
+				$Conf{'commands'} = {};
+			}
+			# Initialize empty command hash.
+			$Conf{'commands'}->{$1} = {};
 		}
 	}
 	return;
@@ -1360,6 +1402,185 @@ sub check_collections () {
 		# Set proper file permissions
 		chmodr (0750, "$ConfDir/collections/$collection");
 	}
+}
+
+################################################################################
+# Check for remote commands defined.
+################################################################################
+sub prepare_remote_commands {
+	if ($YAML == 0) {
+		log_message(
+			'error',
+			'Cannot use commands without YAML dependency, please install it.'
+		);
+		return;
+	}
+
+	foreach my $ref (keys %{$Conf{'commands'}}) {
+		my $file_content;
+		my $download = 0;
+		my $rcmd_file = $ConfDir.'/commands/'.$ref.'.rcmd';
+
+		# Check for local .rcmd.done files
+		if (-e $Conf{'temporal'}.'/'.$ref.'.rcmd.done') {
+			# Ignore.
+			delete $Conf{'commands'}->{$ref};
+			next;
+		}
+
+		# Search for local .rcmd file
+		if (-e $rcmd_file) {
+			my $remote_md5_file = $Conf{'temporal'}.'/'.$ref.'.md5';
+
+			$file_content = read_file($rcmd_file);
+			if (recv_file($ref.'.md5', $remote_md5_file) != 0) {
+				# Remote file could not be retrieved, skip.
+				delete $Conf{'commands'}->{$ref};
+				next;
+			}
+
+			my $local_md5 = md5($file_content);
+			my $remote_md5 = md5(read_file($remote_md5_file));
+
+			if ($local_md5 ne $remote_md5) {
+				# Must be downloaded again.
+				$download = 1;
+			}
+		} else {
+			$download = 1;
+		}
+		
+		# Search for remote .rcmd file
+		if ($download == 1) {
+			# Download .rcmd file
+			if (recv_file($ref.'.rcmd') != 0) {
+				# Remote file could not be retrieved, skip.
+				delete $Conf{'commands'}->{$ref};
+				next;
+			} else {
+				# Success
+				move($Conf{'temporal'}.'/'.$ref.'.rcmd', $rcmd_file);
+			}
+		}
+		
+		# Parse and prepare in memory skel.
+		eval {
+			$Conf{'commands'}->{$ref} = YAML::Tiny->read($rcmd_file);
+		};
+		if ($@) {
+			# Failed.
+			log_message('error', 'Failed to decode command. ' . $@);
+			delete $Conf{'commands'}->{$ref};
+			next;
+		}
+
+	}
+}
+
+################################################################################
+# Command report.
+################################################################################
+sub report_command {
+	my ($ref, $err_level) = @_;
+
+  # Retrieve content from .stdout and .stderr
+	my $stdout_file = $Conf{'temporal'}.'/'.$ref.'.stdout';
+	my $stderr_file = $Conf{'temporal'}.'/'.$ref.'.stderr';
+
+	my $return;
+	eval {
+		$return = {
+			'error_level' => $err_level,
+			'stdout' => read_file($stdout_file),
+			'stderr' => read_file($stderr_file),
+		};
+
+		$return->{'name'} = $Conf{'commands'}->{$ref}->[0]->{'name'};
+	};
+	if ($@) {
+		log_message('error', 'Failed to report command output. ' . $@);
+	}
+
+	# Cleanup
+	unlink($stdout_file) if (-e $stdout_file);
+	unlink($stderr_file) if (-e $stderr_file);
+
+	# Mark command as done.
+	open (my $R_FILE, '> '.$ConfDir.'/commands/'.$ref.'.rcmd.done');
+	print $R_FILE $err_level;
+	close($R_FILE);
+
+	return $return;
+}
+
+################################################################################
+# Executes a block of commands, returns error level, leaves output in 
+# redirection set by $std_files. E.g:
+# $std_files = ' >>  /tmp/stdout 2>> /tmp/stderr
+################################################################################
+sub execute_command_block {
+	my ($commands, $std_files) = @_;
+
+	$std_files = '' unless defined ($std_files);
+	return 0 if ref($commands) ne "ARRAY";
+
+	my $err_level;
+
+	foreach my $comm (@{$commands}) {
+		`($comm) $std_files`;
+		$err_level = $?>>8;
+		last unless ($err_level == 0);
+	}
+
+	return $err_level;
+}
+
+################################################################################
+# Evalate given command.
+################################################################################
+sub evaluate_command {
+	my ($ref) = @_;
+
+	# Not found.
+	return unless defined $Conf{'commands'}->{$ref};
+
+	# Already completed.
+	return if (-e $ConfDir.'/commands/'.$ref.'.rcmd.done');
+
+	# [0] because how library works.
+	my $cmd = $Conf{'commands'}->{$ref}->[0];
+
+	my $std_files = ' >> '.$Conf{'temporal'}.'/'.$ref.'.stdout ';
+	$std_files .= ' 2>> '.$Conf{'temporal'}.'/'.$ref.'.stderr ';
+
+	# Check preconditions
+	my $err_level;
+	
+	$err_level = execute_command_block(
+		$cmd->{'preconditions'},
+		$std_files
+	);
+
+	# Precondition not satisfied.
+	return report_command($ref, $err_level) unless ($err_level == 0);
+
+	# Main run.
+	$err_level = execute_command_block(
+		$cmd->{'script'},
+		$std_files
+	);
+
+	# Script not success.
+	return report_command($ref, $err_level) unless ($err_level == 0);
+
+	# Check postconditions
+	$err_level = execute_command_block(
+		$cmd->{'postconditions'},
+		$std_files
+	);
+
+	# Return results.
+	return report_command($ref, $err_level);
 }
 
 ################################################################################
@@ -2999,6 +3220,25 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
+	if ($Conf{'debug'} ne '1') {
+		# Check remote commands
+		prepare_remote_commands ();
+
+		# Cleanup old .rcmd.done files.
+		my %registered = map { $_.'.rcmd.done' => 1 } keys %{$Conf{'commands'}};
+		if(opendir(my $dir, $ConfDir.'/commands/')) {
+			while (my $item = readdir($dir)) {
+				# Skip other files.
+				next if ($item !~ /\.rcmd\.done$/);
+
+				# Clean .rcmd.done file if its command is not referenced in conf.
+				if (!defined($registered{$item})) {
+					unlink ($item);
+				}
+			}
+		}
+	}
+
 	# Launch broker agents
 	@BrokerPid = ();
 	my @broker_agents = read_config ('broker_agent');
@@ -3125,6 +3365,23 @@ while (1) {
 		# Execute the module
 		} else {
 			exec_module($module, $Conf{'interval'});
+		}
+	}
+
+	if (ref ($Conf{'commands'}) eq "HASH") {
+		foreach my $command (keys %{$Conf{'commands'}}) {
+			my $result = evaluate_command($command);
+			if (ref($result) eq "HASH") {
+				# Process command result.
+				$Xml .= "<cmd_report>\n";
+				$Xml .= "  <cmd_response>\n";
+				$Xml .= "    <cmd_name><![CDATA[".$result->{'name'}."]]></cmd_name>\n";
+				$Xml .= "    <cmd_errorlevel><![CDATA[".$result->{'error_level'}."]]></cmd_errorlevel>\n";
+				$Xml .= "    <cmd_stdout><![CDATA[".$result->{'stdout'}."]]></cmd_stdout>\n";
+				$Xml .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_sterr>\n";
+				$Xml .= "  </cmd_response>\n";
+				$Xml .= "</cmd_report>\n";
+			}
 		}
 	}
 

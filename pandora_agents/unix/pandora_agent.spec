@@ -90,6 +90,11 @@ fi
 if [ ! -e /etc/pandora/collections ]; then
 	mkdir /etc/pandora/collections
 fi
+
+if [ ! -e /etc/pandora/commands ]; then
+	mkdir /etc/pandora/commands
+fi
+
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 
 # Enable the service on SystemD

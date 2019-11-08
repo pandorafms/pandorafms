@@ -2782,6 +2782,9 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 	`id_tag` integer(10) unsigned NOT NULL default '0',
 	`name` text default '',
 	`group_recursion` INT(1) unsigned default 0,
+	`log_content` text,
+	`log_source` text,
+	`log_agent` text,
 	PRIMARY KEY  (`id_event_rule`),
 	KEY `idx_id_event_alert` (`id_event_alert`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

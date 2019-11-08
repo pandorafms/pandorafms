@@ -564,6 +564,9 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `tevent_rule` ADD COLUMN `group_recursion` INT(1) unsigned default 0;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_agent` TEXT;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert`

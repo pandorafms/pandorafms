@@ -8,4 +8,8 @@ INSERT INTO `ttipo_modulo` VALUES
 (36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
 (37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
+ALTER TABLE `tevent_rule` ADD COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_agent` TEXT;
+
 COMMIT;

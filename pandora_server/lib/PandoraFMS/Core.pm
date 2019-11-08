@@ -205,6 +205,7 @@ our @EXPORT = qw(
 	pandora_get_module_phone_tags
 	pandora_get_module_email_tags
 	pandora_get_os
+	pandora_get_os_by_id
 	pandora_input_password
 	pandora_is_master
 	pandora_mark_agent_for_alert_update
@@ -5811,6 +5812,66 @@ sub pandora_get_os ($$) {
 	# Other OS
 	return 10;
 }
+
+########################################################################
+# SUB pandora_get_os_by_id (integer)
+# Returns a chain with the name associated to target id_os.
+########################################################################
+sub pandora_get_os_by_id ($$) {
+	my ($dbh, $os_id) = @_;
+	
+	if (! defined($os_id) || !is_numeric($os_id)) {
+		# Other OS
+		return 'Other';
+	}
+	
+	if ($os_id eq 9) {
+		return 'Windows';
+	}
+	if ($os_id eq 7 ) {
+		return 'Cisco';
+	}
+	if ($os_id eq 2 ) {
+		return 'Solaris';
+	}
+	if ($os_id eq 3 ) {
+		return 'AIX';
+	}
+	if ($os_id eq 5) {
+		return 'HP-UX';
+	}
+	if ($os_id eq 8 ) {
+		return 'Apple';
+	}
+	if ($os_id eq 1 ) {
+		return 'Linux';
+	}
+	if ($os_id eq  1) {
+		return 'Enterasys';
+	}
+	if ($os_id eq  3) {
+		return 'Octopods';
+	}
+	if ($os_id eq  4) {
+		return 'embedded';
+	}
+	if ($os_id eq  5) {
+		return 'android';
+	}
+	if ($os_id eq 4 ) {
+		return 'BSD';
+	}
+		
+	# Search for a custom OS
+	my $os_name = get_db_value ($dbh, 'SELECT name FROM tconfig_os WHERE id_os = ?', $os_id);
+	if (defined ($os_name)) {
+		return $os_name;
+	}
+
+	# Other OS
+	return 'Other';
+}
+
 
 ########################################################################
 # Load module macros (a base 64 encoded JSON document) into the macro

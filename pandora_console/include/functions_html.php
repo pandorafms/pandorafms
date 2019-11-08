@@ -1536,6 +1536,89 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
 
 
 /**
+ * Render an input email element.
+ *
+ * @param array $settings Array with attributes input.
+ * only name is necessary.
+ *
+ * @return string Html input.
+ */
+function html_print_input_email(array $settings):string
+{
+    // TODO: const.
+    $valid_attrs = [
+        'accept',
+        'disabled',
+        'maxlength',
+        'name',
+        'readonly',
+        'placeholder',
+        'size',
+        'value',
+        'accesskey',
+        'class',
+        'dir',
+        'id',
+        'lang',
+        'style',
+        'tabindex',
+        'title',
+        'xml:lang',
+        'onfocus',
+        'onblur',
+        'onselect',
+        'onchange',
+        'onclick',
+        'ondblclick',
+        'onmousedown',
+        'onmouseup',
+        'onmouseover',
+        'onmousemove',
+        'onmouseout',
+        'onkeypress',
+        'onkeydown',
+        'onkeyup',
+        'required',
+        'pattern',
+        'autocomplete',
+    ];
+
+    $output = '';
+    if (isset($settings) === true && is_array($settings) === true) {
+        // Check Name is necessary.
+        if (isset($settings['name']) === true) {
+            $output = '<input type="email" ';
+
+            // Check Max length.
+            if (isset($settings['maxlength']) === false) {
+                $settings['maxlength'] = 255;
+            }
+
+            // Check Size.
+            if (isset($settings['size']) === false
+                || $settings['size'] === 0
+            ) {
+                $settings['size'] = 255;
+            }
+
+            foreach ($settings as $attribute => $attr_value) {
+                // Check valid attribute.
+                if (in_array($attribute, $valid_attrs) === false) {
+                    continue;
+                }
+
+                $output .= $attribute.'="'.$attr_value.'" ';
+            }
+
+            $output .= $function.'/>';
+        }
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input image element.
  *
  * The element will have an id like: "image-$name"
@@ -1822,7 +1905,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);
     $output .= '</textarea>';
@@ -1898,6 +1981,7 @@ function html_get_predefined_table($model='transparent', $columns=4)
  *    $table->titlestyle - Title style
  *    $table->titleclass - Title class
  *    $table->styleTable - Table style
+ *    $table->autosize - Autosize
  *  $table->caption - Table title
  * @param bool Whether to return an output string or echo now
  *
@@ -2008,6 +2092,12 @@ function html_print_table(&$table, $return=false)
         // $table->width = '80%';
     }
 
+    if (isset($table->autosize) === true) {
+        $table->autosize = 'autosize = "1"';
+    } else {
+        $table->autosize = '';
+    }
+
     if (empty($table->border)) {
         if (empty($table)) {
             $table = new stdClass();
@@ -2042,9 +2132,9 @@ function html_print_table(&$table, $return=false)
     $tableid = empty($table->id) ? 'table'.$table_count : $table->id;
 
     if (!empty($table->width)) {
-        $output .= '<table style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
     } else {
-        $output .= '<table style="'.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="'.$styleTable.' '.$table->tablealign;
     }
 
     $output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
@@ -2189,33 +2279,47 @@ function html_print_table(&$table, $return=false)
 
 
 /**
- * Render a radio button input. Extended version, use html_print_radio_button() to simplify.
+ * Render a radio button input. Extended version, use html_print_input()
+ * to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
-    inserted into the HTML tag, use it carefully (optional).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string $name         Input name.
+ * @param string $value        Input value.
+ * @param string $label        Set the button to be marked (optional, unmarked by default).
+ * @param string $checkedvalue Checked value.
+ * @param string $disabled     Disable the button (optional, button enabled by default).
+ * @param string $script       Script to execute when onClick event is triggered (optional).
+ * @param string $attributes   Optional HTML attributes. It's a free string which will be inserted tag, use it carefully (optional).
+ * @param string $returnparam  Whether to return an output string or echo now (optional, echo by default).
+ * @param string $modalparam   Modal param.
+ * @param string $message      Message.
+ * @param string $id           Use custom id.
  *
  * @return string HTML code if return parameter is true.
  */
- /*
-     Hello there! :)
-     We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-     You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
- */
-
-function html_print_radio_button_extended($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return=false, $modal=false, $message='visualmodal')
-{
+function html_print_radio_button_extended(
+    $name,
+    $value,
+    $label,
+    $checkedvalue,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $modal=false,
+    $message='visualmodal',
+    $id=null
+) {
     static $idcounter = 0;
 
     $output = '';
 
     $output = '<input type="radio" name="'.$name.'" value="'.$value.'"';
-    $htmlid = 'radiobtn'.sprintf('%04d', ++$idcounter);
+    if (empty($id) === false) {
+        $htmlid = $id;
+    } else {
+        $htmlid = 'radiobtn'.sprintf('%04d', ++$idcounter);
+    }
+
     $output .= ' id="'.$htmlid.'"';
 
     if ($value == $checkedvalue) {
@@ -3003,23 +3107,24 @@ function html_print_csrf_error()
 
 
 /**
- * Print an swith button
+ * Print an swith button.
  *
- * @param  array $atributes. Valid params:
- *         name: Usefull to handle in forms
- *         value: If is checked or not
- *         disabled: Disabled. Cannot be pressed.
- *         id: Optional id for the switch.
- *         class: Additional classes (string).
- * @return string with HTML of button
+ * @param array $attributes Valid params.
+ * name: Usefull to handle in forms.
+ * value: If is checked or not.
+ * disabled: Disabled. Cannot be pressed.
+ * id: Optional id for the switch.
+ * class: Additional classes (string).
+ *
+ * @return string with HTML of button.
  */
 function html_print_switch($attributes=[])
 {
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) $attributes['value'] ? ' checked' : '';
-    $html_expand .= (bool) $attributes['disabled'] ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -3042,7 +3147,7 @@ function html_print_switch($attributes=[])
     }
 
     return "<label class='p-switch' style='".$attributes['style']."'>
-			<input type='checkbox' $html_expand>
+			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider'></span>
 		</label>";
 }
@@ -3198,6 +3303,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
             );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
         break;
 
         case 'hidden':
@@ -3367,6 +3476,26 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['modal']) === true) ? $data['modal'] : false),
                 ((isset($data['message']) === true) ? $data['message'] : '')
             );
+        break;
+
+        case 'radio_button':
+            $output .= html_print_radio_button_extended(
+                $data['name'],
+                $data['value'],
+                $data['label'],
+                ((isset($data['checkedvalue']) === true) ? $data['checkedvalue'] : 1),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : true),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : 'visualmodal'),
+                ((isset($data['id']) === true) ? $data['id'] : null)
+            );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
         break;
 
         default:

@@ -657,7 +657,7 @@ sub logger ($$;$) {
 		if (defined $parent_caller) {
 			$parent_caller = (split '/', $parent_caller)[-1];
 			$parent_caller =~ s/\.[^.]+$//;
-			$parent_caller = " ** " . $parent_caller . " **: ";
+			$parent_caller = " " . $parent_caller . ": ";
 		} else {
 			$parent_caller = " ";
 		}

@@ -1,16 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Modules
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 require_once 'include/functions_network_components.php';
 enterprise_include_once('include/functions_local_components.php');
 
@@ -19,18 +35,65 @@ if (is_ajax()) {
     $snmp_walk = (bool) get_parameter('snmp_walk');
     $get_module_component = (bool) get_parameter('get_module_component');
     $get_module_components = (bool) get_parameter('get_module_components');
-    $get_module_local_components = (bool) get_parameter('get_module_local_components');
-    $get_module_local_component = (bool) get_parameter('get_module_local_component');
+    $get_module_local_components = (bool) get_parameter(
+        'get_module_local_components'
+    );
+    $get_module_local_component = (bool) get_parameter(
+        'get_module_local_component'
+    );
 
     if ($get_module_component) {
         $id_component = (int) get_parameter('id_module_component');
 
         $component = db_get_row('tnetwork_component', 'id_nc', $id_component);
 
-        $component['throw_unknown_events'] = network_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
+        $component['throw_unknown_events'] = network_components_is_disable_type_event(
+            $id_component,
+            EVENTS_GOING_UNKNOWN
+        );
 
         // Decrypt passwords in the component.
-        $component['plugin_pass'] = io_output_password($component['plugin_pass']);
+        $component['plugin_pass'] = io_output_password(
+            $component['plugin_pass']
+        );
+
+        if ($component['type'] >= 15
+            && $component['type'] <= 18
+        ) {
+            // New support for snmp v3.
+            $component['snmp_version'] = $component['tcp_send'];
+            $component['snmp3_auth_user'] = io_safe_output(
+                $component['plugin_user']
+            );
+            // Must use io_output_password.
+            $component['snmp3_auth_pass'] = io_safe_output(
+                $component['plugin_pass']
+            );
+            $component['snmp3_auth_method'] = io_safe_output(
+                $component['plugin_parameter']
+            );
+            $component['snmp3_privacy_method'] = io_safe_output(
+                $component['custom_string_1']
+            );
+            $component['snmp3_privacy_pass'] = io_safe_output(
+                $component['custom_string_2']
+            );
+            $component['snmp3_security_level'] = io_safe_output(
+                $component['custom_string_3']
+            );
+        } else if ($component['type'] >= 34
+            && $component['type'] <= 37
+        ) {
+            $component['command_text'] = io_safe_output(
+                $component['tcp_send']
+            );
+            $component['command_credential_identifier'] = io_safe_output(
+                $component['custom_string_1']
+            );
+            $component['command_os'] = io_safe_output(
+                $component['custom_string_2']
+            );
+        }
 
         $component['str_warning'] = io_safe_output($component['str_warning']);
         $component['str_critical'] = io_safe_output($component['str_critical']);
@@ -83,33 +146,29 @@ if (is_ajax()) {
 
         $component = db_get_row('tlocal_component', 'id', $id_component);
         foreach ($component as $index => $element) {
-            $component[$index] = html_entity_decode($element, ENT_QUOTES, 'UTF-8');
+            $component[$index] = html_entity_decode(
+                $element,
+                ENT_QUOTES,
+                'UTF-8'
+            );
         }
 
-        $typeName = local_components_parse_module_extract_value('module_type', $component['data']);
+        $typeName = local_components_parse_module_extract_value(
+            'module_type',
+            $component['data']
+        );
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $component['type'] = db_get_value_sql(
-                    '
-					SELECT id_tipo
-					FROM ttipo_modulo
-					WHERE nombre LIKE "'.$typeName.'"'
-                );
-            break;
+        $component['type'] = db_get_value_sql(
+            '
+            SELECT id_tipo
+            FROM ttipo_modulo
+            WHERE nombre LIKE "'.$typeName.'"'
+        );
 
-            case 'postgresql':
-            case 'oracle':
-                $component['type'] = db_get_value_sql(
-                    '
-					SELECT id_tipo
-					FROM ttipo_modulo
-					WHERE nombre LIKE \''.$typeName.'\''
-                );
-            break;
-        }
-
-        $component['throw_unknown_events'] = !local_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
+        $component['throw_unknown_events'] = !local_components_is_disable_type_event(
+            $id_component,
+            EVENTS_GOING_UNKNOWN
+        );
 
         echo io_json_mb_encode($component);
         return;
@@ -136,7 +195,9 @@ if (is_ajax()) {
         $snmp3_auth_method = get_parameter('snmp3_auth_method');
         $snmp3_auth_pass = io_safe_output(get_parameter('snmp3_auth_pass'));
         $snmp3_privacy_method = get_parameter('snmp3_privacy_method');
-        $snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_privacy_pass'));
+        $snmp3_privacy_pass = io_safe_output(
+            get_parameter('snmp3_privacy_pass')
+        );
         $snmp_port = get_parameter('snmp_port');
 
         $snmpwalk = get_snmpwalk(
@@ -177,7 +238,7 @@ require_once 'include/functions_exportserver.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 
-// Reading a module
+// Reading a module.
 if ($id_agent_module) {
     $module = modules_get_agentmodule($id_agent_module);
     $moduletype = $module['id_modulo'];
@@ -202,19 +263,25 @@ if ($id_agent_module) {
     $snmp_community = $module['snmp_community'];
     $snmp_oid = $module['snmp_oid'];
 
-    // New support for snmp v3
+    // New support for snmp v3.
     $snmp_version = $module['tcp_send'];
     $snmp3_auth_user = $module['plugin_user'];
     $snmp3_auth_pass = io_output_password($module['plugin_pass']);
 
-    // Auth method could be MD5 or SHA
+    // Auth method could be MD5 or SHA.
     $snmp3_auth_method = $module['plugin_parameter'];
 
-    // Privacy method could be DES or AES
+    // Privacy method could be DES or AES.
     $snmp3_privacy_method = $module['custom_string_1'];
     $snmp3_privacy_pass = io_output_password($module['custom_string_2']);
 
-    // Security level Could be noAuthNoPriv | authNoPriv | authPriv
+    // For Remote cmd fields are reused:
+    // tcp_send, custom_string_1, custom_string_2.
+    $command_text = $module['tcp_send'];
+    $command_credential_identifier = $module['custom_string_1'];
+    $command_os = $module['custom_string_2'];
+
+    // Security level Could be noAuthNoPriv | authNoPriv | authPriv.
     $snmp3_security_level = $module['custom_string_3'];
 
     $ip_target = $module['ip_target'];
@@ -265,39 +332,39 @@ if ($id_agent_module) {
     $id_category = $module['id_category'];
 
     $cron_interval = explode(' ', $module['cron_interval']);
-    if (isset($cron_interval[4])) {
+    if (isset($cron_interval[4]) === true) {
         $minute_from = $cron_interval[0];
         $minute = explode('-', $minute_from);
         $minute_from = $minute[0];
-        if (isset($minute[1])) {
+        if (isset($minute[1]) === true) {
             $minute_to = $minute[1];
         }
 
         $hour_from = $cron_interval[1];
         $h = explode('-', $hour_from);
         $hour_from = $h[0];
-        if (isset($h[1])) {
+        if (isset($h[1]) === true) {
             $hour_to = $h[1];
         }
 
         $mday_from = $cron_interval[2];
         $md = explode('-', $mday_from);
         $mday_from = $md[0];
-        if (isset($md[1])) {
+        if (isset($md[1]) === true) {
             $mday_to = $md[1];
         }
 
         $month_from = $cron_interval[3];
         $m = explode('-', $month_from);
         $month_from = $m[0];
-        if (isset($m[1])) {
+        if (isset($m[1]) === true) {
             $month_to = $m[1];
         }
 
         $wday_from = $cron_interval[4];
         $wd = explode('-', $wday_from);
         $wday_from = $wd[0];
-        if (isset($wd[1])) {
+        if (isset($wd[1]) === true) {
             $wday_to = $wd[1];
         }
     } else {
@@ -315,14 +382,20 @@ if ($id_agent_module) {
     }
 
     $module_macros = null;
-    if (isset($module['module_macros'])) {
-        $module_macros = json_decode(base64_decode($module['module_macros']), true);
+    if (isset($module['module_macros']) === true) {
+        $module_macros = json_decode(
+            base64_decode($module['module_macros']),
+            true
+        );
     }
 } else {
-    if (!isset($moduletype)) {
+    if (isset($moduletype) === false) {
         $moduletype = (string) get_parameter('moduletype');
+        if ($_SESSION['create_module'] && $config['welcome_state'] == 1) {
+            $moduletype = 'networkserver';
+        }
 
-        // Clean up specific network modules fields
+        // Clean up specific network modules fields.
         $name = '';
         $description = '';
         $id_module_group = 1;
@@ -374,7 +447,7 @@ if ($id_agent_module) {
         $str_critical = '';
         $ff_event = 0;
 
-        // New support for snmp v3
+        // New support for snmp v3.
         $snmp_version = 1;
         $snmp3_auth_user = '';
         $snmp3_auth_pass = '';
@@ -382,6 +455,11 @@ if ($id_agent_module) {
         $snmp3_privacy_method = '';
         $snmp3_privacy_pass = '';
         $snmp3_security_level = '';
+
+        // For Remote CMD.
+        $command_text = '';
+        $command_credential_identifier = '';
+        $command_os = '';
 
         $critical_instructions = '';
         $warning_instructions = '';
@@ -418,7 +496,9 @@ if ($id_agent_module) {
     }
 }
 
-$is_function_policies = enterprise_include_once('include/functions_policies.php');
+$is_function_policies = enterprise_include_once(
+    'include/functions_policies.php'
+);
 
 if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
     $relink_policy = get_parameter('relink_policy', 0);
@@ -428,19 +508,32 @@ if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
         $policy_info = policies_info_module_policy($id_agent_module);
         $policy_id = $policy_info['id_policy'];
 
-        if ($relink_policy && policies_get_policy_queue_status($policy_id) == STATUS_IN_QUEUE_APPLYING) {
-            ui_print_error_message(__('This policy is applying and cannot be modified'));
+        if ($relink_policy
+            && policies_get_policy_queue_status($policy_id) == STATUS_IN_QUEUE_APPLYING
+        ) {
+            ui_print_error_message(
+                __('This policy is applying and cannot be modified')
+            );
         } else {
             $result = policies_relink_module($id_agent_module);
-            ui_print_result_message($result, __('Module will be linked in the next application'));
+            ui_print_result_message(
+                $result,
+                __('Module will be linked in the next application')
+            );
 
-            db_pandora_audit('Agent management', 'Re-link module '.$id_agent_module);
+            db_pandora_audit(
+                'Agent management',
+                'Re-link module '.$id_agent_module
+            );
         }
     }
 
     if ($unlink_policy) {
         $result = policies_unlink_module($id_agent_module);
-        ui_print_result_message($result, __('Module will be unlinked in the next application'));
+        ui_print_result_message(
+            $result,
+            __('Module will be unlinked in the next application')
+        );
 
         db_pandora_audit('Agent management', 'Unlink module '.$id_agent_module);
     }
@@ -452,7 +545,7 @@ $remote_conf = false;
 
 if ($__code_from !== 'policies') {
     // Only check in the module editor.
-    // Check ACL tags
+    // Check ACL tags.
     $tag_acl = true;
 
     // If edit a existing module.
@@ -479,12 +572,12 @@ switch ($moduletype) {
         $remote_conf = false;
         if (enterprise_installed()) {
             enterprise_include_once('include/functions_config_agents.php');
-            $remote_conf = enterprise_hook('config_agents_has_remote_configuration', [$id_agente]);
+            $remote_conf = enterprise_hook(
+                'config_agents_has_remote_configuration',
+                [$id_agente]
+            );
         }
 
-        /*
-            Categories is an array containing the allowed module types
-         (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
         $categories = [
             0,
             1,
@@ -503,12 +596,16 @@ switch ($moduletype) {
                     'config_agents_get_module_from_conf',
                     [
                         $id_agente,
-                        io_safe_output(modules_get_agentmodule_name($id_agent_module)),
+                        io_safe_output(
+                            modules_get_agentmodule_name($id_agent_module)
+                        ),
                     ]
                 );
             }
 
-            enterprise_include('godmode/agentes/module_manager_editor_data.php');
+            enterprise_include(
+                'godmode/agentes/module_manager_editor_data.php'
+            );
         }
     break;
 
@@ -520,6 +617,10 @@ switch ($moduletype) {
             4,
             5,
         ];
+        if (enterprise_installed()) {
+            $categories[] = 10;
+        }
+
         include 'module_manager_editor_common.php';
         include 'module_manager_editor_network.php';
     break;
@@ -562,9 +663,12 @@ switch ($moduletype) {
         include 'module_manager_editor_wmi.php';
     break;
 
-    // WARNING: type 7 is reserved on enterprise
+    // WARNING: type 7 is reserved on enterprise.
     default:
-        if (enterprise_include('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
+        if (enterprise_include(
+            'godmode/agentes/module_manager_editor.php'
+        ) === ENTERPRISE_NOT_HOOK
+        ) {
             ui_print_error_message(sprintf(__('Invalid module type')));
             return;
         }
@@ -580,7 +684,7 @@ if ($config['enterprise_installed'] && $id_agent_module) {
 
 echo '<h3 id="message" class="error invisible"></h3>';
 
-// TODO: Change to the ui_print_error system
+// TODO: Change to the ui_print_error system.
 echo '<form method="post" id="module_form">';
 
 ui_toggle(
@@ -602,12 +706,18 @@ ui_toggle(
 
 if ($moduletype != 13) {
     ui_toggle(
-        html_print_table($table_new_relations, true).html_print_table($table_relations, true),
+        html_print_table(
+            $table_new_relations,
+            true
+        ).html_print_table(
+            $table_relations,
+            true
+        ),
         __('Module relations')
     );
 }
 
-// Submit
+// Submit.
 echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
 if ($id_agent_module) {
     html_print_submit_button(
@@ -659,38 +769,84 @@ ui_require_javascript_file('pandora_modules');
 <script language="javascript">
 /* <![CDATA[ */
 var no_name_lang =`
-<?php echo ui_print_info_message(['no_close' => true, 'message' => __('No module name provided') ]); ?>
+<?php
+echo ui_print_info_message(
+    [
+        'no_close' => true,
+        'message'  => __('No module name provided'),
+    ]
+);
+?>
 `;
 var no_target_lang =`
-<?php echo ui_print_info_message(['no_close' => true, 'message' => __('No target IP provided') ]); ?>
+<?php
+echo ui_print_info_message(
+    [
+        'no_close' => true,
+        'message'  => __('No target IP provided'),
+    ]
+);
+?>
 `;
 var no_oid_lang =`
-<?php echo ui_print_info_message(['no_close' => true, 'message' => __('No SNMP OID provided') ]); ?>
+<?php
+echo ui_print_info_message(
+    [
+        'no_close' => true,
+        'message'  => __('No SNMP OID provided'),
+    ]
+);
+?>
 `;
 var no_prediction_module_lang =`
-<?php echo ui_print_info_message(['no_close' => true, 'message' => __('No module to predict') ]); ?>
+<?php
+echo ui_print_info_message(
+    [
+        'no_close' => true,
+        'message'  => __('No module to predict'),
+    ]
+);
+?>
 `;
 var no_plugin_lang =`
-<?php echo ui_print_info_message(['no_close' => true, 'message' => __('No plug-in provided') ]); ?>
+<?php
+echo ui_print_info_message(
+    [
+        'no_close' => true,
+        'message'  => __('No plug-in provided'),
+    ]
+);
+?>
 `;
 var no_execute_test_from =`
-<?php echo ui_print_info_message(['no_close' => true, 'message' => __('No server provided') ]); ?>
+<?php
+echo ui_print_info_message(
+    [
+        'no_close' => true,
+        'message'  => __('No server provided'),
+    ]
+);
+?>
 `;
 
 $(document).ready (function () {
     configure_modules_form ();
 
     $("#module_form").submit(function() {
-        if (typeof(check_remote_conf) != 'undefined') { 
+        if (typeof(check_remote_conf) != 'undefined') {
             if (check_remote_conf) {
-                //Check the name
+                //Check the name.
                 name = $("#text-name").val();
                 remote_config = $("#textarea_configuration_data").val();
-                
-                regexp_name = new RegExp('module_name\\s*' + name.replace(/([^0-9A-Za-z_])/g, "\\$1") +"\n");
-                
+
+                regexp_name = new RegExp(
+                    'module_name\\s*' + name.replace(/([^0-9A-Za-z_])/g,
+                    "\\$1"
+                    ) +"\n"
+                );
+
                 regexp_plugin = new RegExp('^module_plugin\\s*');
-                
+
                 if (remote_config == '' || remote_config.match(regexp_name) ||
                     remote_config.match(regexp_plugin) ||
                     $("#id_module_type").val()==100 ||
@@ -698,15 +854,15 @@ $(document).ready (function () {
                     return true;
                 }
                 else {
-                    alert("<?php echo __('Error, The field name and name in module_name in data configuration are different.'); ?>");
+                    alert ("<?php echo __('Error, The field name and name in module_name in data configuration are different.'); ?>");
                     return false;
                 }
             }
         }
-        
+
         return true;
     });
-    
+
     function checkKeepaliveModule() {
         // keepalive modules have id = 100
         if ($("#id_module_type").val()==100 ||
@@ -720,11 +876,10 @@ $(document).ready (function () {
                 $("#simple-configuration_data").show();
             }
         }
-        
     }
-    
+
     checkKeepaliveModule();
-    
+
     $("#id_module_type").change (function () {
         checkKeepaliveModule();
     });
@@ -741,11 +896,15 @@ function handleFileSelect() {
     err_msg_2 = "<?php echo __('Couldn`t find the fileinput element.'); ?>";
     err_msg_3 = "<?php echo __('This browser doesn`t seem to support the files property of file inputs.'); ?>";
     err_msg_4 = "<?php echo __('Please select a file before clicking Load'); ?>";
-    
-    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+
+    if (!window.File ||
+        !window.FileReader ||
+        !window.FileList ||
+        !window.Blob
+    ) {
         $('#mssg_error_div').append(err_msg_1);
         return;
-    }   
+    }
 
     input = document.getElementById('file-file_html_text');
 
@@ -756,7 +915,7 @@ function handleFileSelect() {
         $('#mssg_error_div').append(err_msg_3);
     }
     else if (!input.files[0]) {
-        $('#mssg_error_div').append(err_msg_4);               
+        $('#mssg_error_div').append(err_msg_4);
     }
     else {
         file = input.files[0];
@@ -767,7 +926,9 @@ function handleFileSelect() {
 }
 
 function receivedText() {
-    document.getElementById('textarea_custom_string_1').appendChild(document.createTextNode(fr.result));
-}  
+    document
+        .getElementById('textarea_custom_string_1')
+        .appendChild(document.createTextNode(fr.result));
+}
 /* ]]> */
 </script>

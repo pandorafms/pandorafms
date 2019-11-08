@@ -59,6 +59,7 @@ rm -rf $RPM_BUILD_ROOT
 %post
 # Install pandora_websocket_engine service.
 cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
+chmod +x /etc/init.d/pandora_websocket_engine
 
 echo "You can now start the Pandora FMS Websocket service by executing"
 echo "   /etc/init.d/pandora_websocket_engine start"

@@ -1885,6 +1885,9 @@ function load_modal(settings) {
   }
   data.append("page", settings.onshow.page);
   data.append("method", settings.onshow.method);
+  if (settings.onshow.extradata != undefined) {
+    data.append("extradata", JSON.stringify(settings.onshow.extradata));
+  }
 
   if (settings.target == undefined) {
     var uniq = uniqId();

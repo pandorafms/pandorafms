@@ -148,8 +148,6 @@ if (!isset($config['homeurl_static'])) {
     }
 }
 
-db_select_engine();
-$config['dbconnection'] = db_connect();
 
 
 if (! defined('EXTENSIONS_DIR')) {
@@ -159,6 +157,9 @@ if (! defined('EXTENSIONS_DIR')) {
 if (! defined('ENTERPRISE_DIR')) {
     define('ENTERPRISE_DIR', 'enterprise');
 }
+
+db_select_engine();
+$config['dbconnection'] = db_connect();
 
 require_once $ownDir.'functions_config.php';
 

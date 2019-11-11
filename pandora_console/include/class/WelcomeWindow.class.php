@@ -211,7 +211,13 @@ class WelcomeWindow extends Wizard
         $this->step = $config['welcome_state'];
 
         // Get step available.
-        if (empty($config['welcome_id_agent']) === true) {
+        if (empty($config['welcome_mail_configured']) === true
+            && get_parameter('sec2') == 'godmode/setup/setup'
+            && get_parameter('section', '') == 'general'
+            && get_parameter('update_config', false) !== false
+        ) {
+            $this->step = W_CONFIGURE_MAIL;
+        } else if (empty($config['welcome_id_agent']) === true) {
             $this->step = W_CREATE_AGENT;
         } else if (empty($config['welcome_module']) === true) {
             $this->step = W_CREATE_MODULE;
@@ -219,8 +225,6 @@ class WelcomeWindow extends Wizard
             $this->step = W_CREATE_ALERT;
         } else if (empty($config['welcome_task']) === true) {
             $this->step = W_CREATE_TASK;
-        } else if (empty($config['welcome_mail_configured']) === true) {
-            $this->step = W_CONFIGURE_MAIL;
         }
 
         return $this->step;

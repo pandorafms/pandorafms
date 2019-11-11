@@ -282,6 +282,20 @@ sub error ($) {
 }
 
 ################################################################################
+# Try to load extra libraries.c
+################################################################################
+sub load_libraries() {
+	# Dynamic load. Avoid unwanted behaviour.
+	eval {eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');};
+	if ($@) {
+		$YAML = 0;
+		print STDERR $@;
+	} else {
+		$YAML = 1;
+	}
+}
+
+################################################################################
 # Check a regular expression. Returns 1 if its valid, 0 otherwise.
 ################################################################################
 sub valid_regexp ($) {
@@ -1199,14 +1213,14 @@ sub recv_file {
 		};
 
 		if ($@) {
-			log_message ('error', "Error retrieving file: File transfer command is not responding.");
+			log_message ('error', "Error retrieving file: '.$file.' File transfer command is not responding.");
 			exit 1;
 		}
 
 		# Get the errorlevel
 		my $rc = $? >> 8;
 		if ($rc != 0) {
-			log_message ('error', "Error retrieving file: $output");
+			log_message ('error', "Error retrieving file: '$file' $output");
 		}
 		exit $rc;
 	}
@@ -1469,7 +1483,7 @@ sub prepare_remote_commands {
 		};
 		if ($@) {
 			# Failed.
-			log_message('error', 'Failed to decode command. ' . $@);
+			log_message('error', 'Failed to decode command. ' . "\n".$@);
 			delete $Conf{'commands'}->{$ref};
 			next;
 		}
@@ -3206,6 +3220,8 @@ my $iter_base_time = time();
 $LogFileIdx = -1;
 # Loop
 while (1) {
+	load_libraries();
+
 	if (-e $Conf{'logfile'} && (stat($Conf{'logfile'}))[7] > $Conf{'logsize'}) {
 		rotate_log();
 	}
@@ -3376,9 +3392,10 @@ while (1) {
 				$Xml .= "<cmd_report>\n";
 				$Xml .= "  <cmd_response>\n";
 				$Xml .= "    <cmd_name><![CDATA[".$result->{'name'}."]]></cmd_name>\n";
+				$Xml .= "    <cmd_key><![CDATA[".$command."]]></cmd_key>\n";
 				$Xml .= "    <cmd_errorlevel><![CDATA[".$result->{'error_level'}."]]></cmd_errorlevel>\n";
 				$Xml .= "    <cmd_stdout><![CDATA[".$result->{'stdout'}."]]></cmd_stdout>\n";
-				$Xml .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_sterr>\n";
+				$Xml .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_stderr>\n";
 				$Xml .= "  </cmd_response>\n";
 				$Xml .= "</cmd_report>\n";
 			}

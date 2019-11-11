@@ -789,6 +789,9 @@ class WelcomeWindow extends Wizard
             // Finished! do not show.
             $this->setStep(WELCOME_FINISHED);
             return false;
+        } else if (empty($sec2) === true) {
+            // Pending tasks.
+            return true;
         }
 
         if ($this->step === WELCOME_FINISHED) {

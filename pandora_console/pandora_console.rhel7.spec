@@ -57,6 +57,12 @@ install -m 0644 pandora_console_logrotate_centos $RPM_BUILD_ROOT%{_sysconfdir}/l
 rm -rf $RPM_BUILD_ROOT
 
 %post
+# Install pandora_websocket_engine service.
+cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
+
+echo "You can now start the Pandora FMS Websocket service by executing"
+echo "   /etc/init.d/pandora_websocket_engine start"
+
 # Has an install already been done, if so we only want to update the files
 # push install.php aside so that the console works immediately using existing
 # configuration.

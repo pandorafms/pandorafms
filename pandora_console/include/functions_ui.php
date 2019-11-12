@@ -3237,6 +3237,8 @@ function ui_print_datatable(array $parameters)
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
+                    title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
+                    fieldSeparator: "'.$config['csv_divider'].'",
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3533,6 +3535,8 @@ function ui_print_event_priority(
  * @param string  $toggle_class    Toggle class.
  * @param string  $container_class Container class.
  * @param string  $main_class      Main object class.
+ * @param string  $img_a           Image (closed).
+ * @param string  $img_b           Image (opened).
  *
  * @return string HTML.
  */
@@ -3545,20 +3549,22 @@ function ui_toggle(
     $return=false,
     $toggle_class='',
     $container_class='white-box-content',
-    $main_class='box-shadow white_table_graph'
+    $main_class='box-shadow white_table_graph',
+    $img_a='images/arrow_down_green.png',
+    $img_b='images/arrow_right_green.png'
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image('images/arrow_down_green.png', true, false, true);
-    $image_b = html_print_image('images/arrow_right_green.png', true, false, true);
+    $image_a = html_print_image($img_a, true, false, true);
+    $image_b = html_print_image($img_b, true, false, true);
     // Options.
     if ($hidden_default) {
         $style = 'display:none';
-        $original = 'images/arrow_right_green.png';
+        $original = $img_b;
     } else {
         $style = '';
-        $original = 'images/arrow_down_green.png';
+        $original = $img_a;
     }
 
     // Link to toggle.
@@ -3608,6 +3614,31 @@ function ui_toggle(
     } else {
         return $output;
     }
+}
+
+
+/**
+ * Simplified way of ui_toggle ussage.
+ *
+ * @param array $data Arguments.
+ *
+ * @return string HTML code with toggle content.
+ */
+function ui_print_toggle($data)
+{
+    return ui_toggle(
+        $data['content'],
+        $data['name'],
+        (isset($data['title']) === true) ? $data['title'] : '',
+        (isset($data['id']) === true) ? $data['id'] : '',
+        (isset($data['hidden_default']) === true) ? $data['hidden_default'] : true,
+        (isset($data['return']) === true) ? $data['return'] : false,
+        (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
+        (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
+        (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
+        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png'
+    );
 }
 
 
@@ -5744,4 +5775,24 @@ function ui_print_comments($comments)
 
     return io_safe_output($comentario);
 
+}
+
+
+/**
+ * Get complete external pandora url.
+ *
+ * @param string $url Url to be parsed.
+ *
+ * @return string Full url.
+ */
+function ui_get_full_external_url(string $url)
+{
+    $url_parsed = parse_url($url);
+    if ($url_parsed) {
+        if (!isset($url_parsed['scheme'])) {
+            $url = 'http://'.$url;
+        }
+    }
+
+        return $url;
 }

@@ -386,7 +386,7 @@ if ($items) {
     }
 
     $table->head[4] = __('Time lapse');
-    $table->head[5] = __('Name').' / '.__('Description');
+    $table->head[5] = __('Name or Description');
     if (check_acl($config['id_user'], 0, 'RM')) {
         $table->head[6] = '<span title="'.__('Options').'">'.__('Op.').'</span>';
         if ($report_w || $report_m) {

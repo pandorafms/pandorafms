@@ -45,3 +45,71 @@ img.handle-alerts {
   width: 20px;
   cursor: move;
 }
+
+.content {
+  width: 80%;
+  min-height: 4em;
+  border: 1px solid #ddd;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+ul.sample {
+  max-width: 50%;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+ul.sample li {
+  padding-bottom: 1em;
+}
+ul.sample li:last-child {
+  padding-bottom: 0;
+}
+div.target {
+  flex-grow: 1;
+  margin-left: 3em;
+  border: 1px solid #ddd;
+}
+
+.field {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 3px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: 600;
+  background-color: #333;
+}
+
+.log {
+  background-color: #638460;
+}
+.event {
+  background-color: #587cff;
+}
+
+.operator {
+  background-color: #908787;
+}
+
+.variable {
+  background-color: #82b92e;
+}
+
+.modifier {
+  background-color: #cba9d2;
+}
+
+.nexo {
+  background-color: #424242;
+}
+
+.rules div {
+  display: inline-block;
+}
+
+.inEdit {
+  background-color: #888;
+}

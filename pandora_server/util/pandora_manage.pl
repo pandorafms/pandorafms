@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.740 PS191029";
+my $version = "7.0NG.740 PS191112";
 
 # save program name for logging
 my $progname = basename($0);
@@ -118,12 +118,22 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
+<<<<<<< HEAD
+	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
+	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
+	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
+	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
+	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
+	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
+	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
+=======
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
 	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
+>>>>>>> origin/develop
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	help_screen_line('--locate_agent', '<agent_name> [<use_alias>]', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
 	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
@@ -4849,6 +4859,49 @@ sub cli_get_agent_modules() {
 	}
 }
 
+##############################################################################
+# Show id, name and id_server of an agent given alias
+# Related option: --get_agents_id_name_by_alias
+##############################################################################
+
+sub cli_get_agents_id_name_by_alias() {
+	my $agent_alias = @ARGV[2];
+	my $strict = @ARGV[3];
+	my @agents;
+	my $where_value;
+
+	if($strict eq 'strict') {
+		$where_value = $agent_alias;
+	} else {
+		$where_value = "%".$agent_alias."%";
+	}
+
+	if(is_metaconsole($conf) == 1) {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente, id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	} else {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	}
+	if(scalar(@agents) == 0) {
+		print "[ERROR] No agents retrieved.\n\n";
+	} else {
+		if(is_metaconsole($conf) == 1) {
+			print "alias, id_agente, id_tagente, id_server, server_name\n";
+
+				foreach my $agent (@agents) {
+			
+				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+			}
+		} else {
+			print "alias, id_agente\n";
+
+			foreach my $agent (@agents) {
+				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";
+			}
+		}
+	}	
+}
+
+
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
 	my $synthetic_type = @ARGV[3];
@@ -5895,9 +5948,16 @@ sub cli_stop_downtime () {
 	exist_check($downtime_id,'planned downtime',$downtime_id);
 	
 	my $current_time = time;
-	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	if($current_time >= $downtime_date_to) {
+	my $data = get_db_single_row ($dbh, 'SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
+
+	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
+		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
+		print_log "[INFO] Periodical and running planned downtime cannot be stopped.\n\n";
+		exit;
+	}
+	
+	if($current_time >= $data->{'date_to'}) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}
@@ -7418,6 +7478,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_modules') {
 			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agents_id_name_by_alias') {
+			param_check($ltotal, 2,1);
+			cli_get_agents_id_name_by_alias();
 		}
 		elsif ($param eq '--get_policy_modules') {
 			param_check($ltotal, 1);

@@ -121,12 +121,9 @@ function html_do_report_info($report)
             </tr>
             <tr>
                 <td><b>'.__('Report date').': </b></td>';
-    if (isset($report['period'])) {
-        if (is_numeric($report['datetime']) && is_numeric($report['period'])) {
-            $html .= '<td>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</td>';
-        }
-
-        $html .= '<td></td>';
+    if (is_numeric($report['datetime']) && is_numeric($report['period']) && ($report['period'] != 0)) {
+        $html .= '<td>'.__('From').' <b>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</b></td>';
+        $html .= '<td>'.__('to').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     } else {
         $html .= '<td>'.__('Items period before').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     }
@@ -288,23 +285,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_sum_value($table, $item, $mini);
             break;
 
-            /*
-                case 'MTTR':
-                reporting_html_MTTR_value($table, $item, $mini, true, true);
-                break;
-
-                case 'MTBF':
-                reporting_html_MTBF_value($table, $item, $mini, true, true);
-                break;
-
-                case 'TTO':
-                reporting_html_TTO_value($table, $item, $mini, false, true);
-                break;
-
-                case 'TTRT':
-                reporting_html_TTRT_value($table, $item, $mini, false, true);
-                break;
-            */
             case 'agent_configuration':
                 reporting_html_agent_configuration($table, $item);
             break;
@@ -2729,31 +2709,6 @@ function reporting_html_agent_configuration(
 }
 
 
-/*
-    function reporting_html_TTRT_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-    {
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-    }
-
-
-    function reporting_html_TTO_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-    {
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-    }
-
-
-    function reporting_html_MTBF_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-    {
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-    }
-
-
-    function reporting_html_MTTR_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-    {
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-    }
-*/
-
 function reporting_html_sum_value(&$table, $item, $mini)
 {
     reporting_html_value($table, $item, $mini);
@@ -3625,10 +3580,10 @@ function reporting_html_general($table, $item, $pdf=0)
                     }
 
                     $table1->head[3] = __('Value');
-                    $table1->style[0] = 'text-align: left';
-                    $table1->style[1] = 'text-align: left';
-                    $table1->style[2] = 'text-align: left';
-                    $table1->style[3] = 'text-align: left';
+                    $table1->style[0] = 'text-align: center';
+                    $table1->style[1] = 'text-align: center';
+                    $table1->style[2] = 'text-align: center';
+                    $table1->style[3] = 'text-align: center';
 
                     // Begin - Order by agent.
                     foreach ($item['data'] as $key => $row) {
@@ -3759,12 +3714,16 @@ function reporting_html_general($table, $item, $pdf=0)
         $table_summary->head = [];
         $table_summary->head_colspan = [];
         $table_summary->align = [];
+        $table_summary->headstyle = [];
+        $table_summary->headstyle[0] = 'text-align: center;';
+        $table_summary->headstyle[1] = 'text-align: center;';
+        $table_summary->headstyle[2] = 'text-align: center;';
 
-        $table_summary->align[0] = 'left';
-        $table_summary->align[1] = 'right';
-        $table_summary->align[2] = 'right';
-        $table_summary->align[3] = 'left';
-        $table_summary->align[4] = 'right';
+        $table_summary->align[0] = 'center';
+        $table_summary->align[1] = 'center';
+        $table_summary->align[2] = 'center';
+        $table_summary->align[3] = 'center';
+        $table_summary->align[4] = 'center';
 
         $table_summary->head_colspan[0] = 2;
         $table_summary->head[0] = __('Min Value');
@@ -3772,11 +3731,11 @@ function reporting_html_general($table, $item, $pdf=0)
         $table_summary->head_colspan[2] = 2;
         $table_summary->head[2] = __('Max Value');
 
-        $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'];
-        $table_summary->data[0][1] = $item['min']['formated_value'];
+        $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'].str_repeat('&nbsp;', 20).$item['min']['formated_value'];
+        $table_summary->data[0][1] = '';
         $table_summary->data[0][2] = format_for_graph($item['avg_value'], 2);
-        $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'];
-        $table_summary->data[0][4] = $item['max']['formated_value'];
+        $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'].str_repeat('&nbsp;', 20).$item['max']['formated_value'];
+        $table_summary->data[0][4] = '';
 
         if ($pdf !== 0) {
             $return_pdf .= html_print_table($table_summary, true);

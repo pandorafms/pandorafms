@@ -298,70 +298,86 @@ function quickShellSettings()
     ui_require_css_file('wizard');
     ui_require_css_file('discovery');
 
-    // Parser.
     // Gotty settings. Internal communication (WS).
-    $gotty = get_parameter(
-        'gotty',
-        $config['gotty']
-    );
-    $gotty_host = get_parameter(
-        'gotty_host',
-        $config['gotty_host']
-    );
-    $gotty_ssh_port = get_parameter(
-        'gotty_ssh_port',
-        $config['gotty_ssh_port']
-    );
-    $gotty_telnet_port = get_parameter(
-        'gotty_telnet_port',
-        $config['gotty_telnet_port']
-    );
-
-    $gotty_user = get_parameter(
-        'gotty_user',
-        $config['gotty_user']
-    );
-
-    $gotty_pass = get_parameter(
-        'gotty_pass',
-        io_output_password($config['gotty_pass'])
-    );
-
-    $gotty_pass = io_input_password($gotty_pass);
-
-    $changes = 0;
-    $critical = 0;
-    if ($config['gotty'] != $gotty) {
-        config_update_value('gotty', $gotty);
-        $changes++;
-        $critical++;
+    if (isset($config['gotty_host']) === false) {
+        config_update_value('gotty_host', '127.0.0.1');
     }
 
-    if ($config['gotty_host'] != $gotty_host) {
-        config_update_value('gotty_host', $gotty_host);
-        $changes++;
+    if (isset($config['gotty_telnet_port']) === false) {
+        config_update_value('gotty_telnet_port', 8082);
     }
 
-    if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
-        config_update_value('gotty_telnet_port', $gotty_telnet_port);
-        $changes++;
+    if (isset($config['gotty_ssh_port']) === false) {
+        config_update_value('gotty_ssh_port', 8081);
     }
 
-    if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
-        config_update_value('gotty_ssh_port', $gotty_ssh_port);
-        $changes++;
-    }
+    // Parser.
+    if (get_parameter('qs_update', false) !== false) {
+        // Gotty settings. Internal communication (WS).
+        $gotty = get_parameter(
+            'gotty',
+            ''
+        );
+        $gotty_host = get_parameter(
+            'gotty_host',
+            $config['gotty_host']
+        );
+        $gotty_ssh_port = get_parameter(
+            'gotty_ssh_port',
+            $config['gotty_ssh_port']
+        );
+        $gotty_telnet_port = get_parameter(
+            'gotty_telnet_port',
+            $config['gotty_telnet_port']
+        );
 
-    if ($config['gotty_user'] != $gotty_user) {
-        config_update_value('gotty_user', $gotty_user);
-        $changes++;
-        $critical++;
-    }
+        $gotty_user = get_parameter(
+            'gotty_user',
+            ''
+        );
 
-    if ($config['gotty_pass'] != $gotty_pass) {
-        config_update_value('gotty_pass', $gotty_pass);
-        $changes++;
-        $critical++;
+        $gotty_pass = get_parameter(
+            'gotty_pass',
+            ''
+        );
+
+        $gotty_pass = io_input_password($gotty_pass);
+
+        $changes = 0;
+        $critical = 0;
+        if ($config['gotty'] != $gotty) {
+            config_update_value('gotty', $gotty);
+            $changes++;
+            $critical++;
+        }
+
+        if ($config['gotty_host'] != $gotty_host) {
+            config_update_value('gotty_host', $gotty_host);
+            $changes++;
+        }
+
+        if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
+            config_update_value('gotty_telnet_port', $gotty_telnet_port);
+            $changes++;
+        }
+
+        if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
+            config_update_value('gotty_ssh_port', $gotty_ssh_port);
+            $changes++;
+        }
+
+        if ($config['gotty_user'] != $gotty_user) {
+            config_update_value('gotty_user', $gotty_user);
+            $changes++;
+            $critical++;
+        }
+
+        if ($config['gotty_pass'] != $gotty_pass) {
+            $gotty_pass = io_input_password($gotty_pass);
+            config_update_value('gotty_pass', $gotty_pass);
+            $changes++;
+            $critical++;
+        }
     }
 
     // Interface.
@@ -392,7 +408,8 @@ function quickShellSettings()
             'inputs' => [
                 [
                     'label'     => __('Gotty path').ui_print_help_tip(
-                        __('Leave blank if using an external Gotty service')
+                        __('Leave blank if using an external Gotty service'),
+                        true
                     ),
                     'arguments' => [
                         'type'  => 'text',
@@ -426,7 +443,8 @@ function quickShellSettings()
                 ],
                 [
                     'label'     => __('Gotty user').ui_print_help_tip(
-                        __('Optional, set a user to access gotty service')
+                        __('Optional, set a user to access gotty service'),
+                        true
                     ),
                     'arguments' => [
                         'type'  => 'text',
@@ -436,12 +454,20 @@ function quickShellSettings()
                 ],
                 [
                     'label'     => __('Gotty password').ui_print_help_tip(
-                        __('Optional, set a password to access gotty service')
+                        __('Optional, set a password to access gotty service'),
+                        true
                     ),
                     'arguments' => [
                         'type'  => 'password',
                         'name'  => 'gotty_pass',
                         'value' => io_output_password($config['gotty_pass']),
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'type'  => 'hidden',
+                        'name'  => 'qs_update',
+                        'value' => 1,
                     ],
                 ],
                 [

@@ -33,7 +33,7 @@ ui_require_css_file('firts_task');
             );
             ?>
       </p>
-        <form action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" method="post">
+        <form action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" method="post">
             <input type="submit" class="button_task" value="<?php echo __('Create Planned Downtime'); ?>" />
         </form>
     </div>

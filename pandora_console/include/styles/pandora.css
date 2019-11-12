@@ -5921,3 +5921,12 @@ table.table_modal_alternate tr td:first-child {
   font-size: 14px;
   font-weight: bold;
 }
+
+/* Generic classes to reuse and facilitate the creation of custom themes */
+.pandora_green_text {
+  color: #82b92e;
+}
+
+.pandora_green_bg {
+  background-color: #82b92e;
+}

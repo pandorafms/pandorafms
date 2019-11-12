@@ -1905,7 +1905,7 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
  *
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator> in this order
+ * @param array             $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator><recursion> in this order
  *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *              example for CSV:
  *
@@ -1934,17 +1934,25 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
     }
 
     if (isset($other['data'][0])) {
-        // Filter by SO
+        // Filter by SO.
         if ($other['data'][0] != '') {
             $where .= ' AND tconfig_os.id_os = '.$other['data'][0];
         }
     }
 
     if (isset($other['data'][1])) {
-        // Filter by group
+        // Filter by group.
         if ($other['data'][1] != '') {
-            $where .= ' AND id_grupo = '.$other['data'][1];
+            $ag_groups = $other['data'][1];
+            // Recursion.
+            if ($other['data'][6] === '1') {
+                $ag_groups = groups_get_id_recursive($ag_groups, true);
+            }
+
+            $ag_groups = implode(',', (array) $ag_groups);
         }
+
+        $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
     }
 
     if (isset($other['data'][3])) {
@@ -1974,23 +1982,26 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
     // Initialization of array
     $result_agents = [];
     // Filter by state
-    if (defined('METACONSOLE')) {
-        $sql = "SELECT id_agente, alias, direccion, comentarios,
-            tconfig_os.name, url_address, nombre
-        FROM tconfig_os, tmetaconsole_agent
-        LEFT JOIN tagent_secondary_group
-            ON tmetaconsole_agent.id_agente = tagent_secondary_group.id_agent
-        WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
-            AND disabled = 0 $where AND $groups";
+    if (is_metaconsole()) {
+        $sql = 'SELECT id_agente, alias, direccion, comentarios,
+			tconfig_os.name, url_address, nombre
+		FROM tconfig_os, tmetaconsole_agent
+		LEFT JOIN tmetaconsole_agent_secondary_group
+			ON tmetaconsole_agent.id_agente = tmetaconsole_agent_secondary_group.id_agent
+		WHERE tmetaconsole_agent.id_os = tconfig_os.id_os
+			AND disabled = 0 '.$where.' AND '.$groups;
     } else {
-        $sql = "SELECT id_agente, alias, direccion, comentarios,
+        $sql = 'SELECT id_agente, alias, direccion, comentarios,
                 tconfig_os.name, url_address, nombre
             FROM tconfig_os, tagente
             LEFT JOIN tagent_secondary_group
                 ON tagente.id_agente = tagent_secondary_group.id_agent
             WHERE tagente.id_os = tconfig_os.id_os
-                AND disabled = 0 $where AND $groups";
+                AND disabled = 0 '.$where.' AND '.$groups;
     }
+
+    // Group by agent
+    $sql .= ' GROUP BY id_agente';
 
     $all_agents = db_get_all_rows_sql($sql);
 
@@ -9080,7 +9091,9 @@ function api_set_delete_module($id, $id2, $other, $trash1)
 
 function api_set_module_data($id, $thrash2, $other, $trash1)
 {
-    if (defined('METACONSOLE')) {
+    global $config;
+
+    if (is_metaconsole()) {
         return;
     }
 
@@ -9129,8 +9142,9 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
             );
 
             if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$time.'.data', $xml)) {
-                returnError('error_file', 'Can save agent data xml.');
+                returnError('error_file', 'XML file could not be generated in path: '.$config['remote_config']);
             } else {
+                echo __('XML file was generated successfully in path: ').$config['remote_config'];
                 returnData('string', ['type' => 'string', 'data' => $xml]);
                 return;
             }
@@ -14222,6 +14236,46 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
         returnData('json', $data, JSON_FORCE_OBJECT);
     } else {
         returnError('error_agents', 'No agents retrieved.');
+    }
+}
+
+
+/**
+ * Get agents alias, id and server id (if Metaconsole) given agent alias
+ * matching part of it.
+ *
+ * @param string $alias
+ * @param $trash1
+ * @param $trash2
+ * @param string $returnType
+ *  Example:
+ *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora&id=pandrora&id2=strict
+ */
+function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
+{
+    global $config;
+
+    if ($strict == 'strict') {
+        $where_clause = " alias = '$alias'";
+    } else {
+        $where_clause = " upper(alias) LIKE upper('%$alias%')";
+    }
+
+    if (is_metaconsole()) {
+        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE $where_clause");
+    } else {
+        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente from tagente WHERE $where_clause");
+    }
+
+    if ($all_agents !== false) {
+        $data = [
+            'type' => 'json',
+            'data' => $all_agents,
+        ];
+
+        returnData('json', $data, JSON_FORCE_OBJECT);
+    } else {
+        returnError('error_agents', 'Alias did not match any agent.');
     }
 }
 

@@ -4092,6 +4092,18 @@ function mask2cidr($mask)
 }
 
 
+/**
+ * convert the cidr prefix to subnet mask
+ *
+ * @param  int cidr prefix
+ * @return string subnet mask
+ */
+function cidr2mask($int)
+{
+    return long2ip(-1 << (32 - (int) $int));
+}
+
+
 function get_help_info($section_name)
 {
     global $config;

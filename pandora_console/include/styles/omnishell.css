@@ -1,15 +1,3 @@
-.add_agent {
-  background-image: url("../../images/darrowright.png");
-  background-repeat: no-repeat;
-  border: none;
-}
-
-.remove_agent {
-  background-image: url("../../images/darrowleft.png");
-  background-repeat: no-repeat;
-  border: none;
-}
-
 .edit_yaml {
   margin-left: 39px;
   margin-top: 10px;
@@ -76,4 +64,36 @@ div.container-msg-target-modal pre {
   background-color: #e2e2e2;
   border: 3px dashed grey;
   border-radius: 10px;
+}
+
+ul.textarea_script,
+.textarea_script {
+  max-height: 125px;
+}
+
+.add_button {
+  height: 20%;
+  margin-bottom: 35px;
+}
+
+.status_table {
+  margin-top: 20px;
+}
+
+.gr_table {
+  margin-top: 20px;
+  margin-left: 75px;
+}
+
+.btn_section {
+  width: 1px;
+  align-self: center;
+}
+
+.btn_add_agent {
+  background-image: url(../../images/darrowright.png);
+}
+
+.btn_del_agent {
+  background-image: url(../../images/darrowleft.png);
 }

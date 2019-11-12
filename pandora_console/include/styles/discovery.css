@@ -204,6 +204,7 @@ label {
   width: 100%;
 }
 
+li > input[type="number"],
 li > input[type="text"],
 li > input[type="email"],
 li > input[type="password"],

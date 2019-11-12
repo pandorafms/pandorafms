@@ -551,6 +551,18 @@ select:-internal-list-box {
   align-items: center;
 }
 
+.flex-space-around {
+  justify-content: space-around;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-start {
+  justify-content: flex-start;
+}
+
 .nowrap {
   flex-wrap: nowrap;
 }

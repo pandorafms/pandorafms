@@ -3293,6 +3293,9 @@ function ui_print_datatable(array $parameters)
         );
     }
 
+    // Languages.
+    $processing = __('Processing');
+
     // Extra html.
     $extra = '';
     if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
@@ -3357,6 +3360,9 @@ function ui_print_datatable(array $parameters)
             searching: false,
             responsive: true,
             dom: "plfrtiBp",
+            language: {
+                processing:"'.$processing.'"
+            },
             buttons: [
                 {
                     extend: "csv",

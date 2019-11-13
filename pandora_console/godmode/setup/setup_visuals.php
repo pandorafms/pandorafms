@@ -557,7 +557,7 @@ $row++;
 
 
     // For 5.1 Autohidden menu feature
-    $table_styles->data['autohidden'][0] = __('Autohidden menu');
+    $table_styles->data['autohidden'][0] = __('Automatically hide submenu');
     $table_styles->data['autohidden'][1] = html_print_checkbox_switch(
         'autohidden_menu',
         1,
@@ -1032,6 +1032,12 @@ $row++;
     );
 
     $row++;
+
+    $table_other->data[$row][0] = __('Font size for items reports');
+    $table_other->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." size='1' name='font_size_item_report' min='1' max='9' step='0.1'>";
+
+    $row++;
+
     // ----------------------------------------------------------------------
     $dirItems = scandir($config['homedir'].'/images/custom_logo');
     foreach ($dirItems as $entryDir) {

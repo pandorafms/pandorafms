@@ -1,5 +1,11 @@
+.new_task p,
+.new_task div {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: lighter;
+}
 .new_task {
   margin-top: 30px;
+  min-width: 600px;
   left: 20px;
   width: 60%;
   height: 300px;
@@ -30,6 +36,7 @@ div.new_task_cluster > div {
 
 .image_task {
   width: 20%;
+  min-width: 175px;
   height: 100%;
   float: left;
 }
@@ -47,7 +54,7 @@ div.new_task_cluster > div {
 
 .text_task {
   width: 70%;
-  float: right;
+  float: left;
   height: 100%;
   padding-right: 25px;
 }

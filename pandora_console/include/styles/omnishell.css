@@ -40,18 +40,27 @@
 
 .container-msg-target-modal p {
   font-family: "lato-lighter", "Open Sans", sans-serif;
-  text-align: center;
   margin-bottom: 20px;
+  font-size: 10pt;
+}
+
+span.failed {
+  color: red;
+  font-weight: bolder;
+}
+
+span.success {
+  color: green;
   font-weight: bolder;
 }
 
 .container-msg-target-modal pre {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
-  padding: 15px;
+  font-family: monospace;
+  padding: 1em;
   white-space: pre-wrap;
-  background-color: #f2f6f7;
-  border: 3px dashed grey;
-  border-radius: 10px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2em;
 }
 
 ul.wizard li > textarea {

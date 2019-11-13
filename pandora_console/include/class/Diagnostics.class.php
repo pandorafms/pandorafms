@@ -676,6 +676,13 @@ class Diagnostics extends Wizard
             $cpuProcessor = 'cat /proc/cpuinfo | grep "processor" | wc -l';
             $ramMemTotal = 'cat /proc/meminfo | grep "MemTotal"';
 
+            exec(
+                "ifconfig | awk '{ print $2}' | grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'",
+                $output
+            );
+
+            $ips = implode(', ', $output);
+
             $result = [
                 'error' => false,
                 'data'  => [
@@ -697,9 +704,7 @@ class Diagnostics extends Wizard
                     ],
                     'ipInfo'       => [
                         'name'  => __('Ip'),
-                        'value' => exec(
-                            "/sbin/ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}'"
-                        ),
+                        'value' => $ips,
                     ],
                 ],
             ];

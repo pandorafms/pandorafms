@@ -679,13 +679,45 @@ class Diagnostics extends Wizard
             $result = [
                 'error' => false,
                 'data'  => [
-                    'cpuInfo' => [
+                    'cpuInfo'      => [
                         'name'  => __('CPU'),
                         'value' => exec($cpuModelName).' x '.exec($cpuProcessor),
                     ],
-                    'ramInfo' => [
+                    'ramInfo'      => [
                         'name'  => __('RAM'),
                         'value' => exec($ramMemTotal),
+                    ],
+                    'osInfo'       => [
+                        'name'  => __('Os'),
+                        'value' => exec('uname -a'),
+                    ],
+                    'hostnameInfo' => [
+                        'name'  => __('Hostname'),
+                        'value' => exec('hostname'),
+                    ],
+                    'ipInfo'       => [
+                        'name'  => __('Ip'),
+                        'value' => exec(
+                            "/sbin/ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}'"
+                        ),
+                    ],
+                ],
+            ];
+        } else {
+            $result = [
+                'error' => false,
+                'data'  => [
+                    'osInfo'       => [
+                        'name'  => __('OS'),
+                        'value' => exec('ver'),
+                    ],
+                    'hostnameInfo' => [
+                        'name'  => __('Hostname'),
+                        'value' => exec('hostname'),
+                    ],
+                    'ipInfo'       => [
+                        'name'  => __('Ip'),
+                        'value' => exec('ipconfig | findstr IPv4'),
                     ],
                 ],
             ];
@@ -754,22 +786,6 @@ class Diagnostics extends Wizard
                         $status = (($item['Value'] / $bytes) >= 64) ? 1 : 0;
                         $message = __('Min. Recommended Value').' 64M';
                     break;
-
-                    /*
-                        case 'join_buffer_size':
-                        $name = __('Join buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 265) ? 1 : 0;
-                        $message = __('Min. Recommended Value 265');
-                        break;
-
-                        case 'key_buffer_size':
-                        $name = __('Key buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 256';
-                        break;
-                    */
 
                     case 'max_allowed_packet':
                         $name = __('Maximun allowed packet');
@@ -1322,8 +1338,8 @@ class Diagnostics extends Wizard
             $lenght = strlen($innodb[0]['Status']);
 
             $data = [];
-            for ($i = 0; $i < $lenght; $i = ($i + 500)) {
-                $str = substr($innodb[0]['Status'], $i, ($i + 500));
+            for ($i = 0; $i < $lenght; $i = ($i + 300)) {
+                $str = substr($innodb[0]['Status'], $i, ($i + 300));
                 $data['showEngine-'.$i] = [
                     'name'  => '',
                     'value' => '<pre>'.$str.'</pre>',

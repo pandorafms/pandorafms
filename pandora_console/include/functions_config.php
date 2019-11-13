@@ -353,6 +353,18 @@ function config_update_config()
                     if (!config_update_value('email_password', get_parameter('email_password'))) {
                         $error_update[] = __('Email password');
                     }
+
+                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
+                        $error_update[] = __('WebSocket bind address');
+                    }
+
+                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
+                        $error_update[] = __('WebSocket port');
+                    }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
+                    }
                 break;
 
                 case 'enterprise':
@@ -1269,6 +1281,10 @@ function config_update_config()
                     }
 
                     // Juanma (06/05/2014) New feature: Custom front page for reports.
+                    if (!config_update_value('font_size_item_report', get_parameter('font_size_item_report', 2))) {
+                        $error_update[] = __('Font size for items reports');
+                    }
+
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
                         $error_update[] = __('Custom report front');
                     }
@@ -2791,6 +2807,10 @@ function config_process_config()
     // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
+    }
+
+    if (!isset($config['font_size_item_report'])) {
+        config_update_value('font_size_item_report', 2);
     }
 
     if (!isset($config['custom_report_front_font'])) {

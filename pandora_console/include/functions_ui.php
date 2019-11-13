@@ -3243,6 +3243,8 @@ function ui_print_datatable(array $parameters)
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
+                    title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
+                    fieldSeparator: "'.$config['csv_divider'].'",
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -5750,4 +5752,24 @@ function ui_print_comments($comments)
 
     return io_safe_output($comentario);
 
+}
+
+
+/**
+ * Get complete external pandora url.
+ *
+ * @param string $url Url to be parsed.
+ *
+ * @return string Full url.
+ */
+function ui_get_full_external_url(string $url)
+{
+    $url_parsed = parse_url($url);
+    if ($url_parsed) {
+        if (!isset($url_parsed['scheme'])) {
+            $url = 'http://'.$url;
+        }
+    }
+
+        return $url;
 }

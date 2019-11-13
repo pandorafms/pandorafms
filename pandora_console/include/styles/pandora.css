@@ -5896,6 +5896,12 @@ table.table_modal_alternate tr td:first-child {
   width: 100%;
 }
 
+/*
+ * ---------------------------------------------------------------------
+ * - VISUAL STYLES FOR HISTOGRAM GRAPHS
+ * ---------------------------------------------------------------------
+ */
+
 .slicebar-box-hover-styles {
   position: absolute;
   background-color: #fff;
@@ -5911,6 +5917,7 @@ table.table_modal_alternate tr td:first-child {
   width: 101%;
 }
 
+/*Font header feedback*/
 form#modal_form_feedback {
   padding: 10px;
 }
@@ -5950,4 +5957,24 @@ form#modal_form_feedback ul.wizard li > textarea {
   height: 15em;
   display: inline-block;
   font-family: monospace;
+}
+/*
+ * ---------------------------------------------------------------------
+ * - FONT SIZES IN AGENT VIEW. This changes the font size of the agent
+ * name and the description when the language is Japanese or Chinese
+ * ---------------------------------------------------------------------
+ */
+
+.custom_font_size {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Generic classes to reuse and facilitate the creation of custom themes */
+.pandora_green_text {
+  color: #82b92e;
+}
+
+.pandora_green_bg {
+  background-color: #82b92e;
 }

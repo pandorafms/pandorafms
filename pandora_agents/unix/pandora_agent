@@ -318,8 +318,7 @@ sub read_file {
 	my $path = shift;
 
 	my $_FILE;
-	if( !open($_FILE, "<".$path) ) {
-		print ">> Failed to open $path ".`whoami`."\n";
+	if( !open($_FILE, "<", $path) ) {
 		# failed to open, return undef
 		return undef;
 	}
@@ -1535,15 +1534,20 @@ sub report_command {
 sub execute_command_block {
 	my ($commands, $std_files) = @_;
 
-	$std_files = '' unless defined ($std_files);
-	return 0 if ref($commands) ne "ARRAY";
-
 	my $err_level;
+	$std_files = '' unless defined ($std_files);
 
-	foreach my $comm (@{$commands}) {
-		`($comm) $std_files`;
+	if (ref($commands) ne "ARRAY") {
+		`($commands) $std_files`;
+		print "($commands) $std_files\n";
 		$err_level = $?>>8;
-		last unless ($err_level == 0);
+	} else {
+		foreach my $comm (@{$commands}) {
+			`($comm) $std_files`;
+			print $comm. '=> ' . ($?>>8)."\n";
+			$err_level = $?>>8;
+			last unless ($err_level == 0);
+		}
 	}
 
 	return $err_level;

@@ -342,11 +342,11 @@ class WelcomeWindow extends Wizard
         $btn_create_alert_class = '';
         $btn_create_discovery_class = 'pending';
 
-        $li_configure_mail_class = 'green';
-        $li_create_agent_class = 'green';
-        $li_create_module_class = 'grey';
-        $li_create_alert_class = 'grey';
-        $li_create_discovery_class = 'green';
+        $li_configure_mail_class = 'row_green';
+        $li_create_agent_class = 'row_green';
+        $li_create_module_class = 'row_grey';
+        $li_create_alert_class = 'row_grey';
+        $li_create_discovery_class = 'row_green';
 
         if (empty($config['welcome_mail_configured']) === false) {
             $btn_configure_mail_class = ' completed';
@@ -355,18 +355,18 @@ class WelcomeWindow extends Wizard
         if (empty($config['welcome_id_agent']) === false) {
             $btn_create_agent_class = ' completed';
             $btn_create_module_class = ' pending';
-            $li_create_module_class = 'green';
+            $li_create_module_class = 'row_green';
         }
 
         if (empty($config['welcome_module']) === false) {
             $btn_create_module_class = ' completed';
             $btn_create_alert_class = ' pending';
-            $li_create_module_class = 'green';
+            $li_create_module_class = 'row_green';
         }
 
         if (empty($config['welcome_alert']) === false) {
             $btn_create_alert_class = ' completed';
-            $li_create_alert_class = 'green';
+            $li_create_alert_class = 'row_green';
         }
 
         if (empty($config['welcome_task']) === false) {
@@ -380,8 +380,8 @@ class WelcomeWindow extends Wizard
             $btn_create_module_class = ' completed';
             $btn_create_alert_class = ' completed';
             $btn_create_discovery_class = ' completed';
-            $li_create_module_class = 'green';
-            $li_create_alert_class = 'green';
+            $li_create_module_class = 'row_green';
+            $li_create_alert_class = 'row_green';
         }
 
         $form = [

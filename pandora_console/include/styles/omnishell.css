@@ -45,12 +45,12 @@
 }
 
 span.failed {
-  color: red;
+  color: #fb4444;
   font-weight: bolder;
 }
 
 span.success {
-  color: green;
+  color: #82b92f;
   font-weight: bolder;
 }
 
@@ -58,9 +58,16 @@ span.success {
   font-family: monospace;
   padding: 1em;
   white-space: pre-wrap;
-  background-color: #222;
-  color: #fff;
+  background-color: #efefef;
+  color: #565656;
   font-size: 1.2em;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+.container-msg-target-modal p img {
+  margin-right: 0.3em;
+  height: 1.3em;
 }
 
 ul.wizard li > textarea {

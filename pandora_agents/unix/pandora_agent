@@ -24,6 +24,7 @@ Version 6.0
 use strict;
 use warnings;
 
+use Scalar::Util qw(looks_like_number);
 use POSIX qw(strftime floor);
 use Sys::Hostname;
 use File::Basename;
@@ -1523,7 +1524,26 @@ sub report_command {
 	print $R_FILE $err_level;
 	close($R_FILE);
 
+
+	$return->{'stdout'} = '' unless defined ($return->{'stdout'});
+	$return->{'stderr'} = '' unless defined ($return->{'stderr'});
+
 	return $return;
+}
+
+################################################################################
+# Executes a command using defined timeout.
+################################################################################
+sub execute_command_timeout {
+	my ($command, $timeout) = @_;
+
+	if (!looks_like_number($timeout)) {
+		`$command`;
+	} else {
+		`$command`;
+	}
+
+	return $?>>8;
 }
 
 ################################################################################
@@ -1532,20 +1552,28 @@ sub report_command {
 # $std_files = ' >>  /tmp/stdout 2>> /tmp/stderr
 ################################################################################
 sub execute_command_block {
-	my ($commands, $std_files) = @_;
+	my ($commands, $std_files, $timeout) = @_;
 
-	my $err_level;
+	return 0 unless defined($commands);
+
+	my $err_level = 0;
 	$std_files = '' unless defined ($std_files);
 
 	if (ref($commands) ne "ARRAY") {
-		`($commands) $std_files`;
-		print "($commands) $std_files\n";
-		$err_level = $?>>8;
+		return 0 if $commands eq '';
+		$err_level = execute_command_timeout(
+			"($commands) $std_files",
+			$timeout
+		);
+
 	} else {
 		foreach my $comm (@{$commands}) {
-			`($comm) $std_files`;
-			print $comm. '=> ' . ($?>>8)."\n";
-			$err_level = $?>>8;
+			next unless defined($comm);
+			$err_level = execute_command_timeout(
+				"($comm) $std_files",
+				$timeout
+			);
+
 			last unless ($err_level == 0);
 		}
 	}
@@ -1576,7 +1604,8 @@ sub evaluate_command {
 	
 	$err_level = execute_command_block(
 		$cmd->{'preconditions'},
-		$std_files
+		$std_files,
+		$cmd->{'timeout'}
 	);
 
 	# Precondition not satisfied.
@@ -1585,7 +1614,8 @@ sub evaluate_command {
 	# Main run.
 	$err_level = execute_command_block(
 		$cmd->{'script'},
-		$std_files
+		$std_files,
+		$cmd->{'timeout'}
 	);
 
 	# Script not success.
@@ -1594,7 +1624,8 @@ sub evaluate_command {
 	# Check postconditions
 	$err_level = execute_command_block(
 		$cmd->{'postconditions'},
-		$std_files
+		$std_files,
+		$cmd->{'timeout'}
 	);
 
 	# Return results.

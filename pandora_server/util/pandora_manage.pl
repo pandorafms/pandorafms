@@ -121,6 +121,7 @@ sub help_screen{
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
 	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");

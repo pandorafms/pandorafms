@@ -184,9 +184,11 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     }
 
     ui_require_css_file('cluetip', 'include/styles/js/');
+    ui_require_jquery_file('validate');
     ui_require_jquery_file('cluetip');
     ui_require_jquery_file('pandora.controls');
     ui_require_jquery_file('bgiframe');
+
     ?>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -201,7 +203,25 @@ $(document).ready (function () {
         }
     });
 <?php endif; ?>
-    
+
+    // Rule.
+    $.validator.addMethod(
+        "valueNotEquals",
+        function(value, element, arg) {
+            return arg != value;
+        },
+        "Value must not equal arg."
+    );
+
+    // configure your validation
+    $("form.add_alert_form").validate({
+        rules: {
+            id_agent_module: { valueNotEquals: "0" }
+        },
+        messages: {
+            id_agent_module: { valueNotEquals: "Please select an item!" }
+        }
+    });
     $("select#template").change (function () {
         id = this.value;
         $a = $(this).siblings ("a.template_details");

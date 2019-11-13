@@ -349,19 +349,19 @@ if ($config['menu_type'] == 'classic') {
 
         // Support.
         if (enterprise_installed()) {
-            $header_support_link = 'https://support.artica.es/';
+            $header_support_link = $config['custom_support_url'];
         } else {
             $header_support_link = 'https://pandorafms.com/forums/';
         }
 
         $header_support = '<div id="header_support">';
-        $header_support .= '<a href="'.$header_support_link.'" target="_blank">';
+        $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
         $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
         $header_support .= '</a></div>';
 
         // Documentation.
         $header_docu = '<div id="header_docu">';
-        $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
+        $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
         $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
         $header_docu .= '</a></div>';
 
@@ -635,12 +635,6 @@ if ($config['menu_type'] == 'classic') {
     * Loads modal from AJAX to add feedback.
     */
     function show_feedback() {
-        <?php
-        // Require specific CSS and JS.
-        ui_require_css_file('wizard');
-        ui_require_css_file('discovery');
-        ui_require_css_file('diagnostics');
-        ?>
         var btn_ok_text = '<?php echo __('Send'); ?>';
         var btn_cancel_text = '<?php echo __('Cancel'); ?>';
         var title = '<?php echo __('Report an issue'); ?>';
@@ -719,13 +713,15 @@ if ($config['menu_type'] == 'classic') {
             $("#agent_access").css("display","");
         });
 
-        // Feedback.
-        $("#feedback-header").click(function () {
-            // Clean DOM.
-            $("#feedback-header").empty();
-            // Function charge Modal.
-            show_feedback();
-        });
+        <?php if (enterprise_installed()) { ?>
+            // Feedback.
+            $("#feedback-header").click(function () {
+                // Clean DOM.
+                $("#feedback-header").empty();
+                // Function charge Modal.
+                show_feedback();
+            });
+        <?php } ?>
 
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);

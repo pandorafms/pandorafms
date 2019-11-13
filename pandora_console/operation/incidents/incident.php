@@ -372,7 +372,7 @@ if ($count_total >= 1) {
 }
 
 if ($count_total < 1) {
-    include_once $config['homedir'].'/general/firts_task/incidents.php';
+    include_once $config['homedir'].'/general/first_task/incidents.php';
 } else {
     // TOTAL incidents
     $url = 'index.php?sec=workspace&amp;sec2=operation/incidents/incident';

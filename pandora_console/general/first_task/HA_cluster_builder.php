@@ -33,13 +33,13 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     exit;
 }
 
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clusters defined yet.') ]);
 ?>
 
 <div class="new_task_cluster">
     <div class="image_task_cluster">
-        <?php echo html_print_image('images/firts_task/slave-mode.png', true, ['title' => __('Clusters')]); ?>
+        <?php echo html_print_image('images/first_task/slave-mode.png', true, ['title' => __('Clusters')]); ?>
     </div>
     <div class="text_task_cluster">
         <h3> <?php echo __('PANDORA FMS DB CLUSTER'); ?></h3>

@@ -6,15 +6,8 @@
   overflow: hidden;
 }
 
-#welcome_modal_window {
-  /*
-  max-height: 100%;
-  height: 100%;
-  border-left: 1em solid #82b92f;
-  margin-bottom: -59px;
-  padding-bottom: 100px;
-  margin-left: -1px;
-  */
+#welcome_modal_window * {
+  font-size: 10pt;
 }
 
 #welcome_form ul.wizard > li {

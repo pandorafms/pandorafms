@@ -118,22 +118,12 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
-<<<<<<< HEAD
-	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
-	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
-	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
-	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
-	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
-	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
-	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
-=======
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
 	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
->>>>>>> origin/develop
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	help_screen_line('--locate_agent', '<agent_name> [<use_alias>]', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
 	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
@@ -4095,9 +4085,6 @@ sub cli_create_event() {
 				$id_alert_agent_module = 0;
 			}
 			
-			if (defined($comment) && $comment ne '') {
-				$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-			}
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			# Base64 encode custom data
@@ -4148,9 +4135,6 @@ sub cli_create_event() {
 			$id_alert_agent_module = 0;
 		}
 		
-		if (defined($comment) && $comment ne '') {
-			$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-		}
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		# Base64 encode custom data

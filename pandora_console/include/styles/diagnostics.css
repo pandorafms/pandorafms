@@ -17,6 +17,10 @@
   text-align: justify;
 }
 
+.dataTables_wrapper {
+  min-height: 150px;
+}
+
 .datatables-td-title {
   width: 25% !important;
   font-weight: bolder;
@@ -55,4 +59,12 @@
 .footer-self-monitoring {
   margin: 30px;
   font-style: italic;
+}
+
+#modal_form_feedback {
+  margin: 10px;
+}
+
+#div-what-happened label {
+  margin-bottom: 10px;
 }

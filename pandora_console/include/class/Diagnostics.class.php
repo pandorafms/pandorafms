@@ -706,18 +706,34 @@ class Diagnostics extends Wizard
                 $bytes = 1048576;
                 $mega = 1024;
                 switch ($item['Variable_name']) {
-                    case 'sql_mode':
-                        $name = __('Sql mode');
-                        $value = ($item['Value']);
-                        $status = (empty($item['Value']) === true) ? 1 : 0;
-                        $message = __('Must be empty');
+                    case 'innodb_buffer_pool_size':
+                        $name = __('InnoDB buffer pool size');
+                        $value = ($item['Value'] / $bytes);
+                        $status = (($item['Value'] / $bytes) >= 250) ? 1 : 0;
+                        $message = __(
+                            'It has to be 40% of the server memory not recommended to be greater or less'
+                        );
                     break;
 
-                    case 'innodb_log_file_size':
-                        $name = __('InnoDB log file size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 64) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 64M';
+                    case 'innodb_file_per_table':
+                        $name = __('InnoDB file per table');
+                        $value = $item['Value'];
+                        $status = ($item['Value'] === 'ON') ? 1 : 0;
+                        $message = __('Recommended ON');
+                    break;
+
+                    case 'innodb_flush_log_at_trx_commit':
+                        $name = __('InnoDB flush log at trx-commit');
+                        $value = $item['Value'];
+                        $status = ($item['Value'] == 2) ? 1 : 0;
+                        $message = __('Recommended Value').' 2';
+                    break;
+
+                    case 'innodb_lock_wait_timeout':
+                        $name = __('InnoDB lock wait timeout');
+                        $value = $item['Value'];
+                        $status = ($item['Value'] >= 90) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 90s';
                     break;
 
                     case 'innodb_log_buffer_size':
@@ -727,12 +743,28 @@ class Diagnostics extends Wizard
                         $message = __('Min. Recommended Value').' 16M';
                     break;
 
-                    case 'innodb_flush_log_at_trx_commit':
-                        $name = __('InnoDB flush log at trx-commit');
-                        $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 0) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 0';
+                    case 'innodb_log_file_size':
+                        $name = __('InnoDB log file size');
+                        $value = ($item['Value'] / $bytes);
+                        $status = (($item['Value'] / $bytes) >= 64) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 64M';
                     break;
+
+                    /*
+                        case 'join_buffer_size':
+                        $name = __('Join buffer size');
+                        $value = ($item['Value'] / $bytes);
+                        $status = (($item['Value'] / $bytes) >= 265) ? 1 : 0;
+                        $message = __('Min. Recommended Value 265');
+                        break;
+
+                        case 'key_buffer_size':
+                        $name = __('Key buffer size');
+                        $value = ($item['Value'] / $bytes);
+                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 256';
+                        break;
+                    */
 
                     case 'max_allowed_packet':
                         $name = __('Maximun allowed packet');
@@ -741,27 +773,34 @@ class Diagnostics extends Wizard
                         $message = __('Min. Recommended Value').' 32M';
                     break;
 
-                    case 'innodb_buffer_pool_size':
-                        $name = __('InnoDB buffer pool size');
-                        $value = ($item['Value'] / $mega);
-                        $status = (($item['Value'] / $mega) >= 250) ? 1 : 0;
-                        $message = __(
-                            'It has to be 40% of the server memory not recommended to be greater or less'
-                        );
+                    case 'max_connections':
+                        $name = __('Maximun connections');
+                        $value = $item['Value'];
+                        $status = (($item['Value']) >= 90) ? 1 : 0;
+                        $message = __('Min. Recommended Value');
+                        $message .= ' 90 ';
+                        $message .= __('conections');
                     break;
 
-                    case 'sort_buffer_size':
-                        $name = __('Sort buffer size');
-                        $value = number_format(($item['Value'] / $mega), 2);
+                    case 'query_cache_limit':
+                        $name = __('Query cache limit');
+                        $value = ($item['Value'] / $bytes);
+                        $status = (($item['Value'] / $bytes) >= 8) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 8M';
+                    break;
+
+                    case 'query_cache_min_res_unit':
+                        $name = __('Query cache min-res-unit');
+                        $value = ($item['Value'] / $mega);
+                        $status = (($item['Value'] / $mega) >= 2) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 2M';
+                    break;
+
+                    case 'query_cache_size':
+                        $name = __('Query cache size');
+                        $value = ($item['Value'] / $bytes);
                         $status = (($item['Value'] / $bytes) >= 32) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 32';
-                    break;
-
-                    case 'join_buffer_size':
-                        $name = __('Join buffer size');
-                        $value = ($item['Value'] / $mega);
-                        $status = (($item['Value'] / $bytes) >= 265) ? 1 : 0;
-                        $message = __('Min. Recommended Value 265');
+                        $message = __('Min. Recommended Value').' 32M';
                     break;
 
                     case 'query_cache_type':
@@ -771,81 +810,46 @@ class Diagnostics extends Wizard
                         $message = __('Recommended ON');
                     break;
 
-                    case 'query_cache_size':
-                        $name = __('Query cache size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 32) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 32MB';
+                    case 'read_buffer_size':
+                        $name = __('Read buffer size');
+                        $value = ($item['Value'] / $mega);
+                        $status = (($item['Value'] / $mega) >= 32) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 32K';
                     break;
 
-                    case 'query_cache_limit':
-                        $name = __('Query cache limit');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 256K';
+                    case 'read_rnd_buffer_size':
+                        $name = __('Read rnd-buffer size');
+                        $value = ($item['Value'] / $mega);
+                        $status = (($item['Value'] / $mega) >= 32) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 32K';
                     break;
 
-                    case 'innodb_lock_wait_timeout':
-                        $name = __('InnoDB lock wait timeout');
-                        $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 90) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 90s';
+                    case 'sort_buffer_size':
+                        $name = __('Sort buffer size');
+                        $value = ($item['Value'] / $mega);
+                        $status = (($item['Value'] / $mega) >= 32) ? 1 : 0;
+                        $message = __('Min. Recommended Value').' 32K';
+                    break;
+
+                    case 'sql_mode':
+                        $name = __('Sql mode');
+                        $value = ($item['Value']);
+                        $status = (empty($item['Value']) === true) ? 1 : 0;
+                        $message = __('Must be empty');
                     break;
 
                     case 'thread_cache_size':
                         $name = __('Thread cache size');
                         $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 8) ? 1 : 0;
+                        $status = ($item['Value'] >= 8) ? 1 : 0;
                         $message = __('Min. Recommended Value').' 8';
                     break;
 
                     case 'thread_stack':
                         $name = __('Thread stack');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 256K';
-                    break;
-
-                    case 'max_connections':
-                        $name = __('Maximun connections');
-                        $value = $item['Value'];
-                        $status = (($item['Value'] / $bytes) >= 90) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 90';
-                    break;
-
-                    case 'key_buffer_size':
-                        $name = __('Key buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
+                        $value = ($item['Value'] / $mega);
+                        $status = (($item['Value'] / $mega) >= 256) ? 1 : 0;
                         $message = __('Min. Recommended Value').' 256';
-                    break;
-
-                    case 'read_buffer_size':
-                        $name = __('Read buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 32) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 32';
-                    break;
-
-                    case 'read_rnd_buffer_size':
-                        $name = __('Read rnd-buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 32) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 32';
-                    break;
-
-                    case 'query_cache_min_res_unit':
-                        $name = __('Query cache min-res-unit');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 2) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 2k';
-                    break;
-
-                    case 'innodb_file_per_table':
-                        $name = __('InnoDB file per table');
-                        $value = $item['Value'];
-                        $status = ($item['Value'] === 'ON') ? 1 : 0;
-                        $message = __('Recommended ON');
                     break;
 
                     default:
@@ -1801,6 +1805,7 @@ class Diagnostics extends Wizard
             'id'       => 'modal_form_feedback',
             'onsubmit' => 'return false;',
             'class'    => 'modal',
+            'extra'    => 'novalidate',
         ];
 
         $inputs = [];

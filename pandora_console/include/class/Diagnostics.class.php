@@ -70,6 +70,7 @@ class Diagnostics extends Wizard
 
         $this->ajaxController = $page;
         $this->pdf = $pdf;
+        $this->product_name = io_safe_output(get_product_name());
     }
 
 
@@ -126,7 +127,7 @@ class Diagnostics extends Wizard
 
         // Header.
         ui_print_page_header(
-            __('Pandora FMS Diagnostic tool'),
+            __('%s Diagnostic tool', $this->product_name),
             'images/gm_massive_operations.png',
             false,
             'diagnostic_tool_tab',
@@ -190,7 +191,7 @@ class Diagnostics extends Wizard
         foreach ($infoMethods as $key => $method) {
             switch ($method) {
                 case 'getStatusInfo':
-                    $title = __('Info status pandoraFms');
+                    $title = __('Info status %s', $this->product_name);
                 break;
 
                 case 'getPHPSetup':
@@ -219,16 +220,17 @@ class Diagnostics extends Wizard
 
                 case 'getTablesFragmentation':
                     $title = __(
-                        'Tables fragmentation in the Pandora FMS database'
+                        'Tables fragmentation in the %s database',
+                        $this->product_name
                     );
                 break;
 
                 case 'getPandoraFMSLogsDates':
-                    $title = __('Pandora FMS logs dates');
+                    $title = __('%s logs dates', $this->product_name);
                 break;
 
                 case 'getLicenceInformation':
-                    $title = __('Pandora FMS Licence Information');
+                    $title = __('%s Licence Information', $this->product_name);
                 break;
 
                 case 'getAttachmentFolder':
@@ -240,7 +242,7 @@ class Diagnostics extends Wizard
                 break;
 
                 case 'getServerThreads':
-                    $title = __('Pandora FMS server threads');
+                    $title = __('%s server threads', $this->product_name);
                 break;
 
                 case 'getShowEngine':
@@ -399,11 +401,11 @@ class Diagnostics extends Wizard
             'error' => false,
             'data'  => [
                 'buildVersion'  => [
-                    'name'  => __('Pandora FMS Build'),
+                    'name'  => __('%s Build', $this->product_name),
                     'value' => $build_version,
                 ],
                 'version'       => [
-                    'name'  => __('Pandora FMS Version'),
+                    'name'  => __('%s Version', $this->product_name),
                     'value' => $pandora_version,
                 ],
                 'mr'            => [
@@ -512,7 +514,7 @@ class Diagnostics extends Wizard
             'error' => false,
             'data'  => [
                 'countAgents'      => [
-                    'name'  => __('Total agentsy'),
+                    'name'  => __('Total agents'),
                     'value' => $countAgents,
                 ],
                 'countModules'     => [
@@ -586,7 +588,10 @@ class Diagnostics extends Wizard
         $pandoraDbLastRun = __('Pandora DB has never been executed');
         if ($dateDbMantenaince !== false) {
             $difference = ($currentTime - $dateDbMantenaince);
-            $pandoraDbLastRun = human_time_comparation($difference);
+            $pandoraDbLastRun = human_time_description_raw(
+                $difference,
+                true
+            );
             $pandoraDbLastRun .= ' '.__('Ago');
         }
 
@@ -602,7 +607,7 @@ class Diagnostics extends Wizard
                     'value' => $notInitAgents,
                 ],
                 'pandoraDbLastRun' => [
-                    'name'  => __('PandoraDB Last run'),
+                    'name'  => __('Pandora DB Last run'),
                     'value' => $pandoraDbLastRun,
                 ],
             ],
@@ -953,10 +958,10 @@ class Diagnostics extends Wizard
 
         $unit = 'M';
 
-        $pathServerLogs = 'var/log/pandora/pandora_server.log';
+        $pathServerLogs = '/var/log/pandora/pandora_server.log';
         $servers = $this->getLogInfo($pathServerLogs);
 
-        $pathErrLogs = 'var/log/pandora/pandora_server.error';
+        $pathErrLogs = '/var/log/pandora/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
         $pathConsoleLogs = $config['homedir'].'/pandora_console.log';
@@ -1018,6 +1023,7 @@ class Diagnostics extends Wizard
         $customerKey = db_get_value_sql($sql);
 
         // Extract Info license.
+        enterprise_include_once('include/functions_license.php');
         $license = enterprise_hook('license_get_info');
 
         // Agent Capacity.
@@ -1050,6 +1056,7 @@ class Diagnostics extends Wizard
             WHERE id_tipo_modulo
             BETWEEN 6 AND 18'
         );
+
         $totalModuleIntervalTime = db_get_value_sql(
             'SELECT SUM(module_interval)
             FROM tagente_modulo
@@ -1060,26 +1067,26 @@ class Diagnostics extends Wizard
         $averageTime = 0;
         if ($totalModuleIntervalTime !== false) {
             $averageTime = number_format(
-                ((int) $totalModuleIntervalTime / (int) $totalNetworkModules),
+                ((int) $totalNetworkModules / (int) $totalModuleIntervalTime),
                 3
             );
         }
 
         $moduleNetworkmsg = __(
             sprintf(
-                'The system is not overloaded (average time %d)',
-                $average_time
+                'The system is not overloaded (average time %f)',
+                $averageTime
             )
         );
         $moduleNetworkst = 1;
-        if ($average_time === 0) {
+        if ($averageTime === 0) {
             $moduleNetworkmsg = __('The system has no load');
             $moduleNetworkst = 0;
-        } else if ($averageTime < 180) {
+        } else if ($averageTime > 180) {
             $moduleNetworkmsg = __(
                 sprintf(
-                    'The system is overloaded (average time %d) and a very fine configuration is required',
-                    $average_time
+                    'The system is overloaded (average time %f) and a very fine configuration is required',
+                    $averageTime
                 )
             );
             $moduleNetworkst = 0;
@@ -1673,7 +1680,7 @@ class Diagnostics extends Wizard
             'status'  => 0,
         ];
 
-        if (is_file($path) === true) {
+        if (file_exists($path) === true) {
             $fileSize = filesize($path);
             $sizeServerLog = number_format($fileSize);
             $sizeServerLog = (0 + str_replace(',', '', $sizeServerLog));
@@ -1872,7 +1879,7 @@ class Diagnostics extends Wizard
 
         $mail_feedback = 'feedback@artica.es';
         $email = $mail_feedback;
-        $subject = 'PandoraFMS Report '.$config['pandora_uid'];
+        $subject = $this->product_name.' Report '.$config['pandora_uid'];
         $text = get_parameter('what-happened', '');
         $attachment = get_parameter_switch('include_installation_data', 0);
         $email_from = get_parameter_switch('email', '');

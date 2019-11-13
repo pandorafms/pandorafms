@@ -7,6 +7,7 @@ li#li-filters-alert-list > label {
   width: initial;
 }
 
+form#advanced_filters_alert ul li label,
 form#general_filters_alert ul li label {
   width: 150px;
 }
@@ -34,6 +35,18 @@ li#li-time-from-to > input {
   margin-right: 15px;
 }
 
+form#advanced_filters_alert textarea {
+  flex: 1 1 auto;
+  height: 5em;
+  min-height: 5em;
+}
+
+form#advanced_filters_alert ul li label img {
+  margin-bottom: -2px;
+  margin-left: 5px;
+}
+
+/*DRAG DROP*/
 #threshold_manual,
 #threshold_default {
   /*TODO: UGLY*/

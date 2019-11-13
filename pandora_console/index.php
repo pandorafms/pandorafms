@@ -520,17 +520,17 @@ if (! isset($config['id_user'])) {
                             break;
 
                             case 'Group view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/group_view';
                             break;
 
                             case 'Alert detail':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/alerts_status';
                             break;
 
                             case 'Tactical view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/tactical';
                             break;
 

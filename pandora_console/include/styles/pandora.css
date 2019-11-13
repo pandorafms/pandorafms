@@ -5698,7 +5698,7 @@ div#status_pie {
   align-items: center;
   flex-wrap: wrap;
   padding: 1em;
-  min-width: fit-content;
+  min-width: 100%;
 }
 
 .white_table_graph_content {

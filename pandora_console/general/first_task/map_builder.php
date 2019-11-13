@@ -15,7 +15,7 @@ global $config;
 global $vconsoles_write;
 global $vconsoles_manage;
 check_login();
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 
 ui_print_info_message(
     [
@@ -28,7 +28,7 @@ if ($vconsoles_write || $vconsoles_manage) {
 
 <div class="new_task">
     <div class="image_task">
-        <?php echo html_print_image('images/firts_task/icono_grande_visualconsole.png', true, ['title' => __('Visual Console')]); ?>
+        <?php echo html_print_image('images/first_task/icono_grande_visualconsole.png', true, ['title' => __('Visual Console')]); ?>
     </div>
     <div class="text_task">
         <h3> <?php echo __('Create Visual Console'); ?></h3><p id="description_task"> 

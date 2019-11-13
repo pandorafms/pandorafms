@@ -547,7 +547,10 @@ class WelcomeWindow extends Wizard
                     ],
                 ],
             ],
-            [
+        ];
+
+        if (enterprise_installed()) {
+            $inputs[] = [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
                 'class'         => 'hole flex-row w100p',
@@ -573,8 +576,8 @@ class WelcomeWindow extends Wizard
 
                     ],
                 ],
-            ],
-        ];
+            ];
+        }
 
         $output = $this->printForm(
             [

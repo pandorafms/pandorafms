@@ -19,6 +19,12 @@
   height: 20px;
 }
 
+.element-target-big {
+  width: 100px;
+  margin: 2px;
+  height: 100px;
+}
+
 .status-normal {
   background-color: #add570;
 }

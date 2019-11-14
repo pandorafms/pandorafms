@@ -144,7 +144,7 @@ class HelpFeedBack extends Wizard
                 'block_content' => [
                     [
                         'arguments' => [
-                            'label'      => __('Sugesstion'),
+                            'label'      => __('Suggestion'),
                             'type'       => 'radio_button',
                             'attributes' => 'class="btn"',
                             'name'       => 'suggestion',
@@ -155,7 +155,7 @@ class HelpFeedBack extends Wizard
                     ],
                     [
                         'arguments' => [
-                            'label'      => __('Something is not quite right'),
+                            'label'      => __('Something is wrong'),
                             'type'       => 'radio_button',
                             'attributes' => 'class="btn"',
                             'name'       => 'report',

@@ -348,7 +348,7 @@ if ($config['menu_type'] == 'classic') {
 
 
         // Support.
-        if (defined('PANDORA_ENTERPRISE')) {
+        if (enterprise_installed()) {
             $header_support_link = $config['custom_support_url'];
         } else {
             $header_support_link = 'https://pandorafms.com/forums/';
@@ -635,12 +635,6 @@ if ($config['menu_type'] == 'classic') {
     * Loads modal from AJAX to add feedback.
     */
     function show_feedback() {
-        <?php
-        // Require specific CSS and JS.
-        ui_require_css_file('wizard');
-        ui_require_css_file('discovery');
-        ui_require_css_file('diagnostics');
-        ?>
         var btn_ok_text = '<?php echo __('Send'); ?>';
         var btn_cancel_text = '<?php echo __('Cancel'); ?>';
         var title = '<?php echo __('Report an issue'); ?>';
@@ -719,13 +713,15 @@ if ($config['menu_type'] == 'classic') {
             $("#agent_access").css("display","");
         });
 
-        // Feedback.
-        $("#feedback-header").click(function () {
-            // Clean DOM.
-            $("#feedback-header").empty();
-            // Function charge Modal.
-            show_feedback();
-        });
+        <?php if (enterprise_installed()) { ?>
+            // Feedback.
+            $("#feedback-header").click(function () {
+                // Clean DOM.
+                $("#feedback-header").empty();
+                // Function charge Modal.
+                show_feedback();
+            });
+        <?php } ?>
 
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);

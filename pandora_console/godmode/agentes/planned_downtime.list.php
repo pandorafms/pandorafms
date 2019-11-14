@@ -352,7 +352,7 @@ if (!empty($groups)) {
 
 // No downtimes cause the user has not anyone.
 if (!$downtimes && !$filter_performed) {
-    include_once $config['homedir'].'/general/firts_task/planned_downtime.php';
+    include_once $config['homedir'].'/general/first_task/planned_downtime.php';
 }
 // No downtimes cause the user performed a search.
 else if (!$downtimes) {

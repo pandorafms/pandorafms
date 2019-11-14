@@ -211,7 +211,13 @@ class WelcomeWindow extends Wizard
         $this->step = $config['welcome_state'];
 
         // Get step available.
-        if (empty($config['welcome_id_agent']) === true) {
+        if (empty($config['welcome_mail_configured']) === true
+            && get_parameter('sec2') == 'godmode/setup/setup'
+            && get_parameter('section', '') == 'general'
+            && get_parameter('update_config', false) !== false
+        ) {
+            $this->step = W_CONFIGURE_MAIL;
+        } else if (empty($config['welcome_id_agent']) === true) {
             $this->step = W_CREATE_AGENT;
         } else if (empty($config['welcome_module']) === true) {
             $this->step = W_CREATE_MODULE;
@@ -219,8 +225,6 @@ class WelcomeWindow extends Wizard
             $this->step = W_CREATE_ALERT;
         } else if (empty($config['welcome_task']) === true) {
             $this->step = W_CREATE_TASK;
-        } else if (empty($config['welcome_mail_configured']) === true) {
-            $this->step = W_CONFIGURE_MAIL;
         }
 
         return $this->step;
@@ -338,11 +342,11 @@ class WelcomeWindow extends Wizard
         $btn_create_alert_class = '';
         $btn_create_discovery_class = 'pending';
 
-        $li_configure_mail_class = 'green';
-        $li_create_agent_class = 'green';
-        $li_create_module_class = 'grey';
-        $li_create_alert_class = 'grey';
-        $li_create_discovery_class = 'green';
+        $li_configure_mail_class = 'row_green';
+        $li_create_agent_class = 'row_green';
+        $li_create_module_class = 'row_grey';
+        $li_create_alert_class = 'row_grey';
+        $li_create_discovery_class = 'row_green';
 
         if (empty($config['welcome_mail_configured']) === false) {
             $btn_configure_mail_class = ' completed';
@@ -351,18 +355,18 @@ class WelcomeWindow extends Wizard
         if (empty($config['welcome_id_agent']) === false) {
             $btn_create_agent_class = ' completed';
             $btn_create_module_class = ' pending';
-            $li_create_module_class = 'green';
+            $li_create_module_class = 'row_green';
         }
 
         if (empty($config['welcome_module']) === false) {
             $btn_create_module_class = ' completed';
             $btn_create_alert_class = ' pending';
-            $li_create_module_class = 'green';
+            $li_create_module_class = 'row_green';
         }
 
         if (empty($config['welcome_alert']) === false) {
             $btn_create_alert_class = ' completed';
-            $li_create_alert_class = 'green';
+            $li_create_alert_class = 'row_green';
         }
 
         if (empty($config['welcome_task']) === false) {
@@ -376,8 +380,8 @@ class WelcomeWindow extends Wizard
             $btn_create_module_class = ' completed';
             $btn_create_alert_class = ' completed';
             $btn_create_discovery_class = ' completed';
-            $li_create_module_class = 'green';
-            $li_create_alert_class = 'green';
+            $li_create_module_class = 'row_green';
+            $li_create_alert_class = 'row_green';
         }
 
         $form = [
@@ -543,7 +547,10 @@ class WelcomeWindow extends Wizard
                     ],
                 ],
             ],
-            [
+        ];
+
+        if (enterprise_installed()) {
+            $inputs[] = [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
                 'class'         => 'hole flex-row w100p',
@@ -569,8 +576,8 @@ class WelcomeWindow extends Wizard
 
                     ],
                 ],
-            ],
-        ];
+            ];
+        }
 
         $output = $this->printForm(
             [
@@ -785,6 +792,9 @@ class WelcomeWindow extends Wizard
             // Finished! do not show.
             $this->setStep(WELCOME_FINISHED);
             return false;
+        } else if (empty($sec2) === true) {
+            // Pending tasks.
+            return true;
         }
 
         if ($this->step === WELCOME_FINISHED) {

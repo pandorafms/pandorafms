@@ -2912,6 +2912,130 @@ function ui_progress(
 
 
 /**
+ * Generates a progress bar CSS based.
+ * Requires css progress.css
+ *
+ * @param array   $progress Progress.
+ * @param string  $width    Width.
+ * @param integer $height   Height in 'em'.
+ * @param array   $color    status color.
+ * @param boolean $return   Return or paint (if false).
+ * @param boolean $text     Text to be displayed,by default progress %.
+ * @param array   $ajax     Ajax: [ 'page' => 'page', 'data' => 'data' ] Sample:
+ *   [
+ *       'page'     => 'operation/agentes/ver_agente', Target page.
+ *       'interval' => 100 / $agent["intervalo"], Ask every interval seconds.
+ *       'data'     => [ Data to be sent to target page.
+ *           'id_agente'       => $id_agente,
+ *           'refresh_contact' => 1,
+ *       ],
+ *   ].
+ *
+ * @return string HTML code.
+ */
+function ui_progress_extend(
+    $progress,
+    $width='100%',
+    $height='2.5',
+    $color='#82b92e',
+    $return=true,
+    $text='',
+    $ajax=false
+) {
+    if (!$progress['total']) {
+        $progress = 0;
+    }
+
+    $totalW = ($progress['total'] * 100);
+    if ($totalW > 100) {
+        $totalW = 100;
+    }
+
+    if ($totalW < 0) {
+        $totalW = 0;
+    }
+
+    if (empty($text)) {
+        $text = $totalW.'%';
+    }
+
+    $badW = (($progress['bad'] * 100 ) / $progress['total']);
+    $goodW = (($progress['good'] * 100 ) / $progress['total']);
+    $unknownW = (($progress['unknown'] * 100 ) / $progress['total']);
+    ui_require_css_file('progress');
+    $output .= '<div class="progress_main" data-label="total"';
+    $output .= '" style="width: '.$totalW.'%;display:flex; height: '.$height.'em;">';
+    $output .= '<div id="unknow_div" onmouseover="Mouseover()" class="progress_main text_over" data-label="Pending"';
+    $output .= '" style="width:  '.$unknownW.'%; height: '.$height.'em; background-color: '.COL_UNKNOWN.'; "></div>';
+    $output .= '<div class="progress_main" data-label="Success"';
+    $output .= '" style="width: '.$goodW.'%;  height: '.$height.'em; background-color: '.COL_NORMAL.';"></div>';
+    $output .= '<div class="progress_main" data-label="Error"';
+    $output .= '" style="width: '.$badW.'%; height: '.$height.'em; background-color: '.COL_CRITICAL.';"></div>';
+    $output .= '</div>';
+
+    if ($ajax !== false && is_array($ajax)) {
+        $output .= '<script type="text/javascript">
+         
+        $(document).ready(function() {
+            function 
+            document.getElementById("#unknow_div").onmouseover = function() {
+            document.getElementById("#unknow_div").append( $( "<span> ***</span>" ) );
+  }
+        
+     
+        }
+        setInterval(() => {
+                last = $(".progress_main").attr("data-label").split(" ")[0]*1;
+                width = $(".progress").width() / $(".progress").parent().width() * 100;
+                width_interval = '.$ajax['interval'].';
+                if (last % 10 == 0) {
+                    $.post({
+                        url: "'.ui_get_full_url('ajax.php', false, false, false).'",
+                        data: {';
+        if (is_array($ajax['data'])) {
+            foreach ($ajax['data'] as $token => $value) {
+                $output .= '
+                            '.$token.':"'.$value.'",';
+            }
+        }
+
+        $output .= '
+                            page: "'.$ajax['page'].'"
+                        },
+                        success: function(data) {
+                            try {
+                                val = JSON.parse(data);
+                                $(".progress_main").attr("data-label", val["last_contact"]+" s");
+                                $(".progress").width(val["progress"]+"%");
+                            } catch (e) {
+                                console.error(e);
+                                $(".progress_text").attr("data-label", (last -1) + " s");
+                                if (width < 100) {
+                                    $(".progress").width((width+width_interval) + "%");
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    $(".progress_main").attr("data-label", (last -1) + " s");
+                    if (width < 100) {
+                        $(".progress").width((width+width_interval) + "%");
+                    }
+                }
+            }, 1000);
+    });
+    </script>';
+    }
+
+    if (!$return) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Generate needed code to print a datatables jquery plugin.
  *
  * @param array $parameters All desired data using following format:
@@ -3169,6 +3293,9 @@ function ui_print_datatable(array $parameters)
         );
     }
 
+    // Languages.
+    $processing = __('Processing');
+
     // Extra html.
     $extra = '';
     if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
@@ -3233,6 +3360,9 @@ function ui_print_datatable(array $parameters)
             searching: false,
             responsive: true,
             dom: "plfrtiBp",
+            language: {
+                processing:"'.$processing.'"
+            },
             buttons: [
                 {
                     extend: "csv",

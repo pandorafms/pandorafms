@@ -1,3 +1,155 @@
+.edit_yaml {
+  margin-left: 39px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.margin_button {
+  margin-right: 5px;
+}
+
+.container-target {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.element-target {
+  width: 20px;
+  margin: 2px;
+  height: 20px;
+}
+
+.status-normal {
+  background-color: #add570;
+}
+
+.status-critical {
+  background-color: #e3485e;
+}
+
+.status-notinit {
+  background-color: #8bbbdd;
+}
+
+.container-msg-target-modal {
+  max-height: 400px;
+  overflow: initial;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.container-msg-target-modal p {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  margin-bottom: 20px;
+  font-size: 10pt;
+}
+
+span.failed {
+  color: #fb4444;
+  font-weight: bolder;
+}
+
+span.success {
+  color: #82b92f;
+  font-weight: bolder;
+}
+
+.container-msg-target-modal pre {
+  font-family: monospace;
+  padding: 1em;
+  white-space: pre-wrap;
+  background-color: #efefef;
+  color: #565656;
+  font-size: 1.2em;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+.container-msg-target-modal p img {
+  margin-right: 0.3em;
+  height: 1.3em;
+}
+
+ul.wizard li > textarea {
+  height: 5em;
+}
+
+.label_select {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: bolder;
+}
+
+.divided select {
+  width: 100%;
+}
+
+.inline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+}
+
+.inline label:first-child {
+  width: 250px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+.inline label:nth-child(3) {
+  margin-right: 1em;
+  margin-left: 1em;
+}
+
+.inline select {
+  margin-right: 1em;
+}
+
+.middle {
+  align-self: center;
+}
+.edit_discovery_info {
+  padding-top: 0;
+}
+
+ul.wizard {
+  width: 100%;
+}
+
+.filter_column {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.filter_column .edit_discovery_input {
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-content: baseline;
+  margin-left: 2em;
+}
+.filter_column .edit_discovery_input .label_select {
+  display: inline;
+  margin: 0;
+}
+
+.filter_column .edit_discovery_input select {
+  flex-grow: 1;
+  margin-left: 2em;
+}
+
+.wizard li {
+  display: flex;
+}
+
 /*
  * Discovery css global
  */
@@ -204,7 +356,6 @@ label {
   width: 100%;
 }
 
-li > input[type="number"],
 li > input[type="text"],
 li > input[type="email"],
 li > input[type="password"],

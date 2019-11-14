@@ -83,7 +83,6 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
 </style>
 </head>
 <body>
-    
 <div id="alert_messages_na">
     
     <div class='modalheade'>
@@ -100,10 +99,29 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
             ?>
         </div>
     </div>
-    <a href='https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration' target='_blank'>
-    <div class='modalwikibutto cerrar'>
-        <span class='modalwikibuttontex'> <?php echo __('Documentation'); ?></span>
-    </div>
+    <?php
+    $custom_conf_enabled = false;
+    foreach ($config as $key => $value) {
+        if (preg_match('/._alt/i', $key)) {
+            $custom_conf_enabled = true;
+            break;
+        }
+    }
+
+    if (!$custom_conf_enabled) {
+        echo '
+                <a href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration" target="_blank">
+            <div class="modalwikibutto cerrar">
+                <span class="modalwikibuttontex">'.__('Documentation').'
+            </span>
+            </div>
+            </a>
+            ';
+    }
+
+    ?>
+      
+    
     </a>
 </div>
     

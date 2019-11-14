@@ -10,7 +10,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.740"
-PI_BUILD="191108"
+PI_BUILD="191113"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -400,6 +400,11 @@ install () {
 	mkdir -p $PANDORA_BASE$PANDORA_HOME/collections
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
 	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
+
+	echo "Creating the commands directory in $PANDORA_BASE$PANDORA_HOME/commands..."
+	mkdir -p $PANDORA_BASE$PANDORA_HOME/commands
+	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/commands
+	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/commands $PANDORA_BASE$PANDORA_CFG
 	
 	if [ $WITHOUT_TENTACLE_SERVER -eq 0 ]
 	then

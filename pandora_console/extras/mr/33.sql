@@ -34,4 +34,6 @@ CREATE TABLE `tremote_command_target` (
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
+
 COMMIT;

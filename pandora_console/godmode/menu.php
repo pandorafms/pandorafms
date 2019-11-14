@@ -56,7 +56,6 @@ if (check_acl($config['id_user'], 0, 'AR')
         enterprise_hook('applications_menu');
         enterprise_hook('cloud_menu');
         enterprise_hook('console_task_menu');
-        enterprise_hook('SAP_view');
     }
 
     // Add to menu.

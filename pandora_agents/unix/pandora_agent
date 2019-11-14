@@ -1439,7 +1439,7 @@ sub prepare_commands {
 		my $rcmd_file = $ConfDir.'/commands/'.$ref.'.rcmd';
 
 		# Check for local .rcmd.done files
-		if (-e $Conf{'temporal'}.'/'.$ref.'.rcmd.done') {
+		if (-e $rcmd_file.'.done') {
 			# Ignore.
 			delete $Conf{'commands'}->{$ref};
 			next;

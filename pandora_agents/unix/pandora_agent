@@ -979,6 +979,9 @@ sub read_config (;$) {
 		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq '1');
 	}
+
+	# Check remote commands
+	prepare_commands();
 }
 
 #################################################################################
@@ -1421,7 +1424,7 @@ sub check_collections () {
 ################################################################################
 # Check for remote commands defined.
 ################################################################################
-sub prepare_remote_commands {
+sub prepare_commands {
 	if ($YAML == 0) {
 		log_message(
 			'error',
@@ -3272,21 +3275,25 @@ while (1) {
 	check_collections () unless ($Conf{'debug'} eq '1');
 
 	if ($Conf{'debug'} ne '1') {
-		# Check remote commands
-		prepare_remote_commands ();
-
-		# Cleanup old .rcmd.done files.
-		my %registered = map { $_.'.rcmd.done' => 1 } keys %{$Conf{'commands'}};
+		# Cleanup old .rcmd and .rcmd.done files.
+		my %registered = map { $_.'.rcmd' => 1 } keys %{$Conf{'commands'}};
 		if(opendir(my $dir, $ConfDir.'/commands/')) {
 			while (my $item = readdir($dir)) {
 				# Skip other files.
-				next if ($item !~ /\.rcmd\.done$/);
-
+				next if ($item !~ /\.rcmd$/);
 				# Clean .rcmd.done file if its command is not referenced in conf.
 				if (!defined($registered{$item})) {
-					unlink ($item);
+					if (-e $item) {
+						unlink ($item);
+					}
+					if (-e $item.'.done') {
+						unlink ($item.'.done');
+					}
 				}
 			}
+
+			# Close dir.
+			closedir($dir);
 		}
 	}
 

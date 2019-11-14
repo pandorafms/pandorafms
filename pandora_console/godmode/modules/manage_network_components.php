@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -32,7 +47,7 @@ require_once $config['homedir'].'/include/functions_categories.php';
 enterprise_include_once('meta/include/functions_components_meta.php');
 require_once $config['homedir'].'/include/functions_component_groups.php';
 
-// Header
+// Header.
 if (defined('METACONSOLE')) {
     components_meta_print_header();
     $sec = 'advanced';
@@ -40,15 +55,6 @@ if (defined('METACONSOLE')) {
     $id_modulo = (int) get_parameter('id_component_type');
     $new_component = (bool) get_parameter('new_component');
 } else {
-    /*
-        Hello there! :)
-
-        We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-
-        You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-
-    */
-
     $id_modulo = (int) get_parameter('id_component_type');
     $new_component = (bool) get_parameter('new_component');
     if ($id_modulo == 2 || $id_modulo == 4 || $id_modulo == 6) {
@@ -58,7 +64,6 @@ if (defined('METACONSOLE')) {
     } else {
         $help_header = 'network_component_tab';
     }
-
 
     ui_print_page_header(
         __('Module management').' &raquo; '.__('Network component management'),
@@ -72,7 +77,6 @@ if (defined('METACONSOLE')) {
     );
     $sec = 'gmodules';
 }
-
 
 $type = (int) get_parameter('type');
 $name = (string) get_parameter('name');
@@ -120,7 +124,7 @@ $history_data = (bool) get_parameter('history_data');
 
 // Don't read as (float) because it lost it's decimals when put into MySQL
 // where are very big and PHP uses scientific notation, p.e:
-// 1.23E-10 is 0.000000000123
+// 1.23E-10 is 0.000000000123.
 $post_process = (string) get_parameter('post_process', 0.0);
 
 $unit = (string) get_parameter('unit');
@@ -151,9 +155,16 @@ $snmp3_auth_user = (string) io_safe_output(get_parameter('snmp3_auth_user'));
 $snmp3_auth_pass = io_input_password((string) get_parameter('snmp3_auth_pass'));
 $snmp3_auth_method = (string) get_parameter('snmp3_auth_method');
 $snmp3_privacy_method = (string) get_parameter('snmp3_privacy_method');
-$snmp3_privacy_pass = io_input_password((string) get_parameter('snmp3_privacy_pass'));
+$snmp3_privacy_pass = io_input_password(
+    (string) get_parameter('snmp3_privacy_pass')
+);
 $snmp3_security_level = (string) get_parameter('snmp3_security_level');
 
+$command_text = (string) get_parameter('command_text');
+$command_credential_identifier = (string) get_parameter(
+    'command_credential_identifier'
+);
+$command_os = (string) get_parameter('command_os');
 
 $throw_unknown_events = get_parameter('throw_unknown_events', false);
 // Set the event type that can show.
@@ -163,11 +174,19 @@ $disabled_types_event = json_encode($disabled_types_event);
 $create_component = (bool) get_parameter('create_component');
 $update_component = (bool) get_parameter('update_component');
 $delete_component = (bool) get_parameter('delete_component');
-$duplicate_network_component = (bool) get_parameter('duplicate_network_component');
+$duplicate_network_component = (bool) get_parameter(
+    'duplicate_network_component'
+);
 $delete_multiple = (bool) get_parameter('delete_multiple');
 $multiple_delete = (bool) get_parameter('multiple_delete', 0);
-$create_network_from_module = (bool) get_parameter('create_network_from_module', 0);
-$create_network_from_snmp_browser = (bool) get_parameter('create_network_from_snmp_browser', 0);
+$create_network_from_module = (bool) get_parameter(
+    'create_network_from_module',
+    0
+);
+$create_network_from_snmp_browser = (bool) get_parameter(
+    'create_network_from_snmp_browser',
+    0
+);
 
 if ($duplicate_network_component) {
     $source_id = (int) get_parameter('source_id');
@@ -182,43 +201,40 @@ if ($duplicate_network_component) {
         __('Could not be created')
     );
 
-    // List unset for jump the bug in the pagination (TODO) that the make another
-    // copy for each pass into pages.
+    // List unset for jump the bug in the pagination
+    // that the make another copy for each pass into pages.
     unset($_GET['source_id']);
     unset($_GET['duplicate_network_component']);
 
     $id = 0;
 }
 
+$custom_string_1 = '';
+$custom_string_2 = '';
+$custom_string_3 = '';
+
+if ($type >= 15 && $type <= 18) {
+    // New support for snmp v3.
+    $tcp_send = $snmp_version;
+    $plugin_user = $snmp3_auth_user;
+    $plugin_pass = $snmp3_auth_pass;
+    $plugin_parameter = $snmp3_auth_method;
+    $custom_string_1 = $snmp3_privacy_method;
+    $custom_string_2 = $snmp3_privacy_pass;
+    $custom_string_3 = $snmp3_security_level;
+} else if ($type >= 34 && $type <= 37) {
+    $tcp_send = $command_text;
+    $custom_string_1 = $command_credential_identifier;
+    $custom_string_2 = $command_os;
+}
+
 if ($create_component) {
-    $custom_string_1 = '';
-    $custom_string_2 = '';
-    $custom_string_3 = '';
     $name_check = db_get_value(
         'name',
         'tnetwork_component',
         'name',
         $name
     );
-
-    // remote_snmp = 15
-    // remote_snmp_proc = 18
-    if ($type >= 15 && $type <= 18) {
-        // New support for snmp v3
-        $tcp_send = $snmp_version;
-        $plugin_user = $snmp3_auth_user;
-        $plugin_pass = $snmp3_auth_pass;
-        $plugin_parameter = $snmp3_auth_method;
-        $custom_string_1 = $snmp3_privacy_method;
-        $custom_string_2 = $snmp3_privacy_pass;
-        $custom_string_3 = $snmp3_security_level;
-        $name_check = db_get_value(
-            'name',
-            'tnetwork_component',
-            'name',
-            $name
-        );
-    }
 
     if ($name && !$name_check) {
         $id = network_components_create_network_component(
@@ -283,36 +299,22 @@ if ($create_component) {
     }
 
     if ($id === false || !$id) {
-        db_pandora_audit('Module management', 'Fail try to create network component');
+        db_pandora_audit(
+            'Module management',
+            'Fail try to create network component'
+        );
         ui_print_error_message(__('Could not be created'));
         include_once 'godmode/modules/manage_network_components_form.php';
         return;
     }
 
-    db_pandora_audit('Module management', "Create network component #$id");
+    db_pandora_audit('Module management', 'Create network component #'.$id);
     ui_print_success_message(__('Created successfully'));
     $id = 0;
 }
 
 if ($update_component) {
     $id = (int) get_parameter('id');
-
-    $custom_string_1 = '';
-    $custom_string_2 = '';
-    $custom_string_3 = '';
-
-    // $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
-    if ($type >= 15 && $type <= 18) {
-        // New support for snmp v3
-        $tcp_send = $snmp_version;
-        $plugin_user = $snmp3_auth_user;
-        $plugin_pass = $snmp3_auth_pass;
-        $plugin_parameter = $snmp3_auth_method;
-        $custom_string_1 = $snmp3_privacy_method;
-        $custom_string_2 = $snmp3_privacy_pass;
-        $custom_string_3 = $snmp3_security_level;
-        // $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
-    }
 
     if (!empty($name)) {
         $result = network_components_update_network_component(
@@ -380,14 +382,14 @@ if ($update_component) {
     if ($result === false || !$result) {
         db_pandora_audit(
             'Module management',
-            "Fail try to update network component #$id"
+            'Fail try to update network component #'.$id
         );
         ui_print_error_message(__('Could not be updated'));
         include_once 'godmode/modules/manage_network_components_form.php';
         return;
     }
 
-    db_pandora_audit('Module management', "Update network component #$id");
+    db_pandora_audit('Module management', 'Update network component #'.$id);
     ui_print_success_message(__('Updated successfully'));
 
     $id = 0;
@@ -401,12 +403,12 @@ if ($delete_component) {
     if ($result) {
         db_pandora_audit(
             'Module management',
-            "Delete network component #$id"
+            'Delete network component #'.$id
         );
     } else {
         db_pandora_audit(
             'Module management',
-            "Fail try to delete network component #$id"
+            'Fail try to delete network component #'.$id
         );
     }
 
@@ -433,12 +435,12 @@ if ($multiple_delete) {
     if ($result) {
         db_pandora_audit(
             'Module management',
-            "Multiple delete network component: $str_ids"
+            'Multiple delete network component:'.$str_ids
         );
     } else {
         db_pandora_audit(
             'Module management',
-            "Fail try to delete network component: $str_ids"
+            'Fail try to delete network component:'.$str_ids
         );
     }
 
@@ -451,7 +453,10 @@ if ($multiple_delete) {
     $id = 0;
 }
 
-if ($id || $new_component || $create_network_from_module || $create_network_from_snmp_browser) {
+if ($id || $new_component
+    || $create_network_from_module
+    || $create_network_from_snmp_browser
+) {
     include_once $config['homedir'].'/godmode/modules/manage_network_components_form.php';
     return;
 }
@@ -540,7 +545,7 @@ if ($component_groups === false) {
 foreach ($component_groups as $component_group_key => $component_group_val) {
     $num_components = db_get_num_rows(
         'SELECT id_nc
-		FROM tnetwork_component 
+		FROM tnetwork_component
 		WHERE id_group = '.$component_group_key
     );
 
@@ -551,14 +556,14 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
     if ($childs !== false) {
         foreach ($childs as $child) {
             $num_components_childs += db_get_num_rows(
-                'SELECT id 
-				FROM tlocal_component 
+                'SELECT id
+				FROM tlocal_component
 				WHERE id_network_component_group = '.$child['id_sg']
             );
         }
     }
 
-    // Only show component groups with local components
+    // Only show component groups with local components.
     if ($num_components == 0 && $num_components_childs == 0) {
         unset($component_groups[$component_group_key]);
     }
@@ -622,7 +627,11 @@ if ($search_string != '') {
     $filter[] = '(name LIKE '."'%".$search_string."%'".'OR description LIKE '."'%".$search_string."%'".'OR tcp_send LIKE '."'%".$search_string."%'".'OR tcp_rcv LIKE '."'%".$search_string."%'".')';
 }
 
-$total_components = network_components_get_network_components(false, $filter, 'COUNT(*) AS total');
+$total_components = network_components_get_network_components(
+    false,
+    $filter,
+    'COUNT(*) AS total'
+);
 $total_components = $total_components[0]['total'];
 ui_pagination($total_components, $url);
 $filter['offset'] = (int) get_parameter('offset');
@@ -651,7 +660,13 @@ unset($table);
 $table->width = '100%';
 $table->head = [];
 $table->class = 'info_table';
-$table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
+$table->head['checkbox'] = html_print_checkbox(
+    'all_delete',
+    0,
+    false,
+    true,
+    false
+);
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');
 $table->head[3] = __('Description');
@@ -669,12 +684,21 @@ foreach ($components as $component) {
     $data = [];
 
     if ($component['max'] == $component['min'] && $component['max'] == 0) {
-        $component['max'] = $component['min'] = __('N/A');
+        $component['max'] = __('N/A');
+        $component['min'] = __('N/A');
     }
 
-    $data['checkbox'] = html_print_checkbox_extended('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
+    $data['checkbox'] = html_print_checkbox_extended(
+        'delete_multiple[]',
+        $component['id_nc'],
+        false,
+        false,
+        '',
+        'class="check_delete"',
+        true
+    );
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&'.'sec2=godmode/modules/manage_network_components&'.'id='.$component['id_nc'].'&pure='.$pure.'">';
+    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
     $data[0] .= io_safe_output($component['name']);
     $data[0] .= '</a>';
     $data[1] = ui_print_moduletype_icon($component['type'], true);
@@ -702,6 +726,10 @@ foreach ($components as $component) {
                 ['title' => __('Plug-in module')]
             );
         break;
+
+        default:
+            // Not possible.
+        break;
     }
 
     $data[3] = "<span style='font-size: 8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
@@ -719,13 +747,32 @@ if (isset($data)) {
     echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    ui_pagination($total_components, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination(
+        $total_components,
+        $url,
+        0,
+        0,
+        false,
+        'offset',
+        true,
+        'pagination-bottom'
+    );
     echo "<div style='float: right; margin-left: 5px;'>";
-    html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+    html_print_submit_button(
+        __('Delete'),
+        'delete_btn',
+        false,
+        'class="sub delete"'
+    );
     echo '</div>';
     echo '</form>';
 } else {
-    ui_print_info_message(['no_close' => true, 'message' => __('There are no defined network components') ]);
+    ui_print_info_message(
+        [
+            'no_close' => true,
+            'message'  => __('There are no defined network components'),
+        ]
+    );
 }
 
 echo '<form method="post" action="'.$url.'">';
@@ -744,7 +791,12 @@ html_print_select(
     '',
     ''
 );
-html_print_submit_button(__('Create'), 'crt', false, 'class="sub next" style="margin-left: 5px;"');
+html_print_submit_button(
+    __('Create'),
+    'crt',
+    false,
+    'class="sub next" style="margin-left: 5px;"'
+);
 echo '</div>';
 echo '</form>';
 
@@ -752,30 +804,33 @@ enterprise_hook('close_meta_frame');
 
 ?>
 <script type="text/javascript">
-
     $( document ).ready(function() {
-
         $('[id^=checkbox-delete_multiple]').change(function(){
             if($(this).parent().parent().hasClass('checkselected')){
                 $(this).parent().parent().removeClass('checkselected');
             }
             else{
-                $(this).parent().parent().addClass('checkselected');    
+                $(this).parent().parent().addClass('checkselected');
             }
         });
 
-        $('[id^=checkbox-all_delete]').change(function(){    
+        $('[id^=checkbox-all_delete]').change(function(){
             if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
-                $(".check_delete").prop("checked", true);
+                $('[id^=checkbox-delete_multiple]')
+                    .parent()
+                    .parent()
+                    .addClass('checkselected');
+                $(".check_delete")
+                    .prop("checked", true);
             }
             else{
-                $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
+                $('[id^=checkbox-delete_multiple]')
+                    .parent()
+                    .parent()
+                    .removeClass('checkselected');
                 $(".check_delete").prop("checked", false);
-            }    
+            }
         });
-
     });
-
 
 </script>

@@ -1330,7 +1330,7 @@ if ($update_module || $create_module) {
     // Change double quotes by single.
     $snmp_oid = preg_replace('/&quot;/', '&#039;', $snmp_oid);
 
-    if (empty($snmp_oid)) {
+    if (empty($snmp_oid) === true) {
         // The user did not set any OID manually but did a SNMP walk.
         $snmp_oid = (string) get_parameter('select_snmp_oid');
     }
@@ -1339,18 +1339,30 @@ if ($update_module || $create_module) {
         // New support for snmp v3.
         $tcp_send = (string) get_parameter('snmp_version');
         $plugin_user = (string) get_parameter('snmp3_auth_user');
-        $plugin_pass = io_input_password((string) get_parameter('snmp3_auth_pass'));
+        $plugin_pass = io_input_password(
+            (string) get_parameter('snmp3_auth_pass')
+        );
         $plugin_parameter = (string) get_parameter('snmp3_auth_method');
 
         $custom_string_1 = (string) get_parameter('snmp3_privacy_method');
-        $custom_string_2 = io_input_password((string) get_parameter('snmp3_privacy_pass'));
+        $custom_string_2 = io_input_password(
+            (string) get_parameter('snmp3_privacy_pass')
+        );
         $custom_string_3 = (string) get_parameter('snmp3_security_level');
+    } else if ($id_module_type >= 34 && $id_module_type <= 37) {
+        $tcp_send = (string) get_parameter('command_text');
+        $custom_string_1 = (string) get_parameter(
+            'command_credential_identifier'
+        );
+        $custom_string_2 = (string) get_parameter('command_os');
     } else {
         $plugin_user = (string) get_parameter('plugin_user');
         if (get_parameter('id_module_component_type') == 7) {
             $plugin_pass = (int) get_parameter('plugin_pass');
         } else {
-            $plugin_pass = io_input_password((string) get_parameter('plugin_pass'));
+            $plugin_pass = io_input_password(
+                (string) get_parameter('plugin_pass')
+            );
         }
 
         $plugin_parameter = (string) get_parameter('plugin_parameter');
@@ -2266,6 +2278,10 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
+if ($_SESSION['create_module'] && $config['welcome_state'] == 1) {
+    $edit_module = true;
+}
+
 switch ($tab) {
     case 'main':
         include 'agent_manager.php';

@@ -1281,34 +1281,11 @@ class Diagnostics extends Wizard
         global $config;
 
         $result = [];
+        $totalServerThreads = 0;
         if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
             $totalServerThreads = shell_exec(
                 'ps -T aux | grep pandora_server | grep -v grep | wc -l'
             );
-            $percentageThreadsRam = shell_exec(
-                "ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
-            );
-            $percentageThreadsCpu = shell_exec(
-                "ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
-            );
-
-            $result = [
-                'error' => false,
-                'data'  => [
-                    'totalServerThreads'   => [
-                        'name'  => __('Total server threads'),
-                        'value' => $totalServerThreads,
-                    ],
-                    'percentageThreadsRam' => [
-                        'name'  => __('Percentage of threads used by the RAM'),
-                        'value' => $percentageThreadsRam.' %',
-                    ],
-                    'percentageThreadsCpu' => [
-                        'name'  => __('Percentage of threads used by the CPU'),
-                        'value' => $percentageThreadsCpu.' %',
-                    ],
-                ],
-            ];
         }
 
         include_once $config['homedir'].'/include/functions_servers.php';
@@ -1329,9 +1306,18 @@ class Diagnostics extends Wizard
             }
 
             $result['data']['total_threads'] = [
-                'name'  => __('Total threads'),
-                'value' => $sum_threads,
+                'name'   => __('Total threads'),
+                'value'  => $sum_threads,
+                'status' => ($sum_threads < $totalServerThreads) ? 2 : 1,
             ];
+
+            if ($totalServerThreads > 0) {
+                $result['data']['total_threads']['message'] = __(
+                    'Current pandora_server running threads'
+                );
+                $result['data']['total_threads']['message'] .= ' ';
+                $result['data']['total_threads']['message'] .= $totalServerThreads;
+            }
         }
 
         return json_encode($result);
@@ -1780,7 +1766,17 @@ class Diagnostics extends Wizard
                     // of objects, making a post-process of certain fields.
                     if (isset($items[$key]['status']) === true) {
                         $acumValue = $items[$key]['value'];
-                        if ($items[$key]['status'] === 1) {
+
+                        if ($items[$key]['status'] === 2) {
+                            $items[$key]['value'] = html_print_image(
+                                'images/icono-warning.png',
+                                true,
+                                [
+                                    'title' => __('Warning'),
+                                    'style' => 'width:15px;',
+                                ]
+                            );
+                        } else if ($items[$key]['status'] === 1) {
                             $items[$key]['value'] = html_print_image(
                                 'images/exito.png',
                                 true,

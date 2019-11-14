@@ -5438,6 +5438,15 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Console_Setup&printable=yes#Websocket_engine';
             }
+        break;
+
+        case 'discovery':
+            if ($es) {
+                $result .= 'Discovery&printable=yes';
+            } else {
+                $result .= 'Discovery&printable=yes';
+            }
+        break;
     }
 
     return $result;

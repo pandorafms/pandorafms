@@ -28,7 +28,7 @@ if (check_acl($config['id_user'], 0, 'AR')
     || check_acl($config['id_user'], 0, 'PM')
 ) {
     $sub = [];
-    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Main');
+    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Start');
     $sub['godmode/servers/discovery&wiz=main']['id'] = 'Discovery';
     $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
     $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';

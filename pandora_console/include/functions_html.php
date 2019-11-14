@@ -1905,7 +1905,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);
     $output .= '</textarea>';
@@ -1981,6 +1981,7 @@ function html_get_predefined_table($model='transparent', $columns=4)
  *    $table->titlestyle - Title style
  *    $table->titleclass - Title class
  *    $table->styleTable - Table style
+ *    $table->autosize - Autosize
  *  $table->caption - Table title
  * @param bool Whether to return an output string or echo now
  *
@@ -2091,6 +2092,12 @@ function html_print_table(&$table, $return=false)
         // $table->width = '80%';
     }
 
+    if (isset($table->autosize) === true) {
+        $table->autosize = 'autosize = "1"';
+    } else {
+        $table->autosize = '';
+    }
+
     if (empty($table->border)) {
         if (empty($table)) {
             $table = new stdClass();
@@ -2125,9 +2132,9 @@ function html_print_table(&$table, $return=false)
     $tableid = empty($table->id) ? 'table'.$table_count : $table->id;
 
     if (!empty($table->width)) {
-        $output .= '<table style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
     } else {
-        $output .= '<table style="'.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="'.$styleTable.' '.$table->tablealign;
     }
 
     $output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
@@ -3100,23 +3107,24 @@ function html_print_csrf_error()
 
 
 /**
- * Print an swith button
+ * Print an swith button.
  *
- * @param  array $atributes. Valid params:
- *         name: Usefull to handle in forms
- *         value: If is checked or not
- *         disabled: Disabled. Cannot be pressed.
- *         id: Optional id for the switch.
- *         class: Additional classes (string).
- * @return string with HTML of button
+ * @param array $attributes Valid params.
+ * name: Usefull to handle in forms.
+ * value: If is checked or not.
+ * disabled: Disabled. Cannot be pressed.
+ * id: Optional id for the switch.
+ * class: Additional classes (string).
+ *
+ * @return string with HTML of button.
  */
 function html_print_switch($attributes=[])
 {
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) $attributes['value'] ? ' checked' : '';
-    $html_expand .= (bool) $attributes['disabled'] ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -3139,7 +3147,7 @@ function html_print_switch($attributes=[])
     }
 
     return "<label class='p-switch' style='".$attributes['style']."'>
-			<input type='checkbox' $html_expand>
+			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider'></span>
 		</label>";
 }
@@ -3295,6 +3303,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
             );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
         break;
 
         case 'hidden':

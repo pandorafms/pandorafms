@@ -544,6 +544,13 @@ select:-internal-list-box {
   align-items: baseline;
 }
 
+.flex-row-vcenter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .nowrap {
   flex-wrap: nowrap;
 }
@@ -5910,6 +5917,47 @@ table.table_modal_alternate tr td:first-child {
   width: 101%;
 }
 
+/*Font header feedback*/
+form#modal_form_feedback {
+  padding: 10px;
+}
+
+form#modal_form_feedback label {
+  margin-bottom: 10px;
+  color: #343434;
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+form#modal_form_feedback input[type="email"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+}
+
+form#modal_form_feedback ul.wizard li {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+form#modal_form_feedback ul.wizard li > label:not(.p-switch) {
+  width: 250px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+form#modal_form_feedback ul.wizard li > textarea {
+  width: 600px;
+  height: 15em;
+  display: inline-block;
+  font-family: monospace;
+}
 /*
  * ---------------------------------------------------------------------
  * - FONT SIZES IN AGENT VIEW. This changes the font size of the agent

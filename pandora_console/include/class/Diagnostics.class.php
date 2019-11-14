@@ -1280,37 +1280,59 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            return [];
+        $result = [];
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $totalServerThreads = shell_exec(
+                'ps -T aux | grep pandora_server | grep -v grep | wc -l'
+            );
+            $percentageThreadsRam = shell_exec(
+                "ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
+            );
+            $percentageThreadsCpu = shell_exec(
+                "ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
+            );
+
+            $result = [
+                'error' => false,
+                'data'  => [
+                    'totalServerThreads'   => [
+                        'name'  => __('Total server threads'),
+                        'value' => $totalServerThreads,
+                    ],
+                    'percentageThreadsRam' => [
+                        'name'  => __('Percentage of threads used by the RAM'),
+                        'value' => $percentageThreadsRam.' %',
+                    ],
+                    'percentageThreadsCpu' => [
+                        'name'  => __('Percentage of threads used by the CPU'),
+                        'value' => $percentageThreadsCpu.' %',
+                    ],
+                ],
+            ];
         }
 
-        $totalServerThreads = shell_exec(
-            'ps -T aux | grep pandora_server | grep -v grep | wc -l'
-        );
-        $percentageThreadsRam = shell_exec(
-            "ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
-        );
-        $percentageThreadsCpu = shell_exec(
-            "ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
-        );
+        include_once $config['homedir'].'/include/functions_servers.php';
+        $sql = 'SELECT `name`, server_type, threads FROM tserver';
+        $servers = db_get_all_rows_sql($sql);
 
-        $result = [
-            'error' => false,
-            'data'  => [
-                'totalServerThreads'   => [
-                    'name'  => __('Total server threads'),
-                    'value' => $totalServerThreads,
-                ],
-                'percentageThreadsRam' => [
-                    'name'  => __('Percentage of threads used by the RAM'),
-                    'value' => $percentageThreadsRam.' %',
-                ],
-                'percentageThreadsCpu' => [
-                    'name'  => __('Percentage of threads used by the CPU'),
-                    'value' => $percentageThreadsCpu.' %',
-                ],
-            ],
-        ];
+        if (isset($servers) === true && is_array($servers) === true) {
+            $sum_threads = 0;
+            foreach ($servers as $key => $value) {
+                $result['data']['threads_server_'.$value['server_type']] = [
+                    'name'  => __('Threads').' '.\servers_get_server_string_name(
+                        $value['server_type']
+                    ),
+                    'value' => $value['threads'],
+                ];
+
+                $sum_threads += $value['threads'];
+            }
+
+            $result['data']['total_threads'] = [
+                'name'  => __('Total threads'),
+                'value' => $sum_threads,
+            ];
+        }
 
         return json_encode($result);
     }

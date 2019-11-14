@@ -36,4 +36,6 @@ CREATE TABLE `tremote_command_target` (
 
 INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
 
+ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
+
 COMMIT;

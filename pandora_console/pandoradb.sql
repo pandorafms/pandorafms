@@ -699,7 +699,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
 	`identifier` varchar(100) NOT NULL,
 	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
-	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM',
 	`username` text,
 	`password` text,
 	`extra_1` text,

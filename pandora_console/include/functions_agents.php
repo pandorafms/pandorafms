@@ -3481,3 +3481,66 @@ function agents_get_status_animation($up=true)
         );
     }
 }
+
+
+/**
+ * Return if an agent is SAP or or an a agent SAP list.
+ * If function receive false, you will return all SAP agents,
+ * but if you receive an id agent, check if it is a sap agent
+ * and return true or false.
+ *
+ * @param  integer $id_agent
+ * @return boolean
+ */
+function agents_get_sap_agents($id_agent)
+{
+    // Available modules.
+    // If you add more modules, please update SAP.pm.
+    $sap_modules = [
+        160 => __('SAP Login OK'),
+        109 => __('SAP Dumps'),
+        111 => __('SAP List lock'),
+        113 => __('SAP Cancel Jobs'),
+        121 => __('SAP Batch input erroneus'),
+        104 => __('SAP Idoc erroneus'),
+        105 => __('SAP IDOC OK'),
+        150 => __('SAP WP without active restart'),
+        151 => __('SAP WP stopped'),
+        102 => __('Average time of SAPGUI response '),
+        180 => __('Dialog response time'),
+        103 => __('Dialog Logged users '),
+        192 => __('SYSFAIL, delivery attempts tRFC wrong entries number'),
+        195 => __('SYSFAIL, queue qRFC INPUT, wrong entries number '),
+        116 => __('Number of Update WPs in error'),
+    ];
+
+    $array_agents = [];
+    foreach ($sap_modules as $module => $key) {
+        $array_agents = array_merge(
+            $array_agents,
+            db_get_all_rows_sql(
+                'SELECT ta.id_agente,ta.alias
+                 FROM tagente ta
+                 INNER JOIN tagente_modulo tam 
+                 ON tam.id_agente = ta.id_agente 
+                 WHERE tam.nombre  
+                 LIKE "%SAP%" 
+                 GROUP BY ta.id_agente'
+            )
+        );
+    }
+
+    $indexed_agents = index_array($array_agents, 'id_agente', false);
+
+    if ($id_agent === false) {
+        return $indexed_agents;
+    }
+
+    foreach ($indexed_agents as $agent => $key) {
+        if ($agent === $id_agent) {
+            return true;
+        }
+    }
+
+    return false;
+}

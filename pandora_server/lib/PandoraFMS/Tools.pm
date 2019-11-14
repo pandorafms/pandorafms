@@ -110,6 +110,7 @@ our @EXPORT = qw(
 	is_offline
 	to_number
 	clean_blank
+	credential_store_get_key
 	pandora_sendmail
 	pandora_trash_ascii
 	enterprise_hook
@@ -487,6 +488,27 @@ sub pandora_daemonize {
 # Pandora other General functions |
 # -------------------------------------------+
 
+########################################################################
+# SUB credential_store_get_key
+# Retrieve all information related to target identifier.
+# param1 - config hash
+# param2 - dbh link
+# param3 - string identifier
+########################################################################
+sub credential_store_get_key($$$) {
+	my ($pa_config, $dbh, $identifier) = @_;
+
+	my $sql = 'SELECT * FROM tcredential_store WHERE identifier = ?';
+	my $key = get_db_single_row($dbh, $sql, $identifier);
+
+	return {
+		'username' => pandora_output_password($pa_config, $key->{'username'}),
+		'password' => pandora_output_password($pa_config, $key->{'password'}),
+		'extra_1' => $key->{'extra_1'},
+		'extra_2' => $key->{'extra_2'},
+	};
+
+}
 
 ########################################################################
 # SUB pandora_sendmail

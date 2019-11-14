@@ -70,6 +70,7 @@ class Diagnostics extends Wizard
 
         $this->ajaxController = $page;
         $this->pdf = $pdf;
+        $this->product_name = io_safe_output(get_product_name());
     }
 
 
@@ -126,7 +127,7 @@ class Diagnostics extends Wizard
 
         // Header.
         ui_print_page_header(
-            __('Pandora FMS Diagnostic tool'),
+            __('%s Diagnostic tool', $this->product_name),
             'images/gm_massive_operations.png',
             false,
             'diagnostic_tool_tab',
@@ -190,7 +191,7 @@ class Diagnostics extends Wizard
         foreach ($infoMethods as $key => $method) {
             switch ($method) {
                 case 'getStatusInfo':
-                    $title = __('Info status pandoraFms');
+                    $title = __('Info status %s', $this->product_name);
                 break;
 
                 case 'getPHPSetup':
@@ -219,16 +220,17 @@ class Diagnostics extends Wizard
 
                 case 'getTablesFragmentation':
                     $title = __(
-                        'Tables fragmentation in the Pandora FMS database'
+                        'Tables fragmentation in the %s database',
+                        $this->product_name
                     );
                 break;
 
                 case 'getPandoraFMSLogsDates':
-                    $title = __('Pandora FMS logs dates');
+                    $title = __('%s logs dates', $this->product_name);
                 break;
 
                 case 'getLicenceInformation':
-                    $title = __('Pandora FMS Licence Information');
+                    $title = __('%s Licence Information', $this->product_name);
                 break;
 
                 case 'getAttachmentFolder':
@@ -240,7 +242,7 @@ class Diagnostics extends Wizard
                 break;
 
                 case 'getServerThreads':
-                    $title = __('Pandora FMS server threads');
+                    $title = __('%s server threads', $this->product_name);
                 break;
 
                 case 'getShowEngine':
@@ -399,11 +401,11 @@ class Diagnostics extends Wizard
             'error' => false,
             'data'  => [
                 'buildVersion'  => [
-                    'name'  => __('Pandora FMS Build'),
+                    'name'  => __('%s Build', $this->product_name),
                     'value' => $build_version,
                 ],
                 'version'       => [
-                    'name'  => __('Pandora FMS Version'),
+                    'name'  => __('%s Version', $this->product_name),
                     'value' => $pandora_version,
                 ],
                 'mr'            => [
@@ -512,7 +514,7 @@ class Diagnostics extends Wizard
             'error' => false,
             'data'  => [
                 'countAgents'      => [
-                    'name'  => __('Total agentsy'),
+                    'name'  => __('Total agents'),
                     'value' => $countAgents,
                 ],
                 'countModules'     => [
@@ -586,7 +588,10 @@ class Diagnostics extends Wizard
         $pandoraDbLastRun = __('Pandora DB has never been executed');
         if ($dateDbMantenaince !== false) {
             $difference = ($currentTime - $dateDbMantenaince);
-            $pandoraDbLastRun = human_time_comparation($difference);
+            $pandoraDbLastRun = human_time_description_raw(
+                $difference,
+                true
+            );
             $pandoraDbLastRun .= ' '.__('Ago');
         }
 
@@ -602,7 +607,7 @@ class Diagnostics extends Wizard
                     'value' => $notInitAgents,
                 ],
                 'pandoraDbLastRun' => [
-                    'name'  => __('PandoraDB Last run'),
+                    'name'  => __('Pandora DB Last run'),
                     'value' => $pandoraDbLastRun,
                 ],
             ],
@@ -671,16 +676,53 @@ class Diagnostics extends Wizard
             $cpuProcessor = 'cat /proc/cpuinfo | grep "processor" | wc -l';
             $ramMemTotal = 'cat /proc/meminfo | grep "MemTotal"';
 
+            exec(
+                "ifconfig | awk '{ print $2}' | grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'",
+                $output
+            );
+
+            $ips = implode(', ', $output);
+
             $result = [
                 'error' => false,
                 'data'  => [
-                    'cpuInfo' => [
+                    'cpuInfo'      => [
                         'name'  => __('CPU'),
                         'value' => exec($cpuModelName).' x '.exec($cpuProcessor),
                     ],
-                    'ramInfo' => [
+                    'ramInfo'      => [
                         'name'  => __('RAM'),
                         'value' => exec($ramMemTotal),
+                    ],
+                    'osInfo'       => [
+                        'name'  => __('Os'),
+                        'value' => exec('uname -a'),
+                    ],
+                    'hostnameInfo' => [
+                        'name'  => __('Hostname'),
+                        'value' => exec('hostname'),
+                    ],
+                    'ipInfo'       => [
+                        'name'  => __('Ip'),
+                        'value' => $ips,
+                    ],
+                ],
+            ];
+        } else {
+            $result = [
+                'error' => false,
+                'data'  => [
+                    'osInfo'       => [
+                        'name'  => __('OS'),
+                        'value' => exec('ver'),
+                    ],
+                    'hostnameInfo' => [
+                        'name'  => __('Hostname'),
+                        'value' => exec('hostname'),
+                    ],
+                    'ipInfo'       => [
+                        'name'  => __('Ip'),
+                        'value' => exec('ipconfig | findstr IPv4'),
                     ],
                 ],
             ];
@@ -749,22 +791,6 @@ class Diagnostics extends Wizard
                         $status = (($item['Value'] / $bytes) >= 64) ? 1 : 0;
                         $message = __('Min. Recommended Value').' 64M';
                     break;
-
-                    /*
-                        case 'join_buffer_size':
-                        $name = __('Join buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 265) ? 1 : 0;
-                        $message = __('Min. Recommended Value 265');
-                        break;
-
-                        case 'key_buffer_size':
-                        $name = __('Key buffer size');
-                        $value = ($item['Value'] / $bytes);
-                        $status = (($item['Value'] / $bytes) >= 256) ? 1 : 0;
-                        $message = __('Min. Recommended Value').' 256';
-                        break;
-                    */
 
                     case 'max_allowed_packet':
                         $name = __('Maximun allowed packet');
@@ -953,10 +979,10 @@ class Diagnostics extends Wizard
 
         $unit = 'M';
 
-        $pathServerLogs = 'var/log/pandora/pandora_server.log';
+        $pathServerLogs = '/var/log/pandora/pandora_server.log';
         $servers = $this->getLogInfo($pathServerLogs);
 
-        $pathErrLogs = 'var/log/pandora/pandora_server.error';
+        $pathErrLogs = '/var/log/pandora/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
         $pathConsoleLogs = $config['homedir'].'/pandora_console.log';
@@ -1018,6 +1044,7 @@ class Diagnostics extends Wizard
         $customerKey = db_get_value_sql($sql);
 
         // Extract Info license.
+        enterprise_include_once('include/functions_license.php');
         $license = enterprise_hook('license_get_info');
 
         // Agent Capacity.
@@ -1050,6 +1077,7 @@ class Diagnostics extends Wizard
             WHERE id_tipo_modulo
             BETWEEN 6 AND 18'
         );
+
         $totalModuleIntervalTime = db_get_value_sql(
             'SELECT SUM(module_interval)
             FROM tagente_modulo
@@ -1060,26 +1088,26 @@ class Diagnostics extends Wizard
         $averageTime = 0;
         if ($totalModuleIntervalTime !== false) {
             $averageTime = number_format(
-                ((int) $totalModuleIntervalTime / (int) $totalNetworkModules),
+                ((int) $totalNetworkModules / (int) $totalModuleIntervalTime),
                 3
             );
         }
 
         $moduleNetworkmsg = __(
             sprintf(
-                'The system is not overloaded (average time %d)',
-                $average_time
+                'The system is not overloaded (average time %f)',
+                $averageTime
             )
         );
         $moduleNetworkst = 1;
-        if ($average_time === 0) {
+        if ($averageTime === 0) {
             $moduleNetworkmsg = __('The system has no load');
             $moduleNetworkst = 0;
-        } else if ($averageTime < 180) {
+        } else if ($averageTime > 180) {
             $moduleNetworkmsg = __(
                 sprintf(
-                    'The system is overloaded (average time %d) and a very fine configuration is required',
-                    $average_time
+                    'The system is overloaded (average time %f) and a very fine configuration is required',
+                    $averageTime
                 )
             );
             $moduleNetworkst = 0;
@@ -1252,37 +1280,47 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            return [];
+        $result = [];
+        $totalServerThreads = 0;
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $totalServerThreads = shell_exec(
+                'ps -T aux | grep pandora_server | grep -v grep | wc -l'
+            );
         }
 
-        $totalServerThreads = shell_exec(
-            'ps -T aux | grep pandora_server | grep -v grep | wc -l'
-        );
-        $percentageThreadsRam = shell_exec(
-            "ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
-        );
-        $percentageThreadsCpu = shell_exec(
-            "ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'"
-        );
+        include_once $config['homedir'].'/include/functions_servers.php';
+        $sql = 'SELECT `name`, server_type, threads FROM tserver';
+        $servers = db_get_all_rows_sql($sql);
 
-        $result = [
-            'error' => false,
-            'data'  => [
-                'totalServerThreads'   => [
-                    'name'  => __('Total server threads'),
-                    'value' => $totalServerThreads,
-                ],
-                'percentageThreadsRam' => [
-                    'name'  => __('Percentage of threads used by the RAM'),
-                    'value' => $percentageThreadsRam.' %',
-                ],
-                'percentageThreadsCpu' => [
-                    'name'  => __('Percentage of threads used by the CPU'),
-                    'value' => $percentageThreadsCpu.' %',
-                ],
-            ],
-        ];
+        if (isset($servers) === true && is_array($servers) === true) {
+            $sum_threads = 0;
+            foreach ($servers as $key => $value) {
+                $result['data']['threads_server_'.$value['server_type']] = [
+                    'name'  => __('Threads').' '.\servers_get_server_string_name(
+                        $value['server_type']
+                    ),
+                    'value' => $value['threads'],
+                ];
+
+                $sum_threads += $value['threads'];
+            }
+
+            $result['data']['total_threads'] = [
+                'name'   => __('Total threads'),
+                'value'  => $sum_threads,
+                'status' => ($sum_threads < $totalServerThreads) ? 2 : 1,
+            ];
+
+            if ($sum_threads < $totalServerThreads) {
+                $result['data']['total_threads']['message'] = __(
+                    'Current pandora_server running threads'
+                );
+            } else {
+                __(
+                    'There\'s more pandora_server threads than configured, are you running multiple servers simultaneusly?.'
+                );
+            }
+        }
 
         return json_encode($result);
     }
@@ -1315,8 +1353,8 @@ class Diagnostics extends Wizard
             $lenght = strlen($innodb[0]['Status']);
 
             $data = [];
-            for ($i = 0; $i < $lenght; $i = ($i + 500)) {
-                $str = substr($innodb[0]['Status'], $i, ($i + 500));
+            for ($i = 0; $i < $lenght; $i = ($i + 300)) {
+                $str = substr($innodb[0]['Status'], $i, ($i + 300));
                 $data['showEngine-'.$i] = [
                     'name'  => '',
                     'value' => '<pre>'.$str.'</pre>',
@@ -1673,7 +1711,7 @@ class Diagnostics extends Wizard
             'status'  => 0,
         ];
 
-        if (is_file($path) === true) {
+        if (file_exists($path) === true) {
             $fileSize = filesize($path);
             $sizeServerLog = number_format($fileSize);
             $sizeServerLog = (0 + str_replace(',', '', $sizeServerLog));
@@ -1730,7 +1768,17 @@ class Diagnostics extends Wizard
                     // of objects, making a post-process of certain fields.
                     if (isset($items[$key]['status']) === true) {
                         $acumValue = $items[$key]['value'];
-                        if ($items[$key]['status'] === 1) {
+
+                        if ($items[$key]['status'] === 2) {
+                            $items[$key]['value'] = html_print_image(
+                                'images/icono-warning.png',
+                                true,
+                                [
+                                    'title' => __('Warning'),
+                                    'style' => 'width:15px;',
+                                ]
+                            );
+                        } else if ($items[$key]['status'] === 1) {
                             $items[$key]['value'] = html_print_image(
                                 'images/exito.png',
                                 true,
@@ -1872,7 +1920,7 @@ class Diagnostics extends Wizard
 
         $mail_feedback = 'feedback@artica.es';
         $email = $mail_feedback;
-        $subject = 'PandoraFMS Report '.$config['pandora_uid'];
+        $subject = $this->product_name.' Report '.$config['pandora_uid'];
         $text = get_parameter('what-happened', '');
         $attachment = get_parameter_switch('include_installation_data', 0);
         $email_from = get_parameter_switch('email', '');

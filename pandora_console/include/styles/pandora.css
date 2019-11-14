@@ -3000,7 +3000,6 @@ div.nodata_container {
 /* service map */
 #container_servicemap_legend {
   position: absolute;
-  width: 200px;
   background: #fff;
   margin-top: 10px;
   right: 2px;
@@ -3012,10 +3011,6 @@ div.nodata_container {
 
 #container_servicemap_legend table {
   text-align: left;
-}
-
-.legend_servicemap_item {
-  display: none;
 }
 
 /* agent modules*/

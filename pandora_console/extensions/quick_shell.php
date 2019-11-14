@@ -381,7 +381,12 @@ function quickShellSettings()
     }
 
     // Interface.
-    ui_print_page_header(__('QuickShell settings'));
+    ui_print_page_header(
+        __('QuickShell settings'),
+        '',
+        false,
+        'quickshell_settings'
+    );
 
     if ($changes > 0) {
         $msg = __('%d Updated', $changes);

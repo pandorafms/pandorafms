@@ -93,12 +93,13 @@ class HelpFeedBack extends Wizard
         ui_require_css_File('discovery');
         ui_require_css_file('help_feedback');
 
-        $help_url = get_parameter('url', null);
+        $help_url = get_parameter('b', null);
+        $help_url = base64_decode($help_url);
         if ($help_url === null) {
             echo __('Page not found');
         } else {
             ?>
-        <iframe width="100%" height="100%" frameBorder="0" 
+        <iframe width="100%" height="100%" frameBorder="0" id="h_Viewer"
             src="<?php echo $help_url; ?>">
             <?php echo __('Browser not compatible.'); ?>
         </iframe>

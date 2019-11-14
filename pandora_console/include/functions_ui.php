@@ -1404,14 +1404,19 @@ function ui_print_help_icon(
     }
 
     $url = get_help_info($help_id);
+    $b = base64_encode($url);
 
+    $help_handler = 'index.php?sec=view&sec2=general/help_feedback';
+    // Needs to use url encoded to avoid anchor lost.
+    $help_handler .= '&b='.$b;
+    $help_handler .= '&pure=1&url='.$url;
     $output = html_print_image(
         $image,
         true,
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".ui_get_full_url('index.php?sec=view&sec2=general/help_feedback&pure=1&url='.$url)."')",
+            'onclick' => "open_help ('".ui_get_full_url($help_handler)."')",
             'id'      => $id,
         ],
         false,

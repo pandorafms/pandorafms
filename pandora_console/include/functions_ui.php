@@ -3667,6 +3667,7 @@ function ui_print_event_priority(
  * @param string  $main_class      Main object class.
  * @param string  $img_a           Image (closed).
  * @param string  $img_b           Image (opened).
+ * @param string  $clean           Do not encapsulate with class boxes, clean print.
  *
  * @return string HTML.
  */
@@ -3681,7 +3682,8 @@ function ui_toggle(
     $container_class='white-box-content',
     $main_class='box-shadow white_table_graph',
     $img_a='images/arrow_down_green.png',
-    $img_b='images/arrow_right_green.png'
+    $img_b='images/arrow_right_green.png',
+    $clean=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3697,9 +3699,17 @@ function ui_toggle(
         $original = $img_a;
     }
 
+    $header_class = '';
+    if ($clean === false) {
+        $header_class = 'white_table_graph_header';
+    } else {
+        $main_class = '';
+        $container_class = 'white-box-content-clean';
+    }
+
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'">';
-    $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
+    $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,
         [
@@ -3767,7 +3777,8 @@ function ui_print_toggle($data)
         (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
         (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
-        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png'
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
+        (isset($data['clean']) === true) ? $data['clean'] : false
     );
 }
 

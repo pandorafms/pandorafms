@@ -1311,12 +1311,14 @@ class Diagnostics extends Wizard
                 'status' => ($sum_threads < $totalServerThreads) ? 2 : 1,
             ];
 
-            if ($totalServerThreads > 0) {
+            if ($sum_threads < $totalServerThreads) {
                 $result['data']['total_threads']['message'] = __(
                     'Current pandora_server running threads'
                 );
-                $result['data']['total_threads']['message'] .= ' ';
-                $result['data']['total_threads']['message'] .= $totalServerThreads;
+            } else {
+                __(
+                    'There\'s more pandora_server threads than configured, are you running multiple servers simultaneusly?.'
+                );
             }
         }
 

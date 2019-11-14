@@ -218,7 +218,8 @@ function quickShell()
     if (empty($config['gotty_user']) === false
         && empty($config['gotty_pass']) === false
     ) {
-        $auth_str = $config['gotty_user'].':'.$config['gotty_pass'];
+        $auth_str = io_safe_output($config['gotty_user']);
+        $auth_str .= ':'.io_output_password($config['gotty_pass']);
         $gotty_url = $auth_str.'@'.$host.':'.$port;
     }
 

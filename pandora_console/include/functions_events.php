@@ -4580,7 +4580,7 @@ function events_page_comments($event, $ajax=false)
                 continue;
             }
 
-            $comments_array[] = json_decode(io_safe_output($comm), true);
+            $comments_array[] = io_safe_output(json_decode($comm, true));
         }
     } else {
         // If comments are not stored in json, the format is old.

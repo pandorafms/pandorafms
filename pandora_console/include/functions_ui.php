@@ -2969,7 +2969,7 @@ function ui_progress_extend(
     ui_require_css_file('progress');
 
     // Main container.
-    $output .= '<div class="progress_main" ';
+    $output .= '<div class="progress_main_noborder" ';
     $output .= '" style="width:'.$data['width'].'%;';
     $output .= ' height:'.$data['height'].'em;">';
 

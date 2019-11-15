@@ -3683,8 +3683,8 @@ CREATE TABLE `tremote_command_target` (
   `rcmd_id` bigint unsigned NOT NULL,
   `id_agent` int(10) unsigned NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
-  `stdout` text,
-  `stderr` text,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
   `errorlevel` int(10) unsigned NOT NULL default 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)

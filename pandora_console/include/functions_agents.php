@@ -133,6 +133,32 @@ function agents_get_agent_id_by_alias($alias)
 
 
 /**
+ * Return seconds left to contact again with agent.
+ *
+ * @param integer $id_agente Target agent
+ *
+ * @return integer|null Seconds left.
+ */
+function agents_get_next_contact_time_left(int $id_agente)
+{
+    $last_contact = false;
+
+    if ($id_agente > 0) {
+        $last_contact = db_get_value_sql(
+            sprintf(
+                'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
+                    FROM `tagente`
+                    WHERE id_agente = %d ',
+                $id_agente
+            )
+        );
+    }
+
+    return $last_contact;
+}
+
+
+/**
  * Creates an agent.
  *
  * @param string  $name          Agent name.

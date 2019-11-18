@@ -116,3 +116,59 @@ function delete_alert_action(settings) {
     }
   });
 }
+
+function standby_alert(settings) {
+  confirmDialog({
+    title: settings.title,
+    message: settings.msg,
+    onAccept: function() {
+      $.ajax({
+        method: "post",
+        url: settings.url,
+        data: {
+          page: settings.page,
+          method: "standByAlert",
+          id_alert: settings.id_alert,
+          standby: settings.standby
+        },
+        dataType: "html",
+        success: function(data) {
+          $("#standby-alert-" + settings.id_alert).empty();
+          $("#standby-alert-" + settings.id_alert).append(data);
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+  });
+}
+
+function disabled_alert(settings) {
+  confirmDialog({
+    title: settings.title,
+    message: settings.msg,
+    onAccept: function() {
+      $.ajax({
+        method: "post",
+        url: settings.url,
+        data: {
+          page: settings.page,
+          method: "disabledAlert",
+          id_alert: settings.id_alert,
+          disabled: settings.disabled
+        },
+        dataType: "json",
+        success: function(data) {
+          $("#disabled-alert-" + settings.id_alert).empty();
+          $("#disabled-alert-" + settings.id_alert).append(data.disabled);
+          $("#status-alert-" + settings.id_alert).empty();
+          $("#status-alert-" + settings.id_alert).append(data.status);
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+  });
+}

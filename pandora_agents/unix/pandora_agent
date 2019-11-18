@@ -1731,28 +1731,48 @@ sub execute_command_timeout {
 # $std_files = ' >>  /tmp/stdout 2>> /tmp/stderr
 ################################################################################
 sub execute_command_block {
-	my ($commands, $std_files, $timeout) = @_;
+	my ($commands, $std_files, $timeout, $retry) = @_;
 
 	return 0 unless defined($commands);
+
+	my $retries = $retry;
+
+	$retries = 1 unless looks_like_number($retries) && $retries > 0;
 
 	my $err_level = 0;
 	$std_files = '' unless defined ($std_files);
 
 	if (ref($commands) ne "ARRAY") {
 		return 0 if $commands eq '';
-		$err_level = execute_command_timeout(
-			"($commands) $std_files",
-			$timeout
-		);
+
+		do {
+			$err_level = execute_command_timeout(
+				"($commands) $std_files",
+				$timeout
+			);
+
+			# Do not retry if success.
+			last if looks_like_number($err_level) && $err_level == 0;
+		} while ((--$retries) > 0);
 
 	} else {
 		foreach my $comm (@{$commands}) {
 			next unless defined($comm);
-			$err_level = execute_command_timeout(
-				"($comm) $std_files",
-				$timeout
-			);
+			$retries = $retry;
+			$retries = 1 unless looks_like_number($retries) && $retries > 0;
 
+			do {
+				$err_level = execute_command_timeout(
+					"($comm) $std_files",
+					$timeout
+				);
+
+				# Do not retry if success.
+				last if looks_like_number($err_level) && $err_level == 0;
+
+			} while ((--$retries) > 0);
+
+			# Do not continue evaluating block if failed.
 			last unless ($err_level == 0);
 		}
 	}

@@ -1411,7 +1411,7 @@ function ui_print_help_icon(
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".$url."')",
+            'onclick' => "open_help ('".ui_get_full_url('index.php?sec=view&sec2=general/help_feedback&pure=1&url='.$url)."')",
             'id'      => $id,
         ],
         false,
@@ -3015,6 +3015,10 @@ function ui_print_datatable(array $parameters)
         $parameters['default_pagination'] = $config['block_size'];
     }
 
+    if (!isset($parameters['paging'])) {
+        $parameters['paging'] = true;
+    }
+
     $no_sortable_columns = [];
     if (isset($parameters['no_sortable_columns'])) {
         $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
@@ -3165,6 +3169,9 @@ function ui_print_datatable(array $parameters)
         );
     }
 
+    // Languages.
+    $processing = __('Processing');
+
     // Extra html.
     $extra = '';
     if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
@@ -3175,7 +3182,7 @@ function ui_print_datatable(array $parameters)
     $table = '<table id="'.$table_id.'" ';
     $table .= 'class="'.$parameters['class'].'"';
     $table .= 'style="'.$parameters['style'].'">';
-    $table .= '<thead><tr>';
+    $table .= '<thead><tr class="datatables_thead_tr">';
 
     if (isset($parameters['column_names'])
         && is_array($parameters['column_names'])
@@ -3224,11 +3231,14 @@ function ui_print_datatable(array $parameters)
             },
             processing: true,
             serverSide: true,
-            paging: true,
+            paging: '.$parameters['paging'].',
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
             dom: "plfrtiBp",
+            language: {
+                processing:"'.$processing.'"
+            },
             buttons: [
                 {
                     extend: "csv",
@@ -3326,10 +3336,18 @@ function ui_print_datatable(array $parameters)
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
-        });
-    });
+        });';
 
-</script>';
+    if (isset($parameters['caption']) === true
+        && empty($parameters['caption']) === false
+    ) {
+        $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
+        $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    $js .= '});';
+
+    $js .= '</script>';
 
     // Order.
     $err_msg = '<div id="error-'.$table_id.'"></div>';
@@ -3345,7 +3363,7 @@ function ui_print_datatable(array $parameters)
     $output = $include.$output;
 
     // Print datatable if needed.
-    if (!(isset($parameters['print']) && $parameters['print'] === false)) {
+    if (isset($parameters['print']) === false || $parameters['print'] === false) {
         echo $output;
     }
 
@@ -3523,6 +3541,8 @@ function ui_print_event_priority(
  * @param string  $toggle_class    Toggle class.
  * @param string  $container_class Container class.
  * @param string  $main_class      Main object class.
+ * @param string  $img_a           Image (closed).
+ * @param string  $img_b           Image (opened).
  *
  * @return string HTML.
  */
@@ -3535,20 +3555,22 @@ function ui_toggle(
     $return=false,
     $toggle_class='',
     $container_class='white-box-content',
-    $main_class='box-shadow white_table_graph'
+    $main_class='box-shadow white_table_graph',
+    $img_a='images/arrow_down_green.png',
+    $img_b='images/arrow_right_green.png'
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image('images/arrow_down_green.png', true, false, true);
-    $image_b = html_print_image('images/arrow_right_green.png', true, false, true);
+    $image_a = html_print_image($img_a, true, false, true);
+    $image_b = html_print_image($img_b, true, false, true);
     // Options.
     if ($hidden_default) {
         $style = 'display:none';
-        $original = 'images/arrow_right_green.png';
+        $original = $img_b;
     } else {
         $style = '';
-        $original = 'images/arrow_down_green.png';
+        $original = $img_a;
     }
 
     // Link to toggle.
@@ -3598,6 +3620,31 @@ function ui_toggle(
     } else {
         return $output;
     }
+}
+
+
+/**
+ * Simplified way of ui_toggle ussage.
+ *
+ * @param array $data Arguments.
+ *
+ * @return string HTML code with toggle content.
+ */
+function ui_print_toggle($data)
+{
+    return ui_toggle(
+        $data['content'],
+        $data['name'],
+        (isset($data['title']) === true) ? $data['title'] : '',
+        (isset($data['id']) === true) ? $data['id'] : '',
+        (isset($data['hidden_default']) === true) ? $data['hidden_default'] : true,
+        (isset($data['return']) === true) ? $data['return'] : false,
+        (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
+        (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
+        (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
+        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png'
+    );
 }
 
 
@@ -5697,7 +5744,7 @@ function ui_print_comments($comments)
                 continue;
             }
 
-            $comments_array[] = json_decode(io_safe_output($comm), true);
+            $comments_array[] = io_safe_output(json_decode($comm, true));
         }
     }
 

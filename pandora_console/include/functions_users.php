@@ -1236,3 +1236,29 @@ function users_get_explode_tags(&$group)
     }
 
 }
+
+
+/**
+ * Get mail admin.
+ *
+ * @return string Return mail admin.
+ */
+function get_mail_admin():string
+{
+    $mail = db_get_value('email', 'tusuario', 'is_admin', 1);
+
+    return $mail;
+}
+
+
+/**
+ * Get name admin.
+ *
+ * @return string Return name admin.
+ */
+function get_name_admin():string
+{
+    $mail = db_get_value('fullname', 'tusuario', 'is_admin', 1);
+
+    return $mail;
+}

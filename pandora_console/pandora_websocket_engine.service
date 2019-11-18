@@ -1,0 +1,19 @@
+[Unit]
+Description=php webSocket
+After=syslog.target network.target
+
+[Service]
+User=apache
+
+Type=simple
+ExecStart=php /var/www/html/pandora_console/ws.php >> /var/www/html/pandora_console/pandora_console.log 2>&1
+TimeoutStopSec=20
+KillMode=process
+Restart=always
+RestartSec=2
+StandardOutput=file:/var/www/html/pandora_console/pandora_console.log
+StandardError=file:/var/www/html/pandora_console/pandora_console.log
+
+[Install]
+WantedBy=multi-user.target
+Alias=websocket.service

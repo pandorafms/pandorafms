@@ -1018,7 +1018,7 @@ $adv_inputs[] = $in;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    true
 );
 
 $data = html_print_select(
@@ -1539,7 +1539,7 @@ function process_datatables_callback(table, settings) {
                 // Agent id.
                 target = i;
             }
-            if(label == '<?php echo __('Agent name'); ?>') {
+            if(label == '<?php echo addslashes(__('Agent name')); ?>') {
                 // Agent id.
                 target = i;
                 break;
@@ -1619,15 +1619,13 @@ function process_datatables_item(item) {
 
     // Show comments events.
     item.user_comment = item.comments
-  
-    if(item.comments.length > 80){
 
-    item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-    item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
-    item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
-    
+    if(typeof item.comments !== 'undefined' && item.comments.length > 80) {
+        item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+        item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
+        item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
     }
- 
+
     // Grouped events.
     if(item.max_id_evento) {
         item.id_evento = item.max_id_evento

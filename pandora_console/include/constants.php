@@ -147,7 +147,7 @@ define('COL_UNKNOWN', '#B2B2B2');
 define('COL_DOWNTIME', '#976DB1');
 define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
-define('COL_MINOR', '#B2B2B2');
+define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#E4E4E4');
 define('COL_MAINTENANCE', '#4a83f3');
@@ -648,3 +648,12 @@ define('HA_PENDING', 2);
 define('HA_PROCESSING', 3);
 define('HA_DISABLED', 4);
 define('HA_FAILED', 5);
+
+
+define('WELCOME_STARTED', 1);
+define('W_CONFIGURE_MAIL', 1);
+define('W_CREATE_AGENT', 2);
+define('W_CREATE_MODULE', 3);
+define('W_CREATE_ALERT', 4);
+define('W_CREATE_TASK', 5);
+define('WELCOME_FINISHED', -1);

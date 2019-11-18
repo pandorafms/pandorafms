@@ -1396,9 +1396,6 @@ ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned d
 ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `ff_normal` int(4) unsigned default '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `ff_warning` int(4) unsigned default '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `ff_critical` int(4) unsigned default '0';
 ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	DROP COLUMN `ff_warning`,
 	DROP COLUMN `ff_critical`,
@@ -1757,7 +1754,12 @@ INSERT INTO tmodule VALUES (8, 'Wux module');
 -- Table `ttipo_modulo`
 -- ---------------------------------------------------------------------
 
-INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
+INSERT INTO `ttipo_modulo` VALUES
+(25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -2010,6 +2012,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_node_id` INT(10) NOT NULL default 0,
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

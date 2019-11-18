@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.739
-%define release     191028
+%define version     7.0NG.740
+%define release     191118
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -57,6 +57,13 @@ install -m 0644 pandora_console_logrotate_centos $RPM_BUILD_ROOT%{_sysconfdir}/l
 rm -rf $RPM_BUILD_ROOT
 
 %post
+# Install pandora_websocket_engine service.
+cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
+chmod +x /etc/init.d/pandora_websocket_engine
+
+echo "You can now start the Pandora FMS Websocket service by executing"
+echo "   /etc/init.d/pandora_websocket_engine start"
+
 # Has an install already been done, if so we only want to update the files
 # push install.php aside so that the console works immediately using existing
 # configuration.

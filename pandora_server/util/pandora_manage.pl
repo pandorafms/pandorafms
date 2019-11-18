@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.739 PS191028";
+my $version = "7.0NG.740 PS191118";
 
 # save program name for logging
 my $progname = basename($0);
@@ -121,6 +121,7 @@ sub help_screen{
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
 	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
@@ -4085,9 +4086,6 @@ sub cli_create_event() {
 				$id_alert_agent_module = 0;
 			}
 			
-			if (defined($comment) && $comment ne '') {
-				$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-			}
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			# Base64 encode custom data
@@ -4138,9 +4136,6 @@ sub cli_create_event() {
 			$id_alert_agent_module = 0;
 		}
 		
-		if (defined($comment) && $comment ne '') {
-			$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-		}
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		# Base64 encode custom data
@@ -4848,6 +4843,49 @@ sub cli_get_agent_modules() {
 		}
 	}
 }
+
+##############################################################################
+# Show id, name and id_server of an agent given alias
+# Related option: --get_agents_id_name_by_alias
+##############################################################################
+
+sub cli_get_agents_id_name_by_alias() {
+	my $agent_alias = @ARGV[2];
+	my $strict = @ARGV[3];
+	my @agents;
+	my $where_value;
+
+	if($strict eq 'strict') {
+		$where_value = $agent_alias;
+	} else {
+		$where_value = "%".$agent_alias."%";
+	}
+
+	if(is_metaconsole($conf) == 1) {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente, id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	} else {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	}
+	if(scalar(@agents) == 0) {
+		print "[ERROR] No agents retrieved.\n\n";
+	} else {
+		if(is_metaconsole($conf) == 1) {
+			print "alias, id_agente, id_tagente, id_server, server_name\n";
+
+				foreach my $agent (@agents) {
+			
+				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+			}
+		} else {
+			print "alias, id_agente\n";
+
+			foreach my $agent (@agents) {
+				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";
+			}
+		}
+	}	
+}
+
 
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
@@ -5895,9 +5933,16 @@ sub cli_stop_downtime () {
 	exist_check($downtime_id,'planned downtime',$downtime_id);
 	
 	my $current_time = time;
-	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	if($current_time >= $downtime_date_to) {
+	my $data = get_db_single_row ($dbh, 'SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
+
+	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
+		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
+		print_log "[INFO] Periodical and running planned downtime cannot be stopped.\n\n";
+		exit;
+	}
+	
+	if($current_time >= $data->{'date_to'}) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}
@@ -7418,6 +7463,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_modules') {
 			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agents_id_name_by_alias') {
+			param_check($ltotal, 2,1);
+			cli_get_agents_id_name_by_alias();
 		}
 		elsif ($param eq '--get_policy_modules') {
 			param_check($ltotal, 1);

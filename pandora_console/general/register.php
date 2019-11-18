@@ -30,6 +30,7 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
+require_once $config['homedir'].'/include/class/WelcomeWindow.class.php';
 
 
 if (is_ajax()) {
@@ -122,6 +123,8 @@ if (is_ajax()) {
     exit();
 }
 
+
+
 ui_require_css_file('register');
 
 $initial = isset($config['initial_wizard']) !== true
@@ -168,6 +171,16 @@ if (!$config['disabled_newsletter']) {
             );
         }
     }
+}
+
+$welcome = !$registration && !$show_newsletter && !$initial;
+try {
+    $welcome_window = new WelcomeWindow($welcome);
+    if ($welcome_window !== null) {
+        $welcome_window->run();
+    }
+} catch (Exception $e) {
+    $welcome = false;
 }
 
 $newsletter = null;

@@ -13,7 +13,8 @@ switch ($_GET['module']) {
         $sql = sprintf(
             'SELECT id_tipo, descripcion
 			FROM ttipo_modulo
-			WHERE categoria between 3 and 5 '
+			WHERE categoria between 3 and 5
+            OR categoria = 10 '
         );
     break;
 

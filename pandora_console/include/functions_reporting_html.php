@@ -447,7 +447,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
     if ($mini) {
         $font_size = '1.5';
     } else {
-        $font_size = '3';
+        $font_size = $config['font_size_item_report'];
     }
 
     $metaconsole_on = is_metaconsole();
@@ -2493,7 +2493,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
     if ($mini) {
         $font_size = '1.5';
     } else {
-        $font_size = '3';
+        $font_size = $config['font_size_item_report'];
     }
 
     $table->colspan['module']['cell'] = 3;
@@ -2735,10 +2735,12 @@ function reporting_html_min_value(&$table, $item, $mini)
 
 function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
 {
+    global $config;
+
     if ($mini) {
         $font_size = '1.5';
     } else {
-        $font_size = '3';
+        $font_size = $config['font_size_item_report'];
     }
 
     if (isset($item['visual_format']) && $item['visual_format'] != 0

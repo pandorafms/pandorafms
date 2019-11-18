@@ -333,12 +333,12 @@ function quickShellSettings()
 
         $gotty_user = get_parameter(
             'gotty_user',
-            $config['gotty_user']
+            ''
         );
 
         $gotty_pass = get_parameter(
             'gotty_pass',
-            io_output_password($config['gotty_pass'])
+            ''
         );
 
         $gotty_pass = io_input_password($gotty_pass);
@@ -373,6 +373,7 @@ function quickShellSettings()
         }
 
         if ($config['gotty_pass'] != $gotty_pass) {
+            $gotty_pass = io_input_password($gotty_pass);
             config_update_value('gotty_pass', $gotty_pass);
             $changes++;
             $critical++;

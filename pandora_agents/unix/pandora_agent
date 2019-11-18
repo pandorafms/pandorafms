@@ -55,7 +55,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.740';
-use constant AGENT_BUILD => '191113';
+use constant AGENT_BUILD => '191118';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -294,6 +294,77 @@ sub load_libraries() {
 	} else {
 		$YAML = 1;
 	}
+}
+
+################################################################################
+# Erase blank spaces before and after the string
+################################################################################
+sub trim {
+	my $string = shift;
+	if (empty($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
+}
+
+################################################################################
+# Mix hashses
+################################################################################
+sub merge_hashes {
+	my $_h1 = shift;
+	my $_h2 = shift;
+
+	if (ref($_h1) ne "HASH") {
+		return \%{$_h2} if (ref($_h2) eq "HASH");
+	}
+
+	if (ref($_h2) ne "HASH") {
+		return \%{$_h1} if (ref($_h1) eq "HASH");
+	}
+
+	if ((ref($_h1) ne "HASH") && (ref($_h2) ne "HASH")) {
+		return {};
+	}
+
+	my %ret = (%{$_h1}, %{$_h2});
+
+	return \%ret;
+}
+
+################################################################################
+# Empty
+################################################################################
+sub empty {
+	my $str = shift;
+
+	if (!(defined($str)) ){
+		return 1;
+	}
+
+	if(looks_like_number($str)){
+		return 0;
+	}
+
+	if (ref($str) eq "ARRAY") {
+		return (($#{$str}<0)?1:0);
+	}
+
+	if (ref($str) eq "HASH") {
+		my @tmp = keys %{$str};
+		return (($#tmp<0)?1:0);
+	}
+
+	if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+		return 1;
+	}
+	return 0;
 }
 
 ################################################################################
@@ -731,13 +802,6 @@ sub parse_conf_modules($) {
 		# Macros
 		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;
-		# Commands
-		} elsif ($line =~ /^\s*cmd_file\s+(.+)$/) {
-			if (ref ($Conf{'commands'}) ne "HASH") {
-				$Conf{'commands'} = {};
-			}
-			# Initialize empty command hash.
-			$Conf{'commands'}->{$1} = {};
 		}
 	}
 	return;
@@ -832,7 +896,21 @@ sub read_config (;$) {
 		next if ($line =~ /^module\s*\w*/);
 
 		#Configuration token
-		if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
+		if ($line =~ /^\s*(\S+)\s+(.*)$/) {
+			# Reserved keyword.
+			next if ($1 eq "commands");
+
+			if ($1 eq "cmd_file") {
+				# Commands
+				if (ref ($Conf{'commands'}) ne "HASH") {
+					$Conf{'commands'} = {};
+				}
+				# Initialize empty command hash.
+				$Conf{'commands'}->{$2} = {};
+				log_message('setup', "Command required $2");
+				next;
+			}
+
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
 			
@@ -979,6 +1057,7 @@ sub read_config (;$) {
 		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq '1');
 	}
+
 }
 
 #################################################################################
@@ -1289,6 +1368,10 @@ sub check_remote_config () {
 	%Collections = ();
 	%Conf = %DefaultConf;
 
+	# Supposed to discard current configuration but not.
+	# Cleanup old commands configuration.
+	$Conf{'commands'} = {};
+
 	# Reload the new configuration
 	read_config ();
 	
@@ -1421,7 +1504,7 @@ sub check_collections () {
 ################################################################################
 # Check for remote commands defined.
 ################################################################################
-sub prepare_remote_commands {
+sub prepare_commands {
 	if ($YAML == 0) {
 		log_message(
 			'error',
@@ -1430,13 +1513,27 @@ sub prepare_remote_commands {
 		return;
 	}
 
+	# Force configuration file read.
+	my @commands = read_config('cmd_file');
+
+	if (empty(\@commands)) {
+		$Conf{'commands'} = {};
+	} else {
+		foreach my $rcmd (@commands) {
+			$Conf{'commands'}->{trim($rcmd)} = {};
+		}
+	}
+
+	# Cleanup old commands. Not registered.
+	cleanup_old_commands();
+
 	foreach my $ref (keys %{$Conf{'commands'}}) {
 		my $file_content;
 		my $download = 0;
 		my $rcmd_file = $ConfDir.'/commands/'.$ref.'.rcmd';
 
 		# Check for local .rcmd.done files
-		if (-e $Conf{'temporal'}.'/'.$ref.'.rcmd.done') {
+		if (-e $rcmd_file.'.done') {
 			# Ignore.
 			delete $Conf{'commands'}->{$ref};
 			next;
@@ -1532,18 +1629,100 @@ sub report_command {
 }
 
 ################################################################################
+# Cleanup unreferenced rcmd and rcmd.done files.
+################################################################################
+sub cleanup_old_commands {
+	# Cleanup old .rcmd and .rcmd.done files.
+	my %registered = map { $_.'.rcmd' => 1 } keys %{$Conf{'commands'}};
+	if(opendir(my $dir, $ConfDir.'/commands/')) {
+		while (my $item = readdir($dir)) {
+
+			# Skip other files.
+			next if ($item !~ /\.rcmd$/);
+
+			# Clean .rcmd.done file if its command is not referenced in conf.
+			if (!defined($registered{$item})) {
+				if (-e $ConfDir.'/commands/'.$item) {
+					unlink($ConfDir.'/commands/'.$item);
+				}
+				if (-e $ConfDir.'/commands/'.$item.'.done') {
+					unlink($ConfDir.'/commands/'.$item.'.done');
+				}
+			}
+		}
+
+		# Close dir.
+		closedir($dir);
+	}
+
+}
+
+################################################################################
 # Executes a command using defined timeout.
 ################################################################################
 sub execute_command_timeout {
-	my ($command, $timeout) = @_;
+	my ($cmd, $timeout) = @_;
 
-	if (!looks_like_number($timeout)) {
-		`$command`;
-	} else {
-		`$command`;
+	if (!defined($timeout)
+		|| !looks_like_number($timeout)
+		|| $timeout <= 0
+	) {
+		`$cmd`;
+		return $?>>8;
 	}
 
-	return $?>>8;
+	my $remaining_timeout = $timeout;
+
+	my $RET;
+	my $output;
+
+	my $pid = open ($RET, "-|");
+	if (!defined($pid)) {
+		# Failed to fork.
+		log_message('error', '[command] Failed to fork.');
+		return undef;
+	}
+	if ($pid == 0) {
+		# Child.
+		my $ret;
+		eval {
+			local $SIG{ALRM} = sub { die "timeout\n" };
+			alarm $timeout;
+			`$cmd`;
+			alarm 0;
+		};
+
+		my $result = ($?>>8);
+		print $result;
+
+		# Exit child.
+		# Child finishes.
+		exit;
+
+	} else {
+		# Parent waiting.
+		while( --$remaining_timeout > 0 ){
+			if (wait == -1) {
+				last;
+			}
+			# Wait child up to timeout seconds.
+			sleep 1;
+		}
+	}
+
+	if ($remaining_timeout > 0) {
+		# Retrieve output from child.
+		$output = do { local $/; <$RET> };
+		$output = $output>>8;
+	}
+	else {
+		# Timeout expired.
+		return 124;
+	}
+
+	close($RET);
+
+	return $output;
 }
 
 ################################################################################
@@ -1552,28 +1731,48 @@ sub execute_command_timeout {
 # $std_files = ' >>  /tmp/stdout 2>> /tmp/stderr
 ################################################################################
 sub execute_command_block {
-	my ($commands, $std_files, $timeout) = @_;
+	my ($commands, $std_files, $timeout, $retry) = @_;
 
 	return 0 unless defined($commands);
+
+	my $retries = $retry;
+
+	$retries = 1 unless looks_like_number($retries) && $retries > 0;
 
 	my $err_level = 0;
 	$std_files = '' unless defined ($std_files);
 
 	if (ref($commands) ne "ARRAY") {
 		return 0 if $commands eq '';
-		$err_level = execute_command_timeout(
-			"($commands) $std_files",
-			$timeout
-		);
+
+		do {
+			$err_level = execute_command_timeout(
+				"($commands) $std_files",
+				$timeout
+			);
+
+			# Do not retry if success.
+			last if looks_like_number($err_level) && $err_level == 0;
+		} while ((--$retries) > 0);
 
 	} else {
 		foreach my $comm (@{$commands}) {
 			next unless defined($comm);
-			$err_level = execute_command_timeout(
-				"($comm) $std_files",
-				$timeout
-			);
+			$retries = $retry;
+			$retries = 1 unless looks_like_number($retries) && $retries > 0;
 
+			do {
+				$err_level = execute_command_timeout(
+					"($comm) $std_files",
+					$timeout
+				);
+
+				# Do not retry if success.
+				last if looks_like_number($err_level) && $err_level == 0;
+
+			} while ((--$retries) > 0);
+
+			# Do not continue evaluating block if failed.
 			last unless ($err_level == 0);
 		}
 	}
@@ -3271,24 +3470,8 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
-	if ($Conf{'debug'} ne '1') {
-		# Check remote commands
-		prepare_remote_commands ();
-
-		# Cleanup old .rcmd.done files.
-		my %registered = map { $_.'.rcmd.done' => 1 } keys %{$Conf{'commands'}};
-		if(opendir(my $dir, $ConfDir.'/commands/')) {
-			while (my $item = readdir($dir)) {
-				# Skip other files.
-				next if ($item !~ /\.rcmd\.done$/);
-
-				# Clean .rcmd.done file if its command is not referenced in conf.
-				if (!defined($registered{$item})) {
-					unlink ($item);
-				}
-			}
-		}
-	}
+	# Check scheduled commands
+	prepare_commands() unless ($Conf{'debug'} eq '1');
 
 	# Launch broker agents
 	@BrokerPid = ();

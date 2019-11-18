@@ -30,12 +30,16 @@ CREATE TABLE `tremote_command_target` (
   `rcmd_id` bigint unsigned NOT NULL,
   `id_agent` int(10) unsigned NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
-  `stdout` text,
-  `stderr` text,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
   `errorlevel` int(10) unsigned NOT NULL default 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
+
+ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
 
 COMMIT;

@@ -2249,7 +2249,7 @@ CREATE TABLE `tvisual_console_elements_cache` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
 	`identifier` varchar(100) NOT NULL,
 	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
-	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM',
 	`username` text,
 	`password` text,
 	`extra_1` text,
@@ -2327,8 +2327,8 @@ CREATE TABLE `tremote_command_target` (
   `rcmd_id` bigint unsigned NOT NULL,
   `id_agent` int(10) unsigned NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
-  `stdout` text,
-  `stderr` text,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
   `errorlevel` int(10) unsigned NOT NULL default 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)

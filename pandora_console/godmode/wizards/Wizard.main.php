@@ -458,6 +458,7 @@ class Wizard
 
         if (is_array($input['block_content']) === true) {
             $direct = (bool) $input['direct'];
+            $toggle = (bool) $input['toggle'];
 
             // Print independent block of inputs.
             $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
@@ -471,12 +472,35 @@ class Wizard
                 $output .= '<ul class="wizard '.$input['block_class'].'">';
             }
 
-            foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlock(
-                    $input,
+            $html = '';
+
+            foreach ($input['block_content'] as $in) {
+                $html .= $this->printBlock(
+                    $in,
                     $return,
                     (bool) $direct
                 );
+            }
+
+            if ($toggle === true) {
+                $output .= ui_print_toggle(
+                    [
+                        'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                        'content'         => $html,
+                        'title'           => $input['toggle_title'],
+                        'id'              => $input['toggle_id'],
+                        'hidden_default'  => $input['toggle_hidden_default'],
+                        'return'          => (isset($input['toggle_return']) ? $input['toggle_return'] : true),
+                        'toggle_class'    => $input['toggle_toggle_class'],
+                        'main_class'      => $input['toggle_main_class'],
+                        'container_class' => $input['toggle_container_class'],
+                        'img_a'           => $input['toggle_img_a'],
+                        'img_b'           => $input['toggle_img_b'],
+                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                    ]
+                );
+            } else {
+                $output .= $html;
             }
 
             // Close block.

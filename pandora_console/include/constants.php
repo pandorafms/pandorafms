@@ -537,7 +537,7 @@ define('NODE_GENERIC', 3);
 define('STATUS_OK', 0);
 define('STATUS_ERROR', 1);
 
-// Maps (new networkmaps and  new visualmaps).
+// Maps new networkmaps and  new visualmaps.
 define('MAP_TYPE_NETWORKMAP', 0);
 define('MAP_TYPE_VISUALMAP', 1);
 
@@ -590,6 +590,7 @@ define('DISCOVERY_CLOUD_AWS_EC2', 6);
 define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
+define('DISCOVERY_APP_SAP', 10);
 
 
 // Discovery types matching definition.

@@ -19,6 +19,38 @@
   height: 20px;
 }
 
+.element-target-big {
+  width: 100px;
+  margin: 2px;
+  height: 100px;
+}
+
+.element-target-big:hover {
+  box-shadow: 0 0 10px -5px #424242;
+}
+
+.element-target-big:before {
+  content: attr(data-label);
+  position: relative;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  color: #373737;
+  font-weight: bolder;
+  display: flex;
+  flex-direction: row;
+  font-size: 1.8em;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  text-decoration: none;
+}
+
+.container-target a:hover {
+  text-decoration: none;
+}
+
 .status-normal {
   background-color: #add570;
 }
@@ -148,6 +180,12 @@ ul.wizard {
 
 .wizard li {
   display: flex;
+}
+
+.no-class.action-buttons.mw120px.textright.sorting_disabled,
+.textright {
+  text-align: right;
+  padding-right: 2em;
 }
 
 /*

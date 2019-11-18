@@ -488,7 +488,7 @@ if ($id_agente) {
 
     $is_sap = agents_get_sap_agents($id_agente);
     if ($is_sap) {
-        $saptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image('images/chart_curve.png', true, ['title' => __('SAP view')]).'</a>';
+        $saptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image('images/sap_icon.png', true, ['title' => __('SAP view')]).'</a>';
 
         if ($tab == 'sap_view') {
             $saptab['active'] = true;

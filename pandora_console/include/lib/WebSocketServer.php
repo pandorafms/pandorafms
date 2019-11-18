@@ -1542,8 +1542,6 @@ abstract class WebSocketServer
     {
         global $config;
 
-        \hd($config['dbconnection']);
-
         if (isset($config['dbconnection']) === false
             || mysqli_ping($config['dbconnection']) === false
         ) {

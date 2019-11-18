@@ -3169,6 +3169,9 @@ function ui_print_datatable(array $parameters)
         );
     }
 
+    // Languages.
+    $processing = __('Processing');
+
     // Extra html.
     $extra = '';
     if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
@@ -3233,6 +3236,9 @@ function ui_print_datatable(array $parameters)
             searching: false,
             responsive: true,
             dom: "plfrtiBp",
+            language: {
+                processing:"'.$processing.'"
+            },
             buttons: [
                 {
                     extend: "csv",
@@ -5738,7 +5744,7 @@ function ui_print_comments($comments)
                 continue;
             }
 
-            $comments_array[] = json_decode(io_safe_output($comm), true);
+            $comments_array[] = io_safe_output(json_decode($comm, true));
         }
     }
 

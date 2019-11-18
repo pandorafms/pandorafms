@@ -17,6 +17,10 @@
   text-align: justify;
 }
 
+.dataTables_wrapper {
+  min-height: 150px;
+}
+
 .datatables-td-title {
   width: 25% !important;
   font-weight: bolder;

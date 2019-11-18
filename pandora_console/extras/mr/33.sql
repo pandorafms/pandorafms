@@ -8,6 +8,10 @@ INSERT INTO `ttipo_modulo` VALUES
 (36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
 (37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
+<<<<<<< HEAD
 ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
+=======
+INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
+>>>>>>> origin/develop
 
 COMMIT;

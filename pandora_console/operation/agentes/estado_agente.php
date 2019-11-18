@@ -821,8 +821,9 @@ foreach ($agents as $agent) {
     $data[2] = ui_print_os_icon($agent['id_os'], false, true);
 
     $data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent['intervalo']).'</span>';
-
-    $data[4] = ui_print_group_icon($agent['id_grupo'], true);
+    $data[4] = '<a href="'.$config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">';
+    $data[4] .= ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
+    $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];
 
     $data[5] = ui_print_type_agent_icon(

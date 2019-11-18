@@ -5416,6 +5416,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'omnishell':
+            if ($es) {
+                $result .= 'Omnishell&printable=yes';
+            } else {
+                $result .= 'Omnishell&printable=yes';
+            }
+        break;
+
         case 'module_type_tab':
             if ($es) {
                 $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';

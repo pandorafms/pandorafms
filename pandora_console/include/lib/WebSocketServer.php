@@ -439,6 +439,9 @@ abstract class WebSocketServer
             if ((time() - $this->lastTickTimestamp) > $this->tickInterval) {
                 $this->lastTickTimestamp = time();
                 $this->tick();
+
+                // Keep connection with DB active.
+                $this->dbHearthbeat();
             }
 
             socket_select($read, $write, $except, 0, $this->timeout);
@@ -1527,6 +1530,27 @@ abstract class WebSocketServer
         // Finish dump.
         $dump .= "\n";
         return $dump;
+    }
+
+
+    /**
+     * Keeps db connection opened.
+     *
+     * @return void
+     */
+    public function dbHearthbeat()
+    {
+        global $config;
+
+        \hd($config['dbconnection']);
+
+        if (isset($config['dbconnection']) === false
+            || mysqli_ping($config['dbconnection']) === false
+        ) {
+            // Retry connection.
+            db_select_engine();
+            $config['dbconnection'] = db_connect();
+        }
     }
 
 

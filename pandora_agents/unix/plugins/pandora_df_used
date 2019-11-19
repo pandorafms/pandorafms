@@ -49,7 +49,7 @@ else
 
 	# Store all "ext" fstypes in @lines array
 	my @lines = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1";"\$2";"\$(NF-1)";"\$NF}' | grep -i "adfs\\|affs\\|autofs\\|btrfs\\|cifs\\|coda\\|coherent\\|efs\\|ext\\|hfs\\|hfsplus\\|hpfs\\|jfs\\|minix\\|msdos\\|ncpfs\\|nfs\\|nfs4\\|ntfs\\|proc\\|qnx4\\|reiserfs\\|smbfs\\|sysv\\|ubifs\\|udf\\|ufs\\|umsdos\\|usbfs\\|vfat\\|xenix\\|xfs\\|xiafs"`;
-
+	
 	chomp (@lines);
 
 	# To skip indicated filesystems
@@ -57,12 +57,16 @@ else
 	{
 		if (substr($fs,0,1) eq '-')
 		{
-			$excluded_filesystems{substr($fs,1,)} = '-1%';
+			my $mount_name=substr($fs,1,);
+			my @mount_all= split /\n/, `df -khTP | tail -n +2 | awk '{print \$7}'| grep -i "$mount_name"`; 
+			foreach (@mount_all){
+				$excluded_filesystems{$_} = '-1%';
+			}
 		}
 		else
 		{
 			my @linesmanual = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1";"\$2";"\$(NF-1)";"\$NF}' | grep -i $fs`;
-			
+
 			chomp (@linesmanual);
 
 			$filesystems{$fs} = '-1%';

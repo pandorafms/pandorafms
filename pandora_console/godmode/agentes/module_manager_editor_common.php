@@ -329,13 +329,20 @@ if (!$edit) {
     }
 
     // Removed web analysis and log4x from select.
+    $tipe_not_in = '24, 25';
+    // TODO: FIX credential store for remote command in metaconsole.
+    if (is_metaconsole()) {
+        $tipe_not_in = '24, 25, 34, 35, 36, 37';
+    }
+
     $sql = sprintf(
         'SELECT id_tipo, descripcion, nombre, categoria
 		FROM ttipo_modulo
 		WHERE categoria IN (%s)
-        AND id_tipo NOT IN (24, 25)
+        AND id_tipo NOT IN (%s)
 		ORDER BY id_tipo ASC',
-        implode(',', $categories)
+        implode(',', $categories),
+        $tipe_not_in
     );
 
     $type_names = db_get_all_rows_sql($sql);

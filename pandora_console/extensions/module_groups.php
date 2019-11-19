@@ -30,6 +30,15 @@
 global $config;
 
 check_login();
+// ACL Check
+if (!check_acl($config['id_user'], 0, 'AR')) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Module Groups view'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
 
 if (is_ajax()) {
     $get_info_alert_module_group = (bool) get_parameter('get_info_alert_module_group');
@@ -81,6 +90,16 @@ function mainModuleGroups()
     $offset = get_parameter('offset', 0);
     $agent_group_search = get_parameter('agent_group_search', '');
     $module_group_search = get_parameter('module_group_search', '');
+
+    // Check the user's group permissions.
+    $user_groups = users_get_groups($config['user'], 'AR');
+    $info = array_filter(
+        $info,
+        function ($v, $k) use ($user_groups) {
+            return $user_groups[$v['id']] != null;
+        },
+        ARRAY_FILTER_USE_BOTH
+    );
 
     $info = array_filter(
         $info,
@@ -265,7 +284,7 @@ function mainModuleGroups()
         text-align: center;
     ';
 
-    if (true) {
+    if ($info && $array_module_group) {
         $table = new StdClass();
         $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
@@ -296,22 +315,22 @@ function mainModuleGroups()
                         $url = 'index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group='.$key.'&modulegroup='.$k;
 
                         if ($array_data[$key][$k]['alerts_module_count'] != 0) {
-                            $color = '#FFA631';
+                            $color = COL_ALERTFIRED;
                             // Orange when the cell for this model group and agent has at least one alert fired.
                         } else if ($array_data[$key][$k]['critical_module_count'] != 0) {
-                            $color = '#e63c52';
+                            $color = COL_CRITICAL;
                             // Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
                         } else if ($array_data[$key][$k]['warning_module_count'] != 0) {
-                            $color = '#f3b200';
+                            $color = COL_WARNING;
                             // Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
                         } else if ($array_data[$key][$k]['unknown_module_count'] != 0) {
-                            $color = '#B2B2B2 ';
+                            $color = COL_UNKNOWN;
                             // Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
                         } else if ($array_data[$key][$k]['normal_module_count'] != 0) {
-                            $color = '#82b92e';
+                            $color = COL_NORMAL;
                             // Green when the cell for this model group and agent has OK state all modules.
                         } else if ($array_data[$key][$k]['notInit_module_count'] != 0) {
-                            $color = '#5BB6E5';
+                            $color = COL_NOTINIT;
                             // Blue when the cell for this module group and all modules have not init value.
                         }
 
@@ -359,7 +378,7 @@ function mainModuleGroups()
                 echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status').'</td></tr>';
                 echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module group and agent have at least one in unknown status and the others in green status').'</td></tr>';
                 echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module group and agent have all modules in OK status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_MAINTENANCE.";'></div></td><td>".__('Blue cell when the module group and agent have all modules in not init status.').'</td></tr>';
+                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__('Blue cell when the module group and agent have all modules in not init status.').'</td></tr>';
             echo '</table>';
         echo '</div>';
     } else {

@@ -448,8 +448,9 @@ B<Returns>:
 
 =cut
 ##########################################################################
-sub pandora_evaluate_alert ($$$$$$$;$$$) {
-	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value, $events, $event) = @_;
+sub pandora_evaluate_alert ($$$$$$$;$$$$) {
+	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh,
+	  $last_data_value, $correlatedItems, $event, $log) = @_;
 	
 	if (defined ($agent)) {
 		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output ($agent->{'nombre'}) . "'.", 10);
@@ -592,9 +593,20 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
 		return $status if ($last_status == 0 && $alert->{'type'} eq 'not_normal');
 	}
-	# Event alert
+	# Correlated alert
 	else {
-		my $rc = enterprise_hook ('evaluate_event_alert', [$pa_config, $dbh, $alert, $events, $event]);
+		my $rc = enterprise_hook (
+			'evaluate_correlated_alert',
+			[
+				$pa_config,
+				$dbh,
+				$alert,
+				$correlatedItems,
+				$event,
+				$log
+			]
+		);
+
 		return $status unless (defined ($rc) && $rc == 1);
 	}
 	

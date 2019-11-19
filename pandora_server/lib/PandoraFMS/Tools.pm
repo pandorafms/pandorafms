@@ -827,9 +827,9 @@ sub enterprise_hook ($$) {
 	my $output = eval { &$func (@args); };
 
 	# Discomment to debug.
-	# if ($@) {
-	# 	print STDERR $@;
-	# }
+	if ($@) {
+		print STDERR $@;
+	}
 
 	# Check for errors
 	#return undef if ($@);

@@ -18,7 +18,7 @@ function edit(id, str) {
   }
 
   // Value input hidden.
-  var valueHidden = $("#hidden-json-rule").val();
+  var valueHidden = $("#rule-stack").val();
 
   // Convert to array.
   var arrayValueHidden = JSON.parse(valueHidden);
@@ -31,11 +31,180 @@ function edit(id, str) {
     // Change value.
     arrayValueHidden[numberField].value = str;
 
-    // Update value json-rule.
-    $("#hidden-json-rule").val(JSON.stringify(arrayValueHidden));
+    // Update value rule-stack.
+    $("#rule-stack").val(JSON.stringify(arrayValueHidden));
   }
 
   return;
+}
+
+function getStack() {
+  return JSON.parse($("#rule-stack").val());
+}
+
+function setStack(stack) {
+  return $("#rule-stack").val(JSON.stringify(stack));
+}
+
+function addStack(stack, item) {
+  console.log("voy a meterla bien al fondo");
+  console.log(item);
+  stack.push(item);
+  setStack(stack);
+  console.log(stack);
+}
+
+function prevStack(stack) {
+  return stack[stack.length - 1];
+}
+
+function getBlockState() {
+  return $("#block-status").val();
+}
+
+function setBlockState(st) {
+  return $("#block-status").val(st);
+}
+
+function getBlockOrder() {
+  return $("#block-order").val();
+}
+
+function increaseBlockOrder(order) {
+  return $("#block-order").val(parseInt($("#block-order").val()) + 1);
+}
+
+function gramaticRules(content) {
+  console.log($(content));
+  var stack = getStack();
+  var id = $(content).attr("id");
+  var latest = prevStack(stack);
+
+  console.log("ME LLAMAN CON " + id);
+  var classType = $(content)
+    .attr("class")
+    .split(/\s+/)[0];
+
+  var item;
+
+  item = {
+    type: classType,
+    id: id,
+    value: $(content).text(),
+    order: getBlockOrder()
+  };
+
+  // Control block start.
+  if (id == "block-start") {
+    if (getBlockState() == "1") {
+      console.log("Block already opened");
+      return false;
+    }
+
+    if (stack.length > 0) {
+      if (latest.type == "nexos") {
+        // Can add a block start after a nexus.
+        addStack(stack, item);
+        setBlockState("1");
+        return true;
+      }
+    }
+
+    if (stack.length == 0) {
+      addStack(stack, item);
+      setBlockState("1");
+      return true;
+    }
+  }
+
+  // Control block end.
+  if (id == "block-end") {
+    if (getBlockState() == "0") {
+      console.log("Block already closed");
+      return false;
+    }
+
+    if (stack.length > 0) {
+      // We can only close a block after add a variable.
+      if (latest.type == "variables") {
+        // Can add a block start after a nexus.
+        addStack(stack, item);
+        setBlockState("0");
+        increaseBlockOrder();
+        return true;
+      }
+    }
+  }
+
+  // Control field.
+  if (classType == "fields") {
+    if (
+      stack.length == 0 ||
+      latest.id == "block-start" ||
+      latest.type == "nexos"
+    ) {
+      // We can add a field after a block start or a nexo
+      addStack(stack, item);
+      return true;
+    }
+  }
+
+  console.log(latest);
+  // Control operator.
+  if (classType == "operators") {
+    if (latest.type == "fields" || latest.type == "variables") {
+      // We can add a operator after a field or a variable.
+      addStack(stack, item);
+      return true;
+    }
+  }
+
+  // Control variables.
+  if (classType == "variables") {
+    if (latest.type == "operators" || latest.type == "modifiers") {
+      // We can add a operator after a field or a variable.
+      addStack(stack, item);
+      return true;
+    }
+  }
+
+  // Control modifiers.
+  if (classType == "modifiers") {
+    // TODO: Could not be repeated per block!!
+    if (latest.type == "variables") {
+      // We can add a operator after a field or a variable.
+      addStack(stack, item);
+      return true;
+    }
+  }
+
+  // Control nexos.
+  if (classType == "nexos") {
+    if (latest.type == "variables" && getBlockState() == "0") {
+      // After a variable and at the end of a block (rule).
+      // Could be anything.
+      addStack(stack, item);
+      increaseBlockOrder();
+      return true;
+    }
+
+    if (latest.id == "block-end" && getBlockState() == "0") {
+      // After a block-end could be anything.
+      addStack(stack, item);
+      increaseBlockOrder();
+      return true;
+    }
+
+    if (getBlockState() == "1") {
+      // I'm inside a block. Coul only use AND nexos.
+      if (id == "nexo-and") {
+        addStack(stack, item);
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 function drop(ev) {
@@ -47,6 +216,13 @@ function drop(ev) {
   // Extract ID.
   var id = $(content).attr("id");
 
+  console.log("Moving: " + id);
+
+  // Ensure rules.
+  if (gramaticRules(content) != true) {
+    return;
+  }
+
   // Extract clas type.
   var classType = $(content)
     .attr("class")
@@ -56,7 +232,7 @@ function drop(ev) {
   content = $(content).removeClass(classType);
 
   // Input hidden.
-  var valueHidden = $("#hidden-json-rule").val();
+  var valueHidden = $("#rule-stack").val();
 
   // Initialize stack.
   var stack = [];
@@ -69,18 +245,11 @@ function drop(ev) {
   // Change ID for non repeat and use variable change text.
   content = $(content).attr("id", "element-" + stack.length);
 
-  // Add stack.
-  stack.push({
-    type: classType,
-    element: id.replace(classType + "-", ""),
-    value: $(content).text()
-  });
-
   // Convert to json tring for value input hidden.
   var stackString = JSON.stringify(stack);
 
   // Set input hidden.
-  $("#hidden-json-rule").val(stackString);
+  $("#rule-stack").val(stackString);
 
   // Next button to submit is disabled
   $("#submit-rule").attr("disabled", true);

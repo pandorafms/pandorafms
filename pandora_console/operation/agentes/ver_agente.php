@@ -1329,6 +1329,19 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
     }
 }
 
+$is_sap = agents_get_sap_agents($id_agente);
+if ($is_sap) {
+    $saptab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image('images/sap_icon.png', true, ['title' => __('SAP view')]).'</a>';
+    if ($tab == 'sap_view') {
+        $saptab['active'] = true;
+    } else {
+        $saptab['active'] = false;
+    }
+} else {
+    $saptab = '';
+}
+
+
 $onheader = [
     'manage'             => $managetab,
     'main'               => $maintab,
@@ -1342,6 +1355,8 @@ $onheader = [
     'ux_console'         => $ux_console_tab,
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
+    'sap_view'           => $saptab,
+
 ];
 
 // Added after it exists
@@ -1505,6 +1520,12 @@ switch ($tab) {
         $tab_name = $tab_name_extensions;
     break;
 
+    case 'sap_view':
+            $tab_description = '- '.__('SAP view');
+            $help_header = 'sap_view';
+            $tab_name = 'SAP View';
+    break;
+
     default:
         $tab_name = '';
         $help_header = '';
@@ -1610,6 +1631,10 @@ switch ($tab) {
 
     case 'ehorus':
         include 'operation/agentes/ehorus.php';
+    break;
+
+    case 'sap_view':
+        include 'general/sap_view.php';
     break;
 
     case 'extension':

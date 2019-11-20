@@ -486,19 +486,6 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
-    $is_sap = agents_get_sap_agents($id_agente);
-    if ($is_sap) {
-        $saptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image('images/sap_icon.png', true, ['title' => __('SAP view')]).'</a>';
-
-        if ($tab == 'sap_view') {
-            $saptab['active'] = true;
-        } else {
-            $saptab['active'] = false;
-        }
-    } else {
-        $saptab = '';
-    }
-
 
     $total_incidents = agents_get_count_incidents($id_agente);
 
@@ -545,7 +532,6 @@ if ($id_agente) {
                 'group'                => $grouptab,
                 'gis'                  => $gistab,
                 'agent_wizard'         => $agent_wizard,
-                'sap_view'             => $saptab,
             ];
         } else {
             $onheader = [
@@ -561,7 +547,6 @@ if ($id_agente) {
                 'group'        => $grouptab,
                 'gis'          => $gistab,
                 'agent_wizard' => $agent_wizard,
-                'sap_view'     => $saptab,
 
             ];
         }
@@ -708,36 +693,33 @@ if ($id_agente) {
             }
         break;
 
-        case 'sap_view':
-            $tab_description = '- '.__('SAP view');
-            $help_header = 'sap_view';
-            $tab_name = 'SAP View';
-        break;
-
         default:
             // Default.
         break;
     }
 
-    ui_print_page_header(
-        agents_get_alias($id_agente),
-        'images/setup.png',
-        false,
-        $help_header,
-        true,
-        $onheader,
-        false,
-        '',
-        $config['item_title_size_text'],
-        '',
-        ui_print_breadcrums(
-            [
-                __('Resources'),
-                __('Manage agents'),
-                '<span class="breadcrumb_active">'.$tab_name.'</span>',
-            ]
-        )
-    );
+    $pure = get_parameter('pure', 0);
+    if (!$pure) {
+        ui_print_page_header(
+            agents_get_alias($id_agente),
+            'images/setup.png',
+            false,
+            $help_header,
+            true,
+            $onheader,
+            false,
+            '',
+            $config['item_title_size_text'],
+            '',
+            ui_print_breadcrums(
+                [
+                    __('Resources'),
+                    __('Manage agents'),
+                    '<span class="breadcrumb_active">'.$tab_name.'</span>',
+                ]
+            )
+        );
+    }
 } else {
     // Create agent.
     ui_print_page_header(
@@ -2367,10 +2349,6 @@ switch ($tab) {
 
     case 'agent_wizard':
         include 'agent_wizard.php';
-    break;
-
-    case 'sap_view':
-        include 'general/sap_view.php';
     break;
 
     default:

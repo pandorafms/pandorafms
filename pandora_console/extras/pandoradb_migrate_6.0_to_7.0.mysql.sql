@@ -567,19 +567,19 @@ ALTER TABLE `tevent_rule` ADD COLUMN `group_recursion` INT(1) unsigned default 0
 ALTER TABLE `tevent_rule` ADD COLUMN `log_content` TEXT;
 ALTER TABLE `tevent_rule` ADD COLUMN `log_source` TEXT;
 ALTER TABLE `tevent_rule` ADD COLUMN `log_agent` TEXT;
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_agent` text DESC 'Operator for agent';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_usuario` text DESC 'Operator for id_usuario';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_grupo` text DESC 'Operator for id_grupo';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_evento` text DESC 'Operator for evento';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_event_type` text DESC 'Operator for event_type';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_module` text DESC 'Operator for module';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_alert` text DESC 'Operator for alert';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_criticity` text DESC 'Operator for criticity';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_user_comment` text DESC 'Operator for user_comment';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_tag` text DESC 'Operator for id_tag';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_content` text DESC 'Operator for log_content';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_source` text DESC 'Operator for log_source';
-ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text DESC 'Operator for log_agent';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_agent` text COMMENT 'Operator for agent';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_usuario` text COMMENT 'Operator for id_usuario';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_grupo` text COMMENT 'Operator for id_grupo';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_evento` text COMMENT 'Operator for evento';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_event_type` text COMMENT 'Operator for event_type';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_module` text COMMENT 'Operator for module';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_alert` text COMMENT 'Operator for alert';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_criticity` text COMMENT 'Operator for criticity';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_user_comment` text COMMENT 'Operator for user_comment';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_tag` text COMMENT 'Operator for id_tag';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_content` text COMMENT 'Operator for log_content';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_source` text COMMENT 'Operator for log_source';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator for log_agent';
 
 
 -- -----------------------------------------------------

@@ -1157,8 +1157,6 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
-
 -- ---------------------------------------------------------------------
 -- Table `trel_item`
 -- ---------------------------------------------------------------------
@@ -1285,7 +1283,7 @@ ALTER TABLE `talert_commands` MODIFY COLUMN `id_group` mediumint(8) unsigned NUL
 -- ---------------------------------------------------------------------
 -- Table `tmap`
 -- ---------------------------------------------------------------------
-ALTER TABLE tmap MODIFY `id_user` varchar(128);
+ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `titem`

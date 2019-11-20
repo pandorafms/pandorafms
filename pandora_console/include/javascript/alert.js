@@ -11,12 +11,104 @@ function drag(ev) {
 
 function drop(ev) {
   ev.preventDefault();
-  var data = document.createElement("span");
+
+  // Source Element.
   var content = ev.dataTransfer.getData("html");
+
+  // Extract ID.
+  var id = $(content).attr("id");
+
+  // Extract clas type.
+  var classType = $(content)
+    .attr("class")
+    .split(/\s+/)[0];
+
+  // Input hidden.
+  var valueHidden = $("#hidden-json-rule").val();
+
+  // Initialize stack.
+  var stack = [];
+  // Check first.
+  if (valueHidden != 0) {
+    // Value decode.
+    stack = JSON.parse(valueHidden);
+  }
+
+  // Add stack.
+  stack.push({
+    type: classType,
+    value: id
+  });
+
+  // Convert to json tring for value input hidden.
+  var stackString = JSON.stringify(stack);
+
+  // Set input hidden.
+  $("#hidden-json-rule").val(stackString);
+
+  // Source class type action.
+  switch (classType) {
+    case "fields":
+      $(".fields").addClass("opacityElements");
+      $(".fields").attr("draggable", false);
+
+      $(".operators").removeClass("opacityElements");
+      $(".operators").attr("draggable", true);
+      break;
+
+    case "operators":
+      $(".operators").addClass("opacityElements");
+      $(".operators").attr("draggable", false);
+
+      $(".variable").removeClass("opacityElements");
+      $(".variable").attr("draggable", true);
+      break;
+
+    case "variable":
+      $(".variable").addClass("opacityElements");
+      $(".variable").attr("draggable", false);
+
+      $(".modifier").removeClass("opacityElements");
+      $(".modifier").attr("draggable", true);
+      $(".nexo").removeClass("opacityElements");
+      $(".nexo").attr("draggable", true);
+      break;
+
+    case "modifier":
+      $(".modifier").addClass("opacityElements");
+      $(".modifier").attr("draggable", false);
+      $(".nexo").addClass("opacityElements");
+      $(".nexo").attr("draggable", false);
+
+      $(".variable").removeClass("opacityElements");
+      $(".variable").attr("draggable", true);
+      break;
+
+    case "nexo":
+      $(".modifier").addClass("opacityElements");
+      $(".modifier").attr("draggable", false);
+      $(".nexo").addClass("opacityElements");
+      $(".nexo").attr("draggable", false);
+
+      $(".fields").removeClass("opacityElements");
+      $(".fields").attr("draggable", true);
+      break;
+    default:
+      break;
+  }
+
+  // Create content.
+  var data = document.createElement("span");
+
+  // If content nexo line break.
   if (content.includes("nexo")) {
     content = "<br/>" + content;
   }
+
+  // Add source element in content.
   data.innerHTML = content;
+
+  // Add content to target.
   document.getElementById(ev.target.id).appendChild(data);
 }
 

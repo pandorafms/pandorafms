@@ -96,6 +96,11 @@ div.target {
   background-color: #333;
 }
 
+.field.opacityElements {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
 .log {
   background-color: #638460;
 }

@@ -570,6 +570,10 @@ function configure_modules_form() {
           $("#command_credential_identifier").val(
             data["command_credential_identifier"]
           );
+
+          if (data["command_os"] == 0 || data["command_os"] == "") {
+            data["command_os"] = "inherited";
+          }
           $("#command_os").val(data["command_os"]);
         }
       },

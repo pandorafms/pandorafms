@@ -340,7 +340,7 @@ if ($config['menu_type'] == 'classic') {
                     'title' => __('Feedback'),
                     'id'    => 'feedback-header',
                     'alt'   => __('Feedback'),
-                    'style' => 'cursor: pointer; width: 27px;',
+                    'style' => 'cursor: pointer;',
                 ]
             );
             $header_feedback .= '</div>';

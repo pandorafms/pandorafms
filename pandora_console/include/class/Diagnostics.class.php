@@ -2105,6 +2105,7 @@ class Diagnostics extends Wizard
 
         // Ignore pending HTML outputs.
         while (@ob_end_clean()) {
+            $ignore_me;
         }
 
         // ADD style.

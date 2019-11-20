@@ -1286,11 +1286,6 @@ ALTER TABLE `talert_commands` MODIFY COLUMN `id_group` mediumint(8) unsigned NUL
 ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
--- Table `titem`
--- ---------------------------------------------------------------------
-ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
-
--- ---------------------------------------------------------------------
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');

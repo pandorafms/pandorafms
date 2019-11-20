@@ -32,7 +32,7 @@ global $config;
 require_once $config['homedir'].'/include/class/Diagnostics.class.php';
 
 $ajaxPage = 'tools/diagnostics';
-$pdf = false;
+$pdf = get_parameter('pdf', false);
 
 
 // Control call flow.

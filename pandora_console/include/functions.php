@@ -5431,6 +5431,22 @@ function get_help_info($section_name)
                 $result .= 'GIS&printable=yes#Operation';
             }
         break;
+
+        case 'quickshell_settings':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Websocket_Engine';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Websocket_engine';
+            }
+        break;
+
+        case 'discovery':
+            if ($es) {
+                $result .= 'Discovery&printable=yes';
+            } else {
+                $result .= 'Discovery&printable=yes';
+            }
+        break;
     }
 
     return $result;

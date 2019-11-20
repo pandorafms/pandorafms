@@ -126,7 +126,7 @@ if ($fields) {
     $table->size[3] = '8%';
     $table->data = [];
 } else {
-    include_once $config['homedir'].'/general/firts_task/fields_manager.php';
+    include_once $config['homedir'].'/general/first_task/fields_manager.php';
     return;
 }
 

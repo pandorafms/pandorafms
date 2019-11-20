@@ -145,7 +145,7 @@ class DiscoveryTaskList extends Wizard
         $ret2 = $this->showList();
 
         if ($ret === false && $ret2 === false) {
-            include_once $config['homedir'].'/general/firts_task/recon_view.php';
+            include_once $config['homedir'].'/general/first_task/recon_view.php';
         } else {
             $form = [
                 'form'   => [

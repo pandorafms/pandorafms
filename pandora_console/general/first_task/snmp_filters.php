@@ -13,13 +13,13 @@
 // GNU General Public License for more details.
 global $config;
 check_login();
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ?>
 <?php ui_print_info_message(['no_close' => true, 'message' => __('There are no SNMP filter defined yet.') ]); ?>
 
 <div class="new_task">
     <div class="image_task">
-        <?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, ['title' => __('SNMP Filter')]); ?>
+        <?php echo html_print_image('images/first_task/icono_grande_reconserver.png', true, ['title' => __('SNMP Filter')]); ?>
     </div>
     <div class="text_task">
         <h3> <?php echo __('Create SNMP Filter'); ?></h3><p id="description_task"> 

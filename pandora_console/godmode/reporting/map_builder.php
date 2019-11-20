@@ -395,7 +395,7 @@ if ($own_info['is_admin'] || $vconsoles_read) {
 if (!$maps && !is_metaconsole()) {
     $total = count(visual_map_get_user_layouts($config['id_user'], false, false, false));
     if (!$total) {
-        include_once $config['homedir'].'/general/firts_task/map_builder.php';
+        include_once $config['homedir'].'/general/first_task/map_builder.php';
     } else {
         ui_print_info_message(
             [

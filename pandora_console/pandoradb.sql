@@ -3658,3 +3658,35 @@ CREATE TABLE `tdeployment_hosts` (
   FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
     ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command` (
+  `id` SERIAL,
+  `name` varchar(150) NOT NULL,
+  `timeout` int(10) unsigned NOT NULL default 30,
+  `retries` int(10) unsigned NOT NULL default 3,
+  `preconditions` text,
+  `script` text,
+  `postconditions` text,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `id_group` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command_target`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command_target` (
+  `id` SERIAL,
+  `rcmd_id` bigint unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
+  `errorlevel` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

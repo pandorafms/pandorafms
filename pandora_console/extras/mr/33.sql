@@ -9,9 +9,41 @@ INSERT INTO `ttipo_modulo` VALUES
 (37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
 =======
 INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
 >>>>>>> origin/develop
+=======
+CREATE TABLE `tremote_command` (
+  `id` SERIAL,
+  `name` varchar(150) NOT NULL,
+  `timeout` int(10) unsigned NOT NULL default 30,
+  `retries` int(10) unsigned NOT NULL default 3,
+  `preconditions` text,
+  `script` text,
+  `postconditions` text,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `id_group` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tremote_command_target` (
+  `id` SERIAL,
+  `rcmd_id` bigint unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
+  `errorlevel` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
+
+ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
+>>>>>>> 1cacbbc08f62cbf5aef4df7b2c59bd5af7fabac9
 
 COMMIT;

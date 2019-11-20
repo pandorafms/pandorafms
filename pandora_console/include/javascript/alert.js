@@ -9,6 +9,35 @@ function drag(ev) {
   ev.dataTransfer.setData("html", ev.target.outerHTML);
 }
 
+function edit(id, str) {
+  // If not defined id return.
+  console.log(id);
+
+  if (id == "variable-text") {
+    return;
+  }
+
+  // Value input hidden.
+  var valueHidden = $("#hidden-json-rule").val();
+
+  // Convert to array.
+  var arrayValueHidden = JSON.parse(valueHidden);
+
+  // Extract to id number row.
+  var numberField = id.replace("element-", "");
+
+  // Check do no undefined.
+  if (arrayValueHidden[numberField] != undefined) {
+    // Change value.
+    arrayValueHidden[numberField].value = str;
+
+    // Update value json-rule.
+    $("#hidden-json-rule").val(JSON.stringify(arrayValueHidden));
+  }
+
+  return;
+}
+
 function drop(ev) {
   ev.preventDefault();
 
@@ -23,6 +52,9 @@ function drop(ev) {
     .attr("class")
     .split(/\s+/)[0];
 
+  // Remove Class.
+  content = $(content).removeClass(classType);
+
   // Input hidden.
   var valueHidden = $("#hidden-json-rule").val();
 
@@ -34,10 +66,14 @@ function drop(ev) {
     stack = JSON.parse(valueHidden);
   }
 
+  // Change ID for non repeat and use variable change text.
+  content = $(content).attr("id", "element-" + stack.length);
+
   // Add stack.
   stack.push({
     type: classType,
-    value: id
+    element: id.replace(classType + "-", ""),
+    value: $(content).text()
   });
 
   // Convert to json tring for value input hidden.
@@ -45,6 +81,9 @@ function drop(ev) {
 
   // Set input hidden.
   $("#hidden-json-rule").val(stackString);
+
+  // Next button to submit is disabled
+  $("#submit-rule").attr("disabled", true);
 
   // Source class type action.
   switch (classType) {
@@ -60,35 +99,36 @@ function drop(ev) {
       $(".operators").addClass("opacityElements");
       $(".operators").attr("draggable", false);
 
-      $(".variable").removeClass("opacityElements");
-      $(".variable").attr("draggable", true);
+      $(".variables").removeClass("opacityElements");
+      $(".variables").attr("draggable", true);
       break;
 
-    case "variable":
-      $(".variable").addClass("opacityElements");
-      $(".variable").attr("draggable", false);
+    case "variables":
+      $(".variables").addClass("opacityElements");
+      $(".variables").attr("draggable", false);
 
-      $(".modifier").removeClass("opacityElements");
-      $(".modifier").attr("draggable", true);
-      $(".nexo").removeClass("opacityElements");
-      $(".nexo").attr("draggable", true);
+      $(".modifiers").removeClass("opacityElements");
+      $(".modifiers").attr("draggable", true);
+      $(".nexos").removeClass("opacityElements");
+      $(".nexos").attr("draggable", true);
+      $("#submit-rule").attr("disabled", false);
       break;
 
-    case "modifier":
-      $(".modifier").addClass("opacityElements");
-      $(".modifier").attr("draggable", false);
-      $(".nexo").addClass("opacityElements");
-      $(".nexo").attr("draggable", false);
+    case "modifiers":
+      $(".modifiers").addClass("opacityElements");
+      $(".modifiers").attr("draggable", false);
+      $(".nexos").addClass("opacityElements");
+      $(".nexos").attr("draggable", false);
 
-      $(".variable").removeClass("opacityElements");
-      $(".variable").attr("draggable", true);
+      $(".variables").removeClass("opacityElements");
+      $(".variables").attr("draggable", true);
       break;
 
-    case "nexo":
-      $(".modifier").addClass("opacityElements");
-      $(".modifier").attr("draggable", false);
-      $(".nexo").addClass("opacityElements");
-      $(".nexo").attr("draggable", false);
+    case "nexos":
+      $(".modifiers").addClass("opacityElements");
+      $(".modifiers").attr("draggable", false);
+      $(".nexos").addClass("opacityElements");
+      $(".nexos").attr("draggable", false);
 
       $(".fields").removeClass("opacityElements");
       $(".fields").attr("draggable", true);
@@ -100,6 +140,7 @@ function drop(ev) {
   // Create content.
   var data = document.createElement("span");
 
+  content = $(content).prop("outerHTML");
   // If content nexo line break.
   if (content.includes("nexo")) {
     content = "<br/>" + content;

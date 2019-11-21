@@ -5559,11 +5559,11 @@ function ui_get_docs_logo()
     global $config;
 
     // Default logo to open version (enterprise_installed function only works in login status).
-    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_docs_logo'])) {
         return 'images/icono_docs.png';
     }
 
-    if (empty($config['custom_docs_logo'])) {
+    if ($config['custom_docs_logo'] === '') {
         return false;
     }
 
@@ -5581,11 +5581,11 @@ function ui_get_support_logo()
     global $config;
 
     // Default logo to open version (enterprise_installed function only works in login status).
-    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_support_logo'])) {
         return 'images/icono_support.png';
     }
 
-    if (empty($config['custom_support_logo'])) {
+    if ($config['custom_support_logo'] === '') {
         return false;
     }
 

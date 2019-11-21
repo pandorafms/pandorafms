@@ -67,7 +67,7 @@ function setBlockState(st) {
 }
 
 function getBlockOrder() {
-  return $("#block-order").val();
+  return parseInt($("#block-order").val());
 }
 
 function increaseBlockOrder(order) {
@@ -130,7 +130,6 @@ function gramaticRules(content) {
         // Can add a block start after a nexus.
         addStack(stack, item);
         setBlockState("0");
-        increaseBlockOrder();
         return true;
       }
     }
@@ -183,15 +182,17 @@ function gramaticRules(content) {
     if (latest.type == "variables" && getBlockState() == "0") {
       // After a variable and at the end of a block (rule).
       // Could be anything.
-      addStack(stack, item);
       increaseBlockOrder();
+      item.order = item.order + 1;
+      addStack(stack, item);
       return true;
     }
 
     if (latest.id == "block-end" && getBlockState() == "0") {
       // After a block-end could be anything.
-      addStack(stack, item);
       increaseBlockOrder();
+      item.order += 1;
+      addStack(stack, item);
       return true;
     }
 

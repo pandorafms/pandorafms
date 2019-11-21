@@ -1828,11 +1828,18 @@ function html_print_input_hidden($name, $value, $return=false, $class=false)
  * @param string  $id     Input value.
  * @param boolean $return Whether to return an output string or echo now (optional, echo by default).
  * @param string  $class  Set the class of input.
+ * @param boolean $quotes Use simple quotes or double quotes.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_hidden_extended($name, $value, $id, $return=false, $class=false)
-{
+function html_print_input_hidden_extended(
+    $name,
+    $value,
+    $id,
+    $return=false,
+    $class=false,
+    $quotes=false
+) {
     if ($class !== false) {
         $classText = 'class="'.$class.'"';
     } else {
@@ -1845,7 +1852,16 @@ function html_print_input_hidden_extended($name, $value, $id, $return=false, $cl
         $ouput_id = $id;
     }
 
-    $output = '<input id="'.$ouput_id.'" name="'.$name.'" type="hidden" '.$classText.' value="'.$value.'" />';
+    $quote = '"';
+    if ($quotes === true) {
+        $quote = "'";
+    }
+
+    $output = '<input id='.$quote.''.$ouput_id.''.$quote.' ';
+    $output .= ' name='.$quote.''.$name.''.$quote.' ';
+    $output .= ' type='.$quote.'hidden'.$quote.' '.$classText;
+    $output .= ' value='.$quote.''.$value.''.$quote.'';
+    $output .= ' />';
 
     if ($return) {
         return $output;
@@ -3411,7 +3427,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $data['value'],
                 $data['id'],
                 ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : false)
+                ((isset($data['class']) === true) ? $data['class'] : false),
+                ((isset($data['quotes']) === true) ? $data['quotes'] : false)
             );
         break;
 

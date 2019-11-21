@@ -131,3 +131,31 @@ div.target {
 .inEdit {
   background-color: #888;
 }
+
+.info-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.info-item {
+  width: 25%;
+}
+
+.info-days {
+  width: 65%;
+}
+
+.info-item table.info_table thead tr th {
+  text-align: center;
+}
+
+.info-item table.info_table tbody tr {
+  border-bottom: none;
+}
+
+.info-container table.no-class tbody tr td {
+  padding: 10px;
+}

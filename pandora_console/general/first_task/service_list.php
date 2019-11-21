@@ -15,14 +15,14 @@ global $config;
 global $agent_w;
 
 check_login();
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ?>
 <?php ui_print_info_message(['no_close' => true, 'message' => __('There are no services defined yet.') ]); ?>
 
 <?php if ($agent_w) { ?>
     <div class="new_task">
         <div class="image_task">
-            <?php echo html_print_image('images/firts_task/icono_grande_servicios.png', true, ['title' => __('Services')]); ?>
+            <?php echo html_print_image('images/first_task/icono_grande_servicios.png', true, ['title' => __('Services')]); ?>
         </div>
         <div class="text_task">
             <h3> <?php echo __('Create Services'); ?></h3><p id="description_task"> 

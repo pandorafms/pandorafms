@@ -1619,6 +1619,89 @@ function html_print_input_email(array $settings):string
 
 
 /**
+ * Render an input number element.
+ *
+ * @param array $settings Array with attributes input.
+ * only name is necessary.
+ *
+ * @return string
+ */
+function html_print_input_number(array $settings):string
+{
+    // TODO: const.
+    $valid_attrs = [
+        'accept',
+        'disabled',
+        'maxlength',
+        'name',
+        'readonly',
+        'placeholder',
+        'size',
+        'value',
+        'accesskey',
+        'class',
+        'dir',
+        'id',
+        'lang',
+        'style',
+        'tabindex',
+        'title',
+        'xml:lang',
+        'onfocus',
+        'onblur',
+        'onselect',
+        'onchange',
+        'onclick',
+        'ondblclick',
+        'onmousedown',
+        'onmouseup',
+        'onmouseover',
+        'onmousemove',
+        'onmouseout',
+        'onkeypress',
+        'onkeydown',
+        'onkeyup',
+        'required',
+        'pattern',
+        'autocomplete',
+    ];
+
+    $output = '';
+    if (isset($settings) === true && is_array($settings) === true) {
+        // Check Name is necessary.
+        if (isset($settings['name']) === true) {
+            $output = '<input type="number" ';
+
+            // Check Max length.
+            if (isset($settings['maxlength']) === false) {
+                $settings['maxlength'] = 255;
+            }
+
+            // Check Size.
+            if (isset($settings['size']) === false
+                || $settings['size'] === 0
+            ) {
+                $settings['size'] = 255;
+            }
+
+            foreach ($settings as $attribute => $attr_value) {
+                // Check valid attribute.
+                if (in_array($attribute, $valid_attrs) === false) {
+                    continue;
+                }
+
+                $output .= $attribute.'="'.$attr_value.'" ';
+            }
+
+            $output .= $function.'/>';
+        }
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input image element.
  *
  * The element will have an id like: "image-$name"
@@ -3309,6 +3392,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_email($data);
         break;
 
+        case 'number':
+            $output .= html_print_input_number($data);
+        break;
+
         case 'hidden':
             $output .= html_print_input_hidden(
                 $data['name'],
@@ -3413,7 +3500,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         break;
 
         case 'submit':
-            $output .= '<'.$wrapper.' class="action-buttons" style="width: 100%">'.html_print_submit_button(
+            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';
+            $output .= '<'.$wrapper.' class="action-buttons" style="'.$width.'">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
@@ -3498,6 +3586,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_email($data);
         break;
 
+        case 'multicheck':
+            $output .= html_print_input_multicheck($data);
+        break;
+
         default:
             // Ignore.
         break;
@@ -3511,6 +3603,33 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     }
 
     return $output;
+}
+
+
+/**
+ * Print all checkbox in the same row.
+ *
+ * @param array $data Array with attributes input.
+ * only name is necessary.
+ *
+ * @return string
+ */
+function html_print_input_multicheck(array $data):string
+{
+    $html = '';
+    if (isset($data['data']) === true && is_array($data['data']) === true) {
+        foreach ($data['data'] as $key => $value) {
+            $html .= $value;
+            $html .= html_print_checkbox(
+                'days_week_'.$key,
+                1,
+                $data['checked'][$key],
+                true
+            );
+        }
+    }
+
+    return $html;
 }
 
 

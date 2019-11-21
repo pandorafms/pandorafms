@@ -337,7 +337,7 @@ $table_aux = new stdClass();
 
             echo '</div>';
         } else {
-            include_once $config['homedir'].'/general/firts_task/custom_graphs.php';
+            include_once $config['homedir'].'/general/first_task/custom_graphs.php';
         }
 
         ?>

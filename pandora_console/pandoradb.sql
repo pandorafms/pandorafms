@@ -699,7 +699,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
 	`identifier` varchar(100) NOT NULL,
 	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
-	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM',
 	`username` text,
 	`password` text,
 	`extra_1` text,
@@ -2782,6 +2782,9 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 	`id_tag` integer(10) unsigned NOT NULL default '0',
 	`name` text default '',
 	`group_recursion` INT(1) unsigned default 0,
+	`log_content` text,
+	`log_source` text,
+	`log_agent` text,
 	PRIMARY KEY  (`id_event_rule`),
 	KEY `idx_id_event_alert` (`id_event_alert`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -3657,4 +3660,36 @@ CREATE TABLE `tdeployment_hosts` (
     ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
     ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command` (
+  `id` SERIAL,
+  `name` varchar(150) NOT NULL,
+  `timeout` int(10) unsigned NOT NULL default 30,
+  `retries` int(10) unsigned NOT NULL default 3,
+  `preconditions` text,
+  `script` text,
+  `postconditions` text,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `id_group` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command_target`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command_target` (
+  `id` SERIAL,
+  `rcmd_id` bigint unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
+  `errorlevel` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
+    ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

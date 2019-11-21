@@ -24,7 +24,7 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ?>
 <?php
 ui_print_info_message(['no_close' => true, 'message' => __('There are no clusters defined yet.') ]);
@@ -32,7 +32,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no cluster
 
 <div class="new_task_cluster">
     <div class="image_task_cluster">
-        <?php echo html_print_image('images/firts_task/icono-cluster-activo.png', true, ['title' => __('Clusters')]); ?>
+        <?php echo html_print_image('images/first_task/icono-cluster-activo.png', true, ['title' => __('Clusters')]); ?>
     </div>
     <div class="text_task_cluster">
         <h3> <?php echo __('Create Cluster'); ?></h3>

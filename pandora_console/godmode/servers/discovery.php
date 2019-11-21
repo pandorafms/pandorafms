@@ -54,7 +54,7 @@ function get_wiz_class($str)
                 __('Discovery'),
                 '',
                 false,
-                '',
+                'discovery',
                 true,
                 '',
                 false,

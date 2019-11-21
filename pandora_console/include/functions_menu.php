@@ -536,7 +536,7 @@ function menu_add_extras(&$menu)
 
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_action']['text'] = __('Manage alert actions');
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_command']['text'] = __('Manage commands');
-    $menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_events']['text'] = __('Manage event alerts');
+    $menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_correlation']['text'] = __('Manage event alerts');
 
     $menu_extra['gservers']['sub']['enterprise/godmode/servers/manage_export_form']['text'] = __('Manage export targets');
 

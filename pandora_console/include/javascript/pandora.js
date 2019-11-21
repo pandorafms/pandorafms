@@ -1885,10 +1885,33 @@ function load_modal(settings) {
   }
   data.append("page", settings.onshow.page);
   data.append("method", settings.onshow.method);
+  if (settings.onshow.extradata != undefined) {
+    data.append("extradata", JSON.stringify(settings.onshow.extradata));
+  }
+
+  if (settings.target == undefined) {
+    var uniq = uniqId();
+    var div = document.createElement("div");
+    div.id = "div-modal-" + uniq;
+    div.style.display = "none";
+
+    document.getElementById("main").append(div);
+
+    var id_modal_target = "#div-modal-" + uniq;
+
+    settings.target = $(id_modal_target);
+  }
 
   var width = 630;
   if (settings.onshow.width) {
     width = settings.onshow.width;
+  }
+
+  if (settings.modal.overlay == undefined) {
+    settings.modal.overlay = {
+      opacity: 0.5,
+      background: "black"
+    };
   }
 
   settings.target.html("Loading modal...");
@@ -2081,14 +2104,16 @@ function load_modal(settings) {
         modal: true,
         title: settings.modal.title,
         width: width,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
+        overlay: settings.modal.overlay,
         buttons: required_buttons,
         closeOnEscape: false,
         open: function() {
           $(".ui-dialog-titlebar-close").hide();
+        },
+        close: function() {
+          if (id_modal_target != undefined) {
+            $(id_modal_target).remove();
+          }
         }
       });
     },
@@ -2100,13 +2125,7 @@ function load_modal(settings) {
 
 //Function that shows a dialog box to confirm closures of generic manners. The modal id is random
 function confirmDialog(settings) {
-  var randomStr =
-    Math.random()
-      .toString(36)
-      .substring(2, 15) +
-    Math.random()
-      .toString(36)
-      .substring(2, 15);
+  var randomStr = uniqId();
 
   $("body").append(
     '<div id="confirm_' + randomStr + '">' + settings.message + "</div>"
@@ -2140,6 +2159,18 @@ function confirmDialog(settings) {
       ]
     })
     .show();
+}
+
+function uniqId() {
+  var randomStr =
+    Math.random()
+      .toString(36)
+      .substring(2, 15) +
+    Math.random()
+      .toString(36)
+      .substring(2, 15);
+
+  return randomStr;
 }
 
 /**

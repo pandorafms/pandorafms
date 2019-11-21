@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 check_login();
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ?>
 <?php
 ui_print_info_message(['no_close' => true, 'message' => __('There are no custom graphs defined yet.') ]);
@@ -21,7 +21,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no custom 
 
 <div class="new_task">
     <div class="image_task">
-        <?php echo html_print_image('images/firts_task/icono_grande_custom_reporting.png', true, ['title' => __('Custom Graphs')]); ?>
+        <?php echo html_print_image('images/first_task/icono_grande_custom_reporting.png', true, ['title' => __('Custom Graphs')]); ?>
     </div>
     <div class="text_task">
         <h3> <?php echo __('Create Custom Graph'); ?></h3><p id="description_task"> 

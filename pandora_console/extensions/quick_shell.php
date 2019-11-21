@@ -218,7 +218,8 @@ function quickShell()
     if (empty($config['gotty_user']) === false
         && empty($config['gotty_pass']) === false
     ) {
-        $auth_str = $config['gotty_user'].':'.$config['gotty_pass'];
+        $auth_str = io_safe_output($config['gotty_user']);
+        $auth_str .= ':'.io_output_password($config['gotty_pass']);
         $gotty_url = $auth_str.'@'.$host.':'.$port;
     }
 
@@ -381,7 +382,12 @@ function quickShellSettings()
     }
 
     // Interface.
-    ui_print_page_header(__('QuickShell settings'));
+    ui_print_page_header(
+        __('QuickShell settings'),
+        '',
+        false,
+        'quickshell_settings'
+    );
 
     if ($changes > 0) {
         $msg = __('%d Updated', $changes);
@@ -442,25 +448,31 @@ function quickShellSettings()
                     ],
                 ],
                 [
-                    'label'     => __('Gotty user').ui_print_help_tip(
-                        __('Optional, set a user to access gotty service'),
-                        true
-                    ),
-                    'arguments' => [
-                        'type'  => 'text',
-                        'name'  => 'gotty_user',
-                        'value' => $config['gotty_user'],
-                    ],
-                ],
-                [
-                    'label'     => __('Gotty password').ui_print_help_tip(
-                        __('Optional, set a password to access gotty service'),
-                        true
-                    ),
-                    'arguments' => [
-                        'type'  => 'password',
-                        'name'  => 'gotty_pass',
-                        'value' => io_output_password($config['gotty_pass']),
+                    'toggle'        => true,
+                    'toggle_name'   => 'Advanced',
+                    'block_content' => [
+                        [
+                            'label'     => __('Gotty user').ui_print_help_tip(
+                                __('Optional, set a user to access gotty service'),
+                                true
+                            ),
+                            'arguments' => [
+                                'type'  => 'text',
+                                'name'  => 'gotty_user',
+                                'value' => $config['gotty_user'],
+                            ],
+                        ],
+                        [
+                            'label'     => __('Gotty password').ui_print_help_tip(
+                                __('Optional, set a password to access gotty service'),
+                                true
+                            ),
+                            'arguments' => [
+                                'type'  => 'password',
+                                'name'  => 'gotty_pass',
+                                'value' => io_output_password($config['gotty_pass']),
+                            ],
+                        ],
                     ],
                 ],
                 [

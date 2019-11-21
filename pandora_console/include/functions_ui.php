@@ -1880,7 +1880,13 @@ function ui_process_page_head($string, $bitfield)
     }
 
     // Pandora specific JavaScript should go first.
-    $config['js'] = array_merge(['pandora' => 'include/javascript/pandora.js'], $config['js']);
+    $config['js'] = array_merge(
+        [
+            'pandora'    => 'include/javascript/pandora.js',
+            'pandora_ui' => 'include/javascript/pandora_ui.js',
+        ],
+        $config['js']
+    );
     // Load base64 javascript library.
     $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
     // Load webchat javascript library.

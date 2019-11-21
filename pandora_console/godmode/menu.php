@@ -28,7 +28,7 @@ if (check_acl($config['id_user'], 0, 'AR')
     || check_acl($config['id_user'], 0, 'PM')
 ) {
     $sub = [];
-    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Main');
+    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Start');
     $sub['godmode/servers/discovery&wiz=main']['id'] = 'Discovery';
     $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
     $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';
@@ -346,6 +346,8 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['godmode/setup/links']['id'] = 'Links';
         $sub['tools/diagnostics']['text'] = __('Diagnostic info');
         $sub['tools/diagnostics']['id'] = 'Diagnostic info';
+        enterprise_hook('omnishell');
+
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';
         $sub['godmode/setup/file_manager']['text'] = __('File manager');

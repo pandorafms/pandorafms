@@ -349,6 +349,12 @@ sub pandora_load_config {
 
 	$pa_config->{"fping"} = "/usr/sbin/fping"; # > 5.1SP2
 
+	# Discovery SAP
+	$pa_config->{"java"} = "/usr/bin/java";
+
+	# Discovery SAP utils
+	$pa_config->{"sap_utils"} = "/usr/share/pandora_server/util/recon_scripts/SAP";
+
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
 
@@ -840,6 +846,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^fping\s(.*)/i) {
 			$pa_config->{'fping'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^java\s(.*)/i) {
+			$pa_config->{'java'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_utils\s(.*)/i) {
+			$pa_config->{'sap_utils'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 

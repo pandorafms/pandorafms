@@ -56,7 +56,25 @@ my $TaskSem :shared;
 use constant {
     OS_OTHER => 10,
     OS_ROUTER => 17,
-    OS_SWITCH => 18
+    OS_SWITCH => 18,
+	STEP_SCANNING => 1,
+	STEP_AFT => 2,
+	STEP_TRACEROUTE => 3,
+	STEP_GATEWAY => 4,
+	STEP_STATISTICS => 1,
+	STEP_APP_SCAN => 2,
+	STEP_CUSTOM_QUERIES => 3,
+	DISCOVERY_HOSTDEVICES => 0,
+	DISCOVERY_HOSTDEVICES_CUSTOM => 1,
+	DISCOVERY_CLOUD_AWS => 2,
+	DISCOVERY_APP_VMWARE => 3,
+	DISCOVERY_APP_MYSQL => 4,
+	DISCOVERY_APP_ORACLE => 5,
+	DISCOVERY_CLOUD_AWS_EC2 => 6,
+	DISCOVERY_CLOUD_AWS_RDS => 7,
+	DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
+	DISCOVERY_DEPLOY_AGENTS => 9,
+	DISCOVERY_APP_SAP => 10,
 };
 
 ########################################################################################
@@ -194,6 +212,31 @@ sub data_consumer ($$) {
         if (defined($r) && $r eq 'ERR') {
             # Could not generate extra cnf, skip this task.
             return;
+        }
+
+
+        if ($task->{'type'} == DISCOVERY_APP_SAP) {
+            # SAP TASK, retrieve license.
+            $task->{'sap_license'} = pandora_get_config_value(
+                $dbh,
+                'sap_license'
+            );
+
+            # Retrieve credentials for task (optional).
+            if (defined($task->{'auth_strings'})
+                && $task->{'auth_strings'} ne ''
+            ) {
+                my $key = credential_store_get_key(
+                    $pa_config,
+                    $dbh,
+                    $task->{'auth_strings'}
+                );
+
+                # Inside an eval, here it shouln't fail unless bad configured.
+                $task->{'username'} = $key->{'username'};
+                $task->{'password'} = $key->{'password'};
+
+            }
         }
 
         my $recon = new PandoraFMS::Recon::Base(

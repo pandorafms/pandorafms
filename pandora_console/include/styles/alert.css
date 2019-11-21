@@ -1,0 +1,128 @@
+li#li-buttons-alert-list > div {
+  margin-left: 10px;
+}
+
+li#li-buttons-alert-list > label,
+li#li-filters-alert-list > label {
+  width: initial;
+}
+
+form#advanced_filters_alert ul li label,
+form#general_filters_alert ul li label {
+  width: 150px;
+}
+
+form#conditions_filters_alert ul li label:first-child {
+  width: 300px;
+}
+
+li#li-name-group input {
+  margin-right: 50px;
+}
+
+li#li-description textarea {
+  flex: 1 1 auto;
+}
+
+li#li-from-to-threshold > label:not(:first-child),
+li#li-time-from-to > label:not(:first-child) {
+  width: initial;
+  margin-right: 15px;
+}
+
+li#li-from-to-threshold > input,
+li#li-time-from-to > input {
+  margin-right: 15px;
+}
+
+form#advanced_filters_alert textarea {
+  flex: 1 1 auto;
+  height: 5em;
+  min-height: 5em;
+}
+
+form#advanced_filters_alert ul li label img {
+  margin-bottom: -2px;
+  margin-left: 5px;
+}
+
+/*DRAG DROP*/
+#threshold_manual,
+#threshold_default {
+  /*TODO: UGLY*/
+  width: initial !important;
+  margin-right: 10px;
+}
+
+img.handle-alerts {
+  width: 20px;
+  cursor: move;
+}
+
+.content {
+  width: 80%;
+  min-height: 4em;
+  border: 1px solid #ddd;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+ul.sample {
+  max-width: 50%;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+ul.sample li {
+  padding-bottom: 1em;
+}
+ul.sample li:last-child {
+  padding-bottom: 0;
+}
+div.target {
+  flex-grow: 1;
+  margin-left: 3em;
+  border: 1px solid #ddd;
+}
+
+.field {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 3px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: 600;
+  background-color: #333;
+}
+
+.log {
+  background-color: #638460;
+}
+.event {
+  background-color: #587cff;
+}
+
+.operator {
+  background-color: #908787;
+}
+
+.variable {
+  background-color: #82b92e;
+}
+
+.modifier {
+  background-color: #cba9d2;
+}
+
+.nexo {
+  background-color: #424242;
+}
+
+.rules div {
+  display: inline-block;
+}
+
+.inEdit {
+  background-color: #888;
+}

@@ -108,9 +108,15 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
         }
     }
 
-    if (!$custom_conf_enabled) {
+    if (!$custom_conf_enabled || isset($config['custom_docs_url_alt'])) {
+        if (isset($config['custom_docs_url_alt'])) {
+            $docs_url = $config['custom_docs_url_alt'];
+        } else {
+            $docs_url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration';
+        }
+
         echo '
-                <a href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration" target="_blank">
+                <a href="'.ui_get_full_external_url($docs_url).'" target="_blank">
             <div class="modalwikibutto cerrar">
                 <span class="modalwikibuttontex">'.__('Documentation').'
             </span>

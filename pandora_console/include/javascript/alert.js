@@ -474,3 +474,23 @@ function disabled_alert(settings) {
     }
   });
 }
+
+function datetime_picker_callback(set) {
+  $("#text-time_from, #text-time_to").timepicker({
+    showSecond: true,
+    timeFormat: set.timeFormat,
+    timeOnlyTitle: set.timeOnlyTitle,
+    timeText: set.timeText,
+    hourText: set.hourText,
+    minuteText: set.minuteText,
+    secondText: set.secondText,
+    currentText: set.currentText,
+    closeText: set.closeText
+  });
+
+  $("#text-date_from, #text-date_to").datepicker({
+    dateFormat: set.dateFormat
+  });
+
+  $.datepicker.setDefaults($.datepicker.regional[set.regional]);
+}

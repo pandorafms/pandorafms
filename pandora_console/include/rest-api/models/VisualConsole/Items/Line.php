@@ -206,4 +206,203 @@ final class Line extends Model
     }
 
 
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Model::encode.
+     */
+    protected function encode(array $data): array
+    {
+        $result = [];
+
+        $id = static::getId($data);
+        if ($id) {
+            $result['id'] = $id;
+        }
+
+        $id_layout = static::getIdLayout($data);
+        if ($id_layout) {
+            $result['id_layout'] = $id_layout;
+        }
+
+        $pos_x = static::parseIntOr(
+            static::issetInArray($data, ['x', 'pos_x', 'posX']),
+            null
+        );
+        if ($pos_x !== null) {
+            $result['pos_x'] = $pos_x;
+        }
+
+        $pos_y = static::parseIntOr(
+            static::issetInArray($data, ['y', 'pos_y', 'posY']),
+            null
+        );
+        if ($pos_y !== null) {
+            $result['pos_y'] = $pos_y;
+        }
+
+        $height = static::getHeight($data);
+        if ($height !== null) {
+            $result['height'] = $height;
+        }
+
+        $width = static::getWidth($data);
+        if ($width !== null) {
+            $result['width'] = $width;
+        }
+
+        $type = static::parseIntOr(
+            static::issetInArray($data, ['type']),
+            null
+        );
+        if ($type !== null) {
+            $result['type'] = $type;
+        }
+
+        $border_width = static::getBorderWidth($data);
+        if ($border_width !== null) {
+            $result['border_width'] = $border_width;
+        }
+
+        $border_color = static::extractBorderColor($data);
+        if ($border_color !== null) {
+            $result['border_color'] = $border_color;
+        }
+
+        $show_on_top = static::issetInArray($data, ['isOnTop', 'show_on_top', 'showOnTop']);
+        if ($show_on_top !== null) {
+            $result['show_on_top'] = static::parseBool($show_on_top);
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Extract item id.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item id. 0 by default.
+     */
+    private static function getId(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['id', 'itemId']),
+            0
+        );
+    }
+
+
+    /**
+     * Extract layout id.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item id. 0 by default.
+     */
+    private static function getIdLayout(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['id_layout', 'idLayout', 'layoutId']),
+            0
+        );
+    }
+
+
+    /**
+     * Extract item width.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item width. 0 by default.
+     */
+    private static function getWidth(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['width', 'endX']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract item height.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Item height. 0 by default.
+     */
+    private static function getHeight(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['height', 'endY']),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a border width value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid border width.
+     */
+    private static function getBorderWidth(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['border_width', 'borderWidth']),
+            null
+        );
+    }
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public function save(array $data=[]): bool
+    {
+        $data_model = $this->encode($this->toArray());
+        $newData = $this->encode($data);
+
+        $save = \array_merge($data_model, $newData);
+
+        if (!empty($save)) {
+            if (empty($save['id'])) {
+                // Insert.
+                $result = \db_process_sql_insert('tlayout_data', $save);
+            } else {
+                // Update.
+                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+            }
+        }
+
+        // Update the model.
+        if ($result) {
+            if (empty($save['id'])) {
+                $item = static::fromDB(['id' => $result]);
+            } else {
+                $item = static::fromDB(['id' => $save['id']]);
+            }
+
+            if (!empty($item)) {
+                $this->setData($item->toArray());
+            }
+        }
+
+        return (bool) $result;
+    }
+
+
 }

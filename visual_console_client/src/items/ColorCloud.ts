@@ -53,6 +53,10 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     return container;
   }
 
+  protected resizeElement(width: number): void {
+    super.resizeElement(width, width);
+  }
+
   public createSvgElement(): SVGSVGElement {
     const gradientId = `grad_${this.props.id}`;
     // SVG container.

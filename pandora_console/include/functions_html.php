@@ -77,8 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre>'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info.'</pre>';
-        echo '<pre>';
+        echo '<pre style="z-index: 10000; background: #fff; padding: 1em;">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -96,6 +95,23 @@ function html_debug($var, $file='', $oneline=false)
 function hd($var, $file='', $oneline=false)
 {
     html_debug_print($var, $file, $oneline);
+}
+
+
+/**
+ * Encapsulation (ob) for debug print function.
+ *
+ * @param mixed   $var     Variable to be dumped.
+ * @param string  $file    Target file path.
+ * @param boolean $oneline Show in oneline.
+ *
+ * @return string Dump string.
+ */
+function obhd($var, $file='', $oneline=false)
+{
+    ob_start();
+    hd($var, $file, $oneline);
+    return ob_get_clean();
 }
 
 
@@ -1459,6 +1475,14 @@ function html_print_input_password(
         $attr['class'] = $class;
     }
 
+    if ($disabled === false) {
+        // Trick to avoid password completion on most browsers.
+        if ($autocomplete !== 'on') {
+            $disabled = true;
+            $attr['onfocus'] = "this.removeAttribute('readonly');";
+        }
+    }
+
     return html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete);
 }
 
@@ -1508,6 +1532,89 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
     }
 
     return html_print_input_text_extended($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
+}
+
+
+/**
+ * Render an input email element.
+ *
+ * @param array $settings Array with attributes input.
+ * only name is necessary.
+ *
+ * @return string Html input.
+ */
+function html_print_input_email(array $settings):string
+{
+    // TODO: const.
+    $valid_attrs = [
+        'accept',
+        'disabled',
+        'maxlength',
+        'name',
+        'readonly',
+        'placeholder',
+        'size',
+        'value',
+        'accesskey',
+        'class',
+        'dir',
+        'id',
+        'lang',
+        'style',
+        'tabindex',
+        'title',
+        'xml:lang',
+        'onfocus',
+        'onblur',
+        'onselect',
+        'onchange',
+        'onclick',
+        'ondblclick',
+        'onmousedown',
+        'onmouseup',
+        'onmouseover',
+        'onmousemove',
+        'onmouseout',
+        'onkeypress',
+        'onkeydown',
+        'onkeyup',
+        'required',
+        'pattern',
+        'autocomplete',
+    ];
+
+    $output = '';
+    if (isset($settings) === true && is_array($settings) === true) {
+        // Check Name is necessary.
+        if (isset($settings['name']) === true) {
+            $output = '<input type="email" ';
+
+            // Check Max length.
+            if (isset($settings['maxlength']) === false) {
+                $settings['maxlength'] = 255;
+            }
+
+            // Check Size.
+            if (isset($settings['size']) === false
+                || $settings['size'] === 0
+            ) {
+                $settings['size'] = 255;
+            }
+
+            foreach ($settings as $attribute => $attr_value) {
+                // Check valid attribute.
+                if (in_array($attribute, $valid_attrs) === false) {
+                    continue;
+                }
+
+                $output .= $attribute.'="'.$attr_value.'" ';
+            }
+
+            $output .= $function.'/>';
+        }
+    }
+
+    return $output;
 }
 
 
@@ -1571,6 +1678,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeypress',
         'onkeydown',
         'onkeyup',
+        'class',
     ];
 
     foreach ($attrs as $attribute) {
@@ -1797,7 +1905,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  */
 function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" class="'.$class.'">';
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'">';
     // $output .= io_safe_input ($value);
     $output .= ($value);
     $output .= '</textarea>';
@@ -1873,6 +1981,7 @@ function html_get_predefined_table($model='transparent', $columns=4)
  *    $table->titlestyle - Title style
  *    $table->titleclass - Title class
  *    $table->styleTable - Table style
+ *    $table->autosize - Autosize
  *  $table->caption - Table title
  * @param bool Whether to return an output string or echo now
  *
@@ -1983,6 +2092,12 @@ function html_print_table(&$table, $return=false)
         // $table->width = '80%';
     }
 
+    if (isset($table->autosize) === true) {
+        $table->autosize = 'autosize = "1"';
+    } else {
+        $table->autosize = '';
+    }
+
     if (empty($table->border)) {
         if (empty($table)) {
             $table = new stdClass();
@@ -2017,9 +2132,9 @@ function html_print_table(&$table, $return=false)
     $tableid = empty($table->id) ? 'table'.$table_count : $table->id;
 
     if (!empty($table->width)) {
-        $output .= '<table style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="width:'.$table->width.'; '.$styleTable.' '.$table->tablealign;
     } else {
-        $output .= '<table style="'.$styleTable.' '.$table->tablealign;
+        $output .= '<table '.$table->autosize.' style="'.$styleTable.' '.$table->tablealign;
     }
 
     $output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
@@ -2164,33 +2279,47 @@ function html_print_table(&$table, $return=false)
 
 
 /**
- * Render a radio button input. Extended version, use html_print_radio_button() to simplify.
+ * Render a radio button input. Extended version, use html_print_input()
+ * to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
-    inserted into the HTML tag, use it carefully (optional).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string $name         Input name.
+ * @param string $value        Input value.
+ * @param string $label        Set the button to be marked (optional, unmarked by default).
+ * @param string $checkedvalue Checked value.
+ * @param string $disabled     Disable the button (optional, button enabled by default).
+ * @param string $script       Script to execute when onClick event is triggered (optional).
+ * @param string $attributes   Optional HTML attributes. It's a free string which will be inserted tag, use it carefully (optional).
+ * @param string $returnparam  Whether to return an output string or echo now (optional, echo by default).
+ * @param string $modalparam   Modal param.
+ * @param string $message      Message.
+ * @param string $id           Use custom id.
  *
  * @return string HTML code if return parameter is true.
  */
- /*
-     Hello there! :)
-     We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-     You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
- */
-
-function html_print_radio_button_extended($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return=false, $modal=false, $message='visualmodal')
-{
+function html_print_radio_button_extended(
+    $name,
+    $value,
+    $label,
+    $checkedvalue,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $modal=false,
+    $message='visualmodal',
+    $id=null
+) {
     static $idcounter = 0;
 
     $output = '';
 
     $output = '<input type="radio" name="'.$name.'" value="'.$value.'"';
-    $htmlid = 'radiobtn'.sprintf('%04d', ++$idcounter);
+    if (empty($id) === false) {
+        $htmlid = $id;
+    } else {
+        $htmlid = 'radiobtn'.sprintf('%04d', ++$idcounter);
+    }
+
     $output .= ' id="'.$htmlid.'"';
 
     if ($value == $checkedvalue) {
@@ -2472,7 +2601,7 @@ function html_print_image(
 
                 if (!is_readable($working_dir.'/enterprise/meta'.$src)) {
                     if ($isExternalLink) {
-                        $src = ui_get_full_url($src);
+                        $src = ui_get_full_url($src, false, false, false);
                     } else {
                         $src = ui_get_full_url('../..'.$src);
                     }
@@ -2978,23 +3107,24 @@ function html_print_csrf_error()
 
 
 /**
- * Print an swith button
+ * Print an swith button.
  *
- * @param  array $atributes. Valid params:
- *         name: Usefull to handle in forms
- *         value: If is checked or not
- *         disabled: Disabled. Cannot be pressed.
- *         id: Optional id for the switch.
- *         class: Additional classes (string).
- * @return string with HTML of button
+ * @param array $attributes Valid params.
+ * name: Usefull to handle in forms.
+ * value: If is checked or not.
+ * disabled: Disabled. Cannot be pressed.
+ * id: Optional id for the switch.
+ * class: Additional classes (string).
+ *
+ * @return string with HTML of button.
  */
 function html_print_switch($attributes=[])
 {
     $html_expand = '';
 
     // Check the load values on status.
-    $html_expand .= (bool) $attributes['value'] ? ' checked' : '';
-    $html_expand .= (bool) $attributes['disabled'] ? ' disabled' : '';
+    $html_expand .= (bool) ($attributes['value']) ? ' checked' : '';
+    $html_expand .= (bool) ($attributes['disabled']) ? ' disabled' : '';
 
     // Only load the valid attributes.
     $valid_attrs = [
@@ -3017,7 +3147,7 @@ function html_print_switch($attributes=[])
     }
 
     return "<label class='p-switch' style='".$attributes['style']."'>
-			<input type='checkbox' $html_expand>
+			<input type='checkbox' ".$html_expand.">
 			<span class='p-slider'></span>
 		</label>";
 }
@@ -3065,4 +3195,433 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
     $html .= '</form>';
 
     return $html;
+}
+
+
+/**
+ * Print input using functions html lib.
+ *
+ * @param array   $data       Input definition.
+ * @param string  $wrapper    Wrapper 'div' or 'li'.
+ * @param boolean $input_only Return or print only input or also label.
+ *
+ * @return string HTML code for desired input.
+ */
+function html_print_input($data, $wrapper='div', $input_only=false)
+{
+    if (is_array($data) === false) {
+        return '';
+    }
+
+    $output = '';
+
+    if ($data['label'] && $input_only === false) {
+        $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
+        $output .= ' class="'.$data['input_class'].'">';
+        $output .= '<label class="'.$data['label_class'].'">';
+        $output .= $data['label'];
+        $output .= '</label>';
+
+        if (!$data['return']) {
+            echo $output;
+        }
+    }
+
+    switch ($data['type']) {
+        case 'text':
+            $output .= html_print_input_text(
+                $data['name'],
+                $data['value'],
+                ((isset($data['alt']) === true) ? $data['alt'] : ''),
+                ((isset($data['size']) === true) ? $data['size'] : 50),
+                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
+                ((isset($data['return']) === true) ? $data['return'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+            );
+        break;
+
+        case 'image':
+            $output .= html_print_input_image(
+                $data['name'],
+                $data['src'],
+                $data['value'],
+                ((isset($data['style']) === true) ? $data['style'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['options']) === true) ? $data['options'] : false)
+            );
+        break;
+
+        case 'text_extended':
+            $output .= html_print_input_text_extended(
+                $data['name'],
+                $data['value'],
+                $data['id'],
+                $data['alt'],
+                $data['size'],
+                $data['maxlength'],
+                $data['disabled'],
+                $data['script'],
+                $data['attributes'],
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['password']) === true) ? $data['password'] : false),
+                ((isset($data['function']) === true) ? $data['function'] : '')
+            );
+        break;
+
+        case 'password':
+            $output .= html_print_input_password(
+                $data['name'],
+                $data['value'],
+                ((isset($data['alt']) === true) ? $data['alt'] : ''),
+                ((isset($data['size']) === true) ? $data['size'] : 50),
+                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off')
+            );
+        break;
+
+        case 'text':
+            $output .= html_print_input_text(
+                $data['name'],
+                $data['value'],
+                ((isset($data['alt']) === true) ? $data['alt'] : ''),
+                ((isset($data['size']) === true) ? $data['size'] : 50),
+                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+            );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
+        break;
+
+        case 'hidden':
+            $output .= html_print_input_hidden(
+                $data['name'],
+                $data['value'],
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : false)
+            );
+        break;
+
+        case 'hidden_extended':
+            $output .= html_print_input_hidden_extended(
+                $data['name'],
+                $data['value'],
+                $data['id'],
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : false)
+            );
+        break;
+
+        case 'color':
+            $output .= html_print_input_color(
+                $data['name'],
+                $data['value'],
+                ((isset($data['class']) === true) ? $data['class'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false)
+            );
+        break;
+
+        case 'file':
+            $output .= html_print_input_file(
+                $data['name'],
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['options']) === true) ? $data['options'] : false)
+            );
+        break;
+
+        case 'select':
+            $output .= html_print_select(
+                $data['fields'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+            );
+        break;
+
+        case 'select_from_sql':
+            $output .= html_print_select_from_sql(
+                $data['sql'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
+            );
+        break;
+
+        case 'select_groups':
+            $output .= html_print_select_groups(
+                ((isset($data['id_user']) === true) ? $data['id_user'] : false),
+                ((isset($data['privilege']) === true) ? $data['privilege'] : 'AR'),
+                ((isset($data['returnAllGroup']) === true) ? $data['returnAllGroup'] : true),
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['id_group']) === true) ? $data['id_group'] : false),
+                ((isset($data['keys_field']) === true) ? $data['keys_field'] : 'id_grupo'),
+                ((isset($data['strict_user']) === true) ? $data['strict_user'] : false),
+                ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
+                ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
+            );
+        break;
+
+        case 'submit':
+            $output .= '<'.$wrapper.' class="action-buttons" style="width: 100%">'.html_print_submit_button(
+                ((isset($data['label']) === true) ? $data['label'] : 'OK'),
+                ((isset($data['name']) === true) ? $data['name'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false)
+            ).'</'.$wrapper.'>';
+        break;
+
+        case 'checkbox':
+            $output .= html_print_checkbox(
+                $data['name'],
+                $data['value'],
+                ((isset($data['checked']) === true) ? $data['checked'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false)
+            );
+        break;
+
+        case 'switch':
+            $output .= html_print_switch($data);
+        break;
+
+        case 'interval':
+            $output .= html_print_extended_select_for_time(
+                $data['name'],
+                $data['value'],
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['style']) === true) ? $data['selected'] : false),
+                ((isset($data['unique']) === true) ? $data['unique'] : false)
+            );
+        break;
+
+        case 'textarea':
+            $output .= html_print_textarea(
+                $data['name'],
+                $data['rows'],
+                $data['columns'],
+                ((isset($data['value']) === true) ? $data['value'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+        break;
+
+        case 'button':
+            $output .= html_print_button(
+                ((isset($data['label']) === true) ? $data['label'] : 'OK'),
+                ((isset($data['name']) === true) ? $data['name'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['imageButton']) === true) ? $data['imageButton'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : '')
+            );
+        break;
+
+        case 'radio_button':
+            $output .= html_print_radio_button_extended(
+                $data['name'],
+                $data['value'],
+                $data['label'],
+                ((isset($data['checkedvalue']) === true) ? $data['checkedvalue'] : 1),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : true),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : 'visualmodal'),
+                ((isset($data['id']) === true) ? $data['id'] : null)
+            );
+        break;
+
+        case 'email':
+            $output .= html_print_input_email($data);
+        break;
+
+        default:
+            // Ignore.
+        break;
+    }
+
+    if ($data['label'] && $input_only === false) {
+        $output .= '</'.$wrapper.'>';
+        if (!$data['return']) {
+            echo '</'.$wrapper.'>';
+        }
+    }
+
+    return $output;
+}
+
+
+/**
+ * Print an autocomplete input filled out with Integria IMS users.
+ *
+ * @param string  $name    The name of ajax control, by default is "users".
+ * @param string  $default The default value to show in the ajax control.
+ * @param boolean $return  If it is true return a string with the output instead to echo the output.
+ * @param string  $size    Size.
+ *
+ * @return mixed If the $return is true, return the output as string.
+ */
+function html_print_autocomplete_users_from_integria(
+    $name='users',
+    $default='',
+    $return=false,
+    $size='30',
+    $disable=false,
+    $required=false
+) {
+    global $config;
+
+    ob_start();
+
+    $attrs = ['style' => 'background: url(images/user_green.png) no-repeat right;'];
+
+    if ($required) {
+        $attrs['required'] = 'required';
+    }
+
+    html_print_input_text_extended(
+        $name,
+        $default,
+        'text-'.$name,
+        '',
+        $size,
+        100,
+        $disable,
+        '',
+        $attrs
+    );
+    html_print_input_hidden($name.'_hidden', $id_agent_module);
+
+    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
+
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    ?>
+    <script type="text/javascript">
+        function escapeHTML (str)
+        {
+            var div = document.createElement('div');
+            var text = document.createTextNode(str);
+            div.appendChild(text);
+            return div.innerHTML;
+        }
+        
+        $(document).ready (function () {
+                $("#text-<?php echo $name; ?>").autocomplete({
+                    minLength: 2,
+                    source: function( request, response ) {
+                            var term = request.term; //Word to search
+                            
+                            data_params = {
+                                page: "include/ajax/integria_incidents.ajax",
+                                search_term: term,
+                                get_users: 1,
+                            };
+                            
+                            jQuery.ajax ({
+                                data: data_params,
+                                async: false,
+                                type: "POST",
+                                url: action="<?php echo $javascript_ajax_page; ?>",
+                                timeout: 10000,
+                                dataType: "json",
+                                success: function (data) {
+                                        temp = [];
+                                        $.each(data, function (id, module) {
+                                                temp.push({
+                                                    'value' : id,
+                                                    'label' : module});
+                                        });
+                                        
+                                        response(temp);
+                                    }
+                                });
+                        },
+                    change: function( event, ui ) {
+                            if (!ui.item)
+                                $("input[name='<?php echo $name; ?>_hidden']")
+                                    .val(0);
+                            return false;
+                        },
+                    select: function( event, ui ) {
+                            $("input[name='<?php echo $name; ?>_hidden']")
+                                .val(ui.item.value);
+                            
+                            $("#text-<?php echo $name; ?>").val( ui.item.label );
+                            return false;
+                        }
+                    }
+                );
+            });
+    </script>
+    <?php
+    $output = ob_get_clean();
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }

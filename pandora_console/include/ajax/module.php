@@ -472,11 +472,17 @@ if (check_login()) {
         $result = false;
         $id_module_a = (int) get_parameter('id_module_a');
         $id_module_b = (int) get_parameter('id_module_b');
+        $type = (string) get_parameter('relation_type');
 
         if ($id_module_a < 1) {
             $name_module_a = get_parameter('name_module_a', '');
             if ($name_module_a) {
-                $id_module_a = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_a);
+                $id_module_a = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_a
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -486,7 +492,12 @@ if (check_login()) {
         if ($id_module_b < 1) {
             $name_module_b = get_parameter('name_module_b', '');
             if ($name_module_b) {
-                $id_module_b = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_b);
+                $id_module_b = (int) db_get_value(
+                    'id_agente_modulo',
+                    'tagente_modulo',
+                    'nombre',
+                    $name_module_b
+                );
             } else {
                 echo json_encode($result);
                 return;
@@ -494,7 +505,7 @@ if (check_login()) {
         }
 
         if ($id_module_a > 0 && $id_module_b > 0) {
-            $result = modules_add_relation($id_module_a, $id_module_b);
+            $result = modules_add_relation($id_module_a, $id_module_b, $type);
         }
 
         echo json_encode($result);
@@ -1011,7 +1022,7 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_module_status($module['estado'], $title, true, false, true);
+            $data[5] = ui_print_status_image($status, $title, true);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 
@@ -1102,7 +1113,7 @@ if (check_login()) {
             }
 
             if ($module['id_tipo_modulo'] != 25) {
-                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical']);
+                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse']);
             } else {
                 $data[6] = '';
             }
@@ -1134,13 +1145,18 @@ if (check_login()) {
                     urlencode(
                         base64_encode($module['nombre'])
                     )
-                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 650)";
+                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
                 if (!is_snapshot_data($module['datos'])) {
                     $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
                 }
 
                 $server_name = '';
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.modules_get_agentmodule_name($module['id_agente_modulo'])."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+
+                $modules_get_agentmodule_name = modules_get_agentmodule_name($module['id_agente_modulo']);
+                // Escape the double quotes that may have the name of the module.
+                $modules_get_agentmodule_name = str_replace('&quot;', '\"', $modules_get_agentmodule_name);
+
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
             }
 
             if ($module['estado'] == 3) {

@@ -58,6 +58,15 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     super.resizeElement(width, 0);
   }
 
+  /**
+   * @override Item.initResizementListener. To disable the functionality.
+   * Start the resizement funtionality.
+   * @param element Element to move inside its container.
+   */
+  protected initResizementListener(): void {
+    // No-Op. Disable the resizement functionality for this item.
+  }
+
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "module-graph";
@@ -106,9 +115,7 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     }
 
     // Hack to execute the JS after the HTML is added to the DOM.
-    const aux = document.createElement("div");
-    aux.innerHTML = this.props.html;
-    const scripts = aux.getElementsByTagName("script");
+    const scripts = element.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {
       if (scripts[i].src.length === 0) {
         eval(scripts[i].innerHTML.trim());

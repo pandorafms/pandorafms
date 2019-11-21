@@ -783,7 +783,7 @@ $data[0] = __('User ack.').$jump;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    users_can_manage_group_all($access)
 );
 
 $data[0] .= html_print_select(

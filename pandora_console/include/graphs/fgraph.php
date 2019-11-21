@@ -21,6 +21,7 @@ if (empty($config['homedir'])) {
 }
 
 require_once $config['homedir'].'/include/functions.php';
+require_once $config['homedir'].'/include/graphs/functions_flot.php';
 
 $ttl = get_parameter('ttl', 1);
 $graph_type = get_parameter('graph_type', '');
@@ -169,17 +170,7 @@ function vbar_graph(
     setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
     if (empty($chart_data)) {
-        return html_print_image(
-            $no_data_image,
-            true,
-            [
-                'width'  => $width,
-                'height' => $height,
-                'title'  => __('No data to show'),
-            ],
-            false,
-            true
-        );
+        return graph_nodata_image($width, $height, 'vbar');
     }
 
     if ($ttl == 2) {
@@ -356,17 +347,7 @@ function hbar_graph(
     setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
     if (empty($chart_data)) {
-        return html_print_image(
-            $no_data_image,
-            true,
-            [
-                'width'  => $width,
-                'height' => $height,
-                'title'  => __('No data to show'),
-            ],
-            false,
-            true
-        );
+        return graph_nodata_image($width, $height, 'hbar');
     }
 
     if ($ttl == 2) {

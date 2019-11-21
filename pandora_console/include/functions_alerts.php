@@ -1916,7 +1916,6 @@ function alerts_get_agents_with_alert_template($id_alert_template, $id_group, $f
     $filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
     $filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
     $filter['id_alert_template'] = $id_alert_template;
-    $filter['tagente_modulo.disabled'] = '<> 1';
     $filter['delete_pending'] = '<> 1';
 
     if (empty($id_agents)) {
@@ -2493,7 +2492,7 @@ function alerts_get_action_escalation($action)
         $escalation[$action['fires_max']] = 1;
     } else if ($action['fires_min'] < $action['fires_max']) {
         for ($i = 1; $i <= $action['fires_max']; $i++) {
-            if ($i <= $action['fires_min']) {
+            if ($i < $action['fires_min']) {
                 $escalation[$i] = 0;
             } else {
                 $escalation[$i] = 1;

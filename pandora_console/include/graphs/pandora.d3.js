@@ -2762,7 +2762,14 @@ function valueToBytes(value) {
   return value.toFixed(2) + shorts[pos] + "B";
 }
 
-function donutNarrowGraph(colores, width, height, total) {
+function donutNarrowGraph(
+  colores,
+  width,
+  height,
+  total,
+  textColor,
+  strokeColor
+) {
   // Default settings
   var donutbody = d3.select("body");
   var data = {};
@@ -2848,7 +2855,7 @@ function donutNarrowGraph(colores, width, height, total) {
           this._current = d;
         })
         .attr("d", arc)
-        .attr("stroke", "white")
+        .attr("stroke", strokeColor)
         .style("fill", function(d) {
           return color(d.data.key);
         });
@@ -2872,7 +2879,7 @@ function donutNarrowGraph(colores, width, height, total) {
         .attr("y", 0 + radius / 10)
         .attr("class", "text-tooltip")
         .style("text-anchor", "middle")
-        //.attr("fill", "#82b92e")
+        .attr("fill", textColor)
         .style("font-size", function(d) {
           if (normal_status) {
             percentage_normal = (normal_status * 100) / total;
@@ -2902,6 +2909,7 @@ function donutNarrowGraph(colores, width, height, total) {
           /* .attr("fill", function(d) {
             return color(obj.data.key);
           })*/
+          .attr("fill", textColor)
           .style("font-size", function(d) {
             percentage = (d[obj.data.key] * 100) / total;
             if (Number.isInteger(percentage)) {

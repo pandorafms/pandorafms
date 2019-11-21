@@ -97,9 +97,6 @@ sub pandora_startup () {
 	
 	# Grab config tokens shared with the console and not in the .conf	
 	pandora_get_sharedconfig (\%Config, $DBH);
-	
-	# Generate the encryption key after reading the passphrase.
-	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
 	# Kill any running server threads.
 	stop_server_threads();
@@ -211,7 +208,9 @@ sub pandora_crash () {
 		}
 		$full_error .= $error_line;
 	}
-	
+
+	# Could crash before parse configuration.
+	$Config{'rb_product_name'} = 'PandoraFMS' unless defined($Config{'rb_product_name'}) && $Config{'rb_product_name'} ne '';
 	logger (\%Config, $Config{'rb_product_name'} . ' Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
 	
 	# It's interesting show by console problems, not only in logs. This helps
@@ -365,9 +364,11 @@ sub pandora_server_tasks ($) {
 
 		# COMMON TASKS (master and non-master) 
 		# ---------------------------------------------------------------
-
-		# Rotate Log File
 		if (($counter % 30) == 0) {
+			# Update configuration options from the console.
+			pandora_get_sharedconfig ($pa_config, $dbh);
+
+			# Rotate the log file.
 			pandora_rotate_logfile($pa_config);
 			
 			# Set event storm protection
@@ -379,6 +380,16 @@ sub pandora_server_tasks ($) {
 			&& !is_metaconsole($pa_config)
 			&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
 			pandora_self_monitoring ($pa_config, $dbh);
+		}
+
+		# Pandora sample agent
+		if (defined($pa_config->{'sample_agent'})) {
+			if ($pa_config->{'sample_agent'} == 1
+			&& !is_metaconsole($pa_config)
+			&& $counter % $pa_config->{'sample_agent_interval'} == 0){
+				pandora_sample_agent ($pa_config);
+			}
+			pandora_update_config_token ($dbh, 'sample_agent', $pa_config->{'sample_agent'});
 		}
 
 		# Avoid counter overflow

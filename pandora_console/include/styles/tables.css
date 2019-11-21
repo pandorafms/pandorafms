@@ -122,6 +122,7 @@
   letter-spacing: 0.3pt;
   color: #000;
   background-color: #fff;
+  cursor: pointer;
 }
 
 .info_table tr th {
@@ -190,7 +191,8 @@
 }
 
 .info_table > tbody > tr:hover {
-  background-color: #eee;
+  /* This !important is necessary to overwrite the white background of tables with less than 5 rows. */
+  background-color: #eee !important;
 }
 
 .info_.profile_list > thead > tr > th > a.tip {
@@ -260,11 +262,16 @@ a.pandora_pagination {
   padding: 5px;
   color: #000;
   border: 1px solid #cacaca;
+  border-left: none;
   min-width: 12px;
-  margin-right: -1px;
   text-decoration: none;
   cursor: pointer;
 }
+.dataTables_paginate > span > span.ellipsis + a.pandora_pagination:last-child,
+.dataTables_paginate a.pandora_pagination.previous {
+  border-left: 1px solid #cacaca;
+}
+
 a.pandora_pagination.disabled {
   color: #cacaca;
 }
@@ -311,4 +318,37 @@ a.pandora_pagination.current:hover {
   background-color: #f3f3f3;
   border-color: #b6b6b6;
   cursor: default;
+}
+
+/* Default datatable filter style */
+.datatable_filter.content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.datatable_filter.content label {
+  margin-right: 1em;
+}
+.datatable_filter.content li {
+  flex: 1 1 auto;
+  margin: 1em auto;
+}
+.sorting_desc {
+  background: url(../../images/sort_down_green.png) no-repeat;
+  background-position-x: left;
+  background-position-y: center;
+  cursor: pointer;
+}
+.sorting_asc {
+  background: url(../../images/sort_up_green.png) no-repeat;
+  background-position-x: left;
+  background-position-y: center;
+  cursor: pointer;
+}
+
+.info_table tr th.sorting_asc,
+.info_table tr th.sorting_desc {
+  padding-left: 15px;
 }

@@ -261,6 +261,7 @@ div.login_button_saml input:hover {
 .login_back input {
   background-image: url("../../images/back_login.png");
   background-position: left 5% center;
+  background-repeat: no-repeat;
 }
 
 .login_back input:hover {
@@ -406,6 +407,8 @@ div.form_message_alert ul li input {
 }
 
 div.form_message_alert ul li label {
+  display: inline-block;
+  width: 145px;
   font-size: 10pt;
   padding-right: 20px;
 }

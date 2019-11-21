@@ -1837,6 +1837,52 @@ function array_key_to_offset($array, $key)
 
 
 /**
+ * Undocumented function
+ *
+ * @param array $arguments Following format:
+ *  [
+ *   'ip_target'
+ *   'snmp_version'
+ *   'snmp_community'
+ *   'snmp3_auth_user'
+ *   'snmp3_security_level'
+ *   'snmp3_auth_method'
+ *   'snmp3_auth_pass'
+ *   'snmp3_privacy_method'
+ *   'snmp3_privacy_pass'
+ *   'quick_print'
+ *   'base_oid'
+ *   'snmp_port'
+ *   'server_to_exec'
+ *   'extra_arguments'
+ *   'format'
+ *  ]
+ *
+ * @return array SNMP result.
+ */
+function get_h_snmpwalk(array $arguments)
+{
+    return get_snmpwalk(
+        $arguments['ip_target'],
+        $arguments['snmp_version'],
+        isset($arguments['snmp_community']) ? $arguments['snmp_community'] : '',
+        isset($arguments['snmp3_auth_user']) ? $arguments['snmp3_auth_user'] : '',
+        isset($arguments['snmp3_security_level']) ? $arguments['snmp3_security_level'] : '',
+        isset($arguments['snmp3_auth_method']) ? $arguments['snmp3_auth_method'] : '',
+        isset($arguments['snmp3_auth_pass']) ? $arguments['snmp3_auth_pass'] : '',
+        isset($arguments['snmp3_privacy_method']) ? $arguments['snmp3_privacy_method'] : '',
+        isset($arguments['snmp3_privacy_pass']) ? $arguments['snmp3_privacy_pass'] : '',
+        isset($arguments['quick_print']) ? $arguments['quick_print'] : 0,
+        isset($arguments['base_oid']) ? $arguments['base_oid'] : '',
+        isset($arguments['snmp_port']) ? $arguments['snmp_port'] : '',
+        isset($arguments['server_to_exec']) ? $arguments['server_to_exec'] : 0,
+        isset($arguments['extra_arguments']) ? $arguments['extra_arguments'] : '',
+        isset($arguments['format']) ? $arguments['format'] : '-Oa'
+    );
+}
+
+
+/**
  * Make a snmpwalk and return it.
  *
  * @param string  $ip_target            The target address.
@@ -1956,11 +2002,16 @@ function get_snmpwalk(
         exec($command_str, $output, $rc);
     }
 
-    // Parse the output of snmpwalk
+    // Parse the output of snmpwalk.
     $snmpwalk = [];
     foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode(' = ', $line);
+        // Separate the OID from the value.
+        if (strpos($format, 'q') === false) {
+            $full_oid = explode(' = ', $line, 2);
+        } else {
+            $full_oid = explode(' ', $line, 2);
+        }
+
         if (isset($full_oid[1])) {
             $snmpwalk[$full_oid[0]] = $full_oid[1];
         }
@@ -2633,7 +2684,7 @@ function can_user_access_node()
 
     $userinfo = get_user_info($config['id_user']);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];
     } else {
         return 1;
@@ -2801,6 +2852,8 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
+    $divider = html_entity_decode($config['csv_divider']);
+
     if (!$data) {
         echo __('No data found to export');
         return 0;
@@ -2818,9 +2871,9 @@ function print_audit_csv($data)
     // BOM
     print pack('C*', 0xEF, 0xBB, 0xBF);
 
-    echo __('User').';'.__('Action').';'.__('Date').';'.__('Source IP').';'.__('Comments')."\n";
+    echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).';'.io_safe_output($line['accion']).';'.date($config['date_format'], $line['utimestamp']).';'.$line['ip_origen'].';'.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;
@@ -3736,11 +3789,20 @@ function series_type_graph_array($data, $show_elements_graph)
             } else if (strpos($key, 'percentil') !== false) {
                 $data_return['series_type'][$key] = 'percentil';
                 if ($show_elements_graph['percentil']) {
-                    $data_return['legend'][$key] = __('Percentil').' '.$config['percentil'].'º '.__('of module').' ';
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = __('Percentil').' ';
+                        $name_legend .= $config['percentil'].'º ';
+                        $name_legend .= __('of module').' ';
+                        $name_legend .= $value['agent_alias'].' / ';
+                        $name_legend .= $value['module_name'].' / ';
+                        $name_legend .= __('Unit ').' ';
+                        $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                        $name_legend = __('Percentil').' ';
+                        $name_legend .= $config['percentil'].'º ';
+                        $name_legend .= __('of module').' ';
+                        $name_legend .= $value['agent_alias'].' / ';
+                        $name_legend .= $value['module_name'].': ';
                     }
 
                     $data_return['legend'][$key] .= $name_legend;
@@ -3819,11 +3881,11 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $img_content = join("\n", $result);
 
     if ($params['return_img_base_64']) {
-        // To be used in alerts
+        // To be used in alerts.
         $width_img = 500;
         return $img_content;
     } else {
-        // to be used in PDF files
+        // to be used in PDF files.
         $config['temp_images'][] = $img_path;
         return '<img src="'.$img_url.'" />';
     }
@@ -4030,10 +4092,22 @@ function mask2cidr($mask)
 }
 
 
+/**
+ * convert the cidr prefix to subnet mask
+ *
+ * @param  int cidr prefix
+ * @return string subnet mask
+ */
+function cidr2mask($int)
+{
+    return long2ip(-1 << (32 - (int) $int));
+}
+
+
 function get_help_info($section_name)
 {
     global $config;
-    // hd($section_name);
+
     $user_language = get_user_language($id_user);
 
     $es = false;
@@ -5359,6 +5433,29 @@ function get_help_info($section_name)
         break;
     }
 
-    // hd($result);
     return $result;
+}
+
+
+if (!function_exists('getallheaders')) {
+
+
+    /**
+     * Fix for php-fpm
+     *
+     * @return array
+     */
+    function getallheaders()
+    {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+
 }

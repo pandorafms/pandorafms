@@ -69,6 +69,57 @@ function agents_get_agent_id_by_module_id($id_agente_modulo)
 
 
 /**
+ * Search for agent data anywhere.
+ *
+ * Note: This method matches with server (perl) locate_agent.
+ * Do not change order!
+ *
+ * @param string $field Alias, name or IP address of searchable agent.
+ *
+ * @return array Agent of false if not found.
+ */
+function agents_locate_agent(string $field)
+{
+    global $config;
+
+    $table = 'tagente';
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    }
+
+    // Alias.
+    $sql = sprintf(
+        'SELECT *
+         FROM %s
+         WHERE alias = "%s"',
+        $table,
+        $field
+    );
+    $agent = db_get_row_sql($sql);
+
+    if ($agent !== false) {
+        return $agent;
+    }
+
+    // Addr.
+    $agent = agents_get_agent_with_ip($field);
+    if ($agent !== false) {
+        return $agent;
+    }
+
+    // Name.
+    $sql = sprintf(
+        'SELECT *
+         FROM %s
+         WHERE nombre = "%s"',
+        $table,
+        $field
+    );
+    return db_get_row_sql($sql);
+}
+
+
+/**
  * Get agent id from an agent alias.
  *
  * @param string $alias Agent alias.
@@ -1513,29 +1564,30 @@ function agents_get_name($id_agent, $case='none')
  * Get alias of an agent (cached function).
  *
  * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none)
+ * @param string  $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
 function agents_get_alias($id_agent, $case='none')
 {
     global $config;
-    // Prepare cache
+    // Prepare cache.
     static $cache = [];
     if (empty($case)) {
         $case = 'none';
     }
 
-    // Check cache
+    // Check cache.
     if (isset($cache[$case][$id_agent])) {
         return $cache[$case][$id_agent];
     }
 
-    if ($config['dbconnection_cache'] == null && is_metaconsole()) {
-        $alias = (string) db_get_value('alias', 'tmetaconsole_agent', 'id_tagente', (int) $id_agent);
-    } else {
-        $alias = (string) db_get_value('alias', 'tagente', 'id_agente', (int) $id_agent);
-    }
+    $alias = (string) db_get_value(
+        'alias',
+        'tagente',
+        'id_agente',
+        (int) $id_agent
+    );
 
     switch ($case) {
         case 'upper':
@@ -1544,6 +1596,10 @@ function agents_get_alias($id_agent, $case='none')
 
         case 'lower':
             $alias = mb_strtolower($alias, 'UTF-8');
+        break;
+
+        default:
+            // Not posible.
         break;
     }
 
@@ -1554,7 +1610,13 @@ function agents_get_alias($id_agent, $case='none')
 
 function agents_get_alias_by_name($name, $case='none')
 {
-    $alias = (string) db_get_value('alias', 'tagente', 'nombre', $name);
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    } else {
+        $table = 'tagente';
+    }
+
+    $alias = (string) db_get_value('alias', $table, 'nombre', $name);
 
     switch ($case) {
         case 'upper':
@@ -3385,11 +3447,22 @@ function agents_get_image_status($status)
  */
 function agents_get_status_animation($up=true)
 {
+    global $config;
+
+    // Gif with black background or white background
+    if ($config['style'] === 'pandora_black') {
+        $heartbeat_green = 'images/heartbeat_green_black.gif';
+        $heartbeat_red = 'images/heartbeat_red_black.gif';
+    } else {
+        $heartbeat_green = 'images/heartbeat_green.gif';
+        $heartbeat_red = 'images/heartbeat_red.gif';
+    }
+
     switch ($up) {
         case true:
         default:
         return html_print_image(
-            'images/heartbeat_green.gif',
+            $heartbeat_green,
             true,
             [
                 'width'  => '170',
@@ -3399,7 +3472,7 @@ function agents_get_status_animation($up=true)
 
         case false:
         return html_print_image(
-            'images/heartbeat_red.gif',
+            $heartbeat_red,
             true,
             [
                 'width'  => '170',

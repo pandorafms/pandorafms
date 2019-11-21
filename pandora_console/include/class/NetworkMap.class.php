@@ -2642,7 +2642,16 @@ class NetworkMap
      */
     public function loadMapData()
     {
+        global $config;
+
         $networkmap = $this->map;
+
+        // ACL.
+        $networkmap_write = check_acl(
+            $config['id_user'],
+            $networkmap['id_group'],
+            'MW'
+        );
 
         $simulate = false;
         if (isset($networkmap['__simulated']) === false) {
@@ -2711,6 +2720,7 @@ class NetworkMap
         $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
         $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";
         $output .= 'var enterprise_installed = '.((int) enterprise_installed()).";\n";
+        $output .= 'var networkmap_write = '.$networkmap_write.";\n";
         $output .= 'var node_radius = '.$networkmap['filter']['node_radius'].";\n";
         $output .= 'var networkmap_holding_area_dimensions = '.json_encode($networkmap['filter']['holding_area']).";\n";
         $output .= "var networkmap = {'nodes': [], 'links':  []};\n";

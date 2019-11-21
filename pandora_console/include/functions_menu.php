@@ -50,6 +50,15 @@ function menu_print_menu(&$menu)
 
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
+    if ($sec2 == 'operation/agentes/ver_agente') {
+        $sec2 = 'godmode/agentes/configurar_agente';
+    } else if ($sec2 == 'godmode/servers/discovery') {
+        $wiz = (string) get_parameter('wiz');
+        $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
+    } else {
+        $sec2 = (string) get_parameter('sec2');
+    }
+
     $menu_selected = false;
 
     $allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
@@ -536,7 +545,6 @@ function menu_add_extras(&$menu)
     $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
     $menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');

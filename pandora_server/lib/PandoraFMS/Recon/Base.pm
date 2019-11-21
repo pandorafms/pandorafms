@@ -31,10 +31,12 @@ use constant {
 	DISCOVERY_APP_MYSQL => 4,
 	DISCOVERY_APP_ORACLE => 5,
 	DISCOVERY_CLOUD_AWS_EC2 => 6,
-	DISCOVERY_CLOUD_AWS_RDS => 7
+	DISCOVERY_CLOUD_AWS_RDS => 7,
+	DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
+	DISCOVERY_DEPLOY_AGENTS => 9,
 };
 
-# /dev/null
+# $DEVNULL
 my $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
 
 # Some useful OIDs.
@@ -850,7 +852,7 @@ sub get_routes($) {
 	$self->{'routes'} = [];
 
 	# Parse route's output.
-	my @output = `route -n 2>/dev/null`;
+	my @output = `route -n 2>$DEVNULL`;
 	foreach my $line (@output) {
 		chomp($line);
 		if ($line =~ /^0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+).*/) {
@@ -1218,7 +1220,7 @@ sub snmp_responds_v3($$) {
 sub local_arp($) {
 	my ($self) = @_;
 
-	my @output = `arp -an 2>/dev/null`;
+	my @output = `arp -an 2>$DEVNULL`;
 	foreach my $line (@output) {
 		next unless ($line =~ m/\((\S+)\) at ([0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+)/);
 		$self->add_mac(parse_mac($2), $1);
@@ -1284,7 +1286,7 @@ sub ping ($$$) {
 		for (my $i = 0; $i < $retries; $i++) {
 
 			# Note: There is no timeout option.
-			`$ping_command -s -n $host 56 $packets >/dev/null 2>&1`;
+			`$ping_command -s -n $host 56 $packets >$DEVNULL 2>&1`;
 			return 1 if ($? == 0);
 		}
 
@@ -1297,7 +1299,7 @@ sub ping ($$$) {
 		for (my $i = 0; $i < $retries; $i++) {
 
 			# Note: There is no timeout option for ping6.
-			`$ping_command -q -n -c $packets $host >/dev/null 2>&1`;
+			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
 			return 1 if ($? == 0);
 		}
 
@@ -1310,7 +1312,7 @@ sub ping ($$$) {
 		for (my $i = 0; $i < $retries; $i++) {
 
 			# Note: There is no timeout option for ping6.
-			`$ping_command -q -n -c $packets $host >/dev/null 2>&1`;
+			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
 			if ($? == 0) {
 				return 1;
 			}
@@ -1322,7 +1324,7 @@ sub ping ($$$) {
 	# Assume Linux by default.
 	my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping";
 	for (my $i = 0; $i < $retries; $i++) {
-		`$ping_command -q -W $timeout -n -c $packets $host >/dev/null 2>&1`;
+		`$ping_command -q -W $timeout -n -c $packets $host >$DEVNULL 2>&1`;
 		return 1 if ($? == 0);
 	}
 
@@ -1527,98 +1529,100 @@ sub app_scan($) {
 			$self->{'task_data'}
 		);
 
-		if (!$dbObj->is_connected()) {
-			call('message', 'Cannot connect to target ' . $target, 3);
-			$global_percent += $global_step;
-			$self->{'c_network_percent'} = 90;
-			# Update progress
-			$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
-			$self->{'summary'}->{'not_alive'} += 1;
-			push @modules, {
-				name => $type . ' connection',
-				type => 'generic_proc',
-				data => 0,
-				description => $type . ' availability'
-			};
+		if (defined($dbObj)) {
+			if (!$dbObj->is_connected()) {
+				call('message', 'Cannot connect to target ' . $target, 3);
+				$global_percent += $global_step;
+				$self->{'c_network_percent'} = 90;
+				# Update progress
+				$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
+				$self->{'summary'}->{'not_alive'} += 1;
+				push @modules, {
+					name => $type . ' connection',
+					type => 'generic_proc',
+					data => 0,
+					description => $type . ' availability'
+				};
 
-		} else {
-			my $dbObjCfg = $dbObj->get_config();
+			} else {
+				my $dbObjCfg = $dbObj->get_config();
 
-			$self->{'summary'}->{'discovered'} += 1;
-			$self->{'summary'}->{'alive'} += 1;
+				$self->{'summary'}->{'discovered'} += 1;
+				$self->{'summary'}->{'alive'} += 1;
 
-			push @modules, {
-				name => $type . ' connection',
-				type => 'generic_proc',
-				data => 1,
-				description => $type . ' availability'
-			};
+				push @modules, {
+					name => $type . ' connection',
+					type => 'generic_proc',
+					data => 1,
+					description => $type . ' availability'
+				};
 
-			# Analyze.
-			$self->{'step'} = STEP_STATISTICS;
-			$self->{'c_network_percent'} = 30;
-			$self->call('update_progress', $global_percent + (30 / (scalar @targets)));
-			$self->{'c_network_name'} = $dbObj->get_host();
+				# Analyze.
+				$self->{'step'} = STEP_STATISTICS;
+				$self->{'c_network_percent'} = 30;
+				$self->call('update_progress', $global_percent + (30 / (scalar @targets)));
+				$self->{'c_network_name'} = $dbObj->get_host();
 
-			# Retrieve connection statistics.
-			# Retrieve uptime statistics
-			# Retrieve query stats
-			# Retrieve connections
-			# Retrieve innodb
-			# Retrieve cache
-			$self->{'c_network_percent'} = 50;
-			$self->call('update_progress', $global_percent + (50 / (scalar @targets)));
-			push @modules, $dbObj->get_statistics();
+				# Retrieve connection statistics.
+				# Retrieve uptime statistics
+				# Retrieve query stats
+				# Retrieve connections
+				# Retrieve innodb
+				# Retrieve cache
+				$self->{'c_network_percent'} = 50;
+				$self->call('update_progress', $global_percent + (50 / (scalar @targets)));
+				push @modules, $dbObj->get_statistics();
 
-			# Custom queries.
-			$self->{'step'} = STEP_CUSTOM_QUERIES;
-			$self->{'c_network_percent'} = 80;
-			$self->call('update_progress', $global_percent + (80 / (scalar @targets)));
-			push @modules, $dbObj->execute_custom_queries();
+				# Custom queries.
+				$self->{'step'} = STEP_CUSTOM_QUERIES;
+				$self->{'c_network_percent'} = 80;
+				$self->call('update_progress', $global_percent + (80 / (scalar @targets)));
+				push @modules, $dbObj->execute_custom_queries();
 
-			if (defined($dbObjCfg->{'scan_databases'})
-			&& $dbObjCfg->{'scan_databases'} == 1) {
-				# Skip database scan in Oracle tasks
-				next if $self->{'type'} == DISCOVERY_APP_ORACLE;
+				if (defined($dbObjCfg->{'scan_databases'})
+				&& "$dbObjCfg->{'scan_databases'}" eq "1") {
+					# Skip database scan in Oracle tasks
+					next if $self->{'type'} == DISCOVERY_APP_ORACLE;
 
-				my $__data = $dbObj->scan_databases();
+					my $__data = $dbObj->scan_databases();
 
-				if (ref($__data) eq "ARRAY") {
-					if (defined($dbObjCfg->{'agent_per_database'})
-					&& $dbObjCfg->{'agent_per_database'} == 1) {
-						# Agent per database detected.
-						push @data, @{$__data};
-					} else {
-						# Merge modules into engine agent.
-						my @_modules = map { 
-							map { $_ } @{$_->{'module_data'}}
-						} @{$__data};
+					if (ref($__data) eq "ARRAY") {
+						if (defined($dbObjCfg->{'agent_per_database'})
+						&& $dbObjCfg->{'agent_per_database'} == 1) {
+							# Agent per database detected.
+							push @data, @{$__data};
+						} else {
+							# Merge modules into engine agent.
+							my @_modules = map { 
+								map { $_ } @{$_->{'module_data'}}
+							} @{$__data};
 
-						push @modules, @_modules;
+							push @modules, @_modules;
+						}
 					}
 				}
 			}
+
+			# Put engine agent at the beginning of the list.
+			my $version = $dbObj->get_version();
+			unshift @data,{
+				'agent_data' => {
+					'agent_name' => $dbObj->get_agent_name(),
+					'os' => $type,
+					'os_version' => (defined($version) ? $version : 'Discovery'),
+					'interval' => $self->{'task_data'}->{'interval_sweep'},
+					'id_group' => $self->{'task_data'}->{'id_group'},
+					'address' => $dbObj->get_host(),
+					'description' => '',
+				},
+				'module_data' => \@modules,
+			};
+
+			$self->call('create_agents', \@data);
+
+			# Destroy item.
+			undef($dbObj);
 		}
-
-		# Put engine agent at the beginning of the list.
-		my $version = $dbObj->get_version();
-		unshift @data,{
-			'agent_data' => {
-				'agent_name' => $dbObj->get_agent_name(),
-				'os' => $type,
-				'os_version' => (defined($version) ? $version : 'Discovery'),
-				'interval' => $self->{'task_data'}->{'interval_sweep'},
-				'id_group' => $self->{'task_data'}->{'id_group'},
-				'address' => $dbObj->get_host(),
-				'description' => '',
-			},
-			'module_data' => \@modules,
-		};
-
-		$self->call('create_agents', \@data);
-
-		# Destroy item.
-		undef($dbObj);
 
 		$global_percent += $global_step;
 		$self->{'c_network_percent'} = 100;
@@ -1632,12 +1636,47 @@ sub app_scan($) {
 
 }
 
+
+##########################################################################
+# Perform a deployment scan.
+##########################################################################
+sub deploy_scan($) {
+	my $self = shift;
+	my ($progress, $step);
+
+	my $type = '';
+
+	# Initialize deployer object.
+	my $deployer = PandoraFMS::Recon::Util::enterprise_new(
+		'PandoraFMS::Recon::Deployer',
+		[
+			task_data => $self->{'task_data'},
+			parent => $self
+		]
+
+	);
+
+	if (!$deployer) {
+		# Failed to initialize, check Cloud credentials or anything.
+		call('message', 'Unable to initialize PandoraFMS::Recon::Deployer', 3);
+	} else {
+		# Let deployer object manage scan.
+		$deployer->scan();
+	}
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+}
+
+
 ##########################################################################
 # Perform a network scan.
 ##########################################################################
 sub scan($) {
 	my ($self) = @_;
-	my ($progress, $step);
+	my ($progress, $step) = 1, 0;
 
 	# 1%
 	$self->call('update_progress', 1);
@@ -1653,10 +1692,14 @@ sub scan($) {
 			# Cloud scan.
 			return $self->cloud_scan();
 		}
+
+		if($self->{'task_data'}->{'type'} == DISCOVERY_DEPLOY_AGENTS) {
+			return $self->deploy_scan();
+		}
 	}
 
 	# Find devices.
-	$self->call('message', "[1/5] Scanning the network...", 3);
+	$self->call('message', "[1/4] Scanning the network...", 3);
 	$self->{'step'} = STEP_SCANNING;
 	$self->call('update_progress', $progress);
 	$self->scan_subnet();
@@ -1672,7 +1715,7 @@ sub scan($) {
 		$self->call('delete_connections');
 
 		# Connectivity from address forwarding tables.
-		$self->call('message', "[1/4] Finding address forwarding table connectivity...", 3);
+		$self->call('message', "[2/4] Finding address forwarding table connectivity...", 3);
 		$self->{'step'} = STEP_AFT;
 		($progress, $step) = (50, 20.0 / scalar(@hosts)); # From 50% to 70%.
 		for (my $i = 0; defined($hosts[$i]); $i++) {
@@ -1790,7 +1833,7 @@ sub snmp_get_command {
 	my ($self, $device, $oid, $community, $vlan) = @_;
 	$vlan = defined($vlan) ? "\@" . $vlan : '';
 
-	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
+	my $command = "snmpwalk -M$DEVNULL -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
 	if ($self->{'snmp_version'} eq "3") {
 		if ($self->{'community'}) { # Context
 			$command .= " -N $self->{'community'} ";
@@ -1806,7 +1849,7 @@ sub snmp_get_command {
 		$command .= " -c$community$vlan ";
 	}
 
-	return "$command $device $oid 2>/dev/null";
+	return "$command $device $oid 2>$DEVNULL";
 
 }
 

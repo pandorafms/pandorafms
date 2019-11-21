@@ -450,14 +450,26 @@ function networkmap_generate_dot(
                         $nodes[$node_count] = $module;
                 }
             } else {
-                $have_relations_a = db_get_value('id', 'tmodule_relationship', 'module_a', $module['id_agente_modulo']);
-                $have_relations_b = db_get_value('id', 'tmodule_relationship', 'module_b', $module['id_agente_modulo']);
+                $sql_a = sprintf(
+                    'SELECT id
+                    FROM tmodule_relationship
+                    WHERE module_a = %d AND type = "direct"',
+                    $module['id_agente_modulo']
+                );
+                $sql_b = sprintf(
+                    'SELECT id
+                    FROM tmodule_relationship
+                    WHERE module_b = %d AND type = "direct"',
+                    $module['id_agente_modulo']
+                );
+                $have_relations_a = db_get_value_sql($sql_a);
+                $have_relations_b = db_get_value_sql($sql_b);
 
                 if ($have_relations_a || $have_relations_b) {
-                    // Save node parent information to define edges later
+                    // Save node parent information to define edges later.
                     $parents[$node_count] = $module['parent'] = $agent['id_node'];
 
-                    // Add node
+                    // Add node.
                     $nodes[$node_count] = $module;
                 }
             }
@@ -2315,7 +2327,13 @@ function migrate_older_open_maps($id)
     $new_map_filter = [];
     $new_map_filter['dont_show_subgroups'] = $old_networkmap['dont_show_subgroups'];
     $new_map_filter['node_radius'] = 40;
-    $new_map_filter['id_migrate_map'] = $id;
+    $new_map_filter['x_offs'] = 0;
+    $new_map_filter['y_offs'] = 0;
+    $new_map_filter['z_dash'] = '0.5';
+    $new_map_filter['node_sep'] = '0.1';
+    $new_map_filter['rank_sep'] = 1;
+    $new_map_filter['mindist'] = 1;
+    $new_map_filter['kval'] = '0.1';
     $map_values['filter'] = json_encode($new_map_filter);
 
     $map_values['description'] = 'Mapa open migrado';
@@ -2328,11 +2346,7 @@ function migrate_older_open_maps($id)
     $map_values['source_period'] = 60;
     $map_values['source'] = 0;
     $map_values['source_data'] = $old_networkmap['id_group'];
-    if ($old_networkmap['type'] == 'radial_dinamic') {
-        $map_values['generation_method'] = 6;
-    } else {
-        $map_values['generation_method'] = 4;
-    }
+    $map_values['generation_method'] = 3;
 
     $map_values['generated'] = 0;
 

@@ -86,7 +86,7 @@ $buttons = [];
 // Draws header.
 $buttons['general'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general">'.html_print_image('images/gm_setup.png', true, ['title' => __('General')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general').'">'.html_print_image('images/gm_setup.png', true, ['title' => __('General')]).'</a>',
 ];
 
 if (enterprise_installed()) {
@@ -95,37 +95,42 @@ if (enterprise_installed()) {
 
 $buttons['auth'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth">'.html_print_image('images/key.png', true, ['title' => __('Authentication')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth').'">'.html_print_image('images/key.png', true, ['title' => __('Authentication')]).'</a>',
 ];
 
 $buttons['perf'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=perf">'.html_print_image('images/performance.png', true, ['title' => __('Performance')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=perf').'">'.html_print_image('images/performance.png', true, ['title' => __('Performance')]).'</a>',
 ];
 
 $buttons['vis'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=vis">'.html_print_image('images/chart.png', true, ['title' => __('Visual styles')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=vis').'">'.html_print_image('images/chart.png', true, ['title' => __('Visual styles')]).'</a>',
 ];
 
 if (check_acl($config['id_user'], 0, 'AW')) {
     if ($config['activate_netflow']) {
         $buttons['net'] = [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net">'.html_print_image('images/op_netflow.png', true, ['title' => __('Netflow')]).'</a>',
+            'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net').'">'.html_print_image('images/op_netflow.png', true, ['title' => __('Netflow')]).'</a>',
         ];
     }
 }
 
+$buttons['integria'] = [
+    'active' => false,
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/integria.png', true, ['title' => __('Integria IMS')]).'</a>',
+];
+
 $buttons['ehorus'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus">'.html_print_image('images/ehorus/ehorus.png', true, ['title' => __('eHorus')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image('images/ehorus/ehorus.png', true, ['title' => __('eHorus')]).'</a>',
 ];
 
 // FIXME: Not definitive icon
 $buttons['notifications'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications').'">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
 ];
 
 $help_header = '';
@@ -165,6 +170,12 @@ switch ($section) {
         $buttons['ehorus']['active'] = true;
         $subpage = ' &raquo '.__('eHorus');
         $help_header = 'setup_ehorus_tab';
+    break;
+
+    case 'integria':
+        $buttons['integria']['active'] = true;
+        $subpage = ' &raquo '.__('Integria IMS');
+        $help_header = 'setup_integria_tab';
     break;
 
     case 'notifications':
@@ -226,6 +237,10 @@ switch ($section) {
 
     case 'ehorus':
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
+    break;
+
+    case 'integria':
+        include_once $config['homedir'].'/godmode/setup/setup_integria.php';
     break;
 
     case 'notifications':

@@ -77,6 +77,7 @@ if (is_ajax()) {
     }
 
     $get_modules_json_for_multiple_snmp = (bool) get_parameter('get_modules_json_for_multiple_snmp', 0);
+    $get_common_modules = (bool) get_parameter('get_common_modules', 1);
     if ($get_modules_json_for_multiple_snmp) {
         include_once 'include/graphs/functions_utils.php';
 
@@ -100,7 +101,16 @@ if (is_ajax()) {
             if ($out === false) {
                 $out = $oid_snmp;
             } else {
-                $out = array_intersect($out, $oid_snmp);
+                $commons = array_intersect($out, $oid_snmp);
+                if ($get_common_modules) {
+                    // Common modules is selected (default)
+                    $out = $commons;
+                } else {
+                    // All modules is selected
+                    $array1 = array_diff($out, $oid_snmp);
+                    $array2 = array_diff($oid_snmp, $out);
+                    $out = array_merge($commons, $array1, $array2);
+                }
             }
 
             $oid_snmp = [];
@@ -201,7 +211,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" disabled="true" value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -265,7 +275,7 @@ if ($new_agent) {
 
 $table_alias = '<div class="label_select"><p class="input_label">'.__('Alias').': '.ui_print_help_tip(__('Characters /,\,|,%,#,&,$ will be ignored'), true).'</p>';
 $table_alias .= '<div class='.$label_select_parent.'>';
-$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true).'</div>';
+$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true, false, true).'</div>';
 if ($new_agent) {
     $table_alias .= '<div class="label_select_child_right">'.html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true).__('Use alias as name').'</div>';
 }
@@ -372,13 +382,13 @@ $table_server = '<div class="label_select"><p class="input_label">'.__('Server')
 $table_server .= '<div class="label_select_parent">';
 if ($new_agent) {
     // Set first server by default.
-    $servers_get_names = servers_get_names();
+    $servers_get_names = $servers;
     $array_keys_servers_get_names = array_keys($servers_get_names);
     $server_name = reset($array_keys_servers_get_names);
 }
 
 $table_server .= html_print_select(
-    servers_get_names(),
+    $servers,
     'server_name',
     $server_name,
     '',
@@ -514,8 +524,10 @@ if (enterprise_installed()) {
         );
         $safe_mode_modules = [];
         $safe_mode_modules[0] = __('Any');
-        foreach ($sql_modules as $m) {
-            $safe_mode_modules[$m['id_module']] = $m['name'];
+        if (is_array($sql_modules)) {
+            foreach ($sql_modules as $m) {
+                $safe_mode_modules[$m['id_module']] = $m['name'];
+            }
         }
 
         $table_adv_safe = '<div class="label_select_simple label_simple_items"><p class="input_label input_label_simple">'.__('Safe operation mode').': '.ui_print_help_tip(
@@ -753,7 +765,7 @@ $table_adv_agent_icon .= html_print_select(
 ).'</div>';
 
 if ($config['activate_gis']) {
-    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Ignore new GIS data:').'</p>';
+    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Update new GIS data:').'</p>';
     if ($new_agent) {
         $update_gis_data = true;
     }
@@ -777,7 +789,7 @@ $table_adv_options = '
                 '.$adv_secondary_groups_right.'
             </div>
         </div>
-<div class="adv_right" >
+<div class="agent_av_opt_right" >
         '.$table_adv_parent.$table_adv_module_mode.$table_adv_cascade;
 
 if ($new_agent) {
@@ -788,24 +800,24 @@ if ($new_agent) {
 $table_adv_options .= '</div>';
 
 $table_adv_options .= '
-        <div class="adv_left" >
+        <div class="agent_av_opt_left" >
         '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
         </div>';
 
-
-echo '<div class="ui_toggle">';
-ui_toggle(
-    $table_adv_options,
-    __('Advanced options'),
-    '',
-    '',
-    true,
-    false,
-    'white_box white_box_opened',
-    'no-border flex'
-);
-echo '</div>';
-
+if (enterprise_installed()) {
+    echo '<div class="ui_toggle">';
+    ui_toggle(
+        $table_adv_options,
+        __('Advanced options'),
+        '',
+        '',
+        true,
+        false,
+        'white_box white_box_opened',
+        'no-border flex'
+    );
+    echo '</div>';
+}
 
 $table = new stdClass();
 $table->width = '100%';
@@ -813,7 +825,7 @@ $table->class = 'custom_fields_table';
 
 $table->head = [
     0 => __('Click to display').ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
         true
     ),
 ];
@@ -919,18 +931,48 @@ foreach ($fields as $field) {
     $i += 2;
 }
 
-if (!empty($fields)) {
+if (enterprise_installed()) {
+    if (!empty($fields)) {
+        echo '<div class="ui_toggle">';
+        ui_toggle(
+            html_print_table($table, true),
+            __('Custom fields'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+        echo '</div>';
+    }
+} else {
     echo '<div class="ui_toggle">';
     ui_toggle(
-        html_print_table($table, true),
-        __('Custom fields'),
+        $table_adv_options,
+        __('Advanced options'),
         '',
         '',
         true,
         false,
         'white_box white_box_opened',
-        'no-border'
+        'no-border flex'
     );
+    if (!empty($fields)) {
+        ui_toggle(
+            html_print_table($table, true),
+            __('Custom fields'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    }
+
+    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+
     echo '</div>';
 }
 
@@ -1162,6 +1204,19 @@ ui_require_jquery_file('bgiframe');
     }
 
     $(document).ready (function() {
+
+        var previous_primary_group_select;
+        $("#grupo").on('focus', function () {
+            previous_primary_group_select = this.value;
+        }).change(function() {
+            if ($("#secondary_groups_selected option[value="+$("#grupo").val()+"]").length) {
+                alert("<?php echo __('Secondary group cannot be primary too.'); ?>");
+                $("#grupo").val(previous_primary_group_select);
+            } else {
+                previous_primary_group_select = this.value;
+            }
+        });
+
         $("select#id_os").pandoraSelectOS ();
 
         var checked = $("#checkbox-cascade_protection").is(":checked");
@@ -1210,7 +1265,7 @@ ui_require_jquery_file('bgiframe');
             128,
             128
         );
-        $("#text-agente").prop('disabled', true);
+        $("#text-agente").prop('readonly', true);
 
     });
 </script>

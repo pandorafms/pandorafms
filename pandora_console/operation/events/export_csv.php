@@ -1,18 +1,34 @@
 <?php
+/**
+ * Event CSV exporter.
+ *
+ * @category   Event CSV export
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Don't start a session before this import.
-// The session is configured and started inside the config process.
+// Load global vars.
+global $config;
+
 require_once '../../include/config.php';
 require_once '../../include/auth/mysql.php';
 require_once '../../include/functions.php';
@@ -23,134 +39,165 @@ require_once '../../include/functions_groups.php';
 
 $config['id_user'] = $_SESSION['id_usuario'];
 
-if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 0, 'EW') && ! check_acl($config['id_user'], 0, 'EM')) {
+if (! check_acl($config['id_user'], 0, 'ER')
+    && ! check_acl($config['id_user'], 0, 'EW')
+    && ! check_acl($config['id_user'], 0, 'EM')
+) {
     exit;
 }
 
-global $config;
-
-// loading l10n tables, because of being invoked not through index.php.
+// Loading l10n tables, because of being invoked not through index.php.
 $l10n = null;
 if (file_exists($config['homedir'].'/include/languages/'.$user_language.'.mo')) {
-    $l10n = new gettext_reader(new CachedFileReader($config['homedir'].'/include/languages/'.$user_language.'.mo'));
+    $cfr = new CachedFileReader(
+        $config['homedir'].'/include/languages/'.$user_language.'.mo'
+    );
+    $l10n = new gettext_reader($cfr);
     $l10n->load_tables();
 }
 
-$offset = (int) get_parameter('offset');
-$id_group = (int) get_parameter('id_group');
-// group
-$event_type = (string) get_parameter('event_type', 'all');
-// 0 all
-$severity = (int) get_parameter('severity', -1);
-// -1 all
-$status = (int) get_parameter('status', -1);
-// -1 all, 0 only red, 1 only green
-$id_agent = (int) get_parameter('id_agent', -1);
+$column_names = [
+    'id_evento',
+    'evento',
+    'timestamp',
+    'estado',
+    'event_type',
+    'utimestamp',
+    'id_agente',
+    'agent_name',
+    'id_usuario',
+    'id_grupo',
+    'id_agentmodule',
+    'id_alert_am',
+    'criticity',
+    'user_comment',
+    'tags',
+    'source',
+    'id_extra',
+    'critical_instructions',
+    'warning_instructions',
+    'unknown_instructions',
+    'owner_user',
+    'ack_utimestamp',
+    'custom_data',
+    'data',
+    'module_status',
+];
 
-$id_event = (int) get_parameter('id_event', -1);
-$event_view_hr = (int) get_parameter('event_view_hr', $config['event_view_hr']);
-$id_user_ack = get_parameter('id_user_ack', 0);
-$search = io_safe_output(preg_replace('/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/', '&', rawurldecode(get_parameter('search'))));
-$text_agent = (string) get_parameter('text_agent', __('All'));
-
-$tag_with_json = base64_decode(get_parameter('tag_with', ''));
-$tag_with_json_clean = io_safe_output($tag_with_json);
-$tag_with_base64 = base64_encode($tag_with_json_clean);
-$tag_with = json_decode($tag_with_json_clean, true);
-if (empty($tag_with)) {
-    $tag_with = [];
-}
-
-$tag_with = array_diff($tag_with, [0 => 0]);
-
-$tag_without_json = base64_decode(get_parameter('tag_without', ''));
-$tag_without_json_clean = io_safe_output($tag_without_json);
-$tag_without_base64 = base64_encode($tag_without_json_clean);
-$tag_without = json_decode($tag_without_json_clean, true);
-if (empty($tag_without)) {
-    $tag_without = [];
-}
-
-$tag_without = array_diff($tag_without, [0 => 0]);
-
-$filter_only_alert = (int) get_parameter('filter_only_alert', -1);
-
-//
-// Build the condition of the events query
-$sql_post = '';
-$meta = false;
-
-$id_user = $config['id_user'];
-
-require 'events.build_query.php';
-
-// Now $sql_post have all the where condition
-//
-switch ($config['dbtype']) {
-    case 'mysql':
-    case 'postgresql':
-    case 'oracle':
-        $sql = 'SELECT *
-			FROM tevento te
-			LEFT JOIN tagent_secondary_group tasg
-				ON te.id_grupo = tasg.id_group
-			WHERE 1=1 '.$sql_post.'
-			ORDER BY utimestamp DESC';
-    break;
-}
+$fields = [
+    'te.id_evento',
+    'te.evento',
+    'te.timestamp',
+    'te.estado',
+    'te.event_type',
+    'te.utimestamp',
+    'te.id_agente',
+    'ta.alias as agent_name',
+    'te.id_usuario',
+    'te.id_grupo',
+    'te.id_agentmodule',
+    'am.nombre as module_name',
+    'te.id_alert_am',
+    'te.criticity',
+    'te.user_comment',
+    'te.tags',
+    'te.source',
+    'te.id_extra',
+    'te.critical_instructions',
+    'te.warning_instructions',
+    'te.unknown_instructions',
+    'te.owner_user',
+    'te.ack_utimestamp',
+    'te.custom_data',
+    'te.data',
+    'te.module_status',
+    'tg.nombre as group_name',
+];
 
 $now = date('Y-m-d');
 
-// Show contentype header
+// Download header.
 header('Content-type: text/txt');
-header('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.csv"');
+header('Content-Disposition: attachment; filename="export_events_'.$now.'.csv"');
 
-echo 'timestamp';
-echo $config['csv_divider'];
-echo 'agent';
-echo $config['csv_divider'];
-echo 'group';
-echo $config['csv_divider'];
-echo 'event';
-echo $config['csv_divider'];
-echo 'status';
-echo $config['csv_divider'];
-echo 'user';
-echo $config['csv_divider'];
-echo 'event_type';
-echo $config['csv_divider'];
-echo 'severity';
-echo $config['csv_divider'];
-echo 'id';
-echo chr(13);
-
-$new = true;
-while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
-    $new = false;
-    $alias = db_get_value('alias', 'tagente', 'id_agente', $event['id_agente']);
-    if ((!check_acl($config['id_user'], $event['id_grupo'], 'ER')
-        && !check_acl($config['id_user'], $event['id_grupo'], 'EW') && !check_acl($config['id_user'], $event['id_grupo'], 'EM') )
-        || (!check_acl($config['id_user'], 0, 'PM') && $event['event_type'] == 'system')
-    ) {
-        continue;
+try {
+    $fb64 = get_parameter('fb64', null);
+    $plain_filter = base64_decode($fb64);
+    $filter = json_decode($plain_filter, true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        throw new Exception('Invalid filter. ['.$plain_filter.']');
     }
 
-    echo date($config['date_format'], $event['utimestamp']);
-    echo $config['csv_divider'];
-    echo io_safe_output($alias);
-    echo $config['csv_divider'];
-    echo io_safe_output(groups_get_name($event['id_grupo']));
-    echo $config['csv_divider'];
-    echo io_safe_output($event['evento']);
-    echo $config['csv_divider'];
-    echo io_safe_output($event['estado']);
-    echo $config['csv_divider'];
-    echo io_safe_output($event['id_usuario']);
-    echo $config['csv_divider'];
-    echo io_safe_output($event['event_type']);
-    echo $config['csv_divider'];
-    echo $event['criticity'];
-    echo $config['csv_divider'];
-    echo $event['id_evento'];
+    $names = events_get_column_names($column_names);
+
+    // Dump headers.
+    foreach ($names as $n) {
+        echo io_safe_output($n).$config['csv_divider'];
+    }
+
     echo chr(13);
+
+    // Dump events.
+    $events_per_step = 1000;
+    $step = 0;
+    while (1) {
+        $events = events_get_all(
+            $fields,
+            $filter,
+            (($step++) * $events_per_step),
+            $events_per_step,
+            'desc',
+            'timestamp',
+            $filter['history']
+        );
+
+        if ($events === false) {
+            break;
+        }
+
+        foreach ($events as $row) {
+            foreach ($column_names as $val) {
+                $key = $val;
+                if ($val == 'id_grupo') {
+                    $key = 'group_name';
+                } else if ($val == 'id_agentmodule') {
+                    $key = 'module_name';
+                }
+
+                switch ($key) {
+                    case 'module_status':
+                        echo events_translate_module_status(
+                            $row[$key]
+                        );
+                    break;
+
+                    case 'event_type':
+                        echo events_translate_event_type(
+                            $row[$key]
+                        );
+                    break;
+
+                    case 'criticity':
+                        echo events_translate_event_criticity(
+                            $row[$key]
+                        );
+                    break;
+
+                    default:
+                        echo io_safe_output($row[$key]);
+                    break;
+                }
+
+                echo $config['csv_divider'];
+            }
+
+            echo chr(13);
+        }
+    }
+} catch (Exception $e) {
+    echo 'ERROR'.chr(13);
+    echo $e->getMessage();
+    exit;
 }
+
+exit;

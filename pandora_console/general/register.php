@@ -30,6 +30,7 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
+require_once $config['homedir'].'/include/class/WelcomeWindow.class.php';
 
 
 if (is_ajax()) {
@@ -123,6 +124,7 @@ if (is_ajax()) {
 }
 
 
+
 ui_require_css_file('register');
 
 $initial = isset($config['initial_wizard']) !== true
@@ -150,25 +152,36 @@ if ($initial && users_is_admin()) {
     );
 }
 
-if ($registration && users_is_admin()) {
-    // Prepare registration wizard, not launch. leave control to flow.
-    registration_wiz_modal(
-        false,
-        // Launch only if not being launch from 'initial'.
-        !$initial,
-        (($show_newsletter === true) ? 'force_run_newsletter()' : null)
-    );
-} else {
-    if ($show_newsletter) {
-        // Show newsletter wizard for current user.
-        newsletter_wiz_modal(
+if (!$config['disabled_newsletter']) {
+    if ($registration && users_is_admin()) {
+        // Prepare registration wizard, not launch. leave control to flow.
+        registration_wiz_modal(
             false,
-            // Launch only if not being call from 'registration'.
-            !$registration && !$initial
+            // Launch only if not being launch from 'initial'.
+            !$initial,
+            (($show_newsletter === true) ? 'force_run_newsletter()' : null)
         );
+    } else {
+        if ($show_newsletter) {
+            // Show newsletter wizard for current user.
+            newsletter_wiz_modal(
+                false,
+                // Launch only if not being call from 'registration'.
+                !$registration && !$initial
+            );
+        }
     }
 }
 
+$welcome = !$registration && !$show_newsletter && !$initial;
+try {
+    $welcome_window = new WelcomeWindow($welcome);
+    if ($welcome_window !== null) {
+        $welcome_window->run();
+    }
+} catch (Exception $e) {
+    $welcome = false;
+}
 
 $newsletter = null;
 

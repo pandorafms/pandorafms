@@ -837,7 +837,7 @@ class Wizard
                     $first_block_printed = true;
                 }
 
-                $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
+                $output .= '<div class="edit_discovery_info '.$row['class'].'" style="'.$row['style'].'">';
 
                 foreach ($row['columns'] as $column) {
                     $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';

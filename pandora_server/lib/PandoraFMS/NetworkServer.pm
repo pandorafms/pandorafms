@@ -560,7 +560,17 @@ sub exec_network_module ($$$$) {
 			|| ($id_tipo_modulo == 35)
 			|| ($id_tipo_modulo == 36)
 			|| ($id_tipo_modulo == 37)) { # CMD Module
-			$module_data = enterprise_hook('remote_execution_module',[$pa_config, $dbh, $module, $target_os, $ip_target]);
+			$module_data = enterprise_hook(
+				'remote_execution_module',
+				[
+					$pa_config,
+					$dbh,
+					$module,
+					$target_os,
+					$ip_target,
+					$tcp_port
+				]
+			);
 			if (!defined($module_data) || "$module_data" eq "") {
 				$module_result = 1;
 			} else {

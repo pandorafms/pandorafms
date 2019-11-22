@@ -1404,14 +1404,19 @@ function ui_print_help_icon(
     }
 
     $url = get_help_info($help_id);
+    $b = base64_encode($url);
 
+    $help_handler = 'index.php?sec=view&sec2=general/help_feedback';
+    // Needs to use url encoded to avoid anchor lost.
+    $help_handler .= '&b='.$b;
+    $help_handler .= '&pure=1&url='.$url;
     $output = html_print_image(
         $image,
         true,
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".ui_get_full_url('index.php?sec=view&sec2=general/help_feedback&pure=1&url='.$url)."')",
+            'onclick' => "open_help ('".ui_get_full_url($help_handler)."')",
             'id'      => $id,
         ],
         false,
@@ -2912,6 +2917,84 @@ function ui_progress(
 
 
 /**
+ * Generates a progress bar CSS based.
+ * Requires css progress.css
+ *
+ * @param array $data With following content:
+ *
+ *  'slices' => [
+ *  'label' => [ // Name of the slice
+ * 'value' => value
+ * 'color' => color of the slice.
+ *  ]
+ *  ],
+ *  'width'  => Width
+ *  'height' => Height in 'em'
+ *  'return' => Boolean, return or paint.
+ *
+ * @return string HTML code.
+ */
+function ui_progress_extend(
+    array $data
+) {
+    if (is_array($data) === false) {
+        // Failed.
+        return false;
+    }
+
+    if (is_array($data['slices']) === false) {
+        // Failed.
+        return false;
+    }
+
+    if (isset($data['width']) === false) {
+        $data['width'] = '100';
+    }
+
+    if (isset($data['height']) === false) {
+        $data['height'] = '1.3';
+    }
+
+    $total = array_reduce(
+        $data['slices'],
+        function ($carry, $item) {
+            $carry += $item['value'];
+            return $carry;
+        }
+    );
+    if ($total == 0) {
+        return null;
+    }
+
+    ui_require_css_file('progress');
+
+    // Main container.
+    $output .= '<div class="progress_main_noborder" ';
+    $output .= '" style="width:'.$data['width'].'%;';
+    $output .= ' height:'.$data['height'].'em;">';
+
+    foreach ($data['slices'] as $label => $def) {
+        $width = ($def['value'] * 100 / $total);
+        $output .= '<div class="progress forced_title" ';
+        $output .= ' data-title="'.$label.': '.$def['value'].'" ';
+        $output .= ' data-use_title_for_force_title="1"';
+        $output .= ' style="width:'.$width.'%;';
+        $output .= ' background-color:'.$def['color'].';';
+        $output .= '">';
+        $output .= '</div>';
+    }
+
+    $output .= '</div>';
+
+    if (!$data['return']) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Generate needed code to print a datatables jquery plugin.
  *
  * @param array $parameters All desired data using following format:
@@ -3543,6 +3626,7 @@ function ui_print_event_priority(
  * @param string  $main_class      Main object class.
  * @param string  $img_a           Image (closed).
  * @param string  $img_b           Image (opened).
+ * @param string  $clean           Do not encapsulate with class boxes, clean print.
  *
  * @return string HTML.
  */
@@ -3557,7 +3641,8 @@ function ui_toggle(
     $container_class='white-box-content',
     $main_class='box-shadow white_table_graph',
     $img_a='images/arrow_down_green.png',
-    $img_b='images/arrow_right_green.png'
+    $img_b='images/arrow_right_green.png',
+    $clean=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3573,9 +3658,17 @@ function ui_toggle(
         $original = $img_a;
     }
 
+    $header_class = '';
+    if ($clean === false) {
+        $header_class = 'white_table_graph_header';
+    } else {
+        $main_class = '';
+        $container_class = 'white-box-content-clean';
+    }
+
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'">';
-    $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
+    $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,
         [
@@ -3643,7 +3736,8 @@ function ui_print_toggle($data)
         (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
         (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
-        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png'
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
+        (isset($data['clean']) === true) ? $data['clean'] : false
     );
 }
 
@@ -5559,11 +5653,11 @@ function ui_get_docs_logo()
     global $config;
 
     // Default logo to open version (enterprise_installed function only works in login status).
-    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_docs_logo'])) {
         return 'images/icono_docs.png';
     }
 
-    if (empty($config['custom_docs_logo'])) {
+    if ($config['custom_docs_logo'] === '') {
         return false;
     }
 
@@ -5581,11 +5675,11 @@ function ui_get_support_logo()
     global $config;
 
     // Default logo to open version (enterprise_installed function only works in login status).
-    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_support_logo'])) {
         return 'images/icono_support.png';
     }
 
-    if (empty($config['custom_support_logo'])) {
+    if ($config['custom_support_logo'] === '') {
         return false;
     }
 

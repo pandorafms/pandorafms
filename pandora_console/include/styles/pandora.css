@@ -551,6 +551,18 @@ select:-internal-list-box {
   align-items: center;
 }
 
+.flex-space-around {
+  justify-content: space-around;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-start {
+  justify-content: flex-start;
+}
+
 .nowrap {
   flex-wrap: nowrap;
 }
@@ -5698,7 +5710,11 @@ div#status_pie {
   align-items: center;
   flex-wrap: wrap;
   padding: 1em;
-  min-width: fit-content;
+  min-width: 100%;
+}
+.white-box-content-clean {
+  padding-left: 2em;
+  padding-top: 1em;
 }
 
 .white_table_graph_content {

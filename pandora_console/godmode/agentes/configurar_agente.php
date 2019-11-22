@@ -486,6 +486,7 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
+
     $total_incidents = agents_get_count_incidents($id_agente);
 
     // Incident tab.
@@ -546,6 +547,7 @@ if ($id_agente) {
                 'group'        => $grouptab,
                 'gis'          => $gistab,
                 'agent_wizard' => $agent_wizard,
+
             ];
         }
 
@@ -696,25 +698,28 @@ if ($id_agente) {
         break;
     }
 
-    ui_print_page_header(
-        agents_get_alias($id_agente),
-        'images/setup.png',
-        false,
-        $help_header,
-        true,
-        $onheader,
-        false,
-        '',
-        $config['item_title_size_text'],
-        '',
-        ui_print_breadcrums(
-            [
-                __('Resources'),
-                __('Manage agents'),
-                '<span class="breadcrumb_active">'.$tab_name.'</span>',
-            ]
-        )
-    );
+    $pure = get_parameter('pure', 0);
+    if (!$pure) {
+        ui_print_page_header(
+            agents_get_alias($id_agente),
+            'images/setup.png',
+            false,
+            $help_header,
+            true,
+            $onheader,
+            false,
+            '',
+            $config['item_title_size_text'],
+            '',
+            ui_print_breadcrums(
+                [
+                    __('Resources'),
+                    __('Manage agents'),
+                    '<span class="breadcrumb_active">'.$tab_name.'</span>',
+                ]
+            )
+        );
+    }
 } else {
     // Create agent.
     ui_print_page_header(

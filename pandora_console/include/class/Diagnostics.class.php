@@ -68,6 +68,10 @@ class Diagnostics extends Wizard
         // Check access.
         check_login();
 
+        $this->url = ui_get_full_url(
+            'index.php?sec=gextensions&sec2=tools/diagnostics'
+        );
+
         $this->ajaxController = $page;
         $this->pdf = $pdf;
         $this->product_name = io_safe_output(get_product_name());
@@ -123,7 +127,25 @@ class Diagnostics extends Wizard
     {
         global $config;
 
+        if ($this->pdf === true) {
+            $this->exportPDF();
+            exit;
+        }
+
         ui_require_css_file('diagnostics');
+
+        $pdf_url = $this->url.'&pdf=true';
+        $pdf_img = html_print_image(
+            'images/pdf.png',
+            true,
+            ['title' => __('Export to PDF')]
+        );
+        $header_buttons = [
+            'csv' => [
+                'active' => false,
+                'text'   => '<a target="_new" href="'.$pdf_url.'">'.$pdf_img.'</a>',
+            ],
+        ];
 
         // Header.
         ui_print_page_header(
@@ -131,7 +153,8 @@ class Diagnostics extends Wizard
             'images/gm_massive_operations.png',
             false,
             'diagnostic_tool_tab',
-            true
+            true,
+            $header_buttons
         );
 
         // Print all Methods Diagnostic Info.
@@ -2080,6 +2103,11 @@ class Diagnostics extends Wizard
         enterprise_include_once('/include/class/Pdf.class.php');
         $mpdf = new Pdf([]);
 
+        // Ignore pending HTML outputs.
+        while (@ob_end_clean()) {
+            $ignore_me;
+        }
+
         // ADD style.
         $mpdf->addStyle($config['homedir'].'/include/styles/diagnostics.css');
 
@@ -2112,6 +2140,8 @@ class Diagnostics extends Wizard
 
         // Write html filename.
         $mpdf->writePDFfile($filename);
+
+        exit;
     }
 
 

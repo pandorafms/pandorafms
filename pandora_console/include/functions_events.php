@@ -1044,6 +1044,8 @@ function events_get_all(
         }
     }
 
+    $user_admin_group_all = ($user_is_admin && $groups == 0) ? '' : 'tasg.';
+
     // TAgs ACLS.
     if (check_acl($config['id_user'], 0, 'ER')) {
         $tags_acls_condition = tags_get_acl_tags(
@@ -1068,7 +1070,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1094,7 +1096,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1120,7 +1122,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1230,8 +1232,11 @@ function events_get_all(
     }
 
     // Secondary groups.
-    db_process_sql('SET group_concat_max_len = 9999999');
-    $event_lj = events_get_secondary_groups_left_join($table);
+    $event_lj = '';
+    if (!$user_is_admin || ($user_is_admin && isset($groups) && $groups > 0)) {
+        db_process_sql('SET group_concat_max_len = 9999999');
+        $event_lj = events_get_secondary_groups_left_join($table);
+    }
 
     $group_selects = '';
     if ($group_by != '') {

@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.740-191121"
+pandora_version="7.0NG.741"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -36,6 +36,8 @@ mkdir -p temp_package/usr/bin/
 mkdir -p temp_package/usr/sbin/
 mkdir -p temp_package/etc/pandora/plugins
 mkdir -p temp_package/etc/pandora/collections
+mkdir -p temp_package/etc/pandora/trans
+mkdir -p temp_package/etc/pandora/commands
 mkdir -p temp_package/etc/init.d/
 mkdir -p temp_package/lib/systemd/system/
 mkdir -p temp_package/var/log/pandora/

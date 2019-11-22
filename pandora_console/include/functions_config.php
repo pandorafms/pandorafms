@@ -455,6 +455,10 @@ function config_update_config()
                             $error_update[] = __('Ipam Ocuppied Manager Warning');
                         }
 
+                        if (!config_update_value('sap_license', get_parameter('sap_license'))) {
+                            $error_update[] = __('Deset SAP license');
+                        }
+
                         $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
                         if (!config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist))) {
                             $error_update[] = __('Inventory changes blacklist');

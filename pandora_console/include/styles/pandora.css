@@ -4989,6 +4989,7 @@ input:checked + .p-slider:before {
 .action_buttons a,
 .action_buttons input[type="image"] {
   margin-right: 5px;
+  display: inline-block;
 }
 
 .action_buttons a:last-child,
@@ -4998,7 +4999,6 @@ input:checked + .p-slider:before {
 
 .action_buttons a:hover {
   background-color: #fff;
-  display: inline-block;
   border-radius: 4px;
 }
 

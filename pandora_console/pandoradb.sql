@@ -2821,7 +2821,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`field8` text NOT NULL default '',
 	`field9` text NOT NULL default '',
 	`field10` text NOT NULL default '',
-	`time_threshold` int(10) NOT NULL default '0',
+	`time_threshold` int(10) NOT NULL default 86400,
 	`max_alerts` int(4) unsigned NOT NULL default '1',
 	`min_alerts` int(4) unsigned NOT NULL default '0',
 	`time_from` time default '00:00:00',
@@ -2846,6 +2846,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`priority` tinyint(4) default '0',
 	`force_execution` tinyint(1) default '0',
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
+	`special_days` tinyint(1) default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

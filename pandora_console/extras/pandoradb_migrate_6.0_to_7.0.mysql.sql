@@ -630,6 +630,9 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
+ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
+
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
 -- -----------------------------------------------------

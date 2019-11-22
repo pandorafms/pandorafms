@@ -29,6 +29,9 @@ ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_content` text COMMENT 'Operat
 ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_source` text COMMENT 'Operator for log_source';
 ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator for log_agent';
 
+ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
+ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
+
 CREATE TABLE `tremote_command` (
   `id` SERIAL,
   `name` varchar(150) NOT NULL,

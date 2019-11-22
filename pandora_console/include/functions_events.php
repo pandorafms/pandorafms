@@ -928,6 +928,16 @@ function events_get_all(
         );
     }
 
+    if (is_metaconsole()) {
+        // Id source event.
+        if (!empty($filter['id_source_event'])) {
+            $sql_filters[] = sprintf(
+                ' AND lower(te.id_source_event) like lower("%%%s%%") ',
+                $filter['id_source_event']
+            );
+        }
+    }
+
     // User comment.
     if (!empty($filter['user_comment'])) {
         $sql_filters[] = sprintf(

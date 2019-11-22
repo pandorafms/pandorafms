@@ -588,6 +588,18 @@ $table->data[23][1] = html_print_input_text('id_extra', $id_extra, '', 11, 255, 
 $table->data[24][0] = '<b>'.__('Comment').'</b>';
 $table->data[24][1] = html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
 
+if (is_metaconsole()) {
+    $table->data[25][0] = '<b>'.__('Id souce event').'</b>';
+    $table->data[25][1] = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        35,
+        255,
+        true
+    );
+}
+
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&pure='.$config['pure'].'">';
 html_print_table($table);
 

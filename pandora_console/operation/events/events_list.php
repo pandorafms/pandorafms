@@ -258,11 +258,6 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
         $id_extra = $user_default_filter['id_extra'];
         $user_comment = $user_default_filter['user_comment'];
         $source = $user_default_filter['source'];
-        $id_source_event = $user_default_filter['id_source_event'];
-
-        if (is_metaconsole()) {
-            $id_source_event = $user_default_filter['id_source_event'];
-        }
 
         if ($user_default_filter['search'] != '') {
             $search = $user_default_filter['search'];
@@ -1143,7 +1138,7 @@ if ($group_rep == 0) {
     $sql = "SELECT DISTINCT te.*, 1 event_rep,
 		(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
 		FROM $event_table te $event_lj
-		WHERE 1=1 ".$sql_post."
+		WHERE 1=1 '.$sql_post.'
 		$order_sql LIMIT ".$offset.','.$pagination;
 
     // Extract the events by filter (or not) from db.
@@ -1216,10 +1211,10 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 }
 
 if ($group_rep == 0) {
-    $sql = "SELECT COUNT(DISTINCT id_evento)
+    $sql = 'SELECT COUNT(DISTINCT id_evento)
 			FROM $event_table te
 			$event_lj
-			WHERE 1=1 $sql_post";
+			WHERE 1=1 $sql_post';
     $total_events = (int) db_get_sql($sql);
 } else if ($group_rep == 1) {
     $total_events = events_get_events_grouped(
@@ -1232,10 +1227,10 @@ if ($group_rep == 0) {
         false
     );
 } else if ($group_rep == 2) {
-    $sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table te
+    $sql = 'SELECT COUNT(*) FROM (select id_agente as total from $event_table te
 		$event_lj
 		WHERE id_agente > 0
-					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
+					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t';
     $total_events = (int) db_get_sql($sql);
 }
 

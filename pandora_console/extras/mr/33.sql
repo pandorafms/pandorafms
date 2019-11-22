@@ -47,9 +47,10 @@ CREATE TABLE `tremote_command_target` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
-ALTER TABLE tevent_filter ADD COLUMN id_source_event int(10);
 
 
 ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
+ALTER TABLE `tevent_filter` ADD COLUMN `id_source_event` int(10);
+
 
 COMMIT;

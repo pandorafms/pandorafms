@@ -160,3 +160,16 @@ div.target {
 .info-container table.no-class tbody tr td {
   padding: 10px;
 }
+
+.mode_table_firing {
+  margin-top: 20px;
+}
+
+.mode_table_firing table.info_table thead tr th {
+  font-weight: bolder;
+}
+
+.mode_table_firing table.info_table thead tr th img {
+  padding: 10px;
+  vertical-align: middle;
+}

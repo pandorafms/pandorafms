@@ -37,7 +37,7 @@ enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
 if (is_metaconsole()) {
     $id_source_event = get_parameter('id_source_event');
-enterprise_include_once('meta/include/functions_events_meta.php');
+}
 
 
 /**
@@ -174,7 +174,6 @@ function events_translate_event_criticity($criticity)
         default:
         return __('UNKNOWN');
     }
->>>>>>> pandora_console/include/functions_events.php
 }
 
 

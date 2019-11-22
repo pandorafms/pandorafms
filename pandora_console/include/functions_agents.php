@@ -3542,17 +3542,22 @@ function agents_get_sap_agents($id_agent)
 
     $array_agents = [];
     foreach ($sap_modules as $module => $key) {
+        $new_ones = db_get_all_rows_sql(
+            'SELECT ta.id_agente,ta.alias
+             FROM tagente ta
+             INNER JOIN tagente_modulo tam 
+             ON tam.id_agente = ta.id_agente 
+             WHERE tam.nombre  
+             LIKE "%SAP%" 
+             GROUP BY ta.id_agente'
+        );
+        if ($new_ones === false) {
+            continue;
+        }
+
         $array_agents = array_merge(
             $array_agents,
-            db_get_all_rows_sql(
-                'SELECT ta.id_agente,ta.alias
-                 FROM tagente ta
-                 INNER JOIN tagente_modulo tam 
-                 ON tam.id_agente = ta.id_agente 
-                 WHERE tam.nombre  
-                 LIKE "%SAP%" 
-                 GROUP BY ta.id_agente'
-            )
+            $new_ones
         );
     }
 

@@ -2480,19 +2480,27 @@ function html_print_radio_button($name, $value, $label='', $checkedvalue='', $re
 /**
  * Render a checkbox button input. Extended version, use html_print_checkbox() to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button  (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
-    inserted into the HTML tag, use it carefully (optional).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $name       Input name.
+ * @param string  $value      Input value.
+ * @param string  $checked    Set the button to be marked (optional, unmarked by default).
+ * @param boolean $disabled   Disable the button  (optional, button enabled by default).
+ * @param string  $script     Script to execute when onClick event is triggered (optional).
+ * @param string  $attributes Optional HTML attributes. It's a free string which will be inserted into the HTML tag, use it carefully (optional).
+ * @param boolean $return     Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $id         Custom id.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_checkbox_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
-{
+function html_print_checkbox_extended(
+    $name,
+    $value,
+    $checked,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $id=''
+) {
     static $idcounter = [];
 
     // If duplicate names exist, it will start numbering. Otherwise it won't
@@ -2508,7 +2516,7 @@ function html_print_checkbox_extended($name, $value, $checked, $disabled, $scrip
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
-        $output .= ' '.$id.'"';
+        $output .= ' id="'.$id.'"';
     }
 
     if ($script != '') {
@@ -2534,17 +2542,39 @@ function html_print_checkbox_extended($name, $value, $checked, $disabled, $scrip
 /**
  * Render a checkbox button input.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param boolean                                                                         $disabled Disable the button (optional, button enabled by default).
+ * @param string  $name            Input name.
+ * @param string  $value           Input value.
+ * @param string  $checked         Set the button to be marked (optional, unmarked by default).
+ * @param boolean $return          Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean $disabled        Disable the button (optional, button enabled by default).
+ * @param string  $script          Script.
+ * @param string  $disabled_hidden Disabled_hidden.
+ * @param string  $attributes      Extra attributes.
+ * @param string  $id              Custom ID.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_checkbox($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
-{
-    $output = html_print_checkbox_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
+function html_print_checkbox(
+    $name,
+    $value,
+    $checked=false,
+    $return=false,
+    $disabled=false,
+    $script='',
+    $disabled_hidden=false,
+    $attributes='',
+    $id=''
+) {
+    $output = html_print_checkbox_extended(
+        $name,
+        $value,
+        (bool) $checked,
+        $disabled,
+        $script,
+        $attributes,
+        true,
+        $id
+    );
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);
     }
@@ -3535,7 +3565,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false)
+                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['id']) === true) ? $data['id'] : '')
             );
         break;
 

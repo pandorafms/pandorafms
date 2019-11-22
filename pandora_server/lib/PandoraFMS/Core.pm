@@ -1215,7 +1215,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $cid_data = "CID_IMAGE";
 		my $dataname = "CID_IMAGE.png";
 
-		if ($data =~ /^data:image\/png;base64, /) {
+		if (defined($data) && $data =~ /^data:image\/png;base64, /) {
 			# macro _data_ substitution in case is image.
 			$attach_data_as_image = 1;
 			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';

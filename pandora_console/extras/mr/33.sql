@@ -9,7 +9,9 @@ INSERT INTO `ttipo_modulo` VALUES
 (37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
 ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '';
-ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned NOT NULL default '99';
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL,
+
 
 ALTER TABLE `tevent_rule` ADD COLUMN `log_content` TEXT;
 ALTER TABLE `tevent_rule` ADD COLUMN `log_source` TEXT;

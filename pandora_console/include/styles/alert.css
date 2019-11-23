@@ -127,7 +127,7 @@ div.target.flex {
   border: 2px dashed #ddd;
   margin-left: 0em;
   margin-top: 10px;
-  padding-top: 1em;
+  padding: 1em;
 }
 
 .fields,
@@ -160,13 +160,16 @@ div#rules.show {
   display: inline-block;
   border-radius: 10px;
   padding: 5px;
-  padding-left: 8px;
-  padding-right: 8px;
+  font-size: 1.2em;
+  padding-left: 1em;
+  padding-right: 1em;
   margin: 3px;
   color: #fff;
   font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
   background-color: #333;
+  word-break: break-all;
+  break-after: all;
 }
 
 .field.opacityElements {

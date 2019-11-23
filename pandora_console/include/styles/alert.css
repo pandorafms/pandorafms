@@ -2,6 +2,43 @@ li#li-buttons-alert-list > div {
   margin-left: 10px;
 }
 
+#rule-builder .rule-builder-actions li {
+  display: inline;
+  width: auto;
+}
+
+#rule-builder .rule-builder-actions li label {
+  width: 0;
+}
+
+div.white_box {
+  min-width: 800px;
+}
+
+#rules,
+ul.sample {
+  margin-bottom: 2em;
+  flex: 1 1 300px;
+}
+
+.flex-row label {
+  flex: 1 1 70px;
+}
+
+.flex-row div {
+  flex: 10 1 200px;
+}
+
+span.rule-title {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+  font-size: 2em;
+  text-align: center;
+  display: block;
+  margin-bottom: 0.8em;
+  width: 100%;
+}
+
 li#li-filters_show_action_alerts > label,
 li#li-buttons-alert-list > label,
 li#li-filters-alert-list > label {
@@ -80,10 +117,40 @@ ul.sample li:last-child {
 }
 div.target {
   flex-grow: 1;
+  flex-basis: auto;
   margin-left: 3em;
-  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+div.target.flex {
+  display: block;
+  border: 2px dashed #ddd;
+  margin-left: 0em;
+  margin-top: 10px;
+  padding-top: 1em;
 }
 
+.fields,
+.operators,
+.variables,
+.modifiers,
+.nexos,
+.blocks {
+  cursor: move;
+}
+div#rules.show::after {
+  content: "Drop here";
+  position: relative;
+  top: 30%;
+  display: block;
+  left: 38%;
+  font-size: 3em;
+  color: #aaa;
+}
+div#rules.show {
+  box-shadow: 0 0 15px -5px #424242;
+  border: 1px solid #ddd;
+}
 .field {
   display: inline-block;
   border-radius: 10px;

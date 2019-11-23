@@ -100,8 +100,6 @@ img.handle-alerts {
 .content {
   width: 80%;
   min-height: 4em;
-  border: 1px solid #ddd;
-  padding-top: 1em;
   padding-bottom: 1em;
 }
 ul.sample {
@@ -163,13 +161,12 @@ div#rules.show {
   font-size: 1.2em;
   padding-left: 1em;
   padding-right: 1em;
-  margin: 3px;
+  margin: 0 0.5em 0.5em 0px;
   color: #fff;
   font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
   background-color: #333;
   word-break: break-all;
-  break-after: all;
 }
 
 .field.opacityElements {

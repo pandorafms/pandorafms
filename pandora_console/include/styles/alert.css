@@ -21,11 +21,11 @@ ul.sample {
   flex: 1 1 300px;
 }
 
-.flex-row label {
+#rules.flex-row label {
   flex: 1 1 70px;
 }
 
-.flex-row div {
+#rules.flex-row div {
   flex: 10 1 200px;
 }
 

@@ -141,11 +141,16 @@ div.target.flex {
 div#rules.show::after {
   content: "Drop here";
   position: relative;
-  top: 30%;
+  top: 25%;
   display: block;
-  left: 38%;
+  left: 37%;
   font-size: 3em;
   color: #aaa;
+  overflow: hidden;
+  width: 6em;
+  background: #fff;
+  text-align: center;
+  z-index: 2;
 }
 div#rules.show {
   box-shadow: 0 0 15px -5px #424242;

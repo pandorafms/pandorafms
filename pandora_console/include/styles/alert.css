@@ -246,7 +246,7 @@ div#rules.show {
   vertical-align: middle;
 }
 
-#rules select {
+#rules select.click-list-elements {
   border-radius: 0px;
   background-color: #424242;
   border: 0px;
@@ -254,7 +254,13 @@ div#rules.show {
   font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
 }
+#rules select.click-list-elements.fields-elements-log {
+  background-color: #638460;
+}
+#rules select.click-list-elements.fields-elements-event {
+  background-color: #587cff;
+}
 
-#rules select:focus {
+#rules select.click-list-elements:focus {
   outline-color: transparent;
 }

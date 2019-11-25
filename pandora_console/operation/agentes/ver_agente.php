@@ -1532,25 +1532,28 @@ switch ($tab) {
     break;
 }
 
-ui_print_page_header(
-    agents_get_alias($id_agente),
-    $icon,
-    false,
-    $help_header,
-    false,
-    $onheader,
-    false,
-    '',
-    $config['item_title_size_text'],
-    '',
-    ui_print_breadcrums(
-        [
-            __('Monitoring'),
-            __('View'),
-            '<span class="breadcrumb_active">'.$tab_name.'</span>',
-        ]
-    )
-);
+if (!$config['pure']) {
+    ui_print_page_header(
+        agents_get_alias($id_agente),
+        $icon,
+        false,
+        $help_header,
+        false,
+        $onheader,
+        false,
+        '',
+        $config['item_title_size_text'],
+        '',
+        ui_print_breadcrums(
+            [
+                __('Monitoring'),
+                __('View'),
+                '<span class="breadcrumb_active">'.$tab_name.'</span>',
+            ]
+        )
+    );
+}
+
 
 
 switch ($tab) {

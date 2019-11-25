@@ -39,6 +39,20 @@ ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_content` text COMMENT 'Operat
 ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_source` text COMMENT 'Operator for log_source';
 ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator for log_agent';
 
+UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
+UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
+UPDATE `tevent_rule` SET `operator_id_grupo` = "REGEX" WHERE `id_grupo` > 0;
+UPDATE `tevent_rule` SET `operator_evento` = "REGEX" WHERE `evento` != '';
+UPDATE `tevent_rule` SET `operator_event_type` = "REGEX" WHERE `event_type` != '';
+UPDATE `tevent_rule` SET `operator_module` = "REGEX" WHERE `module` != '';
+UPDATE `tevent_rule` SET `operator_alert` = "REGEX" WHERE `alert` != '';
+UPDATE `tevent_rule` SET `operator_criticity` = "REGEX" WHERE `criticity` != '99';
+UPDATE `tevent_rule` SET `operator_user_comment` = "REGEX" WHERE `user_comment` != '';
+UPDATE `tevent_rule` SET `operator_id_tag` = "REGEX" WHERE `id_tag` > 0;
+UPDATE `tevent_rule` SET `operator_log_content` = "REGEX" WHERE `log_content` != '';
+UPDATE `tevent_rule` SET `operator_log_source` = "REGEX" WHERE `log_source` != '';
+UPDATE `tevent_rule` SET `operator_log_agent` = "REGEX" WHERE `log_agent` != '';
+
 ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
 ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
 

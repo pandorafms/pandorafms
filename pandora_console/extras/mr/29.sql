@@ -4,7 +4,6 @@ ALTER TABLE `tmetaconsole_agent` ADD INDEX `id_tagente_idx` (`id_tagente`);
 
 DELETE FROM `ttipo_modulo` WHERE `nombre` LIKE 'log4x';
 
-ALTER TABLE tevent_filter ADD column id_source_event int(10);
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
     `identifier` varchar(100) NOT NULL,
     `id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,

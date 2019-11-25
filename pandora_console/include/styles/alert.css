@@ -245,3 +245,16 @@ div#rules.show {
   padding: 10px;
   vertical-align: middle;
 }
+
+#rules select {
+  border-radius: 0px;
+  background-color: #424242;
+  border: 0px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: 600;
+}
+
+#rules select:focus {
+  outline-color: transparent;
+}

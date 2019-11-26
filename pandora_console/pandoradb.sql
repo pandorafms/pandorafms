@@ -3123,6 +3123,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
+	KEY `server_id` (`server_id`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- Criticity: 0 - Maintance (grey)
@@ -3435,6 +3436,7 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
     `id_tmetaconsole_setup` int(10) NOT NULL,
     `id_group` mediumint(4) unsigned NOT NULL,
     PRIMARY KEY(`id`),
+	KEY `id_tagente` (`id_tagente`),
     FOREIGN KEY(`id_agent`) REFERENCES tmetaconsole_agent(`id_agente`)
         ON DELETE CASCADE,
 	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)

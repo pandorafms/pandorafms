@@ -967,6 +967,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1942,6 +1943,7 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
 ALTER TABLE tagente ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tusuario_perfil ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_agent_secondary_group` ADD INDEX `id_tagente` (`id_tagente`);
 
 -- ---------------------------------------------------------------------
 -- Table `tautoconfig`

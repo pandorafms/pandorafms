@@ -1671,8 +1671,6 @@ sub app_scan($) {
 
 				}
 
-				print Dumper($results);
-
 				# Add results.
 				if (ref($results) eq 'HASH') {
 					if (defined($results->{'modules'})) {

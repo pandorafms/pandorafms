@@ -24,7 +24,7 @@ Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
 Requires:           fileutils textutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
-Requires:           perl perl(Sys::Syslog) perl(IO::Compress::Zip)
+Requires:           perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
 # Required by plugins
 #Requires:           sh-utils sed passwd net-tools rpm
 AutoReq:            0

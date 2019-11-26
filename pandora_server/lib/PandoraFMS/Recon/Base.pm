@@ -1531,7 +1531,7 @@ sub database_scan($$$) {
 		&& "$dbObjCfg->{'scan_databases'}" eq "1") {
 
 		# Skip database scan in Oracle tasks
-		next if $self->{'type'} == DISCOVERY_APP_ORACLE;
+		next if defined($self->{'type'}) && $self->{'type'} == DISCOVERY_APP_ORACLE;
 
 		my $__data = $obj->scan_databases();
 
@@ -1556,8 +1556,8 @@ sub database_scan($$$) {
 	}
 
 	return {
-		'modules' => @modules,
-		'data' => @data
+		'modules' => \@modules,
+		'data' => \@data
 	};
 }
 
@@ -1674,11 +1674,11 @@ sub app_scan($) {
 				# Add results.
 				if (ref($results) eq 'HASH') {
 					if (defined($results->{'modules'})) {
-						push @modules, $results->{'modules'};
+						push @modules, @{$results->{'modules'}};
 					}
 
 					if (defined($results->{'data'})) {
-						push @data, $results->{'data'};
+						push @data, @{$results->{'data'}};
 					}
 				}
 			}
@@ -1767,8 +1767,8 @@ sub scan($) {
 		if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
 			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
 			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
-
 			# Application scan.
+			$self->call('message', "Scanning application ...", 6);
 			return $self->app_scan();
 		}
 

@@ -1533,6 +1533,9 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
 /**
  * Add a enteprise javascript file to the HTML head tag.
  *
+ * * THIS FUNCTION COULD PRODUCE ISSUES WHILE INCLUDING JS FILES.
+ * * USE ui_require_javascript_file('file', ENTERPRISE_DIR.'/location') INSTEAD.
+ *
  * To make a javascript file available just put it in <ENTERPRISE_DIR>/include/javascript. The
  * file name should be like "name.js". The "name" would be the value
  * needed to pass to this function.

@@ -303,6 +303,8 @@ sub pandora_load_config {
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
+	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
 	$pa_config->{"snmpserver"} = 0; # 4.0
@@ -354,6 +356,9 @@ sub pandora_load_config {
 
 	# Discovery SAP utils
 	$pa_config->{"sap_utils"} = "/usr/share/pandora_server/util/recon_scripts/SAP";
+	
+	# Discovery SAP Artica environment
+	$pa_config->{"sap_artica_test"} = 0;
 
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
@@ -853,6 +858,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^sap_utils\s(.*)/i) {
 			$pa_config->{'sap_utils'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^sap_artica_test\s(.*)/i) {
+			$pa_config->{'sap_artica_test'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 
 		}
@@ -979,6 +987,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_window\s+([0-9]*)/i) {
 			$pa_config->{'event_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
+			$pa_config->{'log_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
+			$pa_config->{'preload_windows'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);

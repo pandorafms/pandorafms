@@ -1767,8 +1767,8 @@ sub scan($) {
 		if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
 			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
 			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
-
 			# Application scan.
+			$self->call('message', "Scanning application ...", 6);
 			return $self->app_scan();
 		}
 

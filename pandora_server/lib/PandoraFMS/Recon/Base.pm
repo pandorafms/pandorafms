@@ -1556,8 +1556,8 @@ sub database_scan($$$) {
 	}
 
 	return {
-		'modules' => @modules,
-		'data' => @data
+		'modules' => \@modules,
+		'data' => \@data
 	};
 }
 
@@ -1671,14 +1671,16 @@ sub app_scan($) {
 
 				}
 
+				print Dumper($results);
+
 				# Add results.
 				if (ref($results) eq 'HASH') {
 					if (defined($results->{'modules'})) {
-						push @modules, $results->{'modules'};
+						push @modules, @{$results->{'modules'}};
 					}
 
 					if (defined($results->{'data'})) {
-						push @data, $results->{'data'};
+						push @data, @{$results->{'data'}};
 					}
 				}
 			}

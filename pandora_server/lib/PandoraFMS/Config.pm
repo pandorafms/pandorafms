@@ -356,6 +356,9 @@ sub pandora_load_config {
 
 	# Discovery SAP utils
 	$pa_config->{"sap_utils"} = "/usr/share/pandora_server/util/recon_scripts/SAP";
+	
+	# Discovery SAP Artica environment
+	$pa_config->{"sap_artica_test"} = 0;
 
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
@@ -854,6 +857,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^sap_utils\s(.*)/i) {
 			$pa_config->{'sap_utils'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_artica_test\s(.*)/i) {
+			$pa_config->{'sap_artica_test'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 

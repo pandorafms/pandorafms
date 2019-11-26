@@ -515,6 +515,14 @@ select:-internal-list-box {
 .no-text-imp {
   font-size: 0 !important;
 }
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
 .flex-content-right {
   display: flex;
   flex-direction: row;
@@ -4989,6 +4997,7 @@ input:checked + .p-slider:before {
 .action_buttons a,
 .action_buttons input[type="image"] {
   margin-right: 5px;
+  display: inline-block;
 }
 
 .action_buttons a:last-child,
@@ -4998,7 +5007,6 @@ input:checked + .p-slider:before {
 
 .action_buttons a:hover {
   background-color: #fff;
-  display: inline-block;
   border-radius: 4px;
 }
 

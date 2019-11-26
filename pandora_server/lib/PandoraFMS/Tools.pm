@@ -21,7 +21,6 @@ use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
 use POSIX;
-use PandoraFMS::Sendmail;
 use HTML::Entities;
 use Encode;
 use Socket qw(inet_ntoa inet_aton);
@@ -30,6 +29,9 @@ use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
 use threads;
 use threads::shared;
+
+use lib '/usr/lib/perl5';
+use PandoraFMS::Sendmail;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -823,6 +825,11 @@ sub enterprise_hook ($$) {
 
 	# Try to call the function
 	my $output = eval { &$func (@args); };
+
+	# Discomment to debug.
+	if ($@) {
+		print STDERR $@;
+	}
 
 	# Check for errors
 	#return undef if ($@);

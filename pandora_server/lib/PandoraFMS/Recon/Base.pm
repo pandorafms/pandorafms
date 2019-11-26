@@ -1531,7 +1531,7 @@ sub database_scan($$$) {
 		&& "$dbObjCfg->{'scan_databases'}" eq "1") {
 
 		# Skip database scan in Oracle tasks
-		next if $self->{'type'} == DISCOVERY_APP_ORACLE;
+		next if defined($self->{'type'}) && $self->{'type'} == DISCOVERY_APP_ORACLE;
 
 		my $__data = $obj->scan_databases();
 

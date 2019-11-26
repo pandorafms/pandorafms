@@ -852,7 +852,7 @@ function pandoraFlotSlicebar(
     },
     xaxes: [
       {
-        show: show_date,
+        show: true,
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,

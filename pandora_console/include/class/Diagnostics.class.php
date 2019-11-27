@@ -2092,9 +2092,9 @@ class Diagnostics extends Wizard
      *
      * @param string|null $filename Filename.
      *
-     * @return void
+     * @return mixed
      */
-    public function exportPDF(?string $filename=null):void
+    public function exportPDF(?string $filename=null)
     {
         global $config;
 
@@ -2141,7 +2141,7 @@ class Diagnostics extends Wizard
         // Write html filename.
         $mpdf->writePDFfile($filename);
 
-        exit;
+        return;
     }
 
 

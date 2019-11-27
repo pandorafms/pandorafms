@@ -1,5 +1,6 @@
 START TRANSACTION;
 
+ALTER TABLE `treport_template` ADD COLUMN `agent_regex` varchar(600) NOT NULL default '';
 ALTER TABLE `tlayout_template_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;
 
 INSERT INTO `ttipo_modulo` VALUES

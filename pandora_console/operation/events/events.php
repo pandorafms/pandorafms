@@ -197,6 +197,10 @@ $history = get_parameter(
 );
 $section = get_parameter('section', false);
 
+$id_source_event = get_parameter(
+    'filter[id_source_event]',
+    $filter['id_source_event']
+);
 // Ajax responses.
 if (is_ajax()) {
     $get_events = get_parameter('get_events', 0);
@@ -396,6 +400,7 @@ if ($user_filter !== false) {
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
+        $id_source_event = $filter['id_source_event'];
     }
 }
 
@@ -1050,6 +1055,20 @@ $data = html_print_select(
 $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
+
+if (is_metaconsole()) {
+    $data = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
+    $in .= $data.'</div>';
+    $adv_inputs[] = $in;
+}
 
 // Gap.
 $adv_inputs[] = '<div class="filter_input"></div>';

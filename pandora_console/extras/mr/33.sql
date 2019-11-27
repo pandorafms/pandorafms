@@ -83,7 +83,10 @@ CREATE TABLE `tremote_command_target` (
 
 INSERT INTO `tconfig`(`token`, `value`) VALUES ('welcome_state', -1);
 
+
 ALTER TABLE `tcredential_store` MODIFY COLUMN `product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM';
+ALTER TABLE `tevent_filter` ADD COLUMN `id_source_event` int(10);
+
 
 ALTER TABLE `tmetaconsole_agent_secondary_group` ADD INDEX `id_tagente` (`id_tagente`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);

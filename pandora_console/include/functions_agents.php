@@ -3509,6 +3509,27 @@ function agents_get_status_animation($up=true)
 }
 
 
+function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
+{
+    $agents_id = [];
+    $all_agents = agents_get_agents(false, ['id_agente', 'alias']);
+    $agent_match = '/'.$alias_regex.'/'.$flag;
+
+    foreach ($all_agents as $agent) {
+        $result_agent_match = preg_match($agent_match, $agent['alias']);
+        if ($result_agent_match) {
+            $agents_id[] = $agent['id_agente'];
+            $i++;
+            if ($i === $limit) {
+                break;
+            }
+        }
+    }
+
+    return $agents_id;
+}
+
+
 /**
  * Return if an agent is SAP or or an a agent SAP list.
  * If function receive false, you will return all SAP agents,

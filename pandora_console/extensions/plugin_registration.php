@@ -23,12 +23,12 @@ function pluginreg_extension_main()
         return;
     }
 
-    ui_require_css_file('firts_task');
+    ui_require_css_file('first_task');
     ui_print_page_header(__('Plugin registration'), 'images/extensions.png', false, '', true, '');
 
     echo '<div class="new_task">
 			<div class="image_task">';
-                echo html_print_image('images/firts_task/icono_grande_import.png', true, ['title' => __('Plugin Registration') ]);
+                echo html_print_image('images/first_task/icono_grande_import.png', true, ['title' => __('Plugin Registration') ]);
             echo '</div>';
                 echo '<div class="text_task">';
                     echo '<h3>'.__('Plugin registration').'</h3>';

@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 check_login();
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ?>
 <?php ui_print_info_message(['no_close' => true, 'message' => __('There are no collections defined yet.') ]); ?>
 

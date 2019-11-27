@@ -1,10 +1,10 @@
 <?php
 /**
- * Diagnostics view.
+ * Credential store
  *
- * @category   Diagnostics
+ * @category   HelperFeedBack
  * @package    Pandora FMS
- * @subpackage Opensource
+ * @subpackage Help Feedback
  * @version    1.0.0
  * @license    See below
  *
@@ -27,47 +27,51 @@
  */
 
 // Begin.
+
+/**
+ * Class sap_views.
+ */
+
 global $config;
 
-require_once $config['homedir'].'/include/class/Diagnostics.class.php';
+enterprise_include_once('/include/class/SAPView.class.php');
 
-$ajaxPage = 'tools/diagnostics';
-$pdf = get_parameter('pdf', false);
-
+$ajaxPage = 'general/sap_view';
 
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
-    $cs = new Diagnostics($ajaxPage, $pdf);
+    $sap_views = new SAPView($ajaxPage);
 } catch (Exception $e) {
     if (is_ajax()) {
-        echo json_encode(['error' => '[Diagnostics]'.$e->getMessage() ]);
+        echo json_encode(['error' => '[sap_views]'.$e->getMessage() ]);
         exit;
     } else {
-        echo '[Diagnostics]'.$e->getMessage();
+        echo '[sap_views]'.$e->getMessage();
     }
 
     // Stop this execution, but continue 'globally'.
     return;
 }
 
-// AJAX controller.
+// Ajax controller.
 if (is_ajax()) {
-    $method = get_parameter('method');
+    $method = get_parameter('method', '');
 
-    if (method_exists($cs, $method) === true) {
-        if ($cs->ajaxMethod($method) === true) {
-            $cs->{$method}();
+    if (method_exists($sap_views, $method) === true) {
+        if ($sap_views->ajaxMethod($method) === true) {
+            $sap_views->{$method}();
         } else {
-            $cs->error('Unavailable method.');
+            $sap_views->error('Unavailable method.');
         }
     } else {
-        $cs->error('Method not found. ['.$method.']');
+        $sap_views->error('Method not found. ['.$method.']');
     }
+
 
     // Stop any execution.
     exit;
 } else {
     // Run.
-    $cs->run();
+    $sap_views->run();
 }

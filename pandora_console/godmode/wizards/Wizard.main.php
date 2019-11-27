@@ -436,11 +436,15 @@ class Wizard
      *
      * @param array   $input  Definition of target block to be printed.
      * @param boolean $return Return as string or direct output.
+     * @param boolean $direct Avoid encapsulation if input print is direct.
      *
      * @return string HTML content.
      */
-    public function printBlock(array $input, bool $return=false, bool $not_direct=false)
-    {
+    public function printBlock(
+        array $input,
+        bool $return=false,
+        bool $direct=false
+    ) {
         $output = '';
         if ($input['hidden'] == 1) {
             $class = ' hidden';
@@ -453,7 +457,8 @@ class Wizard
         }
 
         if (is_array($input['block_content']) === true) {
-            $not_direct = (bool) $input['direct'];
+            $direct = (bool) $input['direct'];
+            $toggle = (bool) $input['toggle'];
 
             // Print independent block of inputs.
             $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
@@ -462,17 +467,44 @@ class Wizard
                 $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
             }
 
-            if (!$not_direct) {
+            if (!$direct) {
                 // Avoid encapsulation if input is direct => 1.
                 $output .= '<ul class="wizard '.$input['block_class'].'">';
             }
 
-            foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlock($input, $return, (bool) $not_direct);
+            $html = '';
+
+            foreach ($input['block_content'] as $in) {
+                $html .= $this->printBlock(
+                    $in,
+                    $return,
+                    (bool) $direct
+                );
+            }
+
+            if ($toggle === true) {
+                $output .= ui_print_toggle(
+                    [
+                        'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                        'content'         => $html,
+                        'title'           => $input['toggle_title'],
+                        'id'              => $input['toggle_id'],
+                        'hidden_default'  => $input['toggle_hidden_default'],
+                        'return'          => (isset($input['toggle_return']) ? $input['toggle_return'] : true),
+                        'toggle_class'    => $input['toggle_toggle_class'],
+                        'main_class'      => $input['toggle_main_class'],
+                        'container_class' => $input['toggle_container_class'],
+                        'img_a'           => $input['toggle_img_a'],
+                        'img_b'           => $input['toggle_img_b'],
+                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                    ]
+                );
+            } else {
+                $output .= $html;
             }
 
             // Close block.
-            if (!$not_direct) {
+            if (!$direct) {
                 $output .= '</ul>';
             }
 
@@ -482,8 +514,10 @@ class Wizard
 
             $output .= '</li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
-                if (!$not_direct) {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
+                if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
 
@@ -491,7 +525,7 @@ class Wizard
                 $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
-                if (!$not_direct) {
+                if (!$direct) {
                     $output .= '</li>';
                 }
             } else {
@@ -540,7 +574,9 @@ class Wizard
 
             $output .= '</ul></li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
@@ -643,7 +679,9 @@ class Wizard
 
             $output .= '</ul></li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);
@@ -799,15 +837,18 @@ class Wizard
                     $first_block_printed = true;
                 }
 
-                $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
+                $output .= '<div class="edit_discovery_info '.$row['class'].'" style="'.$row['style'].'">';
 
                 foreach ($row['columns'] as $column) {
                     $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
                     $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
                     $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
                     $extra_styles = isset($column['style']) ? $column['style'] : '';
+                    $class = isset($column['class']) ? $column['class'] : '';
 
-                    $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
+                    $output .= '<div class="'.$class.'" ';
+                    $output .= ' style="'.$width.$padding_left.$padding_right;
+                    $output .= $extra_styles.'">';
 
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {

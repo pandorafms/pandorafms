@@ -15,7 +15,7 @@ global $config;
 global $incident_w;
 global $incident_m;
 check_login();
-ui_require_css_file('firts_task');
+ui_require_css_file('first_task');
 ?>
 <?php
 ui_print_info_message(['no_close' => true, 'message' => __('There are no incidents defined yet.') ]);
@@ -25,7 +25,7 @@ if ($incident_w || $incident_m) {
 
 <div class="new_task">
     <div class="image_task">
-        <?php echo html_print_image('images/firts_task/icono_grande_incidencia.png', true, ['title' => __('Incidents')]); ?>
+        <?php echo html_print_image('images/first_task/icono_grande_incidencia.png', true, ['title' => __('Incidents')]); ?>
     </div>
     <div class="text_task">
         <h3> <?php echo __('Create Incidents'); ?></h3><p id="description_task"> 

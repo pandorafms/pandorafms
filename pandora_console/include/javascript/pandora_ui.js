@@ -1,5 +1,12 @@
 /* global $ */
 /* exported load_modal */
+/*JS to Show user modals :
+  - Confirm dialogs.
+  - Display dialogs.
+  - Load modal windows.
+  - Logo Previews.
+  - General show messages.
+*/
 
 var ENTERPRISE_DIR = "enterprise";
 

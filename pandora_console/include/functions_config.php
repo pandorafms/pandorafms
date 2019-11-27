@@ -456,7 +456,7 @@ function config_update_config()
                         }
 
                         if (!config_update_value('sap_license', get_parameter('sap_license'))) {
-                            $error_update[] = __('Deset SAP license');
+                            $error_update[] = __('SAP/R3 Plugin Licence');
                         }
 
                         $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);

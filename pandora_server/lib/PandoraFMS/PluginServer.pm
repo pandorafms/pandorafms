@@ -179,7 +179,7 @@ sub data_consumer ($$) {
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
-			my $macros = decode_json(encode_utf8($module->{'macros'}));
+			my $macros = JSON->new->allow_nonref->decode(encode_utf8($module->{'macros'}));
 			my %macros = %{$macros};
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))

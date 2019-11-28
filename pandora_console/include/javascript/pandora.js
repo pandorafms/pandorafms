@@ -1825,6 +1825,18 @@ function ellipsize(str, max, ellipse) {
   return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
 }
 
+function uniqId() {
+  var randomStr =
+    Math.random()
+      .toString(36)
+      .substring(2, 15) +
+    Math.random()
+      .toString(36)
+      .substring(2, 15);
+
+  return randomStr;
+}
+
 /**
  * Function for AJAX request.
  *

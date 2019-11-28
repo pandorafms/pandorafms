@@ -11,47 +11,52 @@
 var ENTERPRISE_DIR = "enterprise";
 
 /**
- * Display a confirm dialog box
+ * Display a dialog with an image
  *
- * @param string Text to display
- * @param string Ok button text
- * @param string Cancel button text
- * @param function Callback to action when ok button is pressed
+ * @param {string} icon_name The name of the icon you will display
+ * @param {string} icon_path The path to the icon
+ * @param {Object} incoming_options All options
+ * 		grayed: {bool} True to display the background black
+ * 		title {string} 'Logo preview' by default
  */
-function display_confirm_dialog(message, ok_text, cancel_text, ok_function) {
-  // Clean function to close the dialog
-  var clean_function = function() {
-    $("#pandora_confirm_dialog_text").hide();
-    $("#pandora_confirm_dialog_text").remove();
+function logo_preview(icon_name, icon_path, incoming_options) {
+  // Get the options
+  options = {
+    grayed: false,
+    title: "Logo preview"
   };
+  $.extend(options, incoming_options);
 
-  // Modify the ok function to close the dialog too
-  var ok_function_clean = function() {
-    ok_function();
-    clean_function();
-  };
+  if (icon_name == "") return;
 
-  var buttons_obj = {};
-  buttons_obj[cancel_text] = clean_function;
-  buttons_obj[ok_text] = ok_function_clean;
+  $dialog = $("<div></div>");
+  $image = $('<img src="' + icon_path + '">');
+  $image.css("max-width", "500px").css("max-height", "500px");
 
-  // Display the dialog
-  $("body").append(
-    '<div id="pandora_confirm_dialog_text"><h3>' + message + "</h3></div>"
-  );
-  $("#pandora_confirm_dialog_text").dialog({
-    resizable: false,
-    draggable: true,
-    modal: true,
-    dialogClass: "pandora_confirm_dialog",
-    overlay: {
-      opacity: 0.5,
-      background: "black"
-    },
-    closeOnEscape: true,
-    modal: true,
-    buttons: buttons_obj
-  });
+  try {
+    $dialog
+      .hide()
+      .html($image)
+      .dialog({
+        title: options.title,
+        resizable: true,
+        draggable: true,
+        modal: true,
+        dialogClass: options.grayed ? "dialog-grayed" : "",
+        overlay: {
+          opacity: 0.5,
+          background: "black"
+        },
+        minHeight: 1,
+        width: $image.width,
+        close: function() {
+          $dialog.empty().remove();
+        }
+      })
+      .show();
+  } catch (err) {
+    // console.log(err);
+  }
 }
 
 // Advanced Form control.
@@ -65,10 +70,33 @@ function load_modal(settings) {
   }
   data.append("page", settings.onshow.page);
   data.append("method", settings.onshow.method);
+  if (settings.onshow.extradata != undefined) {
+    data.append("extradata", JSON.stringify(settings.onshow.extradata));
+  }
+
+  if (settings.target == undefined) {
+    var uniq = uniqId();
+    var div = document.createElement("div");
+    div.id = "div-modal-" + uniq;
+    div.style.display = "none";
+
+    document.getElementById("main").append(div);
+
+    var id_modal_target = "#div-modal-" + uniq;
+
+    settings.target = $(id_modal_target);
+  }
 
   var width = 630;
   if (settings.onshow.width) {
     width = settings.onshow.width;
+  }
+
+  if (settings.modal.overlay == undefined) {
+    settings.modal.overlay = {
+      opacity: 0.5,
+      background: "black"
+    };
   }
 
   settings.target.html("Loading modal...");
@@ -261,14 +289,16 @@ function load_modal(settings) {
         modal: true,
         title: settings.modal.title,
         width: width,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
+        overlay: settings.modal.overlay,
         buttons: required_buttons,
         closeOnEscape: false,
         open: function() {
           $(".ui-dialog-titlebar-close").hide();
+        },
+        close: function() {
+          if (id_modal_target != undefined) {
+            $(id_modal_target).remove();
+          }
         }
       });
     },
@@ -280,13 +310,7 @@ function load_modal(settings) {
 
 //Function that shows a dialog box to confirm closures of generic manners. The modal id is random
 function confirmDialog(settings) {
-  var randomStr =
-    Math.random()
-      .toString(36)
-      .substring(2, 15) +
-    Math.random()
-      .toString(36)
-      .substring(2, 15);
+  var randomStr = uniqId();
 
   $("body").append(
     '<div id="confirm_' + randomStr + '">' + settings.message + "</div>"
@@ -372,53 +396,4 @@ function generalShowMsg(data, idMsg) {
       }
     ]
   });
-}
-
-/**
- * Display a dialog with an image
- *
- * @param {string} icon_name The name of the icon you will display
- * @param {string} icon_path The path to the icon
- * @param {Object} incoming_options All options
- * 		grayed: {bool} True to display the background black
- * 		title {string} 'Logo preview' by default
- */
-function logo_preview(icon_name, icon_path, incoming_options) {
-  // Get the options
-  options = {
-    grayed: false,
-    title: "Logo preview"
-  };
-  $.extend(options, incoming_options);
-
-  if (icon_name == "") return;
-
-  $dialog = $("<div></div>");
-  $image = $('<img src="' + icon_path + '">');
-  $image.css("max-width", "500px").css("max-height", "500px");
-
-  try {
-    $dialog
-      .hide()
-      .html($image)
-      .dialog({
-        title: options.title,
-        resizable: true,
-        draggable: true,
-        modal: true,
-        dialogClass: options.grayed ? "dialog-grayed" : "",
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        minHeight: 1,
-        width: $image.width,
-        close: function() {
-          $dialog.empty().remove();
-        }
-      })
-      .show();
-  } catch (err) {
-    // console.log(err);
-  }
 }

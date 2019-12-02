@@ -1403,19 +1403,35 @@ function config_update_config()
                         $error_update[] = __('Database password');
                     }
 
-                    if (!config_update_value('history_db_days', get_parameter('history_db_days'))) {
+                    $history_db_days = get_parameter('history_db_days');
+                    if (!is_numeric($history_db_days)
+                        || $history_db_days <= 0
+                        || !config_update_value('history_db_days', $history_db_days)
+                    ) {
                         $error_update[] = __('Days');
                     }
 
-                    if (!config_update_value('history_event_days', get_parameter('history_event_days'))) {
+                    $history_event_days = get_parameter('history_event_days');
+                    if (!is_numeric($history_event_days)
+                        || $history_event_days <= 0
+                        || !config_update_value('history_event_days', $history_event_days)
+                    ) {
                         $error_update[] = __('Event Days');
                     }
 
-                    if (!config_update_value('history_db_step', get_parameter('history_db_step'))) {
+                    $history_db_step = get_parameter('history_db_step');
+                    if (!is_numeric($history_db_step)
+                        || $history_db_step <= 0
+                        || !config_update_value('history_db_step', $history_db_step)
+                    ) {
                         $error_update[] = __('Step');
                     }
 
-                    if (!config_update_value('history_db_delay', get_parameter('history_db_delay'))) {
+                    $history_db_delay = get_parameter('history_db_delay');
+                    if (!is_numeric($history_db_delay)
+                        || $history_db_delay <= 0
+                        || !config_update_value('history_db_delay', $history_db_delay)
+                    ) {
                         $error_update[] = __('Delay');
                     }
                 break;

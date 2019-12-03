@@ -124,11 +124,8 @@ if ($config['menu_type'] == 'classic') {
             $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
                     onkeyup="showinterpreter()" class="search_input" />';
 
-            $search_bar .= '<div 
-            id="result_order"
-            class="show_result_interpreter"
-            style="display:none">Go to Agent Management<br>
-            Go to Agent view</div>';
+
+            $search_bar .= '<div id="result_order" style="display:grid"></div>';
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
@@ -629,7 +626,7 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    // Resize event
+    // Resize event.
     window.addEventListener("resize", function() {
         attatch_to_image();
     });
@@ -645,7 +642,7 @@ if ($config['menu_type'] == 'classic') {
             $.ajax({
                 type: "POST",
                 url: "ajax.php",
-                dataType: "text",
+                dataType: "html",
                 data: {
                     page: 'include/ajax/order_interpreter',
                     method: 'getResult',
@@ -653,7 +650,8 @@ if ($config['menu_type'] == 'classic') {
                 },
                 success: function (data) {
                     console.log(data);
-                },
+                   $('#result_order').html(data);
+                   },
                 error: function (data) {
                     console.error("Fatal error in AJAX call to interpreter order", data)
                 }

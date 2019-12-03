@@ -99,16 +99,24 @@ class OrderInterpreter extends Wizard
     ) {
         $this->ajaxController = $ajax_controller;
         $this->pages_name = [
-            0 => __('Agent view'),
+            0 => __('Tactical View'),
             1 => __('Agent Management'),
-            2 => __('Manage Agents'),
+            2 => __('List Alerts'),
             3 => __('Manage Policies'),
         ];
         $this->pages_url = [
-            0 => ui_get_full_url(),
-            1 => ui_get_full_url(),
-            2 => ui_get_full_url(),
-            3 => ui_get_full_url(),
+            0 => ui_get_full_url(
+                'index.php?sec=view&sec2=operation/agentes/tactical'
+            ),
+            1 => ui_get_full_url(
+                'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'
+            ),
+            2 => ui_get_full_url(
+                'index.php?sec=galertas&sec2=godmode/alerts/alert_list'
+            ),
+            3 => ui_get_full_url(
+                'index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies'
+            ),
         ];
 
     }
@@ -119,18 +127,22 @@ class OrderInterpreter extends Wizard
      *
      * @return array
      */
-    public function getResult():array
+    public function getResult()
     {
         // Take value from input search.
         $text = get_parameter('text', '');
         $array_found = [];
+        echo '<div id="result_order" class="show_result_interpreter">';
+        echo '<ul>';
         foreach ($this->pages_name as $key => $value) {
             if (preg_match('/.*'.$text.'.*/', $value)) {
-                $array_found[$key] = '<input id='.$key.'><a href="'.$this->pages_url[$key].'">'.$value.'</a>';
+                echo '<li>';
+                echo '<img src="http://localhost/pandora_console/images/arrow_right_green.png">';
+                echo 'GO TO <a href="'.$this->pages_url[$key].'">'.$value.'</a><br>';
             }
         }
 
-        return $array_found;
+        echo '</ul></div';
 
     }
 

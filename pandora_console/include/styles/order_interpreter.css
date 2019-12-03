@@ -1,0 +1,29 @@
+div.show_result_interpreter {
+  background-position: center right 10px;
+  background-repeat: no-repeat;
+  background-size: 17px;
+  background-color: #f2f6f7;
+  padding: 0px;
+  padding-right: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-left: 0px;
+  margin: 0;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-left: 0px;
+  width: 300px;
+  height: 30px;
+  margin-left: 2px;
+  padding-left: 15px;
+  padding-right: 40px;
+  color: rgb(0, 0, 0);
+  font-family: "Open Sans", sans-serif;
+  font-size: 8.5pt;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-color: #1a1919;
+  margin-top: 1px;
+}

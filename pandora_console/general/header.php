@@ -13,6 +13,8 @@
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
 require_once 'include/functions_notifications.php';
+require_once 'include/ajax/order_interpreter.php';
+ui_require_css_file('order_interpreter');
 
 // Check permissions
 // Global errors/warnings checking.
@@ -120,8 +122,13 @@ if ($config['menu_type'] == 'classic') {
             }
 
             $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="javascript: fieldKeyWordEmpty = false;" class="search_input" />';
+                    onkeyup="showinterpreter()" class="search_input" />';
 
+            $search_bar .= '<div 
+            id="result_order"
+            class="show_result_interpreter"
+            style="display:none">Go to Agent Management<br>
+            Go to Agent view</div>';
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
@@ -630,7 +637,14 @@ if ($config['menu_type'] == 'classic') {
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
-
+    
+    function showinterpreter(){
+        if( $('#keywords').val() === ''){
+            $('#result_order').hide();
+        }else {
+            $('#result_order').show();
+        }
+    }
     /**
     * Loads modal from AJAX to add feedback.
     */

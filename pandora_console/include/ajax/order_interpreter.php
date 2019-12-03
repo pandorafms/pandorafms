@@ -30,8 +30,9 @@
 global $config;
 
 require_once $config['homedir'].'/include/class/OrderInterpreter.class.php';
+
 if (is_ajax() === false) {
-    exit;
+    return;
 }
 
 $ajaxPage = 'include/ajax/order_interpreter';

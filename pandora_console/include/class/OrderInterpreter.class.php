@@ -125,24 +125,26 @@ class OrderInterpreter extends Wizard
     /**
      * Method to print order interpreted on header search input.
      *
-     * @return array
+     * @return void
      */
     public function getResult()
     {
         // Take value from input search.
         $text = get_parameter('text', '');
         $array_found = [];
-        echo '<div id="result_order" class="show_result_interpreter">';
-        echo '<ul>';
-        foreach ($this->pages_name as $key => $value) {
-            if (preg_match('/.*'.$text.'.*/', $value)) {
-                echo '<li>';
-                echo '<img src="http://localhost/pandora_console/images/arrow_right_green.png">';
-                echo 'GO TO <a href="'.$this->pages_url[$key].'">'.$value.'</a><br>';
+        if ($text !== '') {
+            echo '<div id="result_order" class="show_result_interpreter">';
+            echo '<ul>';
+            foreach ($this->pages_name as $key => $value) {
+                if (preg_match('/.*'.$text.'.*/i', $value)) {
+                    echo '<li>';
+                    echo '<img src="http://localhost/pandora_console/images/arrow_right_green.png">';
+                    echo 'GO TO <a href="'.$this->pages_url[$key].'">'.$value.'</a><br>';
+                }
             }
-        }
 
-        echo '</ul></div';
+            echo '</ul></div';
+        }
 
     }
 

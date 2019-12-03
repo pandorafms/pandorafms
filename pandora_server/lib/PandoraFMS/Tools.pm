@@ -145,6 +145,7 @@ our @EXPORT = qw(
 	ip_to_long
 	get_enabled_servers
 	dateTimeToTimestamp
+	get_user_agent
 );
 
 # ID of the different servers
@@ -2123,6 +2124,65 @@ sub get_enabled_servers {
 }
 # End of function declaration
 # End of defined Code
+
+
+################################################################################
+# Initialize a LWP::User agent
+################################################################################
+sub get_user_agent {
+	my $pa_config = shift;
+	my $ua;
+
+	eval {
+		if (!(defined($pa_config->{'lwp_timeout'})
+			&& is_numeric($pa_config->{'lwp_timeout'}))
+		) {
+			$pa_config->{'lwp_timeout'} = 3;
+		}
+
+		$ua = LWP::UserAgent->new(
+			'keep_alive' => "10"
+		);
+
+		# Configure LWP timeout.
+		$ua->timeout($pa_config->{'lwp_timeout'});
+
+		# Enable environmental proxy settings
+		$ua->env_proxy;
+
+		# Enable in-memory cookie management
+		$ua->cookie_jar( {} );
+
+		if (!defined($pa_config->{'ssl_verify'})
+			|| (defined($pa_config->{'ssl_verify'})
+				&& $pa_config->{'ssl_verify'} eq "0")
+		) {
+			# Disable verify host certificate (only needed for self-signed cert)
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+			# Disable library extra checks 
+			BEGIN {
+				$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
+				$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+			}
+		}
+	};
+	if($@) {
+		logger($pa_config, 'Failed to initialize LWP::UserAgent', 5);
+		# Failed
+		return;
+	}
+
+	return $ua;
+}
+
+
+
+
+
+
+
 
 1;
 __END__

@@ -642,6 +642,22 @@ if ($config['menu_type'] == 'classic') {
         if( $('#keywords').val() === ''){
             $('#result_order').hide();
         }else {
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "text",
+                data: {
+                    page: 'include/ajax/order_interpreter',
+                    method: 'getResult',
+                    text: $('#keywords').val(),
+                },
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.error("Fatal error in AJAX call to interpreter order", data)
+                }
+            });
             $('#result_order').show();
         }
     }

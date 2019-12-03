@@ -117,20 +117,20 @@ class OrderInterpreter extends Wizard
     /**
      * Method to print order interpreted on header search input.
      *
-     * @return void
+     * @return array
      */
-    public function getResult()
+    public function getResult():array
     {
         // Take value from input search.
         $text = get_parameter('text', '');
-
+        $array_found = [];
         foreach ($this->pages_name as $key => $value) {
-            if (preg_match('/'.$text.'/', $value)) {
-                echo 'pene gordo';
+            if (preg_match('/.*'.$text.'.*/', $value)) {
+                $array_found[$key] = '<input id='.$key.'><a href="'.$this->pages_url[$key].'">'.$value.'</a>';
             }
         }
 
-        return;
+        return $array_found;
 
     }
 

@@ -88,8 +88,7 @@ class OrderInterpreter extends Wizard
     /**
      * Constructor.
      *
-     * @param boolean $must_run        Must run or not.
-     * @param string  $ajax_controller Controller.
+     * @param string $ajax_controller Controller.
      *
      * @return object
      * @throws Exception On error.
@@ -135,11 +134,22 @@ class OrderInterpreter extends Wizard
         if ($text !== '') {
             echo '<div id="result_order" class="show_result_interpreter">';
             echo '<ul>';
-            foreach ($this->pages_name as $key => $value) {
-                if (preg_match('/.*'.$text.'.*/i', $value)) {
-                    echo '<li>';
-                    echo '<img src="http://localhost/pandora_console/images/arrow_right_green.png">';
-                    echo 'GO TO <a href="'.$this->pages_url[$key].'">'.$value.'</a><br>';
+
+            if (io_safe_output($text) === __('GO TO ')) {
+                foreach ($this->pages_name as $key => $value) {
+                        echo '<li>';
+                        echo '<img src="http://localhost/pandora_console/images/arrow_right_green.png">';
+                        echo '&nbsp;
+           <a href="'.$this->pages_url[$key].'">'.$value.'</a><br>';
+                }
+            } else {
+                foreach ($this->pages_name as $key => $value) {
+                    if (preg_match('/.*'.io_safe_output($text).'.*/i', __('GO TO '.$value))) {
+                        echo '<li>';
+                        echo '<img src="http://localhost/pandora_console/images/arrow_right_green.png">';
+                        echo '&nbsp;
+                    <a href="'.$this->pages_url[$key].'">'.$value.'</a><br>';
+                    }
                 }
             }
 

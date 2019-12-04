@@ -58,6 +58,7 @@ my %Agents :shared;
 my $Sem :shared;
 my $TaskSem :shared;
 my $AgentSem :shared;
+my $XMLinSem :shared;
 
 ########################################################################################
 # Data Server class constructor.
@@ -74,6 +75,7 @@ sub new ($$;$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	$AgentSem = Thread::Semaphore->new (1);
+	$XMLinSem = Thread::Semaphore->new (1);
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
@@ -175,6 +177,7 @@ sub data_consumer ($$) {
 	my $agent_name = $1;		
 	my $file_name = $pa_config->{'incomingdir'};
 	my $xml_err;
+	my $error;
 	
 	# Fix path
 	$file_name .= "/" unless (substr ($file_name, -1, 1) eq '/');	
@@ -191,24 +194,43 @@ sub data_consumer ($$) {
 
 	for (0..1) {
 		eval {
+			local $SIG{__DIE__};
 			threads->yield;
+			# XML::SAX::ExpatXS is not thread safe.
+			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+				$XMLinSem->down();
+			}
 
 			$xml_data = XMLin ($file_name, forcearray => 'module');
+
+			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+				$XMLinSem->up();
+			}
 		};
 	
 		# Invalid XML
-		if ($@ || ref($xml_data) ne 'HASH') {
+		if ($@) {
+			$error = 1;
+			if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+				$XMLinSem->up();
+			}
+		}
+
+		if ($error || ref($xml_data) ne 'HASH') {
+			
 			if ($@) {
 				$xml_err = $@;
 			} else {
 				$xml_err = "Invalid XML format.";
 			}
+
+			logger($pa_config, "Failed to parse $file_name $xml_err", 3);
 			sleep (2);
 			next;
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
-		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '0' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists
 		if (! -f $file_name) {
@@ -580,8 +602,12 @@ sub process_xml_data ($$$$$) {
 	# Process events
 	process_events_dataserver($pa_config, $data, $agent_id, $group_id, $dbh);
 
-	# Process disovery modules
+	# Process discovery modules
 	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process command responses
+	enterprise_hook('process_rcmd_report', [$pa_config, $data, $server_id, $dbh, $agent_id, $timestamp]);
+
 }
 
 ##########################################################################

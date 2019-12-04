@@ -234,6 +234,8 @@ namespace Pandora_Modules {
 		int          getTimeout    ();
 		string       getSave ();
 		bool         getAsync ();
+		void         setExecutions(long executions=0);
+		long         getExecutions();
 
 		virtual string getXml      ();
 
@@ -301,6 +303,7 @@ namespace Pandora_Modules {
 		time_t      getTimestamp ();
 		void        setIntensiveMatch (unsigned char intensive_match);
 		unsigned char getIntensiveMatch ();
+		bool        isIntensive ();
 
 	};
 }

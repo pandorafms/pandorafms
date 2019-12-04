@@ -16,7 +16,12 @@ global $config;
 enterprise_include_once('include/functions_policies.php');
 
 
-$searchpolicies = check_acl($config['id'], 0, 'AW');
+$searchpolicies = check_acl($config['id_user'], 0, 'AW');
+
+if (!$searchpolicies) {
+    $totalPolicies = 0;
+    return;
+}
 
 $selectpolicieIDUp = '';
 $selectpolicieIDDown = '';
@@ -169,7 +174,7 @@ switch ($sortField) {
     break;
 }
 
-if ($searchpolicies == 0) {
+if ($searchpolicies) {
     /*
         We take the user groups to get policies that meet the requirements of the search
         and which the user have permission on this groups
@@ -188,6 +193,7 @@ if ($searchpolicies == 0) {
         $sql .= ' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
 
     $policies = db_process_sql($sql);
+
 
 if ($policies !== false) {
     $totalPolicies = count($policies);

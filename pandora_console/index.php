@@ -872,12 +872,6 @@ if (! isset($config['id_user'])) {
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
         $iduser = $_SESSION['id_usuario'];
-
-        /*
-         * Check why is not available.
-         * logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
-         */
-
         unset($_SESSION['id_usuario']);
         unset($iduser);
 
@@ -913,7 +907,6 @@ if (! isset($config['id_user'])) {
         $_POST = [];
         $config['auth_error'] = __("User doesn\'t exist.");
         $iduser = $_SESSION['id_usuario'];
-        logoff_db($iduser, $_SERVER['REMOTE_ADDR']);
         unset($_SESSION['id_usuario']);
         unset($iduser);
         include_once 'general/login_page.php';
@@ -933,7 +926,6 @@ if (! isset($config['id_user'])) {
             $_POST = [];
             $config['auth_error'] = __('User only can use the API.');
             $iduser = $_SESSION['id_usuario'];
-            logoff_db($iduser, $_SERVER['REMOTE_ADDR']);
             unset($_SESSION['id_usuario']);
             unset($iduser);
             include_once 'general/login_page.php';
@@ -956,7 +948,6 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
 if (isset($_GET['bye'])) {
     include 'general/logoff.php';
     $iduser = $_SESSION['id_usuario'];
-    db_logoff($iduser, $_SERVER['REMOTE_ADDR']);
 
     $_SESSION = [];
     session_destroy();
@@ -1323,9 +1314,12 @@ require 'include/php_to_js_values.php';
 
 <script type="text/javascript" language="javascript">
 
-    // When there are less than 5 rows, all rows must be white.
-    if($('table.info_table tr').length < 5){
-        $('table.info_table tbody > tr').css('background-color', '#fff');
+       // When there are less than 5 rows, all rows must be white
+       var theme = "<?php echo $config['style']; ?>";
+        if(theme === 'pandora'){
+        if($('table.info_table tr').length < 5){
+            $('table.info_table tbody > tr').css('background-color', '#fff');
+        }
     }
 
     // When the user scrolls down 400px from the top of the document, show the

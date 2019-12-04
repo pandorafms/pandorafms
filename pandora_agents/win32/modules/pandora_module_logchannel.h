@@ -75,7 +75,7 @@ namespace Pandora_Modules {
 		LPWSTR GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId);
 
 	public:
-		Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern);
+		Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern, string application);
 		void run ();
 	};
 }

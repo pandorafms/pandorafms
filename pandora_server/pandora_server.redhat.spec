@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.737
-%define release     190807
+%define version     7.0NG.741
+%define release     191204
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -27,7 +27,7 @@ Requires:           perl(DBI) perl(DBD::mysql)
 Requires:           perl(HTTP::Request::Common) perl(LWP::Simple) perl(LWP::UserAgent)
 Requires:           perl(XML::Simple) perl(XML::Twig) net-snmp-utils
 Requires:           perl(NetAddr::IP) net-snmp net-tools
-Requires:           perl(IO::Socket::INET6) perl(Net::Telnet)
+Requires:           perl(IO::Socket::INET6) perl(IO::Socket::SSL) perl(Net::Telnet)
 Requires:           nmap sudo perl(JSON)
 Requires:           perl(Time::HiRes) perl(Encode::Locale)
 Requires:           perl perl(Sys::Syslog) perl(HTML::Entities) perl(Geo::IP)
@@ -54,6 +54,8 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/conf
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/collections
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/netflow
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/trans
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/commands
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1/
@@ -195,3 +197,5 @@ exit 0
 %{_localstatedir}/spool/pandora/data_in/collections
 %{_localstatedir}/spool/pandora/data_in/conf
 %{_localstatedir}/spool/pandora/data_in/netflow
+%{_localstatedir}/spool/pandora/data_in/trans
+%{_localstatedir}/spool/pandora/data_in/commands

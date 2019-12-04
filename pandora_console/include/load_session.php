@@ -159,7 +159,26 @@ function pandora_session_gc($max_lifetime=300)
     global $config;
 
     if (isset($config['session_timeout'])) {
-        $max_lifetime = $config['session_timeout'];
+        $session_timeout = $config['session_timeout'];
+    } else {
+        // If $config doesn`t work ...
+        $session_timeout = db_get_value(
+            'value',
+            'tconfig',
+            'token',
+            'session_timeout'
+        );
+    }
+
+    if (empty($session_timeout) === false) {
+        if ($session_timeout == -1) {
+            // The session expires in 10 years.
+            $session_timeout = 315576000;
+        } else {
+            $session_timeout *= 60;
+        }
+
+        $max_lifetime = $session_timeout;
     }
 
     $time_limit = (time() - $max_lifetime);
@@ -171,11 +190,15 @@ function pandora_session_gc($max_lifetime=300)
         ]
     );
 
+    // Deleting cron and empty sessions.
+    $sql = 'DELETE FROM tsessions_php WHERE data IS NULL';
+    db_process_sql($sql);
+
     return $retval;
 }
 
 
-// FIXME: SAML should work with pandora session handlers
+// TODO: SAML should work with pandora session handlers.
 if (db_get_value('value', 'tconfig', 'token', 'auth') != 'saml') {
     $result_handler = session_set_save_handler(
         'pandora_session_open',

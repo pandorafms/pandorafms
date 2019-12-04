@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.737
-%define release     190807
+%define version     7.0NG.741
+%define release     191204
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -24,7 +24,7 @@ Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools perl-XML-Twig
 Requires:           nmap sudo perl-HTML-Tree perl-XML-Simple perl-Net-Telnet
-Requires:           perl-IO-Socket-INET6 perl-Socket6 snmp-mibs perl-JSON
+Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-IO-Socket-SSL snmp-mibs perl-JSON
 Requires:           perl-Encode-Locale perl-Geo-IP
 
 %description
@@ -61,6 +61,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/collections
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/netflow
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/trans
+mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/commands
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
@@ -198,6 +199,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /var/spool/pandora/data_in/netflow
 /var/spool/pandora/data_in/conf
 /var/spool/pandora/data_in/trans
+/var/spool/pandora/data_in/commands
 
 %defattr(-,pandora,root,750)
 /etc/pandora

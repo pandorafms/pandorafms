@@ -44,24 +44,16 @@ $groups = groups_get_all();
 // Add the All group to the beginning to be always the first
 // Use this instead array_unshift to keep the array keys
 $groups = ([0 => __('All')] + $groups);
-$html = '';
-$style = 'style="padding: 2px 10px; display: inline-block;"';
+$groups_selected = [];
 foreach ($groups as $id => $name) {
-    $checked = in_array($id, $file['groups']);
-    $all_checked = false;
-    if ($id === 0) {
-        $checkbox = html_print_checkbox_extended('groups[]', $id, $checked, false, '', 'class="chkb_all"', true);
-        $all_checked = $checked;
-    } else {
-        $checkbox = html_print_checkbox_extended('groups[]', $id, $checked, $all_checked, '', 'class="chkb_group"', true);
+    if (in_array($id, $file['groups'])) {
+        $groups_selected[] = $id;
     }
-
-    $html .= "<div $style>$name&nbsp;$checkbox</div>";
 }
 
 $row = [];
 $row[0] = __('Groups');
-$row[1] = $html;
+$row[1] = html_print_select($groups, 'groups[]', $groups_selected, '', '', '', true, true, '', '', '');
 $table->data[] = $row;
 $table->colspan[][1] = 3;
 

@@ -118,7 +118,7 @@ $now = date('Y-m-d');
 
 // Download header.
 header('Content-type: text/txt');
-header('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.csv"');
+header('Content-Disposition: attachment; filename="export_events_'.$now.'.csv"');
 
 try {
     $fb64 = get_parameter('fb64', null);

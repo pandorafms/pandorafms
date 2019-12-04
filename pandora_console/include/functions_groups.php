@@ -308,14 +308,13 @@ function groups_get_children($parent, $ignorePropagate=false)
     static $groups;
 
     if (empty($groups)) {
+        $aux_groups = [];
         $groups = db_get_all_rows_in_table('tgrupo');
-        $groups = array_reduce(
-            $groups,
-            function ($carry, $item) {
-                $carry[$item['id_grupo']] = $item;
-                return $carry;
-            }
-        );
+        foreach ($groups as $key => $value) {
+            $aux_groups[$value['id_grupo']] = $value;
+        }
+
+        $groups = $aux_groups;
     }
 
     $return = [];

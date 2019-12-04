@@ -154,7 +154,7 @@ foreach ($servers as $server) {
         if ($server['type'] == 'recon') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist').'">';
             $data[8] .= html_print_image(
-                'images/firts_task/icono_grande_reconserver.png',
+                'images/first_task/icono_grande_reconserver.png',
                 true,
                 [
                     'title' => __('Manage Discovery tasks'),

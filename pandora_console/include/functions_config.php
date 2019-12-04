@@ -325,6 +325,46 @@ function config_update_config()
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
                         $error_update[] = __('unique_ip');
                     }
+
+                    if (!config_update_value('email_smtpServer', get_parameter('email_smtpServer'))) {
+                        $error_update[] = __('Server SMTP');
+                    }
+
+                    if (!config_update_value('email_from_dir', get_parameter('email_from_dir'))) {
+                        $error_update[] = __('From dir');
+                    }
+
+                    if (!config_update_value('email_from_name', get_parameter('email_from_name'))) {
+                        $error_update[] = __('From name');
+                    }
+
+                    if (!config_update_value('email_smtpPort', (int) get_parameter('email_smtpPort'))) {
+                        $error_update[] = __('Port SMTP');
+                    }
+
+                    if (!config_update_value('email_encryption', get_parameter('email_encryption'))) {
+                        $error_update[] = __('Encryption');
+                    }
+
+                    if (!config_update_value('email_username', get_parameter('email_username'))) {
+                        $error_update[] = __('Email user');
+                    }
+
+                    if (!config_update_value('email_password', get_parameter('email_password'))) {
+                        $error_update[] = __('Email password');
+                    }
+
+                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
+                        $error_update[] = __('WebSocket bind address');
+                    }
+
+                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
+                        $error_update[] = __('WebSocket port');
+                    }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
+                    }
                 break;
 
                 case 'enterprise':
@@ -415,37 +455,13 @@ function config_update_config()
                             $error_update[] = __('Ipam Ocuppied Manager Warning');
                         }
 
+                        if (!config_update_value('sap_license', get_parameter('sap_license'))) {
+                            $error_update[] = __('SAP/R3 Plugin Licence');
+                        }
+
                         $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
                         if (!config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist))) {
                             $error_update[] = __('Inventory changes blacklist');
-                        }
-
-                        if (!config_update_value('email_from_dir', get_parameter('email_from_dir'))) {
-                            $error_update[] = __('From dir');
-                        }
-
-                        if (!config_update_value('email_from_name', get_parameter('email_from_name'))) {
-                            $error_update[] = __('From name');
-                        }
-
-                        if (!config_update_value('email_smtpServer', get_parameter('email_smtpServer'))) {
-                            $error_update[] = __('Server SMTP');
-                        }
-
-                        if (!config_update_value('email_smtpPort', (int) get_parameter('email_smtpPort'))) {
-                            $error_update[] = __('Port SMTP');
-                        }
-
-                        if (!config_update_value('email_encryption', get_parameter('email_encryption'))) {
-                            $error_update[] = __('Encryption');
-                        }
-
-                        if (!config_update_value('email_username', get_parameter('email_username'))) {
-                            $error_update[] = __('Email user');
-                        }
-
-                        if (!config_update_value('email_password', get_parameter('email_password'))) {
-                            $error_update[] = __('Email password');
                         }
                     }
                 break;
@@ -1269,6 +1285,10 @@ function config_update_config()
                     }
 
                     // Juanma (06/05/2014) New feature: Custom front page for reports.
+                    if (!config_update_value('font_size_item_report', get_parameter('font_size_item_report', 2))) {
+                        $error_update[] = __('Font size for items reports');
+                    }
+
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
                         $error_update[] = __('Custom report front');
                     }
@@ -1434,6 +1454,92 @@ function config_update_config()
                     }
                 break;
 
+                case 'integria':
+                    if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
+                        $error_update[] = __('Enable Integria IMS');
+                    }
+
+                    if (!config_update_value('integria_user', (string) get_parameter('integria_user', $config['integria_user']))) {
+                        $error_update[] = __('Integria user');
+                    }
+
+                    if (!config_update_value('integria_pass', io_input_password((string) get_parameter('integria_pass', $config['integria_pass'])))) {
+                        $error_update[] = __('Integria password');
+                    }
+
+                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                        $error_update[] = __('integria API hostname');
+                    }
+
+                    if (!config_update_value('integria_api_pass', io_input_password((string) get_parameter('integria_api_pass', $config['integria_api_pass'])))) {
+                        $error_update[] = __('Integria API password');
+                    }
+
+                    if (!config_update_value('integria_req_timeout', (int) get_parameter('integria_req_timeout', $config['integria_req_timeout']))) {
+                        $error_update[] = __('Integria request timeout');
+                    }
+
+                    if (!config_update_value('default_group', (int) get_parameter('default_group', $config['default_group']))) {
+                        $error_update[] = __('Integria default group');
+                    }
+
+                    if (!config_update_value('cr_default_group', (int) get_parameter('cr_default_group', $config['cr_default_group']))) {
+                        $error_update[] = __('Integria custom response default group');
+                    }
+
+                    if (!config_update_value('default_criticity', (int) get_parameter('default_criticity', $config['default_criticity']))) {
+                        $error_update[] = __('Integria default priority');
+                    }
+
+                    if (!config_update_value('cr_default_criticity', (int) get_parameter('cr_default_criticity', $config['cr_default_criticity']))) {
+                        $error_update[] = __('Integria custom response default priority');
+                    }
+
+                    if (!config_update_value('default_creator', (string) get_parameter('default_creator', $config['default_creator']))) {
+                        $error_update[] = __('Integria default creator');
+                    }
+
+                    if (!config_update_value('default_owner', (string) get_parameter('default_owner', $config['default_owner']))) {
+                        $error_update[] = __('Integria default owner');
+                    }
+
+                    if (!config_update_value('cr_default_owner', (string) get_parameter('cr_default_owner', $config['cr_default_owner']))) {
+                        $error_update[] = __('Integria custom response default owner');
+                    }
+
+                    if (!config_update_value('incident_type', (int) get_parameter('incident_type', $config['incident_type']))) {
+                        $error_update[] = __('Integria default ticket type');
+                    }
+
+                    if (!config_update_value('cr_incident_type', (int) get_parameter('cr_incident_type', $config['cr_incident_type']))) {
+                        $error_update[] = __('Integria custom response default ticket type');
+                    }
+
+                    if (!config_update_value('incident_status', (int) get_parameter('incident_status', $config['incident_status']))) {
+                        $error_update[] = __('Integria default ticket status');
+                    }
+
+                    if (!config_update_value('cr_incident_status', (int) get_parameter('cr_incident_status', $config['cr_incident_status']))) {
+                        $error_update[] = __('Integria custom response default ticket status');
+                    }
+
+                    if (!config_update_value('incident_title', (string) get_parameter('incident_title', $config['incident_title']))) {
+                        $error_update[] = __('Integria default ticket title');
+                    }
+
+                    if (!config_update_value('cr_incident_title', (string) get_parameter('cr_incident_title', $config['cr_incident_title']))) {
+                        $error_update[] = __('Integria custom response default ticket title');
+                    }
+
+                    if (!config_update_value('incident_content', (string) get_parameter('incident_content', $config['incident_content']))) {
+                        $error_update[] = __('Integria default ticket content');
+                    }
+
+                    if (!config_update_value('cr_incident_content', (string) get_parameter('cr_incident_content', $config['cr_incident_content']))) {
+                        $error_update[] = __('Integria custom response default ticket content');
+                    }
+                break;
+
                 default:
                     // Ignore.
                 break;
@@ -1500,7 +1606,7 @@ function config_process_config()
 
     if (!isset($config['remote_config'])) {
         if ($is_windows) {
-            $default = 'C:\\PandoraFMS\\Pandora_Server\\data_in';
+            $default = 'C:\PandoraFMS\Pandora_Server\data_in';
         } else {
             $default = '/var/spool/pandora/data_in';
         }
@@ -1510,7 +1616,7 @@ function config_process_config()
 
     if (!isset($config['phantomjs_bin'])) {
         if ($is_windows) {
-            $default = 'C:\\PandoraFMS\\phantomjs';
+            $default = 'C:\PandoraFMS\Pandora_Server\bin';
         } else {
             $default = '/usr/bin';
         }
@@ -1760,7 +1866,13 @@ function config_process_config()
     }
 
     if (!isset($config['auditdir'])) {
-        config_update_value('auditdir', '/var/www/html/pandora_console');
+        $auditdir = '/var/www/html/pandora_console';
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $auditdir = $config['homedir'];
+        }
+
+        config_update_value('auditdir', $auditdir);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -1791,9 +1903,14 @@ function config_process_config()
         config_update_value('unique_ip', 0);
     }
 
+    if (!isset($config['welcome_state'])) {
+        config_update_value('welcome_state', WELCOME_STARTED);
+    }
+
      /*
       * Parse the ACL IP list for access API
       */
+
     $temp_list_ACL_IPs_for_API = [];
     if (isset($config['list_ACL_IPs_for_API'])) {
         if (!empty($config['list_ACL_IPs_for_API'])) {
@@ -1804,13 +1921,16 @@ function config_process_config()
     $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
-    // This is not set here. The first time, when no
-    // setup is done, update_manager extension manage it
-    // the first time make a conenction and disable itself
-    // Not Managed here !
-    // if (!isset ($config["autoupdate"])) {
-    // config_update_value ('autoupdate', true);.
-    // }
+    /*
+     * This is not set here. The first time, when no
+     * setup is done, update_manager extension manage it
+     * the first time make a conenction and disable itself
+     * Not Managed here !
+     * if (!isset ($config["autoupdate"])) {
+     * config_update_value ('autoupdate', true);.
+     * }
+     */
+
     include_once $config['homedir'].'/include/auth/mysql.php';
     include_once $config['homedir'].'/include/functions_io.php';
 
@@ -1819,10 +1939,16 @@ function config_process_config()
     // user, and should be in pandora root. By default, Pandora adds
     // /attachment to this, so by default is the pandora console home
     // dir.
+    $attachment_store_path = $config['homedir'].'/attachment';
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        // Windows.
+        $attachment_store_path = $config['homedir'].'\attachment';
+    }
+
     if (!isset($config['attachment_store'])) {
         config_update_value(
             'attachment_store',
-            io_safe_input($config['homedir']).'/attachment'
+            $attachment_store_path
         );
     } else {
         // Fixed when the user moves the pandora console to another dir
@@ -1830,16 +1956,23 @@ function config_process_config()
         if (!is_dir($config['attachment_store'])) {
             config_update_value(
                 'attachment_store',
-                $config['homedir'].'/attachment'
+                $attachment_store_path
             );
         }
     }
 
     if (!isset($config['fontpath'])) {
-        $home = str_replace('\\', '/', $config['homedir']);
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $fontpath = $config['homedir'].'\include\fonts\smallfont.ttf';
+        } else {
+            $home = str_replace('\\', '/', $config['homedir']);
+            $fontpath = $home.'/include/fonts/smallfont.ttf';
+        }
+
         config_update_value(
             'fontpath',
-            $home.'/include/fonts/smallfont.ttf'
+            $fontpath
         );
     }
 
@@ -2077,7 +2210,7 @@ function config_process_config()
 
     if (!isset($config['netflow_path'])) {
         if ($is_windows) {
-            $default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\netflow';
+            $default = 'C:\PandoraFMS\Pandora_Server\data_in\netflow';
         } else {
             $default = '/var/spool/pandora/data_in/netflow';
         }
@@ -2639,6 +2772,10 @@ function config_process_config()
         config_update_value('zoom_graph', 1);
     }
 
+    if (!isset($config['percentil'])) {
+        config_update_value('percentil', 95);
+    }
+
     if (!isset($config['render_proc_ok'])) {
         config_update_value('render_proc_ok', __('Ok'));
     }
@@ -2678,6 +2815,10 @@ function config_process_config()
     // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
+    }
+
+    if (!isset($config['font_size_item_report'])) {
+        config_update_value('font_size_item_report', 2);
     }
 
     if (!isset($config['custom_report_front_font'])) {
@@ -2818,6 +2959,19 @@ function config_process_config()
         if (!isset($config['metaconsole_deploy_plugin_server'])) {
             config_update_value('metaconsole_deploy_plugin_server', 0);
         }
+    }
+
+    // Integria.
+    if (!isset($config['integria_enabled'])) {
+        config_update_value('integria_enabled', 0);
+    }
+
+    if (!isset($config['integria_req_timeout'])) {
+        config_update_value('integria_req_timeout', 5);
+    }
+
+    if (!isset($config['integria_hostname'])) {
+        config_update_value('integria_hostname', '');
     }
 
     // Finally, check if any value was overwritten in a form.

@@ -256,6 +256,52 @@ if ($create_user) {
         $password_confirm = '';
         $new_user = true;
     } else {
+        $have_number = false;
+        $have_simbols = false;
+        if ($config['enable_pass_policy']) {
+            if ($config['pass_needs_numbers']) {
+                $nums = preg_match('/([[:alpha:]])*(\d)+(\w)*/', $password_confirm);
+                if ($nums == 0) {
+                    ui_print_error_message(__('Password must contain numbers'));
+                    $user_info = $values;
+                    $password_new = '';
+                    $password_confirm = '';
+                    $new_user = true;
+                } else {
+                    $have_number = true;
+                }
+            }
+
+            if ($config['pass_needs_symbols']) {
+                $symbols = preg_match('/(\w)*(\W)+(\w)*/', $password_confirm);
+                if ($symbols == 0) {
+                    ui_print_error_message(__('Password must contain symbols'));
+                    $user_info = $values;
+                    $password_new = '';
+                    $password_confirm = '';
+                    $new_user = true;
+                } else {
+                    $have_simbols = true;
+                }
+            }
+
+            if ($config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
+                if ($have_number && $have_simbols) {
+                    $result = create_user($id, $password_new, $values);
+                }
+            } else if ($config['pass_needs_symbols'] && !$config['pass_needs_numbers']) {
+                if ($have_simbols) {
+                    $result = create_user($id, $password_new, $values);
+                }
+            } else if (!$config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
+                if ($have_number) {
+                    $result = create_user($id, $password_new, $values);
+                }
+            }
+        } else {
+            $result = create_user($id, $password_new, $values);
+        }
+
         $info = '{"Id_user":"'.$values['id_user'].'","FullName":"'.$values['fullname'].'","Firstname":"'.$values['firstname'].'","Lastname":"'.$values['lastname'].'","Email":"'.$values['email'].'","Phone":"'.$values['phone'].'","Comments":"'.$values['comments'].'","Is_admin":"'.$values['is_admin'].'","Language":"'.$values['language'].'","Timezone":"'.$values['timezone'].'","Block size":"'.$values['block_size'].'"';
 
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -264,7 +310,10 @@ if ($create_user) {
             $info .= '}';
         }
 
-        $result = create_user($id, $password_new, $values);
+        $can_create = false;
+
+
+
         if ($result) {
             $res = save_pass_history($id, $password_new);
         }
@@ -575,6 +624,10 @@ if ($delete_profile) {
     );
 }
 
+if ($values) {
+    $user_info = $values;
+}
+
 $table = new stdClass();
 $table->id = 'user_configuration_table';
 $table->width = '100%';
@@ -775,7 +828,7 @@ $values = [
     0  => __('No'),
 ];
 
-$table->data[12][0] = __('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
+$table->data[12][0] = __('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true);
 $values = [
     'Default'        => __('Default'),
     'Visual console' => __('Visual console'),

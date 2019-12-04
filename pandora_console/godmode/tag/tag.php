@@ -31,6 +31,10 @@ $delete = (int) get_parameter('delete_tag', 0);
 $tag_name = (string) get_parameter('tag_name', '');
 $tab = (string) get_parameter('tab', 'list');
 
+if ($delete != 0 && is_metaconsole()) {
+    open_meta_frame();
+}
+
 // Metaconsole nodes
 $servers = false;
 if (is_metaconsole()) {
@@ -300,7 +304,7 @@ if (!empty($result)) {
     } else if ($filter_performed) {
         echo $filter_form;
     } else {
-        include $config['homedir'].'/general/firts_task/tags.php';
+        include $config['homedir'].'/general/first_task/tags.php';
         return;
     }
 }
@@ -316,6 +320,9 @@ echo '<table border=0 cellpadding=0 cellspacing=0 width=100%>';
     echo '</tr>';
 echo '</table>';
 
+if ($delete != 0 && is_metaconsole()) {
+    close_meta_frame();
+}
 
 // ~ enterprise_hook('close_meta_frame');
 ?>

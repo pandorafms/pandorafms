@@ -292,7 +292,7 @@ if (check_login()) {
 
             $data[] = [
                 'ref'               => $referencia,
-                'data_custom_field' => $values['name_custom_fields'],
+                'data_custom_field' => ui_bbcode_to_html($values['name_custom_fields']),
                 'server'            => $values['server_name'],
                 'agent'             => $agent,
                 'IP'                => $values['direccion'],

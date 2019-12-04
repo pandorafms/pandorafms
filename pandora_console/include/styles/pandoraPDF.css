@@ -27,6 +27,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
 table.header_table {
   width: 100%;
 }
@@ -68,6 +69,7 @@ table.table_beauty tbody tr td {
 
 table.databox {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 th.title_table_pdf {

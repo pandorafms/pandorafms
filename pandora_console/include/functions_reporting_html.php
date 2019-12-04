@@ -121,12 +121,9 @@ function html_do_report_info($report)
             </tr>
             <tr>
                 <td><b>'.__('Report date').': </b></td>';
-    if (isset($report['period'])) {
-        if (is_numeric($report['datetime']) && is_numeric($report['period'])) {
-            $html .= '<td>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</td>';
-        }
-
-        $html .= '<td></td>';
+    if (is_numeric($report['datetime']) && is_numeric($report['period']) && ($report['period'] != 0)) {
+        $html .= '<td>'.__('From').' <b>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</b></td>';
+        $html .= '<td>'.__('to').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     } else {
         $html .= '<td>'.__('Items period before').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     }
@@ -251,6 +248,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_sql($table, $item);
             break;
 
+            case 'simple_baseline_graph':
             case 'simple_graph':
                 reporting_html_graph($table, $item);
             break;
@@ -287,22 +285,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_sum_value($table, $item, $mini);
             break;
 
-            case 'MTTR':
-                reporting_html_MTTR_value($table, $item, $mini, true, true);
-            break;
-
-            case 'MTBF':
-                reporting_html_MTBF_value($table, $item, $mini, true, true);
-            break;
-
-            case 'TTO':
-                reporting_html_TTO_value($table, $item, $mini, false, true);
-            break;
-
-            case 'TTRT':
-                reporting_html_TTRT_value($table, $item, $mini, false, true);
-            break;
-
             case 'agent_configuration':
                 reporting_html_agent_configuration($table, $item);
             break;
@@ -313,10 +295,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'prediction_date':
                 reporting_html_prediction_date($table, $item, $mini);
-            break;
-
-            case 'simple_baseline_graph':
-                reporting_html_graph($table, $item);
             break;
 
             case 'netflow_area':
@@ -469,7 +447,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
     if ($mini) {
         $font_size = '1.5';
     } else {
-        $font_size = '3';
+        $font_size = $config['font_size_item_report'];
     }
 
     $metaconsole_on = is_metaconsole();
@@ -2207,12 +2185,15 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
 {
     $table1 = new stdClass();
     $table1->width = '100%';
-    $table1->head = [__('Date')];
+    $table1->head = [
+        __('Date'),
+        __('Data'),
+    ];
     if (!empty($item['keys'])) {
         $table1->head = array_merge($table1->head, $item['keys']);
     }
 
-    $table1->style[0] = 'text-align: left';
+    $table1->style[0] = 'text-align: center';
 
     $table1->data = [];
     foreach ($item['data'] as $data) {
@@ -2512,7 +2493,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
     if ($mini) {
         $font_size = '1.5';
     } else {
-        $font_size = '3';
+        $font_size = $config['font_size_item_report'];
     }
 
     $table->colspan['module']['cell'] = 3;
@@ -2532,7 +2513,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
             true
         ).' '.__('OK').': '.remove_right_zeros(
             number_format(
-                $item['data']['ok']['formated_value'],
+                $item['data']['ok']['value'],
                 $config['graph_precision']
             )
         ).' %</p>';
@@ -2543,7 +2524,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
             true
         ).' '.__('Not OK').': '.remove_right_zeros(
             number_format(
-                $item['data']['fail']['formated_value'],
+                $item['data']['fail']['value'],
                 $config['graph_precision']
             )
         ).' % '.'</p>';
@@ -2728,30 +2709,6 @@ function reporting_html_agent_configuration(
 }
 
 
-function reporting_html_TTRT_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
-
-
-function reporting_html_TTO_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
-
-
-function reporting_html_MTBF_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
-
-
-function reporting_html_MTTR_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
-    reporting_html_value($table, $item, $mini, $only_value, $check_empty);
-}
-
-
 function reporting_html_sum_value(&$table, $item, $mini)
 {
     reporting_html_value($table, $item, $mini);
@@ -2778,26 +2735,138 @@ function reporting_html_min_value(&$table, $item, $mini)
 
 function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
 {
+    global $config;
+
     if ($mini) {
         $font_size = '1.5';
     } else {
-        $font_size = '3';
+        $font_size = $config['font_size_item_report'];
     }
 
-    $table->colspan['data']['cell'] = 3;
-    $table->cellstyle['data']['cell'] = 'text-align: left;';
+    if (isset($item['visual_format']) && $item['visual_format'] != 0
+        && ($item['type'] == 'max_value' || $item['type'] == 'min_value' || $item['type'] == 'avg_value')
+    ) {
+        $table2 = new stdClass();
+        $table2->width = '100%';
+        switch ($item['type']) {
+            case 'max_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Maximun'),
+                ];
+            break;
 
-    $table->data['data']['cell'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: #000000;">';
+            case 'min_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Minimun'),
+                ];
+            break;
 
-    if ($check_empty && empty($item['data']['value'])) {
-        $table->data['data']['cell'] .= __('Unknown');
-    } else if ($only_value) {
-        $table->data['data']['cell'] .= $item['data']['value'];
+            case 'avg_value':
+                $table2->head = [
+                    __('Agent'),
+                    __('Module'),
+                    __('Average'),
+                ];
+            break;
+        }
+
+        $table2->data = [];
+
+        $data = $item['data'][0];
+
+        $row = [
+            $data[__('Agent')],
+            $data[__('Module')],
+            $data[__('Maximun')],
+        ];
+
+        $table2->data[] = $row;
+
+        $table2->title = $item['title'];
+        $table2->titleclass = 'title_table_pdf';
+        $table2->titlestyle = 'text-align:left;';
+        $table->colspan[1][0] = 3;
+        $table->colspan[2][0] = 3;
+        $table->colspan[3][0] = 3;
+
+        array_push($table->data, html_print_table($table2, true));
+        unset($item['data'][0]);
+
+        if ($item['visual_format'] != 1) {
+            $value = $item['data'][1]['value'];
+            array_push($table->data, $value);
+            unset($item['data'][1]);
+        }
+
+        if ($item['visual_format'] != 2) {
+            $table1 = new stdClass();
+            $table1->width = '100%';
+            switch ($item['type']) {
+                case 'max_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Maximun'),
+                    ];
+                break;
+
+                case 'min_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Minimun'),
+                    ];
+                break;
+
+                case 'avg_value':
+                    $table1->head = [
+                        __('Lapse'),
+                        __('Average'),
+                    ];
+                break;
+            }
+
+            $table1->data = [];
+            foreach ($item['data'] as $data) {
+                if (!is_numeric($data[__('Maximun')])) {
+                    $row = [
+                        $data[__('Lapse')],
+                        $data[__('Maximun')],
+                    ];
+                } else {
+                    $row = [
+                        $data[__('Lapse')],
+                        remove_right_zeros(number_format($data[__('Maximun')], $config['graph_precision'])),
+                    ];
+                }
+
+                $table1->data[] = $row;
+            }
+
+            $table1->title = $item['title'];
+            $table1->titleclass = 'title_table_pdf';
+            $table1->titlestyle = 'text-align:left;';
+
+            array_push($table->data, html_print_table($table1, true));
+        }
     } else {
-        $table->data['data']['cell'] .= $item['data']['formated_value'];
-    }
+        $table->colspan['data']['cell'] = 3;
+        $table->cellstyle['data']['cell'] = 'text-align: left;';
 
-    $table->data['data']['cell'] .= '</p>';
+        $table->data['data']['cell'] = '<p style="font: bold '.$font_size.'em Arial, Sans-serif; color: #000000;">';
+
+        if ($check_empty && empty($item['data']['value'])) {
+            $table->data['data']['cell'] .= __('Unknown');
+        } else if ($only_value) {
+            $table->data['data']['cell'] .= $item['data']['value'];
+        } else {
+            $table->data['data']['cell'] .= $item['data']['formated_value'];
+        }
+
+        $table->data['data']['cell'] .= '</p>';
+    }
 }
 
 
@@ -3513,10 +3582,10 @@ function reporting_html_general($table, $item, $pdf=0)
                     }
 
                     $table1->head[3] = __('Value');
-                    $table1->style[0] = 'text-align: left';
-                    $table1->style[1] = 'text-align: left';
-                    $table1->style[2] = 'text-align: left';
-                    $table1->style[3] = 'text-align: left';
+                    $table1->style[0] = 'text-align: center';
+                    $table1->style[1] = 'text-align: center';
+                    $table1->style[2] = 'text-align: center';
+                    $table1->style[3] = 'text-align: center';
 
                     // Begin - Order by agent.
                     foreach ($item['data'] as $key => $row) {
@@ -3647,12 +3716,16 @@ function reporting_html_general($table, $item, $pdf=0)
         $table_summary->head = [];
         $table_summary->head_colspan = [];
         $table_summary->align = [];
+        $table_summary->headstyle = [];
+        $table_summary->headstyle[0] = 'text-align: center;';
+        $table_summary->headstyle[1] = 'text-align: center;';
+        $table_summary->headstyle[2] = 'text-align: center;';
 
-        $table_summary->align[0] = 'left';
-        $table_summary->align[1] = 'right';
-        $table_summary->align[2] = 'right';
-        $table_summary->align[3] = 'left';
-        $table_summary->align[4] = 'right';
+        $table_summary->align[0] = 'center';
+        $table_summary->align[1] = 'center';
+        $table_summary->align[2] = 'center';
+        $table_summary->align[3] = 'center';
+        $table_summary->align[4] = 'center';
 
         $table_summary->head_colspan[0] = 2;
         $table_summary->head[0] = __('Min Value');
@@ -3660,11 +3733,11 @@ function reporting_html_general($table, $item, $pdf=0)
         $table_summary->head_colspan[2] = 2;
         $table_summary->head[2] = __('Max Value');
 
-        $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'];
-        $table_summary->data[0][1] = $item['min']['formated_value'];
+        $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'].str_repeat('&nbsp;', 20).$item['min']['formated_value'];
+        $table_summary->data[0][1] = '';
         $table_summary->data[0][2] = format_for_graph($item['avg_value'], 2);
-        $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'];
-        $table_summary->data[0][4] = $item['max']['formated_value'];
+        $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'].str_repeat('&nbsp;', 20).$item['max']['formated_value'];
+        $table_summary->data[0][4] = '';
 
         if ($pdf !== 0) {
             $return_pdf .= html_print_table($table_summary, true);

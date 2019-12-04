@@ -59,8 +59,10 @@ if ($update_agents) {
         $values['id_grupo'] = get_parameter('group');
     }
 
-    if (get_parameter('interval', 0) != 0) {
-        $values['intervalo'] = get_parameter('interval');
+    if (!(get_parameter('interval_select') == -1 && empty(get_parameter('interval_text')))) {
+        if (get_parameter('interval', 0) != 0) {
+            $values['intervalo'] = get_parameter('interval');
+        }
     }
 
     if (get_parameter('id_os', '') != -1) {
@@ -199,7 +201,7 @@ if ($update_agents) {
             }
 
             // Update the configuration files.
-            if ($result && ($old_interval_value != $values['intervalo'])) {
+            if ($result && ($old_interval_value != $values['intervalo']) && !empty($values['intervalo'])) {
                 enterprise_hook(
                     'config_agents_update_config_token',
                     [
@@ -523,7 +525,7 @@ $table->data[1][1] = html_print_select_groups(false, 'AR', false, 'group', $grou
 
 $table->data[2][0] = __('Interval');
 
-$table->data[2][1] = html_print_extended_select_for_time('interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
+$table->data[2][1] = html_print_extended_select_for_time('interval', 0, '', __('No change'), '0', 10, true, 'width: 150px', false);
 
 $table->data[3][0] = __('OS');
 $table->data[3][1] = html_print_select_from_sql(
@@ -700,7 +702,7 @@ if ($fields === false) {
 foreach ($fields as $field) {
     $data[0] = '<b>'.$field['name'].'</b>';
     $data[0] .= ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
         true
     );
     $combo = [];

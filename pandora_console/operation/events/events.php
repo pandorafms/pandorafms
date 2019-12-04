@@ -197,6 +197,10 @@ $history = get_parameter(
 );
 $section = get_parameter('section', false);
 
+$id_source_event = get_parameter(
+    'filter[id_source_event]',
+    $filter['id_source_event']
+);
 // Ajax responses.
 if (is_ajax()) {
     $get_events = get_parameter('get_events', 0);
@@ -246,6 +250,8 @@ if (is_ajax()) {
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
+                $fields[] = 'te.id_agentmodule';
+                $fields[] = 'te.server_id';
             }
 
             $events = events_get_all(
@@ -278,9 +284,25 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
-                        $tmp->evento = io_safe_output($tmp->evento);
+                        $tmp->meta = is_metaconsole();
+                        if (is_metaconsole()) {
+                            if ($tmp->server_name !== null) {
+                                $tmp->data_server = metaconsole_get_servers($tmp->server_id);
+                                $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
+                            }
+                        }
+
+                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
+                        if (strlen($tmp->evento) >= 255) {
+                            $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
+                        }
+
                         if ($tmp->module_name) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
+                        }
+
+                        if ($tmp->comments) {
+                            $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
@@ -294,6 +316,8 @@ if (is_ajax()) {
                         );
 
                         $tmp->data = format_numeric($tmp->data, 1);
+
+                        $tmp->instructions = events_get_instructions($item);
 
                         $tmp->b64 = base64_encode(json_encode($tmp));
 
@@ -376,6 +400,7 @@ if ($user_filter !== false) {
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
+        $id_source_event = $filter['id_source_event'];
     }
 }
 
@@ -595,9 +620,9 @@ if ($pure) {
 
     // Countdown.
     echo '<li class="nomn">';
-    echo '<div class="vc-refr">';
-    echo '<div class="vc-countdown"></div>';
-    echo '<div id="vc-refr-form">';
+    echo '<div class="events-refr">';
+    echo '<div class="events-countdown"><span id="refrcounter"></span></div>';
+    echo '<div id="events-refr-form">';
     echo __('Refresh').':';
     echo html_print_select(
         get_refresh_time_array(),
@@ -970,7 +995,7 @@ if (is_metaconsole()) {
         'SELECT id, server_name FROM tmetaconsole_setup',
         'server_id',
         $server_id,
-        'script',
+        '',
         __('All'),
         '0',
         true
@@ -998,7 +1023,7 @@ $adv_inputs[] = $in;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    true
 );
 
 $data = html_print_select(
@@ -1017,20 +1042,33 @@ $adv_inputs[] = $in;
 // Only alert events.
 $data = html_print_select(
     [
-        '-1' => __('All'),
-        '0'  => __('Filter alert events'),
-        '1'  => __('Only alert events'),
+        '0' => __('Filter alert events'),
+        '1' => __('Only alert events'),
     ],
     'filter_only_alert',
     $filter_only_alert,
     '',
-    '',
-    '',
+    __('All'),
+    -1,
     true
 );
 $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
+
+if (is_metaconsole()) {
+    $data = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
+    $in .= $data.'</div>';
+    $adv_inputs[] = $in;
+}
 
 // Gap.
 $adv_inputs[] = '<div class="filter_input"></div>';
@@ -1234,6 +1272,14 @@ try {
         ];
     }
 
+    // Identifies column instructions to make it unsortable.
+    if (in_array('instructions', $fields) > 0) {
+        $fields[array_search('instructions', $fields)] = [
+            'text'  => 'instructions',
+            'class' => 'column-instructions',
+        ];
+    }
+
     $evento_id = array_search('evento', $fields);
     if ($evento_id !== false) {
         $fields[$evento_id] = [
@@ -1258,7 +1304,13 @@ try {
     );
 
     // Get column names.
-    $column_names = events_get_column_names($fields);
+    $column_names = events_get_column_names($fields, true);
+
+    foreach ($column_names as $key => $column) {
+        if (is_array($column) && $column['text'] == 'S') {
+            $column_names[$key]['style'] = 'padding-left: 1em !important;';
+        }
+    }
 
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
@@ -1392,6 +1444,7 @@ try {
             'no_sortable_columns' => [
                 -1,
                 -2,
+                'column-instructions',
             ],
             'ajax_postprocess'    => 'process_datatables_item(item)',
             'drawCallback'        => 'process_datatables_callback(this, settings)',
@@ -1505,7 +1558,7 @@ function process_datatables_callback(table, settings) {
                 // Agent id.
                 target = i;
             }
-            if(label == '<?php echo __('Agent name'); ?>') {
+            if(label == '<?php echo addslashes(__('Agent name')); ?>') {
                 // Agent id.
                 target = i;
                 break;
@@ -1571,6 +1624,26 @@ function process_datatables_callback(table, settings) {
 }
 
 function process_datatables_item(item) {
+
+    // Url to go to node from meta.
+    var server_url = '';
+    var hashdata = '';
+    if(item.meta === true){
+        if(typeof item.data_server !== 'undefined' && typeof item.server_url_hash !== 'undefined'){
+            server_url = item.data_server.server_url;
+            hashdata = item.server_url_hash;
+        }
+    }
+
+
+    // Show comments events.
+    item.user_comment = item.comments
+
+    if(typeof item.comments !== 'undefined' && item.comments.length > 80) {
+        item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+        item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
+        item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+    }
 
     // Grouped events.
     if(item.max_id_evento) {
@@ -1806,9 +1879,19 @@ function process_datatables_item(item) {
 
     /* Update column content now to avoid json poisoning. */
 
+
+    // Url to agent view.
+    var url_link = '<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>';
+    var url_link_hash = '';
+    if(item.meta === true){   
+        url_link = server_url+'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
+        url_link_hash = hashdata;
+    }
+
+
     /* Agent name link */
     if (item.id_agente > 0) {
-        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
+        item.agent_name = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
     } else {
         item.agent_name = '';
     }
@@ -1818,11 +1901,11 @@ function process_datatables_item(item) {
         <?php
         if (in_array('agent_name', $fields)) {
             ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
+            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
             <?php
         } else {
             ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
+            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
             <?php
         }
         ?>
@@ -2107,6 +2190,10 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+
+    let refresco = <?php echo get_parameter('refr', 0); ?>;
+    $('#refresh option[value='+refresco+']').attr('selected', 'selected');
+
     /* Filter to a href */
     $('.events_link').on('click', function(e) {
         e.preventDefault();
@@ -2121,6 +2208,7 @@ $(document).ready( function() {
 
         var url = e.currentTarget.href;
         url += 'fb64=' + btoa(JSON.stringify(values));
+        url += '&refr=' + '<?php echo $config['refr']; ?>';
         document.location = url;
 
     });
@@ -2257,6 +2345,60 @@ $(document).ready( function() {
         click_button_remove_tag("without");
     });
     
+
+    //Autorefresh in fullscreen
+    var pure = '<?php echo $pure; ?>';
+    if(pure == 1){
+        var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
+        var until_time='';
+
+        // If autorefresh is disabled, don't show the countdown   
+        var refresh_time = '<?php echo $_GET['refr']; ?>'; 
+        if(refresh_time == '' || refresh_time == 0){
+            $('#refrcounter').toggle();
+        }
+
+        function events_refresh() {
+            until_time = new Date();
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+
+            $("#refrcounter").countdown ({
+                until: until_time,
+                layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>)',
+                labels: ['', '', '', '', '', '', ''],
+                onExpiry: function () {
+                    dt_events.draw(false);
+                }
+            });
+        }
+        // Start the countdown when page is loaded (first time).
+        events_refresh();
+        // Repeat countdown according to refresh_interval.
+        setInterval(events_refresh, refresh_interval);
+
+
+        $("select#refresh").change (function () {
+            var href = window.location.href;
+
+            inputs = $("#events_form :input");
+            values = {};
+            inputs.each(function() {
+                values[this.name] = $(this).val();
+            })
+
+            var newValue = btoa(JSON.stringify(values));           
+            var fb64 = '<?php echo $fb64; ?>';  
+            // Check if the filters have changed.
+            if(fb64 !== newValue){
+                href = href.replace(fb64, newValue);
+            } 
+                
+            href = href.replace('refr='+refresh_time, 'refr='+this.value);
+
+            $(document).attr("location", href);
+        });
+    }
+
 });
 
 
@@ -2280,5 +2422,12 @@ function datetime_picker_callback() {
 
 datetime_picker_callback();
 
+function show_instructions(id){
+    title = "<?php echo __('Instructions'); ?>";
+    $('#hidden_event_instructions_' + id).dialog({
+        title: title,
+        width: 600
+    });
+}
 
 </script>

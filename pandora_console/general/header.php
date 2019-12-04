@@ -328,22 +328,40 @@ if ($config['menu_type'] == 'classic') {
         $header_autorefresh_counter .= $autorefresh_additional;
         $header_autorefresh_counter .= '</div>';
 
+        // Button for feedback pandora.
+        if (enterprise_installed()) {
+            $header_feedback = '<div id="feedback-icon-header">';
+            $header_feedback .= '<div id="modal-feedback-form" style="display:none;"></div>';
+            $header_feedback .= '<div id="msg-header" style="display: none"></div>';
+            $header_feedback .= html_print_image(
+                '/images/feedback-header.png',
+                true,
+                [
+                    'title' => __('Feedback'),
+                    'id'    => 'feedback-header',
+                    'alt'   => __('Feedback'),
+                    'style' => 'cursor: pointer;',
+                ]
+            );
+            $header_feedback .= '</div>';
+        }
+
 
         // Support.
-        if (defined('PANDORA_ENTERPRISE')) {
-            $header_support_link = 'https://support.artica.es/';
+        if (enterprise_installed()) {
+            $header_support_link = $config['custom_support_url'];
         } else {
             $header_support_link = 'https://pandorafms.com/forums/';
         }
 
         $header_support = '<div id="header_support">';
-        $header_support .= '<a href="'.$header_support_link.'" target="_blank">';
+        $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
         $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
         $header_support .= '</a></div>';
 
         // Documentation.
         $header_docu = '<div id="header_docu">';
-        $header_docu .= '<a href="https://wiki.pandorafms.com/index.php?title=Main_Page" target="_blank">';
+        $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
         $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
         $header_docu .= '</a></div>';
 
@@ -388,9 +406,9 @@ if ($config['menu_type'] == 'classic') {
 
         echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
-    </div>    <!-- Closes #table_header_inner -->        
+    </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
 
 
@@ -610,8 +628,41 @@ if ($config['menu_type'] == 'classic') {
     });
 
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
-    
+
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
+
+    /**
+    * Loads modal from AJAX to add feedback.
+    */
+    function show_feedback() {
+        var btn_ok_text = '<?php echo __('Send'); ?>';
+        var btn_cancel_text = '<?php echo __('Cancel'); ?>';
+        var title = '<?php echo __('Report an issue'); ?>';
+        var url = '<?php echo 'tools/diagnostics'; ?>';
+
+        load_modal({
+            target: $('#modal-feedback-form'),
+            form: 'modal_form_feedback',
+            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+            modal: {
+                title: title,
+                ok: btn_ok_text,
+                cancel: btn_cancel_text,
+            },
+            onshow: {
+                page: url,
+                method: 'formFeedback',
+            },
+            onsubmit: {
+                page: url,
+                method: 'createdScheduleFeedbackTask',
+                dataType: 'json',
+            },
+            ajax_callback: generalShowMsg,
+            idMsgCallback: 'msg-header',
+        });
+    }
+
     $(document).ready (function () {
 
         // Check new notifications on a periodic way
@@ -661,7 +712,17 @@ if ($config['menu_type'] == 'classic') {
         $("#ui_close_dialog_titlebar").click(function () {
             $("#agent_access").css("display","");
         });
-        
+
+        <?php if (enterprise_installed()) { ?>
+            // Feedback.
+            $("#feedback-header").click(function () {
+                // Clean DOM.
+                $("#feedback-header").empty();
+                // Function charge Modal.
+                show_feedback();
+            });
+        <?php } ?>
+
         function blinkpubli(){
             $(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
         }

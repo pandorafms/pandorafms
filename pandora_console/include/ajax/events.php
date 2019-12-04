@@ -84,7 +84,7 @@ $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
 $get_comments = get_parameter('get_comments', 0);
 $get_events_fired = (bool) get_parameter('get_events_fired');
-
+$get_id_source_event = get_parameter('get_id_source_event');
 if ($get_comments) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
@@ -253,7 +253,7 @@ if ($save_event_filter) {
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
-
+    $values['id_source_event'] = get_parameter('id_source_event');
     $exists = (bool) db_get_value_filter(
         'id_filter',
         'tevent_filter',
@@ -300,6 +300,7 @@ if ($update_event_filter) {
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
+    $values['id_source_event'] = get_parameter('id_source_event');
 
     if (io_safe_output($values['tag_with']) == '["0"]') {
         $values['tag_with'] = '[]';
@@ -465,6 +466,8 @@ function load_form_filter() {
                     $("#text-id_extra").val(val);
                 if (i == 'user_comment')
                     $("#text-user_comment").val(val);
+                if (i == 'id_source_event')
+                    $("#text-id_source_event").val(val);
             });
             reorder_tags_inputs();
             // Update the info with the loaded filter
@@ -685,7 +688,8 @@ function save_new_filter() {
             "date_to": $("#text-date_to").val(),
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
-            "user_comment": $("#text-user_comment").val()
+            "user_comment": $("#text-user_comment").val(),
+            "id_source_event": $("#text-id_source_event").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -754,7 +758,9 @@ function save_update_filter() {
         "date_to": $("#text-date_to").val(),
         "source": $("#text-source").val(),
         "id_extra": $("#text-id_extra").val(),
-        "user_comment": $("#text-user_comment").val()
+        "user_comment": $("#text-user_comment").val(),
+        "id_source_event": $("#text-id_source_event").val()
+
         },
         function (data) {
             $(".info_box").hide();
@@ -1290,12 +1296,14 @@ if ($get_extended_event) {
 
     $details = events_page_details($event, $server);
 
+    if ($meta) {
+        metaconsole_restore_db();
+    }
+
     if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
 
-    // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct
-    // node connection was lost.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
             metaconsole_connect($server);
@@ -1574,7 +1582,6 @@ if ($get_list_events_agents) {
     $date_from = get_parameter('date_from');
     $date_to = get_parameter('date_to');
     $id_user = $config['id_user'];
-    $server_id = get_parameter('server_id');
 
     $returned_sql = events_sql_events_grouped_agents(
         $id_agent,
@@ -1810,4 +1817,3 @@ if ($get_events_fired) {
 
     echo io_json_mb_encode($return);
 }
-

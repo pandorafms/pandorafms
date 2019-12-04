@@ -842,7 +842,9 @@ foreach ($modules as $module) {
             $module['str_warning'],
             $module['max_critical'],
             $module['min_critical'],
-            $module['str_critical']
+            $module['str_critical'],
+            $module['warning_inverse'],
+            $module['critical_inverse']
         );
     } else {
         $data[7] = '';

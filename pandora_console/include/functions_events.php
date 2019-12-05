@@ -1262,6 +1262,11 @@ function events_get_all(
                 unset($fields[$idx]);
             }
         }
+    } else {
+        $idx = array_search('te.user_comment', $fields);
+        if ($idx !== false) {
+            $fields[$idx] = 'te.user_comment AS comments';
+        }
     }
 
     $sql = sprintf(
@@ -4604,12 +4609,12 @@ function events_page_comments($event, $ajax=false)
                     continue;
                 }
 
-                $comments_array[] = json_decode(io_safe_output($comm), true);
+                $comments_array[] = io_safe_output(json_decode($comm, true));
             }
         } else {
             $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
             // If comments are not stored in json, the format is old.
-            $comments_array[] = json_decode(io_safe_output($comments), true);
+            $comments_array[] = io_safe_output(json_decode($comments, true));
         }
 
         foreach ($comments_array as $comm) {

@@ -12,3 +12,9 @@ div.show_result_interpreter {
   z-index: 1;
   width: 300px;
 }
+
+.more_results {
+  text-align: right;
+  margin-right: 20px;
+  display: grid;
+}

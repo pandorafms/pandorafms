@@ -572,7 +572,7 @@ function grafico_modulo_sparse_data(
 
 
 /**
- * Functions tu create graphs.
+ * Functions to create graphs.
  *
  * @param array $params Details builds graphs. For example:
  * 'agent_module_id'     => $agent_module_id,
@@ -854,6 +854,10 @@ function grafico_modulo_sparse($params)
         if (modules_is_unit_macro($params['unit'])) {
             $params['unit'] = '';
         }
+    }
+
+    if (empty($params['divisor'])) {
+        $params['divisor'] = get_data_multiplier($params['unit']);
     }
 
     if (!$params['array_data_create']) {
@@ -1466,6 +1470,10 @@ function graphic_combined_module(
                 $data_module_graph['c_inv'] = $module_data['critical_inverse'];
                 $data_module_graph['module_id'] = $agent_module_id;
                 $data_module_graph['unit'] = $module_data['unit'];
+
+                $params['unit'] = $module_data['unit'];
+
+                $params['divisor'] = get_data_multiplier($params['unit']);
 
                 // Stract data.
                 $array_data_module = grafico_modulo_sparse_data(

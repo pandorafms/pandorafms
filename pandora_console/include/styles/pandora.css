@@ -6002,3 +6002,13 @@ form#modal_form_feedback ul.wizard li > textarea {
 .pandora_green_bg {
   background-color: #82b92e;
 }
+
+/*
+ * ---------------------------------------------------------------------
+ * - REPORTING VIEWER
+ * ---------------------------------------------------------------------
+ */
+
+#controls_table > tbody > tr > td input {
+  margin-left: 3px;
+}

@@ -312,7 +312,7 @@ function main_net_tools()
     $ips = db_get_all_rows_sql(
         sprintf(
             'SELECT ip FROM taddress WHERE id_a IN (%s)',
-            join($ids)
+            join(',', $ids)
         )
     );
 

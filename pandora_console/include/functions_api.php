@@ -14426,7 +14426,7 @@ function api_set_delete_event_response($id_response, $trash1, $trash2, $returnTy
  * @param mixed      $other. Serialized params
  * @param $returnType
  *    Example:
- *    api.php?op=set&op2=create_event_response&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *    api.php?op=set&op2=create_event_response&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0%7C90&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
  */
 function api_set_create_event_response($trash1, $trash2, $other, $returnType)
 {
@@ -14449,6 +14449,7 @@ function api_set_create_event_response($trash1, $trash2, $other, $returnType)
     $values['new_window'] = $other['data'][7];
     $values['params'] = $other['data'][8];
     $values['server_to_exec'] = $other['data'][9];
+    $values['command_timeout'] = $other['data'][10];
 
     // Error if user has not permission for the group.
     if (!check_acl($config['id_user'], $values['id_group'], 'PM')) {
@@ -14468,7 +14469,7 @@ function api_set_create_event_response($trash1, $trash2, $other, $returnType)
  * @param mixed       $other. Serialized params
  * @param $returnType
  *    Example:
- *    api.php?op=set&op2=update_event_response&id=7&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *    api.php?op=set&op2=update_event_response&id=7&other=response%7Cdescription%20response%7Ctouch%7Ccommand%7C0%7C650%7C400%7C0%7Cresponse%7C0%7C90&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
  */
 function api_set_update_event_response($id_response, $trash1, $other, $returnType)
 {
@@ -14504,6 +14505,7 @@ function api_set_update_event_response($id_response, $trash1, $other, $returnTyp
     $values['new_window'] = $other['data'][7] == '' ? $event_response['new_window'] : $other['data'][7];
     $values['params'] = $other['data'][8] == '' ? $event_response['params'] : $other['data'][8];
     $values['server_to_exec'] = $other['data'][9] == '' ? $event_response['server_to_exec'] : $other['data'][9];
+    $values['command_timeout'] = $other['data'][10] == '' ? $event_response['command_timeout'] : $other['data'][10];
 
     // Error if user has not permission for the group.
     if (!check_acl($config['id_user'], $values['id_group'], 'PM')) {

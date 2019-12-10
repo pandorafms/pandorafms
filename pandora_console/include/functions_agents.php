@@ -1061,11 +1061,11 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, true)
+                    groups_get_id_recursive($parent, false)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, true);
+            $id_group = groups_get_id_recursive($id_group, false);
         }
 
         // Check available groups for target user only if asking for 'All' group.

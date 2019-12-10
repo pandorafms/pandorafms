@@ -128,7 +128,7 @@ if ($get_comments) {
         );
 
         if ($events !== false) {
-            $event = $events[0];
+            $event = $events;
         }
     }
 

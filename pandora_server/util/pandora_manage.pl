@@ -4092,7 +4092,7 @@ sub cli_create_event() {
 			$custom_data = encode_base64 ($custom_data, '');
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4142,7 +4142,7 @@ sub cli_create_event() {
 		$custom_data = encode_base64 ($custom_data, '');
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 
 	}
 }
@@ -4329,7 +4329,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	

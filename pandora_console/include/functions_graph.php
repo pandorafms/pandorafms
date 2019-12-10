@@ -1761,7 +1761,7 @@ function graphic_combined_module(
 
                 $search_in_history_db = db_search_in_history_db($datelimit);
 
-                $temp[$module] = modules_get_agentmodule($module);
+                $temp[$module] = io_safe_output(modules_get_agentmodule($module));
                 $query_last_value = sprintf(
                     '
                     SELECT datos
@@ -1787,7 +1787,7 @@ function graphic_combined_module(
                 if (!empty($params_combined['labels'])
                     && isset($params_combined['labels'][$module])
                 ) {
-                    $label = io_safe_input($params_combined['labels'][$module]);
+                    $label = io_safe_output($params_combined['labels'][$module]);
                 } else {
                     $alias = db_get_value(
                         'alias',

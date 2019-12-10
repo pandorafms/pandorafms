@@ -921,6 +921,8 @@ if ($perform_event_response) {
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
+    $command_timeout = $event_response['command_timeout'];
+
     if (enterprise_installed()) {
         if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
             $commandExclusions = [
@@ -952,7 +954,7 @@ if ($perform_event_response) {
                     break;
                 }
 
-                system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' 90 '.io_safe_output($command).' 2>&1"', $ret_val);
+                system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
             }
         } else {
             switch (PHP_OS) {
@@ -969,7 +971,7 @@ if ($perform_event_response) {
                 break;
             }
 
-            system($timeout_bin.' 90 '.io_safe_output($command).' 2>&1');
+            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
         }
     } else {
         switch (PHP_OS) {
@@ -986,7 +988,13 @@ if ($perform_event_response) {
             break;
         }
 
-        system($timeout_bin.' 90 '.io_safe_output($command).' 2>&1');
+            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
+    }
+
+    if ($ret_val != 0) {
+        echo "<div style='text-align:left'>";
+        echo __('Error executing response');
+        echo '</div><br>';
     }
 
     return;

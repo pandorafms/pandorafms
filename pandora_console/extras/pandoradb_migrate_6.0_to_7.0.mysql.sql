@@ -1776,6 +1776,7 @@ ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0
 -- Table `tevent_response`
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
+ALTER TABLE tevent_response ADD COLUMN command_timeout int(5) unsigned NOT NULL DEFAULT 90;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule`

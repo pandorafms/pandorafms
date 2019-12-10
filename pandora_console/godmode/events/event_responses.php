@@ -42,6 +42,7 @@ switch ($action) {
         $values['new_window'] = get_parameter('new_window');
         $values['params'] = get_parameter('params');
         $values['server_to_exec'] = get_parameter('server_to_exec');
+        $values['command_timeout'] = get_parameter('command_timeout', 90);
 
         $result = event_responses_create_response($values);
 
@@ -65,6 +66,8 @@ switch ($action) {
         $values['params'] = get_parameter('params');
         $values['server_to_exec'] = get_parameter('server_to_exec');
         $response_id = get_parameter('id_response', 0);
+        $values['command_timeout'] = get_parameter('command_timeout', '90');
+
 
         $result = event_responses_update_response($response_id, $values);
 

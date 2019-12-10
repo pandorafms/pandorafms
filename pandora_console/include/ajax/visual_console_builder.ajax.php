@@ -89,6 +89,10 @@ $type = get_parameter('type');
 
 $id_element = get_parameter('id_element', null);
 
+if (!is_numeric($id_element)) {
+    $id_element = intval(preg_replace('/[^0-9]+/', '', $id_element), 10);
+}
+
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
 $background_color = get_parameter('background_color', null);

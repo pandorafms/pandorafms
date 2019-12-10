@@ -774,11 +774,14 @@ if ($config['activate_gis']) {
 }
 
 
+if (enterprise_installed()) {
+    $advanced_div = '<div class="secondary_groups_list">';
+} else {
+    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+}
 
 // General display distribution.
-$table_adv_options = '
-        <div class="secondary_groups_list">
-           '.$adv_secondary_groups_label.'
+$table_adv_options = $advanced_div.$adv_secondary_groups_label.'
             <div class="sg_source">
                 '.$adv_secondary_groups_left.'
             </div>

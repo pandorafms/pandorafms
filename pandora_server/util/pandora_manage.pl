@@ -194,7 +194,7 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent> <use_alias>]", 'Add event');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
@@ -4089,7 +4089,7 @@ sub cli_create_event() {
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			# Base64 encode custom data
-			$custom_data = encode_base64 ($custom_data);
+			$custom_data = encode_base64 ($custom_data, '');
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
 				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
@@ -4139,7 +4139,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		# Base64 encode custom data
-		$custom_data = encode_base64 ($custom_data);
+		$custom_data = encode_base64 ($custom_data, '');
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
 			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);

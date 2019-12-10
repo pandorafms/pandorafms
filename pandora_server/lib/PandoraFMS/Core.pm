@@ -3430,7 +3430,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	if($comment ne '') {
-		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => "an alert", utimestamp => $utimestamp});
+		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => $user_name, utimestamp => $utimestamp});
 		$comment = encode_json \@comment_data;
 	}
 	

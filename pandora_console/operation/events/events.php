@@ -179,6 +179,14 @@ $date_to = get_parameter(
     'filter[date_to]',
     $filter['date_to']
 );
+$time_from = get_parameter(
+    'filter[time_from]',
+    $filter['time_from']
+);
+$time_to = get_parameter(
+    'filter[time_to]',
+    $filter['time_to']
+);
 $source = get_parameter(
     'filter[source]',
     $filter['source']
@@ -201,6 +209,11 @@ $id_source_event = get_parameter(
     'filter[id_source_event]',
     $filter['id_source_event']
 );
+
+if (empty($text_agent) && !empty($id_agent)) {
+    $text_agent = agents_get_alias($id_agent);
+}
+
 // Ajax responses.
 if (is_ajax()) {
     $get_events = get_parameter('get_events', 0);

@@ -377,8 +377,9 @@ if ($load_filter_modal) {
     }
 
     $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    if (!is_metaconsole()) {
-        $table->style[0] = 'width: 50%; width:50%;';
+    $filter_id_width = '200px';
+    if (is_metaconsole()) {
+        $filter_id_width = '150px';
     }
 
     $data = [];
@@ -391,7 +392,12 @@ if ($load_filter_modal) {
         '',
         __('None'),
         0,
-        true
+        true,
+        false,
+        true,
+        '',
+        false,
+        'margin-left:5px; width:'.$filter_id_width.';'
     );
     $data[1] = html_print_submit_button(
         __('Load filter'),
@@ -412,10 +418,11 @@ function show_filter() {
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 450
     });
 }
-
+//aki
 function load_form_filter() {
     jQuery.post (
         "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

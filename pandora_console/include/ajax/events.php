@@ -1304,24 +1304,18 @@ if ($get_extended_event) {
     // If metaconsole switch to node to get details and custom fields.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
-        metaconsole_connect($server);
     } else {
         $server = '';
     }
 
     $details = events_page_details($event, $server);
 
-    if ($meta) {
-        metaconsole_restore_db();
-    }
-
     if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
 
     if ($meta) {
-        $server = metaconsole_get_connection_by_id($server_id);
-            metaconsole_connect($server);
+        metaconsole_connect($server);
     }
 
     $custom_fields = events_page_custom_fields($event);

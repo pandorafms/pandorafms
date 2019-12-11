@@ -842,6 +842,8 @@ ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) 
 	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `lapse` int(11) unsigned NOT NULL DEFAULT '300',
 	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0';
+ALTER TABLE `treport_content_template` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tnews`
@@ -1330,13 +1332,13 @@ ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 33);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 34);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '741');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '742');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1601,6 +1603,8 @@ ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned 
 	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `failover_mode` tinyint(1) NULL DEFAULT '1',
 	MODIFY COLUMN `failover_type` tinyint(1) NULL DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`

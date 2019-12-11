@@ -164,15 +164,23 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     $params['width'] = (int) $_REQUEST['viewport_width'];
     $params['menu'] = false;
 
+    $params_combined = json_decode($_REQUEST['data_combined'], true);
+    $module_list = json_decode($_REQUEST['data_module_list'], true);
+    $type_graph_pdf = $_REQUEST['type_graph_pdf'];
+
     if ((isset($params['width']) === false
         || ($params['width'] <= 0))
     ) {
         $params['width'] = 650;
-    }
+        if ((int) $params['landscape'] === 1) {
+            $params['width'] = 850;
+        }
 
-        $params_combined = json_decode($_REQUEST['data_combined'], true);
-        $module_list = json_decode($_REQUEST['data_module_list'], true);
-        $type_graph_pdf = $_REQUEST['type_graph_pdf'];
+        if ($type_graph_pdf === 'slicebar') {
+            $params['width'] = 150;
+            $params['height'] = 70;
+        }
+    }
 
         echo '<div>';
     switch ($type_graph_pdf) {

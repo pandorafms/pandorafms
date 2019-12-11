@@ -388,7 +388,7 @@ select:-internal-list-box {
 
 @font-face {
   font-family: "FreeSansBoldFont";
-  src: url("../fonts/FreeSansBold.ttf") format("truetype");
+  src: url("../fonts/FreeSans-Bold.ttf") format("truetype");
 }
 
 .FreeSansBold {

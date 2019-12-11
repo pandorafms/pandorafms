@@ -163,7 +163,6 @@ switch ($action) {
         $description = null;
         $sql = null;
         $show_in_same_row = 0;
-        $show_in_landscape = 0;
         $hide_notinit_agents = 0;
         $priority_mode = REPORT_PRIORITY_MODE_OK;
         $failover_mode = 0;
@@ -171,6 +170,8 @@ switch ($action) {
         $server_name = '';
         $server_id = 0;
         $dyn_height = 230;
+        $landscape = false;
+        $pagebreak = false;
     break;
 
     case 'save':
@@ -208,7 +209,6 @@ switch ($action) {
                 $description = null;
                 $sql = null;
                 $show_in_same_row = 0;
-                $show_in_landscape = 0;
                 $hide_notinit_agents = 0;
                 $server_name = '';
                 $server_id = 0;
@@ -236,11 +236,13 @@ switch ($action) {
             $name_from_template = $style['name_label'];
 
             $show_in_same_row = $style['show_in_same_row'];
-            $show_in_landscape = $style['show_in_landscape'];
             $hide_notinit_agents = $style['hide_notinit_agents'];
             $dyn_height = $style['dyn_height'];
             $type = $item['type'];
             $name = $style['name_label'];
+
+            $landscape = $item['landscape'];
+            $pagebreak = $item['pagebreak'];
 
             switch ($type) {
                 case 'event_report_log':
@@ -2554,25 +2556,6 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_in_landscape" style="" class="datos">
-            <td style="font-weight:bold;">
-            <?php
-            echo __('Show in landscape');
-            ?>
-            </td>
-            <td>
-                <?php
-                html_print_checkbox(
-                    'show_in_landscape',
-                    1,
-                    $show_in_landscape,
-                    false,
-                    false
-                );
-                ?>
-            </td>
-        </tr>
-
         <tr id="row_priority_mode" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
@@ -2777,6 +2760,24 @@ $class = 'databox filters';
             html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
             ?>
             </td>
+        </tr>
+
+        <tr id="row_landscape" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Show item in landscape format (only PDF)');
+            ?>
+            </td>
+            <td><?php html_print_checkbox('landscape', 1, $landscape); ?></td>
+        </tr>
+
+        <tr id="row_pagebreak" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Page break at the end of the item (only PDF)');
+            ?>
+            </td>
+            <td><?php html_print_checkbox('pagebreak', 1, $pagebreak); ?></td>
         </tr>
 
     </tbody>
@@ -4472,7 +4473,6 @@ function chooseType() {
     $("#row_lapse_calc").hide();
     $("#row_lapse").hide();
     $("#row_visual_format").hide();
-    $("#row_show_in_landscape").hide();
     $('#row_hide_notinit_agents').hide();
     $('#row_priority_mode').hide();
     $("#row_module_group").hide();

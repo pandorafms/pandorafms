@@ -882,9 +882,9 @@ $row++;
     $table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config['zoom_graph'], '', '', 0, true, false, false);
     $row++;
 
-    $table_chars->data[$row][0] = __('Graph image height');
+    $table_chars->data[$row][0] = __('Graph image height for HTML reports');
     $table_chars->data[$row][0] .= ui_print_help_tip(
-        __('This is the height in pixels of the module graph or custom graph in the reports (both: HTML and PDF)'),
+        __('This is the height in pixels of the module graph or custom graph in the reports (only: HTML)'),
         true
     );
     $table_chars->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
@@ -1050,7 +1050,14 @@ $row++;
     $dirFonts = scandir(_MPDF_TTFONTPATH);
     foreach ($dirFonts as $entryDir) {
         if (strstr($entryDir, '.ttf') !== false) {
-            $_fonts[$entryDir] = $entryDir;
+            $explode = explode('-', $entryDir);
+            if (count($explode) === 1) {
+                $fonts[$entryDir] = substr($entryDir, 0, (strlen($entryDir) - 4));
+            }
+
+            if ($explode[1] === 'Regular.ttf') {
+                $fonts[$explode[0].'.ttf'] = $explode[0];
+            }
         }
     }
 

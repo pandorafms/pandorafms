@@ -4222,6 +4222,10 @@ function events_page_details($event, $server='')
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
+    if (!empty($server) && is_metaconsole()) {
+        metaconsole_restore_db();
+    }
+
     return $details;
 }
 
@@ -4395,6 +4399,15 @@ function events_page_general($event)
 
     global $group_rep;
 
+    $secondary_groups = '';
+    if (isset($event['id_agente']) && $event['id_agente'] > 0) {
+        enterprise_include_once('include/functions_agents.php');
+        $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
+        if (!empty($secondary_groups_selected)) {
+            $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
+        }
+    }
+
     // General.
     $table_general = new stdClass;
     $table_general->cellspacing = 0;
@@ -4520,6 +4533,14 @@ function events_page_general($event)
     }
 
     $table_general->data[] = $data;
+
+    if (!empty($secondary_groups)) {
+        $data = [];
+        $data[0] = __('Secondary groups');
+        $data[1] = $secondary_groups;
+
+        $table_general->data[] = $data;
+    }
 
     $data = [];
     $data[0] = __('Contact');

@@ -112,7 +112,7 @@ if ($config['menu_type'] == 'classic') {
                 }
             }
 
-            $search_bar .= '<input type="text" id="keywords" name="keywords"';
+            $search_bar .= '<input  type="text" id="keywords" name="keywords"';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= "value='".__('Enter keywords to search')."'";
             } else if (strlen($config['search_keywords']) == 0) {
@@ -637,6 +637,8 @@ if ($config['menu_type'] == 'classic') {
     
     function showinterpreter(){
         if( $('#keywords').val() === ''){
+            $('#keywords').addClass('search_input');
+            $('#keywords').removeClass('results-found');
             $('#result_order').hide();
         }else {
             $.ajax({
@@ -656,7 +658,10 @@ if ($config['menu_type'] == 'classic') {
                     console.error("Fatal error in AJAX call to interpreter order", data)
                 }
             });
+            $('#keywords').removeClass('search_input');
+            $('#keywords').addClass('results-found');
             $('#result_order').show();
+
         }
     }
     /**

@@ -466,11 +466,11 @@ $data[1] = html_print_select(
 
 $array_os = [
     'inherited' => __('Inherited'),
-    'linux'     => __('Linux'),
-    'windows'   => __('Windows'),
+    'linux'     => __('SSH'),
+    'windows'   => __('Windows remote'),
 ];
 
-$data[2] = __('Target OS');
+$data[2] = __('Connection method');
 $data[3] = html_print_select(
     $array_os,
     'command_os',

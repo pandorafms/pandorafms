@@ -2204,7 +2204,7 @@ $class = 'databox filters';
         <tr id="row_show_address_agent" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Show address instead module name.').ui_print_help_tip(
+                echo __('Show address instead module name').ui_print_help_tip(
                     __('Show the main address of agent.'),
                     true
                 );

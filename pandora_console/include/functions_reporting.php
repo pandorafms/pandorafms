@@ -887,6 +887,10 @@ function reporting_SLA(
     $edge_interval = 10;
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $slas = db_get_all_rows_field_filter(
             'treport_content_sla_combined',
             'id_report_content',
@@ -1393,6 +1397,10 @@ function reporting_event_top_n(
     $return['top_n'] = $content['top_n_value'];
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         // Get all the related data.
         $sql = sprintf(
             'SELECT id_agent_module, server_name
@@ -2428,6 +2436,9 @@ function reporting_exception(
             WHERE id_report_content = %d',
             $content['id_rc']
         );
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
 
         $exceptions = db_process_sql($sql);
     } else {
@@ -3490,6 +3501,7 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     $return['data'] = [];
 
     if (is_metaconsole()) {
+        metaconsole_restore_db();
         $server_names = metaconsole_get_connection_names();
         if (isset($server_names) && is_array($server_names)) {
             foreach ($server_names as $key => $value) {
@@ -5140,6 +5152,10 @@ function reporting_sql($report, $content)
             $historical_db = $content['historical_db'];
         }
 
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $result = db_get_all_rows_sql($sql, $historical_db);
         if ($result !== false) {
             foreach ($result as $row) {
@@ -6231,6 +6247,10 @@ function reporting_availability($report, $content, $date=false, $time=false)
     }
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $sql = sprintf(
             '
             SELECT id_agent_module,
@@ -6502,6 +6522,10 @@ function reporting_availability_graph($report, $content, $pdf=false)
     $edge_interval = 10;
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $slas = io_safe_output(
             db_get_all_rows_field_filter(
                 'treport_content_sla_combined',
@@ -7106,6 +7130,7 @@ function reporting_increment($report, $content)
                                      AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
         $sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC';
 
+        metaconsole_restore_db();
         $servers = db_get_all_rows_sql(
             'SELECT *
         FROM tmetaconsole_setup
@@ -7211,6 +7236,10 @@ function reporting_general($report, $content)
     $return['show_in_same_row'] = $content['style']['show_in_same_row'];
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $generals = db_get_all_rows_filter(
             'treport_content_item',
             ['id_report_content' => $content['id_rc']]

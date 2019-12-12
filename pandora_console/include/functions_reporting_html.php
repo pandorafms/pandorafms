@@ -161,8 +161,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         $table->class = 'databox filters';
         $table->rowclass = [];
         $table->rowclass[0] = 'datos5';
-        $table->rowclass[1] = '';
-        $table->rowclass[2] = 'datos5';
         $table->data = [];
         $table->head = [];
         $table->colspan = [];

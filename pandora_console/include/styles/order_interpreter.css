@@ -39,3 +39,7 @@ div.show_result_interpreter {
   border-top-right-radius: 50px;
   border-color: transparent;
 }
+
+.list_found {
+  padding-top: 5px;
+}

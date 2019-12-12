@@ -58,6 +58,5 @@ if (method_exists($order_interpreter, $method) === true) {
     $order_interpreter->error('Method not found. ['.$method.']');
 }
 
-
 // Stop any execution.
 exit;

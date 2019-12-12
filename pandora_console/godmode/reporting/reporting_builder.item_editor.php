@@ -241,6 +241,10 @@ switch ($action) {
             $type = $item['type'];
             $name = $style['name_label'];
 
+            if ($name === null || $name === '') {
+                $name = $item['name'];
+            }
+
             $landscape = $item['landscape'];
             $pagebreak = $item['pagebreak'];
 
@@ -3502,6 +3506,30 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 }
 
 
+echo "<div id='message_no_name'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a name.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_agent'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select an agent.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_module'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a module.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_sql_query'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a SQL query.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_url'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a URL.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_interval_option'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please checked a custom interval option.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -3701,6 +3729,12 @@ $(document).ready (function () {
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
+
+        if($('#text-name').val() == ''){
+            dialog_message('#message_no_name');
+                return false;
+        }
+
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3719,25 +3753,108 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
-                    alert( <?php echo "'".__('Please select Agent')."'"; ?> );
+                    dialog_message('#message_no_agent');
                     return false;
                 }
                 break;
+            case 'agent_module':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                      return false;
+                      }
+                      break;
+            case 'inventory':
+            case 'inventory_changes':
+                 if ($("select#id_agents>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
             default:
                 break;
         }
 
-        if($('#text-name').val() == ''){
-            alert( <?php echo "'".__('Please insert a name')."'"; ?> );
-                return false;
+        switch (type){
+            case 'alert_report_module':
+            case 'event_report_module':
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 'prediction_date':
+            case 'projection_graph':
+            case 'monitor_report':
+            case 'module_histogram_graph':
+            case 'avg_value':
+            case 'max_value':
+            case 'min_value':
+            case 'database_serialized':
+            case 'sumatory':
+            case 'historical_data':
+            case 'increment':
+
+                if ($("#id_agent_module").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                break;
+            case 'agent_module':
+                if ($("select#module>option:selected").val() == undefined) {
+                    dialog_message('#message_no_module');
+                    return false;
+                    }
+                    break;
+            case 'inventory':
+            case 'inventory_changes':
+                if ($("select#inventory_modules>option:selected").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'sql':
+                if ($("#textarea_sql").val() == ''
+                && $("select#id_custom>option:selected").val() == 0) {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'sql_graph_pie':
+            case 'sql_graph_hbar':
+            case 'sql_graph_vbar':
+                if ($("#textarea_sql").val() == '') {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'url':
+                if ($("#text-url").val() == '') {
+                    dialog_message('#message_no_url');
+                     return false;
+                }
+                    break;
+            default:
+                break;
         }
 
+        if (type == 'avg_value' || type == 'max_value' || type == 'min_value') {
+            if (($('input:radio[name=visual_format]:checked').val() != 1
+            && $('input:radio[name=visual_format]:checked').val() != 2
+            && $('input:radio[name=visual_format]:checked').val() != 3)
+            && $("#checkbox-lapse_calc").is(":checked")) {
+                dialog_message('#message_no_interval_option');
+                     return false;
+            }
+        }
 
     });
 
     $("#submit-edit_item").click(function () {
         var type = $('#type').val();
+
+        if($('#text-name').val() == ''){
+            dialog_message('#message_no_name');
+                return false;
+        }
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3756,14 +3873,97 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
-                    alert( <?php echo "'".__('Please select Agent')."'"; ?> );
+                    dialog_message('#message_no_agent');
                     return false;
                 }
                 break;
+            case 'agent_module':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
+            case 'inventory':
+                if ($("select#id_agents>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
             default:
                 break;
         }
+
+        switch (type){
+            case 'alert_report_module':
+            case 'event_report_module':
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 'prediction_date':
+            case 'projection_graph':
+            case 'monitor_report':
+            case 'module_histogram_graph':
+            case 'avg_value':
+            case 'max_value':
+            case 'min_value':
+            case 'database_serialized':
+            case 'sumatory':
+            case 'historical_data':
+            case 'increment':
+
+                if ($("#id_agent_module").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                break;
+            case 'agent_module':
+                if ($("select#module>option:selected").val() == undefined) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'inventory':
+                if ($("select#inventory_modules>option:selected").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'sql':
+                if ($("#textarea_sql").val() == ''
+                && $("select#id_custom>option:selected").val() == 0) {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'sql_graph_pie':
+            case 'sql_graph_hbar':
+            case 'sql_graph_vbar':
+                if ($("#textarea_sql").val() == '') {
+                    dialog_message('#message_no_sql_query');
+                     return false;
+                }
+                    break;
+            case 'url':
+                if ($("#text-url").val() == '') {
+                    dialog_message('#message_no_url');
+                     return false;
+                }
+                    break;
+            default:
+                break;
+        }
+
+        if (type == 'avg_value' || type == 'max_value' || type == 'min_value') {
+            if (($('input:radio[name=visual_format]:checked').val() != 1
+            && $('input:radio[name=visual_format]:checked').val() != 2
+            && $('input:radio[name=visual_format]:checked').val() != 3)
+            && $("#checkbox-lapse_calc").is(":checked")) {
+                dialog_message('#message_no_interval_option');
+                     return false;
+            }
+        }
+
     });
 
     $("#checkbox-lapse_calc").change(function () {
@@ -5189,5 +5389,21 @@ function source_change_agents() {
         },
         "json"
     );
+}
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
 }
 </script>

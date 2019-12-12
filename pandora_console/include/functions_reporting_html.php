@@ -160,11 +160,13 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         $table->width = '100%';
         $table->class = 'databox filters';
         $table->rowclass = [];
-        $table->rowclass[0] = 'datos3';
+        $table->rowclass[0] = 'datos5';
+        $table->rowclass[1] = '';
+        $table->rowclass[2] = 'datos5';
         $table->data = [];
         $table->head = [];
         $table->colspan = [];
-        $table->rowstyle = [];
+        $table->rowstyle = ['background-color: #686868'];
 
         if (isset($item['label']) && $item['label'] != '') {
             $id_agent = $item['id_agent'];

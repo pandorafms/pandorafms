@@ -100,6 +100,8 @@ Exported Functions:
 
 =item * C<pandora_self_monitoring>
 
+=item * C<pandora_sample_agent>
+
 =back
 
 =head1 METHODS
@@ -122,6 +124,7 @@ use threads::shared;
 use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Text::ParseWords;
+use Math::Trig;			# Math functions
 
 # Debugging
 #use Data::Dumper;
@@ -202,6 +205,7 @@ our @EXPORT = qw(
 	pandora_get_module_phone_tags
 	pandora_get_module_email_tags
 	pandora_get_os
+	pandora_get_os_by_id
 	pandora_input_password
 	pandora_is_master
 	pandora_mark_agent_for_alert_update
@@ -247,6 +251,7 @@ our @EXPORT = qw(
 	pandora_group_statistics
 	pandora_server_statistics
 	pandora_self_monitoring
+	pandora_sample_agent
 	pandora_process_policy_queue
 	subst_alert_macros
 	subst_column_macros
@@ -443,8 +448,9 @@ B<Returns>:
 
 =cut
 ##########################################################################
-sub pandora_evaluate_alert ($$$$$$$;$$$) {
-	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value, $events, $event) = @_;
+sub pandora_evaluate_alert ($$$$$$$;$$$$) {
+	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh,
+	  $last_data_value, $correlatedItems, $event, $log) = @_;
 	
 	if (defined ($agent)) {
 		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output ($agent->{'nombre'}) . "'.", 10);
@@ -587,9 +593,20 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
 		return $status if ($last_status == 0 && $alert->{'type'} eq 'not_normal');
 	}
-	# Event alert
+	# Correlated alert
 	else {
-		my $rc = enterprise_hook ('evaluate_event_alert', [$pa_config, $dbh, $alert, $events, $event]);
+		my $rc = enterprise_hook (
+			'evaluate_correlated_alert',
+			[
+				$pa_config,
+				$dbh,
+				$alert,
+				$correlatedItems,
+				$event,
+				$log
+			]
+		);
+
 		return $status unless (defined ($rc) && $rc == 1);
 	}
 	
@@ -1125,6 +1142,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_name_tag_ => undef,
 				_all_address_ => undef,
 				'_address_\d+_' => undef,
+				_secondarygroups_ => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -1141,21 +1159,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	#logger($pa_config, "Clean name ".$clean_name, 10);
 	# User defined alert
 	if ($action->{'internal'} == 0) {
-		$macros{_field1_} = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field2_} = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field3_} = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field4_} = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field5_} = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field6_} = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field7_} = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field8_} = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field11_} = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field12_} = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module);
-		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field1_} = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field2_} = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field3_} = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field4_} = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field5_} = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field6_} = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field7_} = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field8_} = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field11_} = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field12_} = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		my @command_args = ();
 		# divide command into words based on quotes and whitespaces
@@ -1186,7 +1204,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Internal Audit
 	} elsif ($clean_name eq "Internal Audit") {
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
 	
 	# Email
@@ -1197,7 +1215,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $cid_data = "CID_IMAGE";
 		my $dataname = "CID_IMAGE.png";
 
-		if ($data =~ /^data:image\/png;base64, /) {
+		if (defined($data) && $data =~ /^data:image\/png;base64, /) {
 			# macro _data_ substitution in case is image.
 			$attach_data_as_image = 1;
 			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
@@ -1363,12 +1381,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Monitoring Event") {
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
-		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
-		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		# Field 1 (event text)
 		my $event_text = $field1;
@@ -1448,13 +1466,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
 		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 		my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
-		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
 		my $api_path = $config_api_path . "/integria/include/api.php";
@@ -1513,8 +1531,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	} elsif ($clean_name eq "Generate Notification") {
 
 		# Translate macros
-		$field3 = subst_alert_macros($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros($field4, \%macros, $pa_config, $dbh, $agent, $module);
+		$field3 = subst_alert_macros($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# If no targets ignore notification
 		if (defined($field1) && defined($field2) && ($field1 ne "" || $field2 ne "")) {
@@ -3259,7 +3276,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
-	                                                 'alias' => $alias,
+	                                                 'alias' => safe_input($alias),
 													 'update_module_count' => 1, # Force to replicate in metaconsole
 	                                                });                           
 	                                                
@@ -3413,7 +3430,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	if($comment ne '') {
-		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => "an alert", utimestamp => $utimestamp});
+		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => $user_name, utimestamp => $utimestamp});
 		$comment = encode_json \@comment_data;
 	}
 	
@@ -4094,7 +4111,7 @@ sub on_demand_macro($$$$$$;$) {
 		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
 
 		my $field_value = "";
-		if ($type_mod eq 3){
+		if ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 ){
 			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
 		}
 		else{
@@ -4114,6 +4131,15 @@ sub on_demand_macro($$$$$$;$) {
 		}
 		
 		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro eq '_secondarygroups_') {
+		my $field_value = '';
+
+		my @groups = get_db_rows ($dbh, 'SELECT tg.nombre from tagent_secondary_group as tsg INNER JOIN tgrupo tg ON tsg.id_group = tg.id_grupo WHERE tsg.id_agent = ?', $module->{'id_agente'});
+		foreach my $element (@groups) {
+			$field_value .= $element->{'nombre'} .",";
+		}
+		chop($field_value);
+		return(defined($field_value)) ? '('.$field_value.')' : '';
 	}
 }
 
@@ -5236,6 +5262,83 @@ sub pandora_self_monitoring ($$) {
 	print XMLFILE $xml_output;
 	close (XMLFILE);
 }
+##########################################################################
+=head2 C<< xml_module_template (I<$module_name>, I<$module_type>, I<$module_data>) >>
+
+Module template for sample agent
+
+=cut
+##########################################################################
+sub xml_module_template ($$$) {
+	my ($module_name, $module_type, $module_data) = @_;
+	my $output = "<module>\n";
+	
+	$module_name = "<![CDATA[".$module_name."]]>" if $module_name =~ /[\s+.]+/;
+	$module_data = "<![CDATA[".$module_data."]]>" if $module_data =~ /[\s+.]+/;
+
+	$output .= "\t<name>".$module_name."</name>\n";
+	$output .= "\t<type>".$module_type."</type>\n";
+	$output .= "\t<data>".$module_data."</data>\n";
+	$output .= "</module>\n";
+
+	return $output;
+}
+##########################################################################
+=head2 C<< pandora_sample_agent (I<$pa_config>) >>
+
+Pandora agent for make sample data
+
+=cut
+##########################################################################
+sub pandora_sample_agent ($) {
+	
+	my ($pa_config) = @_;
+
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	# First line	
+	my $xml_output = "<?xml version='1.0' encoding='UTF-8'?>\n";
+	# Header
+	$xml_output = "<agent_data agent_name='Sample_Agent' agent_alias='Sample_Agent' description='Agent for sample generation purposes' group='Servers' os_name='$OS' os_version='$OS_VERSION' interval='".$pa_config->{'sample_agent_interval'}."' version='" . $pa_config->{'version'} . "' timestamp='".$timestamp."'>\n";
+	# Boolean ever return TRUE
+	$xml_output .= xml_module_template ("Boolean ever true", "generic_proc","1");
+	# Boolean return TRUE at 80% of times
+	my $sample_boolean_mostly_true = 1;
+	$sample_boolean_mostly_true = 0 if rand(9) > 7;
+	$xml_output .= xml_module_template ("Boolean mostly true", "generic_proc",$sample_boolean_mostly_true);
+	# Boolean return false at 80% of times
+	my $sample_boolean_mostly_false = 0;
+	$sample_boolean_mostly_false = 1 if rand(9) > 7;
+	$xml_output .= xml_module_template ("Boolean mostly false", "generic_proc", $sample_boolean_mostly_false);
+	# Boolean ever return FALSE
+	$xml_output .= xml_module_template ("Boolean ever false", "generic_proc","0");
+	# Random integer between 0 and 100
+	$xml_output .= xml_module_template ("Random integer values", "generic_data",int(rand(100)));
+	# Random values obtained with sinusoidal curves between 0 and 100 values
+	my $b = 1;
+	my $sample_serie_curve = 1 + cos(deg2rad($b));
+	$b = $b + rand(20)/10;
+	$b = 0 if ($b > 180);
+	$sample_serie_curve = $sample_serie_curve * $b * 10;
+	$sample_serie_curve =~ s/\,/\./g;
+	$xml_output .= xml_module_template ("Random serie curve", "generic_data", $sample_serie_curve);
+	# String with 10 random characters
+	my $sample_random_text = "";
+	my @characters = ('a'..'z','A'..'Z');
+	for (1...10){
+		$sample_random_text .= $characters[int(rand(@characters))];
+	}
+	$xml_output .= xml_module_template ("Random text", "generic_data_string", $sample_random_text);
+	# End of xml
+	$xml_output .= "</agent_data>";
+	# File path definition
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".sample.".$utimestamp.".data";
+	# Opening, Writing and closing of XML
+	open (my $xmlfile, ">", $filename) or die "[FATAL] Could not open sample XML file for deploying monitorization at '$filename'";
+	print $xmlfile $xml_output;
+	close ($xmlfile);
+
+}
 
 ##########################################################################
 =head2 C<< set_master (I<$pa_config>, I<$dbh>) >> 
@@ -5721,6 +5824,66 @@ sub pandora_get_os ($$) {
 	# Other OS
 	return 10;
 }
+
+########################################################################
+# SUB pandora_get_os_by_id (integer)
+# Returns a chain with the name associated to target id_os.
+########################################################################
+sub pandora_get_os_by_id ($$) {
+	my ($dbh, $os_id) = @_;
+	
+	if (! defined($os_id) || !is_numeric($os_id)) {
+		# Other OS
+		return 'Other';
+	}
+	
+	if ($os_id eq 9) {
+		return 'Windows';
+	}
+	if ($os_id eq 7 ) {
+		return 'Cisco';
+	}
+	if ($os_id eq 2 ) {
+		return 'Solaris';
+	}
+	if ($os_id eq 3 ) {
+		return 'AIX';
+	}
+	if ($os_id eq 5) {
+		return 'HP-UX';
+	}
+	if ($os_id eq 8 ) {
+		return 'Apple';
+	}
+	if ($os_id eq 1 ) {
+		return 'Linux';
+	}
+	if ($os_id eq  1) {
+		return 'Enterasys';
+	}
+	if ($os_id eq  3) {
+		return 'Octopods';
+	}
+	if ($os_id eq  4) {
+		return 'embedded';
+	}
+	if ($os_id eq  5) {
+		return 'android';
+	}
+	if ($os_id eq 4 ) {
+		return 'BSD';
+	}
+		
+	# Search for a custom OS
+	my $os_name = get_db_value ($dbh, 'SELECT name FROM tconfig_os WHERE id_os = ?', $os_id);
+	if (defined ($os_name)) {
+		return $os_name;
+	}
+
+	# Other OS
+	return 'Other';
+}
+
 
 ########################################################################
 # Load module macros (a base 64 encoded JSON document) into the macro

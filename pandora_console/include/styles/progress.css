@@ -4,7 +4,17 @@
   position: relative;
   width: 100%;
   display: inline-block;
+  display: flex;
 }
+
+.progress_main_noborder {
+  height: 2.5em;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
+}
+
 .progress_main:before {
   content: attr(data-label);
   position: absolute;

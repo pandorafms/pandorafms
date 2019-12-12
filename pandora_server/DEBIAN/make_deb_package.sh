@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.739-190930"
+pandora_version="7.0NG.741-191212"
 
 package_cpan=0
 package_pandora=1
@@ -80,7 +80,9 @@ then
 	mkdir -p temp_package/var/spool/pandora/data_in/netflow
 	chmod 770 temp_package/var/spool/pandora/data_in/netflow
 	mkdir -p temp_package/var/spool/pandora/data_in/trans
-        chmod 770 temp_package/var/spool/pandora/data_in/trans
+    chmod 770 temp_package/var/spool/pandora/data_in/trans
+	mkdir -p temp_package/var/spool/pandora/data_in/commands
+    chmod 770 temp_package/var/spool/pandora/data_in/commands
 	mkdir -p temp_package/var/log/pandora/
 	chmod 754 temp_package/var/log/pandora/
 	mkdir -p temp_package/usr/share/pandora_server/conf/

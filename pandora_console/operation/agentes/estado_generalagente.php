@@ -432,7 +432,7 @@ if (!empty($addresses)) {
     // $data_opcional = [];
     $data_opcional[] = '<b>'.__('Other IP addresses').'</b>';
     if (!empty($addresses)) {
-        $data_opcional[] = '<div style="overflow-y: scroll;">'.implode('<br>', $addresses).'</div>';
+        $data_opcional[] = '<div style="overflow-y: scroll; max-height:50px;">'.implode('<br>', $addresses).'</div>';
     }
 }
 
@@ -825,7 +825,15 @@ $table_events = '<div class="white_table_graph" id="table_events">
 
 $agent_contact = html_print_table($table_contact, true);
 
-$agent_info = empty($table_data->data) ? '' : html_print_table($table_data, true);
+if (empty($table_data->data)) {
+    $agent_info = '';
+} else {
+    if (count($table_data->data) === 1 && $config['activate_gis'] && $dataPositionAgent === false) {
+        $agent_info = '';
+    } else {
+        $agent_info = html_print_table($table_data, true);
+    }
+}
 
 $agent_incidents = !isset($table_incident) ? '' : html_print_table($table_incident, true);
 

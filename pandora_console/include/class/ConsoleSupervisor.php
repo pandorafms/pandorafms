@@ -209,6 +209,12 @@ class ConsoleSupervisor
 
         $this->getUMMessages();
 
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
+
     }
 
 
@@ -434,6 +440,12 @@ class ConsoleSupervisor
          */
 
         $this->getUMMessages();
+
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
 
     }
 
@@ -2330,6 +2342,63 @@ class ConsoleSupervisor
                     $source_id
                 );
             }
+        }
+    }
+
+
+    /**
+     * Check if all servers and console versions are the same
+     *
+     * @return void
+     */
+    public function checkConsoleServerVersions()
+    {
+        global $config;
+        // List all servers except satellite server.
+        $server_version_list = db_get_all_rows_sql(
+            sprintf(
+                'SELECT `name`, `version` 
+                FROM tserver 
+                WHERE server_type != %d
+                GROUP BY `version`',
+                SERVER_TYPE_ENTERPRISE_SATELLITE
+            )
+        );
+
+        $missed = 0;
+
+        if (is_array($server_version_list) === true) {
+            foreach ($server_version_list as $server) {
+                if (strpos(
+                    $server['version'],
+                    $config['current_package_enterprise']
+                ) === false
+                ) {
+                    $missed++;
+                    $title_ver_misaligned = __(
+                        '%s version misaligned with Console',
+                        $server['name']
+                    );
+                    $message_ver_misaligned = __(
+                        'Server %s and this console have different versions. This might cause several malfunctions. Please, update this server.',
+                        $server['name']
+                    );
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SERVER.MISALIGNED',
+                            'title'   => __($title_ver_misaligned),
+                            'message' => __($message_ver_misaligned),
+                            'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Cleanup notifications if exception is recovered.
+        if ($missed == 0) {
+            $this->cleanNotifications('NOTIF.SERVER.MISALIGNED');
         }
     }
 

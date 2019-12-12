@@ -71,10 +71,12 @@ switch ($activeTab) {
     break;
 }
 
-$buttons['graph_container'] = [
-    'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graphs containers')]).'</a>',
-];
+if ($enterpriseEnable) {
+    $buttons['graph_container'] = [
+        'active' => false,
+        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graphs containers')]).'</a>',
+    ];
+}
 
 $delete_graph = (bool) get_parameter('delete_graph');
 $view_graph = (bool) get_parameter('view_graph');
@@ -257,11 +259,6 @@ $table_aux = new stdClass();
             $table->cellspacing = 0;
             $table->align = [];
             $table->head = [];
-            if ($report_w || $report_m) {
-                $table->align[5] = 'left';
-                $table->head[5] = html_print_checkbox('all_delete', 0, false, true, false);
-                $table->size[5] = '20px';
-            }
 
             $table->head[0] = __('Graph name');
             $table->head[1] = __('Description');
@@ -280,6 +277,12 @@ $table_aux = new stdClass();
                 $table->size[4] = '90px';
             }
 
+            if ($report_w || $report_m) {
+                $table->align[5] = 'left';
+                $table->head[5] = html_print_checkbox('all_delete', 0, false, true, false);
+                $table->size[5] = '20px';
+            }
+
             $table->data = [];
 
             $result_graphs = array_slice($graphs, $offset, $config['block_size']);
@@ -287,11 +290,7 @@ $table_aux = new stdClass();
             foreach ($result_graphs as $graph) {
                 $data = [];
 
-                if ($report_m) {
-                    $data[5] .= html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
-                }
-
-                $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text($graph['name'], 70).'</a>';
+                $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text(io_safe_output($graph['name']), 70).'</a>';
 
                 $data[1] = ui_print_truncate_text($graph['description'], 70);
 
@@ -307,6 +306,10 @@ $table_aux = new stdClass();
                 if ($report_m) {
                     $data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
                     return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
+                }
+
+                if ($report_m) {
+                    $data[5] .= html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
                 }
 
                 array_push($table->data, $data);
@@ -334,7 +337,7 @@ $table_aux = new stdClass();
 
             echo '</div>';
         } else {
-            include_once $config['homedir'].'/general/firts_task/custom_graphs.php';
+            include_once $config['homedir'].'/general/first_task/custom_graphs.php';
         }
 
         ?>

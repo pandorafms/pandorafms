@@ -1,16 +1,18 @@
 <?php
+/**
+ * Pandora FMS - http://pandorafms.com.
+ * * ==================================================
+ * * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+ * * Please see http://pandorafms.org for full contribution list
+ * * This program is free software; you can redistribute it and/or
+ * * modify it under the terms of the GNU General Public License
+ * * as published by the Free Software Foundation; version 2
+ * * This program is distributed in the hope that it will be useful,
+ * * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once 'include/functions_modules.php';
@@ -23,19 +25,19 @@ require_once 'include/graphs/functions_utils.php';
 check_login();
 
 $ip_target = (string) get_parameter('ip_target', $ipAgent);
-// Host
+// Host.
 $plugin_user = (string) get_parameter('plugin_user', 'Administrator');
-// Username
+// Username.
 $plugin_pass = io_safe_output(get_parameter('plugin_pass', ''));
-// Password
+// Password.
 $tcp_send = (string) get_parameter('tcp_send');
-// Namespace
+// Namespace.
 $server_to_exec = get_parameter('server_to_exec', 0);
 
-// See if id_agente is set (either POST or GET, otherwise -1
+// See if id_agente is set (either POST or GET, otherwise -1.
 $id_agent = $idAgent;
 
-// Get passed variables
+// Get passed variables.
 $wmiexplore = (int) get_parameter('wmiexplore', 0);
 $create_modules = (int) get_parameter('create_modules', 0);
 
@@ -44,24 +46,30 @@ $interfaces = [];
 $wmi_client = 'wmic';
 
 if ($wmiexplore) {
-    $wmi_command = wmi_compose_query($wmi_client, $plugin_user, $plugin_pass, $ip_target, $tcp_send);
+    $wmi_command = wmi_compose_query(
+        $wmi_client,
+        $plugin_user,
+        $plugin_pass,
+        $ip_target,
+        $tcp_send
+    );
 
     $processes = [];
     $services = [];
     $disks = [];
     $network_component_groups = [];
 
-    // Processes
+    // Processes.
     $wmi_processes = $wmi_command.' "select Name from Win32_Process"';
     $processes_name_field = 1;
-
-    if (enterprise_installed()) {
-        if ($server_to_exec != 0) {
-            $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address']." '".$wmi_processes."'", $output, $rc);
-        } else {
-            exec($wmi_processes, $output);
-        }
+    if (enterprise_installed() && (int) $server_to_exec != 0) {
+        $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
+        exec(
+            'ssh pandora_exec_proxy@'.$server_data['ip_address']."
+            '".$wmi_processes."'",
+            $output,
+            $rc
+        );
     } else {
         exec($wmi_processes, $output);
     }
@@ -73,7 +81,7 @@ if ($wmiexplore) {
 
     if (!$fail) {
         foreach ($output as $index => $row) {
-            // First and second rows are Class and column names, ignore it
+            // First and second rows are Class and column names, ignore it.
             if ($index < 2) {
                 continue;
             }
@@ -81,60 +89,74 @@ if ($wmiexplore) {
             $row_exploded = explode('|', $row);
 
             if (!in_array($row_exploded[$processes_name_field], $processes)) {
-                $processes[$row_exploded[$processes_name_field]] = $row_exploded[$processes_name_field];
+                if (preg_match('/ERROR/', $row_exploded[$processes_name_field])) {
+                    $processes[$row_exploded[$prouycesses_name_field]] = __('None');
+                } else {
+                    $processes[$row_exploded[$prouycesses_name_field]] = $row_exploded[$processes_name_field];
+                }
             }
         }
 
         unset($output);
 
-        // Services
+        // Services.
         $wmi_services = $wmi_command.' "select Name from Win32_Service"';
         $services_name_field = 0;
         $services_check_field = 1;
 
-        if (enterprise_installed()) {
-            if ($server_to_exec != 0) {
-                $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-                exec('ssh pandora_exec_proxy@'.$server_data['ip_address']." '".$wmi_services."'", $output, $rc);
-            } else {
-                exec($wmi_services, $output);
-            }
+        if (enterprise_installed() && (int) $server_to_exec != 0) {
+                $server_data = db_get_row(
+                    'tserver',
+                    'id_server',
+                    $server_to_exec
+                );
+                exec(
+                    'ssh pandora_exec_proxy@'.$server_data['ip_address']."
+                    '".$wmi_services."'",
+                    $output,
+                    $rc
+                );
         } else {
             exec($wmi_services, $output);
         }
 
         foreach ($output as $index => $row) {
-            // First and second rows are Class and column names, ignore it
+            // First and second rows are Class and column names, ignore it.
             if ($index < 2) {
                 continue;
             }
 
-            $row_exploded = explode('|', $row);
+                $row_exploded = explode('|', $row);
 
             if (!in_array($row_exploded[$services_name_field], $services)) {
-                $services[$row_exploded[$services_name_field]] = $row_exploded[$services_name_field];
+                if (preg_match('/ERROR/', $row_exploded[$services_name_field])) {
+                    $services[$row_exploded[$services_name_field]] = __('None');
+                } else {
+                    $services[$row_exploded[$services_name_field]] = $row_exploded[$services_name_field];
+                }
             }
         }
 
         unset($output);
 
-        // Disks
+        // Disks.
         $wmi_disks = $wmi_command.' "Select DeviceID from Win32_LogicalDisk"';
         $disks_name_field = 0;
 
-        if (enterprise_installed()) {
-            if ($server_to_exec != 0) {
-                $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-                exec('ssh pandora_exec_proxy@'.$server_data['ip_address']." '".$wmi_disks."'", $output, $rc);
-            } else {
-                exec($wmi_disks, $output);
-            }
+        if (enterprise_installed() && (int) $server_to_exec != 0) {
+            $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
+            exec(
+                'ssh pandora_exec_proxy@'.$server_data['ip_address']."
+                '".$wmi_disks."'",
+                $output,
+                $rc
+            );
         } else {
             exec($wmi_disks, $output);
         }
 
         foreach ($output as $index => $row) {
-            // First and second rows are Class and column names, ignore it
+            // First and second rows are Class and column names, ignore it.
             if ($index < 2) {
                 continue;
             }
@@ -142,14 +164,21 @@ if ($wmiexplore) {
             $row_exploded = explode('|', $row);
 
             if (!in_array($row_exploded[$disks_name_field], $services)) {
-                $disk_string = sprintf(__('Free space on %s'), $row_exploded[$disks_name_field]);
-                $disks[$row_exploded[$disks_name_field]] = $disk_string;
+                if (preg_match('/ERROR/', $row_exploded[$disks_name_field])) {
+                    $disks[$row_exploded[$disks_name_field]] = __('None');
+                } else {
+                    $disk_string = sprintf(
+                        __('Free space on %s'),
+                        $row_exploded[$disks_name_field]
+                    );
+                    $disks[$row_exploded[$disks_name_field]] = $disk_string;
+                }
             }
         }
 
         unset($output);
 
-        // WMI Components
+        // WMI Components.
         $network_component_groups = network_components_get_groups(MODULE_WMI);
     }
 }
@@ -163,14 +192,14 @@ if ($create_modules) {
     $components = [];
 
     foreach ($modules as $module) {
-        // Split module data to get type
+        // Split module data to get type.
         $module_exploded = explode('_', $module);
         $type = $module_exploded[0];
 
-        // Delete type from module data
+        // Delete type from module data.
         unset($module_exploded[0]);
 
-        // Rebuild module data
+        // Rebuild module data.
         $module = implode('_', $module_exploded);
 
         switch ($type) {
@@ -189,10 +218,14 @@ if ($create_modules) {
             case 'component':
                 $components[] = $module;
             break;
+
+            default:
+                // Default.
+            break;
         }
     }
 
-    // Common values for WMI modules
+    // Common values for WMI modules.
     $values = [
         'ip_target'   => $ip_target,
         'tcp_send'    => $tcp_send,
@@ -202,7 +235,10 @@ if ($create_modules) {
     ];
 
     if ($server_to_exec != 0) {
-        $sql = sprintf('SELECT server_type FROM tserver WHERE id_server = %d', $server_to_exec);
+        $sql = sprintf(
+            'SELECT server_type FROM tserver WHERE id_server = %d',
+            $server_to_exec
+        );
         $row = db_get_row_sql($sql);
 
         if ($row['server_type'] == 13) {
@@ -210,89 +246,146 @@ if ($create_modules) {
         }
     }
 
-    // Create Service modules
+    // Create Service modules.
     $services_values = $values;
 
     $services_values['snmp_community'] = 'Running';
-    // Key string
+    // Key string.
     $services_values['tcp_port'] = 1;
-    // Field number (Running/Stopped)
+    // Field number (Running/Stopped).
     $services_values['id_tipo_modulo'] = 2;
-    // Generic boolean
-    $services_result = wmi_create_wizard_modules($id_agent, $services, 'services', $services_values, 0, 0, $server_to_exec);
+    // Generic boolean.
+    $services_result = wmi_create_wizard_modules(
+        $id_agent,
+        $services,
+        'services',
+        $services_values,
+        0,
+        0,
+        $server_to_exec
+    );
 
-    // Create Process modules
+    // Create Process modules.
     $processes_values = $values;
 
     $processes_values['tcp_port'] = 0;
-    // Field number (OID)
+    // Field number (OID).
     $processes_values['id_tipo_modulo'] = 2;
-    // Generic boolean
-    $processes_result = wmi_create_wizard_modules($id_agent, $processes, 'processes', $processes_values, 0, 0, $server_to_exec);
+    // Generic boolean.
+    $processes_result = wmi_create_wizard_modules(
+        $id_agent,
+        $processes,
+        'processes',
+        $processes_values,
+        0,
+        0,
+        $server_to_exec
+    );
 
-    // Create Space on disk modules
+    // Create Space on disk modules.
     $disks_values = $values;
 
     $disks_values['tcp_port'] = 1;
-    // Free space in bytes
+    // Free space in bytes.
     $disks_values['id_tipo_modulo'] = 1;
-    // Generic numeric
+    // Generic numeric.
     $disks_values['unit'] = 'Bytes';
-    // Unit
-    $disks_result = wmi_create_wizard_modules($id_agent, $disks, 'disks', $disks_values, 0, 0, $server_to_exec);
+    // Unit.
+    $disks_result = wmi_create_wizard_modules(
+        $id_agent,
+        $disks,
+        'disks',
+        $disks_values,
+        0,
+        0,
+        $server_to_exec
+    );
 
-    // Create modules from component
+    // Create modules from component.
     $components_values = $values;
 
     $components_values['id_agente'] = $id_agent;
 
-    $components_result = wmi_create_module_from_components($components, $components_values, 0, 0, $server_to_exec);
+    $components_result = wmi_create_module_from_components(
+        $components,
+        $components_values,
+        0,
+        0,
+        $server_to_exec
+    );
 
 
-    // Errors/Success messages
+    // Errors/Success messages.
     $success_message = '';
     $error_message = '';
     if (!empty($services_result)) {
         if (count($services_result[NOERR]) > 0) {
-            $success_message .= sprintf(__('%s service modules created succesfully'), count($services_result[NOERR])).'<br>';
+            $success_message .= sprintf(
+                __('%s service modules created succesfully'),
+                count($services_result[NOERR])
+            ).'<br>';
         }
 
         if (count($services_result[ERR_GENERIC]) > 0) {
-            $error_message .= sprintf(__('Error creating %s service modules'), count($services_result[ERR_GENERIC])).'<br>';
+            $error_message .= sprintf(
+                __('Error creating %s service modules'),
+                count($services_result[ERR_GENERIC])
+            ).'<br>';
         }
     }
 
     if (!empty($processes_result)) {
         if (count($processes_result[NOERR]) > 0) {
-            $success_message .= sprintf(__('%s process modules created succesfully'), count($processes_result[NOERR])).'<br>';
+            $success_message .= sprintf(
+                __('%s process modules created succesfully'),
+                count($processes_result[NOERR])
+            ).'<br>';
         }
 
         if (count($processes_result[ERR_GENERIC]) > 0) {
-            $error_message .= sprintf(__('Error creating %s process modules'), count($processes_result[ERR_GENERIC])).'<br>';
+            $error_message .= sprintf(
+                __('Error creating %s process modules'),
+                count($processes_result[ERR_GENERIC])
+            ).'<br>';
         }
     }
 
     if (!empty($disks_result)) {
         if (count($disks_result[NOERR]) > 0) {
-            $success_message .= sprintf(__('%s disk space modules created succesfully'), count($disks_result[NOERR])).'<br>';
+            $success_message .= sprintf(
+                __('%s disk space modules created succesfully'),
+                count($disks_result[NOERR])
+            ).'<br>';
         }
 
         if (count($disks_result[ERR_GENERIC]) > 0) {
-            $error_message .= sprintf(__('Error creating %s disk space modules'), count($disks_result[ERR_GENERIC])).'<br>';
+            $error_message .= sprintf(
+                __('Error creating %s disk space modules'),
+                count($disks_result[ERR_GENERIC])
+            ).'<br>';
         }
     }
 
     if (!empty($components_result)) {
         if (count($components_result[NOERR]) > 0) {
-            $success_message .= sprintf(__('%s modules created from components succesfully'), count($components_result[NOERR])).'<br>';
+            $success_message .= sprintf(
+                __('%s modules created from components succesfully'),
+                count($components_result[NOERR])
+            ).'<br>';
         }
 
         if (count($components_result[ERR_GENERIC]) > 0) {
-            $error_message .= sprintf(__('Error creating %s modules from components'), count($components_result[ERR_GENERIC])).'<br>';
+            $error_message .= sprintf(
+                __('Error creating %s modules from components'),
+                count($components_result[ERR_GENERIC])
+            ).'<br>';
         }
 
         if (count($components_result[ERR_EXIST]) > 0) {
-            $error_message .= sprintf(__('%s modules already exist'), count($components_result[ERR_EXIST])).'<br>';
+            $error_message .= sprintf(
+                __('%s modules already exist'),
+                count($components_result[ERR_EXIST])
+            ).'<br>';
         }
     }
 
@@ -306,7 +399,9 @@ if ($create_modules) {
 }
 
 echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-echo "<form method='post' id='wmi_form' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
+echo "<form method='post' id='wmi_form'
+     action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&
+     tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
 
 $table->width = '100%';
 $table->cellpadding = 0;
@@ -314,18 +409,47 @@ $table->cellspacing = 0;
 $table->class = 'databox filters';
 
 $table->data[0][0] = '<b>'.__('Target IP').'</b>';
-$table->data[0][1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
+$table->data[0][1] = html_print_input_text(
+    'ip_target',
+    $ip_target,
+    '',
+    15,
+    60,
+    true
+);
 
 $table->data[0][2] = '<b>'.__('Namespace').'</b>';
-$table->data[0][3] = html_print_input_text('tcp_send', $tcp_send, '', 15, 60, true);
+$table->data[0][3] = html_print_input_text(
+    'tcp_send',
+    $tcp_send,
+    '',
+    15,
+    60,
+    true
+);
 
 $table->data[1][0] = '<b>'.__('Username').'</b>';
-$table->data[1][1] = html_print_input_text('plugin_user', $plugin_user, '', 15, 60, true);
+$table->data[1][1] = html_print_input_text(
+    'plugin_user',
+    $plugin_user,
+    '',
+    15,
+    60,
+    true
+);
 
 $table->data[1][2] = '<b>'.__('Password').'</b>';
-$table->data[1][3] = html_print_input_password('plugin_pass', $plugin_pass, '', 15, 60, true);
+$table->data[1][3] = html_print_input_password(
+    'plugin_pass',
+    $plugin_pass,
+    '',
+    15,
+    60,
+    true
+);
 
-$table->data[1][3] .= '<div id="spinner_modules" style="float: left; display: none;">'.html_print_image('images/spinner.gif', true).'</div>';
+$table->data[1][3] .= '<div id="spinner_modules" style="float: left; display: none;">
+                      '.html_print_image('images/spinner.gif', true).'</div>';
 html_print_input_hidden('wmiexplore', 1);
 
 $servers_to_exec = [];
@@ -346,13 +470,27 @@ if (enterprise_installed()) {
 }
 
 $table->data[2][0] = '<b>'.__('Server to execute command').'</b>';
-$table->data[2][1] = html_print_select($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
+$table->data[2][1] = html_print_select(
+    $servers_to_exec,
+    'server_to_exec',
+    $server_to_exec,
+    '',
+    '',
+    '',
+    true
+);
 
 html_print_table($table);
 
 echo "<div style='text-align:right; width:".$table->width."'>";
-echo '<span id="oid_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>';
-html_print_submit_button(__('WMI Explore'), 'wmi_explore', false, ['class' => 'sub next']);
+echo '<span id="oid_loading" class="invisible">
+'.html_print_image('images/spinner.gif', true).'</span>';
+html_print_submit_button(
+    __('WMI Explore'),
+    'wmi_explore',
+    false,
+    ['class' => 'sub next']
+);
 echo '</div><br>';
 
 if ($wmiexplore && $fail) {
@@ -365,23 +503,25 @@ echo '</form>';
 
 if ($wmiexplore && !$fail) {
     echo '<br><span id ="none_text" style="display: none;">'.__('None').'</span>';
-    echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
+    echo "<form method='post'
+         action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente
+         &tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
     echo '<span id="form_interfaces">';
 
     html_print_input_hidden('create_modules', 1);
     html_print_input_hidden('ip_target', $ip_target);
-    // Host
+    // Host.
     html_print_input_hidden('plugin_user', $plugin_user);
-    // User
+    // User.
     html_print_input_hidden('plugin_pass', $plugin_pass);
-    // Password
+    // Password.
     html_print_input_hidden('tcp_send', $tcp_send);
-    // Namespace
+    // Namespace.
     html_print_input_hidden('server_to_exec', $server_to_exec);
 
     $table->width = '100%';
 
-    // Mode selector
+    // Mode selector.
     $modes = [];
     $modes['services'] = __('Services');
     $modes['processes'] = __('Processes');
@@ -406,7 +546,7 @@ if ($wmiexplore && !$fail) {
     $table->data[1][2] = '<b>'.__('Modules').'</b>';
     $table->cellstyle[1][2] = 'text-align: center;';
 
-    // Components list
+    // Components list.
     $table->data[2][0] = '<div class="wizard_mode_form wizard_mode_components">';
     $table->data[2][0] .= __('Filter by group').'<br>';
     $table->data[2][0] .= html_print_select(
@@ -439,7 +579,7 @@ if ($wmiexplore && !$fail) {
     );
     $table->data[2][0] .= '</div>';
 
-    // Services list
+    // Services list.
     $table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_services">';
     $table->data[2][0] .= html_print_select(
         $services,
@@ -456,8 +596,7 @@ if ($wmiexplore && !$fail) {
         'width: 300px;'
     );
     $table->data[2][0] .= '</div>';
-
-    // Processes list
+    // Processes list.
     $table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_processes">';
     $table->data[2][0] .= html_print_select(
         $processes,
@@ -474,11 +613,13 @@ if ($wmiexplore && !$fail) {
         'width: 300px;'
     );
     $table->data[2][0] .= '</div>';
-    $table->data[2][0] .= '<span id="no_component" class="invisible error wizard_mode_form wizard_mode_components">';
+    $table->data[2][0] .= '<span id="no_component" 
+    class="invisible error wizard_mode_form wizard_mode_components">';
+
     $table->data[2][0] .= __('No component was found');
     $table->data[2][0] .= '</span>';
 
-    // Disks list
+    // Disks list.
     $table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_disks">';
     $table->data[2][0] .= html_print_select(
         $disks,
@@ -498,27 +639,79 @@ if ($wmiexplore && !$fail) {
     $table->cellstyle[2][0] = 'vertical-align: bottom; text-align: center;';
 
 
-    // Components arrow
-    $table->data[2][1] = '<div class="wizard_mode_form wizard_mode_components wizard_mode_components_arrow clickable">'.html_print_image('images/darrowright.png', true, ['title' => __('Add to modules list')]).'</div>';
-    // Services arrow
-    $table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_services wizard_mode_services_arrow clickable">'.html_print_image('images/darrowright.png', true, ['title' => __('Add to modules list')]).'</div>';
-    // Processes arrow
-    $table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_processes wizard_mode_processes_arrow clickable">'.html_print_image('images/darrowright.png', true, ['title' => __('Add to modules list')]).'</div>';
-    // Disks arrow
-    $table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_disks wizard_mode_disks_arrow clickable">'.html_print_image('images/darrowright.png', true, ['title' => __('Add to modules list')]).'</div>';
+    // Components arrow.
+    $table->data[2][1] = '<div 
+    class="wizard_mode_form wizard_mode_components wizard_mode_components_arrow clickable">
+    '.html_print_image(
+        'images/darrowright.png',
+        true,
+        ['title' => __('Add to modules list')]
+    ).'</div>';
+    // Services arrow.
+    $table->data[2][1] .= '<div
+    class="wizard_mode_form wizard_mode_services wizard_mode_services_arrow clickable">
+    '.html_print_image(
+        'images/darrowright.png',
+        true,
+        ['title' => __('Add to modules list')]
+    ).'</div>';
+    // Processes arrow.
+    $table->data[2][1] .= '<div
+    class="wizard_mode_form wizard_mode_processes wizard_mode_processes_arrow clickable">
+    '.html_print_image(
+        'images/darrowright.png',
+        true,
+        ['title' => __('Add to modules list')]
+    ).'</div>';
+    // Disks arrow.
+    $table->data[2][1] .= '<div
+    class="wizard_mode_form wizard_mode_disks wizard_mode_disks_arrow clickable">
+    '.html_print_image(
+        'images/darrowright.png',
+        true,
+        ['title' => __('Add to modules list')]
+    ).'</div>';
 
 
-    $table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">'.html_print_image('images/cross.png', true, ['title' => __('Remove from modules list')]).'</div>';
+    $table->data[2][1] .= '<br><br>
+    <div class="wizard_mode_delete_arrow clickable">
+    '.html_print_image(
+        'images/cross.png',
+        true,
+        ['title' => __('Remove from modules list')]
+    ).'</div>';
     $table->cellstyle[2][1] = 'vertical-align: middle; text-align: center;';
 
-    $table->data[2][2] = html_print_select([], 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px; height: 100%;');
-    $table->data[2][2] .= html_print_input_hidden('agent', $id_agent, true);
+    $table->data[2][2] = html_print_select(
+        [],
+        'module[]',
+        0,
+        false,
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width:300px; height: 100%;'
+    );
+    $table->data[2][2] .= html_print_input_hidden(
+        'agent',
+        $id_agent,
+        true
+    );
     $table->cellstyle[2][2] = 'vertical-align: top; text-align: center;';
 
     html_print_table($table);
 
     echo "<div style='text-align:right; width:".$table->width."'>";
-    html_print_submit_button(__('Create modules'), 'create_modules_btn', false, ['class' => 'sub add']);
+    html_print_submit_button(
+        __('Create modules'),
+        'create_modules_btn',
+        false,
+        ['class' => 'sub add']
+    );
     echo '</div>';
     unset($table);
 
@@ -651,4 +844,3 @@ $(document).ready (function () {
 
 /* ]]> */
 </script>
-

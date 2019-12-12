@@ -63,9 +63,20 @@ if (is_ajax()) {
 
     $test_address = get_parameter('test_address', '');
 
-    $res = enterprise_hook('send_email_attachment', [$test_address, __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'), __('Testing Pandora FMS email'), null]);
+    $res = enterprise_hook(
+        'send_email_attachment',
+        [
+            $test_address,
+            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            __('Testing Pandora FMS email'),
+            null,
+        ]
+    );
 
     echo $res;
+
+    // Exit after ajax response.
+    exit();
 }
 
 $table = new StdClass();
@@ -387,6 +398,52 @@ print_email_test_modal_window($uniqid);
 
 html_print_input_hidden('update_config', 1);
 html_print_table($table_mail_conf);
+
+
+echo '</fieldset>';
+
+echo '<fieldset>';
+echo '<legend>'.__('WebSocket settings').'</legend>';
+
+$t = new StdClass();
+$t->data = [];
+$t->width = '100%';
+$t->class = 'databox filters';
+$t->data = [];
+$t->style[0] = 'font-weight: bold';
+
+$t->data[0][0] = __('Bind address');
+$t->data[0][1] = html_print_input_text(
+    'ws_bind_address',
+    $config['ws_bind_address'],
+    '',
+    30,
+    100,
+    true
+);
+
+$t->data[1][0] = __('Bind port');
+$t->data[1][2] = html_print_input_text(
+    'ws_port',
+    $config['ws_port'],
+    '',
+    30,
+    100,
+    true
+);
+
+$t->data[2][0] = __('WebSocket proxy url').ui_print_help_tip(__('If you had configured a wsproxy set here target URL (for instance ws://your.public.fqdn/ws).'), true);
+$t->data[2][2] = html_print_input_text(
+    'ws_proxy_url',
+    $config['ws_proxy_url'],
+    '',
+    30,
+    100,
+    true
+);
+
+html_print_input_hidden('update_config', 1);
+html_print_table($t);
 
 
 echo '</fieldset>';

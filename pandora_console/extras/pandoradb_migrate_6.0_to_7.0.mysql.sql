@@ -60,6 +60,10 @@ ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_next` bigint(20) NOT NULL def
 ALTER TABLE `tlocal_component` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tlocal_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 
+ALTER TABLE `tlocal_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
+
 -- -----------------------------------------------------
 -- Table `tpolicy_modules`
 -- -----------------------------------------------------
@@ -138,6 +142,10 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE `tpolicy_modules` ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tpolicy_modules` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
+ALTER TABLE `tpolicy_modules` MODIFY COLUMN `ip_target` varchar(100) NULL DEFAULT '',
+	MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicies`
@@ -187,6 +195,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 
 ALTER TABLE `tpolicy_agents` ADD COLUMN `id_node` int(10) NOT NULL DEFAULT '0';
 ALTER TABLE `tpolicy_agents` ADD UNIQUE(`id_policy`, `id_agent`, `id_node`);
+ALTER TABLE `tpolicy_agents` DROP INDEX `id_policy`, ADD UNIQUE INDEX `id_policy` (`id_policy`, `id_agent`, `id_node`), DROP INDEX `id_policy_2`;
 
 -- -----------------------------------------------------
 -- Table `tpolicy_groups`
@@ -377,6 +386,12 @@ ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbhost` text;
 ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbport` text;
 ALTER TABLE tmetaconsole_setup ADD COLUMN `meta_dbname` text;
 
+ALTER TABLE `tmetaconsole_setup` MODIFY COLUMN `meta_dbuser` text NULL,
+	MODIFY COLUMN `meta_dbpass` text NULL,
+	MODIFY COLUMN `meta_dbhost` text NULL,
+	MODIFY COLUMN `meta_dbport` text NULL,
+	MODIFY COLUMN `meta_dbname` text NULL;
+
 -- ---------------------------------------------------------------------
 -- Table `tprofile_view`
 -- ---------------------------------------------------------------------
@@ -564,6 +579,39 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `tevent_rule` ADD COLUMN `group_recursion` INT(1) unsigned default 0;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_agent` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_agent` text COMMENT 'Operator for agent';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_usuario` text COMMENT 'Operator for id_usuario';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_grupo` text COMMENT 'Operator for id_grupo';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_evento` text COMMENT 'Operator for evento';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_event_type` text COMMENT 'Operator for event_type';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_module` text COMMENT 'Operator for module';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_alert` text COMMENT 'Operator for alert';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_criticity` text COMMENT 'Operator for criticity';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_user_comment` text COMMENT 'Operator for user_comment';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_tag` text COMMENT 'Operator for id_tag';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_content` text COMMENT 'Operator for log_content';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_source` text COMMENT 'Operator for log_source';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator for log_agent';
+ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '';
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL;
+
+UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
+UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
+UPDATE `tevent_rule` SET `operator_id_grupo` = "REGEX" WHERE `id_grupo` > 0;
+UPDATE `tevent_rule` SET `operator_evento` = "REGEX" WHERE `evento` != '';
+UPDATE `tevent_rule` SET `operator_event_type` = "REGEX" WHERE `event_type` != '';
+UPDATE `tevent_rule` SET `operator_module` = "REGEX" WHERE `module` != '';
+UPDATE `tevent_rule` SET `operator_alert` = "REGEX" WHERE `alert` != '';
+UPDATE `tevent_rule` SET `operator_criticity` = "REGEX" WHERE `criticity` != '99';
+UPDATE `tevent_rule` SET `operator_user_comment` = "REGEX" WHERE `user_comment` != '';
+UPDATE `tevent_rule` SET `operator_id_tag` = "REGEX" WHERE `id_tag` > 0;
+UPDATE `tevent_rule` SET `operator_log_content` = "REGEX" WHERE `log_content` != '';
+UPDATE `tevent_rule` SET `operator_log_source` = "REGEX" WHERE `log_source` != '';
+UPDATE `tevent_rule` SET `operator_log_agent` = "REGEX" WHERE `log_agent` != '';
 
 -- -----------------------------------------------------
 -- Table `tevent_alert`
@@ -611,6 +659,9 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
+ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
@@ -713,6 +764,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`footer` MEDIUMTEXT default NULL,
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
+	`agent_regex` varchar(600) NOT NULL default '',
+
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -764,23 +817,6 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
--- Table `tnews`
--- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tnews` (
-	`id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-	`author` varchar(255)  NOT NULL DEFAULT '',
-	`subject` varchar(255)  NOT NULL DEFAULT '',
-	`text` TEXT NOT NULL,
-	`timestamp` DATETIME  NOT NULL DEFAULT 0,
-	`id_group` int(10) NOT NULL default 0,
-	`modal` tinyint(1) DEFAULT 0,
-	`expire` tinyint(1) DEFAULT 0,
-	`expire_timestamp` DATETIME  NOT NULL DEFAULT 0,
-	PRIMARY KEY(`id_news`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
 ALTER TABLE treport_content_template ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
 ALTER TABLE treport_content_template ADD COLUMN `lapse_calc` tinyint(1) default '0';
 ALTER TABLE treport_content_template ADD COLUMN `lapse` int(11) default '300';
@@ -802,6 +838,28 @@ ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEF
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
+ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `lapse` int(11) unsigned NOT NULL DEFAULT '300',
+	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0';
+ALTER TABLE `treport_content_template` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
+
+-- ----------------------------------------------------------------------
+-- Table `tnews`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnews` (
+	`id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`author` varchar(255)  NOT NULL DEFAULT '',
+	`subject` varchar(255)  NOT NULL DEFAULT '',
+	`text` TEXT NOT NULL,
+	`timestamp` DATETIME  NOT NULL DEFAULT 0,
+	`id_group` int(10) NOT NULL default 0,
+	`modal` tinyint(1) DEFAULT 0,
+	`expire` tinyint(1) DEFAULT 0,
+	`expire_timestamp` DATETIME  NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_news`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `treport_content_sla_com_temp` (treport_content_sla_combined_template)
@@ -913,6 +971,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1048,6 +1107,14 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+ALTER TABLE `tmetaconsole_agent` ADD COLUMN `remote` tinyint(1) NOT NULL DEFAULT '0',
+	ADD COLUMN `cascade_protection_module` int(10) unsigned NULL DEFAULT '0',
+	ADD COLUMN `transactional_agent` tinyint(1) NOT NULL DEFAULT '0',
+	ADD COLUMN `alias` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+	MODIFY COLUMN `update_secondary_groups` tinyint(1) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0',
+	ADD INDEX `id_tagente_idx` (`id_tagente`);
+
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`
 -- ---------------------------------------------------------------------
@@ -1103,6 +1170,8 @@ CREATE TABLE IF NOT EXISTS `titem` (
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `titem` MODIFY COLUMN `source_data` varchar(250) NULL DEFAULT '';
+
 -- ---------------------------------------------------------------------
 -- Table `tmap`
 -- ---------------------------------------------------------------------
@@ -1129,7 +1198,6 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-
 -- ---------------------------------------------------------------------
 -- Table `trel_item`
 -- ---------------------------------------------------------------------
@@ -1146,6 +1214,10 @@ CREATE TABLE IF NOT EXISTS `trel_item` (
 	`deleted` int(1) unsigned NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `trel_item` MODIFY COLUMN `id_map` int(10) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `id_parent_source_data` int(10) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `id_child_source_data` int(10) unsigned NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_templates`
@@ -1170,6 +1242,11 @@ ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
+	MODIFY COLUMN `al_field12` text NOT NULL,
+	MODIFY COLUMN `al_field13` text NOT NULL,
+	MODIFY COLUMN `al_field14` text NOT NULL,
+	MODIFY COLUMN `al_field15` text NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`
@@ -1184,6 +1261,7 @@ ALTER TABLE talert_snmp_action ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
 -- Table `tserver`
 -- ----------------------------------------------------------------------
 ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
+ALTER TABLE `tserver` MODIFY COLUMN `server_keepalive` int(11) NOT NULL DEFAULT '0';
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`
@@ -1195,6 +1273,11 @@ ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL de
 ALTER TABLE `tagente_estado` ADD COLUMN `ff_normal` int(4) unsigned default '0';
 ALTER TABLE `tagente_estado` ADD COLUMN `ff_warning` int(4) unsigned default '0';
 ALTER TABLE `tagente_estado` ADD COLUMN `ff_critical` int(4) unsigned default '0';
+ALTER TABLE `tagente_estado` MODIFY COLUMN `datos` mediumtext NOT NULL,
+	MODIFY COLUMN `known_status` tinyint(4) NULL DEFAULT '0',
+	MODIFY COLUMN `last_known_status` tinyint(4) NULL DEFAULT '0',
+	MODIFY COLUMN `last_dynamic_update` bigint(20) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `last_unknown_update` bigint(20) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1218,6 +1301,11 @@ ALTER TABLE talert_actions ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "
 ALTER TABLE talert_actions ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_actions` MODIFY COLUMN `field11` text NOT NULL,
+	MODIFY COLUMN `field12` text NOT NULL,
+	MODIFY COLUMN `field13` text NOT NULL,
+	MODIFY COLUMN `field14` text NOT NULL,
+	MODIFY COLUMN `field15` text NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_commands`
@@ -1231,15 +1319,12 @@ UPDATE `talert_actions` SET `field4` = 'text/html', `field4_recovery` = 'text/ht
 
 DELETE FROM `talert_commands` WHERE `id` = 11;
 
+ALTER TABLE `talert_commands` MODIFY COLUMN `id_group` mediumint(8) unsigned NULL DEFAULT '0';
+
 -- ---------------------------------------------------------------------
 -- Table `tmap`
 -- ---------------------------------------------------------------------
-ALTER TABLE tmap MODIFY `id_user` varchar(128);
-
--- ---------------------------------------------------------------------
--- Table `titem`
--- ---------------------------------------------------------------------
-ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
+ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`
@@ -1247,13 +1332,13 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 32);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 34);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '739');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '742');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1314,6 +1399,9 @@ ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `user_comment` text NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
+ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
+
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
@@ -1328,7 +1416,11 @@ ALTER TABLE `tusuario` ADD COLUMN `default_custom_view` int(10) unsigned NULL de
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_user` VARCHAR(60);
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_pass` VARCHAR(45);
 ALTER TABLE `tusuario` ADD COLUMN `ehorus_user_level_enabled` TINYINT(1);
-
+ALTER TABLE `tusuario` MODIFY COLUMN `default_event_filter` int(10) unsigned NOT NULL DEFAULT '0',
+	ADD INDEX `fk_filter_id` (`id_filter`),
+	ADD CONSTRAINT `fk_filter_id` FOREIGN KEY `fk_filter_id` (`id_filter`) REFERENCES `tevent_filter` (`id_filter`) ON DELETE SET NULL ON UPDATE RESTRICT,
+	DROP FOREIGN KEY `fk_id_filter`,
+	DROP INDEX `fk_id_filter`;
 
 
 -- ---------------------------------------------------------------------
@@ -1339,14 +1431,23 @@ ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned d
 ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `ff_normal` int(4) unsigned default '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `ff_warning` int(4) unsigned default '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `ff_critical` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
+	DROP COLUMN `ff_warning`,
+	DROP COLUMN `ff_critical`,
+	MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_datos MODIFY `datos` double(22,5);
+ALTER TABLE `tagente_datos` DROP INDEX `data_index1`, ADD INDEX `data_index1` (`id_agente_modulo`, `utimestamp`);
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_datos_string`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tagente_datos_string` MODIFY COLUMN `datos` mediumtext NOT NULL, DROP INDEX `data_string_index_1`, ADD INDEX `data_string_index_1` (`id_agente_modulo`, `utimestamp`);
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos_inc`
@@ -1362,6 +1463,7 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_min` int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
+ALTER TABLE `tnetwork_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`
@@ -1375,6 +1477,12 @@ ALTER TABLE tagente ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL defa
 ALTER TABLE `tagente` ADD COLUMN `cps` int NOT NULL default 0;
 
 UPDATE tagente SET tagente.alias = tagente.nombre;
+
+ALTER TABLE `tagente` MODIFY COLUMN `remote` tinyint(1) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `cascade_protection_module` int(10) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `update_secondary_groups` tinyint(1) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `alias` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tservice`
@@ -1395,6 +1503,8 @@ ALTER TABLE tlayout MODIFY `name` varchar(600) NOT NULL;
 
 UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 
+ALTER TABLE `tlayout` MODIFY COLUMN `is_favourite` int(10) unsigned NOT NULL DEFAULT '0';
+
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
@@ -1413,6 +1523,13 @@ ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_as_service_warning` 
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `linked_layout_node_id` INT(10) NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `cache_expiration` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `tlayout_data` MODIFY COLUMN `type_graph` varchar(50) NOT NULL DEFAULT 'area',
+	MODIFY COLUMN `label_position` varchar(50) NOT NULL DEFAULT 'down',
+	MODIFY COLUMN `linked_layout_node_id` int(10) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `linked_layout_status_type` enum('default','weight','service') NULL DEFAULT 'default',
+	MODIFY COLUMN `element_group` int(10) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `linked_layout_status_as_service_warning` float(20,3) NOT NULL DEFAULT '0.000',
+	MODIFY COLUMN `linked_layout_status_as_service_critical` float(20,3) NOT NULL DEFAULT '0.000';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -1434,6 +1551,7 @@ ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL de
 ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `modules_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE `tgraph` MODIFY COLUMN `percentil` tinyint(1) unsigned NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1479,12 +1597,21 @@ ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
 ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
 ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
+ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `lapse` int(11) unsigned NOT NULL DEFAULT '300',
+	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	MODIFY COLUMN `failover_mode` tinyint(1) NULL DEFAULT '1',
+	MODIFY COLUMN `failover_type` tinyint(1) NULL DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ---------------------------------------------------------------------
 ALTER TABLE tmodule_relationship ADD COLUMN `id_server` varchar(100) NOT NULL DEFAULT '';
 ALTER TABLE `tmodule_relationship` ADD COLUMN `type` ENUM('direct', 'failover') DEFAULT 'direct';
+ALTER TABLE `tmodule_relationship` MODIFY COLUMN `id_server` varchar(100) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_module`
@@ -1515,6 +1642,14 @@ ALTER TABLE trecon_task ADD `wmi_enabled` tinyint(1) unsigned DEFAULT '0';
 ALTER TABLE trecon_task ADD `auth_strings` text;
 ALTER TABLE trecon_task ADD `autoconfiguration_enabled` tinyint(1) unsigned default '0';
 ALTER TABLE trecon_task ADD `summary` text;
+ALTER TABLE `trecon_task` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `snmp_enabled` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `vlan_enabled` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `wmi_enabled` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `auth_strings` text NULL,
+	MODIFY COLUMN `autoconfiguration_enabled` tinyint(1) unsigned NULL DEFAULT '0',
+	MODIFY COLUMN `summary` text NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`
@@ -1627,12 +1762,14 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
 ALTER TABLE tgraph_source ADD COLUMN `field_order` int(10) NOT NULL default 0;
+ALTER TABLE `tgraph_source` MODIFY COLUMN `id_server` int(11) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `field_order` int(10) NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`
 -- ---------------------------------------------------------------------
 
-ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) BINARY NOT NULL default '';
+ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) NOT NULL default '';
 
 -- ---------------------------------------------------------------------
 -- Table `tserver`
@@ -1643,6 +1780,7 @@ ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0
 -- Table `tevent_response`
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
+ALTER TABLE tevent_response ADD COLUMN command_timeout int(5) unsigned NOT NULL DEFAULT 90;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule`
@@ -1654,7 +1792,12 @@ INSERT INTO tmodule VALUES (8, 'Wux module');
 -- Table `ttipo_modulo`
 -- ---------------------------------------------------------------------
 
-INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
+INSERT INTO `ttipo_modulo` VALUES
+(25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -1808,6 +1951,7 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
 ALTER TABLE tagente ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tusuario_perfil ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_agent_secondary_group` ADD INDEX `id_tagente` (`id_tagente`);
 
 -- ---------------------------------------------------------------------
 -- Table `tautoconfig`
@@ -1907,9 +2051,15 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_node_id` INT(10) NOT NULL default 0,
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tlayout_template_data` MODIFY COLUMN `linked_layout_node_id` int(10) NOT NULL DEFAULT '0',
+	MODIFY COLUMN `linked_layout_status_type` enum('default','weight','service') NULL DEFAULT 'default',
+	MODIFY COLUMN `linked_layout_status_as_service_warning` float(20,3) NOT NULL DEFAULT '0.000',
+	MODIFY COLUMN `linked_layout_status_as_service_critical` float(20,3) NOT NULL DEFAULT '0.000';
 
 -- ---------------------------------------------------------------------
 -- Table `tlog_graph_models`
@@ -1956,6 +2106,7 @@ INSERT INTO tlog_graph_models VALUES (7, 'Users&#x20;login',
 
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE `treport` ADD COLUMN `orientation` varchar(25) NOT NULL default 'vertical';
+ALTER TABLE `treport` MODIFY COLUMN `hidden` tinyint(1) NULL DEFAULT '0' AFTER `non_interactive`;
 
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';
@@ -2092,7 +2243,8 @@ ALTER TABLE `tmensajes` ADD COLUMN `citicity` INT(10) UNSIGNED DEFAULT '0';
 ALTER TABLE `tmensajes` ADD COLUMN `id_source` BIGINT(20) UNSIGNED NOT NULL;
 ALTER TABLE `tmensajes` ADD COLUMN `subtype` VARCHAR(255) DEFAULT '';
 ALTER TABLE `tmensajes` ADD CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `tmensajes` DROP COLUMN `id_usuario_destino`,
+	ADD UNIQUE INDEX `id_mensaje` (`id_mensaje`);
 
 -- ----------------------------------------------------------------------
 -- Table `tnotification_user`
@@ -2194,7 +2346,7 @@ ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT 
 -- Add column in table `tnetflow_filter`
 -- ----------------------------------------------------------------------
 ALTER TABLE `tnetflow_filter` DROP COLUMN `output`;
-
+ALTER TABLE `tnetflow_filter` MODIFY COLUMN `router_ip` text NOT NULL;
 
 -- ----------------------------------------------------------------------
 -- Update table `tuser_task`
@@ -2212,6 +2364,17 @@ INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES
 -- ----------------------------------------------------------------------
 
  ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown','always','not_normal');
+
+ALTER TABLE `talert_templates` MODIFY COLUMN `field11` text NOT NULL,
+	MODIFY COLUMN `field12` text NOT NULL,
+	MODIFY COLUMN `field13` text NOT NULL,
+	MODIFY COLUMN `field14` text NOT NULL,
+	MODIFY COLUMN `field15` text NOT NULL,
+	MODIFY COLUMN `field11_recovery` text NOT NULL,
+	MODIFY COLUMN `field12_recovery` text NOT NULL,
+	MODIFY COLUMN `field13_recovery` text NOT NULL,
+	MODIFY COLUMN `field14_recovery` text NOT NULL,
+	MODIFY COLUMN `field15_recovery` text NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tvisual_console_items_cache`
@@ -2240,7 +2403,7 @@ CREATE TABLE `tvisual_console_elements_cache` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
 	`identifier` varchar(100) NOT NULL,
 	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
-	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM',
 	`username` text,
 	`password` text,
 	`extra_1` text,
@@ -2293,3 +2456,55 @@ CREATE TABLE `tdeployment_hosts` (
   FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
     ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command` (
+  `id` SERIAL,
+  `name` varchar(150) NOT NULL,
+  `timeout` int(10) unsigned NOT NULL default 30,
+  `retries` int(10) unsigned NOT NULL default 3,
+  `preconditions` text,
+  `script` text,
+  `postconditions` text,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `id_group` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command_target`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command_target` (
+  `id` SERIAL,
+  `rcmd_id` bigint unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
+  `errorlevel` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+=========
+-- ---------------------------------------------------------------------
+-- Table `trecon_script`
+-- ---------------------------------------------------------------------
+ALTER TABLE `trecon_script` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tusuario_perfil`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tusuario_perfil` MODIFY COLUMN `no_hierarchy` tinyint(1) NOT NULL DEFAULT '0';
+
+
+-- Extra tnetwork_component
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('N.&#x20;total&#x20;processes','Number&#x20;of&#x20;running&#x20;processes&#x20;in&#x20;a&#x20;Windows&#x20;system.',11,34,0,0,300,0,'tasklist&#x20;/NH&#x20;|&#x20;find&#x20;/c&#x20;/v&#x20;&quot;&quot;','','','',6,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','windows','',0,0,0.000000000000000,'','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Free&#x20;space&#x20;in&#x20;C:','Free&#x20;space&#x20;available&#x20;in&#x20;C:',11,34,0,0,300,0,'powershell&#x20;$obj=&#40;Get-WmiObject&#x20;-class&#x20;&quot;Win32_LogicalDisk&quot;&#x20;-namespace&#x20;&quot;root&#92;CIMV2&quot;&#41;&#x20;;&#x20;$obj.FreeSpace[0]&#x20;*&#x20;100&#x20;/$obj.Size[0]','','','',4,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','windows','',0,0,0.000000000000000,'%','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;uptime','System&#x20;uptime',43,36,0,0,300,0,'uptime&#x20;|sed&#x20;s/us&#92;.*$//g&#x20;|&#x20;sed&#x20;s/,&#92;.*$//g','','','',4,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','linux','',0,0,0.000000000000000,'','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;processes','Running&#x20;processes',43,34,0,0,300,0,'ps&#x20;elf&#x20;|&#x20;wc&#x20;-l','','','',6,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','linux','',0,0,0.000000000000000,'','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;system&#x20;load','Current&#x20;load&#x20;&#40;5&#x20;min&#41;',43,34,0,0,300,0,'uptime&#x20;|&#x20;awk&#x20;&#039;{print&#x20;$&#40;NF-1&#41;}&#039;&#x20;|&#x20;tr&#x20;-d&#x20;&#039;,&#039;','','','',6,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','linux','',0,0,0.000000000000000,'','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;available&#x20;memory&#x20;percent','Available&#x20;memory&#x20;%',43,34,0,0,300,0,'free&#x20;|&#x20;grep&#x20;Mem&#x20;|&#x20;awk&#x20;&#039;{print&#x20;$NF/$2&#x20;*&#x20;100}&#039;','','','',4,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','linux','',0,0,0.000000000000000,'%','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;available&#x20;disk&#x20;/','Available&#x20;free&#x20;space&#x20;in&#x20;mountpoint&#x20;/',43,34,0,0,300,0,'df&#x20;/&#x20;|&#x20;tail&#x20;-n&#x20;+2&#x20;|&#x20;awk&#x20;&#039;{print&#x20;$&#40;NF-1&#41;}&#039;&#x20;|&#x20;tr&#x20;-d&#x20;&#039;%&#039;','','','',4,2,0,'','','',0,0,1,0.00,0.00,'0.00',0.00,0.00,'',0,'','inherited','',0,0,0.000000000000000,'','nowizard','','nowizard','0','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);

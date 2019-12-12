@@ -230,7 +230,7 @@ sub data_consumer ($$) {
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
-		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '0' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists
 		if (! -f $file_name) {
@@ -602,8 +602,12 @@ sub process_xml_data ($$$$$) {
 	# Process events
 	process_events_dataserver($pa_config, $data, $agent_id, $group_id, $dbh);
 
-	# Process disovery modules
+	# Process discovery modules
 	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process command responses
+	enterprise_hook('process_rcmd_report', [$pa_config, $data, $server_id, $dbh, $agent_id, $timestamp]);
+
 }
 
 ##########################################################################

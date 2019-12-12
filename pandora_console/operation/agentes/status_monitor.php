@@ -1541,7 +1541,9 @@ if (!empty($result)) {
                 $row['str_warning'],
                 $row['max_critical'],
                 $row['min_critical'],
-                $row['str_critical']
+                $row['str_critical'],
+                $row['warning_inverse'],
+                $row['critical_inverse']
             );
 
             if (is_numeric($row['datos']) && !modules_is_string_type($row['module_type'])) {
@@ -1716,10 +1718,9 @@ if (!empty($result)) {
     }
 }
 
-// End Build List Result
-//
+// End Build List Result.
 echo "<div id='monitor_details_window'></div>";
-// strict user hidden
+// Strict user hidden.
 echo '<div id="strict_hidden" style="display:none;">';
 html_print_input_text('strict_user_hidden', $strict_user);
 echo '</div>';
@@ -1756,8 +1757,8 @@ $('#moduletype').click(function() {
     );
 
     return false;
-  });
-    
+});
+
 $('#ag_group').change (function () {
     strict_user = $('#text-strict_user_hidden').val();
     

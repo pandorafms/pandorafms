@@ -557,7 +557,7 @@ $row++;
 
 
     // For 5.1 Autohidden menu feature
-    $table_styles->data['autohidden'][0] = __('Autohidden menu');
+    $table_styles->data['autohidden'][0] = __('Automatically hide submenu');
     $table_styles->data['autohidden'][1] = html_print_checkbox_switch(
         'autohidden_menu',
         1,
@@ -882,9 +882,9 @@ $row++;
     $table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config['zoom_graph'], '', '', 0, true, false, false);
     $row++;
 
-    $table_chars->data[$row][0] = __('Graph image height');
+    $table_chars->data[$row][0] = __('Graph image height for HTML reports');
     $table_chars->data[$row][0] .= ui_print_help_tip(
-        __('This is the height in pixels of the module graph or custom graph in the reports (both: HTML and PDF)'),
+        __('This is the height in pixels of the module graph or custom graph in the reports (only: HTML)'),
         true
     );
     $table_chars->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
@@ -1032,6 +1032,12 @@ $row++;
     );
 
     $row++;
+
+    $table_other->data[$row][0] = __('Font size for items reports');
+    $table_other->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." size='1' name='font_size_item_report' min='1' max='9' step='0.1'>";
+
+    $row++;
+
     // ----------------------------------------------------------------------
     $dirItems = scandir($config['homedir'].'/images/custom_logo');
     foreach ($dirItems as $entryDir) {
@@ -1044,7 +1050,14 @@ $row++;
     $dirFonts = scandir(_MPDF_TTFONTPATH);
     foreach ($dirFonts as $entryDir) {
         if (strstr($entryDir, '.ttf') !== false) {
-            $_fonts[$entryDir] = $entryDir;
+            $explode = explode('-', $entryDir);
+            if (count($explode) === 1) {
+                $fonts[$entryDir] = substr($entryDir, 0, (strlen($entryDir) - 4));
+            }
+
+            if ($explode[1] === 'Regular.ttf') {
+                $fonts[$explode[0].'.ttf'] = $explode[0];
+            }
         }
     }
 

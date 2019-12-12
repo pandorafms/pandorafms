@@ -546,7 +546,7 @@ if ($create_modules) {
             $module_values = $common_values;
 
             $module_values['descripcion'] = sprintf(__('Check if the process %s is running or not'), $process);
-            $module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_proc');
+            $module_values['id_tipo_modulo'] = modules_get_type_id('generic_proc');
             $module_values['id_modulo'] = MODULE_PLUGIN;
             $module_values['id_plugin'] = $plugin['id'];
 

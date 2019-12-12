@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.739
-%define release     190930
+%define version     7.0NG.741
+%define release     191212
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -19,7 +19,7 @@ Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip perl
+Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
 AutoReq:            0
 Provides:           %{name}-%{version}
 
@@ -90,6 +90,11 @@ fi
 if [ ! -e /etc/pandora/collections ]; then
 	mkdir /etc/pandora/collections
 fi
+
+if [ ! -e /etc/pandora/commands ]; then
+	mkdir /etc/pandora/commands
+fi
+
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 
 # Enable the service on SystemD

@@ -275,7 +275,7 @@ if ($new_agent) {
 
 $table_alias = '<div class="label_select"><p class="input_label">'.__('Alias').': '.ui_print_help_tip(__('Characters /,\,|,%,#,&,$ will be ignored'), true).'</p>';
 $table_alias .= '<div class='.$label_select_parent.'>';
-$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true).'</div>';
+$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true, false, true).'</div>';
 if ($new_agent) {
     $table_alias .= '<div class="label_select_child_right">'.html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true).__('Use alias as name').'</div>';
 }
@@ -765,7 +765,7 @@ $table_adv_agent_icon .= html_print_select(
 ).'</div>';
 
 if ($config['activate_gis']) {
-    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Ignore new GIS data:').'</p>';
+    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Update new GIS data:').'</p>';
     if ($new_agent) {
         $update_gis_data = true;
     }
@@ -774,11 +774,14 @@ if ($config['activate_gis']) {
 }
 
 
+if (enterprise_installed()) {
+    $advanced_div = '<div class="secondary_groups_list">';
+} else {
+    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+}
 
 // General display distribution.
-$table_adv_options = '
-        <div class="secondary_groups_list">
-           '.$adv_secondary_groups_label.'
+$table_adv_options = $advanced_div.$adv_secondary_groups_label.'
             <div class="sg_source">
                 '.$adv_secondary_groups_left.'
             </div>

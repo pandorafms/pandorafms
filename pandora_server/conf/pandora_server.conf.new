@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.739
+# Version 7.0NG.741
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -130,9 +130,15 @@ networkserver 1
 
 dataserver 1
 
-# Activate (1) Pandora FMS Recon server
+# Activate (1) Pandora FMS Discovery server
 
-reconserver 1
+discoveryserver 1
+
+# Discovery SAP (PANDORA FMS ENTERPRISE ONLY)
+# java /usr/bin/java
+
+# Discovery SAP utils (PANDORA FMS ENTERPRISE ONLY)
+# sap_utils /usr/share/pandora_server/util/recon_scripts/SAP
 
 # pluginserver : 1 or 0. Set to 1 to activate plugin server with this setup
 
@@ -155,6 +161,10 @@ wmiserver 1
 # Network timeout (in seconds) for timeout in network connections for Network agents
 
 network_timeout 4
+
+# Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
+
+rcmd_timeout 30
 
 # Server keepalive (in seconds)
 
@@ -376,6 +386,15 @@ self_monitoring 1
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
 
+# Pandora Sample Agent. If enabled, every 10 minutes, this embedded agent 
+# will make sample data. Disabled by default.
+
+sample_agent 0
+
+# Pandora Sample Agent interval (in seconds).
+
+sample_agent_interval 600
+
 # Update parent from the agent xml
 
 #update_parent 1
@@ -430,9 +449,16 @@ export_threads 1
 
 eventserver 0
 
-# Event Server event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
+
+# Correlated Alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+
+log_window 3600
+
+# Pre-load windows on start with available information. (PANDORA FMS ENTERPRISE ONLY).
+#preload_windows 0
 
 # If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
 

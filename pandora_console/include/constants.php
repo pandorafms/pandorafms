@@ -147,7 +147,7 @@ define('COL_UNKNOWN', '#B2B2B2');
 define('COL_DOWNTIME', '#976DB1');
 define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
-define('COL_MINOR', '#B2B2B2');
+define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#E4E4E4');
 define('COL_MAINTENANCE', '#4a83f3');
@@ -537,7 +537,7 @@ define('NODE_GENERIC', 3);
 define('STATUS_OK', 0);
 define('STATUS_ERROR', 1);
 
-// Maps (new networkmaps and  new visualmaps).
+// Maps new networkmaps and  new visualmaps.
 define('MAP_TYPE_NETWORKMAP', 0);
 define('MAP_TYPE_VISUALMAP', 1);
 
@@ -590,6 +590,7 @@ define('DISCOVERY_CLOUD_AWS_EC2', 6);
 define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
+define('DISCOVERY_APP_SAP', 10);
 
 
 // Discovery types matching definition.
@@ -648,3 +649,12 @@ define('HA_PENDING', 2);
 define('HA_PROCESSING', 3);
 define('HA_DISABLED', 4);
 define('HA_FAILED', 5);
+
+
+define('WELCOME_STARTED', 1);
+define('W_CONFIGURE_MAIL', 1);
+define('W_CREATE_AGENT', 2);
+define('W_CREATE_MODULE', 3);
+define('W_CREATE_ALERT', 4);
+define('W_CREATE_TASK', 5);
+define('WELCOME_FINISHED', -1);

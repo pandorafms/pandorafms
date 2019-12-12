@@ -1084,7 +1084,8 @@ class Tree
 				$agent_status_filter
 				$module_search_filter
 				$tag_condition
-			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
+            GROUP BY tam.id_agente_modulo
+            ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
 
         return $sql;
     }

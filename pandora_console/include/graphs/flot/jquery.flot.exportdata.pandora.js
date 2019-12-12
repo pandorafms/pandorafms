@@ -159,10 +159,9 @@
 
 				if (custom_graph) {
 					dataObject = retrieveDataOject(dataObjects,0);
-					//dataObjects.forEach(function (element) {
-						//elements.push(processDataObject(element));					
-					//});
-					elements.push(processDataObject(dataObject));
+					dataObjects.forEach(function (element) {
+						elements.push(processDataObject(element));					
+					});
 					graphData = elements;
 				}
 				else {

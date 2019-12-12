@@ -133,6 +133,32 @@ function agents_get_agent_id_by_alias($alias)
 
 
 /**
+ * Return seconds left to contact again with agent.
+ *
+ * @param integer $id_agente Target agent
+ *
+ * @return integer|null Seconds left.
+ */
+function agents_get_next_contact_time_left(int $id_agente)
+{
+    $last_contact = false;
+
+    if ($id_agente > 0) {
+        $last_contact = db_get_value_sql(
+            sprintf(
+                'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
+                    FROM `tagente`
+                    WHERE id_agente = %d ',
+                $id_agente
+            )
+        );
+    }
+
+    return $last_contact;
+}
+
+
+/**
  * Creates an agent.
  *
  * @param string  $name          Agent name.
@@ -1035,11 +1061,11 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, true)
+                    groups_get_id_recursive($parent, false)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, true);
+            $id_group = groups_get_id_recursive($id_group, false);
         }
 
         // Check available groups for target user only if asking for 'All' group.
@@ -3480,4 +3506,93 @@ function agents_get_status_animation($up=true)
             ]
         );
     }
+}
+
+
+function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
+{
+    $agents_id = [];
+    $all_agents = agents_get_agents(false, ['id_agente', 'alias']);
+    $agent_match = '/'.$alias_regex.'/'.$flag;
+
+    foreach ($all_agents as $agent) {
+        $result_agent_match = preg_match($agent_match, $agent['alias']);
+        if ($result_agent_match) {
+            $agents_id[] = $agent['id_agente'];
+            $i++;
+            if ($i === $limit) {
+                break;
+            }
+        }
+    }
+
+    return $agents_id;
+}
+
+
+/**
+ * Return if an agent is SAP or or an a agent SAP list.
+ * If function receive false, you will return all SAP agents,
+ * but if you receive an id agent, check if it is a sap agent
+ * and return true or false.
+ *
+ * @param  integer $id_agent
+ * @return boolean
+ */
+function agents_get_sap_agents($id_agent)
+{
+    // Available modules.
+    // If you add more modules, please update SAP.pm.
+    $sap_modules = [
+        160 => __('SAP Login OK'),
+        109 => __('SAP Dumps'),
+        111 => __('SAP lock entry list'),
+        113 => __('SAP canceled Jobs'),
+        121 => __('SAP Batch inputs erroneous'),
+        104 => __('SAP IDOC erroneous'),
+        105 => __('SAP IDOC OK'),
+        150 => __('SAP WP without active restart'),
+        151 => __('SAP WP stopped'),
+        102 => __('Average time of SAPGUI response '),
+        180 => __('Dialog response time'),
+        103 => __('Dialog Logged users '),
+        192 => __('TRFC in error'),
+        195 => __('QRFC in error SMQ2'),
+        116 => __('Number of Update WPs in error'),
+    ];
+
+    $array_agents = [];
+    foreach ($sap_modules as $module => $key) {
+        $new_ones = db_get_all_rows_sql(
+            'SELECT ta.id_agente,ta.alias
+             FROM tagente ta
+             INNER JOIN tagente_modulo tam 
+             ON tam.id_agente = ta.id_agente 
+             WHERE tam.nombre  
+             LIKE "%SAP%" 
+             GROUP BY ta.id_agente'
+        );
+        if ($new_ones === false) {
+            continue;
+        }
+
+        $array_agents = array_merge(
+            $array_agents,
+            $new_ones
+        );
+    }
+
+    $indexed_agents = index_array($array_agents, 'id_agente', false);
+
+    if ($id_agent === false) {
+        return $indexed_agents;
+    }
+
+    foreach ($indexed_agents as $agent => $key) {
+        if ($agent === $id_agent) {
+            return true;
+        }
+    }
+
+    return false;
 }

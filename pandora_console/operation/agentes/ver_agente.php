@@ -68,14 +68,7 @@ if (is_ajax()) {
     if ($refresh_contact) {
         $id_agente = get_parameter('id_agente', 0);
         if ($id_agente > 0) {
-            $last_contact = db_get_value_sql(
-                sprintf(
-                    'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
-                     FROM `tagente`
-                     WHERE id_agente = %d ',
-                    $id_agente
-                )
-            );
+            $last_contact = agents_get_next_contact_time_left($id_agente);
 
             $progress = agents_get_next_contact($id_agente);
             if ($progress < 0 || $progress > 100) {
@@ -1336,6 +1329,19 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
     }
 }
 
+$is_sap = agents_get_sap_agents($id_agente);
+if ($is_sap) {
+    $saptab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image('images/sap_icon.png', true, ['title' => __('SAP view')]).'</a>';
+    if ($tab == 'sap_view') {
+        $saptab['active'] = true;
+    } else {
+        $saptab['active'] = false;
+    }
+} else {
+    $saptab = '';
+}
+
+
 $onheader = [
     'manage'             => $managetab,
     'main'               => $maintab,
@@ -1349,6 +1355,8 @@ $onheader = [
     'ux_console'         => $ux_console_tab,
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
+    'sap_view'           => $saptab,
+
 ];
 
 // Added after it exists
@@ -1512,31 +1520,40 @@ switch ($tab) {
         $tab_name = $tab_name_extensions;
     break;
 
+    case 'sap_view':
+            $tab_description = '- '.__('SAP view');
+            $help_header = 'sap_view';
+            $tab_name = 'SAP View';
+    break;
+
     default:
         $tab_name = '';
         $help_header = '';
     break;
 }
 
-ui_print_page_header(
-    agents_get_alias($id_agente),
-    $icon,
-    false,
-    $help_header,
-    false,
-    $onheader,
-    false,
-    '',
-    $config['item_title_size_text'],
-    '',
-    ui_print_breadcrums(
-        [
-            __('Monitoring'),
-            __('View'),
-            '<span class="breadcrumb_active">'.$tab_name.'</span>',
-        ]
-    )
-);
+if (!$config['pure']) {
+    ui_print_page_header(
+        agents_get_alias($id_agente),
+        $icon,
+        false,
+        $help_header,
+        false,
+        $onheader,
+        false,
+        '',
+        $config['item_title_size_text'],
+        '',
+        ui_print_breadcrums(
+            [
+                __('Monitoring'),
+                __('View'),
+                '<span class="breadcrumb_active">'.$tab_name.'</span>',
+            ]
+        )
+    );
+}
+
 
 
 switch ($tab) {
@@ -1617,6 +1634,10 @@ switch ($tab) {
 
     case 'ehorus':
         include 'operation/agentes/ehorus.php';
+    break;
+
+    case 'sap_view':
+        include 'general/sap_view.php';
     break;
 
     case 'extension':

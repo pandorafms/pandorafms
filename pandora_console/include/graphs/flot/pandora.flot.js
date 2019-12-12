@@ -172,7 +172,6 @@ function pandoraFlotPieCustom(
       show: true,
       radius: 5 / 8,
       formatter: function(label, series) {
-        console.log(series);
         return (
           '<div style="font-size:' +
           font_size +
@@ -783,9 +782,7 @@ function pandoraFlotSlicebar(
   graph_id,
   values,
   datacolor,
-  labels,
   legend,
-  acumulate_data,
   intervaltick,
   font,
   font_size,
@@ -794,12 +791,11 @@ function pandoraFlotSlicebar(
   id_agent,
   full_legend,
   not_interactive,
-  show_date
+  show_date,
+  datelimit
 ) {
   values = values.split(separator2);
-  labels = labels.split(separator);
   legend = legend.split(separator);
-  acumulate_data = acumulate_data.split(separator);
   datacolor = datacolor.split(separator);
 
   if (full_legend != false) {
@@ -822,9 +818,7 @@ function pandoraFlotSlicebar(
     var serie = values[i].split(separator);
 
     var aux = new Array();
-    $.each(serie, function(i, v) {
-      aux.push([v, i]);
-    });
+    aux.push([parseInt(serie[0]), 0]);
 
     datas.push({
       data: aux,
@@ -858,7 +852,7 @@ function pandoraFlotSlicebar(
     },
     xaxes: [
       {
-        show: show_date,
+        show: true,
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,
@@ -902,18 +896,16 @@ function pandoraFlotSlicebar(
         }
 
         $("#extra_" + graph_id).text(from + "-" + to);
-        var extra_height = parseInt(
-          $("#extra_" + graph_id)
-            .css("height")
-            .split("px")[0]
-        );
         var extra_width = parseInt(
           $("#extra_" + graph_id)
             .css("width")
             .split("px")[0]
         );
-        $("#extra_" + graph_id).css("left", pos.pageX - extra_width / 4 + "px");
-        //$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
+
+        $("#extra_" + graph_id).css(
+          "left",
+          parseInt(pos.pageX - extra_width - 200) + "px"
+        );
         $("#extra_" + graph_id).show();
       }
     });
@@ -941,44 +933,29 @@ function pandoraFlotSlicebar(
           to = "23:59";
         }
 
+        var url_filters = {
+          id_agent: id_agent,
+          date_from: newdate,
+          time_from: from + ":00",
+          status: "-1",
+          group_rep: "1"
+        };
+
         if (full_legend != "") {
-          if (newdate2 == undefined) {
-            window.location =
-              "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-              id_agent +
-              "&date_from=" +
-              newdate +
-              "&time_from=" +
-              from +
-              "&status=-1";
-          } else {
-            window.location =
-              "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-              id_agent +
-              "&date_from=" +
-              newdate +
-              "&time_from=" +
-              from +
-              "&date_to=" +
-              newdate2 +
-              "&time_to=" +
-              to +
-              "&status=-1";
+          if (newdate2 != undefined) {
+            url_filters.date_to = newdate2;
+            url_filters.time_to = to + ":00";
           }
         } else {
-          window.location =
-            "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-            id_agent +
-            "&date_from=" +
-            newdate +
-            "&time_from=" +
-            from +
-            "&date_to=" +
-            newdate +
-            "&time_to=" +
-            to +
-            "&status=-1";
+          url_filters.date_to = newdate;
+          url_filters.time_to = to + ":00";
         }
+
+        var url_filters_fb64 = btoa(JSON.stringify(url_filters));
+
+        window.location =
+          "index.php?sec=eventos&sec2=operation/events/events&fb64=" +
+          url_filters_fb64;
       }
     });
 
@@ -992,13 +969,33 @@ function pandoraFlotSlicebar(
 
   // Format functions
   function xFormatter(v, axis) {
-    v = new Date(1000 * v);
-    date_format =
-      (v.getHours() < 10 ? "0" : "") +
-      v.getHours() +
+    d = new Date(1000 * (v + datelimit));
+    var monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+
+    var date_format =
+      (d.getDate() < 10 ? "0" : "") +
+      d.getDate() +
+      " " +
+      monthNames[d.getMonth()] +
+      "<br>" +
+      (d.getHours() < 10 ? "0" : "") +
+      d.getHours() +
       ":" +
-      (v.getMinutes() < 10 ? "0" : "") +
-      v.getMinutes();
+      (d.getMinutes() < 10 ? "0" : "") +
+      d.getMinutes();
     return date_format;
   }
 }

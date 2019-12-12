@@ -760,27 +760,32 @@ function flot_slicesbar_graph(
 
     if ($ttl == 2) {
         $params = [
-            'graph_data'       => $graph_data,
-            'period'           => $period,
-            'width'            => $width,
-            'height'           => $height,
-            'legend'           => $legend,
-            'colors'           => $colors,
-            'fontpath'         => $fontpath,
-            'round_corner'     => $round_corner,
-            'homeurl'          => $homeurl,
-            'watermark'        => $watermark,
-            'adapt_key'        => $adapt_key,
-            'stat_win'         => $stat_win,
-            'id_agent'         => $id_agent,
-            'full_legend_date' => $full_legend_date,
-            'not_interactive'  => $not_interactive,
-            'ttl'              => 1,
-            'widgets'          => $widgets,
-            'show'             => $show,
+            'graph_data'         => $graph_data,
+            'period'             => $period,
+            'width'              => $width,
+            'height'             => $height,
+            'legend'             => $legend,
+            'colors'             => $colors,
+            'fontpath'           => $fontpath,
+            'round_corner'       => $round_corner,
+            'homeurl'            => $homeurl,
+            'watermark'          => $watermark,
+            'adapt_key'          => $adapt_key,
+            'stat_win'           => $stat_win,
+            'id_agent'           => $id_agent,
+            'full_legend_date'   => $full_legend_date,
+            'not_interactive'    => $not_interactive,
+            'ttl'                => 1,
+            'widgets'            => $widgets,
+            'show'               => $show,
+            'return_img_base_64' => true,
         ];
 
-        return generator_chart_to_pdf('slicebar', $params);
+        $graph = '<img src="data:image/jpg;base64,';
+        $graph .= generator_chart_to_pdf('slicebar', $params);
+        $graph .= '" />';
+
+        return $graph;
     }
 
     // Get a unique identifier to graph

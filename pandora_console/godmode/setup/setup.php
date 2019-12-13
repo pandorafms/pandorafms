@@ -133,6 +133,14 @@ $buttons['notifications'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications').'">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
 ];
 
+// Enable only if quickshell is enabled.
+if (function_exists('quickShellSettings') === true) {
+    $buttons['quickshell'] = [
+        'active' => false,
+        'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=quickshell').'">'.html_print_image('images/ehorus/terminal.png', true, ['title' => __('Quickshell')]).'</a>',
+    ];
+}
+
 $help_header = '';
 if (enterprise_installed()) {
     $subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
@@ -181,6 +189,12 @@ switch ($section) {
     case 'notifications':
         $buttons['notifications']['active'] = true;
         $subpage = ' &raquo '.__('Notifications');
+    break;
+
+    case 'quickshell':
+        $buttons['quickshell']['active'] = true;
+        $subpage = ' &raquo '.__('QuickShell');
+        $help_header = 'quickshell_settings';
     break;
 
     case 'enterprise':
@@ -245,6 +259,10 @@ switch ($section) {
 
     case 'notifications':
         include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
+    break;
+
+    case 'quickshell':
+        quickShellSettings();
     break;
 
     default:

@@ -65,17 +65,13 @@ function quickShell()
     ui_require_css_file('discovery');
 
     // Settings.
-    // WebSocket host, where to connect.
-    if (isset($config['ws_host']) === false) {
-        config_update_value('ws_host', $_SERVER['SERVER_ADDR']);
-    }
-
+    // WebSocket host, where client should connect.
     if (isset($config['ws_port']) === false) {
         config_update_value('ws_port', 8080);
     }
 
     if (empty($config['ws_proxy_url']) === true) {
-        $ws_url = 'http://'.$config['ws_host'].':'.$config['ws_port'];
+        $ws_url = 'http://'.$_SERVER['SERVER_ADDR'].':'.$config['ws_port'];
     } else {
         preg_match('/\/\/(.*)/', $config['ws_proxy_url'], $matches);
         if (isset($_SERVER['HTTPS']) === true) {
@@ -381,14 +377,6 @@ function quickShellSettings()
         }
     }
 
-    // Interface.
-    ui_print_page_header(
-        __('QuickShell settings'),
-        '',
-        false,
-        'quickshell_settings'
-    );
-
     if ($changes > 0) {
         $msg = __('%d Updated', $changes);
         if ($critical > 0) {
@@ -522,20 +510,5 @@ if (empty($agent_id) === false
         );
     }
 }
-
-extensions_add_godmode_menu_option(
-    // Name.
-    __('QuickShell settings'),
-    // Acl.
-    'PM',
-    // FatherId.
-    'gextensions',
-    // Icon.
-    'images/ehorus/terminal.png',
-    // Version.
-    'N/A',
-    // SubfatherId.
-    null
-);
 
 extensions_add_godmode_function('quickShellSettings');

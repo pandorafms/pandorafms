@@ -638,7 +638,7 @@ if ($config['menu_type'] == 'classic') {
     
     function showinterpreter(){
 
-        if(event.keyCode == 1 && $("#result_items li.active").length != 0 )
+        if(event.keyCode == 13 && $("#result_items li.active").length != 0 )
         {
             window.location = $('#result_items').find("li.active a").attr('href');
         }

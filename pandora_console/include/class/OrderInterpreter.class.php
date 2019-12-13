@@ -100,7 +100,7 @@ class OrderInterpreter extends Wizard
         $this->ajaxController = $ajax_controller;
 
         $this->pages_menu = [
-            0  => [
+            [
                 'name' => __('Tactical View'),
                 'icon' => ui_get_full_url(
                     'images/op_monitoring.menu_gray.png'
@@ -109,7 +109,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=view&sec2=operation/agentes/tactical'
                 ),
             ],
-            1  => [
+            [
                 'name' => __('Agent Management'),
                 'icon' => ui_get_full_url(
                     'images/gm_resources.menu_gray.png'
@@ -118,7 +118,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'
                 ),
             ],
-            2  => [
+            [
                 'name' => __('General Setup'),
                 'icon' => ui_get_full_url(
                     'images/gm_setup.menu_gray.png'
@@ -127,7 +127,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=general&sec2=godmode/setup/setup&section=general'
                 ),
             ],
-            3  => [
+            [
                 'name' => __('Manage Policies'),
                 'icon' => ui_get_full_url(
                     'images/gm_configuration.menu_gray.png'
@@ -136,7 +136,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies'
                 ),
             ],
-            4  => [
+            [
                 'name' => __('List Alerts'),
                 'icon' => ui_get_full_url(
                     'images/gm_alerts.menu_gray.png'
@@ -145,7 +145,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=galertas&sec2=godmode/alerts/alert_list'
                 ),
             ],
-            5  => [
+            [
                 'name' => __('View Events'),
                 'icon' => ui_get_full_url(
                     'images/op_events.menu_gray.png'
@@ -154,7 +154,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=eventos&sec2=operation/events/events'
                 ),
             ],
-            6  => [
+            [
                 'name' => __('Dashboard'),
                 'icon' => ui_get_full_url(
                     'images/op_reporting.menu_gray.png'
@@ -163,7 +163,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=reporting&sec2=enterprise/dashboard/dashboards'
                 ),
             ],
-            7  => [
+            [
                 'name' => __('Visual Console'),
                 'icon' => ui_get_full_url(
                     'images/op_network.menu_gray.png'
@@ -172,7 +172,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=network&sec2=godmode/reporting/map_builder'
                 ),
             ],
-            8  => [
+            [
                 'name' => __('Manage Servers'),
                 'icon' => ui_get_full_url(
                     'images/gm_servers.menu_gray.png'
@@ -181,7 +181,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=gservers&sec2=godmode/servers/modificar_server'
                 ),
             ],
-            9  => [
+            [
                 'name' => __('Edit User'),
                 'icon' => ui_get_full_url(
                     'images/gm_users.menu_gray.png'
@@ -190,7 +190,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=workspace&sec2=operation/users/user_edit'
                 ),
             ],
-            10 => [
+            [
                 'name' => __('Tree View'),
                 'icon' => ui_get_full_url(
                     'images/op_monitoring.menu_gray.png'
@@ -199,7 +199,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=view&sec2=operation/tree'
                 ),
             ],
-            11 => [
+            [
                 'name' => __('Network Component'),
                 'icon' => ui_get_full_url(
                     'images/gm_configuration.menu_gray.png'
@@ -208,7 +208,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'
                 ),
             ],
-            12 => [
+            [
                 'name' => __('Task List'),
                 'icon' => ui_get_full_url(
                     'images/gm_discovery.menu.png'
@@ -217,7 +217,7 @@ class OrderInterpreter extends Wizard
                     'index.php?sec=discovery&sec2=godmode/servers/discovery&wiz=tasklist'
                 ),
             ],
-            13 => [
+            [
                 'name' => __('Update Manager'),
                 'icon' => ui_get_full_url(
                     'images/um_messages.menu_gray.png'
@@ -284,7 +284,7 @@ class OrderInterpreter extends Wizard
                   + '.$more_results.' results found</div>';
             }
 
-            echo '</div';
+            echo '</div>';
         }
     }
 

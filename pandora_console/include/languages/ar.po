@@ -20268,7 +20268,7 @@ msgid ""
 "The alert would fire when the value matches <span id=\"value\"></span>"
 msgstr ""
 "سيتم إطلاق التنبيه عندما تتطابق القيمة مع ما يلي <span id=\\\"value\\"
-"\"></span"
+"\"></span>"
 
 #: ../../include/functions_ui.php:1003 ../../godmode/alerts/alert_view.php:147
 msgid ""
@@ -20284,9 +20284,7 @@ msgid ""
 "The alert would fire when the value is between <span id=\"min\"></span> and "
 "<span id=\"max\"></span>"
 msgstr ""
-"سيتم إطلاق التنبيه عندما تكون القيمة بين <span id=\\\"min\\\"></span> and "
-"\"\r\n"
-"\"<span id=\\\"max\\\"></span>"
+"سيتم إطلاق التنبيه عندما تكون القيمة بين <span id=\\\"min\\\"></span> and <span id=\\\"max\\\"></span>"
 
 #: ../../include/functions_ui.php:1012
 #: ../../godmode/alerts/configure_alert_template.php:808
@@ -20295,9 +20293,7 @@ msgid ""
 "The alert would fire when the value is not between <span id=\"min\"></span> "
 "and <span id=\"max\"></span>"
 msgstr ""
-"\" سيتم إطلاق التنبيه عندما لا تكون القيمة بين <span id=\\\"min\\\"></span> "
-"\" \r\n"
-"\"and <span id=\\\"max\\\"></span>"
+"سيتم إطلاق التنبيه عندما لا تكون القيمة بين <span id=\\\"min\\\"></span> and <span id=\\\"max\\\"></span>"
 
 #: ../../include/functions_ui.php:1016
 msgid "The alert would fire when the value is over <span id=\"max\"></span>"

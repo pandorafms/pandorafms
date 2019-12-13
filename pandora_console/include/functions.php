@@ -3851,9 +3851,11 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $file_js  = $config['homedir'].'/include/web2image.js';
     $url      = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
-    $img_file = 'img_'.uniqid().'.png';
-    $img_path = $config['homedir'].'/attachment/'.$img_file;
-    $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    if (!$params['return_img_base_64']) {
+        $img_file = 'img_'.uniqid().'.png';
+        $img_path = $config['homedir'].'/attachment/'.$img_file;
+        $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    }
 
     $width_img  = 500;
 
@@ -3866,8 +3868,8 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     }
 
     if ($type_graph_pdf === 'slicebar') {
-        $height_img = 70;
-        $params['height'] = 70;
+        $height_img = 90;
+        $params['height'] = 90;
     }
 
     $params_encode_json = urlencode(json_encode($params));

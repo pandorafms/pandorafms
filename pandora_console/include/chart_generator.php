@@ -101,7 +101,7 @@ $params = json_decode($_REQUEST['data'], true);
 // Metaconsole connection to the node.
 $server_id = $params['server_id'];
 
-if ($config['metaconsole'] && !empty($server_id)) {
+if (is_metaconsole() && !empty($server_id)) {
     $server = metaconsole_get_connection_by_id($server_id);
     // Error connecting.
     if (metaconsole_connect($server) !== NOERR) {

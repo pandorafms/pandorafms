@@ -64,7 +64,10 @@ $t->data[1][2] = html_print_input_text(
     true
 );
 
-$t->data[2][0] = __('WebSocket proxy url').ui_print_help_tip(__('If you had configured a wsproxy set here target URL (for instance ws://your.public.fqdn/ws).'), true);
+$t->data[2][0] = __('WebSocket proxy url').ui_print_help_tip(
+    __('If you had configured a wsproxy set here target URL (for instance ws://your.public.fqdn/ws).'),
+    true
+);
 $t->data[2][2] = html_print_input_text(
     'ws_proxy_url',
     $config['ws_proxy_url'],
@@ -84,7 +87,12 @@ if (function_exists('quickShellSettings') === true) {
     quickShellSettings();
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
+echo '<div class="action-buttons" style="width: 100%;">';
+html_print_submit_button(
+    __('Update'),
+    'update_button',
+    false,
+    'class="sub upd"'
+);
 echo '</div>';
 echo '</form>';

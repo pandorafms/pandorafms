@@ -537,7 +537,7 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         );
     } else if ($prominent == 'compact') {
         $units = 'tiny';
-        $title = human_time_comparation($unixtime);
+        $title = date($config['date_format'], $unixtime);
         $data = human_time_comparation($unixtime, $units);
     } else {
         $title = date($config['date_format'], $unixtime);

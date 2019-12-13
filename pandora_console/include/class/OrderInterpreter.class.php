@@ -278,10 +278,14 @@ class OrderInterpreter extends Wizard
             }
 
             echo $this->loadJS();
-            echo '</ul><div class="more_results">
-                  + '.$more_results.' results found</div></div';
-        }
+            echo '</ul>';
+            if ($iterator > 10) {
+                echo '<div class="more_results">
+                  + '.$more_results.' results found</div>';
+            }
 
+            echo '</div';
+        }
     }
 
 

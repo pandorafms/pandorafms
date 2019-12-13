@@ -247,7 +247,7 @@ class OrderInterpreter extends Wizard
 
         if ($text !== '') {
             echo '<div id="result_order" class="show_result_interpreter">';
-            echo '<ul>';
+            echo '<ul id="result_items">';
 
             foreach ($this->pages_menu as $key => $value) {
                 if (preg_match(
@@ -256,7 +256,7 @@ class OrderInterpreter extends Wizard
                 )
                 ) {
                     if ($iterator <= 9) {
-                        echo '<li class="list_found">';
+                        echo '<li class="list_found" name="'.$iterator.'" id="'.$iterator.'">';
                         echo '
                         Go to &nbsp;
                         <img src="'.$this->pages_menu[$key]['icon'].'">';
@@ -274,11 +274,12 @@ class OrderInterpreter extends Wizard
             }
 
             if ($iterator > 9) {
-                echo '<li class="more_results"><br>';
-                echo '+ '.$more_results.' results found';
+                echo '</li>';
             }
 
-            echo '</ul></div';
+            echo $this->loadJS();
+            echo '</ul><div class="more_results">
+                  + '.$more_results.' results found</div></div';
         }
 
     }
@@ -295,6 +296,7 @@ class OrderInterpreter extends Wizard
         ob_start();
         ?>
     <script type="text/javascript">
+    
     </script>   
         <?php
         return ob_get_clean();

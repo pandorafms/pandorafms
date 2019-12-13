@@ -43,3 +43,7 @@ div.show_result_interpreter {
 .list_found {
   padding-top: 5px;
 }
+
+.active {
+  background: #f2f6f7;
+}

@@ -191,7 +191,7 @@ class OrderInterpreter extends Wizard
                 ),
             ],
             10 => [
-                'name' => __('Three View'),
+                'name' => __('Tree View'),
                 'icon' => ui_get_full_url(
                     'images/op_monitoring.menu_gray.png'
                 ),

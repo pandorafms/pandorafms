@@ -309,7 +309,7 @@ function quickShellSettings()
     }
 
     // Parser.
-    if (get_parameter('qs_update', false) !== false) {
+    if (get_parameter('update_config', false) !== false) {
         // Gotty settings. Internal communication (WS).
         $gotty = get_parameter(
             'gotty',
@@ -389,99 +389,103 @@ function quickShellSettings()
         ui_print_success_message($msg);
     }
 
-    // Form.
-    $wiz = new Wizard();
+    // Form. Using old style.
+    echo '<fieldset>';
+    echo '<legend>'.__('Quickshell').'</legend>';
 
-    $wiz->printForm(
-        [
-            'form'   => [
-                'action' => '#',
-                'class'  => 'wizard',
-                'method' => 'post',
-            ],
-            'inputs' => [
-                [
-                    'label'     => __('Gotty path').ui_print_help_tip(
-                        __('Leave blank if using an external Gotty service'),
-                        true
-                    ),
-                    'arguments' => [
-                        'type'  => 'text',
-                        'name'  => 'gotty',
-                        'value' => $config['gotty'],
-                    ],
-                ],
-                [
-                    'label'     => __('Gotty host'),
-                    'arguments' => [
-                        'type'  => 'text',
-                        'name'  => 'gotty_host',
-                        'value' => $config['gotty_host'],
-                    ],
-                ],
-                [
-                    'label'     => __('Gotty ssh port'),
-                    'arguments' => [
-                        'type'  => 'text',
-                        'name'  => 'gotty_ssh_port',
-                        'value' => $config['gotty_ssh_port'],
-                    ],
-                ],
-                [
-                    'label'     => __('Gotty telnet port'),
-                    'arguments' => [
-                        'type'  => 'text',
-                        'name'  => 'gotty_telnet_port',
-                        'value' => $config['gotty_telnet_port'],
-                    ],
-                ],
-                [
-                    'toggle'        => true,
-                    'toggle_name'   => 'Advanced',
-                    'block_content' => [
-                        [
-                            'label'     => __('Gotty user').ui_print_help_tip(
-                                __('Optional, set a user to access gotty service'),
-                                true
-                            ),
-                            'arguments' => [
-                                'type'  => 'text',
-                                'name'  => 'gotty_user',
-                                'value' => $config['gotty_user'],
-                            ],
-                        ],
-                        [
-                            'label'     => __('Gotty password').ui_print_help_tip(
-                                __('Optional, set a password to access gotty service'),
-                                true
-                            ),
-                            'arguments' => [
-                                'type'  => 'password',
-                                'name'  => 'gotty_pass',
-                                'value' => io_output_password($config['gotty_pass']),
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'arguments' => [
-                        'type'  => 'hidden',
-                        'name'  => 'qs_update',
-                        'value' => 1,
-                    ],
-                ],
-                [
-                    'arguments' => [
-                        'type'       => 'submit',
-                        'label'      => __('Update'),
-                        'attributes' => 'class="sub next"',
-                    ],
-                ],
-            ],
-        ],
-        false,
+    $t = new StdClass();
+    $t->data = [];
+    $t->width = '100%';
+    $t->class = 'databox filters';
+    $t->data = [];
+    $t->style[0] = 'font-weight: bold';
+
+    $t->data[0][0] = __('Gotty path');
+    $t->data[0][1] = html_print_input_text(
+        'gotty',
+        $config['gotty'],
+        '',
+        30,
+        100,
         true
     );
+
+    $t->data[1][0] = __('Gotty host');
+    $t->data[1][1] = html_print_input_text(
+        'gotty_host',
+        $config['gotty_host'],
+        '',
+        30,
+        100,
+        true
+    );
+
+    $t->data[2][0] = __('Gotty ssh port');
+    $t->data[2][1] = html_print_input_text(
+        'gotty_ssh_port',
+        $config['gotty_ssh_port'],
+        '',
+        30,
+        100,
+        true
+    );
+
+    $t->data[3][0] = __('Gotty telnet port');
+    $t->data[3][1] = html_print_input_text(
+        'gotty_telnet_port',
+        $config['gotty_telnet_port'],
+        '',
+        30,
+        100,
+        true
+    );
+
+    $hidden = new StdClass();
+    $hidden->data = [];
+    $hidden->width = '100%';
+    $hidden->class = 'databox filters';
+    $hidden->data = [];
+    $hidden->style[0] = 'font-weight: bold';
+
+    $hidden->data[0][0] = __('Gotty user').ui_print_help_tip(
+        __('Optional, set a user to access gotty service'),
+        true
+    );
+    $hidden->data[0][1] = html_print_input_text(
+        'gotty_user',
+        $config['gotty_user'],
+        '',
+        30,
+        100,
+        true
+    );
+
+    $hidden->data[1][0] = __('Gotty password').ui_print_help_tip(
+        __('Optional, set a password to access gotty service'),
+        true
+    );
+    $hidden->data[1][1] = html_print_input_password(
+        'gotty_pass',
+        io_output_password($config['gotty_pass']),
+        '',
+        30,
+        100,
+        true
+    );
+
+    html_print_table($t);
+
+    ui_print_toggle(
+        [
+            'content'         => html_print_table($hidden, true),
+            'name'            => __('Advanced options'),
+            'clean'           => false,
+            'main_class'      => 'no-border-imp',
+            'container_class' => 'no-border-imp',
+        ]
+    );
+
+    echo '</fieldset>';
 
 }
 

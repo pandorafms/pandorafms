@@ -152,7 +152,7 @@ class WSManager extends WebSocketServer
      */
     public function __construct(
         $listen_addr,
-        $listen_port,
+        int $listen_port,
         $connected=[],
         $process=[],
         $processRaw=[],

@@ -58,6 +58,10 @@ fi
 rm -rf $RPM_BUILD_ROOT
 
 %post
+# Install GoTTY binary file.
+cp -pf %{prefix}/pandora_console/gotty /usr/bin/
+chmod +x /usr/bin/gotty
+
 # Install pandora_websocket_engine service.
 cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
 chmod +x /etc/init.d/pandora_websocket_engine

@@ -398,7 +398,8 @@ function quickShellSettings()
     $t->width = '100%';
     $t->class = 'databox filters';
     $t->data = [];
-    $t->style[0] = 'font-weight: bold';
+    $t->style = [];
+    $t->style[0] = 'font-weight: bold; width: 40%;';
 
     $t->data[0][0] = __('Gotty path');
     $t->data[0][1] = html_print_input_text(
@@ -445,7 +446,7 @@ function quickShellSettings()
     $hidden->width = '100%';
     $hidden->class = 'databox filters';
     $hidden->data = [];
-    $hidden->style[0] = 'font-weight: bold';
+    $hidden->style[0] = 'font-weight: bold;width: 40%;';
 
     $hidden->data[0][0] = __('Gotty user').ui_print_help_tip(
         __('Optional, set a user to access gotty service'),

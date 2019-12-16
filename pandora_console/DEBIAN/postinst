@@ -10,9 +10,6 @@ if [ -f /etc/init.d/apache2 ]; then
 echo Restart the apache.
 /etc/init.d/apache2 restart
 fi
-# Install GoTTY binary file.
-cp -pf %{prefix}/pandora_console/gotty /usr/bin/
-chmod +x /usr/bin/gotty
 
 # Install pandora_websocket_engine service.
 cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/

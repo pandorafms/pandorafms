@@ -1709,7 +1709,9 @@ if (!empty($result)) {
 
     html_print_table($table);
 
-    ui_pagination($count, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    if ($count_modules > $config['block_size']) {
+        ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    }
 } else {
     if ($first_interaction) {
         ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);

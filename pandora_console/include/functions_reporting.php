@@ -291,16 +291,18 @@ function reporting_make_reporting_data(
             $agents_to_macro = $content['id_agent'];
         }
 
-        // Metaconsole connection.
-        if (is_metaconsole()) {
-            $server = metaconsole_get_connection_names();
-            $connection = metaconsole_get_connection($server);
-            if (metaconsole_connect($connection) != NOERR) {
-                continue;
-            }
-        }
-
         if (isset($content['style']['name_label'])) {
+            $server_name = $content['server_name'];
+            $metaconsole_on = is_metaconsole();
+
+            // Metaconsole connection.
+            if ($metaconsole_on && $server_name != '') {
+                $connection = metaconsole_get_connection($server_name);
+                if (!metaconsole_load_external_db($connection)) {
+                    continue;
+                }
+            }
+
             // Add macros name.
             $items_label = [];
             $items_label['type'] = $content['type'];
@@ -309,8 +311,6 @@ function reporting_make_reporting_data(
             $items_label['modules'] = $modules_to_macro;
             $items_label['agents'] = $agents_to_macro;
             $items_label['visual_format'] = $visual_format;
-            $metaconsole_on = is_metaconsole();
-            $server_name = $content['server_name'];
 
             $items_label['agent_description'] = agents_get_description(
                 $content['id_agent']
@@ -7551,12 +7551,10 @@ function reporting_custom_graph(
 
     if ($type_report == 'custom_graph') {
         if (is_metaconsole()) {
-            $servers = metaconsole_get_connection_names();
-            foreach ($servers as $server) {
-                $connection = metaconsole_get_connection($server);
-                if (metaconsole_connect($connection) != NOERR) {
-                    continue;
-                }
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server  = metaconsole_get_connection_by_id($id_meta);
+            if (metaconsole_connect($server) != NOERR) {
+                return false;
             }
         }
     }

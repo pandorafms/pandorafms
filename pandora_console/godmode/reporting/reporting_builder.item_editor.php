@@ -1856,7 +1856,7 @@ $class = 'databox filters';
                     'combo_server',
                     $server_name,
                     '',
-                    __('Select server'),
+                    __('Local metaconsole'),
                     0
                 );
                 ?>

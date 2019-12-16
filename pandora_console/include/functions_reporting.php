@@ -5092,37 +5092,13 @@ function reporting_sql($report, $content)
     }
 
     if ($content['treport_custom_sql_id'] != 0) {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        '`sql`',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-
-            case 'postgresql':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        '"sql"',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-
-            case 'oracle':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        'sql',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-        }
+        $sql = io_safe_output(
+            db_get_value_filter(
+                '`sql`',
+                'treport_custom_sql',
+                ['id' => $content['treport_custom_sql_id']]
+            )
+        );
     } else {
         $sql = io_safe_output($content['external_source']);
     }
@@ -5150,10 +5126,6 @@ function reporting_sql($report, $content)
             );
         } else {
             $historical_db = $content['historical_db'];
-        }
-
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
         }
 
         $result = db_get_all_rows_sql($sql, $historical_db);

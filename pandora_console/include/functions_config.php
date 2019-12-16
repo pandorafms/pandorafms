@@ -1911,14 +1911,6 @@ function config_process_config()
       * Parse the ACL IP list for access API
       */
 
-    $temp_list_ACL_IPs_for_API = [];
-    if (isset($config['list_ACL_IPs_for_API'])) {
-        if (!empty($config['list_ACL_IPs_for_API'])) {
-            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
-        }
-    }
-
-    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
     /*
@@ -2976,6 +2968,15 @@ function config_process_config()
 
     // Finally, check if any value was overwritten in a form.
     config_update_config();
+
+    $temp_list_ACL_IPs_for_API = [];
+    if (isset($config['list_ACL_IPs_for_API'])) {
+        if (!empty($config['list_ACL_IPs_for_API'])) {
+            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+        }
+    }
+
+    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
 }
 
 

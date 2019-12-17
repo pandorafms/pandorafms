@@ -725,11 +725,14 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table->data['error']['cell'] = __('There are no Agent/Modules defined');
         }
 
-        if (!empty($item['charts'])) {
+        if (empty($item['charts']) === false) {
             $table1 = new stdClass();
-            $table1->width = '99%';
+            $table1->width = '100%';
             $table1->size = [];
             $table1->size[0] = '10%';
+            if ($pdf !== 0) {
+                $table1->size[0] = '20%';
+            }
 
             $table1->data = [];
 
@@ -3424,13 +3427,20 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
             // Check failover availability report.
             if ($item['data'][$k_chart]['failover'] === '') {
                 $table1 = new stdClass();
-                $table1->width = '99%';
+                $table1->width = '100%';
                 $table1->data = [];
                 $table1->size = [];
                 $table1->size[0] = '10%';
                 $table1->size[1] = '80%';
                 $table1->size[2] = '5%';
                 $table1->size[3] = '5%';
+                if ($pdf !== 0) {
+                    $table1->size[0] = '20%';
+                    $table1->size[1] = '60%';
+                    $table1->size[2] = '10%';
+                    $table1->size[3] = '10%';
+                }
+
                 $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
                 $table1->data[0][1] = $chart['chart'];
                 $table1->data[0][2] = "<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>".$sla_value.'</span>';

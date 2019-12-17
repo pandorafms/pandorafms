@@ -55,25 +55,29 @@ $serviceListVisualConsole = (bool) get_parameter(
     'serviceListVisualConsole'
 );
 
+$loadtabs = (bool) get_parameter('loadtabs');
+
 ob_clean();
 
-// Retrieve the visual console.
-$visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
-$visualConsoleData = $visualConsole->toArray();
-$vcGroupId = $visualConsoleData['groupId'];
+if ($visualConsoleId) {
+    // Retrieve the visual console.
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
+    $visualConsoleData = $visualConsole->toArray();
+    $vcGroupId = $visualConsoleData['groupId'];
 
-// ACL.
-$aclRead = check_acl($config['id_user'], $vcGroupId, 'VR');
-$aclWrite = check_acl($config['id_user'], $vcGroupId, 'VW');
-$aclManage = check_acl($config['id_user'], $vcGroupId, 'VM');
+    // ACL.
+    $aclRead = check_acl($config['id_user'], $vcGroupId, 'VR');
+    $aclWrite = check_acl($config['id_user'], $vcGroupId, 'VW');
+    $aclManage = check_acl($config['id_user'], $vcGroupId, 'VM');
 
-if (!$aclRead && !$aclWrite && !$aclManage) {
-    db_pandora_audit(
-        'ACL Violation',
-        'Trying to access visual console without group access'
-    );
-    http_response_code(403);
-    return;
+    if (!$aclRead && !$aclWrite && !$aclManage) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access visual console without group access'
+        );
+        http_response_code(403);
+        return;
+    }
 }
 
 if ($getVisualConsole === true) {
@@ -568,6 +572,11 @@ if ($getVisualConsole === true) {
     );
 
     echo io_safe_output(json_encode($services));
+    return;
+} else if ($loadtabs) {
+    $viewer = new Viewer();
+    echo $viewer->loadForm();
+
     return;
 }
 

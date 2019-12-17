@@ -42,6 +42,55 @@ class HTML
      */
     public $breadcrum;
 
+    /**
+     * Current page
+     *
+     * @var integer
+     */
+    public $page;
+
+        /**
+         * Target icon to be shown in discovery wizard list.
+         *
+         * @var string
+         */
+    public $icon;
+
+    /**
+     * Target label to be shown in discovery wizard list.
+     *
+     * @var string
+     */
+    public $label;
+
+    /**
+     * This wizard's url.
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Result of wizard execution (0 - ok, 1 - not ok).
+     *
+     * @var integer
+     */
+    public $result;
+
+    /**
+     * Message to be delivered to user.
+     *
+     * @var string
+     */
+    public $msg;
+
+    /**
+     * Defines access level to use this util.
+     *
+     * @var string
+     */
+    public $access = 'AR';
+
 
     /**
      * Setter for breadcrum
@@ -85,14 +134,75 @@ class HTML
 
 
     /**
-     * Breadcrum builder.
+     * Setter for label
      *
-     * @param array $urls Array of urls to be transformed into a breadcrum.
+     * @param string $str Label.
      *
-     * @return array Breadcrum prepared.
+     * @return void
+     */
+    public function setLabel(string $str)
+    {
+        $this->label = $str;
+    }
+
+
+    /**
+     * Getter for label
+     *
+     * @return array Breadcrum.
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+
+    /**
+     * Return units associated to target interval (in seconds).
+     *
+     * @param integer $interval Target interval.
+     *
+     * @return integer Unit.
+     */
+    public function getTimeUnit($interval)
+    {
+        $units = [
+            1,
+            60,
+            3600,
+            86400,
+            604800,
+            2592000,
+            31104000,
+        ];
+
+        $size = count($units);
+        for ($i = 0; $i < $size; $i++) {
+            if ($interval < $units[$i]) {
+                if (($i - 1) < 0) {
+                    return 1;
+                }
+
+                return $units[($i - 1)];
+            }
+        }
+
+        return $units[-1];
+    }
+
+
+    /**
+     * Builder for breadcrum
+     *
+     * @param array   $urls Array of urls to be stored in breadcrum.
+     * @param boolean $add  True if breadcrum should be added
+     *                      instead of overwrite it.
+     *
+     * @return void
      */
     public function prepareBreadcrum(
-        array $urls
+        array $urls,
+        bool $add=false
     ) {
         $bc = [];
         $i = 0;
@@ -105,15 +215,91 @@ class HTML
             }
 
             $bc[$i] = '';
-            $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" ';
-            $bc[$i] .= 'href="'.$url['link'].'">';
+            $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
             $bc[$i] .= $url['label'];
             $bc[$i] .= '</a>';
             $bc[$i] .= '</span>';
             $i++;
         }
 
-        return $bc;
+        if ($add === true) {
+            $this->addBreadcrum($bc);
+        } else {
+            $this->setBreadcrum($bc);
+        }
+    }
+
+
+    /**
+     * To be overwritten.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        ui_require_css_file('wizard');
+        // Check access.
+        check_login();
+
+        if (! $this->aclMulticheck()) {
+            return;
+        }
+    }
+
+
+    /**
+     * Check multiple acl perms.
+     *
+     * @param string $access Access in PM|AR|RR format. Optional.
+     *
+     * @return boolean Alowed or not.
+     */
+    public function aclMulticheck($access=null)
+    {
+        global $config;
+
+        if (isset($access)) {
+            $perms = explode('|', $access);
+        } else {
+            $perms = explode('|', $this->access);
+        }
+
+        $allowed = false;
+        foreach ($perms as $perm) {
+            $allowed = $allowed || (bool) check_acl(
+                $config['id_user'],
+                0,
+                $perm
+            );
+        }
+
+        return $allowed;
+    }
+
+
+    /**
+     * Checks if environment is ready,
+     * returns array
+     *   icon: icon to be displayed
+     *   label: label to be displayed
+     *
+     * @return array With data.
+     **/
+    public function load()
+    {
+        global $config;
+        // Check access.
+        check_login();
+
+        if (! $this->aclMulticheck()) {
+            return false;
+        }
+
+        return [
+            'icon'  => $this->icon,
+            'label' => $this->label,
+            'url'   => $this->url,
+        ];
     }
 
 
@@ -132,6 +318,50 @@ class HTML
 
 
     /**
+     * Prints a header for current wizard.
+     *
+     * @param boolean $return Return HTML or print it.
+     *
+     * @return string HTML code for header.
+     */
+    public function printHeader(bool $return=false)
+    {
+        $output = $this->printBreadcrum();
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Print input using functions html lib.
+     *
+     * @param array $data Input definition.
+     *
+     * @return string HTML code for desired input.
+     */
+    public function printInput($data)
+    {
+        global $config;
+
+        include_once $config['homedir'].'/include/functions_html.php';
+
+        if (is_array($data) === false) {
+            return '';
+        }
+
+        $input = html_print_input(($data + ['return' => true]), 'div', true);
+        if ($input === false) {
+            return '';
+        }
+
+        return $input;
+    }
+
+
+    /**
      * Prints a go back button redirecting to main page.
      *
      * @param string $url Optional target url.
@@ -141,7 +371,9 @@ class HTML
     public function printGoBackButton($url=null)
     {
         if (isset($url) === false) {
-            $url = ui_get_full_url('index.php');
+            $url = ui_get_full_url(
+                'index.php?sec=gservers&sec2=godmode/servers/discovery'
+            );
         }
 
         $form = [
@@ -168,42 +400,47 @@ class HTML
 
 
     /**
-     * Print input using functions html lib.
-     *
-     * @param array $data Input definition.
-     *
-     * @return string HTML code for desired input.
-     */
-    public function printInput(array $data)
-    {
-        global $config;
-
-        include_once $config['homedir'].'/include/functions_html.php';
-
-        if (is_array($data) === false) {
-            return '';
-        }
-
-        $input = html_print_input(($data + ['return' => true]), 'div', true);
-        if ($input === false) {
-            return '';
-        }
-
-        return $input;
-    }
-
-
-    /**
      * Print a block of inputs.
+     * Example, using direct to 'anidate' inputs directly to wrapper:
+     * [
+     *     'wrapper'       => 'div',
+     *     'block_id'      => 'example_id',
+     *     'class'         => 'your class',
+     *     'direct'        => 1,
+     *     'block_content' => [
+     *         [
+     *             'arguments' => [
+     *                 'label'      => __('Sugesstion'),
+     *                 'type'       => 'button',
+     *                 'attributes' => 'class="sub ok btn_sug"',
+     *                 'name'       => 'option_1',
+     *                 'id'         => 'option_1',
+     *                 'script'     => 'change_option1()',
+     *             ],
+     *         ],
+     *         [
+     *             'arguments' => [
+     *                 'label'      => __('Something is not quite right'),
+     *                 'type'       => 'button',
+     *                 'attributes' => 'class="sub ok btn_something"',
+     *                 'name'       => 'option_2',
+     *                 'id'         => 'option_2',
+     *                 'script'     => 'change_option2()',
+     *             ],
+     *         ],
+     *     ],
+     * ].
      *
      * @param array   $input  Definition of target block to be printed.
      * @param boolean $return Return as string or direct output.
+     * @param boolean $direct Avoid encapsulation if input print is direct.
      *
      * @return string HTML content.
      */
     public function printBlock(
         array $input,
-        bool $return=false
+        bool $return=false,
+        bool $direct=false
     ) {
         $output = '';
         if ($input['hidden'] == 1) {
@@ -217,38 +454,79 @@ class HTML
         }
 
         if (is_array($input['block_content']) === true) {
+            $direct = (bool) $input['direct'];
+            $toggle = (bool) $input['toggle'];
+
             // Print independent block of inputs.
-            if (isset($input['wrapper']) === true) {
-                $output .= '<li id="li-'.$input['block_id'].'" ';
-                $output .= ' class="'.$class.'">';
-                $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'"';
-                $output .= ' class="'.$class.'">';
-            } else {
-                $output .= '<li id="'.$input['block_id'].'" ';
-                $output .= ' class="'.$class.'">';
+            $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
+
+            if ($input['wrapper']) {
+                $output .= '<'.$input['wrapper'].' id="'.$input['block_id'].'" class="'.$class.'">';
             }
 
-            $output .= '<ul class="wizard '.$input['block_class'].'">';
-            foreach ($input['block_content'] as $input) {
-                $output .= self::printBlock($input, $return);
+            if (!$direct) {
+                // Avoid encapsulation if input is direct => 1.
+                $output .= '<ul class="wizard '.$input['block_class'].'">';
+            }
+
+            $html = '';
+
+            foreach ($input['block_content'] as $in) {
+                $html .= $this->printBlock(
+                    $in,
+                    $return,
+                    (bool) $direct
+                );
+            }
+
+            if ($toggle === true) {
+                $output .= ui_print_toggle(
+                    [
+                        'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                        'content'         => $html,
+                        'title'           => $input['toggle_title'],
+                        'id'              => $input['toggle_id'],
+                        'hidden_default'  => $input['toggle_hidden_default'],
+                        'return'          => (isset($input['toggle_return']) ? $input['toggle_return'] : true),
+                        'toggle_class'    => $input['toggle_toggle_class'],
+                        'main_class'      => $input['toggle_main_class'],
+                        'container_class' => $input['toggle_container_class'],
+                        'img_a'           => $input['toggle_img_a'],
+                        'img_b'           => $input['toggle_img_b'],
+                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                    ]
+                );
+            } else {
+                $output .= $html;
             }
 
             // Close block.
-            if (isset($input['wrapper']) === true) {
-                $output .= '</ul></'.$input['wrapper'].'>';
-            } else {
-                $output .= '</ul></li>';
+            if (!$direct) {
+                $output .= '</ul>';
             }
+
+            if ($input['wrapper']) {
+                $output .= '</'.$input['wrapper'].'>';
+            }
+
+            $output .= '</li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
-                $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
+                if (!$direct) {
+                    $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
+                }
+
                 $output .= '<label>'.$input['label'].'</label>';
-                $output .= self::printInput($input['arguments']);
+                $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
-                $output .= '</li>';
+                if (!$direct) {
+                    $output .= '</li>';
+                }
             } else {
-                $output .= self::printInput($input['arguments']);
+                $output .= $this->printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -259,89 +537,6 @@ class HTML
         }
 
         return $output;
-    }
-
-
-    /**
-     * Print a form.
-     *
-     * @param array   $data            Definition of target form to be printed.
-     * @param boolean $return          Return as string or direct output.
-     * @param boolean $print_white_box Print a white box.
-     *
-     * @return string HTML code.
-     */
-    public function printForm(
-        array $data,
-        bool $return=false,
-        bool $print_white_box=false
-    ) {
-        $form = $data['form'];
-        $inputs = $data['inputs'];
-        $js = $data['js'];
-        $rawjs = $data['js_block'];
-        $cb_function = $data['cb_function'];
-        $cb_args = $data['cb_args'];
-
-        $output_head = '<form id="'.$form['id'].'" ';
-        $output_head .= 'class="'.$form['class'].'" ';
-        $output_head .= 'onsubmit="'.$form['onsubmit'].'" ';
-        $output_head .= 'enctype="'.$form['enctype'].'" ';
-        $output_head .= 'action="'.$form['action'].'" ';
-        $output_head .= 'method="'.$form['method'].'" ';
-        $output_head .= $form['extra'].'>';
-
-        if ($return === false) {
-            echo $output_head;
-        }
-
-        try {
-            if (isset($cb_function) === true) {
-                call_user_func_array(
-                    $cb_function,
-                    (isset($cb_args) === true) ? $cb_args : []
-                );
-            }
-        } catch (Exception $e) {
-            error_log('Error executing wizard callback: ', $e->getMessage());
-        }
-
-        $output_submit = '';
-        $output = '';
-
-        if ($print_white_box === true) {
-            $output .= '<div class="white_box">';
-        }
-
-        $output .= '<ul class="wizard">';
-
-        foreach ($inputs as $input) {
-            if ($input['arguments']['type'] != 'submit') {
-                $output .= self::printBlock($input, true);
-            } else {
-                $output_submit .= self::printBlock($input, true);
-            }
-        }
-
-        $output .= '</ul>';
-
-        if ($print_white_box === true) {
-            $output .= '</div>';
-        }
-
-        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
-        $output .= '</form>';
-        $output .= '<script>'.$js.'</script>';
-        if ($rawjs) {
-            $output .= $rawjs;
-        }
-
-        if ($return === false) {
-            echo $output;
-        }
-
-        return $output_head.$output;
-
     }
 
 
@@ -376,7 +571,9 @@ class HTML
 
             $output .= '</ul></li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
@@ -479,7 +676,9 @@ class HTML
 
             $output .= '</ul></li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);
@@ -498,6 +697,84 @@ class HTML
         }
 
         return $output;
+    }
+
+
+    /**
+     * Print a form.
+     *
+     * @param array   $data            Definition of target form to be printed.
+     * @param boolean $return          Return as string or direct output.
+     * @param boolean $print_white_box Print a white box.
+     *
+     * @return string HTML code.
+     */
+    public function printForm(
+        array $data,
+        bool $return=false,
+        bool $print_white_box=false
+    ) {
+        $form = $data['form'];
+        $inputs = $data['inputs'];
+        $js = $data['js'];
+        $rawjs = $data['js_block'];
+        $cb_function = $data['cb_function'];
+        $cb_args = $data['cb_args'];
+
+        $output_head = '<form id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head .= '" '.$form['extra'].'>';
+
+        if ($return === false) {
+            echo $output_head;
+        }
+
+        try {
+            if (isset($cb_function) === true) {
+                call_user_func_array(
+                    $cb_function,
+                    (isset($cb_args) === true) ? $cb_args : []
+                );
+            }
+        } catch (Exception $e) {
+            error_log('Error executing wizard callback: ', $e->getMessage());
+        }
+
+        $output_submit = '';
+        $output = '';
+
+        if ($print_white_box === true) {
+            $output .= '<div class="white_box">';
+        }
+
+        $output .= '<ul class="wizard">';
+
+        foreach ($inputs as $input) {
+            if ($input['arguments']['type'] != 'submit') {
+                $output .= $this->printBlock($input, true);
+            } else {
+                $output_submit .= $this->printBlock($input, true);
+            }
+        }
+
+        $output .= '</ul>';
+
+        if ($print_white_box === true) {
+            $output .= '</div>';
+        }
+
+        $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= '</form>';
+        $output .= '<script>'.$js.'</script>';
+        if ($rawjs) {
+            $output .= $rawjs;
+        }
+
+        if ($return === false) {
+            echo $output;
+        }
+
+        return $output_head.$output;
+
     }
 
 
@@ -557,15 +834,18 @@ class HTML
                     $first_block_printed = true;
                 }
 
-                $output .= '<div class="edit_discovery_info" style="'.$row['style'].'">';
+                $output .= '<div class="edit_discovery_info '.$row['class'].'" style="'.$row['style'].'">';
 
                 foreach ($row['columns'] as $column) {
                     $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
                     $padding_left = isset($column['padding-left']) ? 'padding-left: '.$column['padding-left'].';' : 'padding-left: 0;';
                     $padding_right = isset($column['padding-right']) ? 'padding-right: '.$column['padding-right'].';' : 'padding-right: 0;';
                     $extra_styles = isset($column['style']) ? $column['style'] : '';
+                    $class = isset($column['class']) ? $column['class'] : '';
 
-                    $output .= '<div style="'.$width.$padding_left.$padding_right.$extra_styles.'">';
+                    $output .= '<div class="'.$class.'" ';
+                    $output .= ' style="'.$width.$padding_left.$padding_right;
+                    $output .= $extra_styles.'">';
 
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
@@ -669,15 +949,45 @@ class HTML
 
 
     /**
-     * Dumps html string to output.
+     * Print a big button element (huge image, big text and link).
      *
-     * @param mixed $html HTML content to be printed.
+     * @param array $data Element data (link, image...).
      *
-     * @return void
+     * @return void Only prints the element.
      */
-    public function render($html)
+    public static function printBigButtonElement($data)
     {
-        echo $html;
+        if (isset($data['url']) === false) {
+            $data['url'] = '#';
+        }
+
+        ?>
+        <li class="discovery">
+            <a href="<?php echo $data['url']; ?>">
+                <div class="data_container">
+                    <?php html_print_image($data['icon']); ?>
+                    <br><label id="text_wizard">
+                        <?php echo io_safe_output($data['label']); ?>
+                    </label>
+                </div>
+            </a>
+        </li>
+        <?php
+    }
+
+
+    /**
+     * Print a list of big buttons elements.
+     *
+     * @param array $list_data Array of data for printBigButtonElement.
+     *
+     * @return void Print the full list.
+     */
+    public static function printBigButtonsList($list_data)
+    {
+        echo '<ul class="bigbuttonlist">';
+        array_map('self::printBigButtonElement', $list_data);
+        echo '</ul>';
     }
 
 

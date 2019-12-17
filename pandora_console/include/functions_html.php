@@ -3793,3 +3793,25 @@ function html_print_autocomplete_users_from_integria(
         echo $output;
     }
 }
+
+
+function html_print_tabs(array $tabs)
+{
+    $result = '<div id="html-tabs">';
+    $result .= '<ul class="">';
+    foreach ($tabs as $key => $value) {
+        $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
+        $result .= html_print_image(
+            'images/'.$value['img'],
+            true
+        );
+        $result .= '<span>'.$value['name'].'</span>';
+        $result .= '</a></li>';
+    }
+
+    $result .= '</ul>';
+
+    $result .= '</div>';
+
+    return $result;
+}

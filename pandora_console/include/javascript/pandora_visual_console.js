@@ -1423,6 +1423,20 @@ function createOrUpdateVisualConsoleItem(
     title = "Update item";
   }
   // var props = item.props || {};
+
+  /*
+  var elementsVc = visualConsole.elements
+    .filter(function(item) {
+      return item.props.id;
+    })
+    .map(function(item) {
+      return {
+        value: item.props.id,
+        text: VisualConsole.itemDescriptiveName(item)
+      };
+    });
+  */
+
   load_modal({
     target: $("#modalVCItemForm"),
     form: "itemForm",
@@ -1448,11 +1462,19 @@ function createOrUpdateVisualConsoleItem(
       {
         name: "item",
         value: item
+      },
+      /*{
+        name: "elementsVc",
+        value: elementsVc
+      },*/
+      {
+        name: "vCId",
+        value: visualConsole.props.id
       }
     ],
     onshow: {
       page: "include/rest-api/index",
-      method: "loadForm"
+      method: "loadTabs"
     },
     onsubmit: {
       page: "include/rest-api/index",

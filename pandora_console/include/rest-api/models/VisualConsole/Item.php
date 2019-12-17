@@ -1699,18 +1699,15 @@ class Item extends CachedModel
      */
     protected static function getImageSrc(array $data)
     {
-        $imageSrc = static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'image',
-                    'imageSrc',
-                    'backgroundColor',
-                    'backgroundType',
-                    'valueType',
-                ]
-            ),
-            null
+        $imageSrc = static::issetInArray(
+            $data,
+            [
+                'image',
+                'imageSrc',
+                'backgroundColor',
+                'backgroundType',
+                'valueType',
+            ]
         );
 
         return $imageSrc;
@@ -1898,29 +1895,156 @@ class Item extends CachedModel
     {
         $inputs = [];
 
-        // Label.
-        $inputs[] = [
-            'label'     => __('Label'),
-            'id'        => 'div-label',
-            'arguments' => [
-                'name'   => 'Label',
-                'type'   => 'text',
-                'value'  => $values->label,
-                'return' => true,
-            ],
-        ];
+        switch ($values->tabSelected) {
+            case 'label':
+                // Label.
+                // TODO tinyMCE.
+                $inputs[] = [
+                    'label'     => __('Label'),
+                    'id'        => 'div-label',
+                    'arguments' => [
+                        'name'   => 'label',
+                        'type'   => 'text',
+                        'value'  => $values->label,
+                        'return' => true,
+                    ],
+                ];
+            break;
 
-        // Position.
-        $inputs[] = [
-            'label'     => __('Position'),
-            'id'        => 'div-label',
-            'arguments' => [
-                'name'   => 'position-x',
-                'type'   => 'text',
-                'value'  => $values->posX,
-                'return' => true,
-            ],
-        ];
+            case 'general':
+                // Size.
+                $inputs[] = [
+                    'block_id'      => 'size-item',
+                    'class'         => 'flex-row flex-start w100p',
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label' => __('Size'),
+                        ],
+                        [
+                            'label'     => __('width'),
+                            'arguments' => [
+                                'name'   => 'width',
+                                'type'   => 'number',
+                                'value'  => $values->width,
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'label'     => __('height'),
+                            'arguments' => [
+                                'name'   => 'height',
+                                'type'   => 'number',
+                                'value'  => $values->height,
+                                'return' => true,
+                            ],
+                        ],
+                    ],
+                ];
+
+                // Link enabled.
+                $inputs[] = [
+                    'label'     => __('Link enabled'),
+                    'arguments' => [
+                        'name'  => 'isLinkEnabled',
+                        'id'    => 'isLinkEnabled',
+                        'type'  => 'switch',
+                        'value' => $values->isLinkEnabled,
+                    ],
+                ];
+
+                // Show on top.
+                $inputs[] = [
+                    'label'     => __('Show on top'),
+                    'arguments' => [
+                        'name'  => 'isOnTop',
+                        'id'    => 'isOnTop',
+                        'type'  => 'switch',
+                        'value' => $values->isOnTop,
+                    ],
+                ];
+
+                // Position.
+                $inputs[] = [
+                    'block_id'      => 'position-item',
+                    'class'         => 'flex-row flex-start w100p',
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label' => __('Position'),
+                        ],
+                        [
+                            'label'     => __('X'),
+                            'arguments' => [
+                                'name'   => 'x',
+                                'type'   => 'number',
+                                'value'  => $values->x,
+                                'return' => true,
+                            ],
+                        ],
+                        [
+                            'label'     => __('Y'),
+                            'arguments' => [
+                                'name'   => 'y',
+                                'type'   => 'number',
+                                'value'  => $values->y,
+                                'return' => true,
+                            ],
+                        ],
+                    ],
+                ];
+
+                // Parent.
+                // TODO:XXX
+                $fields = get_parameter('elementsVc', []);
+                $fields[0] = __('None');
+
+                $inputs[] = [
+                    'label'     => __('Parent'),
+                    'arguments' => [
+                        'type'     => 'select',
+                        'fields'   => $fields,
+                        'name'     => 'parentId',
+                        'selected' => $values->parentId,
+                        'return'   => true,
+                    ],
+                ];
+
+                // Restrict access to group.
+                $inputs[] = [
+                    'label'     => __('Restrict access to group'),
+                    'arguments' => [
+                        'type'           => 'select_groups',
+                        'name'           => 'aclGroupId',
+                        'returnAllGroup' => true,
+                        'privilege'      => $values->access,
+                        'selected'       => $values->aclGroupId,
+                        'return'         => true,
+                    ],
+                ];
+
+                // Cache expiration.
+                $inputs[] = [
+                    'label'     => __('Cache expiration'),
+                    'arguments' => [
+                        'name'          => 'cacheExpiration',
+                        'type'          => 'interval',
+                        'value'         => $values->cacheExpiration,
+                        'nothing'       => __('None'),
+                        'nothing_value' => 0,
+                    ],
+                ];
+            break;
+
+            case 'specific':
+                // Override.
+                $inputs = [];
+            break;
+
+            default:
+                // Not possible.
+            break;
+        }
 
         return $inputs;
     }

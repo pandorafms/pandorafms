@@ -1289,6 +1289,10 @@ function config_update_config()
                         $error_update[] = __('Font size for items reports');
                     }
 
+                    if (!config_update_value('interval_description', (string) get_parameter('interval_description', 'large'))) {
+                        $error_update[] = __('Interval description');
+                    }
+
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
                         $error_update[] = __('Custom report front');
                     }
@@ -2811,6 +2815,10 @@ function config_process_config()
 
     if (!isset($config['font_size_item_report'])) {
         config_update_value('font_size_item_report', 2);
+    }
+
+    if (!isset($config['interval_description'])) {
+        config_update_value('interval_description', 'large');
     }
 
     if (!isset($config['custom_report_front_font'])) {

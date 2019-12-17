@@ -291,16 +291,18 @@ function reporting_make_reporting_data(
             $agents_to_macro = $content['id_agent'];
         }
 
-        // Metaconsole connection.
-        if (is_metaconsole()) {
-            $server = metaconsole_get_connection_names();
-            $connection = metaconsole_get_connection($server);
-            if (metaconsole_connect($connection) != NOERR) {
-                continue;
-            }
-        }
-
         if (isset($content['style']['name_label'])) {
+            $server_name = $content['server_name'];
+            $metaconsole_on = is_metaconsole();
+
+            // Metaconsole connection.
+            if ($metaconsole_on && $server_name != '') {
+                $connection = metaconsole_get_connection($server_name);
+                if (!metaconsole_load_external_db($connection)) {
+                    continue;
+                }
+            }
+
             // Add macros name.
             $items_label = [];
             $items_label['type'] = $content['type'];
@@ -309,8 +311,6 @@ function reporting_make_reporting_data(
             $items_label['modules'] = $modules_to_macro;
             $items_label['agents'] = $agents_to_macro;
             $items_label['visual_format'] = $visual_format;
-            $metaconsole_on = is_metaconsole();
-            $server_name = $content['server_name'];
 
             $items_label['agent_description'] = agents_get_description(
                 $content['id_agent']
@@ -5092,37 +5092,13 @@ function reporting_sql($report, $content)
     }
 
     if ($content['treport_custom_sql_id'] != 0) {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        '`sql`',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-
-            case 'postgresql':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        '"sql"',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-
-            case 'oracle':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        'sql',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-        }
+        $sql = io_safe_output(
+            db_get_value_filter(
+                '`sql`',
+                'treport_custom_sql',
+                ['id' => $content['treport_custom_sql_id']]
+            )
+        );
     } else {
         $sql = io_safe_output($content['external_source']);
     }
@@ -5150,10 +5126,6 @@ function reporting_sql($report, $content)
             );
         } else {
             $historical_db = $content['historical_db'];
-        }
-
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
         }
 
         $result = db_get_all_rows_sql($sql, $historical_db);
@@ -7551,12 +7523,10 @@ function reporting_custom_graph(
 
     if ($type_report == 'custom_graph') {
         if (is_metaconsole()) {
-            $servers = metaconsole_get_connection_names();
-            foreach ($servers as $server) {
-                $connection = metaconsole_get_connection($server);
-                if (metaconsole_connect($connection) != NOERR) {
-                    continue;
-                }
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server  = metaconsole_get_connection_by_id($id_meta);
+            if (metaconsole_connect($server) != NOERR) {
+                return false;
             }
         }
     }

@@ -1196,16 +1196,23 @@ $row++;
     if ($config['prominent_time'] == 'comparation') {
         $timestamp = false;
         $comparation = true;
+        $compact = false;
     } else if ($config['prominent_time'] == 'timestamp') {
         $timestamp = true;
         $comparation = false;
+        $compact = false;
+    } else if ($config['prominent_time'] == 'compact') {
+        $timestamp = false;
+        $comparation = false;
+        $compact = true;
     }
 
-    $table_other->data[$row][0] = __('Timestamp or time comparation');
-    $table_other->data[$row][1] = __('Comparation in rollover').' ';
-    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'comparation', '', $comparation, true);
-    $table_other->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
-    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'timestamp', '', $timestamp, true);
+    $table_other->data[$row][0] = __('Timestamp, time comparison, or compact mode');
+    $table_other->data[$row][1] = '<div class="switch_radio_button">';
+    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'comparation', __('Comparation in rollover'), $comparation, true);
+    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'timestamp', __('Timestamp in rollover'), $timestamp, true);
+    $table_other->data[$row][1] .= html_print_radio_button('prominent_time', 'compact', __('Compact mode'), $compact, true);
+    $table_other->data[$row][1] .= '</div>';
 
     $row++;
 

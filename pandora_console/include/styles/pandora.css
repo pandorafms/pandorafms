@@ -590,6 +590,10 @@ select:-internal-list-box {
 .no-border {
   border: none;
 }
+.no-border-imp,
+.no-border-imp > div {
+  border: none !important;
+}
 .no-padding {
   padding: 0;
 }

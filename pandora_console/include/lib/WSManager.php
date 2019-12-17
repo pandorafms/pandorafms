@@ -152,7 +152,7 @@ class WSManager extends WebSocketServer
      */
     public function __construct(
         $listen_addr,
-        $listen_port,
+        int $listen_port,
         $connected=[],
         $process=[],
         $processRaw=[],
@@ -271,11 +271,19 @@ class WSManager extends WebSocketServer
     {
         global $config;
 
-        $php_session_id = \str_replace(
-            'PHPSESSID=',
-            '',
-            $user->headers['cookie']
+        $match;
+        $php_session_id = '';
+        \preg_match(
+            '/PHPSESSID=(.*)/',
+            $user->headers['cookie'],
+            $match
         );
+
+        if (is_array($match) === true) {
+                $php_session_id = $match[1];
+        }
+
+        $php_session_id = \preg_replace('/;.*$/', '', $php_session_id);
 
         // If being redirected from proxy.
         if (isset($user->headers['x-forwarded-for']) === true) {

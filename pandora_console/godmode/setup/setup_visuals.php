@@ -1051,6 +1051,19 @@ $row++;
     $table_report->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
     $row++;
 
+    $interval_description = [
+        'large' => 'Long',
+        'tiny'  => 'Short',
+    ];
+    $table_report->data[$row][0] = __('Interval description');
+    $table_report->data[$row][0] .= ui_print_help_tip(
+        __('A long interval description is for example 10 hours, 20 minutes 33 seconds”, a short one is 10h 20m 33s'),
+        true
+    );
+    $table_report->data[$row][1] = html_print_select($interval_description, 'interval_description', $config['interval_description'], '', '', '', true, false, false);
+
+    $row++;
+
     // ----------------------------------------------------------------------
     $dirItems = scandir($config['homedir'].'/images/custom_logo');
     foreach ($dirItems as $entryDir) {

@@ -60,7 +60,10 @@ if (users_is_admin()) {
 }
 
 if (!$action_update_url_update_manager) {
-    $url_update_manager = get_parameter('url_update_manager', $config['url_update_manager']);
+    $url_update_manager = get_parameter(
+        'url_update_manager',
+        $config['url_update_manager']
+    );
     $update_manager_proxy_server = get_parameter(
         'update_manager_proxy_server',
         $config['update_manager_proxy_server']
@@ -162,7 +165,7 @@ if (!$action_update_url_update_manager) {
         if ($result) {
             $result = config_update_value(
                 'update_manager_proxy_password',
-                $update_manager_proxy_password
+                io_input_password($update_manager_proxy_password)
             );
         }
 

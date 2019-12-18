@@ -35,6 +35,16 @@ table.header_table {
 table.header_table thead tr th,
 table.header_table tbody tr td {
   padding: 10px;
+  background-color: #acacac;
+}
+
+table thead tr th {
+  background-color: #acacac;
+}
+
+table thead tr th.title_table_pdf {
+  background-color: #d6d6d6;
+  color: #1c1c1c;
 }
 
 thead.header_tr tr {
@@ -52,7 +62,7 @@ thead.header_tr tr th.th_first {
 }
 
 thead.header_tr tr th.th_description {
-  background-color: #f5f5f5;
+  background-color: #fafafa;
   color: #1c1c1c;
   text-align: justify;
 }
@@ -79,6 +89,10 @@ th.title_table_pdf {
 
 table.table_agent_module tr td {
   padding: 5px;
+}
+
+table.header_table tbody tr td {
+  background-color: #fafafa;
 }
 
 /* TABLE OF CONTENTS */

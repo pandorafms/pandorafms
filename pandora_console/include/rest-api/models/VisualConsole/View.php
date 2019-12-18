@@ -160,40 +160,136 @@ class View extends \HTML
      */
     public function processForm()
     {
+        global $config;
+
+        hd('++++++++++++++++++++++++++++++++++++', true);
         hd($_POST, true);
+        hd('++++++++++++++++++++++++++++++++++++', true);
+
+        $item = json_decode(io_safe_output(\get_parameter('item')), true);
 
         // Inserted data in new item.
-        // $data = json_decode($_REQUEST['item'])->itemProps;
         $vCId = \get_parameter('vCId', 0);
 
-        $data['type'] = 0;
-        $data['label'] = \get_parameter('label', 'vacio');
+        $data['type'] = $item['itemProps']['type'];
 
-        $class = VisualConsole::getItemClass((int) $data['type']);
-        try {
-            // Save the new item.
-            $data['id_layout'] = $vCId;
-            hd($data, true);
-            $result = $class::save($data);
-        } catch (\Throwable $th) {
-            // There is no item in the database.
-            // hd($th, true);
-            echo false;
-            return;
-        }
+        // Page Label.
+        $data['label'] = \get_parameter('label');
 
-        /*
+        // Page general.
+        $data['width'] = \get_parameter('width');
+        $data['height'] = \get_parameter('height');
+        $data['x'] = \get_parameter('x');
+        $data['y'] = \get_parameter('y');
+        $data['isLinkEnabled'] = \get_parameter('isLinkEnabled');
+        $data['isOnTop'] = \get_parameter('isOnTop');
+        $data['parentId'] = \get_parameter('parentId');
+        $data['aclGroupId'] = \get_parameter('aclGroupId');
+        $data['cacheExpiration_select'] = \get_parameter(
+            'cacheExpiration_select'
+        );
+        $data['cacheExpiration_text'] = \get_parameter('cacheExpiration_text');
+        $data['cacheExpiration'] = \get_parameter('cacheExpiration');
+        $data['cacheExpiration_units'] = \get_parameter(
+            'cacheExpiration_units'
+        );
+
+        // Page specific.
+        $data['imageSrc'] = \get_parameter('imageSrc');
+        $data['agentId'] = \get_parameter('agentId');
+        $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+        $data['agentAlias'] = \get_parameter('agentAlias');
+        $data['showLastValueTooltip'] = \get_parameter('showLastValueTooltip');
+
+        if (isset($item['itemProps']['id']) === false) {
+            // CreateVC.
+            $class = VisualConsole::getItemClass((int) $data['type']);
+            try {
+                // Save the new item.
+                $data['id_layout'] = $vCId;
+                $itemId = $class::save($data);
+                hd('he creado:'.$itemId, true);
+            } catch (\Throwable $th) {
+                // Bad params.
+                http_response_code(400);
+                return false;
+            }
+
             // Extract data new item inserted.
             try {
-            $item = VisualConsole::getItemFromDB($result);
+                $item = VisualConsole::getItemFromDB($itemId);
+                $result = $item->toArray();
             } catch (Throwable $e) {
-            // Bad params.
-            http_response_code(400);
-            return;
+                // Bad params.
+                http_response_code(400);
+                return false;
             }
-        */
+        } else {
+            // UpdateVC.
+            $itemId = $item['itemProps']['id'];
 
-        return json_encode(['error' => obhd($item)]);
+            try {
+                $item = VisualConsole::getItemFromDB($itemId);
+            } catch (Throwable $e) {
+                // Bad params.
+                http_response_code(400);
+                return false;
+            }
+
+            $itemData = $item->toArray();
+            $itemType = $itemData['type'];
+            $itemAclGroupId = $itemData['aclGroupId'];
+
+            // ACL.
+            $aclRead = check_acl($config['id_user'], $itemAclGroupId, 'VR');
+            $aclWrite = check_acl($config['id_user'], $itemAclGroupId, 'VW');
+            $aclManage = check_acl($config['id_user'], $itemAclGroupId, 'VM');
+
+            if (!$aclRead && !$aclWrite && !$aclManage) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access visual console without group access'
+                );
+                http_response_code(403);
+                return false;
+            }
+
+            // Check also the group Id for the group item.
+            if ($itemType === GROUP_ITEM) {
+                $itemGroupId = $itemData['groupId'];
+                // ACL.
+                $aclRead = check_acl($config['id_user'], $itemGroupId, 'VR');
+                $aclWrite = check_acl($config['id_user'], $itemGroupId, 'VW');
+                $aclManage = check_acl($config['id_user'], $itemGroupId, 'VM');
+
+                if (!$aclRead && !$aclWrite && !$aclManage) {
+                    db_pandora_audit(
+                        'ACL Violation',
+                        'Trying to access visual console without group access'
+                    );
+                    http_response_code(403);
+                    return false;
+                }
+            }
+
+            if (is_array($data) === true && empty($data) === false) {
+                try {
+                    // Save the new item.
+                    $data['id_layout'] = $vCId;
+                    $data['id'] = $itemId;
+                    $item->save($data);
+                    hd('he actualizado: '.$itemId, true);
+                    $result = $item->toArray();
+                } catch (\Throwable $th) {
+                    // There is no item in the database.
+                    echo false;
+                    return false;
+                }
+            }
+        }
+
+        hd($result, true);
+        return json_encode($result);
     }
 
 

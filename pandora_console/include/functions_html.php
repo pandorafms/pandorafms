@@ -3639,6 +3639,74 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_multicheck($data);
         break;
 
+        case 'autocomplete_agent':
+            /*
+                if (is_metaconsole() === true) {
+                $connection = metaconsole_get_connection($server_name);
+                $agent_name = '';
+
+                if (metaconsole_load_external_db($connection) == NOERR) {
+                    $agent_name = db_get_value_filter(
+                        'alias',
+                        'tagente',
+                        ['id_agente' => $idAgent]
+                    );
+                }
+
+                // Append server name.
+                if (!empty($agent_name)) {
+                    $agent_name .= ' ('.$server_name.')';
+                }
+
+                // Restore db connection.
+                metaconsole_restore_db();
+                } else {
+
+                }
+            */
+            $agent_name = '';
+            if (isset($data['id_agent_hidden']) === true
+                && empty($data['id_agent_hidden']) === false
+            ) {
+                $agent_name = agents_get_alias($data['id_agent_hidden']);
+            }
+
+            $params = [];
+            $params['return'] = $data['return'];
+            $params['show_helptip'] = false;
+            $params['input_name'] = $data['name'];
+            $params['value'] = $agent_name;
+            $params['javascript_is_function_select'] = true;
+            // $params['selectbox_id'] = 'id_agent_module';
+            // $params['add_none_module'] = true;
+            $params['use_hidden_input_idagent'] = true;
+            $params['hidden_input_idagent_id'] = 'hidden-'.$data['name_agent_hidden'];
+            /*
+                if (is_metaconsole()) {
+                $params['use_input_id_server'] = true;
+                $params['input_id_server_id'] = 'hidden-server_id';
+                $params['metaconsole_enabled'] = true;
+                $params['input_id'] = 'agent_autocomplete_events';
+                $params['javascript_page'] = 'include/ajax/agent';
+                $params['input_name'] = 'agent_text';
+                }
+            */
+
+            $output .= html_print_input_hidden(
+                $data['name_agent_hidden'],
+                $data['id_agent_hidden'],
+                $data['return']
+            );
+            // $output .= html_print_input_hidden('server_name', $server_name);
+            $output .= html_print_input_hidden(
+                $data['name_server_hidden'],
+                $data['server_id_hidden'],
+                $data['return']
+            );
+            // $output .= html_print_input_hidden('id_server', '');
+            $output .= ui_print_agent_autocomplete_input($params);
+        break;
+
         default:
             // Ignore.
         break;

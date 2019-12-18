@@ -1439,18 +1439,25 @@ function createOrUpdateVisualConsoleItem(
 
   load_modal({
     target: $("#modalVCItemForm"),
-    form: "itemForm",
+    form: ["itemForm-label", "itemForm-general", "itemForm-specific"],
     url: baseUrl + "ajax.php",
     ajax_callback: function(response) {
-      var item = handleFormResponse(response);
+      var data = JSON.parse(response); //handleFormResponse(response);
+      console.log(data);
 
-      if (item == false) {
+      if (data == false) {
         // Error.
         return;
       }
 
-      // Success.
-      console.log(item);
+      $("#modalVCItemForm").dialog("close");
+      if (item.itemProps.id) {
+        visualConsole.updateElement(data);
+      } else {
+        data["receivedAt"] = new Date();
+        var newItem = visualConsole.addElement(data);
+        newItem.setMeta({ editMode: true });
+      }
     },
     cleanup: cleanupDOM,
     modal: {
@@ -1463,14 +1470,14 @@ function createOrUpdateVisualConsoleItem(
         name: "item",
         value: item
       },
-      /*{
-        name: "elementsVc",
-        value: elementsVc
-      },*/
       {
         name: "vCId",
         value: visualConsole.props.id
       }
+      /*{
+        name: "elementsVc",
+        value: elementsVc
+      },*/
     ],
     onshow: {
       page: "include/rest-api/index",

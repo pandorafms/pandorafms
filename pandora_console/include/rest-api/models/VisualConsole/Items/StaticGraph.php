@@ -256,7 +256,56 @@ final class StaticGraph extends Item
         $inputs = Item::getFormInputs($values);
 
         if (is_array($inputs) !== true) {
-            throw new Exception('[StaticGraph]::getFormInputs parent class return is not an array');
+            throw new Exception(
+                '[StaticGraph]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values->tabSelected === 'specific') {
+            // List images VC.
+            // TODO: Show images.
+            $inputs[] = [
+                'label'     => __('Image'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => self::getListImagesVC(),
+                    'name'     => 'imageSrc',
+                    'selected' => $values->imageSrc,
+                    'return'   => true,
+                ],
+            ];
+
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values->agentId,
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values->metaconsoleId,
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                ],
+            ];
+
+            $fields = [
+                'default'  => __('Hide last value on boolean modules'),
+                'disabled' => __('Disabled'),
+                'enabled'  => __('Enabled'),
+            ];
+
+            // Show Last Value.
+            $inputs[] = [
+                'label'     => __('Show Last Value'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'showLastValueTooltip',
+                    'selected' => $values->showLastValueTooltip,
+                    'return'   => true,
+                ],
+            ];
         }
 
         return $inputs;

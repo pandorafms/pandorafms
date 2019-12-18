@@ -1942,28 +1942,6 @@ class Item extends CachedModel
                     ],
                 ];
 
-                // Link enabled.
-                $inputs[] = [
-                    'label'     => __('Link enabled'),
-                    'arguments' => [
-                        'name'  => 'isLinkEnabled',
-                        'id'    => 'isLinkEnabled',
-                        'type'  => 'switch',
-                        'value' => $values->isLinkEnabled,
-                    ],
-                ];
-
-                // Show on top.
-                $inputs[] = [
-                    'label'     => __('Show on top'),
-                    'arguments' => [
-                        'name'  => 'isOnTop',
-                        'id'    => 'isOnTop',
-                        'type'  => 'switch',
-                        'value' => $values->isOnTop,
-                    ],
-                ];
-
                 // Position.
                 $inputs[] = [
                     'block_id'      => 'position-item',
@@ -1991,6 +1969,28 @@ class Item extends CachedModel
                                 'return' => true,
                             ],
                         ],
+                    ],
+                ];
+
+                // Link enabled.
+                $inputs[] = [
+                    'label'     => __('Link enabled'),
+                    'arguments' => [
+                        'name'  => 'isLinkEnabled',
+                        'id'    => 'isLinkEnabled',
+                        'type'  => 'switch',
+                        'value' => $values->isLinkEnabled,
+                    ],
+                ];
+
+                // Show on top.
+                $inputs[] = [
+                    'label'     => __('Show on top'),
+                    'arguments' => [
+                        'name'  => 'isOnTop',
+                        'id'    => 'isOnTop',
+                        'type'  => 'switch',
+                        'value' => $values->isOnTop,
                     ],
                 ];
 
@@ -2047,6 +2047,56 @@ class Item extends CachedModel
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * List images for Vc Icons.
+     *
+     * @return array
+     */
+    public function getListImagesVC():array
+    {
+        global $config;
+
+        $result = [];
+
+        // Extract images.
+        $all_images = \list_files(
+            $config['homedir'].'/images/console/icons/',
+            'png',
+            1,
+            0
+        );
+
+        if (isset($all_images) === true && is_array($all_images) === true) {
+            $base_url = \ui_get_full_url(
+                '/images/console/icons/',
+                false,
+                false,
+                false
+            );
+
+            foreach ($all_images as $image_file) {
+                $image_file = substr($image_file, 0, (strlen($image_file) - 4));
+
+                if (strpos($image_file, '_bad') !== false) {
+                    continue;
+                }
+
+                if (strpos($image_file, '_ok') !== false) {
+                    continue;
+                }
+
+                if (strpos($image_file, '_warning') !== false) {
+                    continue;
+                }
+
+                $result[$image_file] = $image_file;
+            }
+        }
+
+        return $result;
     }
 
 

@@ -179,6 +179,7 @@ if (!$action_update_url_update_manager) {
 }
 
 echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
+html_print_input_hidden('update_config', 1);
 
 $table = new stdClass();
 $table->width = '100%';
@@ -259,6 +260,7 @@ if (license_free()) {
 }
 
 html_print_input_hidden('action_update_url_update_manager', 1);
+html_print_input_hidden('update_config', 1);
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

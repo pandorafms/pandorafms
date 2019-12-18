@@ -148,8 +148,15 @@ function config_update_config()
 
     $error_update = [];
 
-    $sec2 = get_parameter_get('sec2');
+    $sec2 = get_parameter('sec2');
+
     switch ($sec2) {
+        case 'godmode/update_manager/update_manager':
+            if (!config_update_value('update_manager_proxy_password', io_input_password(get_parameter('update_manager_proxy_password', $config['update_manager_proxy_password'])))) {
+                $error_update[] = __('update manager');
+            }
+        break;
+
         case 'godmode/setup/setup':
             $section_setup = get_parameter('section');
             // MAIN SETUP.
@@ -2891,13 +2898,6 @@ function config_process_config()
     if (!isset($config['update_manager_proxy_user'])) {
         config_update_value(
             'update_manager_proxy_user',
-            ''
-        );
-    }
-
-    if (!isset($config['update_manager_proxy_password'])) {
-        config_update_value(
-            'update_manager_proxy_password',
             ''
         );
     }

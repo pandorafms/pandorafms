@@ -152,7 +152,7 @@ function config_update_config()
 
     switch ($sec2) {
         case 'godmode/update_manager/update_manager':
-            if (!config_update_value('update_manager_proxy_password', io_input_password(get_parameter('update_manager_proxy_password', $config['update_manager_proxy_password'])))) {
+            if (!config_update_value('update_manager_proxy_password', io_input_password((string) get_parameter('update_manager_proxy_password', $config['update_manager_proxy_password'])))) {
                 $error_update[] = __('update manager');
             }
         break;
@@ -2898,6 +2898,13 @@ function config_process_config()
     if (!isset($config['update_manager_proxy_user'])) {
         config_update_value(
             'update_manager_proxy_user',
+            ''
+        );
+    }
+
+    if (!isset($config['update_manager_proxy_password'])) {
+        config_update_value(
+            'update_manager_proxy_password',
             ''
         );
     }

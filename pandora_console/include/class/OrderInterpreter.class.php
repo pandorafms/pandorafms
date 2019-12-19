@@ -97,6 +97,7 @@ class OrderInterpreter extends Wizard
     public function __construct(
         $ajax_controller='include/ajax/order_interpreter'
     ) {
+        global $config;
         $this->ajaxController = $ajax_controller;
 
         $this->pages_menu = [
@@ -108,6 +109,15 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=view&sec2=operation/agentes/tactical'
                 ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'AR'
+                ) || check_acl(
+                    $config['id_user'],
+                    0,
+                    'AW'
+                ),
             ],
             [
                 'name' => __('Agent Management'),
@@ -116,6 +126,15 @@ class OrderInterpreter extends Wizard
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'AW'
+                ) && check_acl(
+                    $config['id_user'],
+                    0,
+                    'AD'
                 ),
             ],
             [
@@ -126,6 +145,13 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=general&sec2=godmode/setup/setup&section=general'
                 ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'PM'
+                ) || is_user_admin(
+                    $config['id_user']
+                ),
             ],
             [
                 'name' => __('Manage Policies'),
@@ -134,6 +160,11 @@ class OrderInterpreter extends Wizard
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'AW'
                 ),
             ],
             [
@@ -144,6 +175,21 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=galertas&sec2=godmode/alerts/alert_list'
                 ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'LW'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'AD'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'LM'
+                ),
             ],
             [
                 'name' => __('View Events'),
@@ -152,6 +198,21 @@ class OrderInterpreter extends Wizard
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=eventos&sec2=operation/events/events'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'ER'
+                ) ||
+                check_acl(
+                    $config['id_user'],
+                    0,
+                    'EW'
+                ) ||
+                check_acl(
+                    $config['id_user'],
+                    0,
+                    'EM'
                 ),
             ],
             [
@@ -162,6 +223,11 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=reporting&sec2=enterprise/dashboard/dashboards'
                 ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'RR'
+                ),
             ],
             [
                 'name' => __('Visual Console'),
@@ -170,6 +236,11 @@ class OrderInterpreter extends Wizard
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=network&sec2=godmode/reporting/map_builder'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'VW'
                 ),
             ],
             [
@@ -180,6 +251,11 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=gservers&sec2=godmode/servers/modificar_server'
                 ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'AW'
+                ),
             ],
             [
                 'name' => __('Edit User'),
@@ -189,6 +265,7 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=workspace&sec2=operation/users/user_edit'
                 ),
+                'acl'  => true,
             ],
             [
                 'name' => __('Tree View'),
@@ -198,6 +275,7 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=view&sec2=operation/tree'
                 ),
+                'acl'  => true,
             ],
             [
                 'name' => __('Network Component'),
@@ -206,6 +284,11 @@ class OrderInterpreter extends Wizard
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'PM'
                 ),
             ],
             [
@@ -216,6 +299,41 @@ class OrderInterpreter extends Wizard
                 'url'  => ui_get_full_url(
                     'index.php?sec=discovery&sec2=godmode/servers/discovery&wiz=tasklist'
                 ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'AR'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'AW'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'AM'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'RR'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'RW'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'RM'
+                )
+                || check_acl(
+                    $config['id_user'],
+                    0,
+                    'PM'
+                ),
             ],
             [
                 'name' => __('Update Manager'),
@@ -224,6 +342,25 @@ class OrderInterpreter extends Wizard
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=setup'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'PM'
+                ) && is_user_admin($config['id_user']),
+            ],
+            [
+                'name' => __('Manage Agent Groups'),
+                'icon' => ui_get_full_url(
+                    'images/gm_users.menu_gray.png'
+                ),
+                'url'  => ui_get_full_url(
+                    'index.php?sec=gagente&sec2=godmode/groups/group_list&tab=groups'
+                ),
+                'acl'  => check_acl(
+                    $config['id_user'],
+                    0,
+                    'PM'
                 ),
             ],
 
@@ -239,6 +376,8 @@ class OrderInterpreter extends Wizard
      */
     public function getResult()
     {
+        global $config;
+
         // Take value from input search.
         $text = get_parameter('text', '');
         $array_found = [];
@@ -253,7 +392,7 @@ class OrderInterpreter extends Wizard
                 if (preg_match(
                     '/.*'.io_safe_output($text).'.*/i',
                     __('GO TO '.$value['name'])
-                )
+                ) && $value['acl']
                 ) {
                     if ($iterator <= 9) {
                         echo '<li class="list_found" name="'.$iterator.'" id="'.$iterator.'">';

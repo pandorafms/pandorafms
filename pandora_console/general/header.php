@@ -637,12 +637,12 @@ if ($config['menu_type'] == 'classic') {
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
     
     function showinterpreter(){
-        
+
         document.onclick = function(e) {
             $('#result_order').hide();
             $('#keywords').addClass('search_input');
             $('#keywords').removeClass('results-found');
-            $('#keywords')..value = '';
+            $('#keywords').value = '';
             $('#keywords').attr('placeholder','Enter keywords to search');
         }
 

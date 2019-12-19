@@ -423,6 +423,10 @@ class OrderInterpreter extends Wizard
                   + '.$more_results.' '.__('results found').'</div>';
             }
 
+            if ($iterator === 0) {
+                echo __('No results found');
+            }
+
             echo '</div>';
         }
     }

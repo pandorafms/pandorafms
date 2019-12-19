@@ -2161,7 +2161,13 @@ function load_modal(settings) {
                       formdata.append(this.name, $(this).prop("files")[0]);
                     }
                   } else {
-                    formdata.append(this.name, $(this).val());
+                    if ($(this).attr("type") == "checkbox") {
+                      if (this.checked) {
+                        formdata.append(this.name, "on");
+                      }
+                    } else {
+                      formdata.append(this.name, $(this).val());
+                    }
                   }
                 });
               } else {
@@ -2172,7 +2178,13 @@ function load_modal(settings) {
                         formdata.append(this.name, $(this).prop("files")[0]);
                       }
                     } else {
-                      formdata.append(this.name, $(this).val());
+                      if ($(this).attr("type") == "checkbox") {
+                        if (this.checked) {
+                          formdata.append(this.name, "on");
+                        }
+                      } else {
+                        formdata.append(this.name, $(this).val());
+                      }
                     }
                   });
                 });

@@ -244,13 +244,13 @@ final class StaticGraph extends Item
     /**
      * Generates inputs for form (specific).
      *
-     * @param object $values Default values.
+     * @param array $values Default values.
      *
      * @return array Of inputs.
      *
      * @throws Exception On error.
      */
-    public static function getFormInputs(object $values): array
+    public static function getFormInputs(array $values): array
     {
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
@@ -261,7 +261,7 @@ final class StaticGraph extends Item
             );
         }
 
-        if ($values->tabSelected === 'specific') {
+        if ($values['tabSelected'] === 'specific') {
             // List images VC.
             // TODO: Show images.
             $inputs[] = [
@@ -270,7 +270,7 @@ final class StaticGraph extends Item
                     'type'     => 'select',
                     'fields'   => self::getListImagesVC(),
                     'name'     => 'imageSrc',
-                    'selected' => $values->imageSrc,
+                    'selected' => $values['imageSrc'],
                     'return'   => true,
                 ],
             ];
@@ -281,31 +281,33 @@ final class StaticGraph extends Item
                 'arguments' => [
                     'type'               => 'autocomplete_agent',
                     'name'               => 'agentAlias',
-                    'id_agent_hidden'    => $values->agentId,
+                    'id_agent_hidden'    => $values['agentId'],
                     'name_agent_hidden'  => 'agentId',
-                    'server_id_hidden'   => $values->metaconsoleId,
+                    'server_id_hidden'   => $values['metaconsoleId'],
                     'name_server_hidden' => 'metaconsoleId',
                     'return'             => true,
                 ],
             ];
 
+            // Show Last Value.
             $fields = [
                 'default'  => __('Hide last value on boolean modules'),
                 'disabled' => __('Disabled'),
                 'enabled'  => __('Enabled'),
             ];
 
-            // Show Last Value.
             $inputs[] = [
                 'label'     => __('Show Last Value'),
                 'arguments' => [
                     'type'     => 'select',
                     'fields'   => $fields,
                     'name'     => 'showLastValueTooltip',
-                    'selected' => $values->showLastValueTooltip,
+                    'selected' => $values['showLastValueTooltip'],
                     'return'   => true,
                 ],
             ];
+
+            // TODO:XXXX LinkConsoleInputGroup
         }
 
         return $inputs;

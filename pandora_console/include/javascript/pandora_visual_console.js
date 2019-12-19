@@ -353,9 +353,6 @@ function createVisualConsole(
       }
     },
     createItem: function(typeString) {
-      //TODO:XXX
-      console.log(typeString);
-
       var type;
       switch (typeString) {
         case "STATIC_GRAPH":
@@ -1467,12 +1464,16 @@ function createOrUpdateVisualConsoleItem(
     },
     extradata: [
       {
-        name: "item",
-        value: item
+        name: "type",
+        value: item.itemProps.type
       },
       {
         name: "vCId",
         value: visualConsole.props.id
+      },
+      {
+        name: "itemId",
+        value: item.itemProps.id ? item.itemProps.id : 0
       }
       /*{
         name: "elementsVc",

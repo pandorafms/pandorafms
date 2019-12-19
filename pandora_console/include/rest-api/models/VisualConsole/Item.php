@@ -1887,15 +1887,15 @@ class Item extends CachedModel
     /**
      * Generates inputs for form (global, common).
      *
-     * @param object $values Default values.
+     * @param array $values Default values.
      *
      * @return array Of inputs.
      */
-    public static function getFormInputs(object $values): array
+    public static function getFormInputs(array $values): array
     {
         $inputs = [];
 
-        switch ($values->tabSelected) {
+        switch ($values['tabSelected']) {
             case 'label':
                 // Label.
                 // TODO tinyMCE.
@@ -1905,7 +1905,7 @@ class Item extends CachedModel
                     'arguments' => [
                         'name'   => 'label',
                         'type'   => 'text',
-                        'value'  => $values->label,
+                        'value'  => $values['label'],
                         'return' => true,
                     ],
                 ];
@@ -1926,7 +1926,7 @@ class Item extends CachedModel
                             'arguments' => [
                                 'name'   => 'width',
                                 'type'   => 'number',
-                                'value'  => $values->width,
+                                'value'  => $values['width'],
                                 'return' => true,
                             ],
                         ],
@@ -1935,7 +1935,7 @@ class Item extends CachedModel
                             'arguments' => [
                                 'name'   => 'height',
                                 'type'   => 'number',
-                                'value'  => $values->height,
+                                'value'  => $values['height'],
                                 'return' => true,
                             ],
                         ],
@@ -1956,7 +1956,7 @@ class Item extends CachedModel
                             'arguments' => [
                                 'name'   => 'x',
                                 'type'   => 'number',
-                                'value'  => $values->x,
+                                'value'  => $values['x'],
                                 'return' => true,
                             ],
                         ],
@@ -1965,7 +1965,7 @@ class Item extends CachedModel
                             'arguments' => [
                                 'name'   => 'y',
                                 'type'   => 'number',
-                                'value'  => $values->y,
+                                'value'  => $values['y'],
                                 'return' => true,
                             ],
                         ],
@@ -1979,7 +1979,7 @@ class Item extends CachedModel
                         'name'  => 'isLinkEnabled',
                         'id'    => 'isLinkEnabled',
                         'type'  => 'switch',
-                        'value' => $values->isLinkEnabled,
+                        'value' => $values['isLinkEnabled'],
                     ],
                 ];
 
@@ -1990,7 +1990,7 @@ class Item extends CachedModel
                         'name'  => 'isOnTop',
                         'id'    => 'isOnTop',
                         'type'  => 'switch',
-                        'value' => $values->isOnTop,
+                        'value' => $values['isOnTop'],
                     ],
                 ];
 
@@ -2005,7 +2005,7 @@ class Item extends CachedModel
                         'type'     => 'select',
                         'fields'   => $fields,
                         'name'     => 'parentId',
-                        'selected' => $values->parentId,
+                        'selected' => $values['parentId'],
                         'return'   => true,
                     ],
                 ];
@@ -2017,8 +2017,8 @@ class Item extends CachedModel
                         'type'           => 'select_groups',
                         'name'           => 'aclGroupId',
                         'returnAllGroup' => true,
-                        'privilege'      => $values->access,
-                        'selected'       => $values->aclGroupId,
+                        'privilege'      => $values['access'],
+                        'selected'       => $values['aclGroupId'],
                         'return'         => true,
                     ],
                 ];
@@ -2029,7 +2029,7 @@ class Item extends CachedModel
                     'arguments' => [
                         'name'          => 'cacheExpiration',
                         'type'          => 'interval',
-                        'value'         => $values->cacheExpiration,
+                        'value'         => $values['cacheExpiration'],
                         'nothing'       => __('None'),
                         'nothing_value' => 0,
                     ],

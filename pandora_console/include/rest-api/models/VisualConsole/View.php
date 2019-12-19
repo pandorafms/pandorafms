@@ -32,6 +32,7 @@ use Models\VisualConsole\Container as VisualConsole;
 
 global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
+enterprise_include_once('include/functions_metaconsole.php');
 
 /**
  * Global HTML generic class.
@@ -42,10 +43,14 @@ class View extends \HTML
 
     public function loadTabs()
     {
+        $type = get_parameter('type', 0);
+        $itemId = (int) get_parameter('itemId', 0);
+
         $url = ui_get_full_url(false, false, false, false);
         $url .= 'ajax.php?page=include/rest-api/index';
         $url .= '&loadtabs=1';
-        $url .= '&item='.get_parameter('item', null);
+        $url .= '&type='.$type;
+        $url .= '&itemId='.$itemId;
 
         $tabs = [
             [
@@ -83,10 +88,11 @@ class View extends \HTML
                             });
                             ui.jqXHR.fail(function () {
                                 ui.panel.html(
-                                "Couldn\'t load Data. Plz Reload Page or Try Again Later.");
+                                    "Couldn\'t load Data. Plz Reload Page or Try Again Later."
+                                );
                             });
-                        }
-
+                        },
+                        active: 2
                     });';
         $js .= '});';
         $js .= '</script>';
@@ -106,18 +112,9 @@ class View extends \HTML
     {
         // Load desired form based on item type.
         $values = [];
-        $item = null;
-        $item_json = get_parameter('item', null);
-        $item = json_decode(io_safe_output($item_json));
-
-        $type = null;
-        if (isset($item) === true) {
-            $values = $item->itemProps;
-            $values->tabSelected = get_parameter('tabSelected', 'label');
-            $type = $values->type;
-        }
-
-        hd($values->tabSelected, true);
+        $type = get_parameter('type', null);
+        $tabSelected = get_parameter('tabSelected', 'label');
+        $itemId = (int) get_parameter('itemId', 0);
 
         $itemClass = VisualConsole::getItemClass($type);
 
@@ -132,9 +129,18 @@ class View extends \HTML
         $form = [
             'action' => '#',
             'method' => 'POST',
-            'id'     => 'itemForm-'.$values->tabSelected,
+            'id'     => 'itemForm-'.$tabSelected,
             'class'  => 'discovery modal',
         ];
+
+        if ($itemId !== 0) {
+            $item = VisualConsole::getItemFromDB($itemId);
+            $values = $item->toArray();
+        } else {
+            $values['type'] = $type;
+        }
+
+        $values['tabSelected'] = $tabSelected;
 
         // Retrieve inputs.
         $inputs = $itemClass::getFormInputs($values);
@@ -148,7 +154,24 @@ class View extends \HTML
             true
         );
 
-        return $form;
+        // TODO:XXX very ugly.
+        $jsforms = '<script>';
+        $jsforms .= "function typeModuleGraph(type){
+                if (type == 'module') {
+                    $('#MGautoCompleteAgent').show();
+                    $('#MGautoCompleteModule').show();
+                    $('#MGcustomGraph').hide();
+                    $('#customGraphId').val(0);
+                }
+                else if (type == 'custom') {
+                    $('#MGautoCompleteAgent').hide();
+                    $('#MGautoCompleteModule').hide();
+                    $('#MGcustomGraph').show();
+                }
+            }";
+        $jsforms .= '</script>';
+
+        return $form.$jsforms;
 
     }
 
@@ -161,28 +184,24 @@ class View extends \HTML
     public function processForm()
     {
         global $config;
-
-        hd('++++++++++++++++++++++++++++++++++++', true);
-        hd($_POST, true);
-        hd('++++++++++++++++++++++++++++++++++++', true);
-
-        $item = json_decode(io_safe_output(\get_parameter('item')), true);
-
         // Inserted data in new item.
         $vCId = \get_parameter('vCId', 0);
+        $type = get_parameter('type', null);
+        $itemId = (int) get_parameter('itemId', 0);
 
-        $data['type'] = $item['itemProps']['type'];
+        // Type.
+        $data['type'] = $type;
 
-        // Page Label.
+        // Page Label for each item.
         $data['label'] = \get_parameter('label');
 
-        // Page general.
+        // Page general for each item.
         $data['width'] = \get_parameter('width');
         $data['height'] = \get_parameter('height');
         $data['x'] = \get_parameter('x');
         $data['y'] = \get_parameter('y');
-        $data['isLinkEnabled'] = \get_parameter('isLinkEnabled');
-        $data['isOnTop'] = \get_parameter('isOnTop');
+        $data['isLinkEnabled'] = \get_parameter_switch('isLinkEnabled', 0);
+        $data['isOnTop'] = \get_parameter_switch('isOnTop', 0);
         $data['parentId'] = \get_parameter('parentId');
         $data['aclGroupId'] = \get_parameter('aclGroupId');
         $data['cacheExpiration_select'] = \get_parameter(
@@ -194,21 +213,97 @@ class View extends \HTML
             'cacheExpiration_units'
         );
 
-        // Page specific.
-        $data['imageSrc'] = \get_parameter('imageSrc');
-        $data['agentId'] = \get_parameter('agentId');
-        $data['metaconsoleId'] = \get_parameter('metaconsoleId');
-        $data['agentAlias'] = \get_parameter('agentAlias');
-        $data['showLastValueTooltip'] = \get_parameter('showLastValueTooltip');
+        // Page specific data for each item.
+        switch ($type) {
+            case STATIC_GRAPH:
+                $data['imageSrc'] = \get_parameter('imageSrc');
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['showLastValueTooltip'] = \get_parameter(
+                    'showLastValueTooltip'
+                );
+            break;
 
-        if (isset($item['itemProps']['id']) === false) {
+            case MODULE_GRAPH:
+                $data['backgroundType'] = \get_parameter('backgroundType');
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['customGraphId'] = \get_parameter('customGraphId');
+                $data['graphType'] = \get_parameter('graphType');
+            break;
+
+            case SIMPLE_VALUE:
+            case SIMPLE_VALUE_MAX:
+            case SIMPLE_VALUE_MIN:
+            case SIMPLE_VALUE_AVG:
+            break;
+
+            case PERCENTILE_BAR:
+            case PERCENTILE_BUBBLE:
+            case CIRCULAR_PROGRESS_BAR:
+            case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                $data['percentileType'] = \get_parameter('percentileType');
+                $data['width'] = \get_parameter('width');
+                $data['minValue'] = \get_parameter('minValue');
+                $data['maxValue'] = \get_parameter('maxValue');
+                $data['valueType'] = \get_parameter('valueType');
+                $data['color'] = \get_parameter('color');
+                $data['labelColor'] = \get_parameter('labelColor');
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+            break;
+
+            case LABEL:
+            break;
+
+            case ICON:
+            break;
+
+                // Enterprise item. It may not exist.
+            case SERVICE:
+            break;
+
+            case GROUP_ITEM:
+            break;
+
+            case BOX_ITEM:
+            break;
+
+            case LINE_ITEM:
+            break;
+
+            case AUTO_SLA_GRAPH:
+            break;
+
+            case DONUT_GRAPH:
+            break;
+
+            case BARS_GRAPH:
+            break;
+
+            case CLOCK:
+            break;
+
+            case COLOR_CLOUD:
+            break;
+
+            default:
+            break;
+        }
+
+        if (isset($itemId) === false || $itemId === 0) {
+            // TODO: ACL.
             // CreateVC.
             $class = VisualConsole::getItemClass((int) $data['type']);
             try {
                 // Save the new item.
                 $data['id_layout'] = $vCId;
                 $itemId = $class::save($data);
-                hd('he creado:'.$itemId, true);
             } catch (\Throwable $th) {
                 // Bad params.
                 http_response_code(400);
@@ -226,8 +321,6 @@ class View extends \HTML
             }
         } else {
             // UpdateVC.
-            $itemId = $item['itemProps']['id'];
-
             try {
                 $item = VisualConsole::getItemFromDB($itemId);
             } catch (Throwable $e) {
@@ -278,7 +371,6 @@ class View extends \HTML
                     $data['id_layout'] = $vCId;
                     $data['id'] = $itemId;
                     $item->save($data);
-                    hd('he actualizado: '.$itemId, true);
                     $result = $item->toArray();
                 } catch (\Throwable $th) {
                     // There is no item in the database.
@@ -288,7 +380,6 @@ class View extends \HTML
             }
         }
 
-        hd($result, true);
         return json_encode($result);
     }
 

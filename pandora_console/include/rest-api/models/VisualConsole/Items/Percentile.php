@@ -95,6 +95,68 @@ final class Percentile extends Item
 
 
     /**
+     * Encode type item.
+     *
+     * @param array $data Data for encode.
+     *
+     * @return string Return 'PERCENTILE_BAR', 'PERCENTILE_BUBBLE',
+     * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
+     * 'PERCENTILE_BAR' by default.
+     */
+    protected function encodeLabelColor(array $data): ?string
+    {
+        $labelColor = null;
+        if (isset($data['labelColor']) === true) {
+            switch ($data['labelColor']) {
+                case 'fillColor':
+                case 'fill_color':
+                case 'labelColor':
+                    $labelColor = $data['labelColor'];
+                break;
+
+                default:
+                    $labelColor = '#444444';
+                break;
+            }
+        }
+
+        return $labelColor;
+    }
+
+
+    /**
+     * Encode type item.
+     *
+     * @param array $data Data for encode.
+     *
+     * @return string Return 'PERCENTILE_BAR', 'PERCENTILE_BUBBLE',
+     * 'CIRCULAR_PROGRESS_BAR' or 'CIRCULAR_INTERIOR_PROGRESS_BAR'.
+     * 'PERCENTILE_BAR' by default.
+     */
+    protected function encodeColor(array $data): ?string
+    {
+        $color = null;
+        if (isset($data['color']) === true) {
+            switch ($data['color']) {
+                case 'borderColor':
+                case 'border_color':
+                case 'gridColor':
+                case 'color':
+                case 'legendBackgroundColor':
+                    $color = $data['color'];
+                break;
+
+                default:
+                    $color = '#F0F0F0';
+                break;
+            }
+        }
+
+        return $color;
+    }
+
+
+    /**
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.
@@ -124,6 +186,16 @@ final class Percentile extends Item
         $valueType = static::encodeValueType($data);
         if ($valueType !== null) {
             $return['image'] = (string) $valueType;
+        }
+
+        $color = static::encodeColor($data);
+        if ($border_color !== null) {
+            $result['border_color'] = $color;
+        }
+
+        $labelColor = static::encodeLabelColor($data);
+        if ($labelColor !== null) {
+            $result['fill_color'] = $labelColor;
         }
 
         return $return;
@@ -302,30 +374,30 @@ final class Percentile extends Item
         // Get the value type.
         $valueType = static::extractValueType($data);
 
-        if ($moduleId === null) {
-            throw new \InvalidArgumentException('missing module Id');
-        }
+        if ($moduleId !== null && $moduleId !== 0) {
+            // Maybe connect to node.
+            $nodeConnected = false;
+            if (\is_metaconsole() === true && $metaconsoleId !== null) {
+                $nodeConnected = \metaconsole_connect(
+                    null,
+                    $metaconsoleId
+                ) === NOERR;
 
-        // Maybe connect to node.
-        $nodeConnected = false;
-        if (\is_metaconsole() === true && $metaconsoleId !== null) {
-            $nodeConnected = \metaconsole_connect(
-                null,
-                $metaconsoleId
-            ) === NOERR;
+                if ($nodeConnected === false) {
+                    throw new \InvalidArgumentException(
+                        'error connecting to the node'
+                    );
+                }
+            }
 
-            if ($nodeConnected === false) {
+            $moduleValue = \modules_get_last_value($moduleId);
+            if ($moduleValue === false) {
                 throw new \InvalidArgumentException(
-                    'error connecting to the node'
+                    'error fetching the module value'
                 );
             }
-        }
-
-        $moduleValue = \modules_get_last_value($moduleId);
-        if ($moduleValue === false) {
-            throw new \InvalidArgumentException(
-                'error fetching the module value'
-            );
+        } else {
+            $moduleValue = 0;
         }
 
         // Store the module value.
@@ -335,9 +407,12 @@ final class Percentile extends Item
             '.',
             ''
         );
-        $unit = \modules_get_unit($moduleId);
-        if (empty($unit) === false) {
-            $data['unit'] = \io_safe_output($unit);
+        $unit = '';
+        if ($moduleId !== null && $moduleId !== 0) {
+            $unit = \modules_get_unit($moduleId);
+            if (empty($unit) === false) {
+                $data['unit'] = \io_safe_output($unit);
+            }
         }
 
         // Restore connection.
@@ -346,6 +421,165 @@ final class Percentile extends Item
         }
 
         return $data;
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Percentile]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Type percentile.
+            $fields = [
+                'progress-bar'              => __('Percentile'),
+                'bubble'                    => __('Bubble'),
+                'circular-progress-bar'     => __('Circular porgress bar'),
+                'circular-progress-bar-alt' => __(
+                    'Circular progress bar (interior)'
+                ),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Type'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'percentileType',
+                    'selected' => $values['percentileType'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // TODO: QUIT WIDTH FORM GENERAL PAGE.
+            // Diameter.
+            $diameter = (isset($values['width']) === true) ? $values['width'] : 200;
+            $inputs[] = [
+                'label'     => __('Diameter'),
+                'arguments' => [
+                    'name'   => 'width',
+                    'type'   => 'number',
+                    'value'  => $diameter,
+                    'return' => true,
+                ],
+            ];
+
+            // TODO: ADD bbdd.
+            // Min Value.
+            $inputs[] = [
+                'label'     => __('Min. Value'),
+                'arguments' => [
+                    'name'   => 'minValue',
+                    'type'   => 'number',
+                    'value'  => $values['minValue'],
+                    'return' => true,
+                ],
+            ];
+
+            // TODO: ADD bbdd.
+            // Max Value.
+            $inputs[] = [
+                'label'     => __('Max. Value'),
+                'arguments' => [
+                    'name'   => 'maxValue',
+                    'type'   => 'number',
+                    'value'  => $values['maxValue'],
+                    'return' => true,
+                ],
+            ];
+
+            // Value to show.
+            $fields = [
+                'percent' => __('Percent'),
+                'value'   => __('Value'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Value to show'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'valueType',
+                    'selected' => $values['valueType'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Element color.
+            $inputs[] = [
+                'label'     => __('Element color'),
+                'arguments' => [
+                    'name'   => 'color',
+                    'type'   => 'color',
+                    'value'  => $values['color'],
+                    'return' => true,
+                ],
+            ];
+
+            // Value color.
+            $inputs[] = [
+                'label'     => __('Value color'),
+                'arguments' => [
+                    'name'   => 'labelColor',
+                    'type'   => 'color',
+                    'value'  => $values['labelColor'],
+                    'return' => true,
+                ],
+            ];
+
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => 'false',
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                ],
+            ];
+
+            // TODO:XXXX LinkConsoleInputGroup
+        }
+
+        return $inputs;
     }
 
 

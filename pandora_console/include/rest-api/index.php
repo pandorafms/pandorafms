@@ -484,32 +484,7 @@ if ($getVisualConsole === true) {
     echo json_encode($result);
     return;
 } else if ($getCustomGraphVisualConsoleItem) {
-    include_once 'include/functions_custom_graphs.php';
-    enterprise_include_once('include/functions_metaconsole.php');
-    $data = [];
-    if (is_metaconsole()) {
-        $data = metaconsole_get_custom_graphs(true);
-    } else {
-        $data = custom_graphs_get_user(
-            $config['id_user'],
-            false,
-            true,
-            'RR'
-        );
-    }
-
-    $result = array_map(
-        function ($id) use ($data) {
-            return [
-                'value' => $id,
-                'text'  => is_metaconsole() ? io_safe_output($data[$id]) : io_safe_output($data[$id]['name']),
-            ];
-        },
-        array_keys($data)
-    );
-
-    echo json_encode($result);
-    return;
+    // Remove.
 } else if ($serviceListVisualConsole) {
     if (!enterprise_installed()) {
         echo json_encode(false);

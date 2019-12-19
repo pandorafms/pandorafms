@@ -3640,35 +3640,34 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         break;
 
         case 'autocomplete_agent':
-            /*
-                if (is_metaconsole() === true) {
-                $connection = metaconsole_get_connection($server_name);
-                $agent_name = '';
-
-                if (metaconsole_load_external_db($connection) == NOERR) {
-                    $agent_name = db_get_value_filter(
-                        'alias',
-                        'tagente',
-                        ['id_agente' => $idAgent]
-                    );
-                }
-
-                // Append server name.
-                if (!empty($agent_name)) {
-                    $agent_name .= ' ('.$server_name.')';
-                }
-
-                // Restore db connection.
-                metaconsole_restore_db();
-                } else {
-
-                }
-            */
             $agent_name = '';
             if (isset($data['id_agent_hidden']) === true
                 && empty($data['id_agent_hidden']) === false
             ) {
-                $agent_name = agents_get_alias($data['id_agent_hidden']);
+                if (is_metaconsole() === true) {
+                    $connection = metaconsole_get_connection_by_id(
+                        $data['server_id_hidden']
+                    );
+                    $agent_name = '';
+
+                    if (metaconsole_load_external_db($connection) == NOERR) {
+                        $agent_name = db_get_value_filter(
+                            'alias',
+                            'tagente',
+                            ['id_agente' => $data['id_agent_hidden']]
+                        );
+                    }
+
+                    // Append server name.
+                    if (!empty($agent_name)) {
+                        $agent_name .= ' ('.$connection['server_name'].')';
+                    }
+
+                    // Restore db connection.
+                    metaconsole_restore_db();
+                } else {
+                    $agent_name = agents_get_alias($data['id_agent_hidden']);
+                }
             }
 
             $params = [];
@@ -3677,34 +3676,105 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $params['input_name'] = $data['name'];
             $params['value'] = $agent_name;
             $params['javascript_is_function_select'] = true;
-            // $params['selectbox_id'] = 'id_agent_module';
-            // $params['add_none_module'] = true;
+
+            if (isset($data['module_input']) === true
+                && $data['module_input'] === true
+            ) {
+                $params['selectbox_id'] = $data['module_name'];
+                $params['add_none_module'] = $data['module_none'];
+            }
+
             $params['use_hidden_input_idagent'] = true;
             $params['hidden_input_idagent_id'] = 'hidden-'.$data['name_agent_hidden'];
-            /*
-                if (is_metaconsole()) {
+            if (is_metaconsole()) {
                 $params['use_input_id_server'] = true;
-                $params['input_id_server_id'] = 'hidden-server_id';
+                $params['input_id_server_id'] = 'hidden-'.$data['name_server_hidden'];
                 $params['metaconsole_enabled'] = true;
-                $params['input_id'] = 'agent_autocomplete_events';
-                $params['javascript_page'] = 'include/ajax/agent';
-                $params['input_name'] = 'agent_text';
-                }
-            */
+            }
 
             $output .= html_print_input_hidden(
                 $data['name_agent_hidden'],
                 $data['id_agent_hidden'],
                 $data['return']
             );
-            // $output .= html_print_input_hidden('server_name', $server_name);
+
             $output .= html_print_input_hidden(
                 $data['name_server_hidden'],
                 $data['server_id_hidden'],
                 $data['return']
             );
-            // $output .= html_print_input_hidden('id_server', '');
+
             $output .= ui_print_agent_autocomplete_input($params);
+        break;
+
+        case 'autocomplete_module':
+            // Module.
+            if (isset($data['selected']) === false || $data['selected'] === 0) {
+                $fields = [
+                    0 => __('Select an Agent first'),
+                ];
+            } else {
+                $sql = sprintf(
+                    'SELECT id_agente_modulo, nombre
+                    FROM tagente_modulo
+                    WHERE id_agente = %d
+                    AND delete_pending = 0',
+                    $data['agent_id']
+                );
+
+                if (is_metaconsole() === true) {
+                    $connection = metaconsole_get_connection_id(
+                        $data['metaconsole_id']
+                    );
+
+                    if (metaconsole_load_external_db($connection) == NOERR) {
+                        $modules_agent = db_get_all_rows_sql($sql);
+
+                        if ($modules_agent === false) {
+                            $modules_agent = [];
+                        }
+                    }
+
+                    // Restore db connection.
+                    metaconsole_restore_db();
+                } else {
+                    $modules_agent = db_get_all_rows_sql($sql);
+                }
+
+                $fields = [];
+                if (isset($modules_agent) === true
+                    && is_array($modules_agent) === true
+                ) {
+                    $fields = array_reduce(
+                        $modules_agent,
+                        function ($carry, $item) {
+                            $carry[$item['id_agente_modulo']] = $item['nombre'];
+                            return $carry;
+                        },
+                        []
+                    );
+                }
+            }
+
+            $output .= html_print_select(
+                $fields,
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+            );
         break;
 
         default:

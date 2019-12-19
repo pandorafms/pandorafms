@@ -126,7 +126,7 @@ if ($config['menu_type'] == 'classic') {
                     onkeyup="showinterpreter()" class="search_input"/>';
 
 
-            $search_bar .= '<div id="result_order" style="display:grid"></div>';
+            $search_bar .= '<div id="result_order" class="result_order"></div>';
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';

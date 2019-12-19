@@ -2,15 +2,15 @@ div.show_result_interpreter {
   background-color: #fff;
   color: #000;
   border: 1px solid #e2e2e2;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   padding-left: 10px;
   padding-top: 5px;
   padding-bottom: 5px;
   box-shadow: 0px 0px 15px -4px #dadada;
   position: absolute;
   z-index: 1;
-  width: 302px;
+  width: 300px;
 }
 
 .more_results {
@@ -35,8 +35,8 @@ div.show_result_interpreter {
   color: #777;
   font-family: "Open Sans", sans-serif;
   font-size: 8.5pt;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   border-color: transparent;
 }
 
@@ -46,4 +46,9 @@ div.show_result_interpreter {
 
 .active {
   background: #f2f6f7;
+}
+
+.result_order {
+  margin-left: 2px;
+  display: grid;
 }

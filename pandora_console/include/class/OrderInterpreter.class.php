@@ -385,7 +385,7 @@ class OrderInterpreter extends Wizard
         $more_results = 0;
 
         if ($text !== '') {
-            echo '<div id="result_order" class="show_result_interpreter">';
+            echo '<div class="show_result_interpreter">';
             echo '<ul id="result_items">';
 
             foreach ($this->pages_menu as $key => $value) {

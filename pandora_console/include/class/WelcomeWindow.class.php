@@ -397,13 +397,9 @@ class WelcomeWindow extends Wizard
         }
 
         if (empty($config['custom_logo_white_bg']) === false) {
-            $logo_url .= ui_get_full_url(
-                'images/custom_logo/'.$config['custom_logo_white_bg']
-            );
+            $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
         } else {
-            $logo_url .= ui_get_full_url(
-                'images/custom_logo/pandora_logo_head_white_bg.png'
-            );
+            $logo_url .= 'images/custom_logo/pandora_logo_head_white_bg.png';
         }
 
         $inputs = [

@@ -43,14 +43,18 @@ class View extends \HTML
 
     public function loadTabs()
     {
-        $type = get_parameter('type', 0);
-        $itemId = (int) get_parameter('itemId', 0);
-
+        $type = (int) \get_parameter('type', 0);
+        hd($type, true);
+        $itemId = (int) \get_parameter('itemId', 0);
+        $vCId = (int) \get_parameter('vCId', 0);
+        // TODO:XXX;
+        // $elementsVc = io_safe_output(\get_parameter('elementsVc'));
         $url = ui_get_full_url(false, false, false, false);
         $url .= 'ajax.php?page=include/rest-api/index';
-        $url .= '&loadtabs=1';
+        $url .= '&loadtabs=2';
         $url .= '&type='.$type;
         $url .= '&itemId='.$itemId;
+        $url .= '&vCId='.$vCId;
 
         $tabs = [
             [
@@ -70,6 +74,22 @@ class View extends \HTML
                 'img'  => 'event_responses_col.png',
             ],
         ];
+
+        if ($type === LABEL) {
+            $tabs = [
+                [
+                    'name' => __('Label settings'),
+                    'id'   => 'tab-label',
+                    'href' => $url.'&tabSelected=label',
+                    'img'  => 'zoom.png',
+                ],[
+                    'name' => __('General settings'),
+                    'id'   => 'tab-general',
+                    'href' => $url.'&tabSelected=general',
+                    'img'  => 'pencil.png',
+                ],
+            ];
+        }
 
         $result = html_print_tabs($tabs);
 
@@ -115,6 +135,7 @@ class View extends \HTML
         $type = get_parameter('type', null);
         $tabSelected = get_parameter('tabSelected', 'label');
         $itemId = (int) get_parameter('itemId', 0);
+        $vCId = (int) \get_parameter('vCId', 0);
 
         $itemClass = VisualConsole::getItemClass($type);
 
@@ -157,6 +178,9 @@ class View extends \HTML
         // TODO:XXX very ugly.
         $jsforms = '<script>';
         $jsforms .= "function typeModuleGraph(type){
+                $('#MGautoCompleteAgent').removeClass('hidden');
+                $('#MGautoCompleteModule').removeClass('hidden');
+                $('#MGcustomGraph').removeClass('hidden');
                 if (type == 'module') {
                     $('#MGautoCompleteAgent').show();
                     $('#MGautoCompleteModule').show();
@@ -183,6 +207,8 @@ class View extends \HTML
      */
     public function processForm()
     {
+        hd($_POST, true);
+
         global $config;
         // Inserted data in new item.
         $vCId = \get_parameter('vCId', 0);
@@ -219,7 +245,6 @@ class View extends \HTML
                 $data['imageSrc'] = \get_parameter('imageSrc');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
-                $data['agentAlias'] = \get_parameter('agentAlias');
                 $data['showLastValueTooltip'] = \get_parameter(
                     'showLastValueTooltip'
                 );
@@ -229,7 +254,6 @@ class View extends \HTML
                 $data['backgroundType'] = \get_parameter('backgroundType');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
-                $data['agentAlias'] = \get_parameter('agentAlias');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['customGraphId'] = \get_parameter('customGraphId');
                 $data['graphType'] = \get_parameter('graphType');
@@ -239,6 +263,10 @@ class View extends \HTML
             case SIMPLE_VALUE_MAX:
             case SIMPLE_VALUE_MIN:
             case SIMPLE_VALUE_AVG:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['processValue'] = \get_parameter('processValue');
             break;
 
             case PERCENTILE_BAR:
@@ -254,45 +282,79 @@ class View extends \HTML
                 $data['labelColor'] = \get_parameter('labelColor');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
-                $data['agentAlias'] = \get_parameter('agentAlias');
                 $data['moduleId'] = \get_parameter('moduleId');
             break;
 
             case LABEL:
+                // Nothing. no specific items.
             break;
 
             case ICON:
+                $data['imageSrc'] = \get_parameter('imageSrc');
             break;
 
-                // Enterprise item. It may not exist.
             case SERVICE:
+                // TODO:Enterprise item. It may not exist.
             break;
 
             case GROUP_ITEM:
+                $data['imageSrc'] = \get_parameter('imageSrc');
+                $data['showStatistics'] = \get_parameter_switch(
+                    'showStatistics',
+                    0
+                );
             break;
 
             case BOX_ITEM:
+                $data['borderColor'] = \get_parameter('borderColor');
+                $data['borderWidth'] = \get_parameter('borderWidth');
+                $data['fillColor'] = \get_parameter('fillColor');
             break;
 
             case LINE_ITEM:
+                // Nothing. no specific items.
             break;
 
             case AUTO_SLA_GRAPH:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['maxTime'] = \get_parameter('maxTime');
             break;
 
             case DONUT_GRAPH:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['legendBackgroundColor'] = \get_parameter(
+                    'legendBackgroundColor'
+                );
             break;
 
             case BARS_GRAPH:
+                $data['backgroundColor'] = \get_parameter('backgroundColor');
+                $data['typeGraph'] = \get_parameter('typeGraph');
+                $data['gridColor'] = \get_parameter('gridColor');
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['moduleId'] = \get_parameter('moduleId');
             break;
 
             case CLOCK:
+                $data['clockType'] = \get_parameter('clockType');
+                $data['clockFormat'] = \get_parameter('clockFormat');
+                $data['width'] = \get_parameter('width');
+                $data['clockTimezone'] = \get_parameter('clockTimezone');
+                $data['color'] = \get_parameter('color');
             break;
 
             case COLOR_CLOUD:
+                // TODO:XXX.
             break;
 
             default:
+                // Not posible.
             break;
         }
 

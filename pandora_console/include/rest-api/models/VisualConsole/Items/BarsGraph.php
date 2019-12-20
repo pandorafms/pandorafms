@@ -338,4 +338,109 @@ final class BarsGraph extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[BarsGraph]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Background color.
+            $fields = [
+                'white'       => __('White'),
+                'black'       => __('Black'),
+                'transparent' => __('Transparent'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Background color'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'backgroundColor',
+                    'selected' => $values['backgroundColor'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Graph Type.
+            $fields = [
+                'horizontal' => __('Horizontal'),
+                'vertical'   => __('Vertical'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Graph Type'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'typeGraph',
+                    'selected' => $values['typeGraph'],
+                    'return'   => true,
+                ],
+            ];
+
+            // Grid color.
+            $inputs[] = [
+                'label'     => __('Grid color'),
+                'arguments' => [
+                    'name'   => 'gridColor',
+                    'type'   => 'color',
+                    'value'  => $values['gridColor'],
+                    'return' => true,
+                ],
+            ];
+
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => 'false',
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                ],
+            ];
+        }
+
+        return $inputs;
+    }
+
+
 }

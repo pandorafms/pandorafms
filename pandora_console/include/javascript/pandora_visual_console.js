@@ -1420,7 +1420,6 @@ function createOrUpdateVisualConsoleItem(
     title = "Update item";
   }
   // var props = item.props || {};
-
   /*
   var elementsVc = visualConsole.elements
     .filter(function(item) {
@@ -1433,7 +1432,6 @@ function createOrUpdateVisualConsoleItem(
       };
     });
   */
-
   load_modal({
     target: $("#modalVCItemForm"),
     form: ["itemForm-label", "itemForm-general", "itemForm-specific"],
@@ -1478,7 +1476,7 @@ function createOrUpdateVisualConsoleItem(
       /*{
         name: "elementsVc",
         value: elementsVc
-      },*/
+      }*/
     ],
     onshow: {
       page: "include/rest-api/index",

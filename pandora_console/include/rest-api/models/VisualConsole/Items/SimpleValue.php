@@ -296,4 +296,84 @@ final class SimpleValue extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[SimpleValue]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => 'false',
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                ],
+            ];
+
+            // Process.
+            $fields = [
+                'none' => __('None'),
+                'avg'  => __('Avg Value'),
+                'max'  => __('Max Value'),
+                'min'  => __('Min Value'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Process'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'processValue',
+                    'selected' => $values['processValue'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // TODO:XXXX LinkConsoleInputGroup
+        }
+
+        return $inputs;
+    }
+
+
 }

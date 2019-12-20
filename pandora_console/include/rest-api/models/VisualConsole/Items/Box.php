@@ -82,4 +82,63 @@ final class Box extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Box]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Border color.
+            $inputs[] = [
+                'label'     => __('Border color'),
+                'arguments' => [
+                    'name'   => 'borderColor',
+                    'type'   => 'color',
+                    'value'  => $values['borderColor'],
+                    'return' => true,
+                ],
+            ];
+
+            // Border Width.
+            $inputs[] = [
+                'label'     => __('Border Width'),
+                'arguments' => [
+                    'name'   => 'borderWidth',
+                    'type'   => 'number',
+                    'value'  => $values['borderWidth'],
+                    'return' => true,
+                ],
+            ];
+
+            // Fill color.
+            $inputs[] = [
+                'label'     => __('Fill color'),
+                'arguments' => [
+                    'name'   => 'fillColor',
+                    'type'   => 'color',
+                    'value'  => $values['fillColor'],
+                    'return' => true,
+                ],
+            ];
+        }
+
+        return $inputs;
+    }
+
+
 }

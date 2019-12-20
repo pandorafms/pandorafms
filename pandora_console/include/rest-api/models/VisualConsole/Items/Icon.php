@@ -129,4 +129,45 @@ final class Icon extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Icon]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // List images VC.
+            // TODO: Show images.
+            $inputs[] = [
+                'label'     => __('Image'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => self::getListImagesVC(),
+                    'name'     => 'imageSrc',
+                    'selected' => $values['imageSrc'],
+                    'return'   => true,
+                ],
+            ];
+
+            // TODO:XXXX LinkConsoleInputGroup
+        }
+
+        return $inputs;
+    }
+
+
 }

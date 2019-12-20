@@ -31,7 +31,7 @@ li.discovery > a label {
 }
 
 div.data_container > label {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-family: "lato", "Open Sans", sans-serif;
   font-weight: lighter;
 }
 
@@ -204,7 +204,9 @@ label {
   width: 100%;
 }
 
+li > input[type="number"],
 li > input[type="text"],
+li > input[type="email"],
 li > input[type="password"],
 .discovery_text_input > input[type="password"],
 .discovery_text_input > input[type="text"],
@@ -274,17 +276,14 @@ a.ext_link {
 /*
  * Discovery > Wizard css global style
  */
-
-ul.wizard {
-}
-
 ul.wizard li {
   padding-bottom: 10px;
   padding-top: 10px;
+  margin-right: 1em;
 }
 
 ul.wizard li > label:not(.p-switch) {
-  width: 250px;
+  width: auto;
   vertical-align: top;
   display: inline-block;
 }
@@ -300,17 +299,13 @@ ul.wizard li > textarea {
   display: none;
 }
 
-ul.wizard li > label:not(.p-switch) {
-  width: auto;
+form.modal ul.wizard li.hidden {
+  display: none;
 }
 
 form.top-action-buttons ul.wizard {
   display: flex;
   flex-direction: row;
-}
-
-ul.wizard li {
-  margin-right: 1em;
 }
 
 form.modal ul.wizard li {
@@ -329,3 +324,56 @@ ul.wizard li.flex-indep {
   flex: 1;
   margin: 0;
 }
+
+/* Tooltip message errors*/
+div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitooltip {
+  background: grey;
+  opacity: 0.9;
+  border-radius: 4px;
+  box-shadow: 6px 5px 9px -9px black;
+  padding: 6px;
+}
+
+.ui-tooltip-content {
+  background: transparent;
+  color: #fff;
+  font-weight: bold;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+}
+
+.arrow {
+  width: 70px;
+  height: 16px;
+  overflow: hidden;
+  position: absolute;
+  left: 50%;
+  margin-left: -35px;
+  bottom: -16px;
+}
+.arrow.top {
+  top: -16px;
+  bottom: auto;
+}
+.arrow.left {
+  left: 50%;
+}
+.arrow:after {
+  background: grey;
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: -20px;
+  width: 25px;
+  height: 25px;
+  box-shadow: 6px 5px 9px -9px black;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.arrow.top:after {
+  bottom: -20px;
+  top: auto;
+}
+/* END Tooltip message errors*/

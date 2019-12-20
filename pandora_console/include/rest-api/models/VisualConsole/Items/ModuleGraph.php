@@ -333,7 +333,7 @@ final class ModuleGraph extends Item
         }
 
         if ($values['tabSelected'] === 'specific') {
-            // Type percentile.
+            // Background color.
             $fields = [
                 'white'       => __('White'),
                 'black'       => __('Black'),
@@ -352,15 +352,15 @@ final class ModuleGraph extends Item
                 ],
             ];
 
-            $classModule = '';
-            $classCustom = 'displayNone';
+            $hiddenModule = false;
+            $hiddenCustom = true;
             $checkedModule = true;
             $checkedCustom = false;
             if (isset($values['customGraphId']) === true
                 && $values['customGraphId'] !== 0
             ) {
-                $classModule = 'displayNone';
-                $classCustom = '';
+                $hiddenModule = true;
+                $hiddenCustom = false;
                 $checkedModule = false;
                 $checkedCustom = true;
             }
@@ -401,7 +401,7 @@ final class ModuleGraph extends Item
             // Autocomplete agents.
             $inputs[] = [
                 'id'        => 'MGautoCompleteAgent',
-                'class'     => $classModule,
+                'hidden'    => $hiddenModule,
                 'label'     => __('Agent'),
                 'arguments' => [
                     'type'               => 'autocomplete_agent',
@@ -420,7 +420,7 @@ final class ModuleGraph extends Item
             // Autocomplete module.
             $inputs[] = [
                 'id'        => 'MGautoCompleteModule',
-                'class'     => $classModule,
+                'hidden'    => $hiddenModule,
                 'label'     => __('Module'),
                 'arguments' => [
                     'type'           => 'autocomplete_module',
@@ -438,7 +438,7 @@ final class ModuleGraph extends Item
             $fields = self::getListCustomGraph();
             $inputs[] = [
                 'id'        => 'MGcustomGraph',
-                'class'     => $classCustom,
+                'hidden'    => $hiddenCustom,
                 'label'     => __('Custom graph'),
                 'arguments' => [
                     'type'     => 'select',

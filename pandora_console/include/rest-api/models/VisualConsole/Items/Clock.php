@@ -151,4 +151,114 @@ final class Clock extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Clock]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Clock animation.
+            $fields = [
+                'analogic' => __('Simple analogic'),
+                'digital'  => __('Simple digital'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Clock animation'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockType',
+                    'selected' => $values['clockType'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Time format.
+            $fields = [
+                'time'     => __('Only time'),
+                'datetime' => __('Time and date'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Time format'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockFormat',
+                    'selected' => $values['clockFormat'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Width.
+            $inputs[] = [
+                'label'     => __('Width'),
+                'arguments' => [
+                    'name'   => 'width',
+                    'type'   => 'number',
+                    'value'  => $values['width'],
+                    'return' => true,
+                ],
+            ];
+
+            // Time zone.
+            $fields = [
+                'Africa'     => __('Africa'),
+                'America'    => __('America'),
+                'Antarctica' => __('Antarctica'),
+                'Arctic'     => __('Arctic'),
+                'Asia'       => __('Asia'),
+                'Atlantic'   => __('Atlantic'),
+                'Australia'  => __('Australia'),
+                'Europe'     => __('Europe'),
+                'Indian'     => __('Indian'),
+                'Pacific'    => __('Pacific'),
+                'UTC'        => __('UTC'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Time zone'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockTimezone',
+                    'selected' => $values['clockTimezone'],
+                    'return'   => true,
+                ],
+            ];
+
+            // Element color.
+            $inputs[] = [
+                'label'     => __('Fill color'),
+                'arguments' => [
+                    'name'   => 'color',
+                    'type'   => 'color',
+                    'value'  => $values['color'],
+                    'return' => true,
+                ],
+            ];
+        }
+
+        return $inputs;
+    }
+
+
 }

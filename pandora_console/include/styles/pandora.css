@@ -6015,7 +6015,3 @@ form#modal_form_feedback ul.wizard li > textarea {
 #controls_table > tbody > tr > td input {
   margin-left: 3px;
 }
-
-.displayNone {
-  display: none;
-}

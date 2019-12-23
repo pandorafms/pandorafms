@@ -164,7 +164,7 @@ network_timeout 4
 
 # Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
 
-rcmd_timeout 30
+rcmd_timeout 10
 
 # Server keepalive (in seconds)
 

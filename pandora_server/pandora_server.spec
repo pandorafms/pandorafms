@@ -18,7 +18,8 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-buildroot
 BuildArch:          noarch 
-PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+# PreReq:            %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+Requires(pre,preun):/usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
@@ -43,9 +44,10 @@ A few examples of common resources monitored by Pandora FMS could be processor l
 %prep
 rm -rf $RPM_BUILD_ROOT
 
-%setup -q -n pandora_server
+%setup -n pandora_server
 
 %build
+ls -latR
 
 %install
 

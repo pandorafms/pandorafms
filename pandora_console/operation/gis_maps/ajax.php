@@ -302,7 +302,11 @@ switch ($opt) {
             $osversion_offset = 0;
         }
 
-        $row[] = ui_print_os_icon($agent['id_os'], true, true).'&nbsp;(<i><span title="'.$agent['os_version'].'">'.substr($agent['os_version'], $osversion_offset, 15).'</span></i>)';
+        if ($agent['os_version'] != '') {
+            $agent_os_version = '&nbsp;(<i><span title="'.$agent['os_version'].'">'.substr($agent['os_version'], $osversion_offset, 15).'</span></i>)';
+        }
+
+        $row[] = ui_print_os_icon($agent['id_os'], true, true).$agent_os_version;
         $table->data[] = $row;
 
         // URL
@@ -331,7 +335,12 @@ switch ($opt) {
 
         // Agent version
         $row = [];
-        $row[] = __('Agent Version');
+        if (strtolower(get_os_name($agent['id_os'])) == 'satellite') {
+            $row[] = __('Satellite Version');
+        } else {
+            $row[] = __('Agent Version');
+        }
+
         $row[] = $agent['agent_version'];
         $table->data[] = $row;
 

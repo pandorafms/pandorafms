@@ -776,9 +776,9 @@ function ui_print_os_icon(
     }
 
     if (is_metaconsole()) {
-        $no_in_meta = true;
-    } else {
         $no_in_meta = false;
+    } else {
+        $no_in_meta = true;
     }
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);

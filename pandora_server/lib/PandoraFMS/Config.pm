@@ -360,6 +360,9 @@ sub pandora_load_config {
 	# Discovery SAP Artica environment
 	$pa_config->{"sap_artica_test"} = 0;
 
+	# Remote execution modules, option ssh_launcher
+	$pa_config->{"ssh_launcher"} = "/usr/bin/ssh_launcher";
+
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
 
@@ -860,6 +863,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^sap_artica_test\s(.*)/i) {
 			$pa_config->{'sap_artica_test'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ssh_launcher\s(.*)/i) {
+			$pa_config->{'ssh_launcher'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 

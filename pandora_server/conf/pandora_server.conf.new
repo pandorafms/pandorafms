@@ -166,6 +166,10 @@ network_timeout 4
 
 rcmd_timeout 10
 
+# Pandora FMS remote execution commands timeout tool filepath (by default at /usr/bin)
+
+rcmd_timeout_bin /usr/bin/timeout
+
 # Server keepalive (in seconds)
 
 server_keepalive 45

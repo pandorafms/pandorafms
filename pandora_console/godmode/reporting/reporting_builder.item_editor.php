@@ -3318,7 +3318,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                 case 'new':
                     ?>
                     <tr id="general_template" style="" class="datos">
-                        <td colspan="3">
+                        <td colspan="4">
                             <?php
                             echo __('Please save the report to start adding items into the list.');
                             ?>

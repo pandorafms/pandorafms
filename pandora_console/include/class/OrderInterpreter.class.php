@@ -240,7 +240,7 @@ class OrderInterpreter extends Wizard
                 'acl'  => check_acl(
                     $config['id_user'],
                     0,
-                    'VW'
+                    'VR'
                 ),
             ],
             [

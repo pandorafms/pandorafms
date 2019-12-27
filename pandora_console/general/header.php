@@ -13,6 +13,8 @@
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
 require_once 'include/functions_notifications.php';
+require_once 'include/ajax/order_interpreter.php';
+ui_require_css_file('order_interpreter');
 
 // Check permissions
 // Global errors/warnings checking.
@@ -99,7 +101,8 @@ if ($config['menu_type'] == 'classic') {
 
         if ($acl_head_search) {
             // Search bar.
-            $search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
+            $search_bar = '<form autocomplete="off" method="get" style="display: inline;" name="quicksearch" action="">';
+            '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
             } else {
@@ -110,7 +113,7 @@ if ($config['menu_type'] == 'classic') {
                 }
             }
 
-            $search_bar .= '<input type="text" id="keywords" name="keywords"';
+            $search_bar .= '<input id="keywords" name="keywords"';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= "value='".__('Enter keywords to search')."'";
             } else if (strlen($config['search_keywords']) == 0) {
@@ -119,9 +122,11 @@ if ($config['menu_type'] == 'classic') {
                 $search_bar .= "value='".$config['search_keywords']."'";
             }
 
-            $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="javascript: fieldKeyWordEmpty = false;" class="search_input" />';
+            $search_bar .= 'type="search" onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+                    onkeyup="showinterpreter()" class="search_input"/>';
 
+
+            $search_bar .= '<div id="result_order" class="result_order"></div>';
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
@@ -622,7 +627,7 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    // Resize event
+    // Resize event.
     window.addEventListener("resize", function() {
         attatch_to_image();
     });
@@ -630,7 +635,86 @@ if ($config['menu_type'] == 'classic') {
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 
     var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
+    
+    function showinterpreter(){
 
+        document.onclick = function(e) {
+            $('#result_order').hide();
+            $('#keywords').addClass('search_input');
+            $('#keywords').removeClass('results-found');
+            $('#keywords').value = '';
+            $('#keywords').attr('placeholder','Enter keywords to search');
+        }
+
+        if(event.keyCode == 13 && $("#result_items li.active").length != 0 )
+        {
+            window.location = $('#result_items').find("li.active a").attr('href');
+        }
+        var code = event.key;
+        switch (code){
+            case 'ArrowDown':
+                if($("#result_items li.active").length!=0)
+                {
+                    var storeTarget = $('#result_items').find("li.active").next();
+                    $("#result_items li.active").removeClass("active");
+                    storeTarget.focus().addClass("active");
+                   
+                }
+                else
+                {
+                    $('#result_items').find("li:first").focus().addClass("active");
+                }
+           return;
+
+           case 'ArrowUp':
+                if($("#result_items li.active"))
+                {
+                    var storeTarget = $('#result_items').find("li.active").prev();
+                    $("#result_items li.active").removeClass("active");
+                    storeTarget.focus().addClass("active");
+                }
+                else
+                {
+                    $('#result_items').find("li:first").focus().addClass("active");
+                }
+           return;
+                
+           case 'ArrowRight':
+           return;
+           case 'ArrowLeft':
+           return;
+
+        }
+        
+        if( $('#keywords').val() === ''){
+            $('#keywords').addClass('search_input');
+            $('#keywords').removeClass('results-found');
+            $('#result_order').hide();
+            $('#keywords').attr('placeholder','Enter keywords to search');
+        }else {
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "html",
+                data: {
+                    page: 'include/ajax/order_interpreter',
+                    method: 'getResult',
+                    text: $('#keywords').val(),
+                },
+                success: function (data) {
+                   $('#result_order').html(data);
+                   console.log(data);
+                   },
+                error: function (data) {
+                    console.error("Fatal error in AJAX call to interpreter order", data)
+                }
+            });
+            $('#keywords').removeClass('search_input');
+            $('#keywords').addClass('results-found');
+            $('#result_order').show();
+
+        }
+    }
     /**
     * Loads modal from AJAX to add feedback.
     */

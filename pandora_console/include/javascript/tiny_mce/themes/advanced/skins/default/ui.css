@@ -86,7 +86,6 @@
 }
 .defaultSkin table.mceLayout tr.mceLast td {
   border-bottom: 1px solid #ccc;
-  display: none;
 }
 .defaultSkin table.mceToolbar,
 .defaultSkin tr.mceFirst .mceToolbar tr td,

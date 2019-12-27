@@ -3868,8 +3868,8 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     }
 
     if ($type_graph_pdf === 'slicebar') {
-        $height_img = 90;
-        $params['height'] = 90;
+        $width_img  = 360;
+        $height_img = 70;
     }
 
     $params_encode_json = urlencode(json_encode($params));

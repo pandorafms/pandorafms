@@ -9,6 +9,7 @@ RUN yum -y install \
 	epel-release \
 	unzip \
 	perl \
+	python3 \
 	sed \
 	"perl(Sys::Syslog)"
 

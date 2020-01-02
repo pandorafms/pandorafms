@@ -3825,7 +3825,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
 		return unless ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
-		my $last_fired = ($1 > 0) ? strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
+		my $last_fired = ($1 > 0) ? timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
 
 		my $utimestamp = time ();
 		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));

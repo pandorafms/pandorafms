@@ -309,7 +309,7 @@ sub process_xml_data ($$$$$) {
 		my $utimestamp = 0;
 		eval {
 			if ($timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/) {
-				$utimestamp = timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
+				$utimestamp = strftime("%s", $6, $5, $4, $3, $2 -1 , $1 - 1900);
 			}
 		};
 		
@@ -837,7 +837,7 @@ sub process_module_data ($$$$$$$$$$) {
 	}
 	my $utimestamp;
 	eval {
- 		$utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+ 		$utimestamp = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 	};
 	if ($@) {
 		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);

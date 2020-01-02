@@ -118,7 +118,7 @@ use XML::Simple;
 use HTML::Entities;
 use Time::Local;
 use Time::HiRes qw(time);
-use POSIX qw(strftime);
+use POSIX qw(strftime floor);
 use threads;
 use threads::shared;
 use JSON qw(decode_json encode_json);
@@ -1660,7 +1660,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
-	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+
+	my $last_try = ($1 == 0) ? 0 : strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
+
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	# Received stale data. Save module data if needed and return.
@@ -3823,7 +3825,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
 		return unless ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
-		my $last_fired = ($1 > 0) ? timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
+		my $last_fired = ($1 > 0) ? strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
 
 		my $utimestamp = time ();
 		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));

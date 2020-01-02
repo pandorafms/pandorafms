@@ -2382,7 +2382,7 @@ sub get_unix_time {
 	eval {
 		use Time::Local;
 		my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
-		$time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+		$time = strftime("%s", $sec,$min,$hour,$mday,$mon-1,$year);
 	};
 	if ($@) {
 		return 0;

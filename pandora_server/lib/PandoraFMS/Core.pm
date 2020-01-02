@@ -118,7 +118,7 @@ use XML::Simple;
 use HTML::Entities;
 use Time::Local;
 use Time::HiRes qw(time);
-use POSIX qw(strftime);
+use POSIX qw(strftime floor);
 use threads;
 use threads::shared;
 use JSON qw(decode_json encode_json);
@@ -1660,7 +1660,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
-	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $last_try = ($1 == 0) ? 0 : floor(time);
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	# Received stale data. Save module data if needed and return.

@@ -118,7 +118,7 @@ use XML::Simple;
 use HTML::Entities;
 use Time::Local;
 use Time::HiRes qw(time);
-use POSIX qw(strftime floor);
+use POSIX qw(strftime);
 use threads;
 use threads::shared;
 use JSON qw(decode_json encode_json);

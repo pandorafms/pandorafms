@@ -454,10 +454,10 @@ if (!$maps && !is_metaconsole()) {
                     4 => 'action_buttons',
                 ];
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image('images/copy.png', true).'</a>';
-                $data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image('images/cross.png', true).'</a>';
+                $data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.$map['name'].'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
             } else {
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image('images/copy.png', true).'</a>';
-                $data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image('images/cross.png', true).'</a>';
+                $data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.$map['name'].'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
             }
         } else {
             $data[3] = '';

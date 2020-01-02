@@ -1341,6 +1341,9 @@ class NetworkMap
                     && $rel['child_type'] == NODE_MODULE
                 ) {
                     // Module information available.
+                    $id_parent = $rel['id_parent_source_data'];
+                    $id_child = $rel['id_child_source_data'];
+
                     $priority = 1;
                     $valid = 1;
 

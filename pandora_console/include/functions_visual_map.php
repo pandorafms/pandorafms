@@ -1900,6 +1900,8 @@ function visual_map_print_item(
                             echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                         }
                     } else {
+                        $is_meta = is_metaconsole();
+                        
                         $agents_critical = agents_get_agents(
                             [
                                 'disabled' => 0,
@@ -1908,7 +1910,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_warning = agents_get_agents(
                             [
@@ -1918,7 +1923,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_unknown = agents_get_agents(
                             [
@@ -1928,7 +1936,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_ok = agents_get_agents(
                             [
@@ -1938,7 +1949,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $total_agents = ($agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total']);
                         $stat_agent_ok = ($agents_ok[0]['total'] / $total_agents * 100);

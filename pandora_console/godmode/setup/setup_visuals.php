@@ -1038,8 +1038,13 @@ $row++;
 
     $row++;
 
-    $table_report->data[$row][0] = __('PDF font size');
-    $table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." size='1' name='font_size_item_report' min='1' max='9' step='0.1'>";
+    $table_report->data[$row][0] = __('PDF font size (px)');
+    $table_report->data[$row][1] = "<input type ='number' value=".$config['global_font_size_report']." name='global_font_size_report' min='1' max='50' step='1'>";
+
+    $row++;
+
+    $table_report->data[$row][0] = __('HTML font size for SLA (em)');
+    $table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
 
     $row++;
 
@@ -1049,6 +1054,7 @@ $row++;
         true
     );
     $table_report->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
+
     $row++;
 
     $interval_description = [

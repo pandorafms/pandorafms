@@ -1286,7 +1286,11 @@ function config_update_config()
 
                     // Juanma (06/05/2014) New feature: Custom front page for reports.
                     if (!config_update_value('font_size_item_report', get_parameter('font_size_item_report', 2))) {
-                        $error_update[] = __('Font size for items reports');
+                        $error_update[] = __('HTML font size for SLA (em)');
+                    }
+
+                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 14))) {
+                        $error_update[] = __('PDF font size (px)');
                     }
 
                     if (!config_update_value('interval_description', (string) get_parameter('interval_description', 'large'))) {
@@ -2815,6 +2819,10 @@ function config_process_config()
 
     if (!isset($config['font_size_item_report'])) {
         config_update_value('font_size_item_report', 2);
+    }
+
+    if (!isset($config['global_font_size_report'])) {
+        config_update_value('global_font_size_report', 14);
     }
 
     if (!isset($config['interval_description'])) {

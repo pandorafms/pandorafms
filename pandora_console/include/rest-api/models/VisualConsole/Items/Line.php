@@ -431,4 +431,37 @@ final class Line extends Model
     }
 
 
+    /**
+     * Generates inputs for form (global, common).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        $inputs = [];
+
+        switch ($values['tabSelected']) {
+            // Position.
+            case 'label':
+                // Label.
+                // TODO tinyMCE.
+                $inputs[] = [
+                    'label'     => __('Label'),
+                    'id'        => 'div-label',
+                    'arguments' => [
+                        'name'   => 'label',
+                        'type'   => 'text',
+                        'value'  => $values['label'],
+                        'return' => true,
+                    ],
+                ];
+            break;
+        }
+
+        return $inputs;
+    }
+
+
 }

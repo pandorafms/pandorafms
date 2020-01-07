@@ -41,13 +41,17 @@ class View extends \HTML
 {
 
 
+    /**
+     * Tabs.
+     *
+     * @return string
+     */
     public function loadTabs()
     {
         $type = (int) \get_parameter('type', 0);
         $itemId = (int) \get_parameter('itemId', 0);
         $vCId = (int) \get_parameter('vCId', 0);
-        // TODO:XXX;
-        // $elementsVc = io_safe_output(\get_parameter('elementsVc'));
+
         $url = ui_get_full_url(false, false, false, false);
         $url .= 'ajax.php?page=include/rest-api/index';
         $url .= '&loadtabs=2';
@@ -138,12 +142,14 @@ class View extends \HTML
 
         $itemClass = VisualConsole::getItemClass($type);
 
-        if (!isset($itemClass)) {
+        if (isset($itemClass) === false) {
             throw new \Exception(__('Item type not valid ['.$type.']'));
         }
 
         if (\method_exists($itemClass, 'getFormInputs') === false) {
-            throw new \Exception(__('Item type has no getFormInputs method ['.$type.']'));
+            throw new \Exception(
+                __('Item type has no getFormInputs method ['.$type.']')
+            );
         }
 
         $form = [

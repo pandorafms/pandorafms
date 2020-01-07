@@ -1408,10 +1408,6 @@ function createOrUpdateVisualConsoleItem(
         name: "itemId",
         value: item.itemProps.id ? item.itemProps.id : 0
       }
-      /*{
-        name: "elementsVc",
-        value: elementsVc
-      }*/
     ],
     onshow: {
       page: "include/rest-api/index",

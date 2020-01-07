@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Models\VisualConsole;
+use Models\VisualConsole\Container as VC;
 use Models\CachedModel;
 
 /**
@@ -2003,9 +2004,91 @@ class Item extends CachedModel
                 ];
 
                 // Parent.
-                // TODO:XXX
-                $fields = get_parameter('elementsVc', []);
+                // Check groups can access user.
+                $aclUserGroups = [];
+                if (!\users_can_manage_group_all('AR')) {
+                    $aclUserGroups = array_keys(
+                        \users_get_groups(false, 'AR')
+                    );
+                }
+
+                $vcItems = VC::getItemsFromDB(
+                    $values['vCId'],
+                    $aclUserGroups
+                );
+
+                $fields = [];
                 $fields[0] = __('None');
+                foreach ($vcItems as $key => $value) {
+                    $data = $value->toArray();
+                    switch ($data['type']) {
+                        case STATIC_GRAPH:
+                            $text = __('Static graph');
+                            $text .= ' - ';
+                            $text .= $data['imageSrc'];
+                        break;
+
+                        case MODULE_GRAPH:
+                            $text = __('Module graph');
+                        break;
+
+                        case CLOCK:
+                            $text = __('Clock');
+                        break;
+
+                        case BARS_GRAPH:
+                            $text = __('Bars graph');
+                        break;
+
+                        case AUTO_SLA_GRAPH:
+                            $text = __('Auto SLA Graph');
+                        break;
+
+                        case PERCENTILE_BAR:
+                            $text = __('Percentile bar');
+                        break;
+
+                        case CIRCULAR_PROGRESS_BAR:
+                            $text = __('Circular progress bar');
+                        break;
+
+                        case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                            $text = __('Circular progress bar (interior)');
+                        break;
+
+                        case SIMPLE_VALUE:
+                            $text = __('Simple Value');
+                        break;
+
+                        case LABEL:
+                            $text = __('Label');
+                        break;
+
+                        case GROUP_ITEM:
+                            $text = __('Group');
+                        break;
+
+                        case COLOR_CLOUD:
+                            $text = __('Color cloud');
+                        break;
+
+                        case ICON:
+                            $text = __('Icon');
+                        break;
+
+                        default:
+                            $text = __('Item');
+                        break;
+                    }
+
+                    if (isset($data['agentAlias']) === true
+                        && empty($data['agentAlias']) === false
+                    ) {
+                        $text .= ' ('.$data['agentAlias'].')';
+                    }
+
+                    $fields[$data['id']] = $text;
+                }
 
                 $inputs[] = [
                     'label'     => __('Parent'),

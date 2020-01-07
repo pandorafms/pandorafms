@@ -694,8 +694,9 @@ function filemanager_file_explorer(
 
             $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
         } else {
-            $hash = md5($relative_path.$config['dbpass']);
-            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode(base64_encode($relative_path)).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
+            $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
+            $hash = md5($filename.$config['dbpass']);
+            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
         }
 
         // Notice that uploaded php files could be dangerous
@@ -755,8 +756,9 @@ function filemanager_file_explorer(
         }
 
         if ((!$fileinfo['is_dir']) && ($download_button)) {
-            $hash = md5($fileinfo['realpath'].$config['dbpass']);
-            $data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['realpath'])).'&hash='.$hash.'" style="vertical-align: 25%;">';
+            $filename = base64_encode($fileinfo['name']);
+            $hash = md5($filename.$config['dbpass']);
+            $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
             $data[4] .= html_print_image('images/file.png', true);
             $data[4] .= '</a>';
         }

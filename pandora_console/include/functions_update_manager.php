@@ -1166,7 +1166,7 @@ function update_manager_install_package_step2()
     }
 
     update_manager_enterprise_set_version($version);
-    $product_name = get_product_name();
+    $product_name = io_safe_output(get_product_name());
 
     // Generate audit entry.
     db_pandora_audit(

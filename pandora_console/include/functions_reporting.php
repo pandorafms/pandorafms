@@ -760,7 +760,7 @@ function reporting_make_reporting_data(
                     continue;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'top_n':
@@ -1774,6 +1774,27 @@ function reporting_event_report_group(
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
+
+    if (isset($content['recursion']) && $content['recursion'] == 1 && $content['id_group'] != 0) {
+        $propagate = db_get_value(
+            'propagate',
+            'tgrupo',
+            'id_grupo',
+            $content['id_group']
+        );
+
+        if ($propagate) {
+            $children = groups_get_children($content['id_group']);
+            $_groups = [ $content['id_group'] ];
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    $_groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            $content['id_group'] = $_groups;
+        }
+    }
 
     $data = events_get_agent(
         false,

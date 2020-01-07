@@ -1485,7 +1485,8 @@ if (!empty($result)) {
 
             // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
             if (!is_metaconsole()) {
-                $acl_graphs = check_acl($config['id_user'], $row['id_group'], 'RR');
+                $agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+                $acl_graphs = check_acl_one_of_groups($config['id_user'], $agent_groups, 'RR');
             } else {
                 $acl_graphs = true;
             }

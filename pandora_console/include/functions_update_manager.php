@@ -762,7 +762,7 @@ function newsletter_wiz_modal(
         __('Cancel'),
         'cancel_newsletter',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="width:100px;"',
         true
     );
     $output .= '</div>';

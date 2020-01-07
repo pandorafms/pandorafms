@@ -1912,6 +1912,14 @@ class Item extends CachedModel
             break;
 
             case 'general':
+                $inputs[] = [
+                    'arguments' => [
+                        'type'  => 'hidden',
+                        'name'  => 'tabGeneral',
+                        'value' => true,
+                    ],
+                ];
+
                 // Size.
                 $inputs[] = [
                     'block_id'      => 'size-item',
@@ -2097,6 +2105,205 @@ class Item extends CachedModel
         }
 
         return $result;
+    }
+
+
+    /**
+     * Get all VC except own.
+     *
+     * @param integer $id Id Visual Console.
+     *
+     * @return array Array all VCs.
+     */
+    public function getAllVisualConsole(int $id):array
+    {
+        // Extract all VC except own.
+        $result = db_get_all_rows_filter(
+            'tlayout',
+            'id != '.(int) $id,
+            [
+                'id',
+                'name',
+            ]
+        );
+
+        // Extract all VC for each node.
+        if (is_metaconsole() === true) {
+            enterprise_include_once('include/functions_metaconsole.php');
+            $meta_servers = metaconsole_get_servers();
+            foreach ($meta_servers as $server) {
+                if (metaconsole_load_external_db($server) !== NOERR) {
+                    metaconsole_restore_db();
+                    continue;
+                }
+
+                $node_visual_maps = db_get_all_rows_filter(
+                    'tlayout',
+                    [],
+                    [
+                        'id',
+                        'name',
+                    ]
+                );
+
+                if (isset($node_visual_maps) === true
+                    && is_array($node_visual_maps) === true
+                ) {
+                    foreach ($node_visual_maps as $node_visual_map) {
+                        // Add nodeID.
+                        $node_visual_map['nodeId'] = (int) $server['id'];
+
+                        // Name = vc_name - (node).
+                        $node_visual_map['name'] = $node_visual_map['name'];
+                        $node_visual_map['name'] .= ' - (';
+                        $node_visual_map['name'] .= $server['server_name'].')';
+
+                        $result[] = $node_visual_map;
+                    }
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+
+        if ($result === false && $result === '') {
+            $result = [];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Inputs for Linked Visual Console.
+     *
+     * @param array $values Array values item.
+     *
+     * @return array Inputs.
+     */
+    public function inputsLinkedVisualConsole(array $values):array
+    {
+        // LinkConsoleInputGroup.
+        $fields = self::getAllVisualConsole($values['vCId']);
+        \array_unshift($fields, ['id' => 0, 'name' => __('None')]);
+
+        $getAllVisualConsoleValue = $values['linkedLayoutId'];
+        if (\is_metaconsole() === true) {
+            $getAllVisualConsoleValue = $values['linkedLayoutId'];
+            $getAllVisualConsoleValue .= '|';
+            $getAllVisualConsoleValue .= $values['linkedLayoutNodeId'];
+        }
+
+        $inputs[] = [
+            'label'     => __('Linked visual console'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'getAllVisualConsole',
+                'selected' => $getAllVisualConsoleValue,
+                'script'   => 'linkedVisualConsoleChange()',
+                'return'   => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'arguments' => [
+                'type'  => 'hidden',
+                'name'  => 'linkedLayoutId',
+                'value' => $values['linkedLayoutId'],
+            ],
+        ];
+
+        $inputs[] = [
+            'arguments' => [
+                'type'  => 'hidden',
+                'name'  => 'linkedLayoutNodeId',
+                'value' => $values['linkedLayoutNodeId'],
+            ],
+        ];
+
+        // Initial hidden.
+        $hiddenType = true;
+        $hiddenWeight = true;
+        $hiddenCritical = true;
+        $hiddenWarning = true;
+        if (isset($values['linkedLayoutId']) === true
+            && $values['linkedLayoutId'] !== 0
+        ) {
+            $hiddenType = false;
+            if ($values['linkedLayoutStatusType'] === 'service') {
+                $hiddenCritical = false;
+                $hiddenWarning = false;
+            }
+
+            if ($values['linkedLayoutStatusType'] === 'weight') {
+                $hiddenWeight = false;
+            }
+        }
+
+        // Type of the status calculation of the linked visual console.
+        $fields = [
+            'default' => __('By default'),
+            'weight'  => __('By status weight'),
+            'service' => __('By critical elements'),
+        ];
+
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusType',
+            'hidden'    => $hiddenType,
+            'label'     => __(
+                'Type of the status calculation of the linked visual console'
+            ),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'linkedLayoutStatusType',
+                'selected' => $values['linkedLayoutStatusType'],
+                'script'   => 'linkedVisualConsoleTypeChange()',
+                'return'   => true,
+            ],
+        ];
+
+        // Linked visual console weight.
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusTypeWeight',
+            'hidden'    => $hiddenWeight,
+            'label'     => __('Linked visual console weight'),
+            'arguments' => [
+                'name'   => 'linkedLayoutStatusTypeWeight',
+                'type'   => 'number',
+                'value'  => $values['linkedLayoutStatusTypeWeight'],
+                'return' => true,
+            ],
+        ];
+
+        // Critical weight.
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusTypeCriticalThreshold',
+            'hidden'    => $hiddenCritical,
+            'label'     => __('Critical weight'),
+            'arguments' => [
+                'name'   => 'linkedLayoutStatusTypeCriticalThreshold',
+                'type'   => 'number',
+                'value'  => $values['linkedLayoutStatusTypeCriticalThreshold'],
+                'return' => true,
+            ],
+        ];
+
+        // Warning weight.
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusTypeWarningThreshold',
+            'hidden'    => $hiddenWarning,
+            'label'     => __('Warning weight'),
+            'arguments' => [
+                'name'   => 'linkedLayoutStatusTypeWarningThreshold',
+                'type'   => 'number',
+                'value'  => $values['linkedLayoutStatusTypeWarningThreshold'],
+                'return' => true,
+            ],
+        ];
+
+        return $inputs;
     }
 
 

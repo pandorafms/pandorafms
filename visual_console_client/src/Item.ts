@@ -477,7 +477,7 @@ export class LinkConsoleInputGroup extends InputGroup<
 
     // Create Principal element label - select.
     const linkConsoleLabel = document.createElement("label");
-    linkConsoleLabel.textContent = t("Linked visual console	");
+    linkConsoleLabel.textContent = t("Linked visual console");
 
     // Create element Spinner.
     const spinner = fontAwesomeIcon(faCircleNotch, t("Spinner"), {

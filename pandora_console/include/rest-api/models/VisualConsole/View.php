@@ -44,7 +44,6 @@ class View extends \HTML
     public function loadTabs()
     {
         $type = (int) \get_parameter('type', 0);
-        hd($type, true);
         $itemId = (int) \get_parameter('itemId', 0);
         $vCId = (int) \get_parameter('vCId', 0);
         // TODO:XXX;
@@ -159,9 +158,12 @@ class View extends \HTML
             $values = $item->toArray();
         } else {
             $values['type'] = $type;
+            $values['isLinkEnabled'] = true;
+            $values['isOnTop'] = true;
         }
 
         $values['tabSelected'] = $tabSelected;
+        $values['vCId'] = $vCId;
 
         // Retrieve inputs.
         $inputs = $itemClass::getFormInputs($values);
@@ -193,6 +195,59 @@ class View extends \HTML
                     $('#MGcustomGraph').show();
                 }
             }";
+
+        $jsforms .= 'function linkedVisualConsoleChange(){
+            $("#li-linkedLayoutStatusType").removeClass("hidden");
+            if ($("#getAllVisualConsole :selected").val() != 0) {
+                $("#li-linkedLayoutStatusType").show();
+            } else {
+                $("#li-linkedLayoutStatusType").hide();
+                $("#li-linkedLayoutStatusTypeWeight").removeClass("hidden");
+                $("#li-linkedLayoutStatusTypeCriticalThreshold")
+                    .removeClass("hidden");
+                $("#li-linkedLayoutStatusTypeWarningThreshold")
+                    .removeClass("hidden");
+                $("#li-linkedLayoutStatusTypeCriticalThreshold").hide();
+                $("#li-linkedLayoutStatusTypeWarningThreshold").hide();
+                $("#li-linkedLayoutStatusTypeWeight").hide();
+            }
+
+            var linkedLayoutExtract = $("#getAllVisualConsole :selected")
+                .val()
+                .split("|");
+
+            var linkedLayoutNodeId = 0;
+            var linkedLayoutId = 0;
+            if (linkedLayoutExtract instanceof Array) {
+                linkedLayoutId = (linkedLayoutExtract[0]) ? linkedLayoutExtract[0] : 0;
+                linkedLayoutNodeId = (linkedLayoutExtract[1]) ? linkedLayoutExtract[1] : 0;
+            }
+
+            $("#hidden-linkedLayoutId").val(linkedLayoutId);
+            $("#hidden-linkedLayoutNodeId").val(linkedLayoutNodeId);
+        }';
+
+        $jsforms .= 'function linkedVisualConsoleTypeChange(){
+            $("#li-linkedLayoutStatusTypeWeight").removeClass("hidden");
+            $("#li-linkedLayoutStatusTypeCriticalThreshold")
+                .removeClass("hidden");
+            $("#li-linkedLayoutStatusTypeWarningThreshold")
+                .removeClass("hidden");
+            if ($("#linkedLayoutStatusType :selected").val() == "service") {
+                $("#li-linkedLayoutStatusTypeCriticalThreshold").show();
+                $("#li-linkedLayoutStatusTypeWarningThreshold").show();
+                $("#li-linkedLayoutStatusTypeWeight").hide();
+            } else if ($("#linkedLayoutStatusType :selected").val() == "weight") {
+                $("#li-linkedLayoutStatusTypeCriticalThreshold").hide();
+                $("#li-linkedLayoutStatusTypeWarningThreshold").hide();
+                $("#li-linkedLayoutStatusTypeWeight").show();
+            } else {
+                $("#li-linkedLayoutStatusTypeCriticalThreshold").hide();
+                $("#li-linkedLayoutStatusTypeWarningThreshold").hide();
+                $("#li-linkedLayoutStatusTypeWeight").hide();
+            }
+        }';
+
         $jsforms .= '</script>';
 
         return $form.$jsforms;
@@ -222,12 +277,22 @@ class View extends \HTML
         $data['label'] = \get_parameter('label');
 
         // Page general for each item.
+        $tabGeneral = (bool) \get_parameter('tabGeneral', false);
         $data['width'] = \get_parameter('width');
         $data['height'] = \get_parameter('height');
         $data['x'] = \get_parameter('x');
         $data['y'] = \get_parameter('y');
-        $data['isLinkEnabled'] = \get_parameter_switch('isLinkEnabled', 0);
-        $data['isOnTop'] = \get_parameter_switch('isOnTop', 0);
+
+        if ($tabGeneral === true) {
+            $data['isLinkEnabled'] = \get_parameter_switch('isLinkEnabled');
+            $data['isOnTop'] = \get_parameter_switch('isOnTop');
+        } else {
+            if ($itemId === 0) {
+                $data['isLinkEnabled'] = true;
+                $data['isOnTop'] = true;
+            }
+        }
+
         $data['parentId'] = \get_parameter('parentId');
         $data['aclGroupId'] = \get_parameter('aclGroupId');
         $data['cacheExpiration_select'] = \get_parameter(
@@ -237,6 +302,29 @@ class View extends \HTML
         $data['cacheExpiration'] = \get_parameter('cacheExpiration');
         $data['cacheExpiration_units'] = \get_parameter(
             'cacheExpiration_units'
+        );
+
+        // Linked other VC.
+        $data['linkedLayoutId'] = \get_parameter(
+            'linkedLayoutId',
+            0
+        );
+        $data['linkedLayoutNodeId'] = \get_parameter(
+            'linkedLayoutNodeId',
+            0
+        );
+        $data['linkedLayoutStatusType'] = \get_parameter(
+            'linkedLayoutStatusType',
+            'default'
+        );
+        $data['linkedLayoutStatusTypeWeight'] = \get_parameter(
+            'linkedLayoutStatusTypeWeight'
+        );
+        $data['linkedLayoutStatusTypeCriticalThreshold'] = \get_parameter(
+            'linkedLayoutStatusTypeCriticalThreshold'
+        );
+        $data['linkedLayoutStatusTypeWarningThreshold'] = \get_parameter(
+            'linkedLayoutStatusTypeWarningThreshold'
         );
 
         // Page specific data for each item.

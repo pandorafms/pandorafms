@@ -254,7 +254,13 @@ final class DonutGraph extends Item
                 ],
             ];
 
-            // TODO:XXXX LinkConsoleInputGroup
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
         }
 
         return $inputs;

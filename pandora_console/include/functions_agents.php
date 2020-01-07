@@ -1061,11 +1061,11 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, true)
+                    groups_get_id_recursive($parent, false)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, true);
+            $id_group = groups_get_id_recursive($id_group, false);
         }
 
         // Check available groups for target user only if asking for 'All' group.
@@ -3509,6 +3509,27 @@ function agents_get_status_animation($up=true)
 }
 
 
+function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
+{
+    $agents_id = [];
+    $all_agents = agents_get_agents(false, ['id_agente', 'alias']);
+    $agent_match = '/'.$alias_regex.'/'.$flag;
+
+    foreach ($all_agents as $agent) {
+        $result_agent_match = preg_match($agent_match, $agent['alias']);
+        if ($result_agent_match) {
+            $agents_id[] = $agent['id_agente'];
+            $i++;
+            if ($i === $limit) {
+                break;
+            }
+        }
+    }
+
+    return $agents_id;
+}
+
+
 /**
  * Return if an agent is SAP or or an a agent SAP list.
  * If function receive false, you will return all SAP agents,
@@ -3525,34 +3546,39 @@ function agents_get_sap_agents($id_agent)
     $sap_modules = [
         160 => __('SAP Login OK'),
         109 => __('SAP Dumps'),
-        111 => __('SAP List lock'),
-        113 => __('SAP Cancel Jobs'),
-        121 => __('SAP Batch input erroneus'),
-        104 => __('SAP Idoc erroneus'),
+        111 => __('SAP lock entry list'),
+        113 => __('SAP canceled Jobs'),
+        121 => __('SAP Batch inputs erroneous'),
+        104 => __('SAP IDOC erroneous'),
         105 => __('SAP IDOC OK'),
         150 => __('SAP WP without active restart'),
         151 => __('SAP WP stopped'),
         102 => __('Average time of SAPGUI response '),
         180 => __('Dialog response time'),
         103 => __('Dialog Logged users '),
-        192 => __('SYSFAIL, delivery attempts tRFC wrong entries number'),
-        195 => __('SYSFAIL, queue qRFC INPUT, wrong entries number '),
+        192 => __('TRFC in error'),
+        195 => __('QRFC in error SMQ2'),
         116 => __('Number of Update WPs in error'),
     ];
 
     $array_agents = [];
     foreach ($sap_modules as $module => $key) {
+        $new_ones = db_get_all_rows_sql(
+            'SELECT ta.id_agente,ta.alias
+             FROM tagente ta
+             INNER JOIN tagente_modulo tam 
+             ON tam.id_agente = ta.id_agente 
+             WHERE tam.nombre  
+             LIKE "%SAP%" 
+             GROUP BY ta.id_agente'
+        );
+        if ($new_ones === false) {
+            continue;
+        }
+
         $array_agents = array_merge(
             $array_agents,
-            db_get_all_rows_sql(
-                'SELECT ta.id_agente,ta.alias
-                 FROM tagente ta
-                 INNER JOIN tagente_modulo tam 
-                 ON tam.id_agente = ta.id_agente 
-                 WHERE tam.nombre  
-                 LIKE "%SAP%" 
-                 GROUP BY ta.id_agente'
-            )
+            $new_ones
         );
     }
 

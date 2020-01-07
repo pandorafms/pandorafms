@@ -15,7 +15,7 @@ global $config;
 
 check_login();
 
-// Visual console required
+// Visual console required.
 if (empty($visualConsole)) {
     db_pandora_audit(
         'ACL Violation',
@@ -425,7 +425,7 @@ $table->data['all_one_item_per_agent'][1] .= html_print_input_hidden(
 
 
 $table->rowstyle['all_4'] = 'display: none;';
-$table->data['all_4'][0] = __('Agents');
+$table->data['all_4'][0] = __('Agents').ui_print_help_tip(__('If you select several agents, only the common modules will be displayed'), true);
 
 $agents_list = [];
 if (!is_metaconsole()) {
@@ -506,7 +506,7 @@ $table->data['all_8'][1] = html_print_select(
     VISUAL_MAP_WIZARD_PARENTS_NONE,
     true
 );
-$table->data['all_8'][2] = '<span id="parent_column_2_item_in_visual_map">'.__('Item in the map').'</span>'.'<span id="parent_column_2_relationship">'.ui_print_help_tip(
+$table->data['all_8'][2] = '<span id="parent_column_2_item_in_visual_map">'.__('Item in the map').'</span><span id="parent_column_2_relationship">'.ui_print_help_tip(
     __('The parenting relationships in %s will be drawn on the map.', get_product_name()),
     true
 ).'</span>';

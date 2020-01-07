@@ -196,6 +196,10 @@ h4 {
   color: #3f3f3f;
   text-transform: none;
 }
+
+table tbody tr td h4 {
+  color: #ffffff;
+}
 a {
   color: #3f3f3f;
   text-decoration: none;
@@ -388,7 +392,7 @@ select:-internal-list-box {
 
 @font-face {
   font-family: "FreeSansBoldFont";
-  src: url("../fonts/FreeSansBold.ttf") format("truetype");
+  src: url("../fonts/FreeSans-Bold.ttf") format("truetype");
 }
 
 .FreeSansBold {
@@ -515,6 +519,14 @@ select:-internal-list-box {
 .no-text-imp {
   font-size: 0 !important;
 }
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
 .flex-content-right {
   display: flex;
   flex-direction: row;
@@ -581,6 +593,10 @@ select:-internal-list-box {
 }
 .no-border {
   border: none;
+}
+.no-border-imp,
+.no-border-imp > div {
+  border: none !important;
 }
 .no-padding {
   padding: 0;
@@ -3019,7 +3035,6 @@ div.nodata_container {
 /* service map */
 #container_servicemap_legend {
   position: absolute;
-  width: 200px;
   background: #fff;
   margin-top: 10px;
   right: 2px;
@@ -3031,10 +3046,6 @@ div.nodata_container {
 
 #container_servicemap_legend table {
   text-align: left;
-}
-
-.legend_servicemap_item {
-  display: none;
 }
 
 /* agent modules*/
@@ -4989,6 +5000,7 @@ input:checked + .p-slider:before {
 .action_buttons a,
 .action_buttons input[type="image"] {
   margin-right: 5px;
+  display: inline-block;
 }
 
 .action_buttons a:last-child,
@@ -4998,7 +5010,6 @@ input:checked + .p-slider:before {
 
 .action_buttons a:hover {
   background-color: #fff;
-  display: inline-block;
   border-radius: 4px;
 }
 
@@ -5993,4 +6004,14 @@ form#modal_form_feedback ul.wizard li > textarea {
 
 .pandora_green_bg {
   background-color: #82b92e;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - REPORTING VIEWER
+ * ---------------------------------------------------------------------
+ */
+
+#controls_table > tbody > tr > td input {
+  margin-left: 3px;
 }

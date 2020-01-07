@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.740 PS191122";
+my $version = "7.0NG.742 PS200107";
 
 # save program name for logging
 my $progname = basename($0);
@@ -194,7 +194,7 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent> <use_alias>]", 'Add event');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
@@ -640,9 +640,9 @@ sub pandora_delete_module_data ($$) {
 	my $buffer = 1000;
 	
 	while(1) {
-		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=?', $id_module);
+		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_inc WHERE id_agente_modulo=?', $id_module);
+		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_log4x WHERE id_agente_modulo=?', $id_module);
 		my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		
 		my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
@@ -652,19 +652,19 @@ sub pandora_delete_module_data ($$) {
 		}
 		
 		if($nd > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndinc > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_inc', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	
 		if($ndlog4x > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_log4x', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndstring > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_string', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	}
 		
@@ -4089,10 +4089,10 @@ sub cli_create_event() {
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			# Base64 encode custom data
-			$custom_data = encode_base64 ($custom_data);
+			$custom_data = encode_base64 ($custom_data, '');
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4139,10 +4139,10 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		# Base64 encode custom data
-		$custom_data = encode_base64 ($custom_data);
+		$custom_data = encode_base64 ($custom_data, '');
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 
 	}
 }
@@ -4329,7 +4329,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
@@ -4416,7 +4416,7 @@ sub cli_delete_data($) {
 		
 				print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-				pandora_delete_data($dbh, 'module', $id_agent);
+				pandora_delete_data($dbh, 'agent', $id_agent);
 			}
 		} else {
 			my $id_agent = get_agent_id($dbh,$name);
@@ -4424,7 +4424,7 @@ sub cli_delete_data($) {
 		
 			print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-			pandora_delete_data($dbh, 'module', $id_agent);
+			pandora_delete_data($dbh, 'agent', $id_agent);
 		}
 	}
 	elsif($opt eq '-g' || $opt eq '--g') {

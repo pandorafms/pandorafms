@@ -455,7 +455,7 @@ function __($string /*, variable arguments */)
             return $string;
         }
 
-        return $l10n->translate($string);
+        return str_replace('\'', '`', $l10n->translate($string));
     }
 
     $args = func_get_args();
@@ -465,7 +465,7 @@ function __($string /*, variable arguments */)
         return vsprintf($string, $args);
     }
 
-    return vsprintf($l10n->translate($string), $args);
+    return vsprintf(str_replace('\'', '`', $l10n->translate($string)), $args);
 }
 
 

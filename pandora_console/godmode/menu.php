@@ -316,6 +316,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
+
     if ($config['activate_gis']) {
         $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');
     }

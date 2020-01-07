@@ -456,7 +456,7 @@ function config_update_config()
                         }
 
                         if (!config_update_value('sap_license', get_parameter('sap_license'))) {
-                            $error_update[] = __('Deset SAP license');
+                            $error_update[] = __('SAP/R3 Plugin Licence');
                         }
 
                         $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
@@ -1308,7 +1308,15 @@ function config_update_config()
 
                     // Juanma (06/05/2014) New feature: Custom front page for reports.
                     if (!config_update_value('font_size_item_report', get_parameter('font_size_item_report', 2))) {
-                        $error_update[] = __('Font size for items reports');
+                        $error_update[] = __('HTML font size for SLA (em)');
+                    }
+
+                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 14))) {
+                        $error_update[] = __('PDF font size (px)');
+                    }
+
+                    if (!config_update_value('interval_description', (string) get_parameter('interval_description', 'large'))) {
+                        $error_update[] = __('Interval description');
                     }
 
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
@@ -1429,19 +1437,35 @@ function config_update_config()
                         $error_update[] = __('Database password');
                     }
 
-                    if (!config_update_value('history_db_days', get_parameter('history_db_days'))) {
+                    $history_db_days = get_parameter('history_db_days');
+                    if (!is_numeric($history_db_days)
+                        || $history_db_days <= 0
+                        || !config_update_value('history_db_days', $history_db_days)
+                    ) {
                         $error_update[] = __('Days');
                     }
 
-                    if (!config_update_value('history_event_days', get_parameter('history_event_days'))) {
+                    $history_event_days = get_parameter('history_event_days');
+                    if (!is_numeric($history_event_days)
+                        || $history_event_days <= 0
+                        || !config_update_value('history_event_days', $history_event_days)
+                    ) {
                         $error_update[] = __('Event Days');
                     }
 
-                    if (!config_update_value('history_db_step', get_parameter('history_db_step'))) {
+                    $history_db_step = get_parameter('history_db_step');
+                    if (!is_numeric($history_db_step)
+                        || $history_db_step <= 0
+                        || !config_update_value('history_db_step', $history_db_step)
+                    ) {
                         $error_update[] = __('Step');
                     }
 
-                    if (!config_update_value('history_db_delay', get_parameter('history_db_delay'))) {
+                    $history_db_delay = get_parameter('history_db_delay');
+                    if (!is_numeric($history_db_delay)
+                        || $history_db_delay <= 0
+                        || !config_update_value('history_db_delay', $history_db_delay)
+                    ) {
                         $error_update[] = __('Delay');
                     }
                 break;
@@ -1937,14 +1961,6 @@ function config_process_config()
       * Parse the ACL IP list for access API
       */
 
-    $temp_list_ACL_IPs_for_API = [];
-    if (isset($config['list_ACL_IPs_for_API'])) {
-        if (!empty($config['list_ACL_IPs_for_API'])) {
-            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
-        }
-    }
-
-    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
     /*
@@ -2851,6 +2867,14 @@ function config_process_config()
         config_update_value('font_size_item_report', 2);
     }
 
+    if (!isset($config['global_font_size_report'])) {
+        config_update_value('global_font_size_report', 14);
+    }
+
+    if (!isset($config['interval_description'])) {
+        config_update_value('interval_description', 'large');
+    }
+
     if (!isset($config['custom_report_front_font'])) {
         config_update_value('custom_report_front_font', 'FreeSans.ttf');
     }
@@ -3006,6 +3030,15 @@ function config_process_config()
 
     // Finally, check if any value was overwritten in a form.
     config_update_config();
+
+    $temp_list_ACL_IPs_for_API = [];
+    if (isset($config['list_ACL_IPs_for_API'])) {
+        if (!empty($config['list_ACL_IPs_for_API'])) {
+            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+        }
+    }
+
+    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
 }
 
 

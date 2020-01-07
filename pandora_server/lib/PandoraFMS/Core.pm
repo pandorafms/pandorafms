@@ -448,8 +448,9 @@ B<Returns>:
 
 =cut
 ##########################################################################
-sub pandora_evaluate_alert ($$$$$$$;$$$) {
-	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value, $events, $event) = @_;
+sub pandora_evaluate_alert ($$$$$$$;$$$$) {
+	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh,
+	  $last_data_value, $correlatedItems, $event, $log) = @_;
 	
 	if (defined ($agent)) {
 		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output ($agent->{'nombre'}) . "'.", 10);
@@ -592,9 +593,20 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
 		return $status if ($last_status == 0 && $alert->{'type'} eq 'not_normal');
 	}
-	# Event alert
+	# Correlated alert
 	else {
-		my $rc = enterprise_hook ('evaluate_event_alert', [$pa_config, $dbh, $alert, $events, $event]);
+		my $rc = enterprise_hook (
+			'evaluate_correlated_alert',
+			[
+				$pa_config,
+				$dbh,
+				$alert,
+				$correlatedItems,
+				$event,
+				$log
+			]
+		);
+
 		return $status unless (defined ($rc) && $rc == 1);
 	}
 	
@@ -1203,7 +1215,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $cid_data = "CID_IMAGE";
 		my $dataname = "CID_IMAGE.png";
 
-		if ($data =~ /^data:image\/png;base64, /) {
+		if (defined($data) && $data =~ /^data:image\/png;base64, /) {
 			# macro _data_ substitution in case is image.
 			$attach_data_as_image = 1;
 			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
@@ -1648,7 +1660,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
-	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+
+	my $last_try = ($1 == 0) ? 0 : strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
+
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	# Received stale data. Save module data if needed and return.
@@ -3418,7 +3432,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	if($comment ne '') {
-		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => "an alert", utimestamp => $utimestamp});
+		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => $user_name, utimestamp => $utimestamp});
 		$comment = encode_json \@comment_data;
 	}
 	
@@ -3811,7 +3825,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
 		return unless ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
-		my $last_fired = ($1 > 0) ? timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
+		my $last_fired = ($1 > 0) ? strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
 
 		my $utimestamp = time ();
 		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));

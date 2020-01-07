@@ -466,11 +466,11 @@ $data[1] = html_print_select(
 
 $array_os = [
     'inherited' => __('Inherited'),
-    'linux'     => __('Linux'),
-    'windows'   => __('Windows'),
+    'linux'     => __('SSH'),
+    'windows'   => __('Windows remote'),
 ];
 
-$data[2] = __('Target OS');
+$data[2] = __('Connection method');
 $data[3] = html_print_select(
     $array_os,
     'command_os',
@@ -541,14 +541,12 @@ $(document).ready (function () {
             $("#simple-field_snmpv3_row2").attr("style", "");
             $("#simple-field_snmpv3_row3").attr("style", "");
             $("input[name=active_snmp_v3]").val(1);
-            $("input[name=snmp_community]").attr("disabled", true);
         }
         else {
             $("#simple-field_snmpv3_row1").css("display", "none");
             $("#simple-field_snmpv3_row2").css("display", "none");
             $("#simple-field_snmpv3_row3").css("display", "none");
             $("input[name=active_snmp_v3]").val(0);
-            $("input[name=snmp_community]").removeAttr('disabled');
         }
     });
 

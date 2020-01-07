@@ -9,8 +9,8 @@
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.740"
-PI_BUILD="191122"
+PI_VERSION="7.0NG.742"
+PI_BUILD="200107"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -89,7 +89,7 @@ fi
 [ "$4" ] && PANDORA_PERL_PATH=$4
 
 # Check for Perl 5.6.x or higher available
-PERL_VERSION=`$PANDORA_PERL_PATH -v | egrep 'v5.[6-9]|v5.[12][0-9]' | grep perl`
+PERL_VERSION=`$PANDORA_PERL_PATH -v | egrep 'v5.[6-9]|v5.[1-3][0-9]' | grep perl`
 
 if [ -z "$PERL_VERSION" ]
 then

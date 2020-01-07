@@ -1708,3 +1708,17 @@ void
 Pandora_Module::setExecutions (long executions) {
 	this->executions = executions;
 }
+
+/** 
+ * Checks if the module has intensive conditions.
+ * 
+ * @return true if the module's intensive condition list is not empty, false if it is.
+ */
+bool
+Pandora_Module::isIntensive () {
+	if (this->intensive_condition_list == NULL || this->intensive_condition_list->size () <= 0) {
+		return false;
+	}
+
+	return true;
+}

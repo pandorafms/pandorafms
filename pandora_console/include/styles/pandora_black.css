@@ -27,6 +27,7 @@ div#page,
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc,
+ul.subsubmenu li,
 input.search_input,
 .filters input,
 input#text-id_parent.ac_input,
@@ -98,6 +99,18 @@ table.widget_list tr.datos2,
 table.widget_list td.datos,
 table.widget_list td.datos2 {
   background-color: inherit;
+}
+
+/* Change inputs with autocomplete */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #111 inset !important;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: #fff !important;
 }
 
 /* messages */
@@ -251,6 +264,10 @@ table.table_modal_alternate tr:nth-child(even) td {
   filter: brightness(2.5) contrast(50%);
 }
 
+a.pandora_pagination {
+  color: #fff;
+}
+
 /* firts_task.css */
 .new_task,
 div.new_task_cluster,
@@ -337,11 +354,16 @@ table#diagnostic_info tbody td div {
   color: #fff;
 }
 
+.ui-widget-content.ui-autocomplete,
+.ui-widget-content.ui-autocomplete a {
+  color: #333;
+}
+
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
-  background-color: #222;
-  color: #fff;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .ui-state-active,
@@ -364,6 +386,11 @@ a:visited.ui-button,
 ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
   img {
   filter: brightness(2);
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+  background-color: transparent;
+  color: #fff;
 }
 
 /* notifications */
@@ -393,6 +420,17 @@ div#box_online * {
   color: #555;
 }
 
+/* news dialog */
+#news_dialog #new_text {
+  background: #222 !important;
+}
+
+/* ipam */
+.tooltipster-content {
+  background: #222 !important;
+}
+
+/* licence */
 div#code_license_dialog div#code,
 div#form_activate_licence #code {
   margin-top: 20px;

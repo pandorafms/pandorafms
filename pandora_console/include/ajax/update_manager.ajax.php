@@ -266,9 +266,10 @@ if ($install_package) {
             [$version]
         );
 
+        $product_name = io_safe_output(get_product_name());
         db_pandora_audit(
-            'Update '.get_product_name(),
-            "Update version: $version of ".get_product_name().' by '.$config['id_user']
+            'Update '.$product_name,
+            "Update version: $version of ".$product_name.' by '.$config['id_user']
         );
 
         $return['status'] = 'success';

@@ -499,4 +499,14 @@ li#li-position-item > label:not(:first-child) {
   margin-left: 15px;
 }
 
+li#li-image-item label {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+li#li-image-item label img {
+  flex: initial;
+}
+
 /*# sourceMappingURL=vc.main.css.map*/

@@ -469,7 +469,12 @@ final class Group extends Item
 
         if ($values['tabSelected'] === 'specific') {
             // List images VC.
-            // TODO: Show images.
+            if (isset($values['imageSrc']) === false) {
+                $values['imageSrc'] = 'appliance';
+            }
+
+            $baseUrl = ui_get_full_url('/', false, false, false);
+
             $inputs[] = [
                 'label'     => __('Image'),
                 'arguments' => [
@@ -477,7 +482,19 @@ final class Group extends Item
                     'fields'   => self::getListImagesVC(),
                     'name'     => 'imageSrc',
                     'selected' => $values['imageSrc'],
+                    'script'   => 'imageVCChange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
                     'return'   => true,
+                ],
+            ];
+
+            $images = self::imagesElementsVC($values['imageSrc']);
+
+            $inputs[] = [
+                'block_id'      => 'image-item',
+                'class'         => 'flex-row flex-end w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    ['label' => $images],
                 ],
             ];
 

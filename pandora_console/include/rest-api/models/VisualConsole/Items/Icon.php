@@ -151,7 +151,20 @@ final class Icon extends Item
 
         if ($values['tabSelected'] === 'specific') {
             // List images VC.
-            // TODO: Show images.
+            if (isset($values['imageSrc']) === false) {
+                $values['imageSrc'] = 'appliance';
+            } else {
+                $explode_url = explode('/', $values['imageSrc']);
+                $total = count($explode_url);
+                $values['imageSrc'] = substr(
+                    $explode_url[($total - 1)],
+                    0,
+                    -4
+                );
+            }
+
+            $baseUrl = ui_get_full_url('/', false, false, false);
+
             $inputs[] = [
                 'label'     => __('Image'),
                 'arguments' => [
@@ -159,7 +172,19 @@ final class Icon extends Item
                     'fields'   => self::getListImagesVC(),
                     'name'     => 'imageSrc',
                     'selected' => $values['imageSrc'],
+                    'script'   => 'imageVCChange(\''.$baseUrl.'\',\''.$values['vCId'].'\',1)',
                     'return'   => true,
+                ],
+            ];
+
+            $images = self::imagesElementsVC($values['imageSrc'], true);
+
+            $inputs[] = [
+                'block_id'      => 'image-item',
+                'class'         => 'flex-row flex-end w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    ['label' => $images],
                 ],
             ];
 

@@ -11,6 +11,7 @@ require_once $config['homedir'].'/vendor/autoload.php';
 
 use Models\VisualConsole\Container as VisualConsole;
 use Models\VisualConsole\View as Viewer;
+use Models\VisualConsole\Item as Item;
 
 $method = get_parameter('method');
 if ($method) {
@@ -264,7 +265,11 @@ if ($getVisualConsole === true) {
 } else if ($getAllVisualConsole === true) {
     // TODO: Remove.
 } else if ($getImagesVisualConsole) {
-    // TODO: Remove.
+    $img = get_parameter('nameImg', 'appliance');
+    $only = (bool) get_parameter('only', 0);
+    $count = Item::imagesElementsVC($img, $only);
+    echo json_encode($count);
+    return;
 } else if ($autocompleteAgentsVisualConsole) {
     $params = (array) get_parameter('data', []);
 

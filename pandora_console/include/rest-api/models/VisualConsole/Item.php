@@ -2307,4 +2307,46 @@ class Item extends CachedModel
     }
 
 
+    /**
+     * Return html images.
+     *
+     * @param string       $image Name image.
+     * @param boolean|null $only  Only normal image.
+     *
+     * @return string Html images.
+     */
+    static function imagesElementsVC(string $image, ?bool $only=false):string
+    {
+        $type_image = [''];
+        if ($only === false) {
+            $type_image = [
+                'bad',
+                'ok',
+                'warning',
+                '',
+            ];
+        }
+
+        $images = '';
+        foreach ($type_image as $k => $v) {
+            $type = '';
+            if ($v !== '') {
+                $type = '_'.$v;
+            }
+
+            $images .= html_print_image(
+                'images/console/icons/'.$image.$type.'.png',
+                true,
+                [
+                    'title' => __('Image Vc'),
+                    'alt'   => __('Image Vc'),
+                    'style' => 'max-width:70px; max-height:70px;',
+                ]
+            );
+        }
+
+        return $images;
+    }
+
+
 }

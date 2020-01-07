@@ -1183,7 +1183,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
     }
 
     // Month days
-    for ($i = 0; $i < 31; $i++) {
+    for ($i = 1; $i <= 31; $i++) {
         $mdays[$i] = $i;
     }
 

@@ -133,15 +133,17 @@ $buttons['notifications'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications').'">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
 ];
 
-$buttons['gis'] = [
-    'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=gis').'">'.html_print_image('images/gis_tab.png', true, ['title' => __('GIS Map connection')]).'</a>',
-];
-
 $buttons['websocket_engine'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=websocket_engine').'">'.html_print_image('images/websocket_small.png', true, ['title' => __('Websocket engine')]).'</a>',
 ];
+
+if ($config['activate_gis']) {
+    $buttons['gis'] = [
+        'active' => false,
+        'text'   => '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=gis').'">'.html_print_image('images/gis_tab.png', true, ['title' => __('GIS Map connection')]).'</a>',
+    ];
+}
 
 $help_header = '';
 if (enterprise_installed()) {

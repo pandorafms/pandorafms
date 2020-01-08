@@ -776,9 +776,9 @@ function ui_print_os_icon(
     }
 
     if (is_metaconsole()) {
-        $no_in_meta = true;
-    } else {
         $no_in_meta = false;
+    } else {
+        $no_in_meta = true;
     }
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
@@ -1144,7 +1144,7 @@ function ui_format_alert_row(
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {
-        $data[$index['module_name']] .= ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+        $data[$index['module_name']] .= ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
     } else {
         if (defined('METACONSOLE')) {
             $agent_name = $alert['agent_name'];
@@ -1155,16 +1155,16 @@ function ui_format_alert_row(
         }
 
         if (defined('METACONSOLE') || !can_user_access_node()) {
-            $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+            $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', '');
         } else {
             if ($agent_style !== false) {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
+                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
             } else {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
+                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
             }
         }
 
-        $data[$index['module_name']] = ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+        $data[$index['module_name']] = ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
     }
 
     $data[$index['agent_name']] .= $disabledHtmlEnd;
@@ -1184,7 +1184,7 @@ function ui_format_alert_row(
 		FROM talert_templates WHERE id = '.$alert['id_alert_template']
     );
 
-    $data[$index['description']] .= $disabledHtmlStart.ui_print_truncate_text(io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt').$disabledHtmlEnd;
+    $data[$index['description']] .= $disabledHtmlStart.ui_print_truncate_text(io_safe_output($description), 'description', false, true, true, '[&hellip;]', '').$disabledHtmlEnd;
 
     $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
 

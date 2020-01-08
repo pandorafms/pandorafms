@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     7.0NG.742
-%define release     200108
+%define release     200102
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -42,6 +42,7 @@ A few examples of common resources monitored by Pandora FMS could be processor l
 
 
 %prep
+rm -rf $RPM_BUILD_ROOT
 
 %setup -n pandora_server
 
@@ -50,11 +51,7 @@ ls -latR
 
 %install
 
-rm -rf $RPM_BUILD_ROOT/BUILD/
-rm -rf $RPM_BUILD_ROOT/RPM/
-rm -rf $RPM_BUILD_ROOT/SRPM/
-rm -rf $RPM_BUILD_ROOT/SPECS/
-
+rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/

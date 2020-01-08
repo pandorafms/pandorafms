@@ -135,7 +135,8 @@ describe("itemMetaDecoder function", () => {
       editMode: false,
       isBeingMoved: false,
       isBeingResized: false,
-      isSelected: false
+      isSelected: false,
+      lineMode: false
     });
   });
 
@@ -155,7 +156,8 @@ describe("itemMetaDecoder function", () => {
       editMode: true,
       isBeingMoved: false,
       isBeingResized: false,
-      isSelected: false
+      isSelected: false,
+      lineMode: false
     });
   });
 

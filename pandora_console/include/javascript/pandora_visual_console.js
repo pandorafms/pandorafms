@@ -162,7 +162,7 @@ function createVisualConsole(
       var item = e.item || {};
       var meta = item.meta || {};
 
-      if (meta.editMode && !meta.isUpdating) {
+      if ((meta.editMode || meta.lineMode) && !meta.isUpdating) {
         createOrUpdateVisualConsoleItem(
           visualConsole,
           asyncTaskManager,
@@ -1344,7 +1344,7 @@ function cleanupDOM() {
   $("#modalVCItemForm").empty();
 }
 /* Defined in operations/visual_console/view.php */
-/* global handleFormResponse,$,load_modal */
+/* global $, load_modal */
 function createOrUpdateVisualConsoleItem(
   visualConsole,
   asyncTaskManager,
@@ -1373,7 +1373,7 @@ function createOrUpdateVisualConsoleItem(
     form: ["itemForm-label", "itemForm-general", "itemForm-specific"],
     url: baseUrl + "ajax.php",
     ajax_callback: function(response) {
-      var data = JSON.parse(response); //handleFormResponse(response);
+      var data = JSON.parse(response);
 
       if (data == false) {
         // Error.

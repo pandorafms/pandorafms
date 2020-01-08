@@ -278,7 +278,8 @@ export function itemMetaDecoder(data: UnknownObject): ItemMeta | never {
     isUpdating: false,
     isBeingMoved: false,
     isBeingResized: false,
-    isSelected: false
+    isSelected: false,
+    lineMode: false
   };
 }
 

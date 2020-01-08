@@ -260,7 +260,8 @@ export default class Line extends Item<LineProps> {
     this.moveMode = newMetadata.editMode;
     super.setMeta({
       ...newMetadata,
-      editMode: false
+      editMode: false,
+      lineMode: true
     });
   }
 
@@ -409,6 +410,15 @@ export default class Line extends Item<LineProps> {
         : `-${this.circleRadius}px`;
 
       if (!this.isMoving) {
+        // Remove circles.
+        const circles = element.getElementsByClassName(
+          "visual-console-item-line-circle"
+        );
+        while (circles.length > 0) {
+          const circle = circles.item(0);
+          if (circle) circle.remove();
+        }
+
         element.appendChild(startCircle);
         element.appendChild(endCircle);
 

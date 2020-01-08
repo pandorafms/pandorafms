@@ -373,41 +373,45 @@ final class Line extends Model
      *
      * @param array $data Unknown input data structure.
      *
-     * @return boolean The modeled element data structure stored into the DB.
+     * @return integer The modeled element data structure stored into the DB.
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[]): int
     {
-        $data_model = $this->encode($this->toArray());
-        $newData = $this->encode($data);
-
-        $save = \array_merge($data_model, $newData);
-
-        if (!empty($save)) {
-            if (empty($save['id'])) {
+        if (empty($data) === false) {
+            if (empty($data['id']) === true) {
                 // Insert.
+                $save = static::encode($data);
                 $result = \db_process_sql_insert('tlayout_data', $save);
+                if ($result !== false) {
+                    $item = static::fromDB(['id' => $result]);
+                    $item->setData($item->toArray());
+                }
             } else {
                 // Update.
-                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+                $dataModelEncode = $this->encode($this->toArray());
+                $dataEncode = $this->encode($data);
+
+                $save = array_merge($dataModelEncode, $dataEncode);
+
+                $result = \db_process_sql_update(
+                    'tlayout_data',
+                    $save,
+                    ['id' => $save['id']]
+                );
+                // Invalidate the item's cache.
+                if ($result !== false && $result > 0) {
+                    $item = static::fromDB(['id' => $save['id']]);
+                    // Update the model.
+                    if (empty($item) === false) {
+                        $this->setData($item->toArray());
+                    }
+                }
             }
         }
 
-        // Update the model.
-        if ($result) {
-            if (empty($save['id'])) {
-                $item = static::fromDB(['id' => $result]);
-            } else {
-                $item = static::fromDB(['id' => $save['id']]);
-            }
-
-            if (!empty($item)) {
-                $this->setData($item->toArray());
-            }
-        }
-
-        return (bool) $result;
+        return $result;
     }
 
 
@@ -442,22 +446,43 @@ final class Line extends Model
     {
         $inputs = [];
 
-        switch ($values['tabSelected']) {
-            // Position.
-            case 'label':
-                // Label.
-                // TODO tinyMCE.
-                $inputs[] = [
-                    'label'     => __('Label'),
-                    'id'        => 'div-label',
-                    'arguments' => [
-                        'name'   => 'label',
-                        'type'   => 'text',
-                        'value'  => $values['label'],
-                        'return' => true,
-                    ],
-                ];
-            break;
+        if ($values['tabSelected'] === 'specific') {
+            // Width.
+            if ($values['borderWidth'] < 1) {
+                $values['borderWidth'] = 1;
+            }
+
+            $inputs[] = [
+                'label'     => __('Width'),
+                'arguments' => [
+                    'name'   => 'borderWidth',
+                    'type'   => 'number',
+                    'value'  => $values['borderWidth'],
+                    'return' => true,
+                ],
+            ];
+
+            // Color.
+            $inputs[] = [
+                'label'     => __('Color'),
+                'arguments' => [
+                    'name'   => 'borderColor',
+                    'type'   => 'color',
+                    'value'  => $values['borderColor'],
+                    'return' => true,
+                ],
+            ];
+
+            // Show on top.
+            $inputs[] = [
+                'label'     => __('Show on top'),
+                'arguments' => [
+                    'name'  => 'isOnTop',
+                    'id'    => 'isOnTop',
+                    'type'  => 'switch',
+                    'value' => $values['isOnTop'],
+                ],
+            ];
         }
 
         return $inputs;

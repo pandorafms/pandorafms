@@ -209,7 +209,7 @@ final class Group extends Item
             $agentsOk = \agents_get_agents(
                 [
                     'id_grupo' => $groupId,
-                    'status'   => AGENT_STATUS_OK,
+                    'status'   => AGENT_STATUS_NORMAL,
                 ],
                 ['COUNT(*) AS total'],
                 'AR',

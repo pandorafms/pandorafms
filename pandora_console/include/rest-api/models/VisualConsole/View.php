@@ -92,6 +92,15 @@ class View extends \HTML
                     'img'  => 'pencil.png',
                 ],
             ];
+        } else if ($type === LINE_ITEM) {
+            $tabs = [
+                [
+                    'name' => __('Specific settings'),
+                    'id'   => 'tab-specific',
+                    'href' => $url.'&tabSelected=specific',
+                    'img'  => 'event_responses_col.png',
+                ],
+            ];
         }
 
         $result = html_print_tabs($tabs);
@@ -333,7 +342,9 @@ class View extends \HTML
             break;
 
             case LINE_ITEM:
-                // Nothing. no specific items.
+                $data['borderColor'] = \get_parameter('borderColor');
+                $data['borderWidth'] = \get_parameter('borderWidth');
+                $data['isOnTop'] = \get_parameter_switch('isOnTop');
             break;
 
             case AUTO_SLA_GRAPH:

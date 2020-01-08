@@ -17,7 +17,7 @@ $method = get_parameter('method');
 if ($method) {
     $viewer = new Viewer();
     try {
-        if (method_exists($viewer, $method)) {
+        if (method_exists($viewer, $method) === true) {
             echo $viewer->{$method}();
         }
     } catch (Exception $e) {

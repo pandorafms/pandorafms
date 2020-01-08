@@ -59,4 +59,5 @@ export interface ItemMeta {
   isBeingMoved: boolean;
   isBeingResized: boolean;
   editMode: boolean;
+  lineMode: boolean;
 }

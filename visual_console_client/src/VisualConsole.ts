@@ -422,6 +422,9 @@ export default class VisualConsole {
         itemInstance.onLineMovementFinished(
           context.handleLineElementMovementFinished
         );
+        // TODO:Continue
+        //itemInstance.onClick(context.handleElementClick);
+        itemInstance.onDblClick(context.handleElementDblClick);
       } else {
         itemInstance.onClick(context.handleElementClick);
         itemInstance.onDblClick(context.handleElementDblClick);

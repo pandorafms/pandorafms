@@ -186,6 +186,9 @@ then
 		dpkg-deb --build temp_package
 	fi
 	mv temp_package.deb pandorafms.server_$pandora_version.deb
+	echo "generated: pandorafms.server_$pandora_version.deb"
+	pwd
+	ls -lah pandorafms.server_$pandora_version.deb
 	chmod 777 pandorafms.server_$pandora_version.deb
 fi
 

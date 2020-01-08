@@ -64,6 +64,20 @@ mkdir temp_package
 
 if [ $package_pandora -eq 1 ]
 then
+	whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
+	if [ $? = 1 ]
+	then
+		if [ "$DPKG_DEB" == "" ]; then
+			echo "No found \"dpkg-deb\" aplication, please install."
+			exit 1
+		fi
+
+		# Use dockerized app.
+		alias dpkg-deb="eval $DPKG_DEB"
+	else
+		echo "Found \"dpkg-debs\"."
+	fi
+
 	mkdir -p temp_package/usr/bin/
 	mkdir -p temp_package/usr/sbin/
 	mkdir -p temp_package/etc/init.d/

@@ -75,7 +75,7 @@ then
 		echo ">> Using dockerized version of dpkg-deb: "
 		echo "  $DPKG_DEB"
 		# Use dockerized app.
-		alias dpkg-deb="eval $DPKG_DEB"
+		USE_DOCKER_APP=1
 	else
 		echo "Found \"dpkg-debs\"."
 	fi
@@ -180,7 +180,11 @@ then
 	echo "END"
 
 	echo "Make the package \"Pandorafms server\"."
-	dpkg-deb --build temp_package
+	if [ "$USE_DOCKER_APP" == "1" ]; then 
+		eval $DPKG_DEB --build temp_package
+	else
+		dpkg-deb --build temp_package
+	fi
 	mv temp_package.deb pandorafms.server_$pandora_version.deb
 	chmod 777 pandorafms.server_$pandora_version.deb
 fi

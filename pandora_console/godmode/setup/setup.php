@@ -133,149 +133,136 @@ $buttons['notifications'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications').'">'.html_print_image('images/alerts_template.png', true, ['title' => __('Notifications')]).'</a>',
 ];
 
-$buttons['gis'] = [
-    'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=gis').'">'.html_print_image('images/gis_tab.png', true, ['title' => __('GIS Map connection')]).'</a>',
-
 $buttons['websocket_engine'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=websocket_engine').'">'.html_print_image('images/websocket_small.png', true, ['title' => __('Websocket engine')]).'</a>',
 ];
 
-    $help_header = '';
-    if (enterprise_installed()) {
-        $subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
+$help_header = '';
+if (enterprise_installed()) {
+    $subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
+}
+
+switch ($section) {
+    case 'general':
+        $buttons['general']['active'] = true;
+        $subpage = ' &raquo '.__('General');
+        $help_header = 'setup_general_tab';
+    break;
+
+    case 'auth':
+        $buttons['auth']['active'] = true;
+        $subpage = ' &raquo '.__('Authentication');
+    break;
+
+    case 'perf':
+        $buttons['perf']['active'] = true;
+        $subpage = ' &raquo '.__('Performance');
+        $help_header = '';
+    break;
+
+    case 'vis':
+        $buttons['vis']['active'] = true;
+        $subpage = ' &raquo '.__('Visual styles');
+    break;
+
+    case 'net':
+        $buttons['net']['active'] = true;
+        $subpage = ' &raquo '.__('Netflow');
+    break;
+
+    case 'ehorus':
+        $buttons['ehorus']['active'] = true;
+        $subpage = ' &raquo '.__('eHorus');
+        $help_header = 'setup_ehorus_tab';
+    break;
+
+    case 'integria':
+        $buttons['integria']['active'] = true;
+        $subpage = ' &raquo '.__('Integria IMS');
+        $help_header = 'setup_integria_tab';
+    break;
+
+    case 'notifications':
+        $buttons['notifications']['active'] = true;
+        $subpage = ' &raquo '.__('Notifications');
+    break;
+
+    case 'websocket_engine':
+        $buttons['websocket_engine']['active'] = true;
+        $subpage = ' &raquo '.__('Pandora Websocket Engine');
+        $help_header = 'quickshell_settings';
+    break;
+
+    case 'enterprise':
+        $buttons['enterprise']['active'] = true;
+        $subpage = ' &raquo '.__('Enterprise');
+        $help_header = 'setup_enterprise_tab';
+    break;
+
+    default:
+        // Default.
+    break;
+}
+
+// Header.
+ui_print_page_header(
+    __('Configuration').$subpage,
+    '',
+    false,
+    $help_header,
+    true,
+    $buttons
+);
+
+if (isset($config['error_config_update_config'])) {
+    if ($config['error_config_update_config']['correct'] == false) {
+        ui_print_error_message($config['error_config_update_config']['message']);
+    } else {
+        ui_print_success_message(__('Correct update the setup options'));
     }
 
-    switch ($section) {
-        case 'general':
-            $buttons['general']['active'] = true;
-            $subpage = ' &raquo '.__('General');
-            $help_header = 'setup_general_tab';
-        break;
+    unset($config['error_config_update_config']);
+}
 
-        case 'auth':
-            $buttons['auth']['active'] = true;
-            $subpage = ' &raquo '.__('Authentication');
-        break;
+switch ($section) {
+    case 'general':
+        include_once $config['homedir'].'/godmode/setup/setup_general.php';
+    break;
 
-        case 'perf':
-            $buttons['perf']['active'] = true;
-            $subpage = ' &raquo '.__('Performance');
-            $help_header = '';
-        break;
+    case 'auth':
+        include_once $config['homedir'].'/godmode/setup/setup_auth.php';
+    break;
 
-        case 'vis':
-            $buttons['vis']['active'] = true;
-            $subpage = ' &raquo '.__('Visual styles');
-        break;
+    case 'perf':
+        include_once $config['homedir'].'/godmode/setup/performance.php';
+    break;
 
-        case 'net':
-            $buttons['net']['active'] = true;
-            $subpage = ' &raquo '.__('Netflow');
-        break;
+    case 'net':
+        include_once $config['homedir'].'/godmode/setup/setup_netflow.php';
+    break;
 
-        case 'ehorus':
-            $buttons['ehorus']['active'] = true;
-            $subpage = ' &raquo '.__('eHorus');
-            $help_header = 'setup_ehorus_tab';
-        break;
+    case 'vis':
+        include_once $config['homedir'].'/godmode/setup/setup_visuals.php';
+    break;
 
-        case 'integria':
-            $buttons['integria']['active'] = true;
-            $subpage = ' &raquo '.__('Integria IMS');
-            $help_header = 'setup_integria_tab';
-        break;
+    case 'ehorus':
+        include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
+    break;
 
-        case 'gis':
-            $buttons['gis']['active'] = true;
-            $subpage = ' &raquo '.__('Map conections GIS');
-        break;
+    case 'integria':
+        include_once $config['homedir'].'/godmode/setup/setup_integria.php';
+    break;
 
-        case 'notifications':
-            $buttons['notifications']['active'] = true;
-            $subpage = ' &raquo '.__('Notifications');
-        break;
+    case 'notifications':
+        include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
+    break;
 
-        case 'websocket_engine':
-            $buttons['websocket_engine']['active'] = true;
-            $subpage = ' &raquo '.__('Pandora Websocket Engine');
-            $help_header = 'quickshell_settings';
-        break;
+    case 'websocket_engine':
+        include_once $config['homedir'].'/godmode/setup/setup_websocket_engine.php';
+    break;
 
-        case 'enterprise':
-            $buttons['enterprise']['active'] = true;
-            $subpage = ' &raquo '.__('Enterprise');
-            $help_header = 'setup_enterprise_tab';
-        break;
-
-        default:
-            // Default.
-        break;
-    }
-
-    // Header.
-    ui_print_page_header(
-        __('Configuration').$subpage,
-        '',
-        false,
-        $help_header,
-        true,
-        $buttons
-    );
-
-    if (isset($config['error_config_update_config'])) {
-        if ($config['error_config_update_config']['correct'] == false) {
-            ui_print_error_message($config['error_config_update_config']['message']);
-        } else {
-            ui_print_success_message(__('Correct update the setup options'));
-        }
-
-        unset($config['error_config_update_config']);
-    }
-
-    switch ($section) {
-        case 'general':
-            include_once $config['homedir'].'/godmode/setup/setup_general.php';
-        break;
-
-        case 'auth':
-            include_once $config['homedir'].'/godmode/setup/setup_auth.php';
-        break;
-
-        case 'perf':
-            include_once $config['homedir'].'/godmode/setup/performance.php';
-        break;
-
-        case 'net':
-            include_once $config['homedir'].'/godmode/setup/setup_netflow.php';
-        break;
-
-        case 'vis':
-            include_once $config['homedir'].'/godmode/setup/setup_visuals.php';
-        break;
-
-        case 'ehorus':
-            include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
-        break;
-
-        case 'integria':
-            include_once $config['homedir'].'/godmode/setup/setup_integria.php';
-        break;
-
-        case 'gis':
-            include_once $config['homedir'].'/godmode/setup/gis.php';
-        break;
-
-        case 'notifications':
-            include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
-        break;
-
-        case 'websocket_engine':
-            include_once $config['homedir'].'/godmode/setup/setup_websocket_engine.php';
-        break;
-
-        default:
-            enterprise_hook('setup_enterprise_select_tab', [$section]);
-        break;
-    }
+    default:
+        enterprise_hook('setup_enterprise_select_tab', [$section]);
+    break;
+}

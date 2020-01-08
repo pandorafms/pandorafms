@@ -3851,14 +3851,26 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $file_js  = $config['homedir'].'/include/web2image.js';
     $url      = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
-    $img_file = 'img_'.uniqid().'.png';
-    $img_path = $config['homedir'].'/attachment/'.$img_file;
-    $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    if (!$params['return_img_base_64']) {
+        $img_file = 'img_'.uniqid().'.png';
+        $img_path = $config['homedir'].'/attachment/'.$img_file;
+        $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    }
 
     $width_img  = 500;
-    $height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
 
-    $params['height'] = $height_img;
+    // Set height image.
+    $height_img = 170;
+    $params['height'] = 170;
+    if ((int) $params['landscape'] === 1) {
+        $height_img = 150;
+        $params['height'] = 150;
+    }
+
+    if ($type_graph_pdf === 'slicebar') {
+        $width_img  = 360;
+        $height_img = 70;
+    }
 
     $params_encode_json = urlencode(json_encode($params));
 
@@ -3881,11 +3893,10 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $img_content = join("\n", $result);
 
     if ($params['return_img_base_64']) {
-        // To be used in alerts
-        $width_img = 500;
+        // To be used in alerts.
         return $img_content;
     } else {
-        // to be used in PDF files
+        // to be used in PDF files.
         $config['temp_images'][] = $img_path;
         return '<img src="'.$img_url.'" />';
     }
@@ -4089,6 +4100,18 @@ function mask2cidr($mask)
     $long = ip2long($mask);
     $base = ip2long('255.255.255.255');
     return (32 - log((($long ^ $base) + 1), 2));
+}
+
+
+/**
+ * convert the cidr prefix to subnet mask
+ *
+ * @param  int cidr prefix
+ * @return string subnet mask
+ */
+function cidr2mask($int)
+{
+    return long2ip(-1 << (32 - (int) $int));
 }
 
 
@@ -5404,6 +5427,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'omnishell':
+            if ($es) {
+                $result .= 'Omnishell&printable=yes';
+            } else {
+                $result .= 'Omnishell&printable=yes';
+            }
+        break;
+
         case 'module_type_tab':
             if ($es) {
                 $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
@@ -5417,6 +5448,22 @@ function get_help_info($section_name)
                 $result .= 'Pandora_GIS&printable=yes#Operaci.C3.B3n';
             } else {
                 $result .= 'GIS&printable=yes#Operation';
+            }
+        break;
+
+        case 'quickshell_settings':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Websocket_Engine';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Websocket_engine';
+            }
+        break;
+
+        case 'discovery':
+            if ($es) {
+                $result .= 'Discovery&printable=yes';
+            } else {
+                $result .= 'Discovery&printable=yes';
             }
         break;
     }

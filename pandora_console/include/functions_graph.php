@@ -1446,9 +1446,20 @@ function graphic_combined_module(
                 $data_module_graph['agent_name'] = modules_get_agentmodule_agent_name(
                     $agent_module_id
                 );
-                $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
-                    $agent_module_id
-                );
+
+                if (is_metaconsole()) {
+                    $data_module_graph['agent_alias'] = db_get_value(
+                        'alias',
+                        'tagente',
+                        'id_agente',
+                        (int) $module_data['id_agente']
+                    );
+                } else {
+                    $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
+                        $agent_module_id
+                    );
+                }
+
                 $data_module_graph['agent_id'] = $module_data['id_agente'];
                 $data_module_graph['module_name'] = $module_data['nombre'];
                 $data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
@@ -1761,7 +1772,7 @@ function graphic_combined_module(
 
                 $search_in_history_db = db_search_in_history_db($datelimit);
 
-                $temp[$module] = modules_get_agentmodule($module);
+                $temp[$module] = io_safe_output(modules_get_agentmodule($module));
                 $query_last_value = sprintf(
                     '
                     SELECT datos
@@ -1787,7 +1798,7 @@ function graphic_combined_module(
                 if (!empty($params_combined['labels'])
                     && isset($params_combined['labels'][$module])
                 ) {
-                    $label = io_safe_input($params_combined['labels'][$module]);
+                    $label = io_safe_output($params_combined['labels'][$module]);
                 } else {
                     $alias = db_get_value(
                         'alias',
@@ -3829,43 +3840,39 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
         $full_legend[$cont] = $name;
 
         $top = ($datelimit + ($periodtime * ($i + 1)));
-        $event = db_get_row_filter(
+
+        $events = db_get_all_rows_filter(
             'tevento',
             ['id_agente' => $id_agent,
                 'utimestamp > '.$bottom,
-                'utimestamp < '.$top
+                'utimestamp < '.$top,
             ],
             'criticity, utimestamp'
         );
 
-        if (!empty($event['utimestamp'])) {
+        if (!empty($events)) {
             $data[$cont]['utimestamp'] = $periodtime;
-            switch ($event['criticity']) {
-                case EVENT_CRIT_WARNING:
-                    $data[$cont]['data'] = 2;
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $data[$cont]['data'] = 3;
-                break;
-
-                default:
-                    $data[$cont]['data'] = 1;
-                break;
+            $event_criticity = array_column($events, 'criticity');
+            if (array_search(EVENT_CRIT_CRITICAL, $event_criticity) !== false) {
+                $data[$cont]['data'] = EVENT_CRIT_CRITICAL;
+            } else if (array_search(EVENT_CRIT_WARNING, $event_criticity) !== false) {
+                $data[$cont]['data'] = EVENT_CRIT_WARNING;
+            } else {
+                $data[$cont]['data'] = EVENT_CRIT_NORMAL;
             }
         } else {
             $data[$cont]['utimestamp'] = $periodtime;
-            $data[$cont]['data'] = 1;
+            $data[$cont]['data'] = EVENT_CRIT_NORMAL;
         }
 
         $cont++;
     }
 
     $colors = [
-        1 => COL_NORMAL,
-        2 => COL_WARNING,
-        3 => COL_CRITICAL,
-        4 => COL_UNKNOWN,
+        1                   => COL_UNKNOWN,
+        EVENT_CRIT_NORMAL   => COL_NORMAL,
+        EVENT_CRIT_WARNING  => COL_WARNING,
+        EVENT_CRIT_CRITICAL => COL_CRITICAL,
     ];
 
     // Draw slicebar graph

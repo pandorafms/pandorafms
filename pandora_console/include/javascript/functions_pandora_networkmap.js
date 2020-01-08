@@ -14,6 +14,7 @@
 /* global holding_area_dimensions */
 /* global networkmap_id */
 /* global enterprise_installed */
+/* global networkmap_write */
 /* global force */
 /* global layer_graph_nodes */
 /* global layer_graph_links */
@@ -791,8 +792,8 @@ function edit_node(data_node, dblClick) {
       var id_networkmap_lenght = networkmap_id.toString().length;
       var id_node_length = id.length - id_networkmap_lenght;
       id = id.substring(0, id_node_length);
-      var node_selected = graph.nodes[id];
-
+      var index_node = $.inArray(data_node, graph.nodes);
+      var node_selected = graph.nodes[index_node];
       var selected_links = get_relations(node_selected);
 
       $(
@@ -2087,7 +2088,12 @@ function show_menu(item, data) {
         icon: "add_node",
         disabled: function() {
           if (enterprise_installed) {
-            return false;
+            // Check if user can write network maps.
+            if (networkmap_write) {
+              return false;
+            } else {
+              return true;
+            }
           } else {
             return true;
           }
@@ -2099,6 +2105,14 @@ function show_menu(item, data) {
       items_list["center"] = {
         name: set_center_menu,
         icon: "center",
+        disabled: function() {
+          // Check if user can write network maps.
+          if (networkmap_write) {
+            return false;
+          } else {
+            return true;
+          }
+        },
         callback: function(key, options) {
           set_center(networkmap_id);
         }
@@ -2136,7 +2150,12 @@ function show_menu(item, data) {
         icon: "restart_map",
         disabled: function() {
           if (enterprise_installed) {
-            return false;
+            // Check if user can write network maps.
+            if (networkmap_write) {
+              return false;
+            } else {
+              return true;
+            }
           } else {
             return true;
           }
@@ -2849,10 +2868,13 @@ function init_drag_and_drop() {
       var selection = d3.selectAll(".node_selected");
 
       selection.each(function(d) {
-        graph.nodes[d.id].x = d.x + delta[0];
-        graph.nodes[d.id].y = d.y + delta[1];
-        graph.nodes[d.id].px = d.px + delta[0];
-        graph.nodes[d.id].py = d.py + delta[1];
+        // We search the position of this node in the array (index).
+        // This is to avoid errors when deleting nodes (id doesn't match index).
+        var index_node = $.inArray(d, graph.nodes);
+        graph.nodes[index_node].x = d.x + delta[0];
+        graph.nodes[index_node].y = d.y + delta[1];
+        graph.nodes[index_node].px = d.px + delta[0];
+        graph.nodes[index_node].py = d.py + delta[1];
       });
 
       draw_elements_graph();

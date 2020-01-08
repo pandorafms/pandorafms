@@ -155,6 +155,8 @@ if (!empty($sub2)) {
 
 enterprise_hook('cluster_menu');
 enterprise_hook('aws_menu');
+enterprise_hook('SAP_view');
+
 
 if (!empty($sub)) {
     $menu_operation['estado']['text'] = __('Monitoring');
@@ -384,10 +386,10 @@ if (check_acl($config['id_user'], 0, 'ER')
             )
         );
         if ($user_filter !== false) {
-            $filter = events_get_event_filter($user_filter['id_filter']);
+            $user_event_filter = events_get_event_filter($user_filter['id_filter']);
         } else {
             // Default.
-            $filter = [
+            $user_event_filter = [
                 'status'        => EVENT_NO_VALIDATED,
                 'event_view_hr' => $config['event_view_hr'],
                 'group_rep'     => 1,
@@ -397,7 +399,7 @@ if (check_acl($config['id_user'], 0, 'ER')
             ];
         }
 
-        $fb64 = base64_encode(json_encode($filter));
+        $fb64 = base64_encode(json_encode($user_event_filter));
 
         // RSS.
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');

@@ -155,7 +155,7 @@ if (is_ajax()) {
 ob_end_clean();
 
 
-// Take some parameters (GET)
+// Take some parameters (GET).
 $group_id = (int) get_parameter('group_id', 0);
 $search = trim(get_parameter('search', ''));
 $search_custom = trim(get_parameter('search_custom', ''));
@@ -172,10 +172,10 @@ $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 $onheader = [];
 
 if (check_acl($config['id_user'], 0, 'AW')) {
-    // Prepare the tab system to the future
+    // Prepare the tab system to the future.
     $tab = 'setup';
 
-    // Setup tab
+    // Setup tab.
     $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image('images/setup.png', true, ['title' => __('Setup')]).'</a>';
 
     $setuptab['godmode'] = true;
@@ -193,7 +193,7 @@ if (!$strict_user) {
     }
 }
 
-// User is deleting agent
+// User is deleting agent.
 if (isset($result_delete)) {
     if ($result_delete) {
         ui_print_success_message(__('Sucessfully deleted agent'));
@@ -283,7 +283,7 @@ $order = null;
 $order_collation = '';
 switch ($config['dbtype']) {
     case 'mysql':
-        // $order_collation = " COLLATE utf8_general_ci";
+        // $order_collation = " COLLATE utf8_general_ci";.
         $order_collation = '';
     break;
 
@@ -314,6 +314,10 @@ switch ($sortField) {
                     'order'  => 'DESC',
                 ];
             break;
+
+            default:
+                // Default.
+            break;
         }
     break;
 
@@ -335,6 +339,10 @@ switch ($sortField) {
                     'field2' => 'alias'.$order_collation,
                     'order'  => 'DESC',
                 ];
+            break;
+
+            default:
+                // Default.
             break;
         }
     break;
@@ -358,6 +366,10 @@ switch ($sortField) {
                     'order'  => 'DESC',
                 ];
             break;
+
+            default:
+                // Default.
+            break;
         }
     break;
 
@@ -379,6 +391,10 @@ switch ($sortField) {
                     'field2' => 'alias'.$order_collation,
                     'order'  => 'DESC',
                 ];
+            break;
+
+            default:
+                // Default.
             break;
         }
     break;
@@ -402,6 +418,10 @@ switch ($sortField) {
                     'order'  => 'DESC',
                 ];
             break;
+
+            default:
+                // Default.
+            break;
         }
     break;
 
@@ -424,6 +444,10 @@ switch ($sortField) {
                     'order'  => 'ASC',
                 ];
             break;
+
+            default:
+                // Default.
+            break;
         }
     break;
 
@@ -445,6 +469,10 @@ switch ($sortField) {
                     'field2' => 'alias'.$order_collation,
                     'order'  => 'ASC',
                 ];
+            break;
+
+            default:
+                // Default.
             break;
         }
     break;
@@ -505,7 +533,7 @@ if (!empty($search_custom)) {
     $search_sql_custom = '';
 }
 
-// Show only selected groups
+// Show only selected groups.
 if ($group_id > 0) {
     $groups = [$group_id];
     if ($recursion) {
@@ -624,11 +652,13 @@ if (empty($agents)) {
     $agents = [];
 }
 
-$agent_font_size = 'font-size:  7px';
-$description_font_size = 'font-size: 6.5px';
-if ($config['language'] == 'ja' || $config['language'] == 'zh_CN' || $own_info['language'] == 'ja' || $own_info['language'] == 'zh_CN') {
-    $agent_font_size = 'font-size: 15px';
-    $description_font_size = 'font-size: 11px';
+if ($config['language'] == 'ja'
+    || $config['language'] == 'zh_CN'
+    || $own_info['language'] == 'ja'
+    || $own_info['language'] == 'zh_CN'
+) {
+    // Adds a custom font size for Japanese and Chinese language.
+    $custom_font_size = 'custom_font_size';
 }
 
 // Urls to sort the table.
@@ -648,7 +678,7 @@ $url_up_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;
 $url_down_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=down';
 
 
-// Prepare pagination
+// Prepare pagination.
 ui_pagination(
     $total_agents,
     ui_get_url_refresh(['group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status])
@@ -744,10 +774,8 @@ foreach ($agents as $agent) {
     $data = [];
 
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
-    $data[0] .= '<span>';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"> <span style="'.$agent_font_size.';font-weight:bold" title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></a>';
-    $data[0] .= '</span>';
+    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
 
     if ($agent['quiet']) {
         $data[0] .= '&nbsp;';
@@ -779,7 +807,7 @@ foreach ($agents as $agent) {
 
     $data[0] .= '</div></div>';
 
-    $data[1] = ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', $description_font_size);
+    $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
 
     $data[10] = '';
 
@@ -793,8 +821,9 @@ foreach ($agents as $agent) {
     $data[2] = ui_print_os_icon($agent['id_os'], false, true);
 
     $data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent['intervalo']).'</span>';
-
-    $data[4] = ui_print_group_icon($agent['id_grupo'], true);
+    $data[4] = '<a href="'.$config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">';
+    $data[4] .= ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
+    $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];
 
     $data[5] = ui_print_type_agent_icon(

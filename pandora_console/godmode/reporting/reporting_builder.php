@@ -147,7 +147,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 }
 
 // Constant with fonts directory.
-define('_MPDF_TTFONTPATH', 'include/fonts/');
+define('_MPDF_TTFONTPATH', $config['homedir'].'/include/fonts/');
 
 $activeTab = get_parameter('tab', 'main');
 $action = get_parameter('action', 'list');
@@ -1415,6 +1415,9 @@ switch ($action) {
                             $name_it
                         );
 
+                        $values['landscape'] = get_parameter('landscape');
+                        $values['pagebreak'] = get_parameter('pagebreak');
+
                         /*
                             Added support for projection graphs,
                             prediction date and SLA reports
@@ -1924,10 +1927,6 @@ switch ($action) {
                             'show_in_same_row',
                             0
                         );
-                        $style['show_in_landscape'] = get_parameter(
-                            'show_in_landscape',
-                            0
-                        );
                         $style['hide_notinit_agents'] = get_parameter(
                             'hide_notinit_agents',
                             0
@@ -2006,11 +2005,6 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                                /*
-                                    case 'TTRT':
-                                    case 'TTO':
-                                    case 'MTBF':
-                                case 'MTTR':*/
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {
@@ -2104,6 +2098,9 @@ switch ($action) {
                             $items_label,
                             $name_it
                         );
+
+                        $values['landscape'] = get_parameter('landscape');
+                        $values['pagebreak'] = get_parameter('pagebreak');
 
                         // Support for projection graph, prediction date
                         // and SLA reports 'top_n_value', 'top_n' and 'text'
@@ -2495,10 +2492,6 @@ switch ($action) {
                             'show_in_same_row',
                             0
                         );
-                        $style['show_in_landscape'] = get_parameter(
-                            'show_in_landscape',
-                            0
-                        );
                         $style['hide_notinit_agents'] = get_parameter(
                             'hide_notinit_agents',
                             0
@@ -2613,11 +2606,6 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                                /*
-                                    case 'TTRT':
-                                    case 'TTO':
-                                    case 'MTBF':
-                                case 'MTTR':*/
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {

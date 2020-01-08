@@ -7,6 +7,7 @@
 var id_modules_icmp = Array(6, 7);
 var id_modules_tcp = Array(8, 9, 10, 11);
 var id_modules_snmp = Array(15, 16, 17, 18);
+var id_modules_exec = Array(34, 35, 36, 37);
 
 function configure_modules_form() {
   $("#id_module_type").change(function() {
@@ -23,6 +24,10 @@ function configure_modules_form() {
       $("tr#simple-snmp_1, tr#simple-snmp_2").hide();
       $("tr#simple-tcp_send, tr#simple-tcp_receive").show();
       $("#text-tcp_port").removeAttr("disabled");
+    } else if (id_modules_exec.in_array(this.value)) {
+      $("tr#simple-tcp_send, tr#simple-tcp_receive").hide();
+      $("tr#simple-snmp_1, tr#simple-snmp_2").hide();
+      $("#text-tcp_port").attr("disabled", false);
     }
   });
 
@@ -541,13 +546,13 @@ function configure_modules_form() {
         }
 
         if (data["type"] >= 15 && data["type"] <= 18) {
-          $("#snmp_version").val(data["tcp_send"]);
-          $("#text-snmp3_auth_user").val(data["plugin_user"]);
-          $("#password-snmp3_auth_pass").val(data["plugin_pass"]);
-          $("#snmp3_auth_method").val(data["plugin_parameter"]);
-          $("#snmp3_privacy_method").val(data["custom_string_1"]);
-          $("#password-snmp3_privacy_pass").val(data["custom_string_2"]);
-          $("#snmp3_security_level").val(data["custom_string_3"]);
+          $("#snmp_version").val(data["snmp_version"]);
+          $("#text-snmp3_auth_user").val(data["snmp3_auth_user"]);
+          $("#password-snmp3_auth_pass").val(data["snmp3_auth_pass"]);
+          $("#snmp3_auth_method").val(data["snmp3_auth_method"]);
+          $("#snmp3_privacy_method").val(data["snmp3_privacy_method"]);
+          $("#password-snmp3_privacy_pass").val(data["snmp3_privacy_pass"]);
+          $("#snmp3_security_level").val(data["snmp3_security_level"]);
 
           if (data["tcp_send"] == "3") {
             $("#simple-field_snmpv3_row1").attr("style", "");
@@ -563,6 +568,18 @@ function configure_modules_form() {
 
         if (data["id_plugin"] != undefined) {
           $("#id_plugin").trigger("change");
+        }
+
+        if (data["type"] >= 34 && data["type"] <= 37) {
+          $("#command_text").val(data["command_text"]);
+          $("#command_credential_identifier").val(
+            data["command_credential_identifier"]
+          );
+
+          if (data["command_os"] == 0 || data["command_os"] == "") {
+            data["command_os"] = "inherited";
+          }
+          $("#command_os").val(data["command_os"]);
         }
       },
       "json"

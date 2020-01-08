@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.740 PS191029";
+my $version = "7.0NG.742 PS200108";
 
 # save program name for logging
 my $progname = basename($0);
@@ -121,6 +121,7 @@ sub help_screen{
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
 	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
@@ -193,7 +194,7 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent> <use_alias>]", 'Add event');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
@@ -639,9 +640,9 @@ sub pandora_delete_module_data ($$) {
 	my $buffer = 1000;
 	
 	while(1) {
-		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=?', $id_module);
+		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_inc WHERE id_agente_modulo=?', $id_module);
+		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_log4x WHERE id_agente_modulo=?', $id_module);
 		my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		
 		my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
@@ -651,19 +652,19 @@ sub pandora_delete_module_data ($$) {
 		}
 		
 		if($nd > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndinc > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_inc', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	
 		if($ndlog4x > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_log4x', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndstring > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_string', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	}
 		
@@ -4085,16 +4086,13 @@ sub cli_create_event() {
 				$id_alert_agent_module = 0;
 			}
 			
-			if (defined($comment) && $comment ne '') {
-				$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-			}
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			# Base64 encode custom data
-			$custom_data = encode_base64 ($custom_data);
+			$custom_data = encode_base64 ($custom_data, '');
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4138,16 +4136,13 @@ sub cli_create_event() {
 			$id_alert_agent_module = 0;
 		}
 		
-		if (defined($comment) && $comment ne '') {
-			$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-		}
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		# Base64 encode custom data
-		$custom_data = encode_base64 ($custom_data);
+		$custom_data = encode_base64 ($custom_data, '');
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 
 	}
 }
@@ -4334,7 +4329,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
@@ -4421,7 +4416,7 @@ sub cli_delete_data($) {
 		
 				print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-				pandora_delete_data($dbh, 'module', $id_agent);
+				pandora_delete_data($dbh, 'agent', $id_agent);
 			}
 		} else {
 			my $id_agent = get_agent_id($dbh,$name);
@@ -4429,7 +4424,7 @@ sub cli_delete_data($) {
 		
 			print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-			pandora_delete_data($dbh, 'module', $id_agent);
+			pandora_delete_data($dbh, 'agent', $id_agent);
 		}
 	}
 	elsif($opt eq '-g' || $opt eq '--g') {
@@ -4848,6 +4843,49 @@ sub cli_get_agent_modules() {
 		}
 	}
 }
+
+##############################################################################
+# Show id, name and id_server of an agent given alias
+# Related option: --get_agents_id_name_by_alias
+##############################################################################
+
+sub cli_get_agents_id_name_by_alias() {
+	my $agent_alias = @ARGV[2];
+	my $strict = @ARGV[3];
+	my @agents;
+	my $where_value;
+
+	if($strict eq 'strict') {
+		$where_value = $agent_alias;
+	} else {
+		$where_value = "%".$agent_alias."%";
+	}
+
+	if(is_metaconsole($conf) == 1) {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente, id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	} else {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	}
+	if(scalar(@agents) == 0) {
+		print "[ERROR] No agents retrieved.\n\n";
+	} else {
+		if(is_metaconsole($conf) == 1) {
+			print "alias, id_agente, id_tagente, id_server, server_name\n";
+
+				foreach my $agent (@agents) {
+			
+				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+			}
+		} else {
+			print "alias, id_agente\n";
+
+			foreach my $agent (@agents) {
+				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";
+			}
+		}
+	}	
+}
+
 
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
@@ -5895,9 +5933,16 @@ sub cli_stop_downtime () {
 	exist_check($downtime_id,'planned downtime',$downtime_id);
 	
 	my $current_time = time;
-	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	if($current_time >= $downtime_date_to) {
+	my $data = get_db_single_row ($dbh, 'SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
+
+	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
+		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
+		print_log "[INFO] Periodical and running planned downtime cannot be stopped.\n\n";
+		exit;
+	}
+	
+	if($current_time >= $data->{'date_to'}) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}
@@ -7418,6 +7463,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_modules') {
 			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agents_id_name_by_alias') {
+			param_check($ltotal, 2,1);
+			cli_get_agents_id_name_by_alias();
 		}
 		elsif ($param eq '--get_policy_modules') {
 			param_check($ltotal, 1);

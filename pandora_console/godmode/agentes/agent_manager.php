@@ -275,7 +275,7 @@ if ($new_agent) {
 
 $table_alias = '<div class="label_select"><p class="input_label">'.__('Alias').': '.ui_print_help_tip(__('Characters /,\,|,%,#,&,$ will be ignored'), true).'</p>';
 $table_alias .= '<div class='.$label_select_parent.'>';
-$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true).'</div>';
+$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true, false, true).'</div>';
 if ($new_agent) {
     $table_alias .= '<div class="label_select_child_right">'.html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true).__('Use alias as name').'</div>';
 }
@@ -612,17 +612,19 @@ if (enterprise_installed()) {
         $cascade_protection,
         true
     ).__('Cascade protection').'&nbsp;';
+
+    $table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
+        $modules_values,
+        'cascade_protection_module',
+        $cascade_protection_module,
+        '',
+        '',
+        0,
+        true
+    );
 }
 
-$table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
-    $modules_values,
-    'cascade_protection_module',
-    $cascade_protection_module,
-    '',
-    '',
-    0,
-    true
-).'</div></div>';
+$table_adv_parent .= '</div></div>';
 
 // Learn mode / Normal mode.
 $table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': </p>';
@@ -667,7 +669,7 @@ $table_adv_status .= html_print_checkbox_switch(
     $disabled,
     true
 );
-$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled mode').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
 $table_adv_status .= '</div>';
 
 // Url address.
@@ -774,11 +776,14 @@ if ($config['activate_gis']) {
 }
 
 
+if (enterprise_installed()) {
+    $advanced_div = '<div class="secondary_groups_list">';
+} else {
+    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+}
 
 // General display distribution.
-$table_adv_options = '
-        <div class="secondary_groups_list">
-           '.$adv_secondary_groups_label.'
+$table_adv_options = $advanced_div.$adv_secondary_groups_label.'
             <div class="sg_source">
                 '.$adv_secondary_groups_left.'
             </div>

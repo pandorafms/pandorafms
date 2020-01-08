@@ -47,37 +47,13 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
     }
 
     if (!empty($user_groups_ids)) {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $list_groups = db_get_all_rows_sql(
-                    '
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN ('.$user_groups_ids.')
-					ORDER BY nombre COLLATE utf8_general_ci ASC'
-                );
-            break;
-
-            case 'postgresql':
-                $list_groups = db_get_all_rows_sql(
-                    '
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN ('.$user_groups_ids.')
-					ORDER BY nombre ASC'
-                );
-            break;
-
-            case 'oracle':
-                $list_groups = db_get_all_rows_sql(
-                    '
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN ('.$user_groups_ids.')
-					ORDER BY nombre ASC'
-                );
-            break;
-        }
+        $list_groups = db_get_all_rows_sql(
+            '
+            SELECT *
+            FROM tgrupo
+            WHERE id_grupo IN ('.$user_groups_ids.')
+            ORDER BY nombre COLLATE utf8_general_ci ASC'
+        );
     }
 
     $list = [];
@@ -242,14 +218,36 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
 
         $list['_server_sanity_'] = format_numeric((100 - $list['_module_sanity_']), 1);
     } else if (($config['realtimestats'] == 0)) {
-        $group_stat = db_get_all_rows_sql(
-            "SELECT
-			SUM(ta.normal_count) as normal, SUM(ta.critical_count) as critical,
-			SUM(ta.warning_count) as warning,SUM(ta.unknown_count) as unknown,
-			SUM(ta.notinit_count) as not_init, SUM(fired_count) as alerts_fired
-			FROM tagente ta
-			WHERE disabled = 0 AND id_grupo IN ($user_groups_ids)"
-        );
+        if (users_is_admin()) {
+            $group_stat = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT
+                    SUM(ta.normal_count) as normal, SUM(ta.critical_count) as critical,
+                    SUM(ta.warning_count) as warning,SUM(ta.unknown_count) as unknown,
+                    SUM(ta.notinit_count) as not_init, SUM(ta.fired_count) as alerts_fired
+                    FROM tagente ta
+                    WHERE ta.disabled = 0 AND ta.id_grupo IN (%s)
+                    ',
+                    $user_groups_ids
+                )
+            );
+        } else {
+            $group_stat = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT
+                    SUM(ta.normal_count) as normal, SUM(ta.critical_count) as critical,
+                    SUM(ta.warning_count) as warning,SUM(ta.unknown_count) as unknown,
+                    SUM(ta.notinit_count) as not_init, SUM(ta.fired_count) as alerts_fired
+                    FROM tagente ta
+                    LEFT JOIN tagent_secondary_group tasg
+                        ON ta.id_agente = tasg.id_agent
+                    WHERE ta.disabled = 0 AND
+                    (ta.id_grupo IN ( %s ) OR tasg.id_group IN ( %s ))',
+                    $user_groups_ids,
+                    $user_groups_ids
+                )
+            );
+        }
 
         $list['_agents_unknown_'] = $group_stat[0]['unknown'];
         $list['_monitors_alerts_fired_'] = $group_stat[0]['alerts_fired'];
@@ -303,19 +301,41 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
 
         $list['_server_sanity_'] = format_numeric((100 - $list['_module_sanity_']), 1);
     } else {
-        $_tag_condition = '';
-        $result_list = db_get_all_rows_sql(
-            "SELECT COUNT(*) as contado, estado
-					FROM tagente_estado tae INNER JOIN tagente ta
-						ON tae.id_agente = ta.id_agente
-							AND ta.disabled = 0
-							AND ta.id_grupo IN ( $user_groups_ids )	
-					INNER JOIN tagente_modulo tam
-						ON tae.id_agente_modulo = tam.id_agente_modulo
-							AND tam.disabled = 0
-					$_tag_condition
-					GROUP BY estado"
-        );
+        if (users_is_admin()) {
+            $result_list = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT COUNT(*) as contado, estado FROM tagente_estado tae 
+                    INNER JOIN tagente ta
+                        ON tae.id_agente = ta.id_agente
+                        AND ta.disabled = 0
+                        AND ta.id_grupo IN ( %s )
+                    INNER JOIN tagente_modulo tam
+                        ON tae.id_agente_modulo = tam.id_agente_modulo
+                        AND tam.disabled = 0
+                    GROUP BY estado',
+                    $user_groups_ids
+                )
+            );
+        } else {
+            $result_list = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT COUNT(*) as contado, estado 
+                FROM tagente_estado tae 
+                    INNER JOIN tagente ta
+                        ON tae.id_agente = ta.id_agente
+                        AND ta.disabled = 0	
+                    INNER JOIN tagente_modulo tam
+                        ON tae.id_agente_modulo = tam.id_agente_modulo
+                        AND tam.disabled = 0
+                    LEFT JOIN tagent_secondary_group tasg 
+                        ON ta.id_agente = tasg.id_agent
+                    WHERE (ta.id_grupo IN ( %s ) OR tasg.id_group IN ( %s ))
+                    GROUP BY estado',
+                    $user_groups_ids,
+                    $user_groups_ids
+                )
+            );
+        }
 
         if (empty($result_list)) {
             $result_list = [];

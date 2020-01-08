@@ -1485,7 +1485,8 @@ if (!empty($result)) {
 
             // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
             if (!is_metaconsole()) {
-                $acl_graphs = check_acl($config['id_user'], $row['id_group'], 'RR');
+                $agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+                $acl_graphs = check_acl_one_of_groups($config['id_user'], $agent_groups, 'RR');
             } else {
                 $acl_graphs = true;
             }
@@ -1709,7 +1710,9 @@ if (!empty($result)) {
 
     html_print_table($table);
 
-    ui_pagination($count, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    if ($count_modules > $config['block_size']) {
+        ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    }
 } else {
     if ($first_interaction) {
         ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);
@@ -1718,10 +1721,9 @@ if (!empty($result)) {
     }
 }
 
-// End Build List Result
-//
+// End Build List Result.
 echo "<div id='monitor_details_window'></div>";
-// strict user hidden
+// Strict user hidden.
 echo '<div id="strict_hidden" style="display:none;">';
 html_print_input_text('strict_user_hidden', $strict_user);
 echo '</div>';
@@ -1758,8 +1760,8 @@ $('#moduletype').click(function() {
     );
 
     return false;
-  });
-    
+});
+
 $('#ag_group').change (function () {
     strict_user = $('#text-strict_user_hidden').val();
     

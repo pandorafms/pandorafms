@@ -179,6 +179,14 @@ $date_to = get_parameter(
     'filter[date_to]',
     $filter['date_to']
 );
+$time_from = get_parameter(
+    'filter[time_from]',
+    $filter['time_from']
+);
+$time_to = get_parameter(
+    'filter[time_to]',
+    $filter['time_to']
+);
 $source = get_parameter(
     'filter[source]',
     $filter['source']
@@ -196,6 +204,15 @@ $history = get_parameter(
     $filter['history']
 );
 $section = get_parameter('section', false);
+
+$id_source_event = get_parameter(
+    'filter[id_source_event]',
+    $filter['id_source_event']
+);
+
+if (empty($text_agent) && !empty($id_agent)) {
+    $text_agent = agents_get_alias($id_agent);
+}
 
 // Ajax responses.
 if (is_ajax()) {
@@ -396,6 +413,7 @@ if ($user_filter !== false) {
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
+        $id_source_event = $filter['id_source_event'];
     }
 }
 
@@ -1018,7 +1036,7 @@ $adv_inputs[] = $in;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    true
 );
 
 $data = html_print_select(
@@ -1050,6 +1068,20 @@ $data = html_print_select(
 $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
+
+if (is_metaconsole()) {
+    $data = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
+    $in .= $data.'</div>';
+    $adv_inputs[] = $in;
+}
 
 // Gap.
 $adv_inputs[] = '<div class="filter_input"></div>';
@@ -1539,7 +1571,7 @@ function process_datatables_callback(table, settings) {
                 // Agent id.
                 target = i;
             }
-            if(label == '<?php echo __('Agent name'); ?>') {
+            if(label == '<?php echo addslashes(__('Agent name')); ?>') {
                 // Agent id.
                 target = i;
                 break;
@@ -1619,15 +1651,13 @@ function process_datatables_item(item) {
 
     // Show comments events.
     item.user_comment = item.comments
-  
-    if(item.comments.length > 80){
 
-    item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-    item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
-    item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
-    
+    if(typeof item.comments !== 'undefined' && item.comments.length > 80) {
+        item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+        item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
+        item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
     }
- 
+
     // Grouped events.
     if(item.max_id_evento) {
         item.id_evento = item.max_id_evento

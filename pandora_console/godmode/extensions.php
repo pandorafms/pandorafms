@@ -129,6 +129,7 @@ if ($disabled != '') {
 
 $extensions = extensions_get_extension_info();
 
+$table = new StdClass;
 $table->width = '98%';
 
 $table->head = [];

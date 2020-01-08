@@ -196,6 +196,10 @@ h4 {
   color: #3f3f3f;
   text-transform: none;
 }
+
+table tbody tr td h4 {
+  color: #ffffff;
+}
 a {
   color: #3f3f3f;
   text-decoration: none;
@@ -388,7 +392,7 @@ select:-internal-list-box {
 
 @font-face {
   font-family: "FreeSansBoldFont";
-  src: url("../fonts/FreeSansBold.ttf") format("truetype");
+  src: url("../fonts/FreeSans-Bold.ttf") format("truetype");
 }
 
 .FreeSansBold {
@@ -515,6 +519,14 @@ select:-internal-list-box {
 .no-text-imp {
   font-size: 0 !important;
 }
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
 .flex-content-right {
   display: flex;
   flex-direction: row;
@@ -544,6 +556,25 @@ select:-internal-list-box {
   align-items: baseline;
 }
 
+.flex-row-vcenter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.flex-space-around {
+  justify-content: space-around;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-start {
+  justify-content: flex-start;
+}
+
 .nowrap {
   flex-wrap: nowrap;
 }
@@ -562,6 +593,10 @@ select:-internal-list-box {
 }
 .no-border {
   border: none;
+}
+.no-border-imp,
+.no-border-imp > div {
+  border: none !important;
 }
 .no-padding {
   padding: 0;
@@ -3000,7 +3035,6 @@ div.nodata_container {
 /* service map */
 #container_servicemap_legend {
   position: absolute;
-  width: 200px;
   background: #fff;
   margin-top: 10px;
   right: 2px;
@@ -3012,10 +3046,6 @@ div.nodata_container {
 
 #container_servicemap_legend table {
   text-align: left;
-}
-
-.legend_servicemap_item {
-  display: none;
 }
 
 /* agent modules*/
@@ -4970,6 +5000,7 @@ input:checked + .p-slider:before {
 .action_buttons a,
 .action_buttons input[type="image"] {
   margin-right: 5px;
+  display: inline-block;
 }
 
 .action_buttons a:last-child,
@@ -4979,7 +5010,6 @@ input:checked + .p-slider:before {
 
 .action_buttons a:hover {
   background-color: #fff;
-  display: inline-block;
   border-radius: 4px;
 }
 
@@ -5691,7 +5721,11 @@ div#status_pie {
   align-items: center;
   flex-wrap: wrap;
   padding: 1em;
-  min-width: fit-content;
+  min-width: 100%;
+}
+.white-box-content-clean {
+  padding-left: 2em;
+  padding-top: 1em;
 }
 
 .white_table_graph_content {
@@ -5889,6 +5923,12 @@ table.table_modal_alternate tr td:first-child {
   width: 100%;
 }
 
+/*
+ * ---------------------------------------------------------------------
+ * - VISUAL STYLES FOR HISTOGRAM GRAPHS
+ * ---------------------------------------------------------------------
+ */
+
 .slicebar-box-hover-styles {
   position: absolute;
   background-color: #fff;
@@ -5902,4 +5942,76 @@ table.table_modal_alternate tr td:first-child {
 
 .flot-text {
   width: 101%;
+}
+
+/*Font header feedback*/
+form#modal_form_feedback {
+  padding: 10px;
+}
+
+form#modal_form_feedback label {
+  margin-bottom: 10px;
+  color: #343434;
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+form#modal_form_feedback input[type="email"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+}
+
+form#modal_form_feedback ul.wizard li {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+form#modal_form_feedback ul.wizard li > label:not(.p-switch) {
+  width: 250px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+form#modal_form_feedback ul.wizard li > textarea {
+  width: 600px;
+  height: 15em;
+  display: inline-block;
+  font-family: monospace;
+}
+/*
+ * ---------------------------------------------------------------------
+ * - FONT SIZES IN AGENT VIEW. This changes the font size of the agent
+ * name and the description when the language is Japanese or Chinese
+ * ---------------------------------------------------------------------
+ */
+
+.custom_font_size {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Generic classes to reuse and facilitate the creation of custom themes */
+.pandora_green_text {
+  color: #82b92e;
+}
+
+.pandora_green_bg {
+  background-color: #82b92e;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - REPORTING VIEWER
+ * ---------------------------------------------------------------------
+ */
+
+#controls_table > tbody > tr > td input {
+  margin-left: 3px;
 }

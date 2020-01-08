@@ -309,7 +309,7 @@ sub process_xml_data ($$$$$) {
 		my $utimestamp = 0;
 		eval {
 			if ($timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/) {
-				$utimestamp = timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
+				$utimestamp = strftime("%s", $6, $5, $4, $3, $2 -1 , $1 - 1900);
 			}
 		};
 		
@@ -602,8 +602,12 @@ sub process_xml_data ($$$$$) {
 	# Process events
 	process_events_dataserver($pa_config, $data, $agent_id, $group_id, $dbh);
 
-	# Process disovery modules
+	# Process discovery modules
 	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process command responses
+	enterprise_hook('process_rcmd_report', [$pa_config, $data, $server_id, $dbh, $agent_id, $timestamp]);
+
 }
 
 ##########################################################################
@@ -833,7 +837,7 @@ sub process_module_data ($$$$$$$$$$) {
 	}
 	my $utimestamp;
 	eval {
- 		$utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+ 		$utimestamp = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 	};
 	if ($@) {
 		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);

@@ -1169,7 +1169,7 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
     maxinum,
     valor;
 
-  for (key in data) {
+  for (var key in data) {
     nombre = data[key].gauge;
 
     label = data[key].label;
@@ -1189,8 +1189,8 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
     mininum = round_with_decimals(parseFloat(data[key].min));
     maxinum = round_with_decimals(parseFloat(data[key].max));
 
-    critical_inverse = parseInt(data[key].critical_inverse);
-    warning_inverse = parseInt(data[key].warning_inverse);
+    var critical_inverse = parseInt(data[key].critical_inverse);
+    var warning_inverse = parseInt(data[key].warning_inverse);
 
     valor = round_with_decimals(data[key].value);
 

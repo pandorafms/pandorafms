@@ -545,6 +545,10 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
             date2strftime_format($config['date_format']),
             $unixtime
         );
+    } else if ($prominent == 'compact') {
+        $units = 'tiny';
+        $title = date($config['date_format'], $unixtime);
+        $data = human_time_comparation($unixtime, $units);
     } else {
         $title = date($config['date_format'], $unixtime);
         $units = 'large';
@@ -772,9 +776,9 @@ function ui_print_os_icon(
     }
 
     if (is_metaconsole()) {
-        $no_in_meta = true;
-    } else {
         $no_in_meta = false;
+    } else {
+        $no_in_meta = true;
     }
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
@@ -1140,7 +1144,7 @@ function ui_format_alert_row(
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {
-        $data[$index['module_name']] .= ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+        $data[$index['module_name']] .= ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
     } else {
         if (defined('METACONSOLE')) {
             $agent_name = $alert['agent_name'];
@@ -1151,16 +1155,16 @@ function ui_format_alert_row(
         }
 
         if (defined('METACONSOLE') || !can_user_access_node()) {
-            $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+            $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', '');
         } else {
             if ($agent_style !== false) {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
+                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
             } else {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
+                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
             }
         }
 
-        $data[$index['module_name']] = ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+        $data[$index['module_name']] = ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
     }
 
     $data[$index['agent_name']] .= $disabledHtmlEnd;
@@ -1180,7 +1184,7 @@ function ui_format_alert_row(
 		FROM talert_templates WHERE id = '.$alert['id_alert_template']
     );
 
-    $data[$index['description']] .= $disabledHtmlStart.ui_print_truncate_text(io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt').$disabledHtmlEnd;
+    $data[$index['description']] .= $disabledHtmlStart.ui_print_truncate_text(io_safe_output($description), 'description', false, true, true, '[&hellip;]', '').$disabledHtmlEnd;
 
     $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
 
@@ -1404,14 +1408,19 @@ function ui_print_help_icon(
     }
 
     $url = get_help_info($help_id);
+    $b = base64_encode($url);
 
+    $help_handler = 'index.php?sec=view&sec2=general/help_feedback';
+    // Needs to use url encoded to avoid anchor lost.
+    $help_handler .= '&b='.$b;
+    $help_handler .= '&pure=1&url='.$url;
     $output = html_print_image(
         $image,
         true,
         [
             'class'   => 'img_help',
             'title'   => __('Help'),
-            'onclick' => "open_help ('".$url."')",
+            'onclick' => "open_help ('".ui_get_full_url($help_handler)."')",
             'id'      => $id,
         ],
         false,
@@ -1527,6 +1536,9 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
 
 /**
  * Add a enteprise javascript file to the HTML head tag.
+ *
+ * * THIS FUNCTION COULD PRODUCE ISSUES WHILE INCLUDING JS FILES.
+ * * USE ui_require_javascript_file('file', ENTERPRISE_DIR.'/location') INSTEAD.
  *
  * To make a javascript file available just put it in <ENTERPRISE_DIR>/include/javascript. The
  * file name should be like "name.js". The "name" would be the value
@@ -2912,6 +2924,84 @@ function ui_progress(
 
 
 /**
+ * Generates a progress bar CSS based.
+ * Requires css progress.css
+ *
+ * @param array $data With following content:
+ *
+ *  'slices' => [
+ *  'label' => [ // Name of the slice
+ * 'value' => value
+ * 'color' => color of the slice.
+ *  ]
+ *  ],
+ *  'width'  => Width
+ *  'height' => Height in 'em'
+ *  'return' => Boolean, return or paint.
+ *
+ * @return string HTML code.
+ */
+function ui_progress_extend(
+    array $data
+) {
+    if (is_array($data) === false) {
+        // Failed.
+        return false;
+    }
+
+    if (is_array($data['slices']) === false) {
+        // Failed.
+        return false;
+    }
+
+    if (isset($data['width']) === false) {
+        $data['width'] = '100';
+    }
+
+    if (isset($data['height']) === false) {
+        $data['height'] = '1.3';
+    }
+
+    $total = array_reduce(
+        $data['slices'],
+        function ($carry, $item) {
+            $carry += $item['value'];
+            return $carry;
+        }
+    );
+    if ($total == 0) {
+        return null;
+    }
+
+    ui_require_css_file('progress');
+
+    // Main container.
+    $output .= '<div class="progress_main_noborder" ';
+    $output .= '" style="width:'.$data['width'].'%;';
+    $output .= ' height:'.$data['height'].'em;">';
+
+    foreach ($data['slices'] as $label => $def) {
+        $width = ($def['value'] * 100 / $total);
+        $output .= '<div class="progress forced_title" ';
+        $output .= ' data-title="'.$label.': '.$def['value'].'" ';
+        $output .= ' data-use_title_for_force_title="1"';
+        $output .= ' style="width:'.$width.'%;';
+        $output .= ' background-color:'.$def['color'].';';
+        $output .= '">';
+        $output .= '</div>';
+    }
+
+    $output .= '</div>';
+
+    if (!$data['return']) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Generate needed code to print a datatables jquery plugin.
  *
  * @param array $parameters All desired data using following format:
@@ -3013,6 +3103,10 @@ function ui_print_datatable(array $parameters)
 
     if (!isset($parameters['default_pagination'])) {
         $parameters['default_pagination'] = $config['block_size'];
+    }
+
+    if (!isset($parameters['paging'])) {
+        $parameters['paging'] = true;
     }
 
     $no_sortable_columns = [];
@@ -3165,6 +3259,9 @@ function ui_print_datatable(array $parameters)
         );
     }
 
+    // Languages.
+    $processing = __('Processing');
+
     // Extra html.
     $extra = '';
     if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
@@ -3175,7 +3272,7 @@ function ui_print_datatable(array $parameters)
     $table = '<table id="'.$table_id.'" ';
     $table .= 'class="'.$parameters['class'].'"';
     $table .= 'style="'.$parameters['style'].'">';
-    $table .= '<thead><tr>';
+    $table .= '<thead><tr class="datatables_thead_tr">';
 
     if (isset($parameters['column_names'])
         && is_array($parameters['column_names'])
@@ -3224,15 +3321,21 @@ function ui_print_datatable(array $parameters)
             },
             processing: true,
             serverSide: true,
-            paging: true,
+            paging: '.$parameters['paging'].',
             pageLength: '.$parameters['default_pagination'].',
             searching: false,
             responsive: true,
             dom: "plfrtiBp",
+            language: {
+                processing:"'.$processing.'"
+            },
             buttons: [
                 {
                     extend: "csv",
                     text : "'.__('Export current page to CSV').'",
+                    titleAttr: "'.__('Export current page to CSV').'",
+                    title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
+                    fieldSeparator: "'.$config['csv_divider'].'",
                     exportOptions : {
                         modifier : {
                             // DataTables core
@@ -3324,10 +3427,18 @@ function ui_print_datatable(array $parameters)
 
         $("#'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
-        });
-    });
+        });';
 
-</script>';
+    if (isset($parameters['caption']) === true
+        && empty($parameters['caption']) === false
+    ) {
+        $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
+        $js .= '$(".datatables_thead_tr").css("height", 0);';
+    }
+
+    $js .= '});';
+
+    $js .= '</script>';
 
     // Order.
     $err_msg = '<div id="error-'.$table_id.'"></div>';
@@ -3343,7 +3454,7 @@ function ui_print_datatable(array $parameters)
     $output = $include.$output;
 
     // Print datatable if needed.
-    if (!(isset($parameters['print']) && $parameters['print'] === false)) {
+    if (isset($parameters['print']) === false || $parameters['print'] === false) {
         echo $output;
     }
 
@@ -3521,6 +3632,9 @@ function ui_print_event_priority(
  * @param string  $toggle_class    Toggle class.
  * @param string  $container_class Container class.
  * @param string  $main_class      Main object class.
+ * @param string  $img_a           Image (closed).
+ * @param string  $img_b           Image (opened).
+ * @param string  $clean           Do not encapsulate with class boxes, clean print.
  *
  * @return string HTML.
  */
@@ -3533,25 +3647,36 @@ function ui_toggle(
     $return=false,
     $toggle_class='',
     $container_class='white-box-content',
-    $main_class='box-shadow white_table_graph'
+    $main_class='box-shadow white_table_graph',
+    $img_a='images/arrow_down_green.png',
+    $img_b='images/arrow_right_green.png',
+    $clean=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image('images/arrow_down_green.png', true, false, true);
-    $image_b = html_print_image('images/arrow_right_green.png', true, false, true);
+    $image_a = html_print_image($img_a, true, false, true);
+    $image_b = html_print_image($img_b, true, false, true);
     // Options.
     if ($hidden_default) {
         $style = 'display:none';
-        $original = 'images/arrow_right_green.png';
+        $original = $img_b;
     } else {
         $style = '';
-        $original = 'images/arrow_down_green.png';
+        $original = $img_a;
+    }
+
+    $header_class = '';
+    if ($clean === false) {
+        $header_class = 'white_table_graph_header';
+    } else {
+        $main_class = '';
+        $container_class = 'white-box-content-clean';
     }
 
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'">';
-    $output .= '<div class="white_table_graph_header" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
+    $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
         $original,
         true,
         [
@@ -3596,6 +3721,32 @@ function ui_toggle(
     } else {
         return $output;
     }
+}
+
+
+/**
+ * Simplified way of ui_toggle ussage.
+ *
+ * @param array $data Arguments.
+ *
+ * @return string HTML code with toggle content.
+ */
+function ui_print_toggle($data)
+{
+    return ui_toggle(
+        $data['content'],
+        $data['name'],
+        (isset($data['title']) === true) ? $data['title'] : '',
+        (isset($data['id']) === true) ? $data['id'] : '',
+        (isset($data['hidden_default']) === true) ? $data['hidden_default'] : true,
+        (isset($data['return']) === true) ? $data['return'] : false,
+        (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
+        (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
+        (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
+        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
+        (isset($data['clean']) === true) ? $data['clean'] : false
+    );
 }
 
 
@@ -5510,11 +5661,11 @@ function ui_get_docs_logo()
     global $config;
 
     // Default logo to open version (enterprise_installed function only works in login status).
-    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_docs_logo'])) {
         return 'images/icono_docs.png';
     }
 
-    if (empty($config['custom_docs_logo'])) {
+    if ($config['custom_docs_logo'] === '') {
         return false;
     }
 
@@ -5532,11 +5683,11 @@ function ui_get_support_logo()
     global $config;
 
     // Default logo to open version (enterprise_installed function only works in login status).
-    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_support_logo'])) {
         return 'images/icono_support.png';
     }
 
-    if (empty($config['custom_support_logo'])) {
+    if ($config['custom_support_logo'] === '') {
         return false;
     }
 
@@ -5695,7 +5846,7 @@ function ui_print_comments($comments)
                 continue;
             }
 
-            $comments_array[] = json_decode(io_safe_output($comm), true);
+            $comments_array[] = io_safe_output(json_decode($comm, true));
         }
     }
 
@@ -5732,4 +5883,24 @@ function ui_print_comments($comments)
 
     return io_safe_output($comentario);
 
+}
+
+
+/**
+ * Get complete external pandora url.
+ *
+ * @param string $url Url to be parsed.
+ *
+ * @return string Full url.
+ */
+function ui_get_full_external_url(string $url)
+{
+    $url_parsed = parse_url($url);
+    if ($url_parsed) {
+        if (!isset($url_parsed['scheme'])) {
+            $url = 'http://'.$url;
+        }
+    }
+
+        return $url;
 }

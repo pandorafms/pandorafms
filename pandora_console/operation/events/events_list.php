@@ -48,6 +48,9 @@ check_login();
 
 $sort_field = get_parameter('sort_field', 'timestamp');
 $sort_order = get_parameter('sort', 'down');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
 
 $event_a = check_acl($config['id_user'], 0, 'ER');
 $event_w = check_acl($config['id_user'], 0, 'EW');
@@ -125,6 +128,10 @@ if (is_ajax()) {
         $values['id_extra'] = get_parameter('id_extra');
         $values['user_comment'] = get_parameter('user_comment');
 
+        if (is_metaconsole()) {
+            $values['id_source_event'] = get_parameter('id_source_event');
+        }
+
         $exists = (bool) db_get_value_filter(
             'id_filter',
             'tevent_filter',
@@ -171,6 +178,10 @@ if (is_ajax()) {
         $values['source'] = get_parameter('source');
         $values['id_extra'] = get_parameter('id_extra');
         $values['user_comment'] = get_parameter('user_comment');
+
+        if (is_metaconsole()) {
+            $values['id_source_event'] = get_parameter('id_source_event');
+        }
 
         if (io_safe_output($values['tag_with']) == '["0"]') {
             $values['tag_with'] = '[]';
@@ -767,7 +778,7 @@ $data[0] = __('User ack.').$jump;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    users_can_manage_group_all($access)
 );
 
 $data[0] .= html_print_select(
@@ -984,6 +995,18 @@ $data[2] .= html_print_input_text(
     255,
     true
 );
+if (is_metaconsole()) {
+    $data[3] = __('Id source event').$jump;
+    $data[3] .= html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+}
+
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -1115,7 +1138,7 @@ if ($group_rep == 0) {
     $sql = "SELECT DISTINCT te.*, 1 event_rep,
 		(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
 		FROM $event_table te $event_lj
-		WHERE 1=1 ".$sql_post."
+		WHERE 1=1 '.$sql_post.'
 		$order_sql LIMIT ".$offset.','.$pagination;
 
     // Extract the events by filter (or not) from db.
@@ -1152,12 +1175,14 @@ enterprise_hook(
     [
         $filter_resume,
         [
-            'status'     => $fields,
-            'event_type' => $types,
-            'severity'   => $severities,
-            'duplicate'  => $repeated_sel,
-            'alerts'     => $alert_events_titles,
-            'groups'     => $user_groups_array,
+            'status'          => $fields,
+            'event_type'      => $types,
+            'severity'        => $severities,
+            'duplicate'       => $repeated_sel,
+            'alerts'          => $alert_events_titles,
+            'groups'          => $user_groups_array,
+            'id_source_event' => $id_source_event,
+
         ],
     ]
 );
@@ -1186,10 +1211,10 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 }
 
 if ($group_rep == 0) {
-    $sql = "SELECT COUNT(DISTINCT id_evento)
+    $sql = 'SELECT COUNT(DISTINCT id_evento)
 			FROM $event_table te
 			$event_lj
-			WHERE 1=1 $sql_post";
+			WHERE 1=1 $sql_post';
     $total_events = (int) db_get_sql($sql);
 } else if ($group_rep == 1) {
     $total_events = events_get_events_grouped(
@@ -1202,10 +1227,10 @@ if ($group_rep == 0) {
         false
     );
 } else if ($group_rep == 2) {
-    $sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table te
+    $sql = 'SELECT COUNT(*) FROM (select id_agente as total from $event_table te
 		$event_lj
 		WHERE id_agente > 0
-					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
+					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t';
     $total_events = (int) db_get_sql($sql);
 }
 
@@ -1336,6 +1361,8 @@ $(document).ready( function() {
                             $("#text-id_extra").val(val);
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
+                        if (i == 'id_source_event')
+                            $("#text-id_source_event").val(val);
                     });
                     reorder_tags_inputs();
                     // Update the info with the loaded filter
@@ -1375,6 +1402,7 @@ $(document).ready( function() {
             $("#text-source").val('');
             $("#text-id_extra").val('');
             $("#text-user_comment").val('');
+            $("#text-id_source_event").val('');
             
             clear_tags_inputs();
             
@@ -1449,6 +1477,10 @@ $(document).ready( function() {
                             $("#text-id_extra").val(val);
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
+                        
+                        if(i == 'id_source_event')
+                            $("#text-id_source_event").val(val);
+                        }
                     });
                     reorder_tags_inputs();
                     // Update the info with the loaded filter
@@ -1517,7 +1549,9 @@ $(document).ready( function() {
                 "date_to": $("#text-date_to").val(),
                 "source": $("#text-source").val(),
                 "id_extra": $("#text-id_extra").val(),
-                "user_comment": $("#text-user_comment").val()
+                "user_comment": $("#text-user_comment").val(),
+                "id_source_event": $("#text-id_source_event").val()
+
             },
             function (data) {
                 $(".info_box").hide();
@@ -1617,7 +1651,9 @@ $(document).ready( function() {
             "date_to": $("#text-date_to").val(),
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
-            "user_comment": $("#text-user_comment").val()
+            "user_comment": $("#text-user_comment").val(),
+            "id_source_event": $("#text-id_source_event").val()
+            
             },
             function (data) {
                 $(".info_box").hide();

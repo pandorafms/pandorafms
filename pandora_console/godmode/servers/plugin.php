@@ -398,7 +398,7 @@ if (($create != '') || ($view != '')) {
     }
 
     $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" style="vertical-align: bottom;">';
-    $data[1] .= html_print_image('images/file.png', true);
+    $data[1] .= html_print_image('images/file.png', true, false, false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
 

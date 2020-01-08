@@ -28,7 +28,7 @@ if (check_acl($config['id_user'], 0, 'AR')
     || check_acl($config['id_user'], 0, 'PM')
 ) {
     $sub = [];
-    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Main');
+    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Start');
     $sub['godmode/servers/discovery&wiz=main']['id'] = 'Discovery';
     $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
     $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';
@@ -316,6 +316,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
+
     if ($config['activate_gis']) {
         $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
@@ -339,13 +342,15 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
     $sub = [];
 
     if (check_acl($config['id_user'], 0, 'PM')) {
-        // Audit //meter en extensiones
+        // Audit //meter en extensiones.
         $sub['godmode/admin_access_logs']['text'] = __('System audit log');
         $sub['godmode/admin_access_logs']['id'] = 'System audit log';
         $sub['godmode/setup/links']['text'] = __('Links');
         $sub['godmode/setup/links']['id'] = 'Links';
-        $sub['extras/pandora_diag']['text'] = __('Diagnostic info');
-        $sub['extras/pandora_diag']['id'] = 'Diagnostic info';
+        $sub['tools/diagnostics']['text'] = __('Diagnostic info');
+        $sub['tools/diagnostics']['id'] = 'Diagnostic info';
+        enterprise_hook('omnishell');
+
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';
         $sub['godmode/setup/file_manager']['text'] = __('File manager');

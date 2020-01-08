@@ -140,14 +140,8 @@ $table->colspan[0][1] = 2;
 $table->data[1][0] = __('Group');
 
 $own_info = get_user_info($config['id_user']);
-// Only display group "All" if user is administrator or has "PM" privileges
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-    $display_all_group = true;
-} else {
-    $display_all_group = false;
-}
 
-$table->data[1][1] = html_print_select_groups(false, 'LW', $display_all_group, 'group', $group, '', '', 0, true);
+$table->data[1][1] = html_print_select_groups(false, 'LW', true, 'group', $group, '', '', 0, true);
 $table->colspan[1][1] = 2;
 
 $table->data[2][0] = __('Command');
@@ -173,9 +167,9 @@ $table->data[2][1] = html_print_select_from_sql(
 );
 $table->data[2][1] .= ' ';
 if (check_acl($config['id_user'], 0, 'PM')) {
-    $table->data[2][1] .= html_print_image('images/add.png', true);
-    $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     $table->data[2][1] .= __('Create Command');
+    $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+    $table->data[2][1] .= html_print_image('images/add.png', true);
     $table->data[2][1] .= '</a>';
 }
 
@@ -320,18 +314,18 @@ $(document).ready (function () {
                 original_command = data["command"];
                 render_command_preview (original_command);
                 command_description = data["description"];
-                render_command_description(command_description);
+                if (command_description != undefined) {
+                    render_command_description(command_description);
+                } else {
+                    render_command_description('');
+
+                }
                 
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
                 
                 // Change the selected group
                 $("#group option").each(function(index, value) {
                     var current_group = $(value).val();
-                    if (data.id_group != 0 && current_group != 0 && current_group != data.id_group) {
-                        $(value).hide();
-                    } else {
-                        $(value).show();
-                    }
                 });
                 if (data.id_group != 0 && $("#group").val() != data.id_group) {
                     $("#group").val(0);

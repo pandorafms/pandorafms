@@ -1183,7 +1183,7 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
     }
 
     // Month days
-    for ($i = 0; $i < 31; $i++) {
+    for ($i = 1; $i <= 31; $i++) {
         $mdays[$i] = $i;
     }
 
@@ -3071,9 +3071,12 @@ function html_print_autocomplete_modules(
         ['style' => 'background: url(images/search_module.png) no-repeat right;']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-    ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    if (!is_metaconsole()) {
+        ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+    }
+
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     ?>
     <script type="text/javascript">
         function escapeHTML (str)

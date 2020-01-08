@@ -612,17 +612,19 @@ if (enterprise_installed()) {
         $cascade_protection,
         true
     ).__('Cascade protection').'&nbsp;';
+
+    $table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
+        $modules_values,
+        'cascade_protection_module',
+        $cascade_protection_module,
+        '',
+        '',
+        0,
+        true
+    );
 }
 
-$table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
-    $modules_values,
-    'cascade_protection_module',
-    $cascade_protection_module,
-    '',
-    '',
-    0,
-    true
-).'</div></div>';
+$table_adv_parent .= '</div></div>';
 
 // Learn mode / Normal mode.
 $table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': </p>';
@@ -667,7 +669,7 @@ $table_adv_status .= html_print_checkbox_switch(
     $disabled,
     true
 );
-$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled mode').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
 $table_adv_status .= '</div>';
 
 // Url address.

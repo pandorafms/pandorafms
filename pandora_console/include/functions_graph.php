@@ -1446,9 +1446,20 @@ function graphic_combined_module(
                 $data_module_graph['agent_name'] = modules_get_agentmodule_agent_name(
                     $agent_module_id
                 );
-                $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
-                    $agent_module_id
-                );
+
+                if (is_metaconsole()) {
+                    $data_module_graph['agent_alias'] = db_get_value(
+                        'alias',
+                        'tagente',
+                        'id_agente',
+                        (int) $module_data['id_agente']
+                    );
+                } else {
+                    $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
+                        $agent_module_id
+                    );
+                }
+
                 $data_module_graph['agent_id'] = $module_data['id_agente'];
                 $data_module_graph['module_name'] = $module_data['nombre'];
                 $data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];

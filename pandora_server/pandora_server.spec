@@ -44,7 +44,7 @@ A few examples of common resources monitored by Pandora FMS could be processor l
 %prep
 rm -rf $RPM_BUILD_ROOT
 
-%setup -n pandora_server
+%setup -q -n pandora_server
 
 %build
 %install

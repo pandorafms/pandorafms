@@ -25,6 +25,8 @@ then
 		exit 1
 	fi
 
+	echo ">> Using dockerized version of dpkg-deb: "
+	echo "  $DPKG_DEB"
 	# Use dockerized app.
 	alias dpkg-deb="eval $DPKG_DEB"
 else

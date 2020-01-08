@@ -13,16 +13,16 @@
   display: flex;
   -webkit-box-orient: initial;
   -webkit-box-direction: initial;
-  -ms-flex-direction: initial;
-  flex-direction: initial;
+      -ms-flex-direction: initial;
+          flex-direction: initial;
   justify-items: center;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+     -moz-user-select: text;
+      -ms-user-select: text;
+          user-select: text;
   z-index: 1;
 }
 
@@ -33,12 +33,12 @@
 .visual-console-item.is-editing {
   border: 2px dashed #b2b2b2;
   -webkit-transform: translateX(-2px) translateY(-2px);
-  transform: translateX(-2px) translateY(-2px);
+          transform: translateX(-2px) translateY(-2px);
   cursor: move;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .visual-console-item.is-editing.is-selected {
@@ -62,22 +62,22 @@
 @-webkit-keyframes spinner-loading {
   0% {
     -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
+            transform: rotate(0deg);
   }
   to {
     -webkit-transform: rotate(1turn);
-    transform: rotate(1turn);
+            transform: rotate(1turn);
   }
 }
 
 @keyframes spinner-loading {
   0% {
     -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
+            transform: rotate(0deg);
   }
   to {
     -webkit-transform: rotate(1turn);
-    transform: rotate(1turn);
+            transform: rotate(1turn);
   }
 }
 
@@ -91,13 +91,13 @@
 
   -webkit-animation-name: spinner-loading;
 
-  animation-name: spinner-loading;
+          animation-name: spinner-loading;
   -webkit-animation-duration: 0.8s;
-  animation-duration: 0.8s;
+          animation-duration: 0.8s;
   -webkit-animation-iteration-count: infinite;
-  animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
   -webkit-animation-timing-function: linear;
-  animation-timing-function: linear;
+          animation-timing-function: linear;
 }
 
 .visual-console-spinner,
@@ -122,8 +122,8 @@
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   opacity: 0.7;
   background: rgb(212, 215, 218);
 }
@@ -143,13 +143,13 @@
   display: flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-  -ms-flex-direction: row;
-  flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+      flex-wrap: wrap;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   font-size: 12pt;
   font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: 600;
@@ -172,7 +172,7 @@
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+          box-sizing: border-box;
   margin-right: 10px;
   padding-left: 2px;
 }
@@ -195,10 +195,10 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+      flex-wrap: wrap;
 }
 
 .input-group {
@@ -213,13 +213,13 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+      flex-wrap: wrap;
   -webkit-box-align: start;
-  -ms-flex-align: start;
-  align-items: start;
+      -ms-flex-align: start;
+          align-items: start;
 }
 
 .div-ranges-input-group > div {
@@ -234,13 +234,13 @@
   display: flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-  -ms-flex-direction: row;
-  flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+      flex-wrap: wrap;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .div-input-group h3 {
@@ -262,16 +262,16 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+      flex-wrap: wrap;
   -webkit-box-align: start;
-  -ms-flex-align: start;
-  align-items: start;
+      -ms-flex-align: start;
+          align-items: start;
   -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   height: 70px;
 }
 
@@ -335,33 +335,254 @@ p.error-p-validate {
 
 .fa-spin {
   -webkit-animation: fa-spin 2s infinite linear;
-  animation: fa-spin 2s infinite linear;
+          animation: fa-spin 2s infinite linear;
 }
 
 .fa-pulse {
   -webkit-animation: fa-spin 1s infinite steps(8);
-  animation: fa-spin 1s infinite steps(8);
+          animation: fa-spin 1s infinite steps(8);
 }
 
 @-webkit-keyframes fa-spin {
   0% {
     -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
+            transform: rotate(0deg);
   }
   100% {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }
 
 @keyframes fa-spin {
   0% {
     -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
+            transform: rotate(0deg);
   }
   100% {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autocomplete input {
+  /*background: pink;*/
+}
+.autocomplete-items {
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  /*position the autocomplete items to be the same width as the container:*/
+  position: absolute;
+  z-index: 1;
+  overflow: auto;
+  max-height: 150px;
+  max-width: 250px;
+}
+.autocomplete-items div {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+  border-top: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  width: 100%;
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+/*
+@font-face {
+  font-family: Alarm Clock;
+  src: url(alarm-clock.ttf);
+}
+*/
+
+/* Digital clock */
+
+.visual-console-item .digital-clock {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  justify-items: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.visual-console-item .digital-clock > span {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 50px;
+
+  /* To improve legibility */
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
+
+.visual-console-item .digital-clock > span.date {
+  font-size: 25px;
+}
+
+.visual-console-item .digital-clock > span.timezone {
+  font-size: 25px;
+}
+
+/* Analog clock */
+
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
+.visual-console-item .analogic-clock .hour-hand {
+  -webkit-animation: rotate-hour 43200s infinite linear;
+          animation: rotate-hour 43200s infinite linear;
+}
+
+.visual-console-item .analogic-clock .minute-hand {
+  -webkit-animation: rotate-minute 3600s infinite linear;
+          animation: rotate-minute 3600s infinite linear;
+}
+
+.visual-console-item .analogic-clock .second-hand {
+  -webkit-animation: rotate-second 60s infinite linear;
+          animation: rotate-second 60s infinite linear;
+}
+
+#html-tabs .ui-widget-header {
+  background-color: #ffffff;
+  border: 0px;
+}
+
+#html-tabs .ui-tabs-anchor {
+  float: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+#html-tabs .ui-tabs-anchor img {
+  margin-right: 10px;
+}
+
+#html-tabs .ui-tabs-nav li {
+  border-radius: 5px 5px 0px 0px;
+}
+
+label span.p-slider {
+  width: 30px;
+}
+
+li#li-size-item > label:not(:first-child),
+li#li-position-item > label:not(:first-child) {
+  width: initial;
+  margin-left: 15px;
+}
+
+li#li-image-item label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+li#li-image-item label img {
+  -webkit-box-flex: initial;
+      -ms-flex: initial;
+          flex: initial;
+}
+
+/* Styles for the solid icons */
+
+.fa {
+  display: inline-block;
+  margin: 0;
+}
+
+.fa,
+.fa > svg,
+.fa.medium,
+.fa.medium > svg {
+  width: 28px;
+  height: 28px;
+}
+
+.fa.fa-small,
+.fa.fa-small > svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fa.fa-large,
+.fa.fa-large > svg {
+  width: 44px;
+  height: 44px;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+          animation: fa-spin 2s infinite linear;
+}
+
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+          animation: fa-spin 1s infinite steps(8);
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }
 
@@ -415,17 +636,17 @@ p.error-p-validate {
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   justify-items: center;
   -ms-flex-line-pack: center;
-  align-content: center;
+      align-content: center;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .visual-console-item .digital-clock > span {
@@ -455,58 +676,18 @@ p.error-p-validate {
 
 .visual-console-item .analogic-clock .hour-hand {
   -webkit-animation: rotate-hour 43200s infinite linear;
-  animation: rotate-hour 43200s infinite linear;
+          animation: rotate-hour 43200s infinite linear;
 }
 
 .visual-console-item .analogic-clock .minute-hand {
   -webkit-animation: rotate-minute 3600s infinite linear;
-  animation: rotate-minute 3600s infinite linear;
+          animation: rotate-minute 3600s infinite linear;
 }
 
 .visual-console-item .analogic-clock .second-hand {
   -webkit-animation: rotate-second 60s infinite linear;
-  animation: rotate-second 60s infinite linear;
+          animation: rotate-second 60s infinite linear;
 }
 
-#html-tabs .ui-widget-header {
-  background-color: #ffffff;
-  border: 0px;
-}
-
-#html-tabs .ui-tabs-anchor {
-  float: none;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-
-#html-tabs .ui-tabs-anchor img {
-  margin-right: 10px;
-}
-
-#html-tabs .ui-tabs-nav li {
-  border-radius: 5px 5px 0px 0px;
-}
-
-label span.p-slider {
-  width: 30px;
-}
-
-li#li-size-item > label:not(:first-child),
-li#li-position-item > label:not(:first-child) {
-  width: initial;
-  margin-left: 15px;
-}
-
-li#li-image-item label {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-li#li-image-item label img {
-  flex: initial;
-}
 
 /*# sourceMappingURL=vc.main.css.map*/

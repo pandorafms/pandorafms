@@ -47,8 +47,6 @@ rm -rf $RPM_BUILD_ROOT
 %setup -n pandora_server
 
 %build
-ls -latR
-
 %install
 
 rm -rf $RPM_BUILD_ROOT

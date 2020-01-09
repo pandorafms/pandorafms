@@ -548,6 +548,12 @@ li#li-image-item label img {
   width: inherit;
 }
 
+.discovery.modal li#div-textarea-label > label {
+  -webkit-box-flex: inherit;
+      -ms-flex: inherit;
+          flex: inherit;
+}
+
 /* Styles for the solid icons */
 
 .fa {

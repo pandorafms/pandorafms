@@ -205,12 +205,7 @@ if (!is_metaconsole()) {
 }
 
 if ($pure === false) {
-    echo '<div class="visual-console-edit-controls">';
-    echo '<span>'.__('Move and resize mode').'</span>';
-    echo '<span>';
-    echo html_print_checkbox_switch('edit-mode', 1, false, true);
-    echo '</span>';
-    echo '</div>';
+    echo '<div id ="edit-vc">';
     echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
     echo '<div>';
         visual_map_print_button_editor_refactor(
@@ -285,7 +280,7 @@ if ($pure === false) {
         );
         // TODO: SERVICE.
     echo '</div>';
-    echo '<div>';
+    echo '<div class="visual-console-copy-delete">';
         visual_map_print_button_editor_refactor(
             'button_delete',
             __('Delete Item'),
@@ -300,7 +295,8 @@ if ($pure === false) {
         );
     echo '</div>';
     echo '</div>';
-    echo '<br />';
+    echo html_print_checkbox_switch('edit-mode', 1, false, true);
+    echo '</div>';
 }
 
 echo '<div id="visual-console-container"></div>';

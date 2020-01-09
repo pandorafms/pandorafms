@@ -1900,14 +1900,17 @@ class Item extends CachedModel
             case 'label':
                 // Label.
                 // TODO tinyMCE.
+                $inputs[] = ['label' => __('Label')];
+
                 $inputs[] = [
-                    'label'     => __('Label'),
-                    'id'        => 'div-label',
+                    'id'        => 'div-textarea-label',
                     'arguments' => [
-                        'name'   => 'label',
-                        'type'   => 'text',
-                        'value'  => $values['label'],
-                        'return' => true,
+                        'type'    => 'textarea',
+                        'rows'    => 4,
+                        'columns' => 60,
+                        'name'    => 'label',
+                        'value'   => $values['label'],
+                        'return'  => true,
                     ],
                 ];
             break;

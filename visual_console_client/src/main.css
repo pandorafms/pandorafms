@@ -426,3 +426,7 @@ li#li-image-item label img {
   max-width: 230px;
   width: inherit;
 }
+
+.discovery.modal li#div-textarea-label > label {
+  flex: inherit;
+}

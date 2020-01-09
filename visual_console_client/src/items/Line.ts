@@ -384,7 +384,7 @@ export default class Line extends Item<LineProps> {
       startCircle.style.width = `${this.circleRadius * 2}px`;
       startCircle.style.height = `${this.circleRadius * 2}px`;
       startCircle.style.borderRadius = "50%";
-      startCircle.style.backgroundColor = "white";
+      startCircle.style.backgroundColor = `${color}`;
       startCircle.style.position = "absolute";
       startCircle.style.left = startIsLeft
         ? `-${this.circleRadius}px`
@@ -400,7 +400,7 @@ export default class Line extends Item<LineProps> {
       endCircle.style.width = `${this.circleRadius * 2}px`;
       endCircle.style.height = `${this.circleRadius * 2}px`;
       endCircle.style.borderRadius = "50%";
-      endCircle.style.backgroundColor = "black";
+      endCircle.style.backgroundColor = `${color}`;
       endCircle.style.position = "absolute";
       endCircle.style.left = startIsLeft
         ? `${width + lineWidth - 8}px`

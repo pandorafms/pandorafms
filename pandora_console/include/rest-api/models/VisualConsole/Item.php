@@ -2077,7 +2077,7 @@ class Item extends CachedModel
                         break;
 
                         default:
-                            $text = __('Item');
+                            // Line not parent.
                         break;
                     }
 

@@ -399,10 +399,11 @@ final class BarsGraph extends Item
             $inputs[] = [
                 'label'     => __('Grid color'),
                 'arguments' => [
-                    'name'   => 'gridColor',
-                    'type'   => 'color',
-                    'value'  => $values['gridColor'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'gridColor',
+                    'type'    => 'color',
+                    'value'   => $values['gridColor'],
+                    'return'  => true,
                 ],
             ];
 

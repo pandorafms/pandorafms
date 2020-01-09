@@ -352,7 +352,16 @@ class HTML
             return '';
         }
 
-        $input = html_print_input(($data + ['return' => true]), 'div', true);
+        $input_only = true;
+        if (isset($data['input_only']) === true) {
+            $input_only = $data['input_only'];
+        }
+
+        $input = html_print_input(
+            ($data + ['return' => true]),
+            'div',
+            $input_only
+        );
         if ($input === false) {
             return '';
         }

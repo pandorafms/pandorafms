@@ -247,10 +247,11 @@ final class DonutGraph extends Item
             $inputs[] = [
                 'label'     => __('Resume data color'),
                 'arguments' => [
-                    'name'   => 'legendBackgroundColor',
-                    'type'   => 'color',
-                    'value'  => $values['legendBackgroundColor'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'legendBackgroundColor',
+                    'type'    => 'color',
+                    'value'   => $values['legendBackgroundColor'],
+                    'return'  => true,
                 ],
             ];
 

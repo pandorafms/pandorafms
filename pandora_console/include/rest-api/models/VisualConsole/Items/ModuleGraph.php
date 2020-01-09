@@ -372,8 +372,8 @@ final class ModuleGraph extends Item
                 'direct'        => 1,
                 'block_content' => [
                     [
+                        'label'     => __('Module Graph'),
                         'arguments' => [
-                            'label'        => __('Module Graph'),
                             'type'         => 'radio_button',
                             'attributes'   => 'class="btn"',
                             'name'         => 'choosetype',
@@ -384,8 +384,8 @@ final class ModuleGraph extends Item
                         ],
                     ],
                     [
+                        'label'     => __('Custom Graph'),
                         'arguments' => [
-                            'label'        => __('Custom Graph'),
                             'type'         => 'radio_button',
                             'attributes'   => 'class="btn"',
                             'name'         => 'choosetype',

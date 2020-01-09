@@ -107,10 +107,11 @@ final class Box extends Item
             $inputs[] = [
                 'label'     => __('Border color'),
                 'arguments' => [
-                    'name'   => 'borderColor',
-                    'type'   => 'color',
-                    'value'  => $values['borderColor'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'borderColor',
+                    'type'    => 'color',
+                    'value'   => $values['borderColor'],
+                    'return'  => true,
                 ],
             ];
 
@@ -129,10 +130,11 @@ final class Box extends Item
             $inputs[] = [
                 'label'     => __('Fill color'),
                 'arguments' => [
-                    'name'   => 'fillColor',
-                    'type'   => 'color',
-                    'value'  => $values['fillColor'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'fillColor',
+                    'type'    => 'color',
+                    'value'   => $values['fillColor'],
+                    'return'  => true,
                 ],
             ];
         }

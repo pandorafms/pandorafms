@@ -466,10 +466,11 @@ final class Line extends Model
             $inputs[] = [
                 'label'     => __('Color'),
                 'arguments' => [
-                    'name'   => 'borderColor',
-                    'type'   => 'color',
-                    'value'  => $values['borderColor'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'borderColor',
+                    'type'    => 'color',
+                    'value'   => $values['borderColor'],
+                    'return'  => true,
                 ],
             ];
 

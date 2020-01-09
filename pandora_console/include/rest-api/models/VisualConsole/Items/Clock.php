@@ -249,10 +249,11 @@ final class Clock extends Item
             $inputs[] = [
                 'label'     => __('Fill color'),
                 'arguments' => [
-                    'name'   => 'color',
-                    'type'   => 'color',
-                    'value'  => $values['color'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'color',
+                    'type'    => 'color',
+                    'value'   => $values['color'],
+                    'return'  => true,
                 ],
             ];
         }

@@ -3359,6 +3359,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         }
     }
 
+    if (isset($data['wrapper']) === true) {
+        $output = '<'.$data['wrapper'].' id="wr_'.$data['name'].'" ';
+        $output .= ' class="'.$data['input_class'].'">';
+    }
+
     switch ($data['type']) {
         case 'text':
             $output .= html_print_input_text(
@@ -3783,6 +3788,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         default:
             // Ignore.
         break;
+    }
+
+    if (isset($data['wrapper']) === true) {
+        $output .= '</'.$data['wrapper'].'>';
     }
 
     if ($data['label'] && $input_only === false) {

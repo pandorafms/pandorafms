@@ -526,10 +526,11 @@ final class Percentile extends Item
             $inputs[] = [
                 'label'     => __('Element color'),
                 'arguments' => [
-                    'name'   => 'color',
-                    'type'   => 'color',
-                    'value'  => $values['color'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'color',
+                    'type'    => 'color',
+                    'value'   => $values['color'],
+                    'return'  => true,
                 ],
             ];
 
@@ -537,10 +538,11 @@ final class Percentile extends Item
             $inputs[] = [
                 'label'     => __('Value color'),
                 'arguments' => [
-                    'name'   => 'labelColor',
-                    'type'   => 'color',
-                    'value'  => $values['labelColor'],
-                    'return' => true,
+                    'wrapper' => 'div',
+                    'name'    => 'labelColor',
+                    'type'    => 'color',
+                    'value'   => $values['labelColor'],
+                    'return'  => true,
                 ],
             ];
 

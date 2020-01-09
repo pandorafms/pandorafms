@@ -527,6 +527,27 @@ li#li-image-item label img {
           flex: initial;
 }
 
+.discovery.modal * {
+  font-weight: normal;
+  color: #343434;
+  font-family: "lato", "Open Sans", sans-serif;
+}
+
+.discovery.modal select {
+  width: 100px;
+}
+
+.discovery.modal div#cacheExpiration_manual select,
+.discovery.modal div#cacheExpiration_manual input,
+.discovery.modal div#cacheExpiration_default select {
+  font-size: inherit !important;
+}
+
+.discovery.modal div#cacheExpiration_default select#cacheExpiration_select {
+  max-width: 230px;
+  width: inherit;
+}
+
 /* Styles for the solid icons */
 
 .fa {

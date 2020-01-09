@@ -830,7 +830,7 @@ foreach ($modules as $module) {
         $data[4] .= ui_print_help_tip(__('The policy modules of data type will only update their intervals when policy is applied.'), true);
     }
 
-    $data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);
+    $data[5] = ui_print_truncate_text(utf8_decode($module['descripcion']), 'description', false);
 
     $data[6] = ui_print_status_image($status, $title, true);
 

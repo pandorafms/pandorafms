@@ -117,6 +117,14 @@ if ($update_agents) {
         $values['quiet'] = get_parameter('quiet_select');
     }
 
+    if (get_parameter('safe_mode_change', -1) == 1 && get_parameter('safe_mode_module', '') != '') {
+        // Get the module name.
+        $values['safe_mode_module'] = get_parameter('safe_mode_module');
+    } else if (get_parameter('safe_mode_change', -1) == 0) {
+        // Disabled Safe Operation Mode.
+        $values['safe_mode_module'] = '0';
+    }
+
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
     if ($fields === false) {
@@ -131,6 +139,20 @@ if ($update_agents) {
         if (empty($values) && empty($fields)) {
             ui_print_error_message(__('No values changed'));
             $id_agents = [];
+        }
+    }
+
+    // Get the id_agente_modulo to update the 'safe_operation_mode' field.
+    if (isset($values['safe_mode_module']) && ($values['safe_mode_module'] != '0')) {
+        foreach ($id_agents as $id_agent) {
+            $id_module_safe[$id_agent] = db_get_value_filter(
+                'id_agente_modulo',
+                'tagente_modulo',
+                [
+                    'id_agente' => $id_agent,
+                    'nombre'    => $values['safe_mode_module'],
+                ]
+            );
         }
     }
 
@@ -186,6 +208,11 @@ if ($update_agents) {
                 if (isset($values['disabled'])) {
                     $disabled_old = $values_old['disabled'];
                 }
+            }
+
+            // Get the id_agent_module for this agent to update the 'safe_operation_mode' field.
+            if (isset($values['safe_mode_module']) && ($values['safe_mode_module'] != '0')) {
+                $values['safe_mode_module'] = $id_module_safe[$id_agent];
             }
 
             $result = db_process_sql_update(
@@ -677,6 +704,27 @@ $table->data[6][1] = html_print_select(
     true
 );
 
+$table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
+    __(
+        'This mode allow %s to disable all modules 
+of this agent while the selected module is on CRITICAL status',
+        get_product_name()
+    ),
+    true
+);
+$table->data[7][1] .= html_print_select(
+    [
+        1 => __('Enabled'),
+        0 => __('Disabled'),
+    ],
+    'safe_mode_change',
+    -1,
+    '',
+    __('No change'),
+    -1,
+    true
+).'&nbsp;';
+$table->data[7][1] .= __('Module').'&nbsp;'.html_print_select('', 'safe_mode_module', '', '', __('Any'), -1, true).'</div>';
 ui_toggle(html_print_table($table, true), __('Advanced options'));
 unset($table);
 
@@ -810,6 +858,54 @@ $(document).ready (function () {
         }
     });
 
+
+    // Enable Safe Operation Mode if 'Enabled' is selected.
+    $("#safe_mode_module").attr("disabled", "disabled");
+    $("#safe_mode_change").on('change', function() {
+        if ($("#safe_mode_change").val() == 1) {
+            $("#safe_mode_module").removeAttr("disabled");
+            refreshSafeModules();
+        }
+        else {
+            $("#safe_mode_module").attr("disabled", "disabled");
+            $('#safe_mode_module').empty();
+            $("#safe_mode_module").append($("<option></option>").attr("value", 'Any').html('Any'));
+        } 
+    });
+ 
+    // Fill modules in Safe Operation Mode.
+    function refreshSafeModules(){
+        var idAgents = Array();
+        jQuery.each ($("#id_agents option:selected"), function (i, val) {
+            idAgents.push($(val).val());
+        });
+
+        var params = {
+            "page" : "operation/agentes/ver_agente",
+            "get_agent_modules_json_for_multiple_agents" : 1,
+            "id_agent" : idAgents,
+            "selection_mode": "common"
+        };
+        
+        jQuery.post ("ajax.php",
+            params,
+            function (data, status) {
+                $('#safe_mode_module').empty();
+                if($.type(data) === "object"){
+                    jQuery.each (data, function (id, value) {
+                        option = $("<option></option>").attr("value", value).html(value);
+                        $("#safe_mode_module").append(option);
+                    });
+                } else {
+                    option = $("<option></option>").attr("value", 'None').html('None');
+                    $("#safe_mode_module").append(option);
+                }
+            },
+            "json"
+        );
+    }
+
+
     $("#form_agent").submit(function() {
         var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
@@ -833,7 +929,7 @@ $(document).ready (function () {
          $("#id_group").trigger("change");
     });
     
-    $("#id_agents").change (function () {
+    $('#id_agents').on('change', function() {
         var idAgents = Array();
         jQuery.each ($("#id_agents option:selected"), function (i, val) {
             idAgents.push($(val).val());
@@ -858,6 +954,10 @@ $(document).ready (function () {
             );
         
         $("#form_agents").attr("style", "");
+
+        if($("#safe_mode_change").val() == 1) {
+            refreshSafeModules();
+        }
     });
     
     $("#id_group").change (function () {

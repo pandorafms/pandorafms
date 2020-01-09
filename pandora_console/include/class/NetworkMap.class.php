@@ -1341,6 +1341,9 @@ class NetworkMap
                     && $rel['child_type'] == NODE_MODULE
                 ) {
                     // Module information available.
+                    $id_parent = $rel['id_parent_source_data'];
+                    $id_child = $rel['id_child_source_data'];
+
                     $priority = 1;
                     $valid = 1;
 
@@ -1655,7 +1658,6 @@ class NetworkMap
                         $node['style']['label'] = $node['name'];
                     }
 
-                    $node['style']['shape'] = 'circle';
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
@@ -2957,7 +2959,7 @@ class NetworkMap
             '',
             0,
             true
-        ).'&nbsp;<span id="shape_icon_in_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" style="display: none;">'.html_print_image('images/dot_green.png', true).'</span><span id="shape_icon_fail" style="display: none;">'.html_print_image('images/dot_red.png', true).'</span>';
+        ).'&nbsp;<span id="shape_icon_in_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" style="display: none;">'.html_print_image('images/success.png', true, ['width' => '18px']).'</span><span id="shape_icon_fail" style="display: none;">'.html_print_image('images/icono-bad.png', true, ['width' => '18px']).'</span>';
         $table->data['node_name'][0] = __('Name');
         $table->data['node_name'][1] = html_print_input_text(
             'edit_name_node',

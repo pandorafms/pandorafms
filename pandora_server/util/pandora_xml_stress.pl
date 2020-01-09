@@ -112,13 +112,13 @@ sub generate_xml_files ($$$$$$) {
 	my $time_from = get_conf_token ($conf, 'time_from', $time_now);
 	die ("[error] Invalid time_from: $time_from\n\n")
 		unless ($time_from =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
-	my $utimestamp_from = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $utimestamp_from = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 	
 	# Get time_to
 	my $time_to = get_conf_token ($conf, 'time_to', $time_now);
 	die ("[error] Invalid time_to: $time_to\n\n")
 		unless ($time_to =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
-	my $utimestamp_to = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $utimestamp_to = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 	
 	my %modules_src_pointers = init_src_pointers($modules);
 	

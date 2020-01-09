@@ -905,6 +905,28 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <?php
+        if ($meta) {
+            ?>
+        <tr id="row_servers" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
+            <td style="">
+                <?php
+                html_print_select(
+                    $servers,
+                    'combo_server',
+                    $server_name,
+                    '',
+                    __('Local metaconsole'),
+                    0
+                );
+                ?>
+            </td>
+        </tr>
+            <?php
+        }
+        ?>
+
         <tr id="row_label" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
@@ -1843,28 +1865,6 @@ $class = 'databox filters';
             </td>
             <td style="" id="max_items_example"></td>
         </tr>
-
-        <?php
-        if ($meta) {
-            ?>
-        <tr id="row_servers" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
-            <td style="">
-                <?php
-                html_print_select(
-                    $servers,
-                    'combo_server',
-                    $server_name,
-                    '',
-                    __('Local metaconsole'),
-                    0
-                );
-                ?>
-            </td>
-        </tr>
-            <?php
-        }
-        ?>
 
         <tr id="row_header" style="" class="datos">
             <td style="font-weight:bold;">
@@ -3546,8 +3546,19 @@ $(document).ready (function () {
     // Load selected modules by default
     $("#id_agents2").trigger('click');
 
+    $('#combo_server').change (function (){
+        $("#id_agents").html('');
+            $("#id_agents2").html('');
+            $("#module").html('');
+            $("#inventory_modules").html('');
+    })
+
     $("#combo_group").change (
         function () {
+            $("#id_agents").html('');
+            $("#id_agents2").html('');
+            $("#module").html('');
+            $("#inventory_modules").html('');
             jQuery.post ("ajax.php",
                 {"page" : "operation/agentes/ver_agente",
                     "get_agents_group_json" : 1,
@@ -3557,9 +3568,6 @@ $(document).ready (function () {
                     "recursion" : $('#checkbox-recursion').is(':checked')
                 },
                 function (data, status) {
-                    $("#id_agents").html('');
-                    $("#id_agents2").html('');
-                    $("#module").html('');
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -3587,9 +3595,7 @@ $(document).ready (function () {
                     "recursion" : $('#checkbox-recursion').is(':checked')
                 },
                 function (data, status) {
-                    $("#id_agents").html('');
                     $("#id_agents2").html('');
-                    $("#module").html('');
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -5174,6 +5180,29 @@ function chooseType() {
             $("#id_agents").change(event_change_id_agent_inventory);
             $("#id_agents").trigger('change');
 
+            $("#combo_server").change(function() {
+                $('#hidden-date_selected').val('');
+                updateInventoryDates(
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+                updateAgents($(this).val(),
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+            });
             $("#combo_group").change(function() {
                 updateAgents($(this).val(),
                 <?php
@@ -5202,6 +5231,30 @@ function chooseType() {
             $("#id_agents").trigger('change');
 
             $("#row_servers").show();
+
+            $("#combo_server").change(function() {
+                $('#hidden-date_selected').val('');
+                updateInventoryDates(
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+                updateAgents($(this).val(),
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+            });
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');

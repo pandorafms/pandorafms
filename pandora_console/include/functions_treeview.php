@@ -624,7 +624,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     if ($agent['ultimo_contacto_remoto'] == '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
     } else {
-        $last_remote_contact = ui_print_timestamp($agent['ultimo_contacto_remoto'], true);
+        $last_remote_contact = date_w_fixed_tz($agent['ultimo_contacto_remoto']);
     }
 
     $row = [];

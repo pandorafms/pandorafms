@@ -913,15 +913,15 @@ div#head {
   min-width: 882px;
   background-color: #fff;
   color: #000;
-  z-index: 2;
+  z-index: 11;
 }
 
 .fixed_header {
-  z-index: 9999;
   position: fixed;
   left: 0;
   top: 0;
   width: 100%;
+  z-index: 11;
 }
 
 #ver {

@@ -146,7 +146,7 @@ function agents_get_next_contact_time_left(int $id_agente)
     if ($id_agente > 0) {
         $last_contact = db_get_value_sql(
             sprintf(
-                'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
+                'SELECT CAST(intervalo AS SIGNED) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto >= ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
                     FROM `tagente`
                     WHERE id_agente = %d ',
                 $id_agente

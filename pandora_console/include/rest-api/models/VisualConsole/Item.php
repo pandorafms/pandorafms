@@ -1899,7 +1899,6 @@ class Item extends CachedModel
         switch ($values['tabSelected']) {
             case 'label':
                 // Label.
-                // TODO tinyMCE.
                 $inputs[] = ['label' => __('Label')];
 
                 $inputs[] = [
@@ -1911,6 +1910,25 @@ class Item extends CachedModel
                         'name'    => 'label',
                         'value'   => $values['label'],
                         'return'  => true,
+                    ],
+                ];
+
+                // Label Position.
+                $fields = [
+                    'down'  => __('Bottom'),
+                    'up'    => __('Top'),
+                    'right' => __('Right'),
+                    'left'  => __('Left'),
+                ];
+
+                $inputs[] = [
+                    'label'     => __('Label position'),
+                    'arguments' => [
+                        'type'     => 'select',
+                        'fields'   => $fields,
+                        'name'     => 'labelPosition',
+                        'selected' => $values['labelPosition'],
+                        'return'   => true,
                     ],
                 ];
             break;
@@ -2401,8 +2419,10 @@ class Item extends CachedModel
      *
      * @return string Html images.
      */
-    static function imagesElementsVC(string $image, ?bool $only=false):string
-    {
+    public static function imagesElementsVC(
+        string $image,
+        ?bool $only=false
+    ):string {
         $type_image = [''];
         if ($only === false) {
             $type_image = [

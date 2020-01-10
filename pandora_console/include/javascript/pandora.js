@@ -1920,6 +1920,10 @@ function load_modal(settings) {
     };
   }
 
+  if (settings.beforeClose == undefined) {
+    settings.beforeClose = function() {};
+  }
+
   settings.target.html("Loading modal...");
   settings.target
     .dialog({
@@ -1989,7 +1993,6 @@ function load_modal(settings) {
       text: settings.modal.ok,
       click: function() {
         if (AJAX_RUNNING) return;
-
         if (settings.onsubmit != undefined) {
           if (settings.onsubmit.preaction != undefined) {
             settings.onsubmit.preaction();
@@ -2107,7 +2110,7 @@ function load_modal(settings) {
         }
       },
       error: function(data) {
-        console.log(data);
+        //console.log(data);
         AJAX_RUNNING = 0;
       }
     });
@@ -2140,7 +2143,8 @@ function load_modal(settings) {
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
-        }
+        },
+        beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {

@@ -1344,7 +1344,7 @@ function cleanupDOM() {
   $("#modalVCItemForm").empty();
 }
 /* Defined in operations/visual_console/view.php */
-/* global $, load_modal */
+/* global $, load_modal, tinyMCE */
 function createOrUpdateVisualConsoleItem(
   visualConsole,
   asyncTaskManager,
@@ -1415,7 +1415,23 @@ function createOrUpdateVisualConsoleItem(
     },
     onsubmit: {
       page: "include/rest-api/index",
-      method: "processForm"
+      method: "processForm",
+      preaction: function() {
+        if (
+          tinyMCE != undefined &&
+          tinyMCE.editors.length > 0 &&
+          item.itemProps.type != 12 &&
+          item.itemProps.type != 13
+        ) {
+          // Content tiny.
+          var label = tinyMCE.activeEditor.getContent();
+          $("#textarea_label").val(label);
+        }
+      }
+    },
+    beforeClose: function() {
+      tinyMCE.remove("#textarea_label");
+      tinyMCE.execCommand("mceRemoveControl", true, "textarea_label");
     }
   });
 

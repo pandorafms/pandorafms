@@ -4116,7 +4116,6 @@ function events_page_details($event, $server='')
                 'type'    => $graph_type,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id_agente_modulo'],
-                'label'   => base64_encode($module['nombre']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 

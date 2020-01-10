@@ -2058,6 +2058,25 @@ function load_modal(settings) {
                 }
               }
             });
+          } else {
+            settings.form.forEach(function(element) {
+              $("#" + element + " :input").each(function() {
+                // TODO VALIDATE ALL INPUTS.
+                if (this.type == "file") {
+                  if ($(this).prop("files")[0]) {
+                    formdata.append(this.name, $(this).prop("files")[0]);
+                  }
+                } else {
+                  if ($(this).attr("type") == "checkbox") {
+                    if (this.checked) {
+                      formdata.append(this.name, "on");
+                    }
+                  } else {
+                    formdata.append(this.name, $(this).val());
+                  }
+                }
+              });
+            });
           }
 
           if (flagError === false) {
@@ -2088,7 +2107,7 @@ function load_modal(settings) {
         }
       },
       error: function(data) {
-        // console.log(data);
+        console.log(data);
         AJAX_RUNNING = 0;
       }
     });
@@ -2111,101 +2130,8 @@ function load_modal(settings) {
         modal: true,
         title: settings.modal.title,
         width: width,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        buttons: [
-          {
-            class:
-              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-            text: settings.modal.cancel,
-            click: function() {
-              $(this).dialog("close");
-              if (typeof settings.cleanup == "function") {
-                settings.cleanup();
-              }
-            }
-          },
-          {
-            class:
-              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-            text: settings.modal.ok,
-            click: function() {
-              if (AJAX_RUNNING) return;
-              AJAX_RUNNING = 1;
-              if (settings.onsubmit.preaction != undefined) {
-                settings.onsubmit.preaction();
-              }
-              var formdata = new FormData();
-              if (settings.extradata) {
-                settings.extradata.forEach(function(item) {
-                  if (item.value != undefined) {
-                    if (
-                      item.value instanceof Object ||
-                      item.value instanceof Array
-                    ) {
-                      formdata.append(item.name, JSON.stringify(item.value));
-                    } else {
-                      formdata.append(item.name, item.value);
-                    }
-                  }
-                });
-              }
-              formdata.append("page", settings.onsubmit.page);
-              formdata.append("method", settings.onsubmit.method);
-              if (Array.isArray(settings.form) === false) {
-                $("#" + settings.form + " :input").each(function() {
-                  if (this.type == "file") {
-                    if ($(this).prop("files")[0]) {
-                      formdata.append(this.name, $(this).prop("files")[0]);
-                    }
-                  } else {
-                    if ($(this).attr("type") == "checkbox") {
-                      if (this.checked) {
-                        formdata.append(this.name, "on");
-                      }
-                    } else {
-                      formdata.append(this.name, $(this).val());
-                    }
-                  }
-                });
-              } else {
-                settings.form.forEach(function(element) {
-                  $("#" + element + " :input").each(function() {
-                    if (this.type == "file") {
-                      if ($(this).prop("files")[0]) {
-                        formdata.append(this.name, $(this).prop("files")[0]);
-                      }
-                    } else {
-                      if ($(this).attr("type") == "checkbox") {
-                        if (this.checked) {
-                          formdata.append(this.name, "on");
-                        }
-                      } else {
-                        formdata.append(this.name, $(this).val());
-                      }
-                    }
-                  });
-                });
-              }
-
-              $.ajax({
-                method: "post",
-                url: settings.url,
-                processData: false,
-                contentType: false,
-                data: formdata,
-                success: function(data) {
-                  if (settings.ajax_callback != undefined) {
-                    settings.ajax_callback(data);
-                  }
-                  AJAX_RUNNING = 0;
-                }
-              });
-            }
-          }
-        ],
+        overlay: settings.modal.overlay,
+        buttons: required_buttons,
         closeOnEscape: false,
         open: function() {
           $(".ui-dialog-titlebar-close").hide();
@@ -2223,7 +2149,13 @@ function load_modal(settings) {
   });
 }
 
-//Function that shows a dialog box to confirm closures of generic manners. The modal id is random
+/**
+ * Function that shows a dialog box to confirm closures of generic manners.
+ * The modal id is random
+ *
+ * @param {array} settings Settings.
+ */
+// eslint-disable-next-line no-unused-vars
 function confirmDialog(settings) {
   var randomStr = uniqId();
 

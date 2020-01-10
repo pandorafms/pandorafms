@@ -243,8 +243,8 @@ if ($create_user) {
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
-    } else if (preg_match('/\s+$/', io_safe_output($id))) {
-        ui_print_error_message(__('Invalid user ID: trailing blank spaces not allowed'));
+    } else if (preg_match('/^\s+|\s+$/', io_safe_output($id))) {
+        ui_print_error_message(__('Invalid user ID: leading or trailing blank spaces not allowed'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';

@@ -2493,6 +2493,11 @@ span#plugin_description {
   text-align: left;
   padding-top: 20px;
 }
+
+#tinymce.mceContentBody.tinyMCEBody {
+  background-color: #ededed;
+}
+
 .visual_font_size_4pt,
 .visual_font_size_4pt > em,
 .visual_font_size_4pt > strong,

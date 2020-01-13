@@ -554,6 +554,10 @@ li#li-image-item label img {
           flex: inherit;
 }
 
+.discovery.modal li#div-textarea-label table tbody td.mceIframeContainer {
+  background-color: #ededed;
+}
+
 /* Styles for the solid icons */
 
 .fa {

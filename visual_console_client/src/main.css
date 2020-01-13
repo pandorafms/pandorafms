@@ -430,3 +430,7 @@ li#li-image-item label img {
 .discovery.modal li#div-textarea-label > label {
   flex: inherit;
 }
+
+.discovery.modal li#div-textarea-label table tbody td.mceIframeContainer {
+  background-color: #ededed;
+}

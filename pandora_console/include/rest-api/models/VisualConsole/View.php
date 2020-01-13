@@ -160,7 +160,8 @@ class View extends \HTML
                                     "bold,italic, |,justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link, |, fontselect, forecolor, fontsizeselect, |,code",
                                     theme_advanced_buttons2: "",
                                     theme_advanced_buttons3: "",
-                                    theme_advanced_statusbar_location: "none"
+                                    theme_advanced_statusbar_location: "none",
+                                    body_class: "tinyMCEBody"
                                 });
                             }
                         },

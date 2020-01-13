@@ -894,22 +894,6 @@ $in = '<div class="filter_input"><label>'.__('Event type').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Criticity - severity.
-$severity_select .= html_print_select(
-    get_priorities(),
-    'severity',
-    $severity,
-    '',
-    __('All'),
-    '-1',
-    true,
-    false,
-    false
-);
-$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
-$in .= $severity_select.'</div>';
-$inputs[] = $in;
-
 // Event status.
 $data = html_print_select(
     events_get_all_status(),
@@ -958,6 +942,28 @@ $inputs[] = $in;
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
 $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
+$in .= $data.'</div>';
+$inputs[] = $in;
+
+if (empty($severity) && $severity !== '0') {
+    $severity = -1;
+}
+
+// Criticity - severity.
+$data = html_print_select(
+    get_priorities(),
+    'severity',
+    $severity,
+    '',
+    __('All'),
+    -1,
+    true,
+    true,
+    true,
+    '',
+    false
+);
+$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
@@ -1115,8 +1121,6 @@ if (is_metaconsole()) {
     $adv_inputs[] = $in;
 }
 
-// Gap.
-$adv_inputs[] = '<div class="filter_input"></div>';
 
 // Date from.
 $data = html_print_input_text(

@@ -751,43 +751,78 @@ function events_get_all(
     }
 
     if (isset($filter['severity']) && $filter['severity'] > 0) {
-        switch ($filter['severity']) {
-            case EVENT_CRIT_MAINTENANCE:
-            case EVENT_CRIT_INFORMATIONAL:
-            case EVENT_CRIT_NORMAL:
-            case EVENT_CRIT_MINOR:
-            case EVENT_CRIT_WARNING:
-            case EVENT_CRIT_MAJOR:
-            case EVENT_CRIT_CRITICAL:
-            default:
-                $sql_filters[] = sprintf(
-                    ' AND criticity = %d ',
-                    $filter['severity']
-                );
-            break;
+        if (is_array($filter['severity'])) {
+            if (!in_array(-1, $filter['severity'])) {
+                $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
+                if ($not_normal !== false) {
+                    unset($filter['severity'][$not_normal]);
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                } else {
+                    $critical_warning = array_search(EVENT_CRIT_WARNING_OR_CRITICAL, $filter['severity']);
+                    if ($critical_warning !== false) {
+                        unset($filter['severity'][$critical_warning]);
+                        $filter['severity'][] = EVENT_CRIT_WARNING;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_WARNING_OR_CRITICAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_WARNING,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                    $critical_normal = array_search(EVENT_CRIT_OR_NORMAL, $filter['severity']);
+                    if ($critical_normal !== false) {
+                        unset($filter['severity'][$critical_normal]);
+                        $filter['severity'][] = EVENT_CRIT_NORMAL;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_NOT_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND criticity != %d',
-                    EVENT_CRIT_NORMAL
-                );
-            break;
+                    if (!empty($filter['severity'])) {
+                        $filter['severity'] = implode(',', $filter['severity']);
+                        $sql_filters[] = sprintf(
+                            ' AND criticity IN (%s)',
+                            $filter['severity']
+                        );
+                    }
+                }
+            }
+        } else {
+            switch ($filter['severity']) {
+                case EVENT_CRIT_MAINTENANCE:
+                case EVENT_CRIT_INFORMATIONAL:
+                case EVENT_CRIT_NORMAL:
+                case EVENT_CRIT_MINOR:
+                case EVENT_CRIT_WARNING:
+                case EVENT_CRIT_MAJOR:
+                case EVENT_CRIT_CRITICAL:
+                default:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity = %d ',
+                        $filter['severity']
+                    );
+                break;
 
-            case EVENT_CRIT_OR_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_NORMAL,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                case EVENT_CRIT_WARNING_OR_CRITICAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_WARNING,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+
+                case EVENT_CRIT_NOT_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                break;
+
+                case EVENT_CRIT_OR_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_NORMAL,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+            }
         }
     }
 

@@ -2042,6 +2042,7 @@ class Item extends CachedModel
                 $fields = [];
                 $fields[0] = __('None');
                 foreach ($vcItems as $key => $value) {
+                    $text = '';
                     $data = $value->toArray();
                     switch ($data['type']) {
                         case STATIC_GRAPH:
@@ -2068,6 +2069,10 @@ class Item extends CachedModel
 
                         case PERCENTILE_BAR:
                             $text = __('Percentile bar');
+                        break;
+
+                        case PERCENTILE_BUBBLE:
+                            $text = __('Percentile bubble');
                         break;
 
                         case CIRCULAR_PROGRESS_BAR:
@@ -2109,7 +2114,9 @@ class Item extends CachedModel
                         $text .= ' ('.$data['agentAlias'].')';
                     }
 
-                    $fields[$data['id']] = $text;
+                    if ($data['id'] !== $values['id']) {
+                        $fields[$data['id']] = $text;
+                    }
                 }
 
                 $inputs[] = [
@@ -2120,6 +2127,7 @@ class Item extends CachedModel
                         'name'     => 'parentId',
                         'selected' => $values['parentId'],
                         'return'   => true,
+                        'sort'     => false,
                     ],
                 ];
 

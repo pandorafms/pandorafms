@@ -135,6 +135,10 @@ $id_agent = get_parameter(
     'filter[id_agent]',
     $filter['id_agent']
 );
+$text_module = get_parameter(
+    'filter[text_module]',
+    $filter['text_module']
+);
 $id_agent_module = get_parameter(
     'filter[id_agent_module]',
     $filter['id_agent_module']
@@ -210,8 +214,36 @@ $id_source_event = get_parameter(
     $filter['id_source_event']
 );
 
+$server_id = get_parameter(
+    'filter[server_id]',
+    $filter['id_server_meta']
+);
+
+if (is_metaconsole()) {
+    // Connect to node database.
+    $id_node = $server_id;
+    if ($id_node != 0) {
+        if (metaconsole_connect(null, $id_node) != NOERR) {
+            return false;
+        }
+    }
+}
+
+
 if (empty($text_agent) && !empty($id_agent)) {
     $text_agent = agents_get_alias($id_agent);
+}
+
+if (empty($text_module) && !empty($id_agent_module)) {
+    $text_module = modules_get_agentmodule_name($id_agent_module);
+    $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
+}
+
+if (is_metaconsole()) {
+    // Return to metaconsole database.
+    if ($id_node != 0) {
+        metaconsole_restore_db();
+    }
 }
 
 // Ajax responses.

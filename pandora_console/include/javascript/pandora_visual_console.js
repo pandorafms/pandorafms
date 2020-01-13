@@ -2316,6 +2316,125 @@ function getImagesVisualConsole(baseUrl, vcId, nameImg, only, callback) {
   };
 }
 
+/**
+ * Onchange time-zone.
+ * @return {void}
+ */
+// eslint-disable-next-line no-unused-vars
+function timeZoneVCChange(baseUrl, vcId) {
+  var zone = document.getElementById("zone").value;
+
+  var fncallback = function(error, data) {
+    if (error || !data) {
+      console.log(
+        "[ERROR]",
+        "[VISUAL-CONSOLE-CLIENT]",
+        "[API]",
+        error ? error.message : "Invalid response"
+      );
+
+      return;
+    }
+
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (error) {
+        console.log(
+          "[ERROR]",
+          "[VISUAL-CONSOLE-CLIENT]",
+          "[API]",
+          error ? error.message : "Invalid response"
+        );
+
+        return; // Stop task execution.
+      }
+    }
+
+    removeAllOptions();
+    Object.keys(data).forEach(addOption);
+
+    function addOption(item) {
+      var select = document.getElementById("clockTimezone");
+      select.options[select.options.length] = new Option(item, item);
+    }
+
+    function removeAllOptions() {
+      var select = document.getElementById("clockTimezone");
+      select.options.length = 0;
+    }
+
+    return;
+  };
+
+  getTimeZoneVisualConsole(baseUrl, vcId, zone, fncallback);
+}
+
+/**
+ * TimeZone for zones.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {int} vcId Identifier of the Visual Console.
+ * @param {string} zone Name zone.
+ * @param {function} callback Function to be executed on request success or fail.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function getTimeZoneVisualConsole(baseUrl, vcId, zone, callback) {
+  var apiPath = baseUrl + "/ajax.php";
+  var jqXHR = null;
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
+      jqXHR.abort(textStatus);
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Function which handle success case.
+  var handleSuccess = function(data) {
+    callback(null, data);
+  };
+
+  // Visual Console container request.
+  jqXHR = jQuery
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        getTimeZoneVisualConsole: 1,
+        visualConsoleId: vcId,
+        zone: zone
+      },
+      "json"
+    )
+    .done(handleSuccess)
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
 // TODO: Delete the functions below when you can.
 /**************************************
  These functions require jQuery library

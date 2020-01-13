@@ -265,35 +265,6 @@ class ClockTimezoneInputGroup extends InputGroup<Partial<ClockProps>> {
   }
 }
 
-/**
- * Class to add item to the clock item form
- * This item consists of a label and a color type input.
- * Element color is stored in the color property
- */
-class FIllColorInputGroup extends InputGroup<Partial<ClockProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const fillcolorLabel = document.createElement("label");
-    fillcolorLabel.textContent = t("Fill color");
-
-    const fillColorInput = document.createElement("input");
-    fillColorInput.type = "color";
-    fillColorInput.required = true;
-
-    fillColorInput.value = `${this.currentData.color ||
-      this.initialData.color}`;
-
-    fillColorInput.addEventListener("change", e => {
-      this.updateData({
-        color: (e.target as HTMLInputElement).value
-      });
-    });
-
-    fillcolorLabel.appendChild(fillColorInput);
-
-    return fillcolorLabel;
-  }
-}
-
 export default class Clock extends Item<ClockProps> {
   public static readonly TICK_INTERVAL = 1000; // In ms.
   private intervalRef: number | null = null;
@@ -861,8 +832,6 @@ export default class Clock extends Item<ClockProps> {
     formContainer.addInputGroup(
       new ClockTimezoneInputGroup("clockTimezone", props)
     );
-
-    formContainer.addInputGroup(new FIllColorInputGroup("fillColor", props));
 
     return formContainer;
   }

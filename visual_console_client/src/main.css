@@ -427,8 +427,13 @@ li#li-image-item label img {
   width: inherit;
 }
 
+li#li-timeZone-item > label:not(:first-child),
 .discovery.modal li#div-textarea-label > label {
   flex: inherit;
+}
+
+li#li-timeZone-item > select:not(:first-child) {
+  margin-left: 10px;
 }
 
 .discovery.modal li#div-textarea-label table tbody td.mceIframeContainer {

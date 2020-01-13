@@ -1541,52 +1541,6 @@ class Item extends CachedModel
             $result['show_on_top'] = static::parseBool($show_on_top);
         }
 
-        $clock_animation = static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'clockType',
-                    'clock_animation',
-                    'clockAnimation',
-                ]
-            ),
-            null
-        );
-        if ($clock_animation !== null) {
-            $result['clock_animation'] = $clock_animation;
-        }
-
-        $time_format = static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'clockFormat',
-                    'time_format',
-                    'timeFormat',
-                ]
-            ),
-            null
-        );
-        if ($time_format !== null) {
-            $result['time_format'] = $time_format;
-        }
-
-        $timezone = static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'timezone',
-                    'timeZone',
-                    'time_zone',
-                    'clockTimezone',
-                ]
-            ),
-            null
-        );
-        if ($timezone !== null) {
-            $result['timezone'] = $timezone;
-        }
-
         $show_last_value = static::notEmptyStringOr(
             static::issetInArray($data, ['showLastValueTooltip']),
             null
@@ -2461,6 +2415,27 @@ class Item extends CachedModel
         }
 
         return $images;
+    }
+
+
+    /**
+     * Return zones.
+     *
+     * @param string $zone Name zone.
+     *
+     * @return array Zones.
+     */
+    public static function zonesVC(string $zone):array
+    {
+        $result = [];
+        $timezones = timezone_identifiers_list();
+        foreach ($timezones as $timezone) {
+            if (strpos($timezone, $zone) !== false) {
+                $result[$timezone] = $timezone;
+            }
+        }
+
+        return $result;
     }
 
 

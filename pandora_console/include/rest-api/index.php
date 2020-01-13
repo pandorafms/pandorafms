@@ -41,6 +41,7 @@ $getGroupsVisualConsoleItem = (bool) get_parameter(
 );
 $getAllVisualConsole = (bool) get_parameter('getAllVisualConsole');
 $getImagesVisualConsole = (bool) get_parameter('getImagesVisualConsole');
+$getTimeZoneVisualConsole = (bool) get_parameter('getTimeZoneVisualConsole');
 $autocompleteAgentsVisualConsole = (bool) get_parameter(
     'autocompleteAgentsVisualConsole'
 );
@@ -269,6 +270,11 @@ if ($getVisualConsole === true) {
     $only = (bool) get_parameter('only', 0);
     $count = Item::imagesElementsVC($img, $only);
     echo json_encode($count);
+    return;
+} else if ($getTimeZoneVisualConsole) {
+    $zone = get_parameter('zone', 'Europe');
+    $zones = Item::zonesVC($zone);
+    echo json_encode($zones);
     return;
 } else if ($autocompleteAgentsVisualConsole) {
     $params = (array) get_parameter('data', []);

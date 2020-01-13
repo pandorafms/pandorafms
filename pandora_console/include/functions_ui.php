@@ -321,7 +321,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
-			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">'.html_print_image($icon_image, true, false, false, false, true).'</td>
+			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">'.html_print_image($icon_image, true, false, false, false, false).'</td>
 			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>'.$text_title.'</b></td>
 			<td class="icon" style="text-align: right; padding-right: 3px;">';
     if (!$no_close_bool) {

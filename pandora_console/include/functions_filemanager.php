@@ -106,12 +106,8 @@ if (!function_exists('mime_content_type')) {
             finfo_close($finfo);
             return $mimetype;
         } else {
-            $temp = exec('file '.$filename);
-            if (isset($temp) && $temp != '') {
-                return $temp;
-            } else {
-                return 'application/octet-stream';
-            }
+            error_log('Warning: Cannot find finfo_open function. Fileinfo extension is not enabled. Please add "extension=fileinfo.so" or "extension=fileinfo.dll" in your php.ini');
+            return 'unknown';
         }
     }
 

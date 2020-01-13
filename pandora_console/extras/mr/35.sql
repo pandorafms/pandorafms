@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tevent_filter` MODIFY `severity` TEXT NOT NULL;
+
+COMMIT;

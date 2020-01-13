@@ -190,6 +190,8 @@ function reporting_make_reporting_data(
     $metaconsole_on = is_metaconsole();
     $index_content = 0;
     foreach ($contents as $content) {
+        $content['name'] = io_safe_input($content['name']);
+        $content['description'] = io_safe_input($content['description']);
         if (!empty($content['id_agent_module']) && !empty($content['id_agent'])
             && tags_has_user_acl_tags($config['id_user'])
         ) {
@@ -7640,7 +7642,7 @@ function reporting_custom_graph(
     $return['title'] = $content['name'];
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
-    $return['subtitle'] = io_safe_output($graph['name']);
+    $return['subtitle'] = $graph['name'];
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];

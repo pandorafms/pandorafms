@@ -179,6 +179,15 @@ function createVisualConsole(
         y: e.newPosition.y,
         type: e.item.props.type
       };
+
+      if (e.item.props.processValue != undefined) {
+        data.processValue = e.item.props.processValue;
+      }
+
+      if (e.item.props.percentileType != undefined) {
+        data.percentileType = e.item.props.percentileType;
+      }
+
       var taskId = "visual-console-item-update-" + id;
 
       // Persist the new position.
@@ -269,6 +278,14 @@ function createVisualConsole(
         height: e.newSize.height,
         type: item.props.type
       };
+
+      if (item.props.processValue != undefined) {
+        data.processValue = item.props.processValue;
+      }
+
+      if (item.props.percentileType != undefined) {
+        data.percentileType = item.props.percentileType;
+      }
 
       var taskId = "visual-console-item-update-" + id;
       // Persist the new size.

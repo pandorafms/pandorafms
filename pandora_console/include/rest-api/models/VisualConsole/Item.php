@@ -1817,6 +1817,7 @@ class Item extends CachedModel
             if (empty($data['id']) === true) {
                 // Insert.
                 $save = static::encode($data);
+
                 $result = \db_process_sql_insert('tlayout_data', $save);
                 if ($result) {
                     $item = static::fromDB(['id' => $result]);

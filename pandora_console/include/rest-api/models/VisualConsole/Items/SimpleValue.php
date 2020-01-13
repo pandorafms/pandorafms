@@ -110,6 +110,8 @@ final class SimpleValue extends Item
         $process_value = static::encodeProcessValue($data);
         if ($process_value !== null) {
             $return['type'] = $process_value;
+        } else if (isset($data['processValue']) === true) {
+            $return['type'] = $data['processValue'];
         }
 
         return $return;
@@ -150,7 +152,7 @@ final class SimpleValue extends Item
      */
     private static function extractProcessValue(array $data): string
     {
-        if (isset($data['processValue'])) {
+        if (isset($data['processValue']) === true) {
             switch ($data['processValue']) {
                 case 'none':
                 case 'avg':

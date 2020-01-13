@@ -130,7 +130,7 @@ function html_do_report_info($report)
 
     $html .= '</tr>
             <tr>
-                <td valign="top"><b>'.__('Description').': </b></td><td>'.io_safe_output($report['description']).'</td>
+                <td valign="top"><b>'.__('Description').': </b></td><td>'.htmlspecialchars($report['description']).'</td>
             </tr>
         </table>'.'</div>';
 

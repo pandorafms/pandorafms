@@ -168,7 +168,7 @@ final class ModuleGraph extends Item
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
-        $imageOnly = false;
+        $imageOnly = true;
 
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
@@ -205,29 +205,32 @@ final class ModuleGraph extends Item
          * the height of one of it to replicate the legacy functionality.
          */
 
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
+
+        if ($width === 0) {
+            $width = 440;
+        }
+
+        if ($height === 0) {
+            $height = 220;
+        }
+
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
 
-            if ($data['width'] < 440) {
-                $data['width'] = 440;
-            }
-
-            if ($data['height'] < 220) {
-                $data['height'] = 220;
-            }
-
             $params = [
-                'period'          => $period,
-                'width'           => (int) $data['width'],
-                'height'          => ($data['height'] - 40),
-                'title'           => '',
-                'unit_name'       => null,
-                'show_alerts'     => false,
-                'only_image'      => $imageOnly,
-                'vconsole'        => true,
-                'document_ready'  => false,
-                'backgroundColor' => $backgroundType,
+                'period'             => $period,
+                'width'              => $width,
+                'height'             => $height,
+                'title'              => '',
+                'unit_name'          => null,
+                'show_alerts'        => false,
+                'only_image'         => $imageOnly,
+                'vconsole'           => true,
+                'backgroundColor'    => $backgroundType,
+                'return_img_base_64' => true,
             ];
 
             $paramsCombined = [
@@ -238,7 +241,8 @@ final class ModuleGraph extends Item
                 'modules_series' => $customGraph['modules_series'],
             ];
 
-            $data['html'] = \graphic_combined_module(
+            $imgbase64 = 'data:image/jpg;base64,';
+            $imgbase64 .= \graphic_combined_module(
                 false,
                 $params,
                 $paramsCombined
@@ -249,33 +253,29 @@ final class ModuleGraph extends Item
                 throw new \InvalidArgumentException('missing module Id');
             }
 
-            if ($data['width'] < 440) {
-                $data['width'] = 440;
-            }
-
-            if ($data['height'] < 220) {
-                $data['height'] = 220;
-            }
-
             $params = [
-                'agent_module_id' => $moduleId,
-                'period'          => $period,
-                'show_events'     => false,
-                'width'           => (int) $data['width'],
-                'height'          => ($data['height'] - 40),
-                'title'           => \modules_get_agentmodule_name($moduleId),
-                'unit'            => \modules_get_unit($moduleId),
-                'only_image'      => $imageOnly,
-                'menu'            => false,
-                'backgroundColor' => $backgroundType,
-                'type_graph'      => $graphType,
-                'vconsole'        => true,
-                'document_ready'  => false,
+                'agent_module_id'    => $moduleId,
+                'period'             => $period,
+                'show_events'        => false,
+                'width'              => $width,
+                'height'             => $height,
+                'title'              => \modules_get_agentmodule_name(
+                    $moduleId
+                ),
+                'unit'               => \modules_get_unit($moduleId),
+                'only_image'         => $imageOnly,
+                'menu'               => false,
+                'backgroundColor'    => $backgroundType,
+                'type_graph'         => $graphType,
+                'vconsole'           => true,
+                'return_img_base_64' => true,
             ];
 
-            $data['html'] = \grafico_modulo_sparse($params);
+            $imgbase64 = 'data:image/jpg;base64,';
+            $imgbase64 .= \grafico_modulo_sparse($params);
         }
 
+        $data['html'] = $imgbase64;
         // Restore connection.
         if ($nodeConnected === true) {
             \metaconsole_restore_db();

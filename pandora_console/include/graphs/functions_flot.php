@@ -279,12 +279,6 @@ function flot_area_graph(
     // Trick to get translated string from javascript.
     $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
-    // To use the js document ready event or not. Default true.
-    $document_ready = true;
-    if (isset($params['document_ready']) === true) {
-        $document_ready = $params['document_ready'];
-    }
-
     $values = json_encode($array_data);
 
     $legend              = json_encode($legend);
@@ -302,10 +296,6 @@ function flot_area_graph(
 
     $return .= "<script type='text/javascript'>";
 
-    if ($document_ready === true) {
-        $return .= '$(document).ready( function () {';
-    }
-
     $return .= "pandoraFlotArea(\n";
     $return .= "'".$graph_id."', \n";
     $return .= $values.", \n";
@@ -318,10 +308,6 @@ function flot_area_graph(
     $return .= $params.", \n";
     $return .= $array_events_alerts."\n";
     $return .= ');';
-
-    if ($document_ready === true) {
-        $return .= '});';
-    }
 
     $return .= '</script>';
 

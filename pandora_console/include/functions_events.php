@@ -624,7 +624,37 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
         break;
     }
 
-    return db_process_sql($update_sql);
+    $result = db_process_sql($update_sql);
+
+    if ($result) {
+        switch ($status) {
+            case EVENT_STATUS_NEW:
+                $status_string = 'New';
+            break;
+
+            case EVENT_STATUS_VALIDATED:
+                $status_string = 'Validated';
+            break;
+
+            case EVENT_STATUS_INPROCESS:
+                $status_string = 'In process';
+            break;
+
+            default:
+                $status_string = '';
+            break;
+        }
+
+        events_comment(
+            $id_evento,
+            '',
+            'Change status to '.$status_string,
+            is_metaconsole() ? true : false,
+            $history
+        );
+    }
+
+    return $result;
 }
 
 

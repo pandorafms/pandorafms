@@ -1207,8 +1207,7 @@ switch ($action) {
                 $report_id_user = get_parameter('report_id_user');
                 $non_interactive = get_parameter('non_interactive', 0);
 
-                // Pretty font by default for pdf.
-                $custom_font = 'FreeSans.ttf';
+                $custom_font = $config['custom_report_front_font'];
 
                 switch ($type_access_selected) {
                     case 'group_view':
@@ -1284,7 +1283,6 @@ switch ($action) {
                         $metaconsole_report = (int) is_metaconsole();
 
                         if ($config['custom_report_front']) {
-                            $custom_font = $config['custom_report_front_font'];
                             $logo = $config['custom_report_front_logo'];
                             $header = $config['custom_report_front_header'];
                             $first_page = $config['custom_report_front_firstpage'];

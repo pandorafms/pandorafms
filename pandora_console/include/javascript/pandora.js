@@ -2083,6 +2083,13 @@ function load_modal(settings) {
           }
 
           if (flagError === false) {
+            if (
+              settings.onsubmitClose != undefined &&
+              settings.onsubmitClose == 1
+            ) {
+              $(this).dialog("close");
+            }
+
             $.ajax({
               method: "post",
               url: settings.url,

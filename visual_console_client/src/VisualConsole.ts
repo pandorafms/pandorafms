@@ -305,6 +305,13 @@ export default class VisualConsole {
       y: props.y
     };
 
+    const meta = this.elementsById[itemId].meta;
+
+    this.elementsById[itemId].meta = {
+      ...meta,
+      isUpdating: true
+    };
+
     relations.forEach(relation => {
       if (relation.parentId === itemId) {
         // Move the line start.

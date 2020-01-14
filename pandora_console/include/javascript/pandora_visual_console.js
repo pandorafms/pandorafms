@@ -325,13 +325,13 @@ function createVisualConsole(
 
                   // Resize the element to its initial Size.
                   item.resize(e.prevSize.width, e.prevSize.height);
-
                   done();
                   return; // Stop task execution.
                 }
               }
 
               visualConsole.updateElement(data);
+              item.setMeta({ isUpdating: false });
 
               done();
             }
@@ -1397,8 +1397,8 @@ function createOrUpdateVisualConsoleItem(
         return;
       }
 
-      $("#modalVCItemForm").dialog("close");
       if (item.itemProps.id) {
+        item.setMeta({ isUpdating: false });
         visualConsole.updateElement(data);
       } else {
         data["receivedAt"] = new Date();
@@ -1444,8 +1444,12 @@ function createOrUpdateVisualConsoleItem(
           var label = tinyMCE.activeEditor.getContent();
           $("#textarea_label").val(label);
         }
+        if (item.itemProps.id) {
+          item.setMeta({ isUpdating: true });
+        }
       }
     },
+    onsubmitClose: 1,
     beforeClose: function() {
       tinyMCE.remove("#textarea_label");
       tinyMCE.execCommand("mceRemoveControl", true, "textarea_label");

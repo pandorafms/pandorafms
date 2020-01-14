@@ -653,7 +653,6 @@ class Tree
                 'type'    => $graphType,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id'],
-                'label'   => base64_encode($module['name']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 

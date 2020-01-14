@@ -1670,6 +1670,10 @@ function process_datatables_callback(table, settings) {
 
     }
 
+    // Uncheck checkbox to select all.
+    if ($('#checkbox-all_validate_box').length) {
+        $('#checkbox-all_validate_box').uncheck();
+    }
 }
 
 function process_datatables_item(item) {

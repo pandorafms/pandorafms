@@ -334,6 +334,19 @@ export default class Clock extends Item<ClockProps> {
   }
 
   /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (this.props.clockType === "digital") {
+      element.classList.replace("analogic-clock", "digital-clock");
+    } else {
+      element.classList.replace("digital-clock", "analogic-clock");
+    }
+    element.innerHTML = this.createDomElement().innerHTML;
+  }
+
+  /**
    * To remove the event listeners and the elements from the DOM.
    * @override
    */
@@ -355,12 +368,12 @@ export default class Clock extends Item<ClockProps> {
       width,
       height
     ); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
-    super.resizeElement(newWidth, newHeight);
+    super.resizeElement(newWidth, height);
     // Re-render the item to force it calculate a new font size.
-    if (this.props.clockType === "digital") {
-      // Replace the old element with the updated date.
-      this.childElementRef.innerHTML = this.createClock().innerHTML;
-    }
+    //if (this.props.clockType === "digital") {
+    // Replace the old element with the updated date.
+    this.childElementRef.innerHTML = this.createClock().innerHTML;
+    //}
   }
 
   /**

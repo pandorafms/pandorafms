@@ -106,12 +106,8 @@ if (!function_exists('mime_content_type')) {
             finfo_close($finfo);
             return $mimetype;
         } else {
-            $temp = exec('file '.$filename);
-            if (isset($temp) && $temp != '') {
-                return $temp;
-            } else {
-                return 'application/octet-stream';
-            }
+            error_log('Warning: Cannot find finfo_open function. Fileinfo extension is not enabled. Please add "extension=fileinfo.so" or "extension=fileinfo.dll" in your php.ini');
+            return 'unknown';
         }
     }
 
@@ -694,8 +690,9 @@ function filemanager_file_explorer(
 
             $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
         } else {
-            $hash = md5($relative_path.$config['dbpass']);
-            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode(base64_encode($relative_path)).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
+            $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
+            $hash = md5($filename.$config['dbpass']);
+            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
         }
 
         // Notice that uploaded php files could be dangerous
@@ -755,8 +752,9 @@ function filemanager_file_explorer(
         }
 
         if ((!$fileinfo['is_dir']) && ($download_button)) {
-            $hash = md5($fileinfo['realpath'].$config['dbpass']);
-            $data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['realpath'])).'&hash='.$hash.'" style="vertical-align: 25%;">';
+            $filename = base64_encode($fileinfo['name']);
+            $hash = md5($filename.$config['dbpass']);
+            $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
             $data[4] .= html_print_image('images/file.png', true);
             $data[4] .= '</a>';
         }

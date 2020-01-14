@@ -750,7 +750,7 @@ if (enterprise_installed()) {
     }
 }
 
-$table->data[1][2] = '<b>'.__('Server to execute command').'</b>';
+$table->data[1][2] = '<b>'.__('Server to execute command').'</b>'.ui_print_help_icon('agent_snmp_explorer_tab', true);
 $table->data[1][3] = html_print_select($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
 
 $snmp_versions['1'] = 'v. 1';

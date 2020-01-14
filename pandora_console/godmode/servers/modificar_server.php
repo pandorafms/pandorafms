@@ -32,7 +32,7 @@ if (isset($_GET['server'])) {
     $id_server = get_parameter_get('server');
     // Headers
     ui_print_page_header(__('Update Server'), 'images/gm_servers.png', false, 'servers', true);
-    $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy FROM tserver WHERE id_server = %d', $id_server);
+    $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
     $row = db_get_row_sql($sql);
     echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
     html_print_input_hidden('server', $id_server);
@@ -81,6 +81,13 @@ if (isset($_GET['server'])) {
                     '<a id="check_exec_server">'.html_print_image('images/dot_red.disabled.png', true).'</a>'.'<div id="check_error_message"></div>',
                 ];
             }
+
+            $port_number = empty($row['port']) ? '' : $row['port'];
+
+            $table->data[] = [
+                __('Port'),
+                html_print_input_text('port', $port_number, '', 10, 0, true).ui_print_help_tip(__('Leave blank to use SSH default port (22)'), true),
+            ];
         }
     }
 
@@ -136,11 +143,15 @@ if (isset($_GET['server'])) {
         $description = get_parameter_post('description');
         $id_server = get_parameter_post('server');
         $exec_proxy = get_parameter_post('exec_proxy');
+        $port = get_parameter_post('port');
+
+        $port_number = empty($port) ? 0 : $port;
 
         $values = [
             'ip_address'  => $address,
             'description' => $description,
             'exec_proxy'  => $exec_proxy,
+            'port'        => $port_number,
         ];
         $result = db_process_sql_update('tserver', $values, ['id_server' => $id_server]);
         if ($result !== false) {

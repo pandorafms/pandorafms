@@ -1775,6 +1775,7 @@ ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) NOT NULL defau
 -- Table `tserver`
 -- ---------------------------------------------------------------------
 ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `tserver` ADD COLUMN `port` int(5) unsigned NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_response`

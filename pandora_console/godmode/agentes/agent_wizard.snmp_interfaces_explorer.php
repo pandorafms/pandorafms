@@ -492,7 +492,7 @@ if (enterprise_installed()) {
     }
 }
 
-$table->data[1][2] = '<b>'.__('Server to execute command').'</b>';
+$table->data[1][2] = '<b>'.__('Server to execute command').'</b>'.ui_print_help_icon('agent_snmp_explorer_tab', true);
 $table->data[1][2] .= '<span id=satellite_remote_tip>'.ui_print_help_tip(__('In order to use remote executions you need to enable remote execution in satellite server'), true, 'images/tip_help.png', false, 'display:').'</span>';
 $table->data[1][4] = html_print_select(
     $servers_to_exec,

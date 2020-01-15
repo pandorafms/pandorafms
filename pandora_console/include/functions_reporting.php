@@ -6252,7 +6252,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
 
         $sql = sprintf(
             '
-            SELECT id_agent_module,
+            SELECT id_agent_module, id_agent_module_failover,
                 server_name, operation
             FROM treport_content_item
             WHERE id_report_content = %d',
@@ -6336,6 +6336,30 @@ function reporting_availability($report, $content, $date=false, $time=false)
                 $content['time_from'],
                 $content['time_to']
             );
+
+            // $row['data']= reporting_advanced_sla(
+            // $item['id_agent_module_failover'],
+            // ($report['datetime'] - $content['period']),
+            // $report['datetime'],
+            // null,
+            // min_value -> dynamic
+            // null,
+            // max_value -> dynamic
+            // null,
+            // inverse_interval -> dynamic
+            // [
+            // '1' => $content['sunday'],
+            // '2' => $content['monday'],
+            // '3' => $content['tuesday'],
+            // '4' => $content['wednesday'],
+            // '5' => $content['thursday'],
+            // '6' => $content['friday'],
+            // '7' => $content['saturday'],
+            // ],
+            // $content['time_from'],
+            // $content['time_to']
+            // );
+            hd($row['data']);
 
             // HACK it is saved in show_graph field.
             // Show interfaces instead the modules
@@ -6450,6 +6474,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
         }
     }
 
+    hd($data);
+
     $return['data'] = $data;
     $return['resume'] = [];
     $return['resume']['resume'] = $content['show_resume'];
@@ -6471,6 +6497,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $return['fields']['unknown_checks'] = $content['unknown_checks'];
     $return['fields']['agent_max_value'] = $content['agent_max_value'];
     $return['fields']['agent_min_value'] = $content['agent_min_value'];
+
+    hd(reporting_check_structure_content($return));
 
     return reporting_check_structure_content($return);
 }
@@ -6595,6 +6623,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
                 $slice = ($content['period'] / $module_interval);
                 $data_combined = [];
 
+                // hd($sla_failover);
                 foreach ($sla_failover as $k_sla => $v_sla) {
                     $sla_array = data_db_uncompress_module(
                         $v_sla,

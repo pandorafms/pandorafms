@@ -13,6 +13,43 @@ final class Box extends Item
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $border_width = parent::getBorderWidth($data);
+        if ($border_width !== null) {
+            $return['border_width'] = $border_width;
+        }
+
+        $border_color = static::getBorderColor($data);
+        if ($border_color !== null) {
+            $return['border_color'] = $border_color;
+        }
+
+        $fill_color = static::getFillColor($data);
+        if ($fill_color !== null) {
+            $return['fill_color'] = $fill_color;
+        }
+
+        $fill_transparent = static::extractFillTransparent($data);
+        if ($fill_transparent !== null) {
+            $return['show_statistics'] = static::parseBool($fill_transparent);
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -30,7 +67,23 @@ final class Box extends Item
         $boxData['borderWidth'] = $this->extractBorderWidth($data);
         $boxData['borderColor'] = $this->extractBorderColor($data);
         $boxData['fillColor'] = $this->extractFillColor($data);
+        $boxData['fillTransparent'] = $this->extractFillTransparent($data);
         return $boxData;
+    }
+
+
+    /**
+     * Extract the "Fill transparent" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean If the statistics should be shown or not.
+     */
+    private static function extractFillTransparent(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['fillTransparent', 'show_statistics'])
+        );
     }
 
 
@@ -223,6 +276,17 @@ final class Box extends Item
                     'type'    => 'color',
                     'value'   => $values['fillColor'],
                     'return'  => true,
+                ],
+            ];
+
+            // Fill transparent.
+            $inputs[] = [
+                'label'     => __('Fill transparent'),
+                'arguments' => [
+                    'name'  => 'fillTransparent',
+                    'id'    => 'fillTransparent',
+                    'type'  => 'switch',
+                    'value' => $values['fillTransparent'],
                 ],
             ];
         }

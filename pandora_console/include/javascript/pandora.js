@@ -2140,16 +2140,30 @@ function load_modal(settings) {
         modal: true,
         title: settings.modal.title,
         width: width,
+        minHeight:
+          settings.onshow.minHeight != undefined
+            ? settings.onshow.minHeight
+            : "auto",
+        maxHeight:
+          settings.onshow.maxHeight != undefined
+            ? settings.onshow.maxHeight
+            : "auto",
         overlay: settings.modal.overlay,
         buttons: required_buttons,
-        closeOnEscape: false,
+        closeOnEscape: true,
         open: function() {
-          $(".ui-dialog-titlebar-close").hide();
+          //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
+
+          if (settings.cleanup != undefined) {
+            settings.cleanup();
+          }
+
+          $(this).dialog("destroy");
         },
         beforeClose: settings.beforeClose()
       });

@@ -149,8 +149,10 @@ if ($getVisualConsole === true) {
         return;
     } else if ($updateVisualConsoleItem === true) {
         $data = get_parameter('data');
-        if ($data) {
+
+        if (isset($data) === true) {
             $data['id'] = $itemId;
+            $data['id_layout'] = $visualConsoleId;
             $result = $item->save($data);
 
             echo $item;

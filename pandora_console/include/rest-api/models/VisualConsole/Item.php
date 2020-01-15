@@ -1383,12 +1383,6 @@ class Item extends CachedModel
             $result['id_group'] = $id_group;
         }
 
-        // TODO change.
-        $border_width = static::getBorderWidth($data);
-        if ($border_width !== null) {
-            $result['border_width'] = $border_width;
-        }
-
         $label_position = static::notEmptyStringOr(
             static::issetInArray($data, ['labelPosition', 'label_position']),
             null
@@ -1506,7 +1500,13 @@ class Item extends CachedModel
         );
         if ($show_last_value === null) {
             $show_last_value = static::parseIntOr(
-                static::issetInArray($data, ['show_last_value', 'showLastValue']),
+                static::issetInArray(
+                    $data,
+                    [
+                        'show_last_value',
+                        'showLastValue',
+                    ]
+                ),
                 null
             );
         }
@@ -1635,7 +1635,7 @@ class Item extends CachedModel
      *
      * @return integer Valid border width.
      */
-    private static function getBorderWidth(array $data)
+    protected static function getBorderWidth(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['border_width', 'borderWidth']),
@@ -1651,7 +1651,7 @@ class Item extends CachedModel
      *
      * @return mixed String representing the border color (not empty) or null.
      */
-    private static function getBorderColor(array $data)
+    protected static function getBorderColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray(
@@ -1676,7 +1676,7 @@ class Item extends CachedModel
      *
      * @return mixed String representing the fill color (not empty) or null.
      */
-    private static function getFillColor(array $data)
+    protected static function getFillColor(array $data)
     {
         return static::notEmptyStringOr(
             static::issetInArray(
@@ -1725,6 +1725,7 @@ class Item extends CachedModel
                     $save,
                     ['id' => $save['id']]
                 );
+
                 // Invalidate the item's cache.
                 if ($result !== false && $result > 0) {
                     // TODO: Invalidate the cache with the function clearCachedData.

@@ -408,6 +408,9 @@ class View extends \HTML
                 $data['borderColor'] = \get_parameter('borderColor');
                 $data['borderWidth'] = \get_parameter('borderWidth');
                 $data['fillColor'] = \get_parameter('fillColor');
+                $data['fillTransparent'] = \get_parameter_switch(
+                    'fillTransparent'
+                );
             break;
 
             case LINE_ITEM:

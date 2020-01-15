@@ -14,6 +14,7 @@ interface BoxProps extends ItemProps {
   borderWidth: number;
   borderColor: string | null;
   fillColor: string | null;
+  fillTransparent: boolean | null;
 }
 
 /**
@@ -36,97 +37,9 @@ export function boxPropsDecoder(data: AnyObject): BoxProps | never {
     // Custom properties.
     borderWidth: parseIntOr(data.borderWidth, 0),
     borderColor: notEmptyStringOr(data.borderColor, null),
-    fillColor: notEmptyStringOr(data.fillColor, null)
+    fillColor: notEmptyStringOr(data.fillColor, null),
+    fillTransparent: data.fillTransparent
   };
-}
-
-/**
- * Class to add item to the Box item form
- * This item consists of a label and a color type input color.
- * Element border color is stored in the borderColor property
- */
-class BorderColorInputGroup extends InputGroup<Partial<BoxProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const borderColorLabel = document.createElement("label");
-    borderColorLabel.textContent = t("Border color");
-
-    const borderColorInput = document.createElement("input");
-    borderColorInput.type = "color";
-    borderColorInput.required = true;
-
-    borderColorInput.value = `${this.currentData.borderColor ||
-      this.initialData.borderColor ||
-      "#000000"}`;
-
-    borderColorInput.addEventListener("change", e => {
-      this.updateData({
-        borderColor: (e.target as HTMLInputElement).value
-      });
-    });
-
-    borderColorLabel.appendChild(borderColorInput);
-
-    return borderColorLabel;
-  }
-}
-
-/**
- * Class to add item to the Box item form
- * This item consists of a label and a color type input number.
- * Element border width is stored in the borderWidth property
- */
-class BorderWidthInputGroup extends InputGroup<Partial<BoxProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const borderWidthLabel = document.createElement("label");
-    borderWidthLabel.textContent = t("Border Width");
-
-    const borderWidthInput = document.createElement("input");
-    borderWidthInput.type = "number";
-    borderWidthInput.min = "0";
-    borderWidthInput.required = true;
-    borderWidthInput.value = `${this.currentData.borderWidth ||
-      this.initialData.borderWidth ||
-      0}`;
-    borderWidthInput.addEventListener("change", e =>
-      this.updateData({
-        borderWidth: parseIntOr((e.target as HTMLInputElement).value, 0)
-      })
-    );
-
-    borderWidthLabel.appendChild(borderWidthInput);
-
-    return borderWidthLabel;
-  }
-}
-
-/**
- * Class to add item to the Box item form
- * This item consists of a label and a color type input color.
- * Element fill color is stored in the fillcolor property
- */
-class FillColorInputGroup extends InputGroup<Partial<BoxProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const fillColorLabel = document.createElement("label");
-    fillColorLabel.textContent = t("Fill color");
-
-    const fillColorInput = document.createElement("input");
-    fillColorInput.type = "color";
-    fillColorInput.required = true;
-
-    fillColorInput.value = `${this.currentData.fillColor ||
-      this.initialData.fillColor ||
-      "#000000"}`;
-
-    fillColorInput.addEventListener("change", e => {
-      this.updateData({
-        fillColor: (e.target as HTMLInputElement).value
-      });
-    });
-
-    fillColorLabel.appendChild(fillColorInput);
-
-    return fillColorLabel;
-  }
 }
 
 export default class Box extends Item<BoxProps> {
@@ -136,8 +49,12 @@ export default class Box extends Item<BoxProps> {
     // To prevent this item to expand beyond its parent.
     box.style.boxSizing = "border-box";
 
-    if (this.props.fillColor) {
-      box.style.backgroundColor = this.props.fillColor;
+    if (this.props.fillTransparent) {
+      box.style.backgroundColor = "transparent";
+    } else {
+      if (this.props.fillColor) {
+        box.style.backgroundColor = this.props.fillColor;
+      }
     }
 
     // Border.
@@ -161,8 +78,12 @@ export default class Box extends Item<BoxProps> {
    * @override Item.updateDomElement
    */
   protected updateDomElement(element: HTMLElement): void {
-    if (this.props.fillColor) {
-      element.style.backgroundColor = this.props.fillColor;
+    if (this.props.fillTransparent) {
+      element.style.backgroundColor = "transparent";
+    } else {
+      if (this.props.fillColor) {
+        element.style.backgroundColor = this.props.fillColor;
+      }
     }
 
     // Border.
@@ -190,13 +111,6 @@ export default class Box extends Item<BoxProps> {
 
   public static getFormContainer(props: Partial<BoxProps>): FormContainer {
     const formContainer = super.getFormContainer(props);
-    formContainer.addInputGroup(
-      new BorderColorInputGroup("border-color", props)
-    );
-    formContainer.addInputGroup(
-      new BorderWidthInputGroup("border-width", props)
-    );
-    formContainer.addInputGroup(new FillColorInputGroup("fill-width", props));
 
     return formContainer;
   }

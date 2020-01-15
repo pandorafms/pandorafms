@@ -478,7 +478,7 @@ function createVisualConsole(
     },
     copyItem: function(item) {
       var id = item.props.id;
-      item.setMeta({ isUpdating: true });
+      item.setMeta({ isSelected: false, isUpdating: true });
 
       var taskId = "visual-console-item-update-" + id;
 
@@ -513,7 +513,7 @@ function createVisualConsole(
               itemRetrieved["id"] = data;
 
               var newItem = visualConsole.addElement(itemRetrieved);
-              newItem.setMeta({ editMode: true });
+              newItem.setMeta({ editMode: true, isSelected: true });
 
               done();
             }
@@ -1428,7 +1428,9 @@ function createOrUpdateVisualConsoleItem(
     ],
     onshow: {
       page: "include/rest-api/index",
-      method: "loadTabs"
+      method: "loadTabs",
+      maxHeight: 600,
+      minHeight: 400
     },
     onsubmit: {
       page: "include/rest-api/index",

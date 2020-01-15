@@ -1361,7 +1361,7 @@ $row++;
     $options_data_multiplier[1] = __('Use always 1000');
     $options_data_multiplier[2] = __('Use always 1024');
 
-    $table_other->data[$row][1] = html_print_select($options_data_multiplier, 'use_data_multiplier', $config['use_data_multiplier'], '', '', 0, true, false, false);
+    $table_other->data[$row][1] = html_print_select($options_data_multiplier, 'use_data_multiplier', $config['use_data_multiplier'], '', '', 1, true, false, false);
 
 
     echo '<fieldset>';

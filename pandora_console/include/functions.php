@@ -5543,7 +5543,7 @@ function delete_custom_module_unit($value)
 
     $custom_units = get_custom_module_units();
 
-    unset($custom_units[$value]);
+    unset($custom_units[io_safe_output($value)]);
 
     $new_conf = json_encode($custom_units);
     $return = config_update_value(
@@ -5574,7 +5574,7 @@ function get_data_multiplier($unit)
 
     switch ($config['use_data_multiplier']) {
         case 0:
-            if (strpos($unit, 'yte') !== false) {
+            if (strpos(strtolower($unit), 'yte') !== false) {
                 $multiplier = 1024;
             } else {
                 $multiplier = 1000;

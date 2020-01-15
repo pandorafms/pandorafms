@@ -2831,7 +2831,7 @@ function config_process_config()
     }
 
     if (!isset($config['use_data_multiplier'])) {
-        config_update_value('use_data_multiplier', ';');
+        config_update_value('use_data_multiplier', '1');
     }
 
     if (!isset($config['command_snapshot'])) {

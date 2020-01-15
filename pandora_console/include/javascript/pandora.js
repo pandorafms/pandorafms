@@ -712,7 +712,7 @@ function post_process_select_init_unit(name, selected) {
     });
 
     if (select_or_text) {
-      $("#" + name + "_select option[value=" + selected + "]").attr(
+      $("#" + name + "_select option[value='" + selected + "']").attr(
         "selected",
         true
       );
@@ -728,7 +728,7 @@ function post_process_select_init_unit(name, selected) {
 
   $("#" + name + "_select").change(function() {
     var value = $("#" + name + "_select").val();
-    $("#" + name + "_select option[value=" + value + "]").attr(
+    $("#" + name + "_select option[value='" + value + "']").attr(
       "selected",
       true
     );

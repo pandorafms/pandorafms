@@ -1340,6 +1340,10 @@ class NetworkMap
                 if ($rel['parent_type'] == NODE_MODULE
                     && $rel['child_type'] == NODE_MODULE
                 ) {
+                    // Keep std references.
+                    $ref_id_parent = $id_parent;
+                    $ref_id_child = $id_child;
+
                     // Module information available.
                     $id_parent = $rel['id_parent_source_data'];
                     $id_child = $rel['id_child_source_data'];
@@ -1371,6 +1375,12 @@ class NetworkMap
 
                     if ($valid == 1) {
                         $rel_map[$id_parent.'_'.$id_child] = [
+                            'index'    => $index,
+                            'priority' => $priority,
+                        ];
+
+                        // Keep node reference mapping - low precedence relationship.
+                        $rel_map[$ref_id_parent.'_'.$ref_id_child] = [
                             'index'    => $index,
                             'priority' => $priority,
                         ];

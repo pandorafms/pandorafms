@@ -31,8 +31,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.740";
-my $pandora_build = "191122";
+my $pandora_version = "7.0NG.742";
+my $pandora_build = "200115";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -2382,7 +2382,7 @@ sub get_unix_time {
 	eval {
 		use Time::Local;
 		my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
-		$time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+		$time = strftime("%s", $sec,$min,$hour,$mday,$mon-1,$year);
 	};
 	if ($@) {
 		return 0;

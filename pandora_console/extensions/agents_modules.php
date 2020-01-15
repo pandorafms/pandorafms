@@ -798,11 +798,7 @@ function mainAgentsModules()
                     echo "<td style='text-align: center;'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
-                    $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'label='.rawurlencode(
-                        urlencode(
-                            base64_encode($module['name'])
-                        )
-                    ).'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."')";
+                    $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."')";
 
                     echo '<a href="javascript:'.$link.'">';
                     switch ($status) {

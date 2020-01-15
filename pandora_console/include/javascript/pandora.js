@@ -1763,7 +1763,7 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number" || Number.isNaN(value)) {
+  if (typeof value !== "number" || isNaN(value)) {
     return value;
   }
 

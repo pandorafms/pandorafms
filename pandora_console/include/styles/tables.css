@@ -239,6 +239,10 @@
   padding: 1.3em 0;
 }
 
+.datos5 * {
+  color: #ffffff;
+}
+
 /*td.datos_id {
 	color: #1a313a;
 }*/

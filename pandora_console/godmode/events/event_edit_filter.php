@@ -55,7 +55,7 @@ if ($id) {
     $id_group = $filter['id_group'];
     $id_name = $filter['id_name'];
     $event_type = $filter['event_type'];
-    $severity = $filter['severity'];
+    $severity = explode(',', $filter['severity']);
     $status = $filter['status'];
     $search = $filter['search'];
     $text_agent = $filter['text_agent'];
@@ -123,7 +123,7 @@ if ($update || $create) {
     $id_group_filter = get_parameter('id_group_filter');
     $id_name = (string) get_parameter('id_name');
     $event_type = get_parameter('event_type', '');
-    $severity = get_parameter('severity', '');
+    $severity = implode(',', get_parameter('severity', -1));
     $status = get_parameter('status', '');
     $search = get_parameter('search', '');
     $text_agent = get_parameter('text_agent', '');
@@ -172,6 +172,8 @@ if ($update || $create) {
         'user_comment'      => $user_comment,
         'filter_only_alert' => $filter_only_alert,
     ];
+
+    $severity = explode(',', $severity);
 }
 
 if ($update) {
@@ -289,15 +291,24 @@ $table->data[3][1] = html_print_select(
     true
 );
 
+if (empty($severity) && $severity !== '0') {
+    $severity = -1;
+}
+
 $table->data[4][0] = '<b>'.__('Severity').'</b>';
 $table->data[4][1] = html_print_select(
     get_priorities(),
-    'severity',
+    'severity[]',
     $severity,
     '',
     __('All'),
-    '-1',
-    true
+    -1,
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width: 175px'
 );
 
 $fields = events_get_all_status();
@@ -587,6 +598,18 @@ $table->data[23][1] = html_print_input_text('id_extra', $id_extra, '', 11, 255, 
 
 $table->data[24][0] = '<b>'.__('Comment').'</b>';
 $table->data[24][1] = html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
+
+if (is_metaconsole()) {
+    $table->data[25][0] = '<b>'.__('Id souce event').'</b>';
+    $table->data[25][1] = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        35,
+        255,
+        true
+    );
+}
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&pure='.$config['pure'].'">';
 html_print_table($table);

@@ -1182,12 +1182,17 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
     }
 
     // Minutes
-    for ($i = 0; $i < 60; $i += 5) {
+    for ($i = 0; $i < 60; $i++) {
         $minutes[$i] = $i;
+
+        // If minute is not a multiple of 5, then add style to option in order to hide it from minute select but still is a valid value that input can adopt. We want this in case a value that is not a multiple of 5 is entered in module's data configuration.
+        if (($i % 5) != 0) {
+            $minutes_hidden_options[$i] = 'display: none;';
+        }
     }
 
     // Month days
-    for ($i = 0; $i < 31; $i++) {
+    for ($i = 1; $i <= 31; $i++) {
         $mdays[$i] = $i;
     }
 
@@ -1220,13 +1225,13 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
 
     if ($to) {
         $table->data[0][0] = html_print_select($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled);
+        $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
         $table->data[0][2] = html_print_select($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][3] = html_print_select($months, 'month_to', $month, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][4] = html_print_select($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
     } else {
         $table->data[0][0] = html_print_select($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled);
+        $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
         $table->data[0][2] = html_print_select($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][3] = html_print_select($months, 'month_from', $month, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][4] = html_print_select($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
@@ -1832,11 +1837,18 @@ function html_print_input_hidden($name, $value, $return=false, $class=false)
  * @param string  $id     Input value.
  * @param boolean $return Whether to return an output string or echo now (optional, echo by default).
  * @param string  $class  Set the class of input.
+ * @param boolean $quotes Use simple quotes or double quotes.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_hidden_extended($name, $value, $id, $return=false, $class=false)
-{
+function html_print_input_hidden_extended(
+    $name,
+    $value,
+    $id,
+    $return=false,
+    $class=false,
+    $quotes=false
+) {
     if ($class !== false) {
         $classText = 'class="'.$class.'"';
     } else {
@@ -1849,7 +1861,16 @@ function html_print_input_hidden_extended($name, $value, $id, $return=false, $cl
         $ouput_id = $id;
     }
 
-    $output = '<input id="'.$ouput_id.'" name="'.$name.'" type="hidden" '.$classText.' value="'.$value.'" />';
+    $quote = '"';
+    if ($quotes === true) {
+        $quote = "'";
+    }
+
+    $output = '<input id='.$quote.''.$ouput_id.''.$quote.' ';
+    $output .= ' name='.$quote.''.$name.''.$quote.' ';
+    $output .= ' type='.$quote.'hidden'.$quote.' '.$classText;
+    $output .= ' value='.$quote.''.$value.''.$quote.'';
+    $output .= ' />';
 
     if ($return) {
         return $output;
@@ -2468,19 +2489,27 @@ function html_print_radio_button($name, $value, $label='', $checkedvalue='', $re
 /**
  * Render a checkbox button input. Extended version, use html_print_checkbox() to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button  (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
-    inserted into the HTML tag, use it carefully (optional).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $name       Input name.
+ * @param string  $value      Input value.
+ * @param string  $checked    Set the button to be marked (optional, unmarked by default).
+ * @param boolean $disabled   Disable the button  (optional, button enabled by default).
+ * @param string  $script     Script to execute when onClick event is triggered (optional).
+ * @param string  $attributes Optional HTML attributes. It's a free string which will be inserted into the HTML tag, use it carefully (optional).
+ * @param boolean $return     Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $id         Custom id.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_checkbox_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
-{
+function html_print_checkbox_extended(
+    $name,
+    $value,
+    $checked,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $id=''
+) {
     static $idcounter = [];
 
     // If duplicate names exist, it will start numbering. Otherwise it won't
@@ -2496,7 +2525,7 @@ function html_print_checkbox_extended($name, $value, $checked, $disabled, $scrip
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
-        $output .= ' '.$id.'"';
+        $output .= ' id="'.$id.'"';
     }
 
     if ($script != '') {
@@ -2522,17 +2551,39 @@ function html_print_checkbox_extended($name, $value, $checked, $disabled, $scrip
 /**
  * Render a checkbox button input.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param boolean                                                                         $disabled Disable the button (optional, button enabled by default).
+ * @param string  $name            Input name.
+ * @param string  $value           Input value.
+ * @param string  $checked         Set the button to be marked (optional, unmarked by default).
+ * @param boolean $return          Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean $disabled        Disable the button (optional, button enabled by default).
+ * @param string  $script          Script.
+ * @param string  $disabled_hidden Disabled_hidden.
+ * @param string  $attributes      Extra attributes.
+ * @param string  $id              Custom ID.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_checkbox($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
-{
-    $output = html_print_checkbox_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
+function html_print_checkbox(
+    $name,
+    $value,
+    $checked=false,
+    $return=false,
+    $disabled=false,
+    $script='',
+    $disabled_hidden=false,
+    $attributes='',
+    $id=''
+) {
+    $output = html_print_checkbox_extended(
+        $name,
+        $value,
+        (bool) $checked,
+        $disabled,
+        $script,
+        $attributes,
+        true,
+        $id
+    );
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);
     }
@@ -3029,9 +3080,12 @@ function html_print_autocomplete_modules(
         ['style' => 'background: url(images/search_module.png) no-repeat right;']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-    ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    if (!is_metaconsole()) {
+        ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+    }
+
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     ?>
     <script type="text/javascript">
         function escapeHTML (str)
@@ -3415,7 +3469,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $data['value'],
                 $data['id'],
                 ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : false)
+                ((isset($data['class']) === true) ? $data['class'] : false),
+                ((isset($data['quotes']) === true) ? $data['quotes'] : false)
             );
         break;
 
@@ -3522,7 +3577,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
-                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false)
+                ((isset($data['disabled_hidden']) === true) ? $data['disabled_hidden'] : false),
+                ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
+                ((isset($data['id']) === true) ? $data['id'] : '')
             );
         break;
 

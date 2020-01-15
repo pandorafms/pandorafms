@@ -653,7 +653,6 @@ class Tree
                 'type'    => $graphType,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id'],
-                'label'   => base64_encode($module['name']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -1076,8 +1075,6 @@ class Tree
 				ON ta.id_agente = tasg.id_agent
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
-                AND tatm.id_alert_template = 1 
-				OR tatm.id_alert_template = NULL
 			$inner
 			WHERE tam.disabled = 0 AND ta.disabled = 0
 				$condition
@@ -1087,7 +1084,8 @@ class Tree
 				$agent_status_filter
 				$module_search_filter
 				$tag_condition
-			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
+            GROUP BY tam.id_agente_modulo
+            ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
 
         return $sql;
     }

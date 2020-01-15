@@ -35,7 +35,9 @@ enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
-enterprise_include_once('meta/include/functions_events_meta.php');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
 
 
 /**
@@ -622,7 +624,37 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
         break;
     }
 
-    return db_process_sql($update_sql);
+    $result = db_process_sql($update_sql);
+
+    if ($result) {
+        switch ($status) {
+            case EVENT_STATUS_NEW:
+                $status_string = 'New';
+            break;
+
+            case EVENT_STATUS_VALIDATED:
+                $status_string = 'Validated';
+            break;
+
+            case EVENT_STATUS_INPROCESS:
+                $status_string = 'In process';
+            break;
+
+            default:
+                $status_string = '';
+            break;
+        }
+
+        events_comment(
+            $id_evento,
+            '',
+            'Change status to '.$status_string,
+            is_metaconsole() ? true : false,
+            $history
+        );
+    }
+
+    return $result;
 }
 
 
@@ -749,43 +781,78 @@ function events_get_all(
     }
 
     if (isset($filter['severity']) && $filter['severity'] > 0) {
-        switch ($filter['severity']) {
-            case EVENT_CRIT_MAINTENANCE:
-            case EVENT_CRIT_INFORMATIONAL:
-            case EVENT_CRIT_NORMAL:
-            case EVENT_CRIT_MINOR:
-            case EVENT_CRIT_WARNING:
-            case EVENT_CRIT_MAJOR:
-            case EVENT_CRIT_CRITICAL:
-            default:
-                $sql_filters[] = sprintf(
-                    ' AND criticity = %d ',
-                    $filter['severity']
-                );
-            break;
+        if (is_array($filter['severity'])) {
+            if (!in_array(-1, $filter['severity'])) {
+                $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
+                if ($not_normal !== false) {
+                    unset($filter['severity'][$not_normal]);
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                } else {
+                    $critical_warning = array_search(EVENT_CRIT_WARNING_OR_CRITICAL, $filter['severity']);
+                    if ($critical_warning !== false) {
+                        unset($filter['severity'][$critical_warning]);
+                        $filter['severity'][] = EVENT_CRIT_WARNING;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_WARNING_OR_CRITICAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_WARNING,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                    $critical_normal = array_search(EVENT_CRIT_OR_NORMAL, $filter['severity']);
+                    if ($critical_normal !== false) {
+                        unset($filter['severity'][$critical_normal]);
+                        $filter['severity'][] = EVENT_CRIT_NORMAL;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_NOT_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND criticity != %d',
-                    EVENT_CRIT_NORMAL
-                );
-            break;
+                    if (!empty($filter['severity'])) {
+                        $filter['severity'] = implode(',', $filter['severity']);
+                        $sql_filters[] = sprintf(
+                            ' AND criticity IN (%s)',
+                            $filter['severity']
+                        );
+                    }
+                }
+            }
+        } else {
+            switch ($filter['severity']) {
+                case EVENT_CRIT_MAINTENANCE:
+                case EVENT_CRIT_INFORMATIONAL:
+                case EVENT_CRIT_NORMAL:
+                case EVENT_CRIT_MINOR:
+                case EVENT_CRIT_WARNING:
+                case EVENT_CRIT_MAJOR:
+                case EVENT_CRIT_CRITICAL:
+                default:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity = %d ',
+                        $filter['severity']
+                    );
+                break;
 
-            case EVENT_CRIT_OR_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_NORMAL,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                case EVENT_CRIT_WARNING_OR_CRITICAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_WARNING,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+
+                case EVENT_CRIT_NOT_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                break;
+
+                case EVENT_CRIT_OR_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_NORMAL,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+            }
         }
     }
 
@@ -924,6 +991,16 @@ function events_get_all(
             ' AND lower(te.id_extra) like lower("%%%s%%") ',
             $filter['id_extra']
         );
+    }
+
+    if (is_metaconsole()) {
+        // Id source event.
+        if (!empty($filter['id_source_event'])) {
+            $sql_filters[] = sprintf(
+                ' AND lower(te.id_source_event) like lower("%%%s%%") ',
+                $filter['id_source_event']
+            );
+        }
     }
 
     // User comment.
@@ -1250,6 +1327,11 @@ function events_get_all(
                 unset($fields[$idx]);
             }
         }
+    } else {
+        $idx = array_search('te.user_comment', $fields);
+        if ($idx !== false) {
+            $fields[$idx] = 'te.user_comment AS comments';
+        }
     }
 
     $sql = sprintf(
@@ -1496,6 +1578,13 @@ function events_get_events_grouped(
         $groupby_extra = ', server_id';
     } else {
         $groupby_extra = '';
+    }
+
+    if (is_metaconsole()) {
+            $id_source_event = get_parameter('id_source_event');
+        if ($id_source_event != '') {
+            $sql_post .= "AND id_source_event = $id_source_event";
+        }
     }
 
     db_process_sql('SET group_concat_max_len = 9999999');
@@ -3985,7 +4074,7 @@ function events_page_details($event, $server='')
 
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
-        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto']);
+        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
         $table_details->data[] = $data;
 
         $data = [];
@@ -4092,7 +4181,6 @@ function events_page_details($event, $server='')
                 'type'    => $graph_type,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id_agente_modulo'],
-                'label'   => base64_encode($module['nombre']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -4197,6 +4285,10 @@ function events_page_details($event, $server='')
     $table_details->data[] = $data;
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
+
+    if (!empty($server) && is_metaconsole()) {
+        metaconsole_restore_db();
+    }
 
     return $details;
 }
@@ -4371,6 +4463,15 @@ function events_page_general($event)
 
     global $group_rep;
 
+    $secondary_groups = '';
+    if (isset($event['id_agente']) && $event['id_agente'] > 0) {
+        enterprise_include_once('include/functions_agents.php');
+        $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
+        if (!empty($secondary_groups_selected)) {
+            $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
+        }
+    }
+
     // General.
     $table_general = new stdClass;
     $table_general->cellspacing = 0;
@@ -4497,6 +4598,14 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
+    if (!empty($secondary_groups)) {
+        $data = [];
+        $data[0] = __('Secondary groups');
+        $data[1] = $secondary_groups;
+
+        $table_general->data[] = $data;
+    }
+
     $data = [];
     $data[0] = __('Contact');
     $data[1] = '';
@@ -4585,12 +4694,12 @@ function events_page_comments($event, $ajax=false)
                     continue;
                 }
 
-                $comments_array[] = json_decode(io_safe_output($comm), true);
+                $comments_array[] = io_safe_output(json_decode($comm, true));
             }
         } else {
             $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
             // If comments are not stored in json, the format is old.
-            $comments_array[] = json_decode(io_safe_output($comments), true);
+            $comments_array[] = io_safe_output(json_decode($comments, true));
         }
 
         foreach ($comments_array as $comm) {

@@ -852,7 +852,7 @@ function pandoraFlotSlicebar(
     },
     xaxes: [
       {
-        show: show_date,
+        show: true,
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,
@@ -933,44 +933,29 @@ function pandoraFlotSlicebar(
           to = "23:59";
         }
 
+        var url_filters = {
+          id_agent: id_agent,
+          date_from: newdate,
+          time_from: from + ":00",
+          status: "-1",
+          group_rep: "1"
+        };
+
         if (full_legend != "") {
-          if (newdate2 == undefined) {
-            window.location =
-              "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-              id_agent +
-              "&date_from=" +
-              newdate +
-              "&time_from=" +
-              from +
-              "&status=-1";
-          } else {
-            window.location =
-              "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-              id_agent +
-              "&date_from=" +
-              newdate +
-              "&time_from=" +
-              from +
-              "&date_to=" +
-              newdate2 +
-              "&time_to=" +
-              to +
-              "&status=-1";
+          if (newdate2 != undefined) {
+            url_filters.date_to = newdate2;
+            url_filters.time_to = to + ":00";
           }
         } else {
-          window.location =
-            "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-            id_agent +
-            "&date_from=" +
-            newdate +
-            "&time_from=" +
-            from +
-            "&date_to=" +
-            newdate +
-            "&time_to=" +
-            to +
-            "&status=-1";
+          url_filters.date_to = newdate;
+          url_filters.time_to = to + ":00";
         }
+
+        var url_filters_fb64 = btoa(JSON.stringify(url_filters));
+
+        window.location =
+          "index.php?sec=eventos&sec2=operation/events/events&fb64=" +
+          url_filters_fb64;
       }
     });
 

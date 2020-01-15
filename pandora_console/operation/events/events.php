@@ -135,6 +135,10 @@ $id_agent = get_parameter(
     'filter[id_agent]',
     $filter['id_agent']
 );
+$text_module = get_parameter(
+    'filter[text_module]',
+    $filter['text_module']
+);
 $id_agent_module = get_parameter(
     'filter[id_agent_module]',
     $filter['id_agent_module']
@@ -179,6 +183,14 @@ $date_to = get_parameter(
     'filter[date_to]',
     $filter['date_to']
 );
+$time_from = get_parameter(
+    'filter[time_from]',
+    $filter['time_from']
+);
+$time_to = get_parameter(
+    'filter[time_to]',
+    $filter['time_to']
+);
 $source = get_parameter(
     'filter[source]',
     $filter['source']
@@ -196,6 +208,43 @@ $history = get_parameter(
     $filter['history']
 );
 $section = get_parameter('section', false);
+
+$id_source_event = get_parameter(
+    'filter[id_source_event]',
+    $filter['id_source_event']
+);
+
+$server_id = get_parameter(
+    'filter[server_id]',
+    $filter['id_server_meta']
+);
+
+if (is_metaconsole()) {
+    // Connect to node database.
+    $id_node = $server_id;
+    if ($id_node != 0) {
+        if (metaconsole_connect(null, $id_node) != NOERR) {
+            return false;
+        }
+    }
+}
+
+
+if (empty($text_agent) && !empty($id_agent)) {
+    $text_agent = agents_get_alias($id_agent);
+}
+
+if (empty($text_module) && !empty($id_agent_module)) {
+    $text_module = modules_get_agentmodule_name($id_agent_module);
+    $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
+}
+
+if (is_metaconsole()) {
+    // Return to metaconsole database.
+    if ($id_node != 0) {
+        metaconsole_restore_db();
+    }
+}
 
 // Ajax responses.
 if (is_ajax()) {
@@ -396,6 +445,7 @@ if ($user_filter !== false) {
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
+        $id_source_event = $filter['id_source_event'];
     }
 }
 
@@ -844,22 +894,6 @@ $in = '<div class="filter_input"><label>'.__('Event type').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Criticity - severity.
-$severity_select .= html_print_select(
-    get_priorities(),
-    'severity',
-    $severity,
-    '',
-    __('All'),
-    '-1',
-    true,
-    false,
-    false
-);
-$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
-$in .= $severity_select.'</div>';
-$inputs[] = $in;
-
 // Event status.
 $data = html_print_select(
     events_get_all_status(),
@@ -908,6 +942,28 @@ $inputs[] = $in;
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
 $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
+$in .= $data.'</div>';
+$inputs[] = $in;
+
+if (empty($severity) && $severity !== '0') {
+    $severity = -1;
+}
+
+// Criticity - severity.
+$data = html_print_select(
+    get_priorities(),
+    'severity',
+    $severity,
+    '',
+    __('All'),
+    -1,
+    true,
+    true,
+    true,
+    '',
+    false
+);
+$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
@@ -1051,8 +1107,20 @@ $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
-// Gap.
-$adv_inputs[] = '<div class="filter_input"></div>';
+if (is_metaconsole()) {
+    $data = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
+    $in .= $data.'</div>';
+    $adv_inputs[] = $in;
+}
+
 
 // Date from.
 $data = html_print_input_text(
@@ -1602,6 +1670,10 @@ function process_datatables_callback(table, settings) {
 
     }
 
+    // Uncheck checkbox to select all.
+    if ($('#checkbox-all_validate_box').length) {
+        $('#checkbox-all_validate_box').uncheck();
+    }
 }
 
 function process_datatables_item(item) {

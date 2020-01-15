@@ -514,7 +514,9 @@ class Wizard
 
             $output .= '</li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
@@ -572,7 +574,9 @@ class Wizard
 
             $output .= '</ul></li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
@@ -675,7 +679,9 @@ class Wizard
 
             $output .= '</ul></li>';
         } else {
-            if ($input['arguments']['type'] != 'hidden') {
+            if ($input['arguments']['type'] != 'hidden'
+                && $input['arguments']['type'] != 'hidden_extended'
+            ) {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
                 $output .= $this->printInput($input['arguments']);

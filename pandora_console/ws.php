@@ -139,7 +139,7 @@ $ws = new WSManager(
     // Bind address.
     $config['ws_bind_address'],
     // Bind port.
-    $config['ws_port'],
+    (int) $config['ws_port'],
     // Connected handlers.
     ['gotty' => 'proxyConnected'],
     // Process handlers.

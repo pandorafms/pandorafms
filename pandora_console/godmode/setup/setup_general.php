@@ -403,50 +403,6 @@ html_print_table($table_mail_conf);
 echo '</fieldset>';
 
 echo '<fieldset>';
-echo '<legend>'.__('WebSocket settings').'</legend>';
-
-$t = new StdClass();
-$t->data = [];
-$t->width = '100%';
-$t->class = 'databox filters';
-$t->data = [];
-$t->style[0] = 'font-weight: bold';
-
-$t->data[0][0] = __('Bind address');
-$t->data[0][1] = html_print_input_text(
-    'ws_bind_address',
-    $config['ws_bind_address'],
-    '',
-    30,
-    100,
-    true
-);
-
-$t->data[1][0] = __('Bind port');
-$t->data[1][2] = html_print_input_text(
-    'ws_port',
-    $config['ws_port'],
-    '',
-    30,
-    100,
-    true
-);
-
-$t->data[2][0] = __('WebSocket proxy url').ui_print_help_tip(__('If you had configured a wsproxy set here target URL (for instance ws://your.public.fqdn/ws).'), true);
-$t->data[2][2] = html_print_input_text(
-    'ws_proxy_url',
-    $config['ws_proxy_url'],
-    '',
-    30,
-    100,
-    true
-);
-
-html_print_input_hidden('update_config', 1);
-html_print_table($t);
-
-
-echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');

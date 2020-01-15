@@ -163,7 +163,6 @@ switch ($action) {
         $description = null;
         $sql = null;
         $show_in_same_row = 0;
-        $show_in_landscape = 0;
         $hide_notinit_agents = 0;
         $priority_mode = REPORT_PRIORITY_MODE_OK;
         $failover_mode = 0;
@@ -171,6 +170,8 @@ switch ($action) {
         $server_name = '';
         $server_id = 0;
         $dyn_height = 230;
+        $landscape = false;
+        $pagebreak = false;
     break;
 
     case 'save':
@@ -208,7 +209,6 @@ switch ($action) {
                 $description = null;
                 $sql = null;
                 $show_in_same_row = 0;
-                $show_in_landscape = 0;
                 $hide_notinit_agents = 0;
                 $server_name = '';
                 $server_id = 0;
@@ -236,11 +236,17 @@ switch ($action) {
             $name_from_template = $style['name_label'];
 
             $show_in_same_row = $style['show_in_same_row'];
-            $show_in_landscape = $style['show_in_landscape'];
             $hide_notinit_agents = $style['hide_notinit_agents'];
             $dyn_height = $style['dyn_height'];
             $type = $item['type'];
             $name = $style['name_label'];
+
+            if ($name === null || $name === '') {
+                $name = $item['name'];
+            }
+
+            $landscape = $item['landscape'];
+            $pagebreak = $item['pagebreak'];
 
             switch ($type) {
                 case 'event_report_log':
@@ -898,6 +904,28 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <?php
+        if ($meta) {
+            ?>
+        <tr id="row_servers" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
+            <td style="">
+                <?php
+                html_print_select(
+                    $servers,
+                    'combo_server',
+                    $server_name,
+                    '',
+                    __('Local metaconsole'),
+                    0
+                );
+                ?>
+            </td>
+        </tr>
+            <?php
+        }
+        ?>
 
         <tr id="row_label" style="" class="datos">
             <td style="font-weight:bold;">
@@ -1838,28 +1866,6 @@ $class = 'databox filters';
             <td style="" id="max_items_example"></td>
         </tr>
 
-        <?php
-        if ($meta) {
-            ?>
-        <tr id="row_servers" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
-            <td style="">
-                <?php
-                html_print_select(
-                    $servers,
-                    'combo_server',
-                    $server_name,
-                    '',
-                    __('Select server'),
-                    0
-                );
-                ?>
-            </td>
-        </tr>
-            <?php
-        }
-        ?>
-
         <tr id="row_header" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
@@ -2198,7 +2204,7 @@ $class = 'databox filters';
         <tr id="row_show_address_agent" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Show address instead module name.').ui_print_help_tip(
+                echo __('Show address instead module name').ui_print_help_tip(
                     __('Show the main address of agent.'),
                     true
                 );
@@ -2554,25 +2560,6 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_in_landscape" style="" class="datos">
-            <td style="font-weight:bold;">
-            <?php
-            echo __('Show in landscape');
-            ?>
-            </td>
-            <td>
-                <?php
-                html_print_checkbox(
-                    'show_in_landscape',
-                    1,
-                    $show_in_landscape,
-                    false,
-                    false
-                );
-                ?>
-            </td>
-        </tr>
-
         <tr id="row_priority_mode" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
@@ -2777,6 +2764,24 @@ $class = 'databox filters';
             html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
             ?>
             </td>
+        </tr>
+
+        <tr id="row_landscape" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Show item in landscape format (only PDF)');
+            ?>
+            </td>
+            <td><?php html_print_checkbox('landscape', 1, $landscape); ?></td>
+        </tr>
+
+        <tr id="row_pagebreak" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Page break at the end of the item (only PDF)');
+            ?>
+            </td>
+            <td><?php html_print_checkbox('pagebreak', 1, $pagebreak); ?></td>
         </tr>
 
     </tbody>
@@ -3501,6 +3506,30 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 }
 
 
+echo "<div id='message_no_name'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a name.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_agent'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select an agent.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_module'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a module.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_sql_query'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a SQL query.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_url'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a URL.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_interval_option'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please checked a custom interval option.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -3517,8 +3546,19 @@ $(document).ready (function () {
     // Load selected modules by default
     $("#id_agents2").trigger('click');
 
+    $('#combo_server').change (function (){
+        $("#id_agents").html('');
+            $("#id_agents2").html('');
+            $("#module").html('');
+            $("#inventory_modules").html('');
+    })
+
     $("#combo_group").change (
         function () {
+            $("#id_agents").html('');
+            $("#id_agents2").html('');
+            $("#module").html('');
+            $("#inventory_modules").html('');
             jQuery.post ("ajax.php",
                 {"page" : "operation/agentes/ver_agente",
                     "get_agents_group_json" : 1,
@@ -3528,9 +3568,6 @@ $(document).ready (function () {
                     "recursion" : $('#checkbox-recursion').is(':checked')
                 },
                 function (data, status) {
-                    $("#id_agents").html('');
-                    $("#id_agents2").html('');
-                    $("#module").html('');
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -3558,9 +3595,7 @@ $(document).ready (function () {
                     "recursion" : $('#checkbox-recursion').is(':checked')
                 },
                 function (data, status) {
-                    $("#id_agents").html('');
                     $("#id_agents2").html('');
-                    $("#module").html('');
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -3700,6 +3735,12 @@ $(document).ready (function () {
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
+
+        if($('#text-name').val() == ''){
+            dialog_message('#message_no_name');
+                return false;
+        }
+
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3718,25 +3759,108 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
-                    alert( <?php echo "'".__('Please select Agent')."'"; ?> );
+                    dialog_message('#message_no_agent');
                     return false;
                 }
                 break;
+            case 'agent_module':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                      return false;
+                      }
+                      break;
+            case 'inventory':
+            case 'inventory_changes':
+                 if ($("select#id_agents>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
             default:
                 break;
         }
 
-        if($('#text-name').val() == ''){
-            alert( <?php echo "'".__('Please insert a name')."'"; ?> );
-                return false;
+        switch (type){
+            case 'alert_report_module':
+            case 'event_report_module':
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 'prediction_date':
+            case 'projection_graph':
+            case 'monitor_report':
+            case 'module_histogram_graph':
+            case 'avg_value':
+            case 'max_value':
+            case 'min_value':
+            case 'database_serialized':
+            case 'sumatory':
+            case 'historical_data':
+            case 'increment':
+
+                if ($("#id_agent_module").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                break;
+            case 'agent_module':
+                if ($("select#module>option:selected").val() == undefined) {
+                    dialog_message('#message_no_module');
+                    return false;
+                    }
+                    break;
+            case 'inventory':
+            case 'inventory_changes':
+                if ($("select#inventory_modules>option:selected").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'sql':
+                if ($("#textarea_sql").val() == ''
+                && $("select#id_custom>option:selected").val() == 0) {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'sql_graph_pie':
+            case 'sql_graph_hbar':
+            case 'sql_graph_vbar':
+                if ($("#textarea_sql").val() == '') {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'url':
+                if ($("#text-url").val() == '') {
+                    dialog_message('#message_no_url');
+                     return false;
+                }
+                    break;
+            default:
+                break;
         }
 
+        if (type == 'avg_value' || type == 'max_value' || type == 'min_value') {
+            if (($('input:radio[name=visual_format]:checked').val() != 1
+            && $('input:radio[name=visual_format]:checked').val() != 2
+            && $('input:radio[name=visual_format]:checked').val() != 3)
+            && $("#checkbox-lapse_calc").is(":checked")) {
+                dialog_message('#message_no_interval_option');
+                     return false;
+            }
+        }
 
     });
 
     $("#submit-edit_item").click(function () {
         var type = $('#type').val();
+
+        if($('#text-name').val() == ''){
+            dialog_message('#message_no_name');
+                return false;
+        }
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3755,14 +3879,97 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
-                    alert( <?php echo "'".__('Please select Agent')."'"; ?> );
+                    dialog_message('#message_no_agent');
                     return false;
                 }
                 break;
+            case 'agent_module':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
+            case 'inventory':
+                if ($("select#id_agents>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
             default:
                 break;
         }
+
+        switch (type){
+            case 'alert_report_module':
+            case 'event_report_module':
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 'prediction_date':
+            case 'projection_graph':
+            case 'monitor_report':
+            case 'module_histogram_graph':
+            case 'avg_value':
+            case 'max_value':
+            case 'min_value':
+            case 'database_serialized':
+            case 'sumatory':
+            case 'historical_data':
+            case 'increment':
+
+                if ($("#id_agent_module").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                break;
+            case 'agent_module':
+                if ($("select#module>option:selected").val() == undefined) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'inventory':
+                if ($("select#inventory_modules>option:selected").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'sql':
+                if ($("#textarea_sql").val() == ''
+                && $("select#id_custom>option:selected").val() == 0) {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'sql_graph_pie':
+            case 'sql_graph_hbar':
+            case 'sql_graph_vbar':
+                if ($("#textarea_sql").val() == '') {
+                    dialog_message('#message_no_sql_query');
+                     return false;
+                }
+                    break;
+            case 'url':
+                if ($("#text-url").val() == '') {
+                    dialog_message('#message_no_url');
+                     return false;
+                }
+                    break;
+            default:
+                break;
+        }
+
+        if (type == 'avg_value' || type == 'max_value' || type == 'min_value') {
+            if (($('input:radio[name=visual_format]:checked').val() != 1
+            && $('input:radio[name=visual_format]:checked').val() != 2
+            && $('input:radio[name=visual_format]:checked').val() != 3)
+            && $("#checkbox-lapse_calc").is(":checked")) {
+                dialog_message('#message_no_interval_option');
+                     return false;
+            }
+        }
+
     });
 
     $("#checkbox-lapse_calc").change(function () {
@@ -4472,7 +4679,6 @@ function chooseType() {
     $("#row_lapse_calc").hide();
     $("#row_lapse").hide();
     $("#row_visual_format").hide();
-    $("#row_show_in_landscape").hide();
     $('#row_hide_notinit_agents').hide();
     $('#row_priority_mode').hide();
     $("#row_module_group").hide();
@@ -4974,6 +5180,29 @@ function chooseType() {
             $("#id_agents").change(event_change_id_agent_inventory);
             $("#id_agents").trigger('change');
 
+            $("#combo_server").change(function() {
+                $('#hidden-date_selected').val('');
+                updateInventoryDates(
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+                updateAgents($(this).val(),
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+            });
             $("#combo_group").change(function() {
                 updateAgents($(this).val(),
                 <?php
@@ -5002,6 +5231,30 @@ function chooseType() {
             $("#id_agents").trigger('change');
 
             $("#row_servers").show();
+
+            $("#combo_server").change(function() {
+                $('#hidden-date_selected').val('');
+                updateInventoryDates(
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+                updateAgents($(this).val(),
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+            });
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -5189,5 +5442,21 @@ function source_change_agents() {
         },
         "json"
     );
+}
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
 }
 </script>

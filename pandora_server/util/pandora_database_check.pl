@@ -216,7 +216,7 @@ sub process_module_data ($$$$$$$$$) {
 		$timestamp !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
 	}
 	my $utimestamp;
-	$utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	$utimestamp = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 
 	my %data_object;
  

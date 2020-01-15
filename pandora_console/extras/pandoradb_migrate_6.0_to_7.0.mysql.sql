@@ -579,6 +579,39 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `tevent_rule` ADD COLUMN `group_recursion` INT(1) unsigned default 0;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `log_agent` TEXT;
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_agent` text COMMENT 'Operator for agent';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_usuario` text COMMENT 'Operator for id_usuario';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_grupo` text COMMENT 'Operator for id_grupo';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_evento` text COMMENT 'Operator for evento';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_event_type` text COMMENT 'Operator for event_type';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_module` text COMMENT 'Operator for module';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_alert` text COMMENT 'Operator for alert';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_criticity` text COMMENT 'Operator for criticity';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_user_comment` text COMMENT 'Operator for user_comment';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_id_tag` text COMMENT 'Operator for id_tag';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_content` text COMMENT 'Operator for log_content';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_source` text COMMENT 'Operator for log_source';
+ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator for log_agent';
+ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '';
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL;
+
+UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
+UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
+UPDATE `tevent_rule` SET `operator_id_grupo` = "REGEX" WHERE `id_grupo` > 0;
+UPDATE `tevent_rule` SET `operator_evento` = "REGEX" WHERE `evento` != '';
+UPDATE `tevent_rule` SET `operator_event_type` = "REGEX" WHERE `event_type` != '';
+UPDATE `tevent_rule` SET `operator_module` = "REGEX" WHERE `module` != '';
+UPDATE `tevent_rule` SET `operator_alert` = "REGEX" WHERE `alert` != '';
+UPDATE `tevent_rule` SET `operator_criticity` = "REGEX" WHERE `criticity` != '99';
+UPDATE `tevent_rule` SET `operator_user_comment` = "REGEX" WHERE `user_comment` != '';
+UPDATE `tevent_rule` SET `operator_id_tag` = "REGEX" WHERE `id_tag` > 0;
+UPDATE `tevent_rule` SET `operator_log_content` = "REGEX" WHERE `log_content` != '';
+UPDATE `tevent_rule` SET `operator_log_source` = "REGEX" WHERE `log_source` != '';
+UPDATE `tevent_rule` SET `operator_log_agent` = "REGEX" WHERE `log_agent` != '';
 
 -- -----------------------------------------------------
 -- Table `tevent_alert`
@@ -626,6 +659,9 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
+ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
@@ -728,6 +764,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`footer` MEDIUMTEXT default NULL,
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
+	`agent_regex` varchar(600) NOT NULL default '',
+
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -804,6 +842,8 @@ ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) 
 	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `lapse` int(11) unsigned NOT NULL DEFAULT '300',
 	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0';
+ALTER TABLE `treport_content_template` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tnews`
@@ -931,6 +971,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1154,6 +1195,8 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
 	`generated` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
+	`id_group_map` INT(10) UNSIGNED NOT NULL default 0,
+
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1291,13 +1334,13 @@ ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 33);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 34);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '741');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '742');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1358,7 +1401,9 @@ ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `user_comment` text NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
+ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
@@ -1561,6 +1606,8 @@ ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned 
 	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `failover_mode` tinyint(1) NULL DEFAULT '1',
 	MODIFY COLUMN `failover_type` tinyint(1) NULL DEFAULT '1';
+ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1736,6 +1783,7 @@ ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0
 -- Table `tevent_response`
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
+ALTER TABLE tevent_response ADD COLUMN command_timeout int(5) unsigned NOT NULL DEFAULT 90;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule`
@@ -1906,6 +1954,7 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
 ALTER TABLE tagente ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tusuario_perfil ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_agent_secondary_group` ADD INDEX `id_tagente` (`id_tagente`);
 
 -- ---------------------------------------------------------------------
 -- Table `tautoconfig`
@@ -2357,7 +2406,7 @@ CREATE TABLE `tvisual_console_elements_cache` (
 CREATE TABLE IF NOT EXISTS `tcredential_store` (
 	`identifier` varchar(100) NOT NULL,
 	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
-	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE') default 'CUSTOM',
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM',
 	`username` text,
 	`password` text,
 	`extra_1` text,

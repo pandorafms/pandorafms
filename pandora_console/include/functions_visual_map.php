@@ -1593,6 +1593,7 @@ function visual_map_print_item(
 
         case CLOCK:
             if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+                $image_prefix = (is_metaconsole()) ? '../../' : '';
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
@@ -1606,17 +1607,16 @@ function visual_map_print_item(
                         }
                     } else {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
-                            $img = '<img src="images/console/signes/clock.png" style="width:200px;height:240px;">';
+                            $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:200px;height:240px;">';
                         } else {
                             if ($layoutData['time_format'] == 'time') {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:71px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:71px">';
                             } else {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:91px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:91px">';
                             }
                         }
                     }
                 } else {
-                    $image_prefix = ($layoutData['id_metaconsole'] != 0) ? '../../' : '';
                     if ($layoutData['clock_animation'] == 'analogic_1') {
                         $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:'.$width.'px;height:'.($width + 40).'px;">';
                     } else {
@@ -1900,6 +1900,8 @@ function visual_map_print_item(
                             echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                         }
                     } else {
+                        $is_meta = is_metaconsole();
+
                         $agents_critical = agents_get_agents(
                             [
                                 'disabled' => 0,
@@ -1908,7 +1910,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_warning = agents_get_agents(
                             [
@@ -1918,7 +1923,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_unknown = agents_get_agents(
                             [
@@ -1928,7 +1936,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_ok = agents_get_agents(
                             [
@@ -1938,7 +1949,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $total_agents = ($agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total']);
                         $stat_agent_ok = ($agents_ok[0]['total'] / $total_agents * 100);

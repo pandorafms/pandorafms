@@ -469,6 +469,9 @@ $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
 $autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'Cluster view';
+if (enterprise_installed()) {
+    $autorefresh_list_out['general/sap_view'] = 'SAP view';
+}
 
 if (!isset($autorefresh_list)) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");

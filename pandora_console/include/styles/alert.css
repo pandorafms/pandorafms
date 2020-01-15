@@ -2,6 +2,44 @@ li#li-buttons-alert-list > div {
   margin-left: 10px;
 }
 
+#rule-builder .rule-builder-actions li {
+  display: inline;
+  width: auto;
+}
+
+#rule-builder .rule-builder-actions li label {
+  width: 0;
+}
+
+div.white_box {
+  min-width: 800px;
+}
+
+#rules,
+ul.sample {
+  margin-bottom: 2em;
+  flex: 1 1 300px;
+}
+
+#rules.flex-row label {
+  flex: 1 1 70px;
+}
+
+#rules.flex-row div {
+  flex: 10 1 200px;
+}
+
+span.rule-title {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+  font-size: 2em;
+  text-align: center;
+  display: block;
+  margin-bottom: 0.8em;
+  width: 100%;
+}
+
+li#li-filters_show_action_alerts > label,
 li#li-buttons-alert-list > label,
 li#li-filters-alert-list > label {
   width: initial;
@@ -62,8 +100,6 @@ img.handle-alerts {
 .content {
   width: 80%;
   min-height: 4em;
-  border: 1px solid #ddd;
-  padding-top: 1em;
   padding-bottom: 1em;
 }
 ul.sample {
@@ -79,21 +115,63 @@ ul.sample li:last-child {
 }
 div.target {
   flex-grow: 1;
+  flex-basis: auto;
   margin-left: 3em;
-  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+div.target.flex {
+  display: block;
+  border: 2px dashed #ddd;
+  margin-left: 0em;
+  margin-top: 10px;
+  padding: 1em;
 }
 
+.fields,
+.operators,
+.variables,
+.modifiers,
+.nexos,
+.blocks {
+  cursor: move;
+}
+div#rules.show::after {
+  content: "Drop here";
+  position: relative;
+  top: 25%;
+  display: block;
+  left: 37%;
+  font-size: 3em;
+  color: #aaa;
+  overflow: hidden;
+  width: 6em;
+  background: #fff;
+  text-align: center;
+  z-index: 2;
+}
+div#rules.show {
+  box-shadow: 0 0 15px -5px #424242;
+  border: 1px solid #ddd;
+}
 .field {
   display: inline-block;
   border-radius: 10px;
   padding: 5px;
-  padding-left: 8px;
-  padding-right: 8px;
-  margin: 3px;
+  font-size: 1.2em;
+  padding-left: 1em;
+  padding-right: 1em;
+  margin: 0 0.5em 0.5em 0px;
   color: #fff;
   font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
   background-color: #333;
+  word-break: break-all;
+}
+
+.field.opacityElements {
+  opacity: 0.2;
+  cursor: not-allowed;
 }
 
 .log {
@@ -125,4 +203,64 @@ div.target {
 
 .inEdit {
   background-color: #888;
+}
+
+.info-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.info-item {
+  width: 25%;
+}
+
+.info-days {
+  width: 65%;
+}
+
+.info-item table.info_table thead tr th {
+  text-align: center;
+}
+
+.info-item table.info_table tbody tr {
+  border-bottom: none;
+}
+
+.info-container table.no-class tbody tr td {
+  padding: 10px;
+}
+
+.mode_table_firing {
+  margin-top: 20px;
+}
+
+.mode_table_firing table.info_table thead tr th {
+  font-weight: bolder;
+}
+
+.mode_table_firing table.info_table thead tr th img {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+#rules select.click-list-elements {
+  border-radius: 0px;
+  background-color: #424242;
+  border: 0px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: 600;
+}
+#rules select.click-list-elements.fields-elements-log {
+  background-color: #638460;
+}
+#rules select.click-list-elements.fields-elements-event {
+  background-color: #587cff;
+}
+
+#rules select.click-list-elements:focus {
+  outline-color: transparent;
 }

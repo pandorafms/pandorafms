@@ -802,9 +802,9 @@ function pandoraFlotSlicebar(
     full_legend = full_legend.split(separator);
   }
 
-  var font_size = parseInt(font_size);
+  font_size = parseInt(font_size);
   if (font != undefined)
-    var font = font
+    font = font
       .split("/")
       .pop()
       .split(".")
@@ -884,7 +884,7 @@ function pandoraFlotSlicebar(
 
   $.plot($("#" + graph_id), datas, options);
 
-  if (match == null) {
+  if (match == null && not_interactive == 0) {
     // Events
     $("#" + graph_id).bind("plothover", function(event, pos, item) {
       if (item) {

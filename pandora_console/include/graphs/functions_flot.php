@@ -143,7 +143,7 @@ function flot_area_graph(
     // Parent layer.
     $return = "<div class='parent_graph' style='width: ".($params['width']).';'.$background_style.$padding_vconsole."'>";
 
-    if (empty($params['title']) === false) {
+    if ($params['title'] === true && empty($params['title']) === false) {
         $return .= '<p style="text-align:center;">'.$params['title'].'</p>';
     }
 
@@ -777,15 +777,17 @@ function flot_slicesbar_graph(
     // Get a unique identifier to graph
     $graph_id = uniqid('graph_');
 
-    $height = ((int) $height + 15);
-
     // Set some containers to legend, graph, timestamp tooltip, etc.
     if ($stat_win) {
+        $height = ((int) $height + 15);
         $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px; display: inline-block;'></div>";
     } else {
         if ($widgets) {
+            $width  = ((int) $width - 10);
+            $height = ((int) $height - 10);
             $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'px; height: '.$height."px;'></div>";
         } else {
+            $height = ((int) $height + 15);
             $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px;'></div>";
         }
     }

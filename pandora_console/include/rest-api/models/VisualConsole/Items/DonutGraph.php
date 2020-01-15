@@ -154,21 +154,11 @@ final class DonutGraph extends Item
             \metaconsole_restore_db();
         }
 
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
+
         if ($isString === true) {
             $graphData = \get_donut_module_data($moduleId);
-
-            $width = (int) $data['width'];
-            $height = (int) $data['height'];
-
-            // Default width.
-            if ($width <= 0) {
-                $width = 300;
-            }
-
-            // Default height.
-            if ($height <= 0) {
-                $height = 300;
-            }
 
             $data['html'] = \d3_donut_graph(
                 (int) $data['id'],
@@ -183,7 +173,8 @@ final class DonutGraph extends Item
                 $src = '../../'.$src;
             }
 
-            $data['html'] = '<img src="'.$src.'">';
+            $style = 'width:'.$width.'px; height:'.$height.'px;';
+            $data['html'] = '<img src="'.$src.'" style="'.$style.'">';
         }
 
         return $data;
@@ -201,6 +192,9 @@ final class DonutGraph extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 
@@ -265,6 +259,33 @@ final class DonutGraph extends Item
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 100;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 100;
+        }
+
+        return $values;
     }
 
 

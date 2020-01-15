@@ -3896,7 +3896,7 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false)
+function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false, $ttl=1)
 {
     global $config;
     global $graphic_type;
@@ -3972,7 +3972,7 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
     $out = flot_slicesbar_graph(
         $data,
         $period,
-        100,
+        $width,
         $height,
         $full_legend,
         $colors,
@@ -3985,7 +3985,8 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
         $id_agent,
         [],
         true,
-        1
+        $ttl,
+        true
     );
 
     if ($return) {

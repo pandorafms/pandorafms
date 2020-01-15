@@ -78,7 +78,9 @@ class View extends \HTML
             ],
         ];
 
+        $activetabs = 2;
         if ($type === LABEL) {
+            $activetabs = 0;
             $tabs = [
                 [
                     'name' => __('Label settings'),
@@ -92,9 +94,25 @@ class View extends \HTML
                     'img'  => 'pencil.png',
                 ],
             ];
-        } else if ($type === LINE_ITEM || $type === BOX_ITEM) {
+        } else if ($type === LINE_ITEM) {
+            $activetabs = 0;
             $tabs = [
                 [
+                    'name' => __('Specific settings'),
+                    'id'   => 'tab-specific',
+                    'href' => $url.'&tabSelected=specific',
+                    'img'  => 'event_responses_col.png',
+                ],
+            ];
+        } else if ($type === BOX_ITEM) {
+            $activetabs = 1;
+            $tabs = [
+                [
+                    'name' => __('General settings'),
+                    'id'   => 'tab-general',
+                    'href' => $url.'&tabSelected=general',
+                    'img'  => 'pencil.png',
+                ],[
                     'name' => __('Specific settings'),
                     'id'   => 'tab-specific',
                     'href' => $url.'&tabSelected=specific',
@@ -161,11 +179,16 @@ class View extends \HTML
                                     theme_advanced_buttons2: "",
                                     theme_advanced_buttons3: "",
                                     theme_advanced_statusbar_location: "none",
-                                    body_class: "tinyMCEBody"
+                                    body_class: "tinyMCEBody",
+                                    forced_root_block : false,
+                                    force_p_newlines : false,
+                                    force_br_newlines : true,
+                                    convert_newlines_to_brs : false,
+                                    remove_linebreaks : true,
                                 });
                             }
                         },
-                        active: 2
+                        active: '.$activetabs.'
                     });';
         $js .= '});';
         $js .= '</script>';
@@ -214,8 +237,6 @@ class View extends \HTML
             $values = $item->toArray();
         } else {
             $values['type'] = $type;
-            $values['isLinkEnabled'] = true;
-            $values['isOnTop'] = true;
         }
 
         $values['tabSelected'] = $tabSelected;
@@ -250,8 +271,8 @@ class View extends \HTML
         global $config;
         // Inserted data in new item.
         $vCId = \get_parameter('vCId', 0);
-        $type = get_parameter('type', null);
-        $itemId = (int) get_parameter('itemId', 0);
+        $type = \get_parameter('type', null);
+        $itemId = (int) \get_parameter('itemId', 0);
 
         // Type.
         $data['type'] = $type;
@@ -262,31 +283,45 @@ class View extends \HTML
 
         // Page general for each item.
         $tabGeneral = (bool) \get_parameter('tabGeneral', false);
-        $data['width'] = \get_parameter('width');
-        $data['height'] = \get_parameter('height');
-        $data['x'] = \get_parameter('x');
-        $data['y'] = \get_parameter('y');
-
         if ($tabGeneral === true) {
+            // Size.
+            $data['width'] = \get_parameter('width');
+            $data['height'] = \get_parameter('height');
+
+            // Position.
+            $data['x'] = \get_parameter('x');
+            $data['y'] = \get_parameter('y');
+
+            // Enable link.
             $data['isLinkEnabled'] = \get_parameter_switch('isLinkEnabled');
+
+            // Show on top.
             $data['isOnTop'] = \get_parameter_switch('isOnTop');
+
+            // Parent.
+            $data['parentId'] = \get_parameter('parentId');
+
+            // ACL.
+            $data['aclGroupId'] = \get_parameter('aclGroupId');
+
+            // Cache.
+            $data['cacheExpiration_select'] = \get_parameter(
+                'cacheExpiration_select'
+            );
+            $data['cacheExpiration_text'] = \get_parameter(
+                'cacheExpiration_text'
+            );
+            $data['cacheExpiration'] = \get_parameter('cacheExpiration');
+            $data['cacheExpiration_units'] = \get_parameter(
+                'cacheExpiration_units'
+            );
         } else {
-            if ($itemId === 0) {
-                $data['isLinkEnabled'] = true;
-                $data['isOnTop'] = true;
+            // Only Create, settings default values if not enter tab general.
+            if ($itemId === 0 && $type != LINE_ITEM) {
+                $class = VisualConsole::getItemClass((int) $type);
+                $data = $class::getDefaultGeneralValues($data);
             }
         }
-
-        $data['parentId'] = \get_parameter('parentId');
-        $data['aclGroupId'] = \get_parameter('aclGroupId');
-        $data['cacheExpiration_select'] = \get_parameter(
-            'cacheExpiration_select'
-        );
-        $data['cacheExpiration_text'] = \get_parameter('cacheExpiration_text');
-        $data['cacheExpiration'] = \get_parameter('cacheExpiration');
-        $data['cacheExpiration_units'] = \get_parameter(
-            'cacheExpiration_units'
-        );
 
         // Linked other VC.
         $data['linkedLayoutId'] = \get_parameter(
@@ -329,6 +364,7 @@ class View extends \HTML
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['customGraphId'] = \get_parameter('customGraphId');
                 $data['graphType'] = \get_parameter('graphType');
+                $data['showLegend'] = \get_parameter_switch('showLegend');
             break;
 
             case SIMPLE_VALUE:
@@ -346,7 +382,6 @@ class View extends \HTML
             case CIRCULAR_PROGRESS_BAR:
             case CIRCULAR_INTERIOR_PROGRESS_BAR:
                 $data['percentileType'] = \get_parameter('percentileType');
-                $data['width'] = \get_parameter('width');
                 $data['minValue'] = \get_parameter('minValue');
                 $data['maxValue'] = \get_parameter('maxValue');
                 $data['valueType'] = \get_parameter('valueType');
@@ -379,6 +414,11 @@ class View extends \HTML
                 $data['borderColor'] = \get_parameter('borderColor');
                 $data['borderWidth'] = \get_parameter('borderWidth');
                 $data['isOnTop'] = \get_parameter_switch('isOnTop');
+                // Insert line default position ball end.
+                if ($itemId === 0) {
+                    $data['height'] = 100;
+                    $data['width'] = 100;
+                }
             break;
 
             case AUTO_SLA_GRAPH:

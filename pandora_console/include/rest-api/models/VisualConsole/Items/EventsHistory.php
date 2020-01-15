@@ -102,12 +102,6 @@ final class EventsHistory extends Item
             throw new \InvalidArgumentException('missing agent Id');
         }
 
-        // Default size.
-        if ($data['width'] == 0 || $data['height'] == 0) {
-            $data['width'] = 500;
-            $data['height'] = 50;
-        }
-
         // Use the same HTML output as the old VC.
         $html = \graph_graphic_moduleevents(
             $agentId,
@@ -116,7 +110,8 @@ final class EventsHistory extends Item
             (int) $data['height'],
             static::extractMaxTime($data),
             '',
-            true
+            true,
+            2
         );
 
         $data['html'] = $html;
@@ -167,6 +162,9 @@ final class EventsHistory extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 
@@ -240,6 +238,33 @@ final class EventsHistory extends Item
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 500;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 70;
+        }
+
+        return $values;
     }
 
 

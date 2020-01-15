@@ -140,6 +140,9 @@ final class Icon extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 

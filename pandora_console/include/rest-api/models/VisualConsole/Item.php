@@ -355,10 +355,7 @@ class Item extends CachedModel
      */
     private static function extractLabel(array $data)
     {
-        return static::notEmptyStringOr(
-            static::issetInArray($data, ['label']),
-            null
-        );
+        return static::issetInArray($data, ['label']);
     }
 
 
@@ -406,29 +403,6 @@ class Item extends CachedModel
                     'id_agente',
                     'idAgent',
                     'idAgente',
-                ]
-            ),
-            null
-        );
-    }
-
-
-    /**
-     * Extract a custom id graph value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return integer Valid identifier of an agent.
-     */
-    private static function extractIdCustomGraph(array $data)
-    {
-        return static::parseIntOr(
-            static::issetInArray(
-                $data,
-                [
-                    'id_custom_graph',
-                    'idCustomGraph',
-                    'customGraphId',
                 ]
             ),
             null
@@ -1294,12 +1268,12 @@ class Item extends CachedModel
         $result = [];
 
         $id = static::getId($data);
-        if ($id) {
+        if (isset($id) === true) {
             $result['id'] = $id;
         }
 
         $id_layout = static::getIdLayout($data);
-        if ($id_layout) {
+        if (isset($id_layout) === true) {
             $result['id_layout'] = $id_layout;
         }
 
@@ -1334,6 +1308,7 @@ class Item extends CachedModel
             $result['label'] = $label;
         }
 
+        // TODO change.
         $image = static::getImageSrc($data);
         if ($image !== null) {
             $result['image'] = $image;
@@ -1347,6 +1322,7 @@ class Item extends CachedModel
             $result['type'] = $type;
         }
 
+        // TODO change.
         $period = static::parseIntOr(
             static::issetInArray($data, ['period', 'maxTime']),
             null
@@ -1407,19 +1383,10 @@ class Item extends CachedModel
             $result['id_group'] = $id_group;
         }
 
-        $id_custom_graph = static::extractIdCustomGraph($data);
-        if ($id_custom_graph !== null) {
-            $result['id_custom_graph'] = $id_custom_graph;
-        }
-
+        // TODO change.
         $border_width = static::getBorderWidth($data);
         if ($border_width !== null) {
             $result['border_width'] = $border_width;
-        }
-
-        $type_graph = static::getTypeGraph($data);
-        if ($type_graph !== null) {
-            $result['type_graph'] = $type_graph;
         }
 
         $label_position = static::notEmptyStringOr(
@@ -1430,25 +1397,16 @@ class Item extends CachedModel
             $result['label_position'] = $label_position;
         }
 
+        // TODO change.
         $border_color = static::getBorderColor($data);
         if ($border_color !== null) {
             $result['border_color'] = $border_color;
         }
 
+        // TODO change.
         $fill_color = static::getFillColor($data);
         if ($fill_color !== null) {
             $result['fill_color'] = $fill_color;
-        }
-
-        $show_statistics = static::issetInArray(
-            $data,
-            [
-                'showStatistics',
-                'show_statistics',
-            ]
-        );
-        if ($show_statistics !== null) {
-            $result['show_statistics'] = static::parseBool($show_statistics);
         }
 
         $linked_layout_node_id = static::parseIntOr(
@@ -1541,6 +1499,7 @@ class Item extends CachedModel
             $result['show_on_top'] = static::parseBool($show_on_top);
         }
 
+        // TODO change.
         $show_last_value = static::notEmptyStringOr(
             static::issetInArray($data, ['showLastValueTooltip']),
             null
@@ -1680,29 +1639,6 @@ class Item extends CachedModel
     {
         return static::parseIntOr(
             static::issetInArray($data, ['border_width', 'borderWidth']),
-            null
-        );
-    }
-
-
-    /**
-     * Extract a type graph value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
-     */
-    private static function getTypeGraph(array $data)
-    {
-        return static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'typeGraph',
-                    'type_graph',
-                    'graphType',
-                ]
-            ),
             null
         );
     }
@@ -2122,6 +2058,44 @@ class Item extends CachedModel
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Default values.
+        if (isset($values['x']) === false) {
+            $values['x'] = 0;
+        }
+
+        if (isset($values['y']) === false) {
+            $values['y'] = 0;
+        }
+
+        if (isset($values['parentId']) === false) {
+            $values['parentId'] = 0;
+        }
+
+        if (isset($values['aclGroupId']) === false) {
+            $values['aclGroupId'] = 0;
+        }
+
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = true;
+        }
+
+        if (isset($values['isOnTop']) === false) {
+            $values['isOnTop'] = false;
+        }
+
+        return $values;
     }
 
 

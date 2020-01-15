@@ -35,6 +35,28 @@ final class Group extends Item
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $show_statistics = static::extractShowStatistics($data);
+        if ($show_statistics !== null) {
+            $return['show_statistics'] = static::parseBool($show_statistics);
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -458,6 +480,9 @@ final class Group extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 

@@ -36,6 +36,80 @@ final class ModuleGraph extends Item
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $type_graph = static::getTypeGraph($data);
+        if ($type_graph !== null) {
+            $return['type_graph'] = $type_graph;
+        }
+
+        $show_legend = static::extractShowLegend($data);
+
+        if ($show_legend !== null) {
+            $return['show_statistics'] = static::parseBool($show_legend);
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Extract a custom id graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of an agent.
+     */
+    private static function extractIdCustomGraph(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'id_custom_graph',
+                    'idCustomGraph',
+                    'customGraphId',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a type graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
+     */
+    private static function getTypeGraph(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'typeGraph',
+                    'type_graph',
+                    'graphType',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -50,6 +124,7 @@ final class ModuleGraph extends Item
         $return['type'] = MODULE_GRAPH;
         $return['backgroundType'] = static::extractBackgroundType($data);
         $return['period'] = static::extractPeriod($data);
+        $return['showLegend'] = static::extractShowLegend($data);
 
         $customGraphId = static::extractCustomGraphId($data);
 
@@ -68,7 +143,8 @@ final class ModuleGraph extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string 'transparent', 'white' or 'black'. 'transparent' by default.
+     * @return string 'transparent', 'white' or 'black'.
+     * 'transparent' by default.
      */
     private static function extractBackgroundType(array $data): string
     {
@@ -98,6 +174,21 @@ final class ModuleGraph extends Item
         return static::parseIntOr(
             static::issetInArray($data, ['period']),
             null
+        );
+    }
+
+
+    /**
+     * Extract the "show Legend" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean If the statistics should be shown or not.
+     */
+    private static function extractShowLegend(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['showLegend', 'show_statistics'])
         );
     }
 
@@ -172,6 +263,7 @@ final class ModuleGraph extends Item
 
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
+        $showLegend = static::extractShowLegend($data);
         $customGraphId = static::extractCustomGraphId($data);
         $graphType = static::extractGraphType($data);
         $linkedModule = static::extractLinkedModule($data);
@@ -208,14 +300,6 @@ final class ModuleGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
 
-        if ($width === 0) {
-            $width = 440;
-        }
-
-        if ($height === 0) {
-            $height = 220;
-        }
-
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
@@ -231,6 +315,8 @@ final class ModuleGraph extends Item
                 'vconsole'           => true,
                 'backgroundColor'    => $backgroundType,
                 'return_img_base_64' => true,
+                'show_legend'        => $showLegend,
+                'show_title'         => false,
             ];
 
             $paramsCombined = [
@@ -269,6 +355,8 @@ final class ModuleGraph extends Item
                 'type_graph'         => $graphType,
                 'vconsole'           => true,
                 'return_img_base_64' => true,
+                'show_legend'        => $showLegend,
+                'show_title'         => false,
             ];
 
             $imgbase64 = 'data:image/jpg;base64,';
@@ -323,6 +411,9 @@ final class ModuleGraph extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 
@@ -466,6 +557,17 @@ final class ModuleGraph extends Item
                 ],
             ];
 
+            // Show legend.
+            $inputs[] = [
+                'label'     => __('Show legend'),
+                'arguments' => [
+                    'name'  => 'showLegend',
+                    'id'    => 'showLegend',
+                    'type'  => 'switch',
+                    'value' => $values['showLegend'],
+                ],
+            ];
+
             // Inputs LinkedVisualConsole.
             $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
                 $values
@@ -476,6 +578,33 @@ final class ModuleGraph extends Item
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 100;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 100;
+        }
+
+        return $values;
     }
 
 

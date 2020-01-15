@@ -252,6 +252,9 @@ final class StaticGraph extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 
@@ -259,6 +262,11 @@ final class StaticGraph extends Item
             throw new Exception(
                 '[StaticGraph]::getFormInputs parent class return is not an array'
             );
+        }
+
+        // Default values.
+        if (isset($values['imageSrc']) === false) {
+            $values['imageSrc'] = 'network';
         }
 
         if ($values['tabSelected'] === 'specific') {

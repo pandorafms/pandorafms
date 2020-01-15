@@ -190,12 +190,12 @@ final class Percentile extends Item
 
         $color = static::encodeColor($data);
         if ($border_color !== null) {
-            $result['border_color'] = $color;
+            $return['border_color'] = $color;
         }
 
         $labelColor = static::encodeLabelColor($data);
         if ($labelColor !== null) {
-            $result['fill_color'] = $labelColor;
+            $return['fill_color'] = $labelColor;
         }
 
         return $return;
@@ -435,6 +435,9 @@ final class Percentile extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 
@@ -442,6 +445,19 @@ final class Percentile extends Item
             throw new Exception(
                 '[Percentile]::getFormInputs parent class return is not an array'
             );
+        }
+
+        // Default specific values.
+        if (isset($values['color']) === false) {
+            $values['color'] = '#000000';
+        }
+
+        if (isset($values['labelColor']) === false) {
+            $values['labelColor'] = '#bcbcbc';
+        }
+
+        if (isset($values['percentileType']) === false) {
+            $values['percentileType'] = 'circular-progress-bar';
         }
 
         if ($values['tabSelected'] === 'specific') {
@@ -464,19 +480,6 @@ final class Percentile extends Item
                     'selected' => $values['percentileType'],
                     'return'   => true,
                     'sort'     => false,
-                ],
-            ];
-
-            // TODO: QUIT WIDTH FORM GENERAL PAGE.
-            // Diameter.
-            $diameter = (isset($values['width']) === true) ? $values['width'] : 200;
-            $inputs[] = [
-                'label'     => __('Diameter'),
-                'arguments' => [
-                    'name'   => 'width',
-                    'type'   => 'number',
-                    'value'  => $diameter,
-                    'return' => true,
                 ],
             ];
 
@@ -588,6 +591,33 @@ final class Percentile extends Item
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 100;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 100;
+        }
+
+        return $values;
     }
 
 

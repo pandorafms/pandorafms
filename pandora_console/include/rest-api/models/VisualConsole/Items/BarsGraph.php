@@ -28,6 +28,55 @@ final class BarsGraph extends Item
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $id_custom_graph = static::extractIdCustomGraph($data);
+        if ($id_custom_graph !== null) {
+            $return['id_custom_graph'] = $id_custom_graph;
+        }
+
+        $type_graph = static::getTypeGraph($data);
+        if ($type_graph !== null) {
+            $return['type_graph'] = $type_graph;
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Extract a graph type value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string 'line' or 'area'. 'line' by default.
+     */
+    private static function extractGraphType(array $data): string
+    {
+        $value = static::issetInArray($data, ['graphType', 'type_graph']);
+
+        switch ($value) {
+            case 'line':
+            case 'area':
+            return $value;
+
+            default:
+            return 'line';
+        }
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -349,6 +398,9 @@ final class BarsGraph extends Item
      */
     public static function getFormInputs(array $values): array
     {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
         // Retrieve global - common inputs.
         $inputs = Item::getFormInputs($values);
 
@@ -441,6 +493,33 @@ final class BarsGraph extends Item
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 250;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 250;
+        }
+
+        return $values;
     }
 
 

@@ -93,13 +93,101 @@ final class Box extends Item
      */
     public static function getFormInputs(array $values): array
     {
-        // Retrieve global - common inputs.
-        $inputs = Item::getFormInputs($values);
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
 
-        if (is_array($inputs) !== true) {
-            throw new Exception(
-                '[Box]::getFormInputs parent class return is not an array'
-            );
+        if ($values['tabSelected'] === 'general') {
+            $inputs[] = [
+                'arguments' => [
+                    'type'  => 'hidden',
+                    'name'  => 'tabGeneral',
+                    'value' => true,
+                ],
+            ];
+
+            // Size.
+            $inputs[] = [
+                'block_id'      => 'size-item',
+                'class'         => 'flex-row flex-start w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label' => __('Size'),
+                    ],
+                    [
+                        'label'     => __('width'),
+                        'arguments' => [
+                            'name'   => 'width',
+                            'type'   => 'number',
+                            'value'  => $values['width'],
+                            'return' => true,
+                        ],
+                    ],
+                    [
+                        'label'     => __('height'),
+                        'arguments' => [
+                            'name'   => 'height',
+                            'type'   => 'number',
+                            'value'  => $values['height'],
+                            'return' => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Position.
+            $inputs[] = [
+                'block_id'      => 'position-item',
+                'class'         => 'flex-row flex-start w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label' => __('Position'),
+                    ],
+                    [
+                        'label'     => __('X'),
+                        'arguments' => [
+                            'name'   => 'x',
+                            'type'   => 'number',
+                            'value'  => $values['x'],
+                            'return' => true,
+                        ],
+                    ],
+                    [
+                        'label'     => __('Y'),
+                        'arguments' => [
+                            'name'   => 'y',
+                            'type'   => 'number',
+                            'value'  => $values['y'],
+                            'return' => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Show on top.
+            $inputs[] = [
+                'label'     => __('Show on top'),
+                'arguments' => [
+                    'name'  => 'isOnTop',
+                    'id'    => 'isOnTop',
+                    'type'  => 'switch',
+                    'value' => $values['isOnTop'],
+                ],
+            ];
+        }
+
+        // Default specific values.
+        if (isset($values['borderColor']) === false) {
+            $values['borderColor'] = '#000000';
+        }
+
+        if (isset($values['borderWidth']) === false) {
+            $values['borderWidth'] = 1;
+        }
+
+        if (isset($values['fillColor']) === false) {
+            $values['fillColor'] = '#ffffff';
         }
 
         if ($values['tabSelected'] === 'specific') {
@@ -140,6 +228,33 @@ final class Box extends Item
         }
 
         return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 100;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 100;
+        }
+
+        return $values;
     }
 
 

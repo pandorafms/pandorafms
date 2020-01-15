@@ -75,12 +75,6 @@ if (isset($_GET['server'])) {
                 __('Exec Server'),
                 html_print_checkbox('exec_proxy', 1, $row['exec_proxy'], true),
             ];
-            if ($row['exec_proxy']) {
-                $table->data[] = [
-                    __('Check Exec Server'),
-                    '<a id="check_exec_server">'.html_print_image('images/dot_red.disabled.png', true).'</a>'.'<div id="check_error_message"></div>',
-                ];
-            }
 
             $port_number = empty($row['port']) ? '' : $row['port'];
 
@@ -88,6 +82,13 @@ if (isset($_GET['server'])) {
                 __('Port'),
                 html_print_input_text('port', $port_number, '', 10, 0, true).ui_print_help_tip(__('Leave blank to use SSH default port (22)'), true),
             ];
+
+            if ($row['exec_proxy']) {
+                $table->data[] = [
+                    __('Check Exec Server'),
+                    '<a id="check_exec_server">'.html_print_image('images/dot_red.disabled.png', true).'</a>'.'<div id="check_error_message"></div>',
+                ];
+            }
         }
     }
 

@@ -2503,12 +2503,13 @@ function get_user_dashboards($id_user)
 /**
  * Get all the possible periods in seconds.
  *
- * @param bool Flag to show or not custom fist option
- * @param bool Show the periods by default if it is empty
+ * @param boolean $custom       Flag to show or not custom fist option
+ * @param boolean $show_default Show the periods by default if it is empty
+ * @param boolean $allow_zero   Allow the use of the value zero.
  *
- * @return The possible periods in an associative array.
+ * @return array The possible periods in an associative array.
  */
-function get_periods($custom=true, $show_default=true)
+function get_periods($custom=true, $show_default=true, $allow_zero=false)
 {
     global $config;
 
@@ -2520,6 +2521,10 @@ function get_periods($custom=true, $show_default=true)
 
     if (empty($config['interval_values'])) {
         if ($show_default) {
+            if ($allow_zero === true) {
+                $periods[0] = sprintf(__('%s seconds'), '0');
+            }
+
             $periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
             $periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
             $periods[SECONDS_1HOUR] = __('1 hour');

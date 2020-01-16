@@ -833,8 +833,9 @@ function post_process_select_events(name) {
  * This function initialize the values of the control
  *
  * @param name string with the name of the select for time
+ * @param allow_zero bool Allow the use of the value zero
  */
-function period_select_init(name) {
+function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").hide();
   $("#" + name + "_default").show();
@@ -849,7 +850,7 @@ function period_select_init(name) {
     } else {
       $("#" + name + "_select option:eq(1)").prop("selected", true);
     }
-  } else if ($("#text-" + name + "_text").val() == 0) {
+  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
     $("#" + name + "_manual").show();
     $("#" + name + "_default").hide();

@@ -214,8 +214,8 @@ function show_massive_response_dialog(
             $("#button-submit_event_response").show();
           },
           close: function() {
+            $("#checkbox-all_validate_box").prop("checked", false);
             $(".chk_val").prop("checked", false);
-            $("#event_response_command_window").dialog("close");
           },
           width: response["modal_width"],
           height: response["modal_height"]

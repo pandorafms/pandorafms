@@ -1099,7 +1099,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`id_name` varchar(600) NOT NULL,
 	`id_group` int(10) NOT NULL default 0,
 	`event_type` text NOT NULL,
-	`severity` int(10) NOT NULL default -1,
+	`severity` text NOT NULL,
 	`status` int(10) NOT NULL default -1,
 	`search` TEXT,
 	`text_agent` TEXT,
@@ -2189,6 +2189,7 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
 	`generated` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
+	`id_group_map` INT(10) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

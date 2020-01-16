@@ -114,6 +114,7 @@ export default class Group extends Item<GroupProps> {
       element.style.backgroundPosition = "center";
     } else if (this.props.showStatistics && this.props.html != null) {
       // Stats table.
+      element.style.backgroundImage = "none";
       element.innerHTML = this.props.html;
     }
 
@@ -134,6 +135,7 @@ export default class Group extends Item<GroupProps> {
       element.innerHTML = "";
     } else if (this.props.showStatistics && this.props.html != null) {
       // Stats table.
+      element.style.backgroundImage = "none";
       element.innerHTML = this.props.html;
     }
   }

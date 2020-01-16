@@ -13,6 +13,25 @@ final class Box extends Item
 
 
     /**
+     * Extract the "Fill transparent" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed If the statistics should be shown or not.
+     */
+    private static function getFillTransparent(array $data)
+    {
+        return static::issetInArray(
+            $data,
+            [
+                'fillTransparent',
+                'show_statistics',
+            ]
+        );
+    }
+
+
+    /**
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.
@@ -40,7 +59,7 @@ final class Box extends Item
             $return['fill_color'] = $fill_color;
         }
 
-        $fill_transparent = static::extractFillTransparent($data);
+        $fill_transparent = static::getFillTransparent($data);
         if ($fill_transparent !== null) {
             $return['show_statistics'] = static::parseBool($fill_transparent);
         }

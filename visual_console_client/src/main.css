@@ -160,7 +160,7 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .div-ranges-input-group > div {
@@ -193,7 +193,7 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   height: 70px;
 }
@@ -440,4 +440,69 @@ li#li-timeZone-item > select:not(:first-child) {
 
 .discovery.modal li#div-textarea-label table tbody td.mceIframeContainer {
   background-color: #ededed;
+}
+
+/*style item group show statistic*/
+.group-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+.group-container .group-item-title {
+  width: 100%;
+  height: 30%;
+  background-color: #9d9ea0;
+  color: black;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.group-container .group-item-info {
+  width: 100%;
+  height: 70%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 2%;
+  align-items: center;
+}
+
+.group-container .group-item-info .group-item-info-container {
+  flex: 1 1 100px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 2px;
+  height: 100%;
+  max-height: 50px;
+  margin: 5px;
+}
+
+.group-container .group-item-info .group-item-info-container .value-style {
+  flex: 1;
+  color: #fff;
+  font-size: 100%;
+  padding: 5px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.group-container .group-item-info .group-item-info-container .name-style {
+  flex: 1;
+  background-color: white;
+  color: black;
+  font-size: 100%;
+  padding: 5px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }

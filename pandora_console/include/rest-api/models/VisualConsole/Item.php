@@ -280,7 +280,14 @@ class Item extends CachedModel
     private static function extractAclGroupId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['id_group', 'aclGroupId', 'idGroup']),
+            static::issetInArray(
+                $data,
+                [
+                    'element_group',
+                    'aclGroupId',
+                    'elementGroup',
+                ]
+            ),
             null
         );
     }
@@ -1378,9 +1385,9 @@ class Item extends CachedModel
             $result['id_metaconsole'] = $id_metaconsole;
         }
 
-        $id_group = static::extractAclGroupId($data);
-        if ($id_group !== null) {
-            $result['id_group'] = $id_group;
+        $element_group = static::extractAclGroupId($data);
+        if ($element_group !== null) {
+            $result['element_group'] = $element_group;
         }
 
         $label_position = static::notEmptyStringOr(
@@ -2071,6 +2078,8 @@ class Item extends CachedModel
      */
     public function getDefaultGeneralValues(array $values): array
     {
+        global $config;
+
         // Default values.
         if (isset($values['x']) === false) {
             $values['x'] = 0;
@@ -2094,6 +2103,10 @@ class Item extends CachedModel
 
         if (isset($values['isOnTop']) === false) {
             $values['isOnTop'] = false;
+        }
+
+        if (isset($values['cacheExpiration']) === false) {
+            $values['cacheExpiration'] = $config['vc_default_cache_expiration'];
         }
 
         return $values;

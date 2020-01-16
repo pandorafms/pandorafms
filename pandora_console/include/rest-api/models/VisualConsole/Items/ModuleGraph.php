@@ -36,6 +36,19 @@ final class ModuleGraph extends Item
 
 
     /**
+     * Extract the "show Legend" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed If the statistics should be shown or not.
+     */
+    private static function getShowLegend(array $data)
+    {
+        return static::issetInArray($data, ['showLegend', 'show_statistics']);
+    }
+
+
+    /**
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.
@@ -53,7 +66,7 @@ final class ModuleGraph extends Item
             $return['type_graph'] = $type_graph;
         }
 
-        $show_legend = static::extractShowLegend($data);
+        $show_legend = static::getShowLegend($data);
         if ($show_legend !== null) {
             $return['show_statistics'] = static::parseBool($show_legend);
         }

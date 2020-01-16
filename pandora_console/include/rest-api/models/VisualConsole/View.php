@@ -402,6 +402,7 @@ class View extends \HTML
                     'showStatistics',
                     0
                 );
+                $data['groupId'] = \get_parameter('groupId');
             break;
 
             case BOX_ITEM:

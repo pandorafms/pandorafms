@@ -45,3 +45,22 @@ switch ($wizard_section) {
 */
 
 require 'agent_wizard.'.$wizard_section.'.php';
+
+?>
+<script language="javascript" type="text/javascript">
+
+function satellite_remote_warn(id_satellite, remote)
+{
+    if(!remote)
+    {
+        $('#server_to_exec option[value='+id_satellite+']').prop('disabled', true);
+        $('#satellite_remote_tip').removeAttr("style").show();
+    }
+    else
+    {
+        $('#satellite_remote_tip').removeAttr("style").hide();
+    }
+
+}
+
+</script>

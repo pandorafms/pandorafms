@@ -734,20 +734,5 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
         "json");
 }
 
-
-function satellite_remote_warn(id_satellite, remote)
-{
-    if(!remote)
-    {
-        $('#server_to_exec option[value='+id_satellite+']').prop('disabled', true);
-        $('#satellite_remote_tip').removeAttr("style").show();
-    }
-    else
-    {
-        $('#satellite_remote_tip').removeAttr("style").hide();
-    }
-
-}
-
 /* ]]> */
 </script>

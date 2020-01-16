@@ -471,7 +471,7 @@ li#li-timeZone-item > select:not(:first-child) {
 }
 
 .group-container .group-item-info .group-item-info-container {
-  flex: 1 1 100px;
+  flex: 1 1 80px;
   display: flex;
   flex-direction: row;
   border-radius: 2px;

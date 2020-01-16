@@ -64,17 +64,17 @@ class View extends \HTML
                 'name' => __('Label settings'),
                 'id'   => 'tab-label',
                 'href' => $url.'&tabSelected=label',
-                'img'  => 'zoom.png',
+                'img'  => 'label-settings.png',
             ],[
                 'name' => __('General settings'),
                 'id'   => 'tab-general',
                 'href' => $url.'&tabSelected=general',
-                'img'  => 'pencil.png',
+                'img'  => 'general-settings.png',
             ],[
                 'name' => __('Specific settings'),
                 'id'   => 'tab-specific',
                 'href' => $url.'&tabSelected=specific',
-                'img'  => 'event_responses_col.png',
+                'img'  => 'specific-settings.png',
             ],
         ];
 
@@ -278,8 +278,11 @@ class View extends \HTML
         $data['type'] = $type;
 
         // Page Label for each item.
-        $data['label'] = \get_parameter('label');
-        $data['labelPosition'] = \get_parameter('labelPosition');
+        $tabLabel = (bool) \get_parameter('tabLabel', false);
+        if ($tabLabel === true) {
+            $data['label'] = \get_parameter('label');
+            $data['labelPosition'] = \get_parameter('labelPosition');
+        }
 
         // Page general for each item.
         $tabGeneral = (bool) \get_parameter('tabGeneral', false);

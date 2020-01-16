@@ -583,6 +583,26 @@ export default class Percentile extends Item<PercentileProps> {
     return element;
   }
 
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (this.meta.isBeingResized === false) {
+      this.resizeElement(this.props.width, this.props.height);
+    }
+    element.innerHTML = this.createDomElement().innerHTML;
+  }
+
+  protected resizeElement(width: number, height: number): void {
+    if (this.props.percentileType === "progress-bar") {
+      super.resizeElement(width, height);
+    } else {
+      console.log("entra por donde ancho y alto es lo mismo");
+      super.resizeElement(width, width);
+    }
+  }
+
   private getProgress(): number {
     const minValue = this.props.minValue || 0;
     const maxValue = this.props.maxValue || 100;

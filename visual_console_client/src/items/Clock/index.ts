@@ -338,9 +338,21 @@ export default class Clock extends Item<ClockProps> {
    * @override Item.updateDomElement
    */
   protected updateDomElement(element: HTMLElement): void {
+    // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
+    const { width: newWidth, height: newHeight } = this.getElementSize(
+      this.props.width,
+      this.props.height
+    );
+
     if (this.props.clockType === "digital") {
+      if (this.meta.isBeingResized === false) {
+        super.resizeElement(this.props.width, this.props.height);
+      }
       element.classList.replace("analogic-clock", "digital-clock");
     } else {
+      if (this.meta.isBeingResized === false) {
+        super.resizeElement(newWidth, newHeight);
+      }
       element.classList.replace("digital-clock", "analogic-clock");
     }
     element.innerHTML = this.createDomElement().innerHTML;
@@ -364,16 +376,20 @@ export default class Clock extends Item<ClockProps> {
    * @param height
    */
   protected resizeElement(width: number, height: number): void {
+    // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
     const { width: newWidth, height: newHeight } = this.getElementSize(
       width,
       height
-    ); // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
-    super.resizeElement(newWidth, height);
+    );
+
     // Re-render the item to force it calculate a new font size.
-    //if (this.props.clockType === "digital") {
-    // Replace the old element with the updated date.
-    this.childElementRef.innerHTML = this.createClock().innerHTML;
-    //}
+    if (this.props.clockType === "digital") {
+      super.resizeElement(width, height);
+      // Replace the old element with the updated date.
+      //this.childElementRef.innerHTML = this.createClock().innerHTML;
+    } else {
+      super.resizeElement(newWidth, newHeight);
+    }
   }
 
   /**
@@ -778,9 +794,14 @@ export default class Clock extends Item<ClockProps> {
           diameter = height;
         }
 
+        let extraHeigth = 0;
+        if (this.props.clockFormat === "datetime") {
+          extraHeigth = height / 8;
+        }
+
         return {
           width: diameter,
-          height: diameter
+          height: diameter + extraHeigth
         };
       }
       case "digital": {

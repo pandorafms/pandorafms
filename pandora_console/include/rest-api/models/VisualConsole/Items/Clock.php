@@ -265,53 +265,6 @@ final class Clock extends Item
         }
 
         if ($values['tabSelected'] === 'specific') {
-            // Clock animation.
-            $fields = [
-                'analogic' => __('Simple analogic'),
-                'digital'  => __('Simple digital'),
-            ];
-
-            $inputs[] = [
-                'label'     => __('Clock animation'),
-                'arguments' => [
-                    'type'     => 'select',
-                    'fields'   => $fields,
-                    'name'     => 'clockType',
-                    'selected' => $values['clockType'],
-                    'return'   => true,
-                    'sort'     => false,
-                ],
-            ];
-
-            // Time format.
-            $fields = [
-                'time'     => __('Only time'),
-                'datetime' => __('Time and date'),
-            ];
-
-            $inputs[] = [
-                'label'     => __('Time format'),
-                'arguments' => [
-                    'type'     => 'select',
-                    'fields'   => $fields,
-                    'name'     => 'clockFormat',
-                    'selected' => $values['clockFormat'],
-                    'return'   => true,
-                    'sort'     => false,
-                ],
-            ];
-
-            // Width.
-            $inputs[] = [
-                'label'     => __('Width'),
-                'arguments' => [
-                    'name'   => 'width',
-                    'type'   => 'number',
-                    'value'  => $values['width'],
-                    'return' => true,
-                ],
-            ];
-
             // Time zone.
             $baseUrl = ui_get_full_url('/', false, false, false);
             $fields = [
@@ -367,6 +320,42 @@ final class Clock extends Item
                             'return'   => true,
                         ],
                     ],
+                ],
+            ];
+
+            // Clock animation.
+            $fields = [
+                'analogic' => __('Simple analogic'),
+                'digital'  => __('Simple digital'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Clock animation'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockType',
+                    'selected' => $values['clockType'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Time format.
+            $fields = [
+                'time'     => __('Only time'),
+                'datetime' => __('Time and date'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Time format'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockFormat',
+                    'selected' => $values['clockFormat'],
+                    'return'   => true,
+                    'sort'     => false,
                 ],
             ];
 

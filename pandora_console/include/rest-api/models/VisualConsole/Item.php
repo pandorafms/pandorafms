@@ -1797,6 +1797,14 @@ class Item extends CachedModel
 
         switch ($values['tabSelected']) {
             case 'label':
+                $inputs[] = [
+                    'arguments' => [
+                        'type'  => 'hidden',
+                        'name'  => 'tabLabel',
+                        'value' => true,
+                    ],
+                ];
+
                 // Label.
                 $inputs[] = ['label' => __('Label')];
 

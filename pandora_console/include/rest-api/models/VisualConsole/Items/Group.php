@@ -304,6 +304,18 @@ final class Group extends Item
                 $groupName,
                 $agentStats
             );
+
+            if (isset($data['width']) === false
+                || (int) $data['width'] === 0
+            ) {
+                $data['width'] = 500;
+            }
+
+            if (isset($data['height']) === false
+                || (int) $data['height'] === 0
+            ) {
+                $data['height'] = 70;
+            }
         } else {
             if (\is_metaconsole()) {
                 $groupFilter = $groupId;

@@ -617,8 +617,8 @@ li#li-timeZone-item > select:not(:first-child) {
 
 .group-container .group-item-info .group-item-info-container {
   -webkit-box-flex: 1;
-      -ms-flex: 1 1 100px;
-          flex: 1 1 100px;
+      -ms-flex: 1 1 80px;
+          flex: 1 1 80px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

@@ -264,12 +264,21 @@ if ($show_update_action_menu) {
                 $data .= __('Threshold');
             $data .= '</td>';
             $data .= '<td class="datos2">';
-                $data .= html_print_input_text(
+                $data .= html_print_extended_select_for_time(
                     'module_action_threshold_ajax',
                     $action_option['module_action_threshold'],
                     '',
-                    4,
-                    10,
+                    '',
+                    '',
+                    false,
+                    true,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
                     true
                 );
             $data .= '</td>';

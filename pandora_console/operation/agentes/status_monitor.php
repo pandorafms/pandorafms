@@ -1485,7 +1485,8 @@ if (!empty($result)) {
 
             // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
             if (!is_metaconsole()) {
-                $acl_graphs = check_acl($config['id_user'], $row['id_group'], 'RR');
+                $agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+                $acl_graphs = check_acl_one_of_groups($config['id_user'], $agent_groups, 'RR');
             } else {
                 $acl_graphs = true;
             }
@@ -1501,7 +1502,6 @@ if (!empty($result)) {
                     'type'    => $graph_type,
                     'period'  => SECONDS_1DAY,
                     'id'      => $row['id_agente_modulo'],
-                    'label'   => base64_encode($row['module_name']),
                     'refresh' => SECONDS_10MINUTES,
                 ];
 
@@ -1709,7 +1709,9 @@ if (!empty($result)) {
 
     html_print_table($table);
 
-    ui_pagination($count, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    if ($count_modules > $config['block_size']) {
+        ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    }
 } else {
     if ($first_interaction) {
         ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);

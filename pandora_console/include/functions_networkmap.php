@@ -1453,6 +1453,20 @@ function networkmap_delete_nodes($id_map)
 }
 
 
+/**
+ * Delete relations given id_map
+ *
+ * @param  integer $id_map
+ * @return integer result
+ */
+function networkmap_delete_relations($id_map)
+{
+    $result = db_process_sql_delete('trel_item', ['id_map' => $id_map]);
+
+    return $result;
+}
+
+
 function get_networkmaps($id)
 {
     $groups = array_keys(users_get_groups(null, 'IW'));

@@ -1178,12 +1178,17 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
     }
 
     // Minutes
-    for ($i = 0; $i < 60; $i += 5) {
+    for ($i = 0; $i < 60; $i++) {
         $minutes[$i] = $i;
+
+        // If minute is not a multiple of 5, then add style to option in order to hide it from minute select but still is a valid value that input can adopt. We want this in case a value that is not a multiple of 5 is entered in module's data configuration.
+        if (($i % 5) != 0) {
+            $minutes_hidden_options[$i] = 'display: none;';
+        }
     }
 
     // Month days
-    for ($i = 0; $i < 31; $i++) {
+    for ($i = 1; $i <= 31; $i++) {
         $mdays[$i] = $i;
     }
 
@@ -1216,13 +1221,13 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
 
     if ($to) {
         $table->data[0][0] = html_print_select($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled);
+        $table->data[0][1] = html_print_select($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
         $table->data[0][2] = html_print_select($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][3] = html_print_select($months, 'month_to', $month, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][4] = html_print_select($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
     } else {
         $table->data[0][0] = html_print_select($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false, '', $disabled);
-        $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled);
+        $table->data[0][1] = html_print_select($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false, '', $disabled, false, $minutes_hidden_options);
         $table->data[0][2] = html_print_select($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][3] = html_print_select($months, 'month_from', $month, '', __('Any'), '*', true, false, false, '', $disabled);
         $table->data[0][4] = html_print_select($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false, '', $disabled);
@@ -3071,9 +3076,12 @@ function html_print_autocomplete_modules(
         ['style' => 'background: url(images/search_module.png) no-repeat right;']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-    ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 
-    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
+    if (!is_metaconsole()) {
+        ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+    }
+
+    $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);
     ?>
     <script type="text/javascript">
         function escapeHTML (str)

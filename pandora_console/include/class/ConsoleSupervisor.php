@@ -392,13 +392,6 @@ class ConsoleSupervisor
         $this->checkDefaultPassword();
 
         /*
-         * Check if there's an active subscription.
-         *    NOTIF.NEWSLETTER.SUBSCRIPTION
-         */
-
-        $this->checkNewsletterSubscription();
-
-        /*
          * Check if there're new updates.
          *    NOTIF.UPDATEMANAGER.OPENSETUP
          *    NOTIF.UPDATEMANAGER.UPDATE
@@ -608,7 +601,6 @@ class ConsoleSupervisor
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
             case 'NOTIF.SECURITY.DEFAULT_PASSWORD':
-            case 'NOTIF.NEWSLETTER.SUBSCRIPTION':
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
             case 'NOTIF.UPDATEMANAGER.MINOR':
@@ -1996,41 +1988,6 @@ class ConsoleSupervisor
             );
         } else {
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
-        }
-    }
-
-
-    /**
-     * Check if instance is subscribed to newsletter.
-     *
-     * @return void
-     */
-    public function checkNewsletterSubscription()
-    {
-        global $config;
-        $login = get_parameter('login', false);
-
-        // Newsletter advice.
-        $newsletter = db_get_value(
-            'middlename',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
-        if (!$config['disabled_newsletter']
-            && $newsletter != 1
-            && $login === false
-        ) {
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.NEWSLETTER.SUBSCRIPTION',
-                    'title'   => __('Not subscribed to the newsletter'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to subscribe to the newsletter'),
-                    'url'     => 'javascript: force_run_newsletter();',
-                ]
-            );
-        } else {
-            $this->cleanNotifications('NOTIF.NEWSLETTER.SUBSCRIPTION');
         }
     }
 

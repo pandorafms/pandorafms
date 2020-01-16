@@ -190,6 +190,8 @@ function reporting_make_reporting_data(
     $metaconsole_on = is_metaconsole();
     $index_content = 0;
     foreach ($contents as $content) {
+        $content['name'] = io_safe_input($content['name']);
+        $content['description'] = io_safe_input($content['description']);
         if (!empty($content['id_agent_module']) && !empty($content['id_agent'])
             && tags_has_user_acl_tags($config['id_user'])
         ) {
@@ -324,6 +326,17 @@ function reporting_make_reporting_data(
             $items_label['agent_alias'] = agents_get_alias(
                 $content['id_agent']
             );
+
+            // This is for metaconsole. It is an array with modules and server (id node).
+            if (is_array($content['id_agent_module'])) {
+                $modules_server_array = $content['id_agent_module'];
+                $modules_array = [];
+                foreach ($modules_server_array as $value) {
+                    $modules_array[] = $value['module'];
+                }
+
+                $content['id_agent_module'] = $modules_array;
+            }
 
             $modules = agents_get_modules(
                 $agent_value,
@@ -760,7 +773,7 @@ function reporting_make_reporting_data(
                     continue;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'top_n':
@@ -1774,6 +1787,27 @@ function reporting_event_report_group(
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
+
+    if (isset($content['recursion']) && $content['recursion'] == 1 && $content['id_group'] != 0) {
+        $propagate = db_get_value(
+            'propagate',
+            'tgrupo',
+            'id_grupo',
+            $content['id_group']
+        );
+
+        if ($propagate) {
+            $children = groups_get_children($content['id_group']);
+            $_groups = [ $content['id_group'] ];
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    $_groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            $content['id_group'] = $_groups;
+        }
+    }
 
     $data = events_get_agent(
         false,
@@ -4254,14 +4288,7 @@ function reporting_sql_graph(
 
         case 'data':
             $data = [];
-            foreach ($modules as $key => $value) {
-                $data[$value] = modules_get_agentmodule_data(
-                    $value,
-                    $content['period'],
-                    $report['datetime']
-                );
-            }
-
+            $data = db_get_all_rows_sql($content['external_source']);
             $return['chart'] = $data;
         break;
     }
@@ -7578,16 +7605,18 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
-    $module_source = db_get_all_rows_sql(
-        'SELECT id_agent_module
-         FROM tgraph_source
-         WHERE id_graph = '.$content['id_gs']
-    );
+    if ($type_report != 'automatic_graph') {
+        $module_source = db_get_all_rows_sql(
+            'SELECT id_agent_module
+             FROM tgraph_source
+             WHERE id_graph = '.$content['id_gs']
+        );
 
-    if (isset($module_source) && is_array($module_source)) {
-        $modules = [];
-        foreach ($module_source as $key => $value) {
-            $modules[$key] = $value['id_agent_module'];
+        if (isset($module_source) && is_array($module_source)) {
+            $modules = [];
+            foreach ($module_source as $key => $value) {
+                $modules[$key] = $value['id_agent_module'];
+            }
         }
     }
 
@@ -7606,7 +7635,7 @@ function reporting_custom_graph(
     $return['title'] = $content['name'];
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
-    $return['subtitle'] = io_safe_output($graph['name']);
+    $return['subtitle'] = $graph['name'];
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];

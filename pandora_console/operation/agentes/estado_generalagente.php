@@ -317,7 +317,7 @@ $data[1] = ui_progress(
     1.8,
     '#BBB',
     true,
-    floor(($agent['intervalo'] * (100 - $progress) / 100)).' s',
+    ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto']))).' s',
     [
         'page'     => 'operation/agentes/ver_agente',
         'interval' => (100 / $agent['intervalo']),

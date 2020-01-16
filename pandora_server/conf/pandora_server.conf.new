@@ -163,8 +163,10 @@ wmiserver 1
 network_timeout 4
 
 # Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
-
 rcmd_timeout 30
+
+# Remote execution modules, ssh_launcher extra option (PANDORA FMS ENTERPRISE ONLY).
+ssh_launcher /usr/share/pandora_server/util/ssh_launcher.sh
 
 # Server keepalive (in seconds)
 

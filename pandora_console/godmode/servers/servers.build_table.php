@@ -101,6 +101,10 @@ foreach ($servers as $server) {
         $data[2] .= ui_print_help_tip(__('This is a master server'), true);
     }
 
+    if ($server['exec_proxy'] == 1) {
+        $data[2] .= html_print_image('images/star.png', true, ['title' => __('Exec server enabled')]);
+    }
+
     // $data[2] .= '</span> <span style="font-size:8px;"> v' .. '</span>';
     switch ($server['type']) {
         case 'snmp':

@@ -1994,7 +1994,12 @@ function get_snmpwalk(
     if (enterprise_installed()) {
         if ($server_to_exec != 0) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+
+            if (empty($server_data['port'])) {
+                exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            } else {
+                exec('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            }
         } else {
             exec($command_str, $output, $rc);
         }

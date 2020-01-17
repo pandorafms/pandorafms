@@ -1347,7 +1347,7 @@ function config_update_config()
                         $error_update[] = __('CSV divider');
                     }
 
-                    if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', ';'))) {
+                    if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
                         $error_update[] = __('Use data multiplier');
                     }
                 break;

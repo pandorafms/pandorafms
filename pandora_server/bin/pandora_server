@@ -21,6 +21,7 @@ use strict;
 use warnings;
 use POSIX qw(strftime);
 use threads;
+use Digest::MD5 qw(md5_hex);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -574,6 +575,114 @@ sub main() {
 		logger(\%Config, "Warmup mode for events started.", 3);
 		pandora_event (\%Config, "Warmup mode for alerts started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
 		pandora_event (\%Config, "Warmup mode for events started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	}
+
+	# Console Api pass (if not defined)
+	if ( !defined($Config{"console_api_pass"}) ) {
+		$Config{"console_api_pass"} = pandora_get_tconfig_token ($DBH, 'api_password', '');
+
+		if ( $Config{"console_api_pass"} eq '' ) {
+			$Config{"console_api_pass"} = '1234';
+			db_process_update ($DBH, 'tconfig', {'value' => $Config{"console_api_pass"}}, {'token' => 'api_password'});
+		}
+	}
+
+	# Only if console_api_url has not defined
+	if( !defined($Config{"console_api_url"}) ) {
+		my $console_api_url = pandora_get_tconfig_token ($DBH, 'public_url', '');
+
+		# If console_api_url is empty in database
+		if ( $console_api_url eq '' ) {
+			$console_api_url = 'http://localhost/pandora_console/include/api.php';
+			logger(\%Config, "Assuming default path for API url: " . $console_api_url, 3);
+		}
+
+		$Config{"console_api_url"} = $console_api_url;
+	}
+
+	# Definition of configuration file
+	my $cfg_file = $Config{'pandora_path'};
+
+	# Randomized parametrization of console_pass. Must be done here.
+	if ( !defined($Config{"console_pass"}) ){
+		if (open (CFG, ">>$cfg_file")) {
+			my $valid_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			my $num_char = 8;
+			my $randomized_string = '';
+			for (my $i = 0; $i < $num_char; $i++) {
+				$randomized_string .= substr($valid_chars, rand(length($valid_chars)), 1);
+			}
+
+			$Config{"console_pass"} = $randomized_string;
+			print CFG "# console_pass: Console password\n";
+			print CFG "# To make sure console_api_url, console_api_pass, console_user and console_pass are properly configured run:\n";
+			print CFG "#   curl '<console_api_url>?op=get&op2=test&apipass=<console_api_pass>&user=<console_user>&pass=<console_pass>'\n";
+			print CFG "# It should return a string similar to:\n";
+			print CFG "# OK,{VERSION},{BUILD}\n";
+			print CFG "console_pass " .$Config{"console_pass"} . "\n";
+
+			close (CFG);
+		} else {
+			logger(\%Config, "[WARNING] Error with configuration file when define `console_pass`: $!", 3);
+		}
+	}
+
+	# Only if console_user is not defined
+	if ( !defined($Config{"console_user"}) ) {
+		my $pandora_uid = pandora_get_tconfig_token ($DBH, 'pandora_uid', '');
+
+		if ( $pandora_uid ne '' && $pandora_uid ne 'OFFLINE' ) {
+			$Config{"console_user"} = "internal_API_$pandora_uid";
+		} else {
+			$Config{"console_user"} = "internal_API";
+		}
+
+		# If user not exists in DB, is necessary to create it
+		if ( get_user_exists($DBH, $Config{"console_user"}) == -1 ) {
+
+			# Definition of API user parameters
+			my $api_user_parameters = {};
+			$api_user_parameters->{'id_user'} = $Config{"console_user"};
+			$api_user_parameters->{'password'} = md5_hex($Config{"console_pass"});
+			$api_user_parameters->{'comments'} = "Internal user, used for generating reports and email attachments";
+			$api_user_parameters->{'is_admin'} = 0;
+			$api_user_parameters->{'not_login'} = 1;
+
+			# Profile creation for API purpouses
+			my $api_profile_parameters = {};
+			$api_profile_parameters->{'id_usuario'} = $Config{"console_user"};
+			$api_profile_parameters->{'id_perfil'} = 0;
+			$api_profile_parameters->{'id_grupo'} = 0;
+			$api_profile_parameters->{'assigned_by'} = "system";
+			$api_profile_parameters->{'id_policy'} = 0;
+			$api_profile_parameters->{'tags'} = "API";
+
+			# Insert in DB
+			my $res_tusuario = db_process_insert($DBH, 'id_user', 'tusuario', $api_user_parameters);
+			my $res_tusuario_perfil = db_process_insert($DBH, 'id_user', 'tusuario_perfil', $api_profile_parameters);
+
+			# If the user was inserted in DB, must write it in configuration file
+			if ( !$res_tusuario || !$res_tusuario_perfil ) {
+				logger(\%Config, "Warning. Was not possible creating console user for API.", 3);
+			} else {
+				if (open (CFG, ">>$cfg_file")) {
+					print CFG "# Console User (created for API use)\n";
+					print CFG "console_user " . $Config{"console_user"} . "\n";
+					close (CFG);
+				} else {
+					logger(\%Config, "Warning. Was not possible edit configuration file for add console user", 3);
+				}
+			}
+		}
+	}
+
+	# Testing API url
+	my $curl_execution = "'".$Config{'console_api_url'}."?op=get&op2=test&apipass=".$Config{"console_api_pass"}."&user=".$Config{"console_user"}."&pass=".$Config{"console_pass"}."'";
+	my @res_testing_api = `curl $curl_execution`;
+
+	if ( $res_testing_api[0] ne 'OK' ) {
+		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
+		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);
 	}
 
 	# Generate 'going up' events

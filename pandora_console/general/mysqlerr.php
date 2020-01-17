@@ -96,9 +96,9 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
         <div class='modalcontenttex'>
             <?php
             if ($config['history_db_connection'] === false) {
-                echo __('History database connection failure, please check login credentials or contact the system administration for help.');
-            } else {
                 echo __('Failure to connect to historical database, please check the configuration or contact system administrator if you need assistance.');
+            } else {
+                echo __('Failure to connect to Database server, please check the configuration file config.php or contact system administrator if you need assistance.');
             }
 
             ?>

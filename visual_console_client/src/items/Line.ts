@@ -224,8 +224,8 @@ export default class Line extends Item<LineProps> {
         )
       },
       {
-        ...meta,
-        editMode: false
+        ...meta
+        //editMode: false
       },
       true
     );
@@ -260,7 +260,7 @@ export default class Line extends Item<LineProps> {
     this.moveMode = newMetadata.editMode;
     super.setMeta({
       ...newMetadata,
-      editMode: false,
+      //editMode: false,
       lineMode: true
     });
   }
@@ -419,9 +419,14 @@ export default class Line extends Item<LineProps> {
           if (circle) circle.remove();
         }
 
-        element.appendChild(startCircle);
-        element.appendChild(endCircle);
+        // TODO: Continue
+        if (element.parentElement !== null) {
+          element.parentElement.appendChild(startCircle);
+          element.parentElement.appendChild(endCircle);
+        }
 
+        console.log(startCircle);
+        console.log(this.elementRef.parentElement);
         // Init the movement listeners.
         this.initStartPositionMovementListener(startCircle, this.elementRef
           .parentElement as HTMLElement);

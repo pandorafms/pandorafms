@@ -370,7 +370,7 @@ export default class VisualConsole {
 
   // TODO: Document
   private handleContainerClick: (e: MouseEvent) => void = () => {
-    this.unselectItems();
+    this.unSelectItems();
   };
 
   public constructor(
@@ -425,18 +425,16 @@ export default class VisualConsole {
       itemInstance.onRemove(context.handleElementRemove);
       itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
 
+      // TODO:Continue
+      itemInstance.onClick(context.handleElementClick);
+      itemInstance.onDblClick(context.handleElementDblClick);
+      itemInstance.onMoved(context.handleElementMovement);
+      itemInstance.onMovementFinished(context.handleElementMovementFinished);
       if (itemInstance instanceof Line) {
         itemInstance.onLineMovementFinished(
           context.handleLineElementMovementFinished
         );
-        // TODO:Continue
-        //itemInstance.onClick(context.handleElementClick);
-        itemInstance.onDblClick(context.handleElementDblClick);
       } else {
-        itemInstance.onClick(context.handleElementClick);
-        itemInstance.onDblClick(context.handleElementDblClick);
-        itemInstance.onMoved(context.handleElementMovement);
-        itemInstance.onMovementFinished(context.handleElementMovementFinished);
         itemInstance.onResized(context.handleElementResizement);
         itemInstance.onResizeFinished(context.handleElementResizementFinished);
       }
@@ -908,66 +906,12 @@ export default class VisualConsole {
   }
 
   /**
-   * Select an item.
-   * @param itemId Item Id.
-   * @param unique To remove the selection of other items or not.
-   */
-  public selectItem(itemId: number, unique: boolean = false): void {
-    if (unique) {
-      this.elementIds.forEach(currentItemId => {
-        const meta = this.elementsById[currentItemId].meta;
-
-        if (currentItemId !== itemId && meta.isSelected) {
-          this.elementsById[currentItemId].meta = {
-            ...meta,
-            isSelected: false
-          };
-        } else if (currentItemId === itemId && !meta.isSelected) {
-          this.elementsById[currentItemId].meta = {
-            ...meta,
-            isSelected: true
-          };
-        }
-      });
-    } else if (this.elementsById[itemId]) {
-      this.elementsById[itemId].meta = {
-        ...this.elementsById[itemId].meta,
-        isSelected: true
-      };
-    }
-  }
-
-  /**
-   * Unselect an item.
-   * @param itemId Item Id.
-   */
-  public unselectItem(itemId: number): void {
-    if (this.elementsById[itemId]) {
-      const meta = this.elementsById[itemId].meta;
-
-      if (meta.isSelected) {
-        this.elementsById[itemId].meta = {
-          ...meta,
-          isSelected: false
-        };
-      }
-    }
-  }
-
-  /**
    * Unselect all items.
    */
-  public unselectItems(): void {
+  public unSelectItems(): void {
     this.elementIds.forEach(itemId => {
       if (this.elementsById[itemId]) {
-        const meta = this.elementsById[itemId].meta;
-
-        if (meta.isSelected) {
-          this.elementsById[itemId].meta = {
-            ...meta,
-            isSelected: false
-          };
-        }
+        this.elementsById[itemId].unSelectItem();
       }
     });
   }

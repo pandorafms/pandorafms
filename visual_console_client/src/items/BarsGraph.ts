@@ -1,12 +1,6 @@
 import { AnyObject, WithModuleProps } from "../lib/types";
 import { modulePropsDecoder, decodeBase64, stringIsEmpty, t } from "../lib";
-import Item, {
-  ItemType,
-  ItemProps,
-  itemBasePropsDecoder,
-  AgentModuleInputGroup
-} from "../Item";
-import { InputGroup, FormContainer } from "../Form";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type BarsGraphProps = {
   type: ItemType.BARS_GRAPH;
@@ -47,127 +41,6 @@ const parseTypeGraph = (typeGraph: unknown): BarsGraphProps["typeGraph"] => {
       return "vertical";
   }
 };
-
-/**
- * Class to add item to the Bars graph item form
- * This item consists of a label and select background.
- * Show background is stored in the backgroundType property.
- */
-class BackgroundColorInputGroup extends InputGroup<Partial<BarsGraphProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const backgroundTypeLabel = document.createElement("label");
-    backgroundTypeLabel.textContent = t("Background color");
-
-    const options: {
-      value: BarsGraphProps["backgroundColor"];
-      text: string;
-    }[] = [
-      { value: "white", text: t("White") },
-      { value: "black", text: t("Black") },
-      { value: "transparent", text: t("Transparent") }
-    ];
-
-    const backgroundTypeSelect = document.createElement("select");
-    backgroundTypeSelect.required = true;
-
-    options.forEach(option => {
-      const optionElement = document.createElement("option");
-      optionElement.value = option.value;
-      optionElement.textContent = option.text;
-      backgroundTypeSelect.appendChild(optionElement);
-    });
-
-    backgroundTypeSelect.value =
-      this.currentData.backgroundColor ||
-      this.initialData.backgroundColor ||
-      "default";
-
-    backgroundTypeSelect.addEventListener("change", event => {
-      this.updateData({
-        backgroundColor: parseBarsGraphProps(
-          (event.target as HTMLSelectElement).value
-        )
-      });
-    });
-
-    backgroundTypeLabel.appendChild(backgroundTypeSelect);
-
-    return backgroundTypeLabel;
-  }
-}
-
-/**
- * Class to add item to the Bars graph item form
- * This item consists of a label and select type graph.
- * Show type is stored in the typeGraph property.
- */
-class TypeGraphInputGroup extends InputGroup<Partial<BarsGraphProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const graphTypeLabel = document.createElement("label");
-    graphTypeLabel.textContent = t("Graph Type");
-
-    const options: {
-      value: BarsGraphProps["typeGraph"];
-      text: string;
-    }[] = [
-      { value: "horizontal", text: t("Horizontal") },
-      { value: "vertical", text: t("Vertical") }
-    ];
-
-    const graphTypeSelect = document.createElement("select");
-    graphTypeSelect.required = true;
-
-    options.forEach(option => {
-      const optionElement = document.createElement("option");
-      optionElement.value = option.value;
-      optionElement.textContent = option.text;
-      graphTypeSelect.appendChild(optionElement);
-    });
-
-    graphTypeSelect.value =
-      this.currentData.typeGraph || this.initialData.typeGraph || "vertical";
-
-    graphTypeSelect.addEventListener("change", event => {
-      this.updateData({
-        typeGraph: parseTypeGraph((event.target as HTMLSelectElement).value)
-      });
-    });
-
-    graphTypeLabel.appendChild(graphTypeSelect);
-
-    return graphTypeLabel;
-  }
-}
-
-/**
- * Class to add item to the BarsGraph item form
- * This item consists of a label and a color type input.
- * Element grid color is stored in the gridColor property
- */
-class GridColorInputGroup extends InputGroup<Partial<BarsGraphProps>> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const gridLabel = document.createElement("label");
-    gridLabel.textContent = t("Grid color");
-
-    const gridInput = document.createElement("input");
-    gridInput.type = "color";
-    gridInput.required = true;
-
-    gridInput.value = `${this.currentData.gridColor ||
-      this.initialData.gridColor ||
-      "#000000"}`;
-
-    gridInput.addEventListener("change", e => {
-      this.updateData({
-        gridColor: (e.target as HTMLInputElement).value
-      });
-    });
-
-    gridLabel.appendChild(gridInput);
-
-    return gridLabel;
-  }
-}
 
 /**
  * Build a valid typed object from a raw object.
@@ -225,33 +98,5 @@ export default class BarsGraph extends Item<BarsGraphProps> {
         eval(scripts[i].innerHTML.trim());
       }
     }
-  }
-
-  /**
-   * @override function to add or remove inputsGroups those that are not necessary.
-   * Add to:
-   * BackgroundColorInputGroup
-   * GridColorInputGroup
-   * TypeGraphInputGroup
-   * AgentModuleInputGroup
-   */
-  public getFormContainer(): FormContainer {
-    return BarsGraph.getFormContainer(this.props);
-  }
-
-  public static getFormContainer(
-    props: Partial<BarsGraphProps>
-  ): FormContainer {
-    const formContainer = super.getFormContainer(props);
-    formContainer.addInputGroup(
-      new BackgroundColorInputGroup("backgroundColor-type", props)
-    );
-    formContainer.addInputGroup(new TypeGraphInputGroup("type-graph", props));
-    formContainer.addInputGroup(new GridColorInputGroup("grid-color", props));
-    formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", props)
-    );
-
-    return formContainer;
   }
 }

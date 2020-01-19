@@ -1,7 +1,6 @@
 import { AnyObject } from "../lib/types";
 import { parseIntOr, notEmptyStringOr, t } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
-import { InputGroup, FormContainer } from "../Form";
 
 interface BoxProps extends ItemProps {
   // Overrided properties.
@@ -98,20 +97,5 @@ export default class Box extends Item<BoxProps> {
         element.style.borderColor = this.props.borderColor;
       }
     }
-  }
-
-  /**
-   * @override function to add or remove inputsGroups those that are not necessary.
-   * Add to:
-   * LinkConsoleInputGroup
-   */
-  public getFormContainer(): FormContainer {
-    return Box.getFormContainer(this.props);
-  }
-
-  public static getFormContainer(props: Partial<BoxProps>): FormContainer {
-    const formContainer = super.getFormContainer(props);
-
-    return formContainer;
   }
 }

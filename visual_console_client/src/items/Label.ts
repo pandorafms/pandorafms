@@ -1,12 +1,6 @@
 import { LinkedVisualConsoleProps, AnyObject } from "../lib/types";
 import { linkedVCPropsDecoder } from "../lib";
-import Item, {
-  ItemType,
-  ItemProps,
-  itemBasePropsDecoder,
-  LinkConsoleInputGroup
-} from "../Item";
-import { FormContainer } from "../Form";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type LabelProps = {
   type: ItemType.LABEL;
@@ -49,23 +43,5 @@ export default class Label extends Item<LabelProps> {
     element.className = "visual-console-item-label";
     // Always return an empty label.
     return element;
-  }
-
-  /**
-   * @override function to add or remove inputsGroups those that are not necessary.
-   * Add to:
-   * LinkConsoleInputGroup
-   */
-  public getFormContainer(): FormContainer {
-    return Label.getFormContainer(this.props);
-  }
-
-  public static getFormContainer(props: Partial<LabelProps>): FormContainer {
-    const formContainer = super.getFormContainer(props);
-    formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", props)
-    );
-
-    return formContainer;
   }
 }

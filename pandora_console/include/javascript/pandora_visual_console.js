@@ -128,6 +128,7 @@ function createVisualConsole(
 
       if (meta.editMode) {
         // Item selection.
+        /*
         if (meta.isSelected) {
           visualConsole.unselectItem(data.id);
         } else {
@@ -138,6 +139,7 @@ function createVisualConsole(
             isMac ? !e.nativeEvent.metaKey : !e.nativeEvent.ctrlKey
           );
         }
+        */
       } else if (
         !meta.editMode &&
         data.linkedLayoutId != null &&
@@ -173,56 +175,67 @@ function createVisualConsole(
     });
     // VC Item moved.
     visualConsole.onItemMoved(function(e) {
-      var id = e.item.props.id;
-      var data = {
-        x: e.newPosition.x,
-        y: e.newPosition.y,
-        type: e.item.props.type
-      };
-
-      if (e.item.props.processValue != undefined) {
-        data.processValue = e.item.props.processValue;
-      }
-
-      if (e.item.props.percentileType != undefined) {
-        data.percentileType = e.item.props.percentileType;
-      }
-
-      var taskId = "visual-console-item-update-" + id;
-
-      // Persist the new position.
-      asyncTaskManager
-        .add(taskId, function(done) {
-          var abortable = updateVisualConsoleItem(
-            baseUrl,
-            visualConsole.props.id,
-            id,
-            data,
-            function(error, data) {
-              // if (!error && !data) return;
-              if (error || !data) {
-                console.log(
-                  "[ERROR]",
-                  "[VISUAL-CONSOLE-CLIENT]",
-                  "[API]",
-                  error ? error.message : "Invalid response"
-                );
-
-                // Move the element to its initial position.
-                e.item.move(e.prevPosition.x, e.prevPosition.y);
-              }
-
-              done();
-            }
-          );
-
-          return {
-            cancel: function() {
-              abortable.abort();
-            }
+      if (e.item.meta.isSelected) {
+        var id = e.item.props.id;
+        var data = {
+          x: e.newPosition.x,
+          y: e.newPosition.y,
+          type: e.item.props.type
+        };
+        if (e.item.props.type === 13) {
+          data = {
+            startX: e.newPosition.x,
+            startY: e.newPosition.y,
+            endX: e.item.props.width + e.newPosition.x,
+            endY: e.item.props.height + e.newPosition.y,
+            type: e.item.props.type
           };
-        })
-        .init();
+        }
+
+        if (e.item.props.processValue != undefined) {
+          data.processValue = e.item.props.processValue;
+        }
+
+        if (e.item.props.percentileType != undefined) {
+          data.percentileType = e.item.props.percentileType;
+        }
+
+        var taskId = "visual-console-item-update-" + id;
+
+        // Persist the new position.
+        asyncTaskManager
+          .add(taskId, function(done) {
+            var abortable = updateVisualConsoleItem(
+              baseUrl,
+              visualConsole.props.id,
+              id,
+              data,
+              function(error, data) {
+                // if (!error && !data) return;
+                if (error || !data) {
+                  console.log(
+                    "[ERROR]",
+                    "[VISUAL-CONSOLE-CLIENT]",
+                    "[API]",
+                    error ? error.message : "Invalid response"
+                  );
+
+                  // Move the element to its initial position.
+                  e.item.move(e.prevPosition.x, e.prevPosition.y);
+                }
+
+                done();
+              }
+            );
+
+            return {
+              cancel: function() {
+                abortable.abort();
+              }
+            };
+          })
+          .init();
+      }
     });
     // VC Line Item moved.
     visualConsole.onLineMoved(function(e) {
@@ -271,51 +284,34 @@ function createVisualConsole(
 
     // VC Item resized.
     visualConsole.onItemResized(function(e) {
-      var item = e.item;
-      var id = item.props.id;
-      var data = {
-        width: e.newSize.width,
-        height: e.newSize.height,
-        type: item.props.type
-      };
+      if (e.item.meta.isSelected) {
+        var item = e.item;
+        var id = item.props.id;
+        var data = {
+          width: e.newSize.width,
+          height: e.newSize.height,
+          type: item.props.type
+        };
 
-      if (item.props.processValue != undefined) {
-        data.processValue = item.props.processValue;
-      }
+        if (item.props.processValue != undefined) {
+          data.processValue = item.props.processValue;
+        }
 
-      if (item.props.percentileType != undefined) {
-        data.percentileType = item.props.percentileType;
-      }
+        if (item.props.percentileType != undefined) {
+          data.percentileType = item.props.percentileType;
+        }
 
-      var taskId = "visual-console-item-update-" + id;
-      // Persist the new size.
-      asyncTaskManager
-        .add(taskId, function(done) {
-          var abortable = updateVisualConsoleItem(
-            baseUrl,
-            visualConsole.props.id,
-            id,
-            data,
-            function(error, data) {
-              if (error || !data) {
-                console.log(
-                  "[ERROR]",
-                  "[VISUAL-CONSOLE-CLIENT]",
-                  "[API]",
-                  error ? error.message : "Invalid response"
-                );
-
-                // Resize the element to its initial Size.
-                item.resize(e.prevSize.width, e.prevSize.height);
-
-                done();
-                return; // Stop task execution.
-              }
-
-              if (typeof data === "string") {
-                try {
-                  data = JSON.parse(data);
-                } catch (error) {
+        var taskId = "visual-console-item-update-" + id;
+        // Persist the new size.
+        asyncTaskManager
+          .add(taskId, function(done) {
+            var abortable = updateVisualConsoleItem(
+              baseUrl,
+              visualConsole.props.id,
+              id,
+              data,
+              function(error, data) {
+                if (error || !data) {
                   console.log(
                     "[ERROR]",
                     "[VISUAL-CONSOLE-CLIENT]",
@@ -325,25 +321,44 @@ function createVisualConsole(
 
                   // Resize the element to its initial Size.
                   item.resize(e.prevSize.width, e.prevSize.height);
+
                   done();
                   return; // Stop task execution.
                 }
+
+                if (typeof data === "string") {
+                  try {
+                    data = JSON.parse(data);
+                  } catch (error) {
+                    console.log(
+                      "[ERROR]",
+                      "[VISUAL-CONSOLE-CLIENT]",
+                      "[API]",
+                      error ? error.message : "Invalid response"
+                    );
+
+                    // Resize the element to its initial Size.
+                    item.resize(e.prevSize.width, e.prevSize.height);
+                    done();
+                    return; // Stop task execution.
+                  }
+                }
+
+                visualConsole.updateElement(data);
+                item.setMeta({ isUpdating: false });
+
+                done();
               }
+            );
 
-              visualConsole.updateElement(data);
-              item.setMeta({ isUpdating: false });
-
-              done();
-            }
-          );
-
-          return {
-            cancel: function() {
-              abortable.abort();
-            }
-          };
-        })
-        .init();
+            return {
+              cancel: function() {
+                abortable.abort();
+              }
+            };
+          })
+          .init();
+      }
     });
 
     if (updateInterval != null && updateInterval > 0) {

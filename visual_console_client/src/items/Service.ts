@@ -6,12 +6,7 @@ import {
   parseIntOr,
   t
 } from "../lib";
-import Item, {
-  ItemType,
-  ItemProps,
-  itemBasePropsDecoder,
-  ImageInputGroup
-} from "../Item";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 import { FormContainer, InputGroup } from "../Form";
 import fontAwesomeIcon from "../lib/FontAwesomeIcon";
 import {
@@ -145,31 +140,5 @@ export default class Service extends Item<ServiceProps> {
     }
 
     return element;
-  }
-
-  /**
-   * @override function to add or remove inputsGroups those that are not necessary.
-   * Add to:
-   * ImageInputGroup
-   * ServiceListInputGroup
-   */
-  public getFormContainer(): FormContainer {
-    return Service.getFormContainer(this.props);
-  }
-
-  public static getFormContainer(props: Partial<ServiceProps>): FormContainer {
-    const formContainer = super.getFormContainer(props);
-    formContainer.addInputGroup(
-      new ImageInputGroup("image-console", {
-        ...props,
-        imageKey: "imageSrc",
-        showStatusImg: false
-      })
-    );
-    formContainer.addInputGroup(
-      new ServiceListInputGroup("service-list", props)
-    );
-
-    return formContainer;
   }
 }

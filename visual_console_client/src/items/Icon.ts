@@ -1,13 +1,6 @@
 import { LinkedVisualConsoleProps, AnyObject } from "../lib/types";
 import { linkedVCPropsDecoder } from "../lib";
-import Item, {
-  ItemType,
-  ItemProps,
-  itemBasePropsDecoder,
-  LinkConsoleInputGroup,
-  ImageInputGroup
-} from "../Item";
-import { FormContainer } from "../Form";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type IconProps = {
   type: ItemType.ICON;
@@ -61,26 +54,5 @@ export default class Icon extends Item<IconProps> {
    */
   protected updateDomElement(element: HTMLElement): void {
     element.style.backgroundImage = `url(${this.props.imageSrc})`;
-  }
-
-  /**
-   * @override function to add or remove inputsGroups those that are not necessary.
-   * Add to:
-   * LinkConsoleInputGroup
-   */
-  public getFormContainer(): FormContainer {
-    return Icon.getFormContainer(this.props);
-  }
-
-  public static getFormContainer(props: Partial<IconProps>): FormContainer {
-    const formContainer = super.getFormContainer(props);
-    formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", props)
-    );
-    formContainer.addInputGroup(
-      new ImageInputGroup("image-console", { ...props, imageKey: "image" })
-    );
-
-    return formContainer;
   }
 }

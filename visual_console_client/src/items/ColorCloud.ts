@@ -5,13 +5,7 @@ import {
   WithAgentProps
 } from "../lib/types";
 import { modulePropsDecoder, linkedVCPropsDecoder, t } from "../lib";
-import Item, {
-  itemBasePropsDecoder,
-  ItemType,
-  ItemProps,
-  LinkConsoleInputGroup,
-  AgentModuleInputGroup
-} from "../Item";
+import Item, { itemBasePropsDecoder, ItemType, ItemProps } from "../Item";
 import { FormContainer, InputGroup } from "../Form";
 import fontAwesomeIcon from "../lib/FontAwesomeIcon";
 import { faTrashAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
@@ -422,7 +416,6 @@ export default class ColorCloud extends Item<ColorCloudProps> {
   /**
    * @override function to add or remove inputsGroups those that are not necessary.
    * Add to:
-   * LinkConsoleInputGroup
    * ColorInputGroup
    * RangesInputGroup
    */
@@ -435,10 +428,6 @@ export default class ColorCloud extends Item<ColorCloudProps> {
   ): FormContainer {
     const formContainer = super.getFormContainer(props);
     formContainer.removeInputGroup("label");
-    formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", props),
-      0
-    );
 
     formContainer.addInputGroup(new ColorInputGroup("color-cloud", props), 3);
     formContainer.addInputGroup(new RangesInputGroup("ranges-cloud", props), 4);

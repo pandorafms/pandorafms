@@ -10,14 +10,7 @@ import {
   stringIsEmpty,
   t
 } from "../lib";
-import Item, {
-  ItemType,
-  ItemProps,
-  itemBasePropsDecoder,
-  LinkConsoleInputGroup,
-  AgentModuleInputGroup
-} from "../Item";
-import { FormContainer, InputGroup } from "../Form";
+import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type DonutGraphProps = {
   type: ItemType.DONUT_GRAPH;
@@ -57,38 +50,6 @@ export function donutGraphPropsDecoder(
   };
 }
 
-/**
- * Class to add item to the DonutsGraph item form
- * This item consists of a label and a color type input.
- * Element color is stored in the legendBackgroundColor property
- */
-class LegendBackgroundColorInputGroup extends InputGroup<
-  Partial<DonutGraphProps>
-> {
-  protected createContent(): HTMLElement | HTMLElement[] {
-    const legendBackgroundLabel = document.createElement("label");
-    legendBackgroundLabel.textContent = t("Resume data color");
-
-    const legendBackgroundInput = document.createElement("input");
-    legendBackgroundInput.type = "color";
-    legendBackgroundInput.required = true;
-
-    legendBackgroundInput.value = `${this.currentData.legendBackgroundColor ||
-      this.initialData.legendBackgroundColor ||
-      "#000000"}`;
-
-    legendBackgroundInput.addEventListener("change", e => {
-      this.updateData({
-        legendBackgroundColor: (e.target as HTMLInputElement).value
-      });
-    });
-
-    legendBackgroundLabel.appendChild(legendBackgroundInput);
-
-    return legendBackgroundLabel;
-  }
-}
-
 export default class DonutGraph extends Item<DonutGraphProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
@@ -118,31 +79,5 @@ export default class DonutGraph extends Item<DonutGraphProps> {
         eval(scripts[i].innerHTML.trim());
       }
     }
-  }
-
-  /**
-   * @override function to add or remove inputsGroups those that are not necessary.
-   * Add to:
-   * LinkConsoleInputGroup
-   */
-  public getFormContainer(): FormContainer {
-    return DonutGraph.getFormContainer(this.props);
-  }
-
-  public static getFormContainer(
-    props: Partial<DonutGraphProps>
-  ): FormContainer {
-    const formContainer = super.getFormContainer(props);
-    formContainer.addInputGroup(
-      new LinkConsoleInputGroup("link-console", props)
-    );
-    formContainer.addInputGroup(
-      new LegendBackgroundColorInputGroup("legend-background-color", props)
-    );
-    formContainer.addInputGroup(
-      new AgentModuleInputGroup("agent-autocomplete", props)
-    );
-
-    return formContainer;
   }
 }

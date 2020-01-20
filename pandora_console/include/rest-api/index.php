@@ -229,8 +229,16 @@ if ($getVisualConsole === true) {
     $item = VisualConsole::getItemFromDB($itemId);
     $data = $item->toArray();
     $data['id_layout'] = $visualConsoleId;
-    $data['x'] = ($data['x'] + 20);
-    $data['y'] = ($data['y'] + 20);
+    if ($data['type'] === LINE_ITEM) {
+        $data['endX'] = ($data['endX'] + 20);
+        $data['endY'] = ($data['endY'] + 20);
+        $data['startX'] = ($data['startX'] + 20);
+        $data['startY'] = ($data['startY'] + 20);
+    } else {
+        $data['x'] = ($data['x'] + 20);
+        $data['y'] = ($data['y'] + 20);
+    }
+
     unset($data['id']);
 
     $class = VisualConsole::getItemClass((int) $data['type']);

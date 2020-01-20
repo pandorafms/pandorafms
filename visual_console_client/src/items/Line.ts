@@ -225,7 +225,6 @@ export default class Line extends Item<LineProps> {
       },
       {
         ...meta
-        //editMode: false
       },
       true
     );
@@ -260,7 +259,6 @@ export default class Line extends Item<LineProps> {
     this.moveMode = newMetadata.editMode;
     super.setMeta({
       ...newMetadata,
-      //editMode: false,
       lineMode: true
     });
   }
@@ -409,9 +407,8 @@ export default class Line extends Item<LineProps> {
         ? `${height + lineWidth - this.circleRadius}px`
         : `-${this.circleRadius}px`;
 
-      if (!this.isMoving) {
-        // Remove circles.
-        const circles = element.getElementsByClassName(
+      if (element.parentElement !== null) {
+        const circles = element.parentElement.getElementsByClassName(
           "visual-console-item-line-circle"
         );
         while (circles.length > 0) {
@@ -419,30 +416,30 @@ export default class Line extends Item<LineProps> {
           if (circle) circle.remove();
         }
 
-        // TODO: Continue
-        if (element.parentElement !== null) {
-          element.parentElement.appendChild(startCircle);
-          element.parentElement.appendChild(endCircle);
-        }
-
-        console.log(startCircle);
-        console.log(this.elementRef.parentElement);
-        // Init the movement listeners.
-        this.initStartPositionMovementListener(startCircle, this.elementRef
-          .parentElement as HTMLElement);
-        this.initEndPositionMovementListener(endCircle, this.elementRef
-          .parentElement as HTMLElement);
+        element.parentElement.appendChild(startCircle);
+        element.parentElement.appendChild(endCircle);
       }
-    } else if (!this.isMoving) {
+
+      // Init the movement listeners.
+      this.initStartPositionMovementListener(startCircle, this.elementRef
+        .parentElement as HTMLElement);
+      this.initEndPositionMovementListener(endCircle, this.elementRef
+        .parentElement as HTMLElement);
+    } else if (!this.moveMode) {
       this.stopStartPositionMovementListener();
       // Remove circles.
-      const circles = element.getElementsByClassName(
-        "visual-console-item-line-circle"
-      );
-      while (circles.length > 0) {
-        const circle = circles.item(0);
-        if (circle) circle.remove();
+      if (element.parentElement !== null) {
+        const circles = element.parentElement.getElementsByClassName(
+          "visual-console-item-line-circle"
+        );
+
+        while (circles.length > 0) {
+          const circle = circles.item(0);
+          if (circle) circle.remove();
+        }
       }
+    } else {
+      this.stopStartPositionMovementListener();
     }
   }
 
@@ -460,6 +457,36 @@ export default class Line extends Item<LineProps> {
       height: Math.abs(startPosition.y - endPosition.y),
       x: Math.min(startPosition.x, endPosition.x),
       y: Math.min(startPosition.y, endPosition.y)
+    };
+  }
+
+  /**
+   * Update the position into the properties and move the DOM container.
+   * @param x Horizontal axis position.
+   * @param y Vertical axis position.
+   * @override item function
+   */
+  public move(x: number, y: number): void {
+    super.moveElement(x, y);
+    const startIsLeft =
+      this.props.startPosition.x - this.props.endPosition.x <= 0;
+    const startIsTop =
+      this.props.startPosition.y - this.props.endPosition.y <= 0;
+
+    const start = {
+      x: startIsLeft ? x : this.props.width + x,
+      y: startIsTop ? y : this.props.height + y
+    };
+
+    const end = {
+      x: startIsLeft ? this.props.width + x : x,
+      y: startIsTop ? this.props.height + y : y
+    };
+
+    this.props = {
+      ...this.props,
+      startPosition: start,
+      endPosition: end
     };
   }
 

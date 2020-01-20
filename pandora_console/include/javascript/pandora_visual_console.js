@@ -175,67 +175,78 @@ function createVisualConsole(
     });
     // VC Item moved.
     visualConsole.onItemMoved(function(e) {
-      if (e.item.meta.isSelected) {
-        var id = e.item.props.id;
-        var data = {
-          x: e.newPosition.x,
-          y: e.newPosition.y,
+      var id = e.item.props.id;
+      var data = {
+        x: e.newPosition.x,
+        y: e.newPosition.y,
+        type: e.item.props.type
+      };
+      if (e.item.props.type === 13) {
+        var startIsLeft =
+          e.item.props.startPosition.x - e.item.props.endPosition.x <= 0;
+        var startIsTop =
+          e.item.props.startPosition.y - e.item.props.endPosition.y <= 0;
+
+        data = {
+          startX: startIsLeft
+            ? e.newPosition.x
+            : e.item.props.width + e.newPosition.x,
+          startY: startIsTop
+            ? e.newPosition.y
+            : e.item.props.height + e.newPosition.y,
+          endX: startIsLeft
+            ? e.item.props.width + e.newPosition.x
+            : e.newPosition.x,
+          endY: startIsTop
+            ? e.item.props.height + e.newPosition.y
+            : e.newPosition.y,
           type: e.item.props.type
         };
-        if (e.item.props.type === 13) {
-          data = {
-            startX: e.newPosition.x,
-            startY: e.newPosition.y,
-            endX: e.item.props.width + e.newPosition.x,
-            endY: e.item.props.height + e.newPosition.y,
-            type: e.item.props.type
-          };
-        }
-
-        if (e.item.props.processValue != undefined) {
-          data.processValue = e.item.props.processValue;
-        }
-
-        if (e.item.props.percentileType != undefined) {
-          data.percentileType = e.item.props.percentileType;
-        }
-
-        var taskId = "visual-console-item-update-" + id;
-
-        // Persist the new position.
-        asyncTaskManager
-          .add(taskId, function(done) {
-            var abortable = updateVisualConsoleItem(
-              baseUrl,
-              visualConsole.props.id,
-              id,
-              data,
-              function(error, data) {
-                // if (!error && !data) return;
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  // Move the element to its initial position.
-                  e.item.move(e.prevPosition.x, e.prevPosition.y);
-                }
-
-                done();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
       }
+
+      if (e.item.props.processValue != undefined) {
+        data.processValue = e.item.props.processValue;
+      }
+
+      if (e.item.props.percentileType != undefined) {
+        data.percentileType = e.item.props.percentileType;
+      }
+
+      var taskId = "visual-console-item-update-" + id;
+
+      // Persist the new position.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = updateVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            data,
+            function(error, data) {
+              // if (!error && !data) return;
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // Move the element to its initial position.
+                e.item.move(e.prevPosition.x, e.prevPosition.y);
+              }
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
     });
     // VC Line Item moved.
     visualConsole.onLineMoved(function(e) {
@@ -284,34 +295,51 @@ function createVisualConsole(
 
     // VC Item resized.
     visualConsole.onItemResized(function(e) {
-      if (e.item.meta.isSelected) {
-        var item = e.item;
-        var id = item.props.id;
-        var data = {
-          width: e.newSize.width,
-          height: e.newSize.height,
-          type: item.props.type
-        };
+      var item = e.item;
+      var id = item.props.id;
+      var data = {
+        width: e.newSize.width,
+        height: e.newSize.height,
+        type: item.props.type
+      };
 
-        if (item.props.processValue != undefined) {
-          data.processValue = item.props.processValue;
-        }
+      if (item.props.processValue != undefined) {
+        data.processValue = item.props.processValue;
+      }
 
-        if (item.props.percentileType != undefined) {
-          data.percentileType = item.props.percentileType;
-        }
+      if (item.props.percentileType != undefined) {
+        data.percentileType = item.props.percentileType;
+      }
 
-        var taskId = "visual-console-item-update-" + id;
-        // Persist the new size.
-        asyncTaskManager
-          .add(taskId, function(done) {
-            var abortable = updateVisualConsoleItem(
-              baseUrl,
-              visualConsole.props.id,
-              id,
-              data,
-              function(error, data) {
-                if (error || !data) {
+      var taskId = "visual-console-item-update-" + id;
+      // Persist the new size.
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = updateVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            data,
+            function(error, data) {
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
+
+                // Resize the element to its initial Size.
+                item.resize(e.prevSize.width, e.prevSize.height);
+
+                done();
+                return; // Stop task execution.
+              }
+
+              if (typeof data === "string") {
+                try {
+                  data = JSON.parse(data);
+                } catch (error) {
                   console.log(
                     "[ERROR]",
                     "[VISUAL-CONSOLE-CLIENT]",
@@ -321,44 +349,25 @@ function createVisualConsole(
 
                   // Resize the element to its initial Size.
                   item.resize(e.prevSize.width, e.prevSize.height);
-
                   done();
                   return; // Stop task execution.
                 }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    // Resize the element to its initial Size.
-                    item.resize(e.prevSize.width, e.prevSize.height);
-                    done();
-                    return; // Stop task execution.
-                  }
-                }
-
-                visualConsole.updateElement(data);
-                item.setMeta({ isUpdating: false });
-
-                done();
               }
-            );
 
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-      }
+              visualConsole.updateElement(data);
+              item.setMeta({ isUpdating: false });
+
+              done();
+            }
+          );
+
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
     });
 
     if (updateInterval != null && updateInterval > 0) {
@@ -522,8 +531,35 @@ function createVisualConsole(
               item.setMeta({ isUpdating: false });
 
               var itemRetrieved = item.props;
-              itemRetrieved["x"] = itemRetrieved["x"] + 20;
-              itemRetrieved["y"] = itemRetrieved["y"] + 20;
+              if (itemRetrieved["type"] == 13) {
+                var startIsLeft =
+                  itemRetrieved["startPosition"]["x"] -
+                    itemRetrieved["endPosition"]["x"] <=
+                  0;
+                var startIsTop =
+                  itemRetrieved["startPosition"]["y"] -
+                    itemRetrieved["endPosition"]["y"] <=
+                  0;
+
+                itemRetrieved["startX"] = startIsLeft
+                  ? itemRetrieved["x"] + 20
+                  : itemRetrieved["width"] + itemRetrieved["x"] + 20;
+
+                itemRetrieved["startY"] = startIsTop
+                  ? itemRetrieved["y"] + 20
+                  : itemRetrieved["height"] + itemRetrieved["y"] + 20;
+
+                itemRetrieved["endX"] = startIsLeft
+                  ? itemRetrieved["width"] + itemRetrieved["x"] + 20
+                  : itemRetrieved["x"] + 20;
+
+                itemRetrieved["endY"] = startIsTop
+                  ? itemRetrieved["height"] + itemRetrieved["y"] + 20
+                  : itemRetrieved["y"] + 20;
+              } else {
+                itemRetrieved["x"] = itemRetrieved["x"] + 20;
+                itemRetrieved["y"] = itemRetrieved["y"] + 20;
+              }
               itemRetrieved["receivedAt"] = new Date();
               itemRetrieved["id"] = data;
 
@@ -1383,7 +1419,7 @@ function createOrUpdateVisualConsoleItem(
   baseUrl,
   item
 ) {
-  var title = "Create item";
+  var title = "Create item " + item.itemProps.type;
   if (item.itemProps.id) {
     title = "Update item";
   }

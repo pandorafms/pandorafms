@@ -662,9 +662,7 @@ sub main() {
 			my $res_tusuario_perfil = db_process_insert($DBH, 'id_user', 'tusuario_perfil', $api_profile_parameters);
 
 			# If the user was inserted in DB, must write it in configuration file
-			if ( !$res_tusuario || !$res_tusuario_perfil ) {
-				logger(\%Config, "Warning. Was not possible creating console user for API.", 3);
-			} else {
+			if ( $res_tusuario_perfil > 0 ) {
 				if (open (CFG, ">>$cfg_file")) {
 					print CFG "# Console User (created for API use)\n";
 					print CFG "console_user " . $Config{"console_user"} . "\n";
@@ -672,6 +670,8 @@ sub main() {
 				} else {
 					logger(\%Config, "Warning. Was not possible edit configuration file for add console user", 3);
 				}
+			} else {
+				logger(\%Config, "Warning. Was not possible creating console user for API.", 3);
 			}
 		}
 	}

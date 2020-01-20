@@ -163,8 +163,23 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     }
 
     $table->data[3][0] = __('Threshold');
-    $table->data[3][1] = html_print_input_text('module_action_threshold', '0', '', 5, 7, true);
-    $table->data[3][1] .= '<span style="margin-left:0.5em;">'.__('seconds').'</span>';
+    $table->data[3][1] = html_print_extended_select_for_time(
+        'module_action_threshold',
+        0,
+        '',
+        '',
+        '',
+        false,
+        true,
+        false,
+        true,
+        '',
+        false,
+        false,
+        '',
+        false,
+        true
+    );
 
     if (!isset($step)) {
         echo '<form class="add_alert_form" method="post">';

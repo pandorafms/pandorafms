@@ -1447,7 +1447,7 @@ sub cloud_scan($) {
 	} else {
 
 		# Unrecognized task type.
-		call('message', 'Unrecognized task type', 1);
+		$self->call('message', 'Unrecognized task type', 1);
 		$self->call('update_progress', -1);
 		return;
 	}
@@ -1469,7 +1469,7 @@ sub cloud_scan($) {
 	if (!$cloudObj) {
 
 		# Failed to initialize, check Cloud credentials or anything.
-		call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
+		$self->call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
 	} else {
 
 		# Let Cloud object manage scan.
@@ -1581,7 +1581,7 @@ sub app_scan($) {
 		$type = 'SAP';
 	} else {
 		# Unrecognized task type.
-		call('message', 'Unrecognized task type', 1);
+		$self->call('message', 'Unrecognized task type', 1);
 		$self->call('update_progress', -1);
 		return;
 	}
@@ -1607,7 +1607,7 @@ sub app_scan($) {
 		$self->{'c_network_percent'} = 0;
 
 		# Send message
-		call('message', 'Checking target ' . $target, 10);
+		$self->call('message', 'Checking target ' . $target, 10);
 
 		# Force target acquirement.
 		$self->{'task_data'}->{'dbhost'} = $target;
@@ -1633,7 +1633,7 @@ sub app_scan($) {
 			# Verify if object is connected. If cannot connect to current target
 			# return with module.
 			if (!$obj->is_connected()) {
-				call('message', 'Cannot connect to target ' . $target, 3);
+				$self->call('message', 'Cannot connect to target ' . $target, 3);
 				$global_percent += $global_step;
 				$self->{'c_network_percent'} = 90;
 
@@ -1739,7 +1739,7 @@ sub deploy_scan($) {
 	if (!$deployer) {
 
 		# Failed to initialize, check Cloud credentials or anything.
-		call('message', 'Unable to initialize PandoraFMS::Recon::Deployer', 3);
+		$self->call('message', 'Unable to initialize PandoraFMS::Recon::Deployer', 3);
 	} else {
 
 		# Let deployer object manage scan.

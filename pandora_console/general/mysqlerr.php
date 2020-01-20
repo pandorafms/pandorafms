@@ -95,7 +95,12 @@ background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
         <img class='modalcontentim' src='<?php echo $config['homeurl']; ?>/images/mysqlerr.png'>
         <div class='modalcontenttex'>
             <?php
-            echo __('Failure to connect to Database server, please check the configuration file config.php or contact system administrator if you need assistance.');
+            if ($config['history_db_connection'] === false) {
+                echo __('Failure to connect to historical database, please check the configuration or contact system administrator if you need assistance.');
+            } else {
+                echo __('Failure to connect to Database server, please check the configuration file config.php or contact system administrator if you need assistance.');
+            }
+
             ?>
         </div>
     </div>

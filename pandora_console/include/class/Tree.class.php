@@ -616,7 +616,8 @@ class Tree
             && $statusType !== STATUS_MODULE_NO_DATA_BALL
         ) {
             if (is_numeric($module['value'])) {
-                $statusTitle .= ' : '.format_for_graph($module['value']);
+                $divisor = get_data_multiplier($module['unit']);
+                $statusTitle .= ' : '.format_for_graph($module['value'], 1, '.', ',', $divisor);
             } else {
                 $statusTitle .= ' : '.substr(io_safe_output($module['value']), 0, 42);
             }
@@ -1061,7 +1062,7 @@ class Tree
 
         $columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
-			tam.parent_module_id AS parent, tatm.id AS alerts';
+			tam.parent_module_id AS parent, tatm.id AS alerts, tam.unit';
 
         $sql = "SELECT $columns
 			FROM tagente_modulo tam

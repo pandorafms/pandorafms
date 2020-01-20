@@ -146,7 +146,7 @@ function agents_get_next_contact_time_left(int $id_agente)
     if ($id_agente > 0) {
         $last_contact = db_get_value_sql(
             sprintf(
-                'SELECT format(intervalo,2) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto > ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
+                'SELECT CAST(intervalo AS SIGNED) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto >= ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
                     FROM `tagente`
                     WHERE id_agente = %d ',
                 $id_agente
@@ -3512,13 +3512,18 @@ function agents_get_status_animation($up=true)
 function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
 {
     $agents_id = [];
-    $all_agents = agents_get_agents(false, ['id_agente', 'alias']);
+    if (is_metaconsole()) {
+        $all_agents = agents_meta_get_agents('AR', '|');
+    } else {
+        $all_agents = agents_get_group_agents(0, true, 'lower', false, false, true, '|');
+    }
+
     $agent_match = '/'.$alias_regex.'/'.$flag;
 
-    foreach ($all_agents as $agent) {
-        $result_agent_match = preg_match($agent_match, $agent['alias']);
+    foreach ($all_agents as $agent_id => $agent_alias) {
+        $result_agent_match = preg_match($agent_match, $agent_alias);
         if ($result_agent_match) {
-            $agents_id[] = $agent['id_agente'];
+            $agents_id[] = $agent_id;
             $i++;
             if ($i === $limit) {
                 break;

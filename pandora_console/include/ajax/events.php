@@ -231,7 +231,7 @@ if ($save_event_filter) {
     $values['id_name'] = get_parameter('id_name');
     $values['id_group'] = get_parameter('id_group');
     $values['event_type'] = get_parameter('event_type');
-    $values['severity'] = get_parameter('severity');
+    $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
     $values['text_agent'] = get_parameter('text_agent');
@@ -278,7 +278,7 @@ if ($update_event_filter) {
     $id = get_parameter('id');
     $values['id_group'] = get_parameter('id_group');
     $values['event_type'] = get_parameter('event_type');
-    $values['severity'] = get_parameter('severity');
+    $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
     $values['text_agent'] = get_parameter('text_agent');
@@ -439,8 +439,10 @@ function load_form_filter() {
                     $("#id_group").val(val);
                 if (i == 'event_type')
                     $("#event_type").val(val);
-                if (i == 'severity')
-                    $("#severity").val(val);
+                if (i == 'severity') {
+                    const multiple = val.split(",");
+                    $("#severity").val(multiple);
+                }
                 if (i == 'status')
                     $("#status").val(val);
                 if (i == 'search')
@@ -1579,7 +1581,7 @@ if ($get_list_events_agents) {
     $id_agent = get_parameter('id_agent');
     $server_id = get_parameter('server_id');
     $event_type = get_parameter('event_type');
-    $severity = get_parameter('severity');
+    $severity = implode(',', get_parameter('severity', -1));
     $status = get_parameter('status');
     $search = get_parameter('search');
     $id_agent_module = get_parameter('id_agent_module');

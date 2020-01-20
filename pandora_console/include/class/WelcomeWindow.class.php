@@ -396,7 +396,11 @@ class WelcomeWindow extends Wizard
             $logo_url = ENTERPRISE_DIR.'/';
         }
 
-        $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
+        if (empty($config['custom_logo_white_bg']) === false) {
+            $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
+        } else {
+            $logo_url .= 'images/custom_logo/pandora_logo_head_white_bg.png';
+        }
 
         $inputs = [
             [

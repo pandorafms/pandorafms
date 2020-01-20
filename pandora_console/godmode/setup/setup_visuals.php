@@ -1038,10 +1038,29 @@ $row++;
 
     $row++;
 
-    $table_report->data[$row][0] = __('PDF font size');
-    $table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." size='1' name='font_size_item_report' min='1' max='9' step='0.1'>";
+    $table_report->data[$row][0] = __('PDF font size (px)');
+    $table_report->data[$row][1] = "<input type ='number' value=".$config['global_font_size_report']." name='global_font_size_report' min='1' max='50' step='1'>";
 
     $row++;
+
+    $table_report->data[$row][0] = __('HTML font size for SLA (em)');
+    $table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
+
+    $row++;
+
+    $table_report->data[$row][0] = __('PDF font family');
+    $table_report->data[$row][1] = html_print_select(
+        $fonts,
+        'custom_report_front_font',
+        $config['custom_report_front_font'],
+        false,
+        __('Default'),
+        '',
+        true
+    );
+
+    $row++;
+
 
     $table_report->data[$row][0] = __('Graph image height for HTML reports');
     $table_report->data[$row][0] .= ui_print_help_tip(
@@ -1049,6 +1068,7 @@ $row++;
         true
     );
     $table_report->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
+
     $row++;
 
     $interval_description = [
@@ -1071,18 +1091,6 @@ $row++;
             $customLogos['images/custom_logo/'.$entryDir] = $entryDir;
         }
     }
-
-    // Font
-    $table_report->data['custom_report_front-font'][0] = __('Custom report front').' - '.__('Font family');
-    $table_report->data['custom_report_front-font'][1] = html_print_select(
-        $fonts,
-        'custom_report_front_font',
-        $config['custom_report_front_font'],
-        false,
-        __('Default'),
-        '',
-        true
-    );
 
     // Logo
     $table_report->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo').ui_print_help_tip(
@@ -1391,7 +1399,6 @@ function edit_csv_divider () {
 function display_custom_report_front (show,table) {
     
     if (show == true) {
-        $('tr#'+table+'-custom_report_front-font').show();
         $('tr#'+table+'-custom_report_front-logo').show();
         $('tr#'+table+'-custom_report_front-preview').show();
         $('tr#'+table+'-custom_report_front-header').show();
@@ -1399,7 +1406,6 @@ function display_custom_report_front (show,table) {
         $('tr#'+table+'-custom_report_front-footer').show();
     }
     else {
-        $('tr#'+table+'-custom_report_front-font').hide();
         $('tr#'+table+'-custom_report_front-logo').hide();
         $('tr#'+table+'-custom_report_front-preview').hide();
         $('tr#'+table+'-custom_report_front-header').hide();

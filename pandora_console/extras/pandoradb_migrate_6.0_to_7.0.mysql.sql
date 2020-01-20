@@ -1195,6 +1195,8 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
 	`generated` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
+	`id_group_map` INT(10) UNSIGNED NOT NULL default 0,
+
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1401,6 +1403,7 @@ ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
+ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`

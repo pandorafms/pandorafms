@@ -2133,6 +2133,8 @@ function modules_get_agentmodule_data(
             // remote_snmp_string
         case 17:
             // async_string
+        case 36:
+            // remote_cmd_string
         case 23:
             // Free search is a json with value and exact modifier
             $freesearch = json_decode($freesearch, true);

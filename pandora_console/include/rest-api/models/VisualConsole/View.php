@@ -378,6 +378,10 @@ class View extends \HTML
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['processValue'] = \get_parameter('processValue');
+                // Insert line default position ball end.
+                if ($itemId === 0 && empty($data['label']) === true) {
+                    $data['label'] = '(_value_)';
+                }
             break;
 
             case PERCENTILE_BAR:

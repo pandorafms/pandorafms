@@ -1419,10 +1419,64 @@ function createOrUpdateVisualConsoleItem(
   baseUrl,
   item
 ) {
-  var title = "Create item " + item.itemProps.type;
-  if (item.itemProps.id) {
-    title = "Update item";
+  var nameType = "";
+  switch (item.itemProps.type) {
+    case 0:
+      nameType = "Static graph";
+      break;
+    case 1:
+      nameType = "Module graph";
+      break;
+    case 2:
+      nameType = "Simple Value";
+      break;
+    case 3:
+      nameType = "Percentile";
+      break;
+    case 4:
+      nameType = "Label";
+      break;
+    case 5:
+      nameType = "Icon";
+      break;
+    case 10:
+      nameType = "Service";
+      break;
+    case 11:
+      nameType = "Group";
+      break;
+    case 12:
+      nameType = "Box";
+      break;
+    case 13:
+      nameType = "Line";
+      break;
+    case 14:
+      nameType = "Events";
+      break;
+    case 17:
+      nameType = "Donut graph";
+      break;
+    case 18:
+      nameType = "Bars graph";
+      break;
+    case 19:
+      nameType = "Clock";
+      break;
+    case 20:
+      nameType = "Color Cloud";
+      break;
+
+    default:
+      nameType = "Static graph";
+      break;
   }
+
+  var title = "Create item ";
+  if (item.itemProps.id) {
+    title = "Update item ";
+  }
+  title += nameType;
   // var props = item.props || {};
   /*
   var elementsVc = visualConsole.elements

@@ -113,6 +113,22 @@ export default class SimpleValue extends Item<SimpleValueProps> {
     return element;
   }
 
+  protected resizeElement(width: number, height: number): void {
+    console.log("estamos dentro del resize");
+
+    if (
+      this.elementRef.firstElementChild !== null &&
+      this.elementRef.firstElementChild.firstElementChild !== null
+    ) {
+      console.log(this.elementRef.firstElementChild.firstElementChild);
+      console.log(
+        this.elementRef.firstElementChild.firstElementChild.getBoundingClientRect()
+      );
+    }
+
+    super.resizeElement(width, height);
+  }
+
   /**
    * @override Item.createLabelDomElement
    * Create a new label for the visual console item.

@@ -798,6 +798,10 @@ function html_print_extended_select_for_unit(
     $fields['_timeticks_'] = 'Timeticks';
     $fields['none'] = __('none');
 
+    $default_module_custom_units = get_custom_module_units();
+
+    $fields = array_merge($fields, $default_module_custom_units);
+
     if ($no_change != 0) {
         $fields[-1] = __('No change');
     }

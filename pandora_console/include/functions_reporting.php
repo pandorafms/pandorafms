@@ -1582,7 +1582,10 @@ function reporting_event_top_n(
                         $data['module'] = $module_name[$i];
 
                         $data['value'] = $dt;
-                        $data['formated_value'] = format_for_graph($dt, 2).' '.$units[$i];
+
+                        $divisor = get_data_multiplier($units[$i]);
+
+                        $data['formated_value'] = format_for_graph($dt, 2, '.', ',', $divisor, $units[$i]);
                         $data_return[] = $data;
                     }
 
@@ -1635,12 +1638,15 @@ function reporting_event_top_n(
 
                     $data_pie_graph[$item_name] = $data_top[$i];
                     $data_hbar[$item_name]['g'] = $data_top[$i];
+
+                    $divisor = get_data_multiplier($units[$i]);
+
                     if ($show_graph == 0 || $show_graph == 1) {
                         $data = [];
                         $data['agent'] = $an;
                         $data['module'] = $module_name[$i];
                         $data['value'] = $data_top[$i];
-                        $data['formated_value'] = format_for_graph($data_top[$i], 2).' '.$units[$i];
+                        $data['formated_value'] = format_for_graph($data_top[$i], 2, '.', ',', $divisor, $units[$i]);
                         $data_return[] = $data;
                     }
 
@@ -1716,14 +1722,15 @@ function reporting_event_top_n(
                     $i++;
                 }
 
+                $unit = $data_top_values['units'][0];
                 $avg = ($avg / $i);
 
                 $return['resume']['min']['value'] = $min;
-                $return['resume']['min']['formated_value'] = format_for_graph($min, 2);
+                $return['resume']['min']['formated_value'] = format_for_graph($min, 2, '.', ',', $divisor, $unit);
                 $return['resume']['avg']['value'] = $avg;
-                $return['resume']['avg']['formated_value'] = format_for_graph($avg, 2);
+                $return['resume']['avg']['formated_value'] = format_for_graph($avg, 2, '.', ',', $divisor, $unit);
                 $return['resume']['max']['value'] = $max;
-                $return['resume']['max']['formated_value'] = format_for_graph($max, 2);
+                $return['resume']['max']['formated_value'] = format_for_graph($max, 2, '.', ',', $divisor, $unit);
             }
 
             $return['data'] = $data_return;
@@ -4897,6 +4904,8 @@ function reporting_value($report, $content, $type, $pdf=false)
         case 'max':
         case 'min':
         case 'avg':
+            $divisor = get_data_multiplier($unit);
+
             if ($content['lapse_calc'] == 0) {
                 switch ($type) {
                     case 'max':
@@ -4927,7 +4936,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
                 } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
+                    $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
                 }
             } else {
                 $return['visual_format'] = $content['visual_format'];
@@ -4935,17 +4944,17 @@ function reporting_value($report, $content, $type, $pdf=false)
                 switch ($type) {
                     case 'max':
                         $params['force_interval'] = 'max_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
 
                     case 'min':
                         $params['force_interval'] = 'min_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
 
                     case 'avg':
                         $params['force_interval'] = 'avg_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
                 }
 
@@ -4975,15 +4984,15 @@ function reporting_value($report, $content, $type, $pdf=false)
                         if ($i > $time_begin['utimestamp']) {
                             switch ($type) {
                                 case 'max':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
 
                                 case 'min':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
 
                                 case 'avg':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
                             }
                         } else {
@@ -5012,7 +5021,9 @@ function reporting_value($report, $content, $type, $pdf=false)
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
             } else {
-                $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
+                $divisor = get_data_multiplier($unit);
+
+                $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
             }
         break;
     }
@@ -7329,6 +7340,8 @@ function reporting_general($report, $content)
             }
         }
 
+        $divisor = get_data_multiplier($unit);
+
         switch ($content['group_by_agent']) {
             case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
                 $id_agent_module[$index] = $row['id_agent_module'];
@@ -7359,7 +7372,7 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                     }
                 }
             break;
@@ -7378,7 +7391,7 @@ function reporting_general($report, $content)
 
             if ($change_min) {
                 $return['min']['value'] = $data_res[$index];
-                $return['min']['formated_value'] = format_for_graph($data_res[$index], 2).' '.$unit;
+                $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                 $return['min']['agent'] = $ag_name;
                 $return['min']['module'] = $mod_name;
             }
@@ -7394,7 +7407,7 @@ function reporting_general($report, $content)
 
             if ($change_max) {
                 $return['max']['value'] = $data_res[$index];
-                $return['max']['formated_value'] = format_for_graph($data_res[$index], 2).' '.$unit;
+                $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                 $return['max']['agent'] = $ag_name;
                 $return['max']['module'] = $mod_name;
             }
@@ -7512,13 +7525,15 @@ function reporting_general($report, $content)
                         break;
                     }
 
+                    $divisor = get_data_multiplier($units[$i]);
+
                     if (!is_numeric($d) || $is_string[$i]) {
                         $data['value'] = $d;
                         // to see the chains on the table
                         $data['formated_value'] = $d;
                     } else {
                         $data['value'] = $d;
-                        $data['formated_value'] = format_for_graph($d, 2).' '.$units[$i];
+                        $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, $units[$i]);
                     }
                 }
 

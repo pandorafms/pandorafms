@@ -262,6 +262,11 @@ function format_for_graph(
     $divider=1000,
     $sufix=''
 ) {
+    // Exception to exclude modules whose unit is already formatted as KB (satellite modules)
+    if (!empty($sufix) && $sufix == 'KB') {
+        return;
+    }
+
     $shorts = [
         '',
         'K',
@@ -1994,7 +1999,12 @@ function get_snmpwalk(
     if (enterprise_installed()) {
         if ($server_to_exec != 0) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+
+            if (empty($server_data['port'])) {
+                exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            } else {
+                exec('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            }
         } else {
             exec($command_str, $output, $rc);
         }
@@ -2503,12 +2513,13 @@ function get_user_dashboards($id_user)
 /**
  * Get all the possible periods in seconds.
  *
- * @param bool Flag to show or not custom fist option
- * @param bool Show the periods by default if it is empty
+ * @param boolean $custom       Flag to show or not custom fist option
+ * @param boolean $show_default Show the periods by default if it is empty
+ * @param boolean $allow_zero   Allow the use of the value zero.
  *
- * @return The possible periods in an associative array.
+ * @return array The possible periods in an associative array.
  */
-function get_periods($custom=true, $show_default=true)
+function get_periods($custom=true, $show_default=true, $allow_zero=false)
 {
     global $config;
 
@@ -2520,6 +2531,10 @@ function get_periods($custom=true, $show_default=true)
 
     if (empty($config['interval_values'])) {
         if ($show_default) {
+            if ($allow_zero === true) {
+                $periods[0] = sprintf(__('%s seconds'), '0');
+            }
+
             $periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
             $periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
             $periods[SECONDS_1HOUR] = __('1 hour');
@@ -5493,4 +5508,109 @@ if (!function_exists('getallheaders')) {
     }
 
 
+}
+
+
+/**
+ * Update config token that contains custom module units.
+ *
+ * @param  string Name of new module unit.
+ * @return boolean Success or failure.
+ */
+function add_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_module_units = get_custom_module_units();
+
+    $custom_module_units[$value] = $value;
+
+    $new_conf = json_encode($custom_module_units);
+
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+function get_custom_module_units()
+{
+    global $config;
+
+    if (!isset($config['custom_module_units'])) {
+        $custom_module_units = [];
+    } else {
+        $custom_module_units = json_decode(
+            io_safe_output($config['custom_module_units']),
+            true
+        );
+    }
+
+    return $custom_module_units;
+}
+
+
+function delete_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_units = get_custom_module_units();
+
+    unset($custom_units[io_safe_output($value)]);
+
+    $new_conf = json_encode($custom_units);
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Get multiplier to be applied on module data in order to represent it properly. Based on setup configuration and module's unit, either 1000 or 1024 will be returned.
+ *
+ * @param string Module's unit.
+ *
+ * @return integer Multiplier.
+ */
+function get_data_multiplier($unit)
+{
+    global $config;
+
+    switch ($config['use_data_multiplier']) {
+        case 0:
+            if (strpos(strtolower($unit), 'yte') !== false) {
+                $multiplier = 1024;
+            } else {
+                $multiplier = 1000;
+            }
+        break;
+
+        case 2:
+            $multiplier = 1024;
+        break;
+
+        case 1:
+        default:
+            $multiplier = 1000;
+        break;
+    }
+
+    return $multiplier;
 }

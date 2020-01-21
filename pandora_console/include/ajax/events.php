@@ -956,7 +956,11 @@ if ($perform_event_response) {
                     break;
                 }
 
-                system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                if (empty($server_data['port'])) {
+                    system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                } else {
+                    system('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                }
             }
         } else {
             switch (PHP_OS) {

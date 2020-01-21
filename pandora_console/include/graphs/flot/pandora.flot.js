@@ -1037,6 +1037,11 @@ function pandoraFlotArea(
   var update_legend = {};
   var force_integer = 0;
   var title = params.title;
+  var divisor = params.divisor;
+
+  if (typeof divisor === "undefined") {
+    divisor = 1000;
+  }
 
   if (typeof type === "undefined" || type == "") {
     type = params.type_graph;
@@ -2443,11 +2448,6 @@ function pandoraFlotArea(
         }
       }
 
-      var y_array = format_unit_yaxes(y);
-
-      y = y_array["y"];
-      var how_bigger = y_array["unit"];
-
       var data_legend = [];
 
       // The graphs of points type and unknown graphs will dont be updated
@@ -2465,10 +2465,7 @@ function pandoraFlotArea(
             .html(
               label_aux +
                 " value = " +
-                (short_data
-                  ? number_format(y, 0, "", short_data)
-                  : parseFloat(y)) +
-                how_bigger +
+                number_format(y, 0, "", short_data, divisor) +
                 " " +
                 unit
             );
@@ -2516,20 +2513,11 @@ function pandoraFlotArea(
 
             data_legend[index] =
               " Min: " +
-              (short_data
-                ? number_format(min_y, 0, "", short_data)
-                : parseFloat(min_y)) +
-              min_bigger +
+              number_format(value[x].min, 0, unit, short_data, divisor) +
               " Max: " +
-              (short_data
-                ? number_format(max_y, 0, "", short_data)
-                : parseFloat(max_y)) +
-              max_bigger +
+              number_format(value[x].max, 0, unit, short_data, divisor) +
               " Avg: " +
-              (short_data
-                ? number_format(avg_y, 0, "", short_data)
-                : parseFloat(avg_y)) +
-              avg_bigger;
+              number_format(value[x].avg, 0, unit, short_data, divisor);
           });
 
           label_aux =
@@ -2734,12 +2722,13 @@ function pandoraFlotArea(
 
   function yFormatter(v) {
     var formatted = v;
+
     if (short_data) {
-      formatted = number_format(v, force_integer, "", short_data);
+      formatted = number_format(v, force_integer, unit, short_data, divisor);
     } else {
       // It is an integer.
       if (v - Math.floor(v) == 0) {
-        formatted = number_format(v, force_integer, "", 2);
+        formatted = number_format(v, force_integer, unit, 2, divisor);
       }
     }
 
@@ -3067,7 +3056,18 @@ function check_adaptions(graph_id) {
   });
 }
 
-function number_format(number, force_integer, unit, short_data) {
+function number_format(number, force_integer, unit, short_data, divisor) {
+  divisor = typeof divisor !== "undefined" ? divisor : 1000;
+
+  if (unit == "KB") {
+    return number + unit;
+  }
+
+  // Set maximum decimal precision to 99 in case short_data is not set.
+  if (!short_data) {
+    short_data = 99;
+  }
+
   if (force_integer) {
     if (Math.round(number) != number) {
       return "";
@@ -3080,17 +3080,15 @@ function number_format(number, force_integer, unit, short_data) {
 
   var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
   var pos = 0;
-  while (1) {
-    if (number >= 1000) {
-      //as long as the number can be divided by 1000
-      pos++; //Position in array starting with 0
-      number = number / 1000;
-    } else if (number <= -1000) {
-      pos++;
-      number = number / 1000;
-    } else {
-      break;
-    }
+
+  while (number >= divisor) {
+    // As long as the number can be divided by 1000 or 1024.
+    pos++;
+    number = number / divisor;
+  }
+
+  if (divisor) {
+    number = Math.round(number * decimals) / decimals;
   }
 
   return number + " " + shorts[pos] + unit;

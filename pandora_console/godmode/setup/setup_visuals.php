@@ -1011,6 +1011,7 @@ $row++;
     $table_report->class = 'databox filters';
     $table_report->style[0] = 'font-weight: bold;';
     $table_report->size[0] = '50%';
+
     $table_report->data = [];
 
     $table_report->data[$row][0] = __('Show report info with description').ui_print_help_tip(
@@ -1157,7 +1158,6 @@ $row++;
     html_print_table($table_report);
     echo '</fieldset>';
 
-
     // ----------------------------------------------------------------------
     // OTHER CONFIGURATION
     // ----------------------------------------------------------------------
@@ -1166,17 +1166,17 @@ $row++;
     $table_other->class = 'databox filters';
     $table_other->style[0] = 'font-weight: bold;';
     $table_other->size[0] = '50%';
+    $table_other->size[1] = '26%';
+    $table_other->size[2] = '12%';
+    $table_other->size[3] = '12%';
     $table_other->data = [];
-
-
-
 
     $table_other->data[$row][0] = __('Custom graphviz directory').ui_print_help_tip(__('Custom directory where the graphviz binaries are stored.'), true);
     $table_other->data[$row][1] = html_print_input_text(
         'graphviz_bin_dir',
         $config['graphviz_bin_dir'],
         '',
-        50,
+        25,
         255,
         true
     );
@@ -1193,8 +1193,6 @@ $row++;
         true
     );
     $row++;
-
-
 
     $table_other->data[$row][0] = __('Show only the group name');
     $table_other->data[$row][0] .= ui_print_help_tip(
@@ -1241,16 +1239,15 @@ $row++;
     // CUSTOM VALUES POST PROCESS
     // ----------------------------------------------------------------------
     $table_other->data[$row][0] = __('Custom values post process');
-    $table_other->data[$row][1] = '<table>';
-    $table_other->data[$row][1] .= __('Value').':&nbsp;'.html_print_input_text('custom_value', '', '', 25, 50, true);
-    $table_other->data[$row][1] .= '&nbsp;'.__('Text').':&nbsp;'.html_print_input_text('custom_text', '', '', 25, 50, true);
-    $table_other->data[$row][1] .= '&nbsp;';
-    $table_other->data[$row][1] .= html_print_input_hidden(
+    $table_other->data[$row][1] = __('Value').':&nbsp;'.html_print_input_text('custom_value', '', '', 25, 50, true);
+    $table_other->data[$row][2] = __('Text').':&nbsp;'.html_print_input_text('custom_text', '', '', 15, 50, true);
+    $table_other->data[$row][2] .= '&nbsp;';
+    $table_other->data[$row][2] .= html_print_input_hidden(
         'custom_value_add',
         '',
         true
     );
-    $table_other->data[$row][1] .= html_print_button(
+    $table_other->data[$row][3] = html_print_button(
         __('Add'),
         'custom_value_add_btn',
         false,
@@ -1259,10 +1256,11 @@ $row++;
         true
     );
 
-    $table_other->data[$row][1] .= '<br /><br />';
+    $row++;
 
-    $table_other->data[$row][1] .= __('Delete custom values').': ';
-    $table_other->data[$row][1] .= html_print_select(
+    $table_other->data[$row][0] = '';
+    $table_other->data[$row][1] = __('Delete custom values').': ';
+    $table_other->data[$row][2] = html_print_select(
         post_process_get_custom_values(),
         'custom_values',
         '',
@@ -1272,7 +1270,7 @@ $row++;
         true
     );
     $count_custom_postprocess = post_process_get_custom_values();
-    $table_other->data[$row][1] .= html_print_button(
+    $table_other->data[$row][3] = html_print_button(
         __('Delete'),
         'custom_values_del_btn',
         empty($count_custom_postprocess),
@@ -1286,7 +1284,8 @@ $row++;
         '',
         true
     );
-    $table_other->data[$row][1] .= '</table>';
+    $table_other->data[$row][3] .= '<br><br>';
+
     // ----------------------------------------------------------------------
     // ----------------------------------------------------------------------
     // CUSTOM INTERVAL VALUES
@@ -1301,20 +1300,50 @@ $row++;
         SECONDS_1MONTH  => __('months'),
         SECONDS_1YEAR   => __('years'),
     ];
-    $table_other->data[$row][1] = __('Add new custom value to intervals').': ';
+    $table_other->data[$row][1] = __('Value').': ';
     $table_other->data[$row][1] .= html_print_input_text('interval_value', '', '', 5, 5, true);
-    $table_other->data[$row][1] .= html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false);
-    $table_other->data[$row][1] .= html_print_button(__('Add'), 'interval_add_btn', false, '', 'class="sub next"', true);
-    $table_other->data[$row][1] .= '<br><br>';
+    $table_other->data[$row][2] = html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false);
+    $table_other->data[$row][3] = html_print_button(__('Add'), 'interval_add_btn', false, '', 'class="sub next"', true);
 
-    $table_other->data[$row][1] .= __('Delete interval').': ';
-    $table_other->data[$row][1] .= html_print_select(get_periods(false, false), 'intervals', '', '', '', '', true);
-    $table_other->data[$row][1] .= html_print_button(__('Delete'), 'interval_del_btn', empty($config['interval_values']), '', 'class="sub cancel"', true);
+    $row++;
+
+    $table_other->data[$row][0] = '';
+    $table_other->data[$row][1] = __('Delete interval').': ';
+    $table_other->data[$row][2] = html_print_select(get_periods(false, false), 'intervals', '', '', '', '', true);
+    $table_other->data[$row][3] = html_print_button(__('Delete'), 'interval_del_btn', empty($config['interval_values']), '', 'class="sub cancel"', true);
 
     $table_other->data[$row][1] .= html_print_input_hidden('interval_values', $config['interval_values'], true);
     // This hidden field will be filled from jQuery before submit
     $table_other->data[$row][1] .= html_print_input_hidden('interval_to_delete', '', true);
+    $table_other->data[$row][3] .= '<br><br>';
     // ----------------------------------------------------------------------
+    $row++;
+
+    $table_other->data[$row][0] = __('Module units');
+    $table_other->data[$row][1] = __('Value').': ';
+    $table_other->data[$row][1] .= html_print_input_text('custom_module_unit', '', '', 15, 50, true);
+    $table_other->data[$row][2] = '';
+    $table_other->data[$row][3] = html_print_button(__('Add'), 'module_unit_add_btn', false, '', 'class="sub next"', true);
+
+    $row++;
+    $table_other->data[$row][0] = '';
+    $table_other->data[$row][1] = __('Delete custom values').': ';
+    $table_other->data[$row][2] = html_print_select(get_custom_module_units(), 'module_units', '', '', '', '', true, false, true, 'w100p');
+    $table_other->data[$row][3] = html_print_button(
+        __('Delete'),
+        'custom_module_unit_del_btn',
+        empty($count_custom_postprocess),
+        '',
+        'class="sub cancel"',
+        true
+    );
+
+    $table_other->data[$row][3] .= html_print_input_hidden(
+        'custom_module_unit_to_delete',
+        '',
+        true
+    );
+
     $row++;
 
     $common_dividers = [
@@ -1332,6 +1361,14 @@ $row++;
     }
 
     $row++;
+
+    $table_other->data[$row][0] = __('Data multiplier to use in graphs/data');
+    $options_data_multiplier = [];
+    $options_data_multiplier[0] = __('Use 1024 when module unit are bytes');
+    $options_data_multiplier[1] = __('Use always 1000');
+    $options_data_multiplier[2] = __('Use always 1024');
+
+    $table_other->data[$row][1] = html_print_select($options_data_multiplier, 'use_data_multiplier', $config['use_data_multiplier'], '', '', 1, true, false, false);
 
 
     echo '<fieldset>';
@@ -1547,7 +1584,20 @@ $(document).ready (function () {
     });
     //------------------------------------------------------------------
     
-    
+    //------------------------------------------------------------------
+    // CUSTOM MODULE UNITS
+    //------------------------------------------------------------------
+    $("#button-custom_module_unit_del_btn").click( function()  {
+        var unit_selected = $('#module_units option:selected').val();
+        $('#hidden-custom_module_unit_to_delete').val(unit_selected);
+        $('#submit-update_button').trigger('click');
+    });
+
+    $("#button-module_unit_add_btn").click( function() {
+        $('#submit-update_button').trigger('click');
+    });
+    //------------------------------------------------------------------
+
     // Juanma (06/05/2014) New feature: Custom front page for reports  
     var custom_report = $('#checkbox-custom_report_front')
         .prop('checked');

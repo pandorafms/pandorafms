@@ -1281,6 +1281,28 @@ function config_update_config()
                     }
 
                     // --------------------------------------------------
+                    // --------------------------------------------------
+                    // MODULE CUSTOM UNITS
+                    // --------------------------------------------------
+                    $custom_unit = get_parameter('custom_module_unit');
+                    $custom_unit_to_delete = get_parameter('custom_module_unit_to_delete', '');
+
+                    if (!empty($custom_unit)) {
+                        if (!add_custom_module_unit(
+                            $custom_unit
+                        )
+                        ) {
+                            $error_update[] = __('Add custom module unit');
+                        }
+                    }
+
+                    if (!empty($custom_unit_to_delete)) {
+                        if (!delete_custom_module_unit($custom_unit_to_delete)) {
+                            $error_update[] = __('Delete custom module unit');
+                        }
+                    }
+
+                    // --------------------------------------------------
                     if (!config_update_value('custom_report_info', get_parameter('custom_report_info'))) {
                         $error_update[] = __('Custom report info');
                     }
@@ -1320,6 +1342,10 @@ function config_update_config()
 
                     if (!config_update_value('csv_divider', (string) get_parameter('csv_divider', ';'))) {
                         $error_update[] = __('CSV divider');
+                    }
+
+                    if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
+                        $error_update[] = __('Use data multiplier');
                     }
                 break;
 
@@ -2823,6 +2849,10 @@ function config_process_config()
 
     if (!isset($config['csv_divider'])) {
         config_update_value('csv_divider', ';');
+    }
+
+    if (!isset($config['use_data_multiplier'])) {
+        config_update_value('use_data_multiplier', '1');
     }
 
     if (!isset($config['command_snapshot'])) {

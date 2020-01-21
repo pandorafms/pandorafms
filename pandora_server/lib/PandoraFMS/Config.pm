@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.742";
-my $pandora_build = "200116";
+my $pandora_build = "200121";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -275,7 +275,8 @@ sub pandora_load_config {
 	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
 	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
-	$pa_config->{"rcmd_timeout"} = 30; # Introduced on 7.0.740
+	$pa_config->{"rcmd_timeout"} = 10; # Introduced on 7.0.740
+	$pa_config->{"rcmd_timeout_bin"} = '/usr/bin/timeout'; # Introduced on 7.0.743
 	$pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
 	$pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
@@ -805,6 +806,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^rcmd_timeout\s+([0-9]*)/i) {
 			$pa_config->{"rcmd_timeout"} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^rcmd_timeout_bin\s(.*)/i) {
+			$pa_config->{"rcmd_timeout_bin"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^tcp_checks\s+([0-9]*)/i) {
 			$pa_config->{"tcp_checks"} = clean_blank($1);

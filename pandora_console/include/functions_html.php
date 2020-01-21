@@ -798,6 +798,10 @@ function html_print_extended_select_for_unit(
     $fields['_timeticks_'] = 'Timeticks';
     $fields['none'] = __('none');
 
+    $default_module_custom_units = get_custom_module_units();
+
+    $fields = array_merge($fields, $default_module_custom_units);
+
     if ($no_change != 0) {
         $fields[-1] = __('No change');
     }
@@ -988,20 +992,24 @@ function html_print_extended_select_for_post_process(
 /**
  * Render a pair of select for times and text box for set the time more fine.
  *
- * @param string Select form name
- * @param variant Current selected value. Can be a single value or an
- * array of selected values (in combination with multiple)
- * @param string Javascript onChange (select) code.
- * @param string Label when nothing is selected.
- * @param variant Value when nothing is selected
- * @param integer                                                                                            $size Size of the input.
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param bool Wherter to assign to combo a unique name (to have more than one on same page, like dashboard)
- *
+ * @param string  $name          Select form name
+ * @param variant $selected      Current selected value. Can be a single value or an array of selected values (in combination with multiple)
+ * @param string  $script        Javascript onChange (select) code.
+ * @param string  $nothing       Label when nothing is selected.
+ * @param variant $nothing_value Value when nothing is selected
+ * @param integer $size          Size of the input.
+ * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean $select_style  Wherter to assign to combo a unique name (to have more than one on same page, like dashboard)
+ * @param boolean $unique_name
+ * @param string  $class
+ * @param boolean $readonly
+ * @param string  $custom_fields
+ * @param string  $style_icon
+ * @param boolean $no_change
+ * @param boolean $allow_zero    Allow the use of the value zero.
+
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_extended_select_for_time(
     $name,
     $selected='',
@@ -1016,14 +1024,15 @@ function html_print_extended_select_for_time(
     $readonly=false,
     $custom_fields=false,
     $style_icon='',
-    $no_change=false
+    $no_change=false,
+    $allow_zero=false
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
     if ($custom_fields) {
         $fields = $custom_fields;
     } else {
-        $fields = get_periods();
+        $fields = get_periods(true, true, $allow_zero);
     }
 
     if ($no_change) {
@@ -1045,7 +1054,14 @@ function html_print_extended_select_for_time(
         }
     }
 
-    if (($selected !== false) && (!isset($fields[$selected]) && $selected != 0)) {
+    // Allow the use of the value zero.
+    if ($allow_zero === true) {
+        $selected_zero = true;
+    } else {
+        $selected_zero = ($selected != 0) ? true : false;
+    }
+
+    if (($selected !== false) && (!isset($fields[$selected]) && $selected_zero)) {
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
@@ -1136,7 +1152,7 @@ function html_print_extended_select_for_time(
     echo '</div>';
     echo "<script type='text/javascript'>
 		$(document).ready (function () {
-			period_select_init('$uniq_name');
+			period_select_init('$uniq_name', $allow_zero);
 			period_select_events('$uniq_name');
 		});
 		function period_select_".$name."_update(seconds) {

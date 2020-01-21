@@ -64,12 +64,22 @@ if ($wmiexplore) {
     $processes_name_field = 1;
     if (enterprise_installed() && (int) $server_to_exec != 0) {
         $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-        exec(
-            'ssh pandora_exec_proxy@'.$server_data['ip_address']."
-            '".$wmi_processes."'",
-            $output,
-            $rc
-        );
+
+        if (empty($server_data['port'])) {
+            exec(
+                'ssh pandora_exec_proxy@'.$server_data['ip_address']."
+                '".$wmi_processes."'",
+                $output,
+                $rc
+            );
+        } else {
+            exec(
+                'ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address']."
+                '".$wmi_processes."'",
+                $output,
+                $rc
+            );
+        }
     } else {
         exec($wmi_processes, $output);
     }
@@ -110,12 +120,21 @@ if ($wmiexplore) {
                     'id_server',
                     $server_to_exec
                 );
+            if (empty($server_data['port'])) {
                 exec(
                     'ssh pandora_exec_proxy@'.$server_data['ip_address']."
-                    '".$wmi_services."'",
+                        '".$wmi_services."'",
                     $output,
                     $rc
                 );
+            } else {
+                exec(
+                    'ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address']."
+                        '".$wmi_services."'",
+                    $output,
+                    $rc
+                );
+            }
         } else {
             exec($wmi_services, $output);
         }
@@ -145,12 +164,22 @@ if ($wmiexplore) {
 
         if (enterprise_installed() && (int) $server_to_exec != 0) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec(
-                'ssh pandora_exec_proxy@'.$server_data['ip_address']."
-                '".$wmi_disks."'",
-                $output,
-                $rc
-            );
+
+            if (empty($server_data['port'])) {
+                exec(
+                    'ssh pandora_exec_proxy@'.$server_data['ip_address']."
+                    '".$wmi_disks."'",
+                    $output,
+                    $rc
+                );
+            } else {
+                exec(
+                    'ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address']."
+                    '".$wmi_disks."'",
+                    $output,
+                    $rc
+                );
+            }
         } else {
             exec($wmi_disks, $output);
         }
@@ -469,7 +498,7 @@ if (enterprise_installed()) {
     }
 }
 
-$table->data[2][0] = '<b>'.__('Server to execute command').'</b>';
+$table->data[2][0] = '<b>'.__('Server to execute command').'</b>'.ui_print_help_icon('agent_snmp_explorer_tab', true);
 $table->data[2][1] = html_print_select(
     $servers_to_exec,
     'server_to_exec',

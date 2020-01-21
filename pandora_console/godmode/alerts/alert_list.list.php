@@ -734,12 +734,21 @@ foreach ($simple_alerts as $alert) {
                             $data[3] .= __('Threshold');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos2">';
-                            $data[3] .= html_print_input_text(
+                            $data[3] .= html_print_extended_select_for_time(
                                 'module_action_threshold',
+                                0,
                                 '',
                                 '',
-                                4,
-                                10,
+                                '',
+                                false,
+                                true,
+                                false,
+                                true,
+                                '',
+                                false,
+                                false,
+                                '',
+                                false,
                                 true
                             );
                         $data[3] .= '</td>';

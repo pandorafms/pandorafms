@@ -177,7 +177,23 @@ $table->data[2][1] .= '<div id="command_description" style=""></div>';
 $table->colspan[2][1] = 2;
 
 $table->data[3][0] = __('Threshold');
-$table->data[3][1] = html_print_input_text('action_threshold', $action_threshold, '', 5, 7, true);
+$table->data[3][1] = html_print_extended_select_for_time(
+    'action_threshold',
+    $action_threshold,
+    '',
+    '',
+    '',
+    false,
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    '',
+    false,
+    true
+);
 $table->colspan[3][1] = 2;
 
 $table->data[4][0] = '';

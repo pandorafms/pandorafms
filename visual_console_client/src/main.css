@@ -393,6 +393,18 @@ label span.p-slider {
   width: 30px;
 }
 
+li.interval-color-ranges > label,
+li#li-default-ranges > label {
+  margin-right: 15px;
+}
+
+li.interval-color-ranges > input[type="number"],
+li#li-default-ranges > input[type="number"] {
+  width: 80px;
+}
+
+li.interval-color-ranges > label:not(:first-child),
+li#li-default-ranges > label:not(:first-child),
 li#li-size-item > label:not(:first-child),
 li#li-position-item > label:not(:first-child) {
   width: initial;

@@ -36,23 +36,11 @@ $createVisualConsoleItem = (bool) get_parameter('createVisualConsoleItem');
 $getVisualConsoleItem = (bool) get_parameter('getVisualConsoleItem');
 $removeVisualConsoleItem = (bool) get_parameter('removeVisualConsoleItem');
 $copyVisualConsoleItem = (bool) get_parameter('copyVisualConsoleItem');
-$getGroupsVisualConsoleItem = (bool) get_parameter(
-    'getGroupsVisualConsoleItem'
-);
-$getAllVisualConsole = (bool) get_parameter('getAllVisualConsole');
 $getImagesVisualConsole = (bool) get_parameter('getImagesVisualConsole');
+$createColorRangeVisualConsole = (bool) get_parameter(
+    'createColorRangeVisualConsole'
+);
 $getTimeZoneVisualConsole = (bool) get_parameter('getTimeZoneVisualConsole');
-$autocompleteAgentsVisualConsole = (bool) get_parameter(
-    'autocompleteAgentsVisualConsole'
-);
-$autocompleteModuleVisualConsole = (bool) get_parameter(
-    'autocompleteModuleVisualConsole'
-);
-
-$getCustomGraphVisualConsoleItem = (bool) get_parameter(
-    'getCustomGraphVisualConsoleItem'
-);
-
 $serviceListVisualConsole = (bool) get_parameter(
     'serviceListVisualConsole'
 );
@@ -253,209 +241,69 @@ if ($getVisualConsole === true) {
 
     echo $result;
     return;
-} else if ($getGroupsVisualConsoleItem === true) {
-    $data = users_get_groups_for_select(
-        $config['id_user'],
-        'AR',
-        true,
-        true
-    );
-
-    $result = array_map(
-        function ($id) use ($data) {
-            return [
-                'value' => $id,
-                'text'  => $data[$id],
-            ];
-        },
-        array_keys($data)
-    );
-
-    echo json_encode($result);
-    return;
-} else if ($getAllVisualConsole === true) {
-    // TODO: Remove.
 } else if ($getImagesVisualConsole) {
     $img = get_parameter('nameImg', 'appliance');
     $only = (bool) get_parameter('only', 0);
     $count = Item::imagesElementsVC($img, $only);
     echo json_encode($count);
     return;
+} else if ($createColorRangeVisualConsole) {
+    $baseUrl = ui_get_full_url('/', false, false, false);
+    $from = get_parameter('from', 0);
+    $to = get_parameter('to', 0);
+    $color = get_parameter('color', 0);
+
+    $rangeFrom = [
+        'name'   => 'rangeFrom[]',
+        'type'   => 'number',
+        'value'  => $from,
+        'return' => true,
+    ];
+
+    $rangeTo = [
+        'name'   => 'rangeTo[]',
+        'type'   => 'number',
+        'value'  => $to,
+        'return' => true,
+    ];
+
+    $rangeColor = [
+        'wrapper' => 'div',
+        'name'    => 'rangeColor[]',
+        'type'    => 'color',
+        'value'   => $color,
+        'return'  => true,
+    ];
+
+    $removeBtn = [
+        'name'       => 'Remove',
+        'label'      => '',
+        'type'       => 'button',
+        'attributes' => 'class="remove-item-img"',
+        'return'     => true,
+        'script'     => 'removeColorRange(\''.$baseUrl.'\',\''.$visualConsoleId.'\')',
+    ];
+
+    $liRangeColor = '<li class="interval-color-ranges flex-row flex-start w100p">';
+    $liRangeColor .= '<label>'.__('From').'</label>';
+    $liRangeColor .= html_print_input($rangeFrom);
+    $liRangeColor .= '<label>'.__('To').'</label>';
+    $liRangeColor .= html_print_input($rangeTo);
+    $liRangeColor .= '<label>'.__('Color').'</label>';
+    $liRangeColor .= '<div>';
+    $liRangeColor .= html_print_input($rangeColor);
+    $liRangeColor .= '</div>';
+    $liRangeColor .= '<label></label>';
+    $liRangeColor .= html_print_input($removeBtn);
+    $liRangeColor .= '<li>';
+
+    echo $liRangeColor;
+    return;
 } else if ($getTimeZoneVisualConsole) {
     $zone = get_parameter('zone', 'Europe');
     $zones = Item::zonesVC($zone);
     echo json_encode($zones);
     return;
-} else if ($autocompleteAgentsVisualConsole) {
-    $params = (array) get_parameter('data', []);
-
-    $string = $params['value'];
-
-    // TODO: ACL.
-    $id_group = (int) get_parameter('id_group', -1);
-
-    if ($id_group != -1) {
-        if ($id_group == 0) {
-            $user_groups = users_get_groups(
-                $config['id_user'],
-                'AR',
-                true
-            );
-            $filter['id_grupo'] = array_keys($user_groups);
-        } else {
-            $filter['id_grupo'] = $id_group;
-        }
-    }
-
-    $filter = [];
-    $filter['disabled'] = 0;
-
-    $filter[] = sprintf(
-        '(alias LIKE "%%%s%%")
-        OR (alias NOT LIKE "%%%s%%"
-            AND nombre COLLATE utf8_general_ci LIKE "%%%s%%")
-        OR (alias NOT LIKE "%%%s%%"
-            AND nombre COLLATE utf8_general_ci NOT LIKE "%%%s%%"
-            AND direccion LIKE "%%%s%%")
-        OR (alias NOT LIKE "%%%s%%"
-            AND nombre COLLATE utf8_general_ci NOT LIKE "%%%s%%"
-            AND direccion NOT LIKE "%%%s%%"
-            AND comentarios LIKE "%%%s%%"
-        )',
-        $string,
-        $string,
-        $string,
-        $string,
-        $string,
-        $string,
-        $string,
-        $string,
-        $string,
-        $string
-    );
-
-    $data = [];
-    if (is_metaconsole() === true) {
-        enterprise_include_once('include/functions_metaconsole.php');
-        $metaconsole_connections = metaconsole_get_connection_names();
-        // For all nodes.
-        if (isset($metaconsole_connections) === true
-            && is_array($metaconsole_connections) === true
-        ) {
-            foreach ($metaconsole_connections as $metaconsole) {
-                // Get server connection data.
-                $server_data = metaconsole_get_connection($metaconsole);
-
-                // Establishes connection.
-                if (metaconsole_load_external_db($server_data) !== NOERR) {
-                    continue;
-                }
-
-                $agents = agents_get_agents(
-                    $filter,
-                    [
-                        'id_agente',
-                        'nombre',
-                        'direccion',
-                        'alias',
-                    ]
-                );
-
-                if (isset($agents) === true && is_array($agents) === true) {
-                    foreach ($agents as $agent) {
-                        $data[] = [
-                            'id'              => $agent['id_agente'],
-                            'name'            => io_safe_output(
-                                $agent['nombre']
-                            ),
-                            'alias'           => io_safe_output(
-                                $agent['alias']
-                            ),
-                            'ip'              => io_safe_output(
-                                $agent['direccion']
-                            ),
-                            'filter'          => 'alias',
-                            'metaconsoleId'   => $server_data['id'],
-                            'metaconsoleName' => $metaconsole,
-                        ];
-                    }
-                }
-
-                metaconsole_restore_db();
-            }
-        }
-    } else {
-        $agents = agents_get_agents(
-            $filter,
-            [
-                'id_agente',
-                'nombre',
-                'direccion',
-                'alias',
-            ]
-        );
-        if (isset($agents) === true && is_array($agents) === true) {
-            foreach ($agents as $agent) {
-                $data[] = [
-                    'id'     => $agent['id_agente'],
-                    'name'   => io_safe_output($agent['nombre']),
-                    'alias'  => io_safe_output($agent['alias']),
-                    'ip'     => io_safe_output($agent['direccion']),
-                    'filter' => 'alias',
-                ];
-            }
-        }
-    }
-
-    echo json_encode($data);
-    return;
-} else if ($autocompleteModuleVisualConsole) {
-    $data = (array) get_parameter('data', []);
-
-    $result = [];
-    if (is_metaconsole()) {
-        enterprise_include_once('include/functions_metaconsole.php');
-        $connection = metaconsole_get_connection_by_id($data['metaconsoleId']);
-        if (metaconsole_connect($connection) !== NOERR) {
-            echo json_encode($result);
-            return;
-        }
-    }
-
-    if ($data['type'] == DONUT_GRAPH) {
-        // Only type sting.
-        $filter = sprintf(
-            'id_tipo_modulo IN (17,23,3,10,33)'
-        );
-    }
-
-    $agent_modules = agents_get_modules(
-        $data['agentId'],
-        false,
-        $filter
-    );
-
-    if (is_metaconsole()) {
-        // Restore db connection.
-        metaconsole_restore_db();
-    }
-
-    if (isset($agent_modules) === true && is_array($agent_modules) === true) {
-        $result = array_map(
-            function ($id) use ($agent_modules) {
-                return [
-                    'moduleId'   => $id,
-                    'moduleName' => io_safe_output($agent_modules[$id]),
-                ];
-            },
-            array_keys($agent_modules)
-        );
-    }
-
-    echo json_encode($result);
-    return;
-} else if ($getCustomGraphVisualConsoleItem) {
-    // Remove.
 } else if ($serviceListVisualConsole) {
     if (!enterprise_installed()) {
         echo json_encode(false);

@@ -1761,9 +1761,20 @@ button.deploy,
 input.deploy {
   background-image: url(../../images/input_deploy.png);
 }
-/*#table-add-item select, #table-add-sla select {
-	width: 180px;
-}*/
+
+button.add-item-img,
+input.add-item-img {
+  background-image: url(../../images/add.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+button.remove-item-img,
+input.remove-item-img {
+  background-image: url(../../images/delete.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
 
 /* end of classes for event priorities */
 div#main_pure {

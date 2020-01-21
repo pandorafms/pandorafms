@@ -467,7 +467,25 @@ class View extends \HTML
             break;
 
             case COLOR_CLOUD:
-                // TODO:XXX.
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['defaultColor'] = \get_parameter('defaultColor');
+
+                $rangeFrom = \get_parameter('rangeFrom');
+                $rangeTo = \get_parameter('rangeTo');
+                $rangeColor = \get_parameter('rangeColor');
+
+                $arrayRangeColor = [];
+                foreach ($rangeFrom as $key => $value) {
+                    $arrayRangeColor[$key] = [
+                        'color'     => $rangeColor[$key],
+                        'fromValue' => $value,
+                        'toValue'   => $rangeTo[$key],
+                    ];
+                }
+
+                $data['colorRanges'] = $arrayRangeColor;
             break;
 
             case SERVICE:

@@ -824,140 +824,6 @@ function createVisualConsoleItem(baseUrl, vcId, data, callback) {
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function autocompleteAgentsVisualConsole(baseUrl, vcId, data, callback) {
-  // var apiPath = baseUrl + "/include/rest-api";
-  var apiPath = baseUrl + "/ajax.php";
-  var jqXHR = null;
-
-  // Cancel the ajax requests.
-  var abort = function(textStatus) {
-    if (textStatus == null) textStatus = "abort";
-
-    // -- XMLHttpRequest.readyState --
-    // Value	State	  Description
-    // 0	    UNSENT	Client has been created. open() not called yet.
-    // 4	    DONE   	The operation is complete.
-
-    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
-      jqXHR.abort(textStatus);
-  };
-
-  // Failed request handler.
-  var handleFail = function(jqXHR, textStatus, errorThrown) {
-    abort();
-    // Manually aborted or not.
-    if (textStatus === "abort") {
-      callback();
-    } else {
-      var error = new Error(errorThrown);
-      error.request = jqXHR;
-      callback(error);
-    }
-  };
-
-  // Function which handle success case.
-  var handleSuccess = function(data) {
-    callback(null, data);
-  };
-
-  // Visual Console container request.
-  jqXHR = jQuery
-    .post(
-      apiPath,
-      {
-        page: "include/rest-api/index",
-        autocompleteAgentsVisualConsole: 1,
-        visualConsoleId: vcId,
-        data: data
-      },
-      "json"
-    )
-    .done(handleSuccess)
-    .fail(handleFail);
-
-  // Abortable.
-  return {
-    abort: abort
-  };
-}
-
-/**
- * Fetch a Visual Console's structure and its items.
- * @param {string} baseUrl Base URL to build the API path.
- * @param {number} vcId Identifier of the Visual Console.
- * @param {number} vcItemId Identifier of the Visual Console's item.
- * @param {Object} data Data we want to save.
- * @param {function} callback Function to be executed on request success or fail.
- * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
- */
-// eslint-disable-next-line no-unused-vars
-function autocompleteModuleVisualConsole(baseUrl, vcId, data, callback) {
-  // var apiPath = baseUrl + "/include/rest-api";
-  var apiPath = baseUrl + "/ajax.php";
-  var jqXHR = null;
-
-  // Cancel the ajax requests.
-  var abort = function(textStatus) {
-    if (textStatus == null) textStatus = "abort";
-
-    // -- XMLHttpRequest.readyState --
-    // Value	State	  Description
-    // 0	    UNSENT	Client has been created. open() not called yet.
-    // 4	    DONE   	The operation is complete.
-
-    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
-      jqXHR.abort(textStatus);
-  };
-
-  // Failed request handler.
-  var handleFail = function(jqXHR, textStatus, errorThrown) {
-    abort();
-    // Manually aborted or not.
-    if (textStatus === "abort") {
-      callback();
-    } else {
-      var error = new Error(errorThrown);
-      error.request = jqXHR;
-      callback(error);
-    }
-  };
-
-  // Function which handle success case.
-  var handleSuccess = function(data) {
-    callback(null, data);
-  };
-
-  // Visual Console container request.
-  jqXHR = jQuery
-    .post(
-      apiPath,
-      {
-        page: "include/rest-api/index",
-        autocompleteModuleVisualConsole: 1,
-        visualConsoleId: vcId,
-        data: data
-      },
-      "json"
-    )
-    .done(handleSuccess)
-    .fail(handleFail);
-
-  // Abortable.
-  return {
-    abort: abort
-  };
-}
-
-/**
- * Fetch a Visual Console's structure and its items.
- * @param {string} baseUrl Base URL to build the API path.
- * @param {number} vcId Identifier of the Visual Console.
- * @param {number} vcItemId Identifier of the Visual Console's item.
- * @param {Object} data Data we want to save.
- * @param {function} callback Function to be executed on request success or fail.
- * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
- */
-// eslint-disable-next-line no-unused-vars
 function serviceListVisualConsole(baseUrl, vcId, data, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
@@ -1136,195 +1002,6 @@ function removeVisualConsoleItem(baseUrl, vcId, vcItemId, callback) {
         removeVisualConsoleItem: 1,
         visualConsoleId: vcId,
         visualConsoleItemId: vcItemId
-      },
-      "json"
-    )
-    .done(handleSuccess)
-    .fail(handleFail);
-
-  // Abortable.
-  return {
-    abort: abort
-  };
-}
-
-/**
- * Fetch groups access user.
- * @param {string} baseUrl Base URL to build the API path.
- * @param {number} vcId Identifier of the Visual Console.
- * @param {function} callback Function to be executed on request success or fail.
- * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
- */
-// eslint-disable-next-line no-unused-vars
-function getGroupsVisualConsoleItem(baseUrl, vcId, callback) {
-  var apiPath = baseUrl + "/ajax.php";
-  var jqXHR = null;
-
-  // Cancel the ajax requests.
-  var abort = function(textStatus) {
-    if (textStatus == null) textStatus = "abort";
-
-    // -- XMLHttpRequest.readyState --
-    // Value	State	  Description
-    // 0	    UNSENT	Client has been created. open() not called yet.
-    // 4	    DONE   	The operation is complete.
-
-    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
-      jqXHR.abort(textStatus);
-  };
-
-  // Failed request handler.
-  var handleFail = function(jqXHR, textStatus, errorThrown) {
-    abort();
-    // Manually aborted or not.
-    if (textStatus === "abort") {
-      callback();
-    } else {
-      var error = new Error(errorThrown);
-      error.request = jqXHR;
-      callback(error);
-    }
-  };
-
-  // Function which handle success case.
-  var handleSuccess = function(data) {
-    callback(null, data);
-  };
-
-  // Visual Console container request.
-  jqXHR = jQuery
-    .get(
-      apiPath,
-      {
-        page: "include/rest-api/index",
-        getGroupsVisualConsoleItem: 1,
-        visualConsoleId: vcId
-      },
-      "json"
-    )
-    .done(handleSuccess)
-    .fail(handleFail);
-
-  // Abortable.
-  return {
-    abort: abort
-  };
-}
-
-/**
- * Fetch groups access user.
- * @param {string} baseUrl Base URL to build the API path.
- * @param {number} vcId Identifier of the Visual Console.
- * @param {function} callback Function to be executed on request success or fail.
- * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
- */
-// eslint-disable-next-line no-unused-vars
-function getCustomGraphVisualConsoleItem(baseUrl, vcId, callback) {
-  var apiPath = baseUrl + "/ajax.php";
-  var jqXHR = null;
-
-  // Cancel the ajax requests.
-  var abort = function(textStatus) {
-    if (textStatus == null) textStatus = "abort";
-
-    // -- XMLHttpRequest.readyState --
-    // Value	State	  Description
-    // 0	    UNSENT	Client has been created. open() not called yet.
-    // 4	    DONE   	The operation is complete.
-
-    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
-      jqXHR.abort(textStatus);
-  };
-
-  // Failed request handler.
-  var handleFail = function(jqXHR, textStatus, errorThrown) {
-    abort();
-    // Manually aborted or not.
-    if (textStatus === "abort") {
-      callback();
-    } else {
-      var error = new Error(errorThrown);
-      error.request = jqXHR;
-      callback(error);
-    }
-  };
-
-  // Function which handle success case.
-  var handleSuccess = function(data) {
-    callback(null, data);
-  };
-
-  // Visual Console container request.
-  jqXHR = jQuery
-    .get(
-      apiPath,
-      {
-        page: "include/rest-api/index",
-        getCustomGraphVisualConsoleItem: 1,
-        visualConsoleId: vcId
-      },
-      "json"
-    )
-    .done(handleSuccess)
-    .fail(handleFail);
-
-  // Abortable.
-  return {
-    abort: abort
-  };
-}
-
-/**
- * Fetch groups access user.
- * @param {string} baseUrl Base URL to build the API path.
- * @param {number} vcId Identifier of the Visual Console.
- * @param {function} callback Function to be executed on request success or fail.
- * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
- */
-// eslint-disable-next-line no-unused-vars
-function getAllVisualConsole(baseUrl, vcId, callback) {
-  var apiPath = baseUrl + "/ajax.php";
-  var jqXHR = null;
-
-  // Cancel the ajax requests.
-  var abort = function(textStatus) {
-    if (textStatus == null) textStatus = "abort";
-
-    // -- XMLHttpRequest.readyState --
-    // Value	State	  Description
-    // 0	    UNSENT	Client has been created. open() not called yet.
-    // 4	    DONE   	The operation is complete.
-
-    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
-      jqXHR.abort(textStatus);
-  };
-
-  // Failed request handler.
-  var handleFail = function(jqXHR, textStatus, errorThrown) {
-    abort();
-    // Manually aborted or not.
-    if (textStatus === "abort") {
-      callback();
-    } else {
-      var error = new Error(errorThrown);
-      error.request = jqXHR;
-      callback(error);
-    }
-  };
-
-  // Function which handle success case.
-  var handleSuccess = function(data) {
-    callback(null, data);
-  };
-
-  // Visual Console container request.
-  jqXHR = jQuery
-    .get(
-      apiPath,
-      {
-        page: "include/rest-api/index",
-        getAllVisualConsole: 1,
-        visualConsoleId: vcId
       },
       "json"
     )
@@ -1580,326 +1257,6 @@ function createOrUpdateVisualConsoleItem(
     var done = e.done;
 
     switch (identifier) {
-      case "parent":
-        var data = visualConsole.elements
-          .filter(function(item) {
-            return item.props.id !== params.id;
-          })
-          .map(function(item) {
-            return {
-              value: item.props.id,
-              text: VisualConsole.itemDescriptiveName(item)
-            };
-          });
-
-        done(null, data);
-        break;
-      case "acl-group":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var abortable = getGroupsVisualConsoleItem(
-              baseUrl,
-              visualConsole.props.id,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
-      case "custom-graph-list":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var abortable = getCustomGraphVisualConsoleItem(
-              baseUrl,
-              visualConsole.props.id,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
-      case "link-console":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var abortable = getAllVisualConsole(
-              baseUrl,
-              visualConsole.props.id,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
-      case "image-console":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var abortable = getImagesVisualConsole(
-              baseUrl,
-              visualConsole.props.id,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
-      case "autocomplete-agent":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var dataObject = {
-              value: params.value,
-              type: params.type
-            };
-            var abortable = autocompleteAgentsVisualConsole(
-              baseUrl,
-              visualConsole.props.id,
-              dataObject,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
-      case "autocomplete-module":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var abortable = autocompleteModuleVisualConsole(
-              baseUrl,
-              visualConsole.props.id,
-              params,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
       case "service-list":
         asyncTaskManager
           .add(identifier + "-" + params.id, function(doneAsyncTask) {
@@ -2098,139 +1455,6 @@ function createOrUpdateVisualConsoleItem(
     console.log("Form submit", e.data);
     $formElement.dialog("close");
   });
-
-  $formElement.dialog({
-    title: formContainer.title,
-    modal: true,
-    resizable: false,
-    draggable: true,
-    height: 600,
-    width: 700,
-    open: function() {
-      tinymce.init({
-        selector: "#tinyMCE_editor",
-        theme: "advanced",
-        content_css: baseUrl + "include/styles/pandora.css",
-        theme_advanced_font_sizes:
-          "4pt=.visual_font_size_4pt, " +
-          "6pt=.visual_font_size_6pt, " +
-          "8pt=.visual_font_size_8pt, " +
-          "10pt=.visual_font_size_10pt, " +
-          "12pt=.visual_font_size_12pt, " +
-          "14pt=.visual_font_size_14pt, " +
-          "18pt=.visual_font_size_18pt, " +
-          "24pt=.visual_font_size_24pt, " +
-          "28pt=.visual_font_size_28pt, " +
-          "36pt=.visual_font_size_36pt, " +
-          "48pt=.visual_font_size_48pt, " +
-          "60pt=.visual_font_size_60pt, " +
-          "72pt=.visual_font_size_72pt, " +
-          "84pt=.visual_font_size_84pt, " +
-          "96pt=.visual_font_size_96pt, " +
-          "116pt=.visual_font_size_116pt, " +
-          "128pt=.visual_font_size_128pt, " +
-          "140pt=.visual_font_size_140pt, " +
-          "154pt=.visual_font_size_154pt, " +
-          "196pt=.visual_font_size_196pt",
-        theme_advanced_toolbar_location: "top",
-        theme_advanced_toolbar_align: "left",
-        theme_advanced_buttons1:
-          "bold,italic, |, justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link, |, fontselect, forecolor, fontsizeselect, |,code",
-        theme_advanced_buttons2: "",
-        theme_advanced_buttons3: "",
-        theme_advanced_statusbar_location: "none"
-      });
-    },
-    beforeClose: function() {
-      //Remove tinyMCE.
-      tinymce.remove("#tinyMCE_editor");
-
-      //Danguerous empty form if necessary for cleaned IDs.
-      $formElement.empty();
-    },
-    buttons: [
-      {
-        text: "Cancel",
-        class:
-          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-        click: function() {
-          $formElement.dialog("close");
-        }
-      },
-      {
-        text: "Reset",
-        class:
-          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-        click: function() {
-          console.log("entra");
-          formContainer.reset();
-        }
-      },
-      {
-        text: props.id ? "Update" : "Create",
-        class:
-          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-        click: function() {
-          // Remove input class error.
-          var errorInputValidate = this.getElementsByClassName(
-            "error-input-validate"
-          );
-          if (errorInputValidate.length) {
-            for (var i = 0; i < errorInputValidate.length; i++) {
-              errorInputValidate
-                .item(i)
-                .classList.remove("error-input-validate");
-            }
-          }
-
-          // Remove element P error in form.
-          var errorPValidate = this.getElementsByClassName("error-p-validate");
-          if (errorPValidate.length) {
-            for (var index = 0; index < errorPValidate.length; index++) {
-              errorPValidate.item(index).remove();
-            }
-          }
-
-          // Check validate form.
-          if (this.checkValidity()) {
-            // Trigered simulate button submit.
-            this.dispatchEvent(new Event("submit"));
-          } else {
-            // First Element form invalid.
-            var elementFormInvalid = this.querySelectorAll(":invalid")[0];
-
-            // Focus invalid element.
-            elementFormInvalid.focus();
-
-            // Add class list error invalid element.
-            elementFormInvalid.classList.add("error-input-validate");
-
-            // Create Element message error.
-            var pErrorValidate = document.createElement("p");
-            pErrorValidate.classList.add("error-p-validate");
-            // Message error element invalid.
-            pErrorValidate.textContent = elementFormInvalid.validationMessage;
-
-            // Append parent element.
-            if (
-              elementFormInvalid.parentElement.classList.contains(
-                "div-input-group"
-              )
-            ) {
-              elementFormInvalid.parentElement.appendChild(pErrorValidate);
-            } else {
-              // TODO: Very ugly
-              elementFormInvalid.parentNode.parentNode.parentNode.parentNode.appendChild(
-                pErrorValidate
-              );
-            }
-          }
-        }
-      }
-    ]
-  });
-  // TODO: Add submit and reset button.
-
   */
 }
 
@@ -2415,6 +1639,117 @@ function getImagesVisualConsole(baseUrl, vcId, nameImg, only, callback) {
         only: only
       },
       "json"
+    )
+    .done(handleSuccess)
+    .fail(handleFail);
+
+  // Abortable.
+  return {
+    abort: abort
+  };
+}
+
+/**
+ * Create Color range.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {int} vcId Identifier of the Visual Console.
+ * @return {Void}
+ */
+// eslint-disable-next-line no-unused-vars
+function createColorRange(baseUrl, vcId) {
+  var from = document.getElementById("rangeDefaultFrom").value;
+  var to = document.getElementById("rangeDefaultTo").value;
+  var color = document.getElementById("color-rangeDefaultColor").value;
+
+  if (from == 0 && to == 0) {
+    return;
+  }
+
+  var fncallback = function(error, data) {
+    if (error || !data) {
+      console.log(
+        "[ERROR]",
+        "[VISUAL-CONSOLE-CLIENT]",
+        "[API]",
+        error ? error.message : "Invalid response"
+      );
+
+      return;
+    }
+
+    $("#itemForm-specific ul.wizard:first").append(data);
+    return;
+  };
+
+  createColorRangeVisualConsole(baseUrl, vcId, from, to, color, fncallback);
+}
+
+/**
+ * Add color ranges.
+ * @param {string} baseUrl Base URL to build the API path.
+ * @param {int} vcId Identifier of the Visual Console.
+ * @param {int} from From range.
+ * @param {int} to To range.
+ * @param {string} color Color range.
+ * @param {function} callback Function to be executed on request success or fail.
+ * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
+ */
+// eslint-disable-next-line no-unused-vars
+function createColorRangeVisualConsole(
+  baseUrl,
+  vcId,
+  from,
+  to,
+  color,
+  callback
+) {
+  var apiPath = baseUrl + "/ajax.php";
+  var jqXHR = null;
+
+  // Cancel the ajax requests.
+  var abort = function(textStatus) {
+    if (textStatus == null) textStatus = "abort";
+
+    // -- XMLHttpRequest.readyState --
+    // Value	State	  Description
+    // 0	    UNSENT	Client has been created. open() not called yet.
+    // 4	    DONE   	The operation is complete.
+
+    if (jqXHR.readyState !== 0 && jqXHR.readyState !== 4)
+      jqXHR.abort(textStatus);
+  };
+
+  // Failed request handler.
+  var handleFail = function(jqXHR, textStatus, errorThrown) {
+    abort();
+    // Manually aborted or not.
+    if (textStatus === "abort") {
+      callback();
+    } else {
+      var error = new Error(errorThrown);
+      error.request = jqXHR;
+      callback(error);
+    }
+  };
+
+  // Function which handle success case.
+  var handleSuccess = function(data) {
+    callback(null, data);
+  };
+
+  // Visual Console container request.
+  jqXHR = jQuery
+    .get(
+      apiPath,
+      {
+        page: "include/rest-api/index",
+        createColorRangeVisualConsole: 1,
+        visualConsoleId: vcId,
+        from: from,
+        to: to,
+        color: color
+      },
+      "html"
     )
     .done(handleSuccess)
     .fail(handleFail);

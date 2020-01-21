@@ -109,6 +109,6 @@ if (empty($data)) {
 }
 
 echo '{
-	"label": "'.$graph_title.'",
-	"data": [["'.time().'", '.$data.']]
+	"label": "'.htmlspecialchars($graph_title, ENT_QUOTES).'",    
+	"data": [["'.time().'", '.htmlspecialchars($data, ENT_QUOTES).']]
 }';

@@ -506,3 +506,10 @@ li#li-timeZone-item > select:not(:first-child) {
   align-items: center;
   justify-content: center;
 }
+
+div.label,
+div.simple-value {
+  display: inline-table;
+  min-width: fit-content;
+  min-height: fit-content;
+}

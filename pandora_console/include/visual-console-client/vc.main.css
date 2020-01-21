@@ -681,6 +681,17 @@ li#li-timeZone-item > select:not(:first-child) {
           justify-content: center;
 }
 
+div.label,
+div.simple-value {
+  display: inline-table;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+  min-height: -webkit-fit-content;
+  min-height: -moz-fit-content;
+  min-height: fit-content;
+}
+
 /* Styles for the solid icons */
 
 .fa {

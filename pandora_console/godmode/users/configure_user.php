@@ -262,9 +262,9 @@ if ($create_user) {
         $password_confirm = '';
         $new_user = true;
     } else {
-        $have_number = false;
-        $have_simbols = false;
         if ($config['enable_pass_policy']) {
+            $have_number = true;
+            $have_simbols = true;
             if ($config['pass_needs_numbers']) {
                 $nums = preg_match('/([[:alpha:]])*(\d)+(\w)*/', $password_confirm);
                 if ($nums == 0) {
@@ -273,8 +273,7 @@ if ($create_user) {
                     $password_new = '';
                     $password_confirm = '';
                     $new_user = true;
-                } else {
-                    $have_number = true;
+                    $have_number = false;
                 }
             }
 
@@ -286,23 +285,12 @@ if ($create_user) {
                     $password_new = '';
                     $password_confirm = '';
                     $new_user = true;
-                } else {
-                    $have_simbols = true;
+                    $have_simbols = false;
                 }
             }
 
-            if ($config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
-                if ($have_number && $have_simbols) {
-                    $result = create_user($id, $password_new, $values);
-                }
-            } else if ($config['pass_needs_symbols'] && !$config['pass_needs_numbers']) {
-                if ($have_simbols) {
-                    $result = create_user($id, $password_new, $values);
-                }
-            } else if (!$config['pass_needs_symbols'] && $config['pass_needs_numbers']) {
-                if ($have_number) {
-                    $result = create_user($id, $password_new, $values);
-                }
+            if ($have_number && $have_simbols) {
+                $result = create_user($id, $password_new, $values);
             }
         } else {
             $result = create_user($id, $password_new, $values);

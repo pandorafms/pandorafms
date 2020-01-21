@@ -17,7 +17,6 @@ import {
   t
 } from "../../lib";
 import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../../Item";
-import { InputGroup, FormContainer } from "../../Form";
 
 export type ClockProps = {
   type: ItemType.CLOCK;

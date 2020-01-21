@@ -128,9 +128,8 @@ function createVisualConsole(
 
       if (meta.editMode) {
         // Item selection.
-        /*
         if (meta.isSelected) {
-          visualConsole.unselectItem(data.id);
+          visualConsole.unSelectItem(data.id);
         } else {
           // Unselect the rest of the elements if the
           var isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
@@ -139,7 +138,6 @@ function createVisualConsole(
             isMac ? !e.nativeEvent.metaKey : !e.nativeEvent.ctrlKey
           );
         }
-        */
       } else if (
         !meta.editMode &&
         data.linkedLayoutId != null &&

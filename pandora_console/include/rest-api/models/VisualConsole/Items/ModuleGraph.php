@@ -61,6 +61,11 @@ final class ModuleGraph extends Item
     {
         $return = parent::encode($data);
 
+        $id_custom_graph = static::extractIdCustomGraph($data);
+        if ($id_custom_graph !== null) {
+            $return['id_custom_graph'] = $id_custom_graph;
+        }
+
         $type_graph = static::getTypeGraph($data);
         if ($type_graph !== null) {
             $return['type_graph'] = $type_graph;

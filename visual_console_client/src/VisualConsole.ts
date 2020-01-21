@@ -906,6 +906,41 @@ export default class VisualConsole {
   }
 
   /**
+   * Select an item.
+   * @param itemId Item Id.
+   * @param unique To remove the selection of other items or not.
+   */
+  public selectItem(itemId: number, unique: boolean = false): void {
+    if (unique) {
+      this.elementIds.forEach(currentItemId => {
+        const meta = this.elementsById[currentItemId].meta;
+
+        if (currentItemId !== itemId && meta.isSelected) {
+          this.elementsById[currentItemId].unSelectItem();
+        } else if (currentItemId === itemId && !meta.isSelected) {
+          this.elementsById[currentItemId].selectItem();
+        }
+      });
+    } else if (this.elementsById[itemId]) {
+      this.elementsById[itemId].selectItem();
+    }
+  }
+
+  /**
+   * Unselect an item.
+   * @param itemId Item Id.
+   */
+  public unSelectItem(itemId: number): void {
+    if (this.elementsById[itemId]) {
+      const meta = this.elementsById[itemId].meta;
+
+      if (meta.isSelected) {
+        this.elementsById[itemId].unSelectItem();
+      }
+    }
+  }
+
+  /**
    * Unselect all items.
    */
   public unSelectItems(): void {

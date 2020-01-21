@@ -338,7 +338,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedResizementSave = debounce(
-    500, // ms.
+    300, // ms.
     (width: Size["width"], height: Size["height"]) => {
       // Update the metadata information.
       // Don't use the .meta property cause we don't need DOM updates.
@@ -517,11 +517,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       }
 
       if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {
-        if (this.meta.isSelected === false) {
-          this.selectItem();
-        } else {
-          this.unSelectItem();
-        }
         this.clickEventManager.emit({
           item: this,
           nativeEvent: e

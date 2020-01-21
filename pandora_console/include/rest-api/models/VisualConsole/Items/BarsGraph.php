@@ -28,6 +28,29 @@ final class BarsGraph extends Item
 
 
     /**
+     * Extract a type graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
+     */
+    private static function getTypeGraph(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'typeGraph',
+                    'type_graph',
+                    'graphType',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.
@@ -39,11 +62,6 @@ final class BarsGraph extends Item
     protected function encode(array $data): array
     {
         $return = parent::encode($data);
-
-        $id_custom_graph = static::extractIdCustomGraph($data);
-        if ($id_custom_graph !== null) {
-            $return['id_custom_graph'] = $id_custom_graph;
-        }
 
         $type_graph = static::getTypeGraph($data);
         if ($type_graph !== null) {

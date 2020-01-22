@@ -57,6 +57,9 @@ switch ($graph_type) {
         $out_of_lim_str = io_safe_output(get_parameter('out_of_lim_str', false));
         $out_of_lim_image = get_parameter('out_of_lim_image', false);
 
+        // Add relative path to avoid phar object injection.
+        $out_of_lim_image = '../graphs/'.$out_of_lim_image;
+
         $title = get_parameter('title');
 
         $mode = get_parameter('mode', 1);

@@ -593,11 +593,11 @@ sub main() {
 
 		# If console_api_url is empty in database
 		if ( $console_api_url eq '' ) {
-			$console_api_url = 'http://localhost/pandora_console/include/api.php';
+			$console_api_url = 'http://localhost/pandora_console/';
 			logger(\%Config, "Assuming default path for API url: " . $console_api_url, 3);
 		}
 
-		$Config{"console_api_url"} = $console_api_url;
+		$Config{"console_api_url"} = $console_api_url . 'include/api.php';
 	}
 
 	# Definition of configuration file
@@ -614,7 +614,7 @@ sub main() {
 			}
 
 			$Config{"console_pass"} = $randomized_string;
-			print CFG "# console_pass: Console password\n";
+			print CFG "\n# console_pass: Console password\n";
 			print CFG "# To make sure console_api_url, console_api_pass, console_user and console_pass are properly configured run:\n";
 			print CFG "#   curl '<console_api_url>?op=get&op2=test&apipass=<console_api_pass>&user=<console_user>&pass=<console_pass>'\n";
 			print CFG "# It should return a string similar to:\n";
@@ -651,11 +651,10 @@ sub main() {
 			# Profile creation for API purpouses
 			my $api_profile_parameters = {};
 			$api_profile_parameters->{'id_usuario'} = $Config{"console_user"};
-			$api_profile_parameters->{'id_perfil'} = 0;
+			$api_profile_parameters->{'id_perfil'} = 1;
 			$api_profile_parameters->{'id_grupo'} = 0;
 			$api_profile_parameters->{'assigned_by'} = "system";
 			$api_profile_parameters->{'id_policy'} = 0;
-			$api_profile_parameters->{'tags'} = "API";
 
 			# Insert in DB
 			my $res_tusuario = db_process_insert($DBH, 'id_user', 'tusuario', $api_user_parameters);
@@ -664,7 +663,7 @@ sub main() {
 			# If the user was inserted in DB, must write it in configuration file
 			if ( $res_tusuario_perfil > 0 ) {
 				if (open (CFG, ">>$cfg_file")) {
-					print CFG "# Console User (created for API use)\n";
+					print CFG "\n# Console User (created for API use)\n";
 					print CFG "console_user " . $Config{"console_user"} . "\n";
 					close (CFG);
 				} else {

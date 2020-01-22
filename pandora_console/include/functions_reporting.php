@@ -6245,12 +6245,50 @@ function reporting_availability($report, $content, $date=false, $time=false)
         $return['kind_availability'] = 'module';
     }
 
+    $avg = 0;
+    $min = null;
+    $min_text = '';
+    $max = null;
+    $max_text = '';
+    $count = 0;
+
     if ($content['failover_mode']) {
         $availability_graph_data = reporting_availability_graph($report, $content, false, true);
         $data = $availability_graph_data['data'];
+
         foreach ($data as $key => $item_data) {
-            $data[$key]['SLA'] = $item_data['sla_value'];
-            $data[$key]['availability_item'] = $item_data['module'];
+            $percent_ok = $item_data['sla_value'];
+            $data[$key]['SLA'] = $percent_ok;
+
+            if ($item_data['failover'] != 'result') {
+                $data[$key]['availability_item'] = $item_data['module'];
+                $text = $item_data['agent'].' ('.$item_data['module'].')';
+                $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
+                if (is_null($min)) {
+                    $min = $percent_ok;
+                    $min_text = $text;
+                } else {
+                    if ($min > $percent_ok) {
+                        $min = $percent_ok;
+                        $min_text = $text;
+                    }
+                }
+
+                if (is_null($max)) {
+                    $max = $percent_ok;
+                    $max_text = $text;
+                } else {
+                    if ($max < $percent_ok) {
+                        $max = $percent_ok;
+                        $max_text = $text;
+                    }
+                }
+
+                $count++;
+            } else {
+                $data[$key]['availability_item'] = '--';
+                $data[$key]['agent'] = '--';
+            }
         }
     } else {
         if (empty($content['subitems'])) {
@@ -6273,13 +6311,6 @@ function reporting_availability($report, $content, $date=false, $time=false)
         }
 
         $data = [];
-
-        $avg = 0;
-        $min = null;
-        $min_text = '';
-        $max = null;
-        $max_text = '';
-        $count = 0;
 
         $style = io_safe_output($content['style']);
         if ($style['hide_notinit_agents']) {

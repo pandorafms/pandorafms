@@ -4,7 +4,7 @@
 
 var correct_install_progress = true;
 
-function form_upload(homeurl) {
+function form_upload(homeurl, current_package) {
   var home_url = typeof homeurl !== "undefined" ? homeurl + "/" : "";
 
   //Thanks to: http://tutorialzine.com/2013/05/mini-ajax-file-upload-form/
@@ -164,7 +164,7 @@ function form_upload(homeurl) {
             .change();
 
           // Begin the installation
-          install_package(res.package, homeurl);
+          install_package(res.package, homeurl, current_package);
         });
       } else {
         // Something has gone wrong!
@@ -214,7 +214,7 @@ function formatFileSize(bytes) {
   return (bytes / 1000).toFixed(2) + " KB";
 }
 
-function install_package(package, homeurl) {
+function install_package(package, homeurl, current_package) {
   var home_url = typeof homeurl !== "undefined" ? homeurl + "/" : "";
 
   $(
@@ -1235,6 +1235,50 @@ function install_package(package, homeurl) {
 
   $("#pkg_apply_dialog").html(dialog_text);
   $("#pkg_apply_dialog").dialog("open");
+
+  const number_update = package.match(/package_(\d+).oum/);
+
+  if (number_update === null || number_update[1] != current_package - 0 + 1) {
+    $(
+      "<div id='warning_pkg' class='dialog ui-dialog-content' title='" +
+        package_available +
+        "'></div>"
+    ).dialog({
+      resizable: true,
+      draggable: true,
+      modal: true,
+      overlay: {
+        opacity: 0.5,
+        background: "black"
+      },
+      width: 600,
+      height: 250,
+      buttons: [
+        {
+          text: ok_button,
+          click: function() {
+            $(this).dialog("close");
+          }
+        }
+      ]
+    });
+
+    var dialog_warning = "<div class='update_popup'>";
+    dialog_warning =
+      dialog_warning +
+      "<div class='update_text'><h3>" +
+      text1_warning +
+      "</h3>";
+    dialog_warning = dialog_warning + "<p>" + text2_warning + "</p></div>";
+    dialog_warning =
+      dialog_warning +
+      "<div class='update_icon'><img src='" +
+      home_url +
+      "images/icono_warning_mr.png'></div>";
+    dialog_warning = dialog_warning + "</div>";
+
+    $("#warning_pkg").html(dialog_warning);
+  }
 }
 
 function check_install_package(package, homeurl) {

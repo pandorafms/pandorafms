@@ -46,6 +46,13 @@ if (! check_acl($config['id_user'], 0, 'PM')
 
 $baseurl = ui_get_full_url(false, false, false, false);
 
+$current_package = db_get_value(
+    'value',
+    'tconfig',
+    'token',
+    'current_package_enterprise'
+);
+
 ?>
 
 <!-- Add the stylesheet here cause somehow the 'ui_require_css_file' 
@@ -90,6 +97,8 @@ is not working on the metaconsole and there is no time to fix it -->
 
     var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
     var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
+    var text1_warning = "<?php echo __('WARNING'); ?>\n";
+    var text2_warning = "<?php echo __('This update does not correspond to the next version of Pandora'); ?>\n";
     var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
     var cancel_button = "<?php echo __('Cancel'); ?>\n";
     var ok_button = "<?php echo __('Ok'); ?>\n";
@@ -109,5 +118,5 @@ is not working on the metaconsole and there is no time to fix it -->
 <script src="<?php echo $baseurl; ?>/include/javascript/update_manager.js"></script>
 
 <script type="text/javascript">
-    form_upload("<?php echo $baseurl; ?>");
+    form_upload("<?php echo $baseurl; ?>", "<?php echo $current_package; ?>");
 </script>

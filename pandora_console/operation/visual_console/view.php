@@ -278,7 +278,10 @@ if ($pure === false) {
             __('Color cloud'),
             'color_cloud_min link-create-item'
         );
-        // TODO: SERVICE.
+        enterprise_include_once('include/functions_visual_map_editor.php');
+        enterprise_hook(
+            'enterprise_visual_map_editor_print_toolbox_refactor'
+        );
     echo '</div>';
     echo '<div class="visual-console-copy-delete">';
         visual_map_print_button_editor_refactor(

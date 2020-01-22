@@ -489,7 +489,8 @@ class View extends \HTML
             break;
 
             case SERVICE:
-                // TODO:Enterprise item. It may not exist.
+                $data['imageSrc'] = \get_parameter('imageSrc');
+                $data['serviceId'] = \get_parameter('serviceId');
             break;
 
             case LABEL:

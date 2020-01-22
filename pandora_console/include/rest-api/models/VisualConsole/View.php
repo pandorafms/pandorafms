@@ -104,7 +104,7 @@ class View extends \HTML
                     'img'  => 'event_responses_col.png',
                 ],
             ];
-        } else if ($type === BOX_ITEM) {
+        } else if ($type === BOX_ITEM || $type === COLOR_CLOUD) {
             $activetabs = 1;
             $tabs = [
                 [

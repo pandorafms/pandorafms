@@ -1904,10 +1904,15 @@ function html_print_input_hidden_extended(
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_color($name, $value, $class=false, $return=false)
+function html_print_input_color($name, $value, $id='', $class=false, $return=false)
 {
     $attr_type = 'type="color"';
-    $attr_id = 'id="color-'.htmlspecialchars($name, ENT_QUOTES).'"';
+    if (empty($id) === true) {
+        $attr_id = 'id="color-'.htmlspecialchars($name, ENT_QUOTES).'"';
+    } else {
+        $attr_id = 'id="'.$id.'"';
+    }
+
     $attr_name = 'name="'.htmlspecialchars($name, ENT_QUOTES).'"';
     $attr_value = 'value="'.htmlspecialchars($value, ENT_QUOTES).'"';
     $attr_class = 'class="'.($class !== false ? htmlspecialchars($class, ENT_QUOTES) : '').'"';
@@ -3495,6 +3500,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_color(
                 $data['name'],
                 $data['value'],
+                $data['id'],
                 ((isset($data['class']) === true) ? $data['class'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false)
             );

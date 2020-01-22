@@ -1678,6 +1678,11 @@ function createColorRange(baseUrl, vcId) {
     }
 
     $("#itemForm-specific ul.wizard:first").append(data);
+
+    // Default values.
+    document.getElementById("rangeDefaultFrom").value = 0;
+    document.getElementById("rangeDefaultTo").value = 0;
+    document.getElementById("color-rangeDefaultColor").value = "#000000";
     return;
   };
 
@@ -1758,6 +1763,16 @@ function createColorRangeVisualConsole(
   return {
     abort: abort
   };
+}
+
+/**
+ * Delete color ranges.
+ * @param {string} id UniqId for row range.
+ * @return {Void}
+ */
+// eslint-disable-next-line no-unused-vars
+function removeColorRange(id) {
+  $("#li-" + id).remove();
 }
 
 /**

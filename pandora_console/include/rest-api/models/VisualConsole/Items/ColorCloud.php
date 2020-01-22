@@ -39,21 +39,27 @@ final class ColorCloud extends Item
     {
         $colorRangeArray = [];
 
-        if (isset($data['colorRanges']) === true) {
-            foreach ($data['colorRanges'] as $colorRange) {
-                if (\is_numeric($colorRange['fromValue']) === true
-                    && \is_numeric($colorRange['toValue']) === true
-                    && static::notEmptyStringOr(
-                        $colorRange['color'],
-                        null
-                    ) !== null
-                ) {
-                    $colorRangeArray[] = [
-                        'color'      => $colorRange['color'],
-                        'from_value' => (float) $colorRange['fromValue'],
-                        'to_value'   => (float) $colorRange['toValue'],
-                    ];
+        if (isset($data['colorRanges']) === true
+            && is_array($data['colorRanges']) === true
+        ) {
+            if (empty($data['colorRanges']) === false) {
+                foreach ($data['colorRanges'] as $colorRange) {
+                    if (\is_numeric($colorRange['fromValue']) === true
+                        && \is_numeric($colorRange['toValue']) === true
+                        && static::notEmptyStringOr(
+                            $colorRange['color'],
+                            null
+                        ) !== null
+                    ) {
+                        $colorRangeArray[] = [
+                            'color'      => $colorRange['color'],
+                            'from_value' => (float) $colorRange['fromValue'],
+                            'to_value'   => (float) $colorRange['toValue'],
+                        ];
+                    }
                 }
+            } else {
+                $colorRangeArray = [];
             }
         }
 
@@ -105,7 +111,7 @@ final class ColorCloud extends Item
             $return['label'] = json_encode(
                 [
                     'default_color' => ($defaultColor !== null) ? $defaultColor : $prevDataDefaultColor,
-                    'color_ranges'  => ($colorRanges !== null && (count($colorRanges) > 0)) ? $colorRanges : $prevDataColorRanges,
+                    'color_ranges'  => ($colorRanges !== null) ? $colorRanges : $prevDataColorRanges,
                 ]
             );
         }
@@ -426,7 +432,7 @@ final class ColorCloud extends Item
 
             // Label.
             $inputs[] = [
-                'label' => __('Default').':',
+                'label' => __('Add new range').':',
             ];
 
             $baseUrl = ui_get_full_url('/', false, false, false);
@@ -481,7 +487,7 @@ final class ColorCloud extends Item
 
             // Label.
             $inputs[] = [
-                'label' => __('Ranges').':',
+                'label' => __('Current ranges').':',
             ];
 
             if (isset($values['colorRanges']) === true
@@ -489,7 +495,9 @@ final class ColorCloud extends Item
                 && empty($values['colorRanges']) === false
             ) {
                 foreach ($values['colorRanges'] as $k => $v) {
+                    $uniqId = \uniqid();
                     $inputs[] = [
+                        'block_id'      => $uniqId,
                         'class'         => 'interval-color-ranges flex-row flex-start w100p',
                         'direct'        => 1,
                         'block_content' => [
@@ -515,6 +523,7 @@ final class ColorCloud extends Item
                                 'label'     => __('Color'),
                                 'arguments' => [
                                     'wrapper' => 'div',
+                                    'id'      => 'rangeColor'.$uniqId,
                                     'name'    => 'rangeColor[]',
                                     'type'    => 'color',
                                     'value'   => $v['color'],
@@ -523,12 +532,14 @@ final class ColorCloud extends Item
                             ],
                             [
                                 'arguments' => [
-                                    'name'       => 'Remove',
+                                    'name'       => 'remove-'.$uniqId,
                                     'label'      => '',
                                     'type'       => 'button',
                                     'attributes' => 'class="remove-item-img"',
                                     'return'     => true,
-                                    'script'     => 'removeColorRange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
+                                    'script'     => 'removeColorRange(
+                                        \''.$uniqId.'\'
+                                    )',
                                 ],
                             ],
                         ],

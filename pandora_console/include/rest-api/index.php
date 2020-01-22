@@ -248,6 +248,7 @@ if ($getVisualConsole === true) {
     echo json_encode($count);
     return;
 } else if ($createColorRangeVisualConsole) {
+    $uniqId = \uniqid();
     $baseUrl = ui_get_full_url('/', false, false, false);
     $from = get_parameter('from', 0);
     $to = get_parameter('to', 0);
@@ -281,10 +282,11 @@ if ($getVisualConsole === true) {
         'type'       => 'button',
         'attributes' => 'class="remove-item-img"',
         'return'     => true,
-        'script'     => 'removeColorRange(\''.$baseUrl.'\',\''.$visualConsoleId.'\')',
+        'script'     => 'removeColorRange(\''.$uniqId.'\')',
     ];
 
-    $liRangeColor = '<li class="interval-color-ranges flex-row flex-start w100p">';
+    $classRangeColor = 'interval-color-ranges flex-row flex-start w100p';
+    $liRangeColor = '<li id="li-'.$uniqId.'" class="'.$classRangeColor.'">';
     $liRangeColor .= '<label>'.__('From').'</label>';
     $liRangeColor .= html_print_input($rangeFrom);
     $liRangeColor .= '<label>'.__('To').'</label>';

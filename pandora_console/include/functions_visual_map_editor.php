@@ -738,13 +738,13 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             $form_items['color_cloud_def_color_row'] = [];
             $form_items['color_cloud_def_color_row']['items'] = ['color_cloud'];
             $form_items['color_cloud_def_color_row']['html'] = '<td align="left">'.__('Default color').'</td>
-				<td align="left">'.html_print_input_color('default_color', $default_color, false, true).'</td>';
+				<td align="left">'.html_print_input_color('default_color', $default_color, '', false, true).'</td>';
 
             // Color ranges
             $color_range_tip = __('The color of the element will be the one selected in the first range created in which the value of the module is found (with the initial and final values of the range included)').'.';
             $form_items['color_cloud_color_ranges_row'] = [];
             $form_items['color_cloud_color_ranges_row']['items'] = ['color_cloud'];
-            $form_items['color_cloud_color_ranges_row']['html'] = '<td align="left">'.__('Ranges').ui_print_help_tip($color_range_tip, true).'</td>'.'<td align="left">'.'<table id="new-color-range" class="databox color-range color-range-creation">'.'<tr>'.'<td>'.__('From value').'</td>'.'<td>'.html_print_input_text('from_value_new', '', '', 5, 255, true).'</td>'.'<td rowspan="4">'.'<a class="color-range-add" href="#">'.html_print_image('images/add.png', true).'</a>'.'</td>'.'</tr>'.'<td>'.__('To value').'</td>'.'<td>'.html_print_input_text('to_value_new', '', '', 5, 255, true).'</td>'.'<td></td>'.'<tr>'.'</tr>'.'<tr>'.'<td>'.__('Color').'</td>'.'<td>'.html_print_input_color('color_new', $default_color, false, true).'</td>'.'<td></td>'.'</tr>'.'</table>'.'</td>';
+            $form_items['color_cloud_color_ranges_row']['html'] = '<td align="left">'.__('Ranges').ui_print_help_tip($color_range_tip, true).'</td>'.'<td align="left">'.'<table id="new-color-range" class="databox color-range color-range-creation">'.'<tr>'.'<td>'.__('From value').'</td>'.'<td>'.html_print_input_text('from_value_new', '', '', 5, 255, true).'</td>'.'<td rowspan="4">'.'<a class="color-range-add" href="#">'.html_print_image('images/add.png', true).'</a>'.'</td>'.'</tr>'.'<td>'.__('To value').'</td>'.'<td>'.html_print_input_text('to_value_new', '', '', 5, 255, true).'</td>'.'<td></td>'.'<tr>'.'</tr>'.'<tr>'.'<td>'.__('Color').'</td>'.'<td>'.html_print_input_color('color_new', $default_color, '', false, true).'</td>'.'<td></td>'.'</tr>'.'</table>'.'</td>';
 
             // End of Color Cloud rows
             $form_items['show_on_top_row'] = [];

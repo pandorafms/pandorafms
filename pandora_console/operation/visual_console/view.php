@@ -516,9 +516,15 @@ ui_require_css_file('form');
     });
 
     $('#button-button_delete').click(function (event){
-        visualConsoleManager.visualConsole.elements.forEach(item => {
-            if (item.meta.isSelected === true) {
-                visualConsoleManager.deleteItem(item);
+        confirmDialog({
+            title: "<?php echo __('Delete'); ?>",
+            message: "<?php echo __('Are you sure'); ?>"+"?",
+            onAccept: function() {
+                visualConsoleManager.visualConsole.elements.forEach(item => {
+                    if (item.meta.isSelected === true) {
+                        visualConsoleManager.deleteItem(item);
+                    }
+                });
             }
         });
     });

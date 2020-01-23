@@ -257,7 +257,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedMovementSave = debounce(
-    300, // ms.
+    100, // ms.
     (x: Position["x"], y: Position["y"]) => {
       // Update the metadata information.
       // Don't use the .meta property cause we don't need DOM updates.
@@ -338,7 +338,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedResizementSave = debounce(
-    300, // ms.
+    100, // ms.
     (width: Size["width"], height: Size["height"]) => {
       // Update the metadata information.
       // Don't use the .meta property cause we don't need DOM updates.

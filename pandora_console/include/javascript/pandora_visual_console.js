@@ -1,5 +1,5 @@
 // TODO: Add Artica ST header.
-/* globals jQuery, VisualConsole, AsyncTaskManager, confirmDialog */
+/* globals jQuery, VisualConsole, AsyncTaskManager */
 
 /*
  * *********************
@@ -460,53 +460,49 @@ function createVisualConsole(
       var aux = item;
       var id = item.props.id;
 
-      confirmDialog({
-        title: "Delete",
-        message: "Are you sure?",
-        onAccept: function() {
-          item.remove();
+      item.remove();
 
-          var taskId = "visual-console-item-update-" + id;
+      var taskId = "visual-console-item-update-" + id;
 
-          asyncTaskManager
-            .add(taskId, function(done) {
-              var abortable = removeVisualConsoleItem(
-                baseUrl,
-                visualConsole.props.id,
-                id,
-                function(error, data) {
-                  if (error || !data) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
+      asyncTaskManager
+        .add(taskId, function(done) {
+          var abortable = removeVisualConsoleItem(
+            baseUrl,
+            visualConsole.props.id,
+            id,
+            function(error, data) {
+              if (error || !data) {
+                console.log(
+                  "[ERROR]",
+                  "[VISUAL-CONSOLE-CLIENT]",
+                  "[API]",
+                  error ? error.message : "Invalid response"
+                );
 
-                    // Add the item to the list.
-                    var itemRetrieved = aux.props;
-                    itemRetrieved["receivedAt"] = new Date();
-                    var newItem = visualConsole.addElement(itemRetrieved);
-                    newItem.setMeta({ editMode: true });
-                  }
+                // Add the item to the list.
+                var itemRetrieved = aux.props;
+                itemRetrieved["receivedAt"] = new Date();
+                var newItem = visualConsole.addElement(itemRetrieved);
+                newItem.setMeta({ editMode: true });
+              }
 
-                  done();
-                }
-              );
+              done();
+            }
+          );
 
-              return {
-                cancel: function() {
-                  abortable.abort();
-                }
-              };
-            })
-            .init();
-        }
-      });
+          return {
+            cancel: function() {
+              abortable.abort();
+            }
+          };
+        })
+        .init();
     },
     copyItem: function(item) {
       var id = item.props.id;
       item.setMeta({ isSelected: false, isUpdating: true });
+
+      visualConsole.unSelectItem(id);
 
       var taskId = "visual-console-item-update-" + id;
 
@@ -569,6 +565,7 @@ function createVisualConsole(
 
               var newItem = visualConsole.addElement(itemRetrieved);
               newItem.setMeta({ editMode: true, isSelected: true });
+              visualConsole.selectItem(newItem.props.id);
 
               done();
             }

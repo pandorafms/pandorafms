@@ -96,7 +96,7 @@ export default class Line extends Item<LineProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedStartPositionMovementSave = debounce(
-    500, // ms.
+    100, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
       const startPosition = { x, y };
@@ -154,7 +154,7 @@ export default class Line extends Item<LineProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedEndPositionMovementSave = debounce(
-    500, // ms.
+    100, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
       const endPosition = { x, y };

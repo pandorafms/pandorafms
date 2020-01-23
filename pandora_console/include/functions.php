@@ -5485,6 +5485,45 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Discovery&printable=yes';
             }
+
+        case 'alert_configure':
+            if ($es) {
+                $result .= 'Alerts#Correlation_alert_creation';
+            } else {
+                $result .= 'Alerts#Correlation_alert_creation';
+            }
+        break;
+
+        case 'alert_correlation':
+            if ($es) {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            } else {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            }
+        break;
+
+        case 'alert_rules':
+            if ($es) {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            } else {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            }
+        break;
+
+        case 'alert_fields':
+            if ($es) {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            } else {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            }
+        break;
+
+        case 'alert_triggering':
+            if ($es) {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            } else {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            }
         break;
     }
 

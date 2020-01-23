@@ -562,7 +562,7 @@ final class Percentile extends Item
                     'return'             => true,
                     'module_input'       => true,
                     'module_name'        => 'moduleId',
-                    'module_none'        => 'false',
+                    'module_none'        => false,
                 ],
             ];
 

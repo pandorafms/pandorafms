@@ -311,6 +311,26 @@ final class StaticGraph extends Item
                     'server_id_hidden'   => $values['metaconsoleId'],
                     'name_server_hidden' => 'metaconsoleId',
                     'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => true,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                    'nothing'        => '--',
+                    'nothing_value'  => 0,
                 ],
             ];
 

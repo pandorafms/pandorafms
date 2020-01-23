@@ -355,6 +355,7 @@ class View extends \HTML
                 $data['imageSrc'] = \get_parameter('imageSrc');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['moduleId'] = \get_parameter('moduleId');
                 $data['showLastValueTooltip'] = \get_parameter(
                     'showLastValueTooltip'
                 );

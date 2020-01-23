@@ -3744,7 +3744,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'autocomplete_module':
             // Module.
-            if (isset($data['selected']) === false || $data['selected'] === 0) {
+            if (($data['agent_id'] === false
+                || empty($data['agent_id']) === true)
+                && (isset($data['selected']) === false
+                || $data['selected'] === 0)
+            ) {
                 $fields = [
                     0 => __('Select an Agent first'),
                 ];
@@ -3758,7 +3762,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 );
 
                 if (is_metaconsole() === true) {
-                    $connection = metaconsole_get_connection_id(
+                    $connection = metaconsole_get_connection_by_id(
                         $data['metaconsole_id']
                     );
 

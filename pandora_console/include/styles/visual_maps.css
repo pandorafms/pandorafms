@@ -70,7 +70,8 @@ input.vs_button_ghost {
 #toolbox {
   margin-top: 13px;
 }
-input.visual_editor_button_toolbox {
+
+div#edit-controls input.visual_editor_button_toolbox {
   padding-right: 20px;
   padding-top: 12px;
   padding-bottom: 12px;
@@ -80,14 +81,14 @@ input.visual_editor_button_toolbox {
   border-radius: initial;
 }
 
-button.sub:hover,
-input.sub:hover {
+div#edit-controls button.sub:hover,
+div#edit-controls input.sub:hover {
   border: 0px;
   border-bottom: 3px solid #82b92e;
 }
 
-button.sub[disabled],
-input.sub[disabled] {
+div#edit-controls button.sub[disabled],
+div#edit-controls input.sub[disabled] {
   border-color: transparent;
 }
 

@@ -67,6 +67,7 @@ function visual_map_print_button_editor_refactor(
 
 
 ui_require_css_file('visual_maps');
+ui_require_css_file('register');
 
 // Query parameters.
 $visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');

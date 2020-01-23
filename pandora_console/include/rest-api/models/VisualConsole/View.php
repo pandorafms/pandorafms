@@ -489,7 +489,12 @@ class View extends \HTML
             break;
 
             case SERVICE:
-                $data['imageSrc'] = \get_parameter('imageSrc');
+                $imageSrc = \get_parameter('imageSrc');
+                if ($imageSrc === '0') {
+                    $imageSrc = '';
+                }
+
+                $data['imageSrc'] = $imageSrc;
                 $data['serviceId'] = \get_parameter('serviceId');
             break;
 

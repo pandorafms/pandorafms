@@ -1181,8 +1181,8 @@ function createOrUpdateVisualConsoleItem(
       }
 
       if (item.itemProps.id) {
-        item.setMeta({ isUpdating: false });
         visualConsole.updateElement(data);
+        item.setMeta({ isUpdating: false });
       } else {
         data["receivedAt"] = new Date();
         var newItem = visualConsole.addElement(data);
@@ -1548,6 +1548,11 @@ function linkedVisualConsoleTypeChange() {
 // eslint-disable-next-line no-unused-vars
 function imageVCChange(baseUrl, vcId, only) {
   var nameImg = document.getElementById("imageSrc").value;
+  if (nameImg == 0) {
+    $("#li-image-item label").empty();
+    return;
+  }
+
   if (!only) {
     only = 0;
   }

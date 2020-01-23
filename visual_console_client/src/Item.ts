@@ -775,11 +775,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       }
     }
     // Change link.
-    if (
-      prevProps &&
-      (prevProps.isLinkEnabled !== this.props.isLinkEnabled ||
-        (this.props.isLinkEnabled && prevProps.link !== this.props.link))
-    ) {
+    if (prevProps && prevProps.isLinkEnabled !== this.props.isLinkEnabled) {
       const container = this.createContainerDomElement();
       // Add the children of the old element.
       container.innerHTML = this.elementRef.innerHTML;
@@ -787,7 +783,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       const attrs = this.elementRef.attributes;
       for (let i = 0; i < attrs.length; i++) {
         if (attrs[i].nodeName !== "id") {
-          container.setAttributeNode(attrs[i]);
+          let cloneIsNeeded = this.elementRef.getAttributeNode(
+            attrs[i].nodeName
+          );
+          if (cloneIsNeeded !== null) {
+            container.setAttributeNode(<any>cloneIsNeeded.cloneNode());
+          }
         }
       }
       // Replace the reference.
@@ -797,6 +798,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
       // Changed the reference to the main element. It's ugly, but needed.
       this.elementRef = container;
+    }
+
+    if (
+      prevProps &&
+      (this.props.isLinkEnabled && prevProps.link !== this.props.link)
+    ) {
+      if (this.props.link !== null) {
+        this.elementRef.setAttribute("href", this.props.link);
+      }
     }
 
     // Change metadata related things.

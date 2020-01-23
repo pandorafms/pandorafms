@@ -81,9 +81,12 @@ export default class Service extends Item<ServiceProps> {
    */
   protected updateDomElement(element: HTMLElement): void {
     if (this.props.statusImageSrc !== null) {
-      const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
-      element.style.backgroundImage = `url(${imgSrc})`;
+      element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
+      element.style.backgroundSize = "contain";
+      element.style.backgroundPosition = "center";
+      element.innerHTML = "";
     } else if (this.props.encodedTitle !== null) {
+      element.innerHTML = decodeBase64(this.props.encodedTitle);
     }
   }
 }

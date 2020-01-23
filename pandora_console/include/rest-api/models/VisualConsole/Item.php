@@ -2124,9 +2124,11 @@ class Item extends CachedModel
     /**
      * List images for Vc Icons.
      *
+     * @param boolean|null $service If service item.
+     *
      * @return array
      */
-    public function getListImagesVC():array
+    public function getListImagesVC(?bool $service=false):array
     {
         global $config;
 
@@ -2165,6 +2167,10 @@ class Item extends CachedModel
 
                 $result[$image_file] = $image_file;
             }
+        }
+
+        if ($service === true) {
+            \array_unshift($result, ['name' => __('None')]);
         }
 
         return $result;
@@ -2382,32 +2388,34 @@ class Item extends CachedModel
         string $image,
         ?bool $only=false
     ):string {
-        $type_image = [''];
-        if ($only === false) {
-            $type_image = [
-                'bad',
-                'ok',
-                'warning',
-                '',
-            ];
-        }
-
         $images = '';
-        foreach ($type_image as $k => $v) {
-            $type = '';
-            if ($v !== '') {
-                $type = '_'.$v;
+        if ($image !== '0') {
+            $type_image = [''];
+            if ($only === false) {
+                $type_image = [
+                    'bad',
+                    'ok',
+                    'warning',
+                    '',
+                ];
             }
 
-            $images .= html_print_image(
-                'images/console/icons/'.$image.$type.'.png',
-                true,
-                [
-                    'title' => __('Image Vc'),
-                    'alt'   => __('Image Vc'),
-                    'style' => 'max-width:70px; max-height:70px;',
-                ]
-            );
+            foreach ($type_image as $k => $v) {
+                $type = '';
+                if ($v !== '') {
+                    $type = '_'.$v;
+                }
+
+                $images .= html_print_image(
+                    'images/console/icons/'.$image.$type.'.png',
+                    true,
+                    [
+                        'title' => __('Image Vc'),
+                        'alt'   => __('Image Vc'),
+                        'style' => 'max-width:70px; max-height:70px;',
+                    ]
+                );
+            }
         }
 
         return $images;

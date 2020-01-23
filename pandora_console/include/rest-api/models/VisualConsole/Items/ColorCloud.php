@@ -450,6 +450,7 @@ final class ColorCloud extends Item
                             'type'   => 'number',
                             'value'  => 0,
                             'return' => true,
+                            'min'    => 0,
                         ],
                     ],
                     [
@@ -460,6 +461,7 @@ final class ColorCloud extends Item
                             'type'   => 'number',
                             'value'  => 0,
                             'return' => true,
+                            'min'    => 0,
                         ],
                     ],
                     [
@@ -508,6 +510,7 @@ final class ColorCloud extends Item
                                     'type'   => 'number',
                                     'value'  => $v['fromValue'],
                                     'return' => true,
+                                    'min'    => 0,
                                 ],
                             ],
                             [
@@ -517,6 +520,7 @@ final class ColorCloud extends Item
                                     'type'   => 'number',
                                     'value'  => $v['toValue'],
                                     'return' => true,
+                                    'min'    => 0,
                                 ],
                             ],
                             [

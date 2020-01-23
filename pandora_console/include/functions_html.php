@@ -1685,6 +1685,8 @@ function html_print_input_number(array $settings):string
         'required',
         'pattern',
         'autocomplete',
+        'min',
+        'max',
     ];
 
     $output = '';

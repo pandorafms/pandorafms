@@ -4266,7 +4266,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'auto_sla_graph':
             case AUTO_SLA_GRAPH:
-                $text = __('Auto SLA Graph');
+                $text = __('Event history graph');
             break;
 
             case 'percentile_bar':

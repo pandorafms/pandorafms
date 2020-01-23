@@ -236,7 +236,7 @@ if ($pure === false) {
         );
         visual_map_print_button_editor_refactor(
             'AUTO_SLA_GRAPH',
-            __('Auto SLA Graph'),
+            __('Event history graph'),
             'auto_sla_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(

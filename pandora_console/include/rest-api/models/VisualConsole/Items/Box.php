@@ -193,6 +193,7 @@ final class Box extends Item
                             'type'   => 'number',
                             'value'  => $values['width'],
                             'return' => true,
+                            'min'    => 0,
                         ],
                     ],
                     [
@@ -202,6 +203,7 @@ final class Box extends Item
                             'type'   => 'number',
                             'value'  => $values['height'],
                             'return' => true,
+                            'min'    => 0,
                         ],
                     ],
                 ],
@@ -223,6 +225,7 @@ final class Box extends Item
                             'type'   => 'number',
                             'value'  => $values['x'],
                             'return' => true,
+                            'min'    => 0,
                         ],
                     ],
                     [
@@ -232,6 +235,7 @@ final class Box extends Item
                             'type'   => 'number',
                             'value'  => $values['y'],
                             'return' => true,
+                            'min'    => 0,
                         ],
                     ],
                 ],
@@ -283,6 +287,7 @@ final class Box extends Item
                     'type'   => 'number',
                     'value'  => $values['borderWidth'],
                     'return' => true,
+                    'min'    => 1,
                 ],
             ];
 

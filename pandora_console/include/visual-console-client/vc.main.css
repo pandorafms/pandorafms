@@ -552,12 +552,15 @@ li#li-image-item label img {
   width: 100px;
 }
 
+.discovery.modal div#period_manual select,
+.discovery.modal div#period_manual input,
+.discovery.modal div#period_default select,
 .discovery.modal div#cacheExpiration_manual select,
 .discovery.modal div#cacheExpiration_manual input,
 .discovery.modal div#cacheExpiration_default select {
   font-size: inherit !important;
 }
-
+.discovery.modal div#period_default select#period_select,
 .discovery.modal div#cacheExpiration_default select#cacheExpiration_select {
   max-width: 230px;
   width: inherit;

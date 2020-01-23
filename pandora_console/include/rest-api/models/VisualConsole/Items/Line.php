@@ -459,6 +459,7 @@ final class Line extends Model
                     'type'   => 'number',
                     'value'  => $values['borderWidth'],
                     'return' => true,
+                    'min'    => 1,
                 ],
             ];
 

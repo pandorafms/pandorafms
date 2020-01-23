@@ -1130,7 +1130,7 @@ function createOrUpdateVisualConsoleItem(
       nameType = "Line";
       break;
     case 14:
-      nameType = "Events";
+      nameType = "Event history";
       break;
     case 17:
       nameType = "Donut graph";
@@ -1471,15 +1471,36 @@ function typeModuleGraph(type) {
   $("#MGautoCompleteAgent").removeClass("hidden");
   $("#MGautoCompleteModule").removeClass("hidden");
   $("#MGcustomGraph").removeClass("hidden");
+  $("#MGgraphType").removeClass("hidden");
+  $("#MGshowLegend").removeClass("hidden");
+
   if (type == "module") {
     $("#MGautoCompleteAgent").show();
     $("#MGautoCompleteModule").show();
+    $("#MGgraphType").show();
+    $("#MGshowLegend").show();
     $("#MGcustomGraph").hide();
     $("#customGraphId").val(0);
   } else if (type == "custom") {
     $("#MGautoCompleteAgent").hide();
     $("#MGautoCompleteModule").hide();
+    $("#MGgraphType").hide();
+    $("#MGshowLegend").hide();
     $("#MGcustomGraph").show();
+  }
+}
+
+/**
+ * Onchange input Process Simple Value.
+ * @return {void}
+ */
+// eslint-disable-next-line no-unused-vars
+function simpleValuePeriod() {
+  $("#SVPeriod").removeClass("hidden");
+  if ($("#processValue :selected").val() != "none") {
+    $("#SVPeriod").show();
+  } else {
+    $("#SVPeriod").hide();
   }
 }
 

@@ -1000,7 +1000,7 @@ export default class VisualConsole {
         text = t("Bars graph");
         break;
       case ItemType.AUTO_SLA_GRAPH:
-        text = t("Auto SLA Graph");
+        text = t("Event history graph");
         break;
       case ItemType.PERCENTILE_BAR:
         text = t("Percentile bar");

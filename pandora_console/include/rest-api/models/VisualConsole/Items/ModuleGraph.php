@@ -332,7 +332,7 @@ final class ModuleGraph extends Item
                 'vconsole'           => true,
                 'backgroundColor'    => $backgroundType,
                 'return_img_base_64' => true,
-                'show_legend'        => $showLegend,
+                'show_legend'        => true,
                 'show_title'         => false,
             ];
 
@@ -441,6 +441,11 @@ final class ModuleGraph extends Item
         }
 
         if ($values['tabSelected'] === 'specific') {
+            // Default values.
+            if (isset($values['period']) === false) {
+                $values['period'] = 3600;
+            }
+
             // Background color.
             $fields = [
                 'white'       => __('White'),
@@ -557,6 +562,18 @@ final class ModuleGraph extends Item
                 ],
             ];
 
+            // Period.
+            $inputs[] = [
+                'label'     => __('Period'),
+                'arguments' => [
+                    'name'          => 'period',
+                    'type'          => 'interval',
+                    'value'         => $values['period'],
+                    'nothing'       => __('None'),
+                    'nothing_value' => 0,
+                ],
+            ];
+
             // Graph Type.
             $fields = [
                 'line' => __('Line'),
@@ -564,6 +581,8 @@ final class ModuleGraph extends Item
             ];
 
             $inputs[] = [
+                'id'        => 'MGgraphType',
+                'hidden'    => $hiddenModule,
                 'label'     => __('Graph Type'),
                 'arguments' => [
                     'type'     => 'select',
@@ -576,6 +595,8 @@ final class ModuleGraph extends Item
 
             // Show legend.
             $inputs[] = [
+                'id'        => 'MGshowLegend',
+                'hidden'    => $hiddenModule,
                 'label'     => __('Show legend'),
                 'arguments' => [
                     'name'  => 'showLegend',

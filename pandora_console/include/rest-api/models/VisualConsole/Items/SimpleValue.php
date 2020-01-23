@@ -133,7 +133,7 @@ final class SimpleValue extends Item
         $return['type'] = SIMPLE_VALUE;
         $return['processValue'] = static::extractProcessValue($data);
         $return['valueType'] = static::extractValueType($data);
-        $return['value'] = $data['value'];
+        $return['value'] = \io_safe_output($data['value']);
 
         if ($return['processValue'] !== 'none') {
             $return['period'] = static::extractPeriod($data);
@@ -273,10 +273,12 @@ final class SimpleValue extends Item
         }
 
         // Get the formatted value.
-        $value = \visual_map_get_simple_value(
-            $data['type'],
-            $moduleId,
-            static::extractPeriod($data)
+        $value = \io_safe_output(
+            \visual_map_get_simple_value(
+                $data['type'],
+                $moduleId,
+                static::extractPeriod($data)
+            )
         );
 
         // Restore connection.
@@ -371,6 +373,28 @@ final class SimpleValue extends Item
                     'selected' => $values['processValue'],
                     'return'   => true,
                     'sort'     => false,
+                    'script'   => 'simpleValuePeriod()',
+                ],
+            ];
+
+            $hiddenPeriod = true;
+            if (isset($values['processValue']) === true
+                && $values['processValue'] !== 'none'
+            ) {
+                $hiddenPeriod = false;
+            }
+
+            // Period.
+            $inputs[] = [
+                'id'        => 'SVPeriod',
+                'hidden'    => $hiddenPeriod,
+                'label'     => __('Period'),
+                'arguments' => [
+                    'name'          => 'period',
+                    'type'          => 'interval',
+                    'value'         => $values['period'],
+                    'nothing'       => __('None'),
+                    'nothing_value' => 0,
                 ],
             ];
 
@@ -400,6 +424,11 @@ final class SimpleValue extends Item
     {
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['label']) === false) {
+            $values['label'] = '(_value_)';
+        }
 
         return $values;
     }

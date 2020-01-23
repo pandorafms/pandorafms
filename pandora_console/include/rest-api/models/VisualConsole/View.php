@@ -230,6 +230,7 @@ class View extends \HTML
             'method' => 'POST',
             'id'     => 'itemForm-'.$tabSelected,
             'class'  => 'discovery modal',
+            'extra'  => 'novalidate',
         ];
 
         if ($itemId !== 0) {
@@ -369,6 +370,7 @@ class View extends \HTML
                 $data['customGraphId'] = \get_parameter('customGraphId');
                 $data['graphType'] = \get_parameter('graphType');
                 $data['showLegend'] = \get_parameter_switch('showLegend');
+                $data['period'] = \get_parameter('period');
             break;
 
             case SIMPLE_VALUE:
@@ -379,6 +381,7 @@ class View extends \HTML
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['processValue'] = \get_parameter('processValue');
+                $data['period'] = \get_parameter('period');
                 // Insert line default position ball end.
                 if ($itemId === 0 && empty($data['label']) === true) {
                     $data['label'] = '(_value_)';

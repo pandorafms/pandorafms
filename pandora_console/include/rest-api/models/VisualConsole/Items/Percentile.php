@@ -492,6 +492,7 @@ final class Percentile extends Item
                     'type'   => 'number',
                     'value'  => $values['minValue'],
                     'return' => true,
+                    'min'    => 0,
                 ],
             ];
 
@@ -504,6 +505,7 @@ final class Percentile extends Item
                     'type'   => 'number',
                     'value'  => $values['maxValue'],
                     'return' => true,
+                    'min'    => 0,
                 ],
             ];
 

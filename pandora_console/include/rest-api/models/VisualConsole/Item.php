@@ -1865,6 +1865,7 @@ class Item extends CachedModel
                                 'type'   => 'number',
                                 'value'  => $values['width'],
                                 'return' => true,
+                                'min'    => 0,
                             ],
                         ],
                         [
@@ -1874,6 +1875,7 @@ class Item extends CachedModel
                                 'type'   => 'number',
                                 'value'  => $values['height'],
                                 'return' => true,
+                                'min'    => 0,
                             ],
                         ],
                     ],
@@ -1895,6 +1897,7 @@ class Item extends CachedModel
                                 'type'   => 'number',
                                 'value'  => $values['x'],
                                 'return' => true,
+                                'min'    => 0,
                             ],
                         ],
                         [
@@ -1904,6 +1907,7 @@ class Item extends CachedModel
                                 'type'   => 'number',
                                 'value'  => $values['y'],
                                 'return' => true,
+                                'min'    => 0,
                             ],
                         ],
                     ],
@@ -1970,7 +1974,7 @@ class Item extends CachedModel
                         break;
 
                         case AUTO_SLA_GRAPH:
-                            $text = __('Auto SLA Graph');
+                            $text = __('Event History Graph');
                         break;
 
                         case PERCENTILE_BAR:
@@ -2343,6 +2347,7 @@ class Item extends CachedModel
                 'type'   => 'number',
                 'value'  => $values['linkedLayoutStatusTypeWeight'],
                 'return' => true,
+                'min'    => 0,
             ],
         ];
 
@@ -2356,6 +2361,7 @@ class Item extends CachedModel
                 'type'   => 'number',
                 'value'  => $values['linkedLayoutStatusTypeCriticalThreshold'],
                 'return' => true,
+                'min'    => 0,
             ],
         ];
 
@@ -2369,6 +2375,7 @@ class Item extends CachedModel
                 'type'   => 'number',
                 'value'  => $values['linkedLayoutStatusTypeWarningThreshold'],
                 'return' => true,
+                'min'    => 0,
             ],
         ];
 

@@ -56,7 +56,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'static_graph'    => __('Static Graph'),
                 'percentile_item' => __('Percentile Item'),
                 'module_graph'    => __('Graph'),
-                'auto_sla_graph'  => __('Auto SLA Graph'),
+                'auto_sla_graph'  => __('Event history graph'),
                 'simple_value'    => __('Simple value').ui_print_help_tip(
                     __(
                         "To use 'label'field, you should write
@@ -1299,7 +1299,7 @@ function visual_map_editor_print_toolbox()
         visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
         visual_map_print_button_editor('donut_graph', __('Serialized pie graph'), 'left', false, 'donut_graph_min', true);
         visual_map_print_button_editor('bars_graph', __('Bars Graph'), 'left', false, 'bars_graph_min', true);
-        visual_map_print_button_editor('auto_sla_graph', __('Auto SLA Graph'), 'left', false, 'auto_sla_graph_min', true);
+        visual_map_print_button_editor('auto_sla_graph', __('Event history graph'), 'left', false, 'auto_sla_graph_min', true);
         visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
         visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
         visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);

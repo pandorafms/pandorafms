@@ -188,7 +188,7 @@ export function titleItem(id: number): string {
       title = t("Line");
       break;
     case ItemType.AUTO_SLA_GRAPH:
-      title = t("Auto SLA graph");
+      title = t("Event history graph");
       break;
     case ItemType.CIRCULAR_PROGRESS_BAR:
       title = t("Percentile item");
@@ -257,7 +257,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedMovementSave = debounce(
-    500, // ms.
+    300, // ms.
     (x: Position["x"], y: Position["y"]) => {
       // Update the metadata information.
       // Don't use the .meta property cause we don't need DOM updates.
@@ -338,7 +338,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
   private debouncedResizementSave = debounce(
-    500, // ms.
+    300, // ms.
     (width: Size["width"], height: Size["height"]) => {
       // Update the metadata information.
       // Don't use the .meta property cause we don't need DOM updates.

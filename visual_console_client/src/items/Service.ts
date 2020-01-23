@@ -74,4 +74,16 @@ export default class Service extends Item<ServiceProps> {
 
     return element;
   }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (this.props.statusImageSrc !== null) {
+      const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
+      element.style.backgroundImage = `url(${imgSrc})`;
+    } else if (this.props.encodedTitle !== null) {
+    }
+  }
 }

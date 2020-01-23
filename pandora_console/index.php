@@ -1234,9 +1234,13 @@ if ($searchPage) {
 
             if (isset($_GET['sec2'])) {
                 $file = $_GET['sec2'].'.php';
+                // Make file path absolute to prevent accessing remote files.
+                $file = __DIR__.'/'.$file;
                 // Translate some secs.
                 $main_sec = get_sec($_GET['sec']);
                 $_GET['sec'] = ($main_sec == false) ? $_GET['sec'] : $main_sec;
+
+                // Third condition is aimed to prevent from traversal attack.
                 if (!file_exists($file)
                     || ($_GET['sec2'] != 'general/logon_ok' && enterprise_hook(
                         'enterprise_acl',
@@ -1247,7 +1251,8 @@ if ($searchPage) {
                             true,
                             isset($_GET['sec3']) ? $_GET['sec3'] : '',
                         ]
-                    ) == false)
+                    ) == false
+                    || strpos(realpath($file), __DIR__) === false)
                 ) {
                     unset($_GET['sec2']);
                     include 'general/noaccess.php';

@@ -38,6 +38,7 @@ service httpd start &&\n \
 service crond start &&\n \
 /etc/init.d/pandora_agent_daemon start && \
 /etc/init.d/pandora_server start && \
+/etc/init.d/tentacle_serverd start && \
 tail -f /var/log/pandora/pandora_server.log' \
 >> /entrypoint.sh && \
 chmod +x /entrypoint.sh

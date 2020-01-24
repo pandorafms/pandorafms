@@ -73,30 +73,20 @@ export default class BarsGraph extends Item<BarsGraphProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "bars-graph";
-    element.innerHTML = this.props.html;
-
-    // Hack to execute the JS after the HTML is added to the DOM.
-    const scripts = element.getElementsByTagName("script");
-    for (let i = 0; i < scripts.length; i++) {
-      setTimeout(() => {
-        if (scripts[i].src.length === 0) eval(scripts[i].innerHTML.trim());
-      }, 0);
-    }
+    element.style.backgroundImage = `url(${this.props.html})`;
+    element.style.backgroundRepeat = "no-repeat";
+    element.style.backgroundSize = `${this.props.width}px ${
+      this.props.height
+    }px`;
 
     return element;
   }
 
   protected updateDomElement(element: HTMLElement): void {
-    element.innerHTML = this.props.html;
-
-    // Hack to execute the JS after the HTML is added to the DOM.
-    const aux = document.createElement("div");
-    aux.innerHTML = this.props.html;
-    const scripts = aux.getElementsByTagName("script");
-    for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].src.length === 0) {
-        eval(scripts[i].innerHTML.trim());
-      }
-    }
+    element.style.backgroundImage = `url(${this.props.html})`;
+    element.style.backgroundRepeat = "no-repeat";
+    element.style.backgroundSize = `${this.props.width}px ${
+      this.props.height
+    }px`;
   }
 }

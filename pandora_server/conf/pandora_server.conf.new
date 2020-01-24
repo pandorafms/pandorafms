@@ -560,6 +560,9 @@ async_recovery 1
 # console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
 # console_api_url http://localhost/pandora_console/include/api.php
 
+# console_api_pass: Api pass
+# console_api_pass 1234
+
 # Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).
 #encryption_passphrase passphrase
 

@@ -326,6 +326,7 @@ final class BarsGraph extends Item
         }
 
         $moduleData = \get_bars_module_data($moduleId);
+        array_pop($moduleData);
 
         $waterMark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
@@ -358,12 +359,15 @@ final class BarsGraph extends Item
                 '',
                 $waterMark,
                 $config['fontpath'],
-                6,
+                $config['fontsize'],
                 '',
-                0,
+                2,
                 $config['homeurl'],
                 $backGroundColor,
-                $gridColor
+                $gridColor,
+                null,
+                null,
+                true
             );
         } else {
             $graph = \vbar_graph(
@@ -383,14 +387,15 @@ final class BarsGraph extends Item
                 '',
                 $waterMark,
                 $config['fontpath'],
-                6,
+                $config['fontsize'],
                 '',
-                0,
+                2,
                 $config['homeurl'],
                 $backGroundColor,
                 true,
                 false,
-                $gridColor
+                $gridColor,
+                true
             );
         }
 
@@ -399,7 +404,10 @@ final class BarsGraph extends Item
             \metaconsole_restore_db();
         }
 
-        $data['html'] = $graph;
+        $imgbase64 = 'data:image/jpg;base64,';
+        $imgbase64 .= $graph;
+
+        $data['html'] = $imgbase64;
 
         return $data;
     }

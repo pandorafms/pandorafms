@@ -615,8 +615,7 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 
     // Javascript code
     $return .= "<script type='text/javascript'>";
-    $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
-		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
+    $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels', $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
     $return .= '</script>';
 
     return $return;
@@ -708,12 +707,12 @@ function flot_vcolumn_chart($graph_data, $width, $height, $color, $legend, $long
     $return .= "<script type='text/javascript'>";
     if ($from_ux) {
         if ($from_wux) {
-            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
+            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
         } else {
-            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false, '$background_color', '$tick_color')";
+            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false, '$background_color', '$tick_color')";
         }
     } else {
-        $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
+        $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
     }
 
     $return .= '</script>';

@@ -107,17 +107,7 @@ final class Percentile extends Item
     {
         $labelColor = null;
         if (isset($data['labelColor']) === true) {
-            switch ($data['labelColor']) {
-                case 'fillColor':
-                case 'fill_color':
-                case 'labelColor':
-                    $labelColor = $data['labelColor'];
-                break;
-
-                default:
-                    $labelColor = '#444444';
-                break;
-            }
+            $labelColor = $data['labelColor'];
         }
 
         return $labelColor;
@@ -137,19 +127,7 @@ final class Percentile extends Item
     {
         $color = null;
         if (isset($data['color']) === true) {
-            switch ($data['color']) {
-                case 'borderColor':
-                case 'border_color':
-                case 'gridColor':
-                case 'color':
-                case 'legendBackgroundColor':
-                    $color = $data['color'];
-                break;
-
-                default:
-                    $color = '#F0F0F0';
-                break;
-            }
+            $color = $data['color'];
         }
 
         return $color;
@@ -174,8 +152,15 @@ final class Percentile extends Item
             null
         );
         if ($max_value !== null) {
-            // TODO: XXX.
-            // $return['height'] = $max_value;
+            $return['height'] = $max_value;
+        }
+
+        $min_value = static::parseIntOr(
+            static::issetInArray($data, ['minValue']),
+            null
+        );
+        if ($min_value !== null) {
+            $return['border_width'] = $min_value;
         }
 
         $percentileType = static::encodePercentileType($data);
@@ -217,9 +202,8 @@ final class Percentile extends Item
         $return['type'] = (int) $data['type'];
         $return['percentileType'] = static::extractPercentileType($data);
         $return['valueType'] = static::extractValueType($data);
-        // TODO: Add min value to the database.
         $return['minValue'] = static::parseFloatOr(
-            static::issetInArray($data, ['minValue']),
+            static::issetInArray($data, ['minValue', 'border_width']),
             null
         );
         $return['maxValue'] = static::parseFloatOr(
@@ -483,7 +467,6 @@ final class Percentile extends Item
                 ],
             ];
 
-            // TODO: ADD bbdd.
             // Min Value.
             $inputs[] = [
                 'label'     => __('Min. Value'),
@@ -496,7 +479,6 @@ final class Percentile extends Item
                 ],
             ];
 
-            // TODO: ADD bbdd.
             // Max Value.
             $inputs[] = [
                 'label'     => __('Max. Value'),
@@ -613,10 +595,6 @@ final class Percentile extends Item
         // Default values.
         if (isset($values['width']) === false) {
             $values['width'] = 100;
-        }
-
-        if (isset($values['height']) === false) {
-            $values['height'] = 100;
         }
 
         return $values;

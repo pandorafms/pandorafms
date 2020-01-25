@@ -1404,12 +1404,6 @@ class Item extends CachedModel
             $result['border_color'] = $border_color;
         }
 
-        // TODO change.
-        $fill_color = static::getFillColor($data);
-        if ($fill_color !== null) {
-            $result['fill_color'] = $fill_color;
-        }
-
         $linked_layout_node_id = static::parseIntOr(
             static::issetInArray(
                 $data,
@@ -1669,29 +1663,6 @@ class Item extends CachedModel
                     'gridColor',
                     'color',
                     'legendBackgroundColor',
-                ]
-            ),
-            null
-        );
-    }
-
-
-    /**
-     * Extract a fill color value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return mixed String representing the fill color (not empty) or null.
-     */
-    protected static function getFillColor(array $data)
-    {
-        return static::notEmptyStringOr(
-            static::issetInArray(
-                $data,
-                [
-                    'fillColor',
-                    'fill_color',
-                    'labelColor',
                 ]
             ),
             null

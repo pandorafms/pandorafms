@@ -71,6 +71,7 @@ input.vs_button_ghost {
   margin-top: 13px;
 }
 
+div#editor div#toolbox input.visual_editor_button_toolbox,
 div#edit-controls input.visual_editor_button_toolbox {
   padding-right: 20px;
   padding-top: 12px;

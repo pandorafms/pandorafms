@@ -273,13 +273,30 @@ export default class Percentile extends Item<PercentileProps> {
     element.innerHTML = this.createDomElement().innerHTML;
   }
 
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
   protected resizeElement(width: number, height: number): void {
     if (this.props.percentileType === "progress-bar") {
-      super.resizeElement(width, height);
+      super.resizeElement(width, width / 4);
     } else {
-      console.log("entra por donde ancho y alto es lo mismo");
       super.resizeElement(width, width);
     }
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  public resize(width: number): void {
+    this.resizeElement(width, width);
+    const height = this.props.maxValue || 0;
+    super.setProps({
+      ...this.props, // Object spread: http://es6-features.org/#SpreadOperator
+      width,
+      height
+    });
   }
 
   private getProgress(): number {

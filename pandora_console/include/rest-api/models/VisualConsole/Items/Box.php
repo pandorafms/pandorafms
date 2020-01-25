@@ -32,6 +32,29 @@ final class Box extends Item
 
 
     /**
+     * Extract a fill color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the fill color (not empty) or null.
+     */
+    protected static function getFillColor(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'fillColor',
+                    'fill_color',
+                    'labelColor',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.

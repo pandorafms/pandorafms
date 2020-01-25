@@ -301,6 +301,15 @@ function createVisualConsole(
         type: item.props.type
       };
 
+      // Trick, to allow the percentile item to reuse the height field to save the max value,
+      // it is very ugly, change some year.
+      if (item.props.type === 3) {
+        data = {
+          width: e.newSize.width,
+          type: item.props.type
+        };
+      }
+
       if (item.props.processValue != undefined) {
         data.processValue = item.props.processValue;
       }
@@ -329,7 +338,7 @@ function createVisualConsole(
 
                 // Resize the element to its initial Size.
                 item.resize(e.prevSize.width, e.prevSize.height);
-
+                item.setMeta({ isUpdating: false });
                 done();
                 return; // Stop task execution.
               }
@@ -347,6 +356,7 @@ function createVisualConsole(
 
                   // Resize the element to its initial Size.
                   item.resize(e.prevSize.width, e.prevSize.height);
+                  item.setMeta({ isUpdating: false });
                   done();
                   return; // Stop task execution.
                 }

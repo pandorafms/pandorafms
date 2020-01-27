@@ -3176,7 +3176,11 @@ function reporting_html_availability($table, $item, $pdf=0)
         foreach ($item['data'] as $row) {
             $table_row = [];
             if (isset($row['failover'])) {
-                $table_row[] = ucfirst($row['failover']);
+                if (strpos($row['failover'], 'failover') !== false) {
+                    $table_row[] = __('Failover');
+                } else {
+                    $table_row[] = ucfirst($row['failover']);
+                }
             }
 
             if (isset($row['failover']) && $row['failover'] === 'result') {

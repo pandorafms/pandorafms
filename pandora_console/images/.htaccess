@@ -1,10 +1,5 @@
-#Order deny,allow
-#Deny from All
-#Allow from localhost
-
 #pandora disable phpexec
 <Files *.php>
 Deny from all
-Allow from localhost
 </Files>
 php_flag engine off

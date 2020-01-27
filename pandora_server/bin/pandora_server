@@ -590,21 +590,43 @@ sub main() {
 		$Config{"console_api_url"} = $console_api_url . 'include/api.php';
 	}
 
+	# Definition of configuration file
+	my $cfg_file = $Config{'pandora_path'};
+	my $cfg_file_output = $Config{'pandora_path'} . "_backup";
+
 	# Only if console_api_pass was not defined
 	if ( !defined($Config{"console_api_pass"}) ) {
 		my $console_api_pass = pandora_get_tconfig_token ($DBH, 'api_password', '');
-
 		# If api_password is empty in database
 		if ( $console_api_pass eq '' ) {
 			$console_api_pass = '1234';
 			db_process_update ($DBH, 'tconfig', {'value' => $console_api_pass}, {'token' => 'api_password'});
 		}
-
+		# Definition of console_api_pass in config
 		$Config{"console_api_pass"} = $console_api_pass;
+		# Watch if paramether is added or not (even if it is commented)
+		my $console_api_pass_control = undef;
+		if ( open (CFGin, "<$cfg_file") && open (CFGout, ">>$cfg_file_output") ) {
+			while(my $row = <CFGin>) {
+				if (chomp($row) =~ (m/^#\sconsole_api_pass\s(.*)/i)) {
+					$console_api_pass_control = 1;
+					print CFGout "\nconsole_api_pass " .$Config{"console_api_pass"} . "\n";
+				} else {
+					print CFGout "$row\n";
+				}
+			}
+			# Only if the parameter was not added
+			if ( !defined($console_api_pass_control) ) {
+				print CFGout "\n# console_api_pass: Console password\n";
+				print CFGout "console_api_pass " .$Config{"console_api_pass"} . "\n";
+			}
+			# Close both files
+			close (CFGin);
+			close (CFGout);
+			# Convert the output file in the original configuration file
+			rename $cfg_file_output, $cfg_file;
+		}
 	}
-
-	# Definition of configuration file
-	my $cfg_file = $Config{'pandora_path'};
 
 	# Only if console_pass was not defined.
 	if ( !defined($Config{"console_pass"}) ){

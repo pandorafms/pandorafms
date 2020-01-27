@@ -223,14 +223,6 @@ final class BarsGraph extends Item
         $moduleId = $linkedModule['moduleId'];
         $metaconsoleId = $linkedModule['metaconsoleId'];
 
-        if ($agentId === null) {
-            throw new \InvalidArgumentException('missing agent Id');
-        }
-
-        if ($moduleId === null) {
-            throw new \InvalidArgumentException('missing module Id');
-        }
-
         // Add colors that will use the graphics.
         $color = [];
 
@@ -313,9 +305,9 @@ final class BarsGraph extends Item
         // Maybe connect to node.
         $nodeConnected = false;
         if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $server = \metaconsole_get_connection_by_id($metaconsoleId);
             $nodeConnected = \metaconsole_connect(
-                null,
-                $metaconsoleId
+                $server
             ) === NOERR;
 
             if ($nodeConnected === false) {
@@ -326,7 +318,9 @@ final class BarsGraph extends Item
         }
 
         $moduleData = \get_bars_module_data($moduleId);
-        array_pop($moduleData);
+        if ($moduleData !== false && is_array($moduleData) === true) {
+            array_pop($moduleData);
+        }
 
         $waterMark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',

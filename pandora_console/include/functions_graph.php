@@ -4862,7 +4862,7 @@ function graph_nodata_image($width=300, $height=110, $type='area', $text='')
     // if ($text == '') {
     // $text = __('No data to show');
     // }
-    $text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
+    $text_div = '<div class="nodata_text" style="text-align:center; padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
 
     $image_div = $text_div.'<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\''.$image.'\');"><div></div></div>';
 

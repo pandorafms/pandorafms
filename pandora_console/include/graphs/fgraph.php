@@ -352,7 +352,7 @@ function hbar_graph(
 ) {
     setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
-    if (empty($chart_data)) {
+    if ($chart_data === false || empty($chart_data) === true) {
         return graph_nodata_image($width, $height, 'hbar');
     }
 

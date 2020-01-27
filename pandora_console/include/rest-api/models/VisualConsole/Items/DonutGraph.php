@@ -124,9 +124,9 @@ final class DonutGraph extends Item
         // Maybe connect to node.
         $nodeConnected = false;
         if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $server = \metaconsole_get_connection_by_id($metaconsoleId);
             $nodeConnected = \metaconsole_connect(
-                null,
-                $metaconsoleId
+                $server
             ) === NOERR;
 
             if ($nodeConnected === false) {
@@ -147,12 +147,8 @@ final class DonutGraph extends Item
             $agentId,
             $moduleId
         );
-        $isString = (bool) \db_get_value_sql($sql);
 
-        // Restore connection.
-        if ($nodeConnected === true) {
-            \metaconsole_restore_db();
-        }
+        $isString = (bool) \db_get_value_sql($sql);
 
         $width = (int) $data['width'];
         $height = (int) $data['height'];
@@ -175,6 +171,11 @@ final class DonutGraph extends Item
 
             $style = 'width:'.$width.'px; height:'.$height.'px;';
             $data['html'] = '<img src="'.$src.'" style="'.$style.'">';
+        }
+
+        // Restore connection.
+        if ($nodeConnected === true) {
+            \metaconsole_restore_db();
         }
 
         return $data;

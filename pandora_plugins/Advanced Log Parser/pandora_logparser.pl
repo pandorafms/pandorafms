@@ -258,7 +258,7 @@ sub parse_config {
                 $plugin_setup{"log"}->[$log_items]->{"type"} = $1;
             }
 
-            if ($parametro =~ m/^log\_create_module_for_each_log/i) {
+            if ($parametro =~ m/^log\_create\_module\_for\_each\_log/i) {
                 $plugin_setup{"log"}->[$log_items]->{"module_for_each_log"} = 1;
             } else {
                 if (!defined($plugin_setup{"log"}->[$log_items]->{"module_for_each_log"})){
@@ -482,7 +482,6 @@ sub parse_log ($$$$$$$) {
 	while ($line = <LOGFILE>) {
         while (my ($key, $value) = each (%{$regexp_collection})) {
             # For each regexp block
-
             $rule = $value->{"rule"};
 
             #print "[DEBUG] Action: ".$value->{"action"} ."\n";
@@ -491,7 +490,6 @@ sub parse_log ($$$$$$$) {
             #print "[DEBUG] Rule: ".$value->{"rule"} ."\n";
 
     		if ($line =~ m/$rule/i) {
-
     			# Remove the trailing '\n'
     			chop($line);
 
@@ -613,9 +611,17 @@ sub manage_logfile ($$$$$){
     $index_file_converted =~ s/\\/_/g;
     $index_file_converted =~ s/\|/_/g;
     $index_file_converted =~ s/\:/_/g;
+    $module_name =~ s/\//_/g;
+    $module_name =~ s/\\/_/g;
+    $module_name =~ s/\|/_/g;
+    $module_name =~ s/\:/_/g;
 
     # Create index file if it does not exist
-    $Idx_file = $plugin_setup{"index_dir"} . "/". $module_name . "_" . $index_file_converted . ".idx";
+    if($^O =~ /win/i){
+        $Idx_file = $plugin_setup{"index_dir"} . "\\". $module_name . "_" . $index_file_converted . "\.idx";
+    }else{
+        $Idx_file = $plugin_setup{"index_dir"} . "/". $module_name . "_" . $index_file_converted . "\.idx";
+    }
 
     # if force read all is enabled, 
     if (! -e $Idx_file) {
@@ -629,7 +635,7 @@ sub manage_logfile ($$$$$){
         }
     } else {
         # Load index file
-        ($Idx_pos, $Idx_ino) = load_idx ($Idx_file, $log_filename);            
+        ($Idx_pos, $Idx_ino) = load_idx ($Idx_file, $log_filename);          
     }
 
     # Parse log file
@@ -716,7 +722,7 @@ while (my ($key, $value) = each (@{$plugin_setup{"log"}})) {
     if (defined($value->{"log_location_multiple"})){
         $log_filename_multiple = $value->{"log_location_multiple"};
         $log_create_module_for_each_log = $value->{"module_for_each_log"};
-        my @buffer = `find $log_filename_multiple`;
+        my @buffer = `ls -d "$log_filename_multiple"`;
         foreach (@buffer) {
             # This should solve problems with carriage return in Unix, Linux and Windooze    
             chomp($_);

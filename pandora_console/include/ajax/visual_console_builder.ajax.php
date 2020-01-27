@@ -442,20 +442,16 @@ switch ($action) {
                     || ($layoutData['type'] == PERCENTILE_BUBBLE)
                 ) {
                     if ($value_show == 'value') {
-                        $returnValue = format_for_graph($returnValue, 2);
-
                         $unit_text_db = db_get_sql(
                             'SELECT unit
-							FROM tagente_modulo
-							WHERE id_agente_modulo = '.$layoutData['id_agente_modulo']
+                            FROM tagente_modulo
+                            WHERE id_agente_modulo = '.$layoutData['id_agente_modulo']
                         );
                         $unit_text_db = trim(io_safe_output($unit_text_db));
 
-                        if ($value_show == 'value') {
-                            // Set empty string unit at the moment
-                            // and change for old false value
-                            $unit_text = '';
-                        }
+                        $divisor = get_data_multiplier($unit_text_db);
+
+                        $returnValue = format_for_graph($returnValue, 2, '.', ',', $divisor);
 
                         if (!empty($unit_text_db)) {
                             $unit_text = $unit_text_db;

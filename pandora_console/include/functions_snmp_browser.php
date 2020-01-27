@@ -409,11 +409,20 @@ function snmp_browser_get_oid(
 
         if ($server_to_exec != 0) {
             $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
-            exec(
-                'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
-                $translate_output,
-                $rc
-            );
+
+            if (empty($server_data['port'])) {
+                exec(
+                    'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
+                    $translate_output,
+                    $rc
+                );
+            } else {
+                exec(
+                    'ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
+                    $translate_output,
+                    $rc
+                );
+            }
         } else {
             exec(
                 $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid),

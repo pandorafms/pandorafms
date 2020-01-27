@@ -190,6 +190,8 @@ function reporting_make_reporting_data(
     $metaconsole_on = is_metaconsole();
     $index_content = 0;
     foreach ($contents as $content) {
+        $content['name'] = io_safe_input($content['name']);
+        $content['description'] = io_safe_input($content['description']);
         if (!empty($content['id_agent_module']) && !empty($content['id_agent'])
             && tags_has_user_acl_tags($config['id_user'])
         ) {
@@ -1580,7 +1582,10 @@ function reporting_event_top_n(
                         $data['module'] = $module_name[$i];
 
                         $data['value'] = $dt;
-                        $data['formated_value'] = format_for_graph($dt, 2).' '.$units[$i];
+
+                        $divisor = get_data_multiplier($units[$i]);
+
+                        $data['formated_value'] = format_for_graph($dt, 2, '.', ',', $divisor, $units[$i]);
                         $data_return[] = $data;
                     }
 
@@ -1633,12 +1638,15 @@ function reporting_event_top_n(
 
                     $data_pie_graph[$item_name] = $data_top[$i];
                     $data_hbar[$item_name]['g'] = $data_top[$i];
+
+                    $divisor = get_data_multiplier($units[$i]);
+
                     if ($show_graph == 0 || $show_graph == 1) {
                         $data = [];
                         $data['agent'] = $an;
                         $data['module'] = $module_name[$i];
                         $data['value'] = $data_top[$i];
-                        $data['formated_value'] = format_for_graph($data_top[$i], 2).' '.$units[$i];
+                        $data['formated_value'] = format_for_graph($data_top[$i], 2, '.', ',', $divisor, $units[$i]);
                         $data_return[] = $data;
                     }
 
@@ -1714,14 +1722,15 @@ function reporting_event_top_n(
                     $i++;
                 }
 
+                $unit = $data_top_values['units'][0];
                 $avg = ($avg / $i);
 
                 $return['resume']['min']['value'] = $min;
-                $return['resume']['min']['formated_value'] = format_for_graph($min, 2);
+                $return['resume']['min']['formated_value'] = format_for_graph($min, 2, '.', ',', $divisor, $unit);
                 $return['resume']['avg']['value'] = $avg;
-                $return['resume']['avg']['formated_value'] = format_for_graph($avg, 2);
+                $return['resume']['avg']['formated_value'] = format_for_graph($avg, 2, '.', ',', $divisor, $unit);
                 $return['resume']['max']['value'] = $max;
-                $return['resume']['max']['formated_value'] = format_for_graph($max, 2);
+                $return['resume']['max']['formated_value'] = format_for_graph($max, 2, '.', ',', $divisor, $unit);
             }
 
             $return['data'] = $data_return;
@@ -4286,14 +4295,7 @@ function reporting_sql_graph(
 
         case 'data':
             $data = [];
-            foreach ($modules as $key => $value) {
-                $data[$value] = modules_get_agentmodule_data(
-                    $value,
-                    $content['period'],
-                    $report['datetime']
-                );
-            }
-
+            $data = db_get_all_rows_sql($content['external_source']);
             $return['chart'] = $data;
         break;
     }
@@ -4902,6 +4904,8 @@ function reporting_value($report, $content, $type, $pdf=false)
         case 'max':
         case 'min':
         case 'avg':
+            $divisor = get_data_multiplier($unit);
+
             if ($content['lapse_calc'] == 0) {
                 switch ($type) {
                     case 'max':
@@ -4932,7 +4936,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
                 } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
+                    $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
                 }
             } else {
                 $return['visual_format'] = $content['visual_format'];
@@ -4940,17 +4944,17 @@ function reporting_value($report, $content, $type, $pdf=false)
                 switch ($type) {
                     case 'max':
                         $params['force_interval'] = 'max_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
 
                     case 'min':
                         $params['force_interval'] = 'min_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
 
                     case 'avg':
                         $params['force_interval'] = 'avg_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
                 }
 
@@ -4980,15 +4984,15 @@ function reporting_value($report, $content, $type, $pdf=false)
                         if ($i > $time_begin['utimestamp']) {
                             switch ($type) {
                                 case 'max':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
 
                                 case 'min':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
 
                                 case 'avg':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
                             }
                         } else {
@@ -5017,7 +5021,9 @@ function reporting_value($report, $content, $type, $pdf=false)
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
             } else {
-                $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
+                $divisor = get_data_multiplier($unit);
+
+                $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
             }
         break;
     }
@@ -6250,27 +6256,6 @@ function reporting_availability($report, $content, $date=false, $time=false)
         $return['kind_availability'] = 'module';
     }
 
-    if (empty($content['subitems'])) {
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
-        }
-
-        $sql = sprintf(
-            '
-            SELECT id_agent_module,
-                server_name, operation
-            FROM treport_content_item
-            WHERE id_report_content = %d',
-            $content['id_rc']
-        );
-
-        $items = db_process_sql($sql);
-    } else {
-        $items = $content['subitems'];
-    }
-
-    $data = [];
-
     $avg = 0;
     $min = null;
     $min_text = '';
@@ -6278,180 +6263,241 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $max_text = '';
     $count = 0;
 
-    $style = io_safe_output($content['style']);
-    if ($style['hide_notinit_agents']) {
-        $aux_id_agents = $agents;
-        $i = 0;
-        foreach ($items as $item) {
-            $utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
-            if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))) {
-                unset($items[$i]);
+    if ($content['failover_mode']) {
+        $availability_graph_data = reporting_availability_graph($report, $content, false, true);
+        $data = $availability_graph_data['data'];
+
+        foreach ($data as $key => $item_data) {
+            $percent_ok = $item_data['sla_value'];
+            $data[$key]['SLA'] = $percent_ok;
+
+            if ($item_data['failover'] != 'result') {
+                $data[$key]['availability_item'] = $item_data['module'];
+                $text = $item_data['agent'].' ('.$item_data['module'].')';
+                $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
+                if (is_null($min)) {
+                    $min = $percent_ok;
+                    $min_text = $text;
+                } else {
+                    if ($min > $percent_ok) {
+                        $min = $percent_ok;
+                        $min_text = $text;
+                    }
+                }
+
+                if (is_null($max)) {
+                    $max = $percent_ok;
+                    $max_text = $text;
+                } else {
+                    if ($max < $percent_ok) {
+                        $max = $percent_ok;
+                        $max_text = $text;
+                    }
+                }
+
+                $count++;
+            } else {
+                $data[$key]['availability_item'] = '--';
+                $data[$key]['agent'] = '--';
+            }
+        }
+    } else {
+        if (empty($content['subitems'])) {
+            if (is_metaconsole()) {
+                metaconsole_restore_db();
             }
 
-            $i++;
-        }
-    }
+            $sql = sprintf(
+                '
+                SELECT id_agent_module, id_agent_module_failover,
+                    server_name, operation
+                FROM treport_content_item
+                WHERE id_report_content = %d',
+                $content['id_rc']
+            );
 
-    if (!empty($items)) {
-        foreach ($items as $item) {
-            // aaMetaconsole connection
-            $server_name = $item['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
-                $connection = metaconsole_get_connection($server_name);
-                if (metaconsole_load_external_db($connection) != NOERR) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
+            $items = db_process_sql($sql);
+        } else {
+            $items = $content['subitems'];
+        }
+
+        $data = [];
+
+        $style = io_safe_output($content['style']);
+        if ($style['hide_notinit_agents']) {
+            $aux_id_agents = $agents;
+            $i = 0;
+            foreach ($items as $item) {
+                $utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
+                if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))) {
+                    unset($items[$i]);
+                }
+
+                $i++;
+            }
+        }
+
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                // aaMetaconsole connection
+                $server_name = $item['server_name'];
+                if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                    $connection = metaconsole_get_connection($server_name);
+                    if (metaconsole_load_external_db($connection) != NOERR) {
+                        // ui_print_error_message ("Error connecting to ".$server_name);
+                        continue;
+                    }
+                }
+
+                if (modules_is_disable_agent($item['id_agent_module'])
+                    || modules_is_not_init($item['id_agent_module'])
+                ) {
+                    // Restore dbconnection
+                    if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                        metaconsole_restore_db();
+                    }
+
                     continue;
                 }
-            }
 
-            if (modules_is_disable_agent($item['id_agent_module'])
-                || modules_is_not_init($item['id_agent_module'])
-            ) {
+                $row = [];
+
+                $text = '';
+
+                $row['data'] = reporting_advanced_sla(
+                    $item['id_agent_module'],
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    null,
+                    // min_value -> dynamic
+                    null,
+                    // max_value -> dynamic
+                    null,
+                    // inverse_interval -> dynamic
+                    [
+                        '1' => $content['sunday'],
+                        '2' => $content['monday'],
+                        '3' => $content['tuesday'],
+                        '4' => $content['wednesday'],
+                        '5' => $content['thursday'],
+                        '6' => $content['friday'],
+                        '7' => $content['saturday'],
+                    ],
+                    $content['time_from'],
+                    $content['time_to']
+                );
+
+                // HACK it is saved in show_graph field.
+                // Show interfaces instead the modules
+                if ($content['show_graph']) {
+                    $text = $row['data']['availability_item'] = agents_get_address(
+                        modules_get_agentmodule_agent($item['id_agent_module'])
+                    );
+
+                    if (empty($text)) {
+                        $text = $row['data']['availability_item'] = __('No Address');
+                    }
+                } else {
+                    $text = $row['data']['availability_item'] = modules_get_agentmodule_name(
+                        $item['id_agent_module']
+                    );
+                }
+
+                $row['data']['agent'] = modules_get_agentmodule_agent_alias(
+                    $item['id_agent_module']
+                );
+
+                $text = $row['data']['agent'].' ('.$text.')';
+
                 // Restore dbconnection
                 if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                     metaconsole_restore_db();
                 }
 
-                continue;
-            }
+                // find order
+                $row['data']['order'] = $row['data']['SLA'];
 
-            $row = [];
-
-            $text = '';
-
-            $row['data'] = reporting_advanced_sla(
-                $item['id_agent_module'],
-                ($report['datetime'] - $content['period']),
-                $report['datetime'],
-                null,
-                // min_value -> dynamic
-                null,
-                // max_value -> dynamic
-                null,
-                // inverse_interval -> dynamic
-                [
-                    '1' => $content['sunday'],
-                    '2' => $content['monday'],
-                    '3' => $content['tuesday'],
-                    '4' => $content['wednesday'],
-                    '5' => $content['thursday'],
-                    '6' => $content['friday'],
-                    '7' => $content['saturday'],
-                ],
-                $content['time_from'],
-                $content['time_to']
-            );
-
-            // HACK it is saved in show_graph field.
-            // Show interfaces instead the modules
-            if ($content['show_graph']) {
-                $text = $row['data']['availability_item'] = agents_get_address(
-                    modules_get_agentmodule_agent($item['id_agent_module'])
-                );
-
-                if (empty($text)) {
-                    $text = $row['data']['availability_item'] = __('No Address');
-                }
-            } else {
-                $text = $row['data']['availability_item'] = modules_get_agentmodule_name(
-                    $item['id_agent_module']
-                );
-            }
-
-            $row['data']['agent'] = modules_get_agentmodule_agent_alias(
-                $item['id_agent_module']
-            );
-
-            $text = $row['data']['agent'].' ('.$text.')';
-
-            // Restore dbconnection
-            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
-                metaconsole_restore_db();
-            }
-
-            // find order
-            $row['data']['order'] = $row['data']['SLA'];
-
-            $percent_ok = $row['data']['SLA'];
-            $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
-            if (is_null($min)) {
-                $min = $percent_ok;
-                $min_text = $text;
-            } else {
-                if ($min > $percent_ok) {
+                $percent_ok = $row['data']['SLA'];
+                $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
+                if (is_null($min)) {
                     $min = $percent_ok;
                     $min_text = $text;
+                } else {
+                    if ($min > $percent_ok) {
+                        $min = $percent_ok;
+                        $min_text = $text;
+                    }
                 }
-            }
 
-            if (is_null($max)) {
-                $max = $percent_ok;
-                $max_text = $text;
-            } else {
-                if ($max < $percent_ok) {
+                if (is_null($max)) {
                     $max = $percent_ok;
                     $max_text = $text;
+                } else {
+                    if ($max < $percent_ok) {
+                        $max = $percent_ok;
+                        $max_text = $text;
+                    }
                 }
+
+                $data[] = $row['data'];
+                $count++;
             }
 
-            $data[] = $row['data'];
-            $count++;
-        }
+            switch ($content['order_uptodown']) {
+                case REPORT_ITEM_ORDER_BY_AGENT_NAME:
+                    $temp = [];
+                    foreach ($data as $row) {
+                        $i = 0;
+                        foreach ($temp as $t_row) {
+                            if (strcmp($row['data']['agent'], $t_row['agent']) < 0) {
+                                break;
+                            }
 
-        switch ($content['order_uptodown']) {
-            case REPORT_ITEM_ORDER_BY_AGENT_NAME:
-                $temp = [];
-                foreach ($data as $row) {
-                    $i = 0;
-                    foreach ($temp as $t_row) {
-                        if (strcmp($row['data']['agent'], $t_row['agent']) < 0) {
-                            break;
+                            $i++;
                         }
 
-                        $i++;
+                        array_splice($temp, $i, 0, [$row]);
                     }
 
-                    array_splice($temp, $i, 0, [$row]);
-                }
+                    $data = $temp;
+                break;
 
-                $data = $temp;
-            break;
+                case REPORT_ITEM_ORDER_BY_ASCENDING:
+                    $temp = [];
+                    foreach ($data as $row) {
+                        $i = 0;
+                        foreach ($temp as $t_row) {
+                            if ($row['data']['SLA'] < $t_row['order']) {
+                                break;
+                            }
 
-            case REPORT_ITEM_ORDER_BY_ASCENDING:
-                $temp = [];
-                foreach ($data as $row) {
-                    $i = 0;
-                    foreach ($temp as $t_row) {
-                        if ($row['data']['SLA'] < $t_row['order']) {
-                            break;
+                            $i++;
                         }
 
-                        $i++;
+                        array_splice($temp, $i, 0, [$row]);
                     }
 
-                    array_splice($temp, $i, 0, [$row]);
-                }
+                    $data = $temp;
+                break;
 
-                $data = $temp;
-            break;
+                case REPORT_ITEM_ORDER_BY_DESCENDING:
+                    $temp = [];
+                    foreach ($data as $row) {
+                        $i = 0;
+                        foreach ($temp as $t_row) {
+                            if ($row['data']['SLA'] > $t_row['order']) {
+                                break;
+                            }
 
-            case REPORT_ITEM_ORDER_BY_DESCENDING:
-                $temp = [];
-                foreach ($data as $row) {
-                    $i = 0;
-                    foreach ($temp as $t_row) {
-                        if ($row['data']['SLA'] > $t_row['order']) {
-                            break;
+                            $i++;
                         }
 
-                        $i++;
+                        array_splice($temp, $i, 0, [$row]);
                     }
 
-                    array_splice($temp, $i, 0, [$row]);
-                }
-
-                $data = $temp;
-            break;
+                    $data = $temp;
+                break;
+            }
         }
     }
 
@@ -6490,7 +6536,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
   *
   * @return array Generates a structure the report.
   */
-function reporting_availability_graph($report, $content, $pdf=false)
+function reporting_availability_graph($report, $content, $pdf=false, $failover=false)
 {
     global $config;
     $return = [];
@@ -6532,7 +6578,7 @@ function reporting_availability_graph($report, $content, $pdf=false)
 
         $slas = io_safe_output(
             db_get_all_rows_field_filter(
-                'treport_content_sla_combined',
+                ($failover) ? 'treport_content_item' : 'treport_content_sla_combined',
                 'id_report_content',
                 $content['id_rc']
             )
@@ -6937,9 +6983,19 @@ function prepare_data_for_paint(
     $alias_agent = modules_get_agentmodule_agent_alias(
         $sla['id_agent_module']
     );
-    $name_module = modules_get_agentmodule_name(
-        $sla['id_agent_module']
-    );
+
+    if ($content['show_graph']) {
+        $name_module = agents_get_address(
+            modules_get_agentmodule_agent($sla['id_agent_module'])
+        );
+        if (empty($name_module)) {
+            $name_module = __('No Address');
+        }
+    } else {
+        $name_module = modules_get_agentmodule_name(
+            $sla['id_agent_module']
+        );
+    }
 
     $data['agent'] = $alias_agent;
     $data['module'] = $name_module;
@@ -7334,6 +7390,8 @@ function reporting_general($report, $content)
             }
         }
 
+        $divisor = get_data_multiplier($unit);
+
         switch ($content['group_by_agent']) {
             case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
                 $id_agent_module[$index] = $row['id_agent_module'];
@@ -7364,7 +7422,7 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                     }
                 }
             break;
@@ -7383,7 +7441,7 @@ function reporting_general($report, $content)
 
             if ($change_min) {
                 $return['min']['value'] = $data_res[$index];
-                $return['min']['formated_value'] = format_for_graph($data_res[$index], 2).' '.$unit;
+                $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                 $return['min']['agent'] = $ag_name;
                 $return['min']['module'] = $mod_name;
             }
@@ -7399,7 +7457,7 @@ function reporting_general($report, $content)
 
             if ($change_max) {
                 $return['max']['value'] = $data_res[$index];
-                $return['max']['formated_value'] = format_for_graph($data_res[$index], 2).' '.$unit;
+                $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                 $return['max']['agent'] = $ag_name;
                 $return['max']['module'] = $mod_name;
             }
@@ -7517,13 +7575,15 @@ function reporting_general($report, $content)
                         break;
                     }
 
+                    $divisor = get_data_multiplier($units[$i]);
+
                     if (!is_numeric($d) || $is_string[$i]) {
                         $data['value'] = $d;
                         // to see the chains on the table
                         $data['formated_value'] = $d;
                     } else {
                         $data['value'] = $d;
-                        $data['formated_value'] = format_for_graph($d, 2).' '.$units[$i];
+                        $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, $units[$i]);
                     }
                 }
 
@@ -7640,7 +7700,7 @@ function reporting_custom_graph(
     $return['title'] = $content['name'];
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
-    $return['subtitle'] = io_safe_output($graph['name']);
+    $return['subtitle'] = $graph['name'];
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];

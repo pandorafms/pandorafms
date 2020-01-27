@@ -628,6 +628,8 @@ switch ($action) {
                     $unknown_checks = $item['unknown_checks'];
                     $agent_max_value = $item['agent_max_value'];
                     $agent_min_value = $item['agent_min_value'];
+                    $failover_mode = $item['failover_mode'];
+                    $failover_type = $item['failover_type'];
                 break;
 
                 case 'group_report':
@@ -3263,6 +3265,13 @@ function print_General_list($width, $action, $idItem=null, $type='general')
         $meta = false;
     }
 
+    $failover_mode = db_get_value(
+        'failover_mode',
+        'treport_content',
+        'id_rc',
+        $idItem
+    );
+
     $operation = [
         'avg' => __('rate'),
         'max' => __('max'),
@@ -3284,6 +3293,18 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     <th class="header" scope="col">
                         <?php echo __('Module'); ?>
                     </th>
+                    <?php
+                    if ($failover_mode) {
+                        ?>
+                        <th class="header" scope="col">
+                            <?php echo __('Agent Failover'); ?>
+                        </th>
+                        <th class="header" scope="col">
+                            <?php echo __('Module Failover'); ?>
+                        </th>
+                        <?php
+                    }
+                    ?>
                     <th class="header" scope="col">
                         <?php echo __('Action'); ?>
                     </th>
@@ -3318,7 +3339,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                 case 'new':
                     ?>
                     <tr id="general_template" style="" class="datos">
-                        <td colspan="3">
+                        <td colspan="4">
                             <?php
                             echo __('Please save the report to start adding items into the list.');
                             ?>
@@ -3365,19 +3386,50 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                             ['id_agente_modulo' => $item['id_agent_module']]
                         );
 
+                        if (isset($item['id_agent_module_failover']) === true
+                            && $item['id_agent_module_failover'] !== 0
+                        ) {
+                            $idAgentFailover = db_get_value_filter(
+                                'id_agente',
+                                'tagente_modulo',
+                                ['id_agente_modulo' => $item['id_agent_module_failover']]
+                            );
+                            $nameAgentFailover = agents_get_alias(
+                                $idAgentFailover
+                            );
+
+                            $nameModuleFailover = db_get_value_filter(
+                                'nombre',
+                                'tagente_modulo',
+                                ['id_agente_modulo' => $item['id_agent_module_failover']]
+                            );
+                        }
+
                         $server_name_element = '';
                         if ($meta && $server_name != '') {
                             $server_name_element .= ' ('.$server_name.')';
                         }
 
                         if ($type == 'availability') {
-                            echo '<tr id="general_'.$item['id'].'" style="" class="datos">
-								<td>'.printSmallFont($nameAgent).$server_name_element.'</td>
-								<td>'.printSmallFont($nameModule).'</td>
-								<td style="text-align: center;">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
-								</td>
-							</tr>';
+                            if ($failover_mode) {
+                                echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                                    <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
+                                    <td>'.printSmallFont($nameModule).'</td>
+                                    <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
+                                    <td>'.printSmallFont($nameModuleFailover).'</td>
+                                    <td style="text-align: center;">
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+                                    </td>
+                                </tr>';
+                            } else {
+                                echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                                    <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
+                                    <td>'.printSmallFont($nameModule).'</td>
+                                    <td style="text-align: center;">
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+                                    </td>
+                                </tr>';
+                            }
                         } else {
                             echo '<tr id="general_'.$item['id'].'" style="" class="datos">
 								<td>'.printSmallFont($nameAgent).$server_name_element.'</td>
@@ -3403,6 +3455,15 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                             <td class="agent_name"></td>
                             <td class="module_name"></td>
                             <?php
+                            if ($type == 'availability'
+                                && $failover_mode
+                            ) {
+                                ?>
+                                <td class="agent_name_failover"></td>
+                                <td class="module_name_failover"></td>
+                                <?php
+                            }
+
                             if ($type != 'availability') {
                                 ?>
                                 <td class="operation_name"></td>
@@ -3455,6 +3516,43 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     </option>
                                 </select>
                             </td>
+                            <?php
+                            if ($type == 'availability' && $failover_mode) {
+                                ?>
+                                <td class="sla_list_agent_failover_col">
+                                    <input id="hidden-id_agent_failover" name="id_agent_failover" value="" type="hidden">
+                                    <input id="hidden-server_name_failover" name="server_name_failover" value="" type="hidden">
+                                    <?php
+                                    $params = [];
+                                    $params['show_helptip'] = true;
+                                    $params['input_name'] = 'agent_failover';
+                                    $params['value'] = '';
+                                    $params['use_hidden_input_idagent'] = true;
+                                    $params['hidden_input_idagent_id'] = 'hidden-id_agent_failover';
+                                    $params['javascript_is_function_select'] = true;
+                                    $params['selectbox_id'] = 'id_agent_module_failover';
+                                    $params['add_none_module'] = false;
+                                    if ($meta) {
+                                        $params['use_input_id_server'] = true;
+                                        $params['input_id_server_id'] = 'hidden-id_server';
+                                        $params['disabled_javascript_on_blur_function'] = true;
+                                    }
+
+                                    ui_print_agent_autocomplete_input($params);
+                                    ?>
+                                </td>
+                                <td class="sla_list_module_failover_col">
+                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" style="max-width: 180px">
+                                        <option value="0">
+                                            <?php
+                                            echo __('Select an Agent first');
+                                            ?>
+                                        </option>
+                                    </select>
+                                </td>
+                                <?php
+                            }
+                            ?>
                             <?php
                             if ($type !== 'availability') {
                                 ?>
@@ -4495,6 +4593,10 @@ function addGeneralRow() {
     var idAgent = $("input[name=id_agent_general]").val();
     var serverId = $("input[name=id_server]").val();
     var idModule = $("#id_agent_module_general").val();
+    var nameAgentFailover = $("input[name=agent_failover]").val();
+    var idModuleFailover = $("#id_agent_module_failover").val();
+    var nameModuleFailover = $("#id_agent_module_failover :selected").text();
+
     var operation;
     if ($("#id_operation_module_general").length) {
         operation = $("#id_operation_module_general").val();
@@ -4580,10 +4682,63 @@ function addGeneralRow() {
             }
         });
 
+        if (nameAgentFailover != '') {
+            //Truncate nameAgentFailover
+            var params = [];
+            params.push("truncate_text=1");
+            params.push("text=" + nameAgentFailover);
+            params.push("page=include/ajax/reporting.ajax");
+            jQuery.ajax ({
+                data: params.join ("&"),
+                type: 'POST',
+                url: action=
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                + "/ajax.php",
+                async: false,
+                timeout: 10000,
+                success: function (data) {
+                    nameAgentFailover = data;
+                }
+            });
+
+            //Truncate nameModuleFailover
+            var params = [];
+            params.push("truncate_text=1");
+            params.push("text=" + nameModuleFailover);
+            params.push("page=include/ajax/reporting.ajax");
+            jQuery.ajax ({
+                data: params.join ("&"),
+                type: 'POST',
+                url: action=
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                + "/ajax.php",
+                async: false,
+                timeout: 10000,
+                success: function (data) {
+                    nameModuleFailover = data;
+                }
+            });
+        }
+
         var params = [];
         params.push("add_general=1");
         params.push("id=" + $("input[name=id_item]").val());
         params.push("id_module=" + idModule);
+        params.push("id_module_failover=" + idModuleFailover);
         params.push("id_server=" + serverId);
         params.push("operation=" + operation);
         params.push("id_agent=" + idAgent);
@@ -4610,6 +4765,8 @@ function addGeneralRow() {
                     $("#row", row).attr('id', 'general_' + data['id']);
                     $(".agent_name", row).html(nameAgent);
                     $(".module_name", row).html(nameModule);
+                    $(".agent_name_failover", row).html(nameAgentFailover);
+                    $(".module_name_failover", row).html(nameModuleFailover);
                     $(".operation_name", row).html(nameOperation);
                     $(".delete_button", row).attr(
                         'href',
@@ -4624,6 +4781,15 @@ function addGeneralRow() {
                     $("#id_operation_module_general").val('avg');
                     $("#id_agent_module_general").empty();
                     $("#id_agent_module_general").attr('disabled', 'true');
+
+                    $("input[name=id_agent_failover]").val('');
+                    $("input[name=agent_failover]").val('');
+                    $("#id_agent_module_failover").empty();
+                    $("#id_agent_module_failover").attr('disabled', 'true');
+                    $("#id_agent_module_failover").append(
+                        $("<option></option>")
+                        .attr ("value", 0)
+                        .html ($("#module_sla_text").html()));
                 }
             }
         });
@@ -5111,6 +5277,12 @@ function chooseType() {
                  $("#row_select_fields3").hide();
              }
             $("#row_historical_db_check").hide();
+
+            $("#row_failover_mode").show();
+            var failover_checked = $("input[name='failover_mode']").prop("checked");
+            if(failover_checked){
+                $("#row_failover_type").show();
+            }
             break;
 
         case 'group_report':

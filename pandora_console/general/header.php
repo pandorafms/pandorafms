@@ -703,8 +703,7 @@ if ($config['menu_type'] == 'classic') {
                 },
                 success: function (data) {
                    $('#result_order').html(data);
-                   console.log(data);
-                   },
+                },
                 error: function (data) {
                     console.error("Fatal error in AJAX call to interpreter order", data)
                 }

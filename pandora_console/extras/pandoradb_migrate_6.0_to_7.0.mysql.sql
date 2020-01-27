@@ -1195,6 +1195,8 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
 	`generated` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
+	`id_group_map` INT(10) UNSIGNED NOT NULL default 0,
+
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1401,6 +1403,7 @@ ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
+ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
@@ -1775,6 +1778,7 @@ ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) NOT NULL defau
 -- Table `tserver`
 -- ---------------------------------------------------------------------
 ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `tserver` ADD COLUMN `port` int(5) unsigned NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_response`
@@ -2432,6 +2436,21 @@ CREATE TABLE `tagent_repository` (
   FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `treport_content_item`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treport_content_item` (
+	`id` INTEGER UNSIGNED NOT NULL auto_increment,
+	`id_report_content` INTEGER UNSIGNED NOT NULL,
+	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL DEFAULT 0,
+	`server_name` text,
+	`operation` text,
+	PRIMARY KEY(`id`),
+	FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
+		ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
 -- Table `tdeployment_hosts`

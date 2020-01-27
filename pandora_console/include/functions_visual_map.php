@@ -1593,6 +1593,7 @@ function visual_map_print_item(
 
         case CLOCK:
             if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+                $image_prefix = (is_metaconsole()) ? '../../' : '';
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
@@ -1606,17 +1607,16 @@ function visual_map_print_item(
                         }
                     } else {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
-                            $img = '<img src="images/console/signes/clock.png" style="width:200px;height:240px;">';
+                            $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:200px;height:240px;">';
                         } else {
                             if ($layoutData['time_format'] == 'time') {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:71px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:71px">';
                             } else {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:91px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:91px">';
                             }
                         }
                     }
                 } else {
-                    $image_prefix = ($layoutData['id_metaconsole'] != 0) ? '../../' : '';
                     if ($layoutData['clock_animation'] == 'analogic_1') {
                         $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:'.$width.'px;height:'.($width + 40).'px;">';
                     } else {
@@ -1901,7 +1901,7 @@ function visual_map_print_item(
                         }
                     } else {
                         $is_meta = is_metaconsole();
-                        
+
                         $agents_critical = agents_get_agents(
                             [
                                 'disabled' => 0,

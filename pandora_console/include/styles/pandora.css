@@ -4985,11 +4985,10 @@ input:checked + .p-slider:before {
 .action_buttons input[type="image"],
 .action_button_img {
   border-radius: 4px;
-  border: 1px solid #dcdcdc;
-  padding: 1px;
+  border: 1px solid #dcdcdc !important;
+  padding: 1px !important;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
   max-width: 21px;
-  background-color: transparent; /*BORRAR*/
 }
 
 /* This class is for only one icon to be a button type. */

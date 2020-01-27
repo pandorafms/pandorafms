@@ -90,6 +90,7 @@
   align-items: center;
   opacity: 0.7;
   background: rgb(212, 215, 218);
+  z-index: 2;
 }
 
 .show-elements {

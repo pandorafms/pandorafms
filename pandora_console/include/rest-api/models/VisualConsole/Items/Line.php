@@ -264,6 +264,10 @@ final class Line extends Model
 
         $borderWidth = static::getBorderWidth($data);
         if ($borderWidth !== null) {
+            if ($borderWidth < 1) {
+                $borderWidth = 1;
+            }
+
             $result['border_width'] = $borderWidth;
         }
 

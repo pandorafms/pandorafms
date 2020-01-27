@@ -538,11 +538,11 @@ final class BarsGraph extends Item
 
         // Default values.
         if (isset($values['width']) === false) {
-            $values['width'] = 250;
+            $values['width'] = 300;
         }
 
         if (isset($values['height']) === false) {
-            $values['height'] = 250;
+            $values['height'] = 180;
         }
 
         return $values;

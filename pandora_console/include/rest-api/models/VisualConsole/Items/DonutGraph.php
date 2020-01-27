@@ -278,11 +278,11 @@ final class DonutGraph extends Item
 
         // Default values.
         if (isset($values['width']) === false) {
-            $values['width'] = 100;
+            $values['width'] = 300;
         }
 
         if (isset($values['height']) === false) {
-            $values['height'] = 100;
+            $values['height'] = 300;
         }
 
         return $values;

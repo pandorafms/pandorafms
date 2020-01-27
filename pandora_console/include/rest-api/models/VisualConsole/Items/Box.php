@@ -69,6 +69,10 @@ final class Box extends Item
 
         $border_width = parent::getBorderWidth($data);
         if ($border_width !== null) {
+            if ($border_width < 1) {
+                $border_width = 1;
+            }
+
             $return['border_width'] = $border_width;
         }
 

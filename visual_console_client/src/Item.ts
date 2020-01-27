@@ -824,6 +824,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.classList.remove("is-fetching");
       }
     }
+
     if (!prevMeta || prevMeta.isUpdating !== this.meta.isUpdating) {
       if (this.meta.isUpdating) {
         this.elementRef.classList.add("is-updating");

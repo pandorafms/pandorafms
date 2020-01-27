@@ -1165,19 +1165,7 @@ function createOrUpdateVisualConsoleItem(
     title = "Update item ";
   }
   title += nameType;
-  // var props = item.props || {};
-  /*
-  var elementsVc = visualConsole.elements
-    .filter(function(item) {
-      return item.props.id;
-    })
-    .map(function(item) {
-      return {
-        value: item.props.id,
-        text: VisualConsole.itemDescriptiveName(item)
-      };
-    });
-  */
+
   load_modal({
     target: $("#modalVCItemForm"),
     form: ["itemForm-label", "itemForm-general", "itemForm-specific"],
@@ -1194,6 +1182,19 @@ function createOrUpdateVisualConsoleItem(
         visualConsole.updateElement(data);
         item.setMeta({ isUpdating: false });
       } else {
+        document
+          .getElementById("visual-console-container")
+          .classList.remove("is-updating");
+
+        var div = document
+          .getElementById("visual-console-container")
+          .querySelector(".div-visual-console-spinner");
+        if (div !== null) {
+          var parent = div.parentElement;
+          if (parent !== null) {
+            parent.removeChild(div);
+          }
+        }
         data["receivedAt"] = new Date();
         var newItem = visualConsole.addElement(data);
         newItem.setMeta({ editMode: true });
@@ -1241,6 +1242,20 @@ function createOrUpdateVisualConsoleItem(
         }
         if (item.itemProps.id) {
           item.setMeta({ isUpdating: true });
+        } else {
+          var divParent = document.createElement("div");
+          divParent.className = "div-visual-console-spinner";
+          var divSpinner = document.createElement("div");
+          divSpinner.className = "visual-console-spinner";
+          divParent.appendChild(divSpinner);
+
+          document
+            .getElementById("visual-console-container")
+            .classList.add("is-updating");
+
+          document
+            .getElementById("visual-console-container")
+            .appendChild(divParent);
         }
       }
     },
@@ -1250,225 +1265,6 @@ function createOrUpdateVisualConsoleItem(
       tinyMCE.execCommand("mceRemoveControl", true, "textarea_label");
     }
   });
-
-  /*
-  var formContainer = {};
-  
-  if (props.id) {
-    // Item selection.
-    visualConsole.selectItem(props.id, true);
-    formContainer = item.getFormContainer();
-  } else {
-    formContainer = VisualConsole.items[props.type].getFormContainer({
-      width: 0,
-      type: props.type
-    });
-  }
-  formContainer.onInputGroupDataRequested(function(e) {
-    var identifier = e.identifier;
-    var params = e.params;
-    var done = e.done;
-
-    switch (identifier) {
-      case "service-list":
-        asyncTaskManager
-          .add(identifier + "-" + params.id, function(doneAsyncTask) {
-            var abortable = serviceListVisualConsole(
-              baseUrl,
-              visualConsole.props.id,
-              params,
-              function(error, data) {
-                if (error || !data) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  done(error);
-                  doneAsyncTask();
-                  return;
-                }
-
-                if (typeof data === "string") {
-                  try {
-                    data = JSON.parse(data);
-                  } catch (error) {
-                    console.log(
-                      "[ERROR]",
-                      "[VISUAL-CONSOLE-CLIENT]",
-                      "[API]",
-                      error ? error.message : "Invalid response"
-                    );
-
-                    done(error);
-                    doneAsyncTask();
-                    return; // Stop task execution.
-                  }
-                }
-
-                done(null, data);
-                doneAsyncTask();
-              }
-            );
-
-            return {
-              cancel: function() {
-                abortable.abort();
-              }
-            };
-          })
-          .init();
-        break;
-
-      default:
-        done(new Error("identifier not found"));
-    }
-  });
-
-  var formElement = formContainer.getFormElement();
-  var $formElement = jQuery(formElement);
-
-  formContainer.onSubmit(function(e) {
-    console.log(e);
-
-    // Send the update.
-    var id = props.id;
-    var data = e.data;
-
-    if (
-      props.type != 20 &&
-      props.type != 3 &&
-      props.type != 9 &&
-      props.type != 15 &&
-      props.type != 16
-    ) {
-      // Content tiny.
-      var content = tinymce.get("tinyMCE_editor").getContent();
-      // Pass content to array data.
-      data.label = content;
-    }
-
-    var taskId = "visual-console-item-update-" + id;
-
-    if (props.id) {
-      // Show updating state.
-      item.setMeta({ isUpdating: true });
-    } else {
-      data.type = props.type;
-    }
-
-    // Persist the new data.
-    asyncTaskManager
-      .add(taskId, function(done) {
-        var abortable;
-        if (props.id) {
-          abortable = updateVisualConsoleItem(
-            baseUrl,
-            visualConsole.props.id,
-            id,
-            data,
-            function(error, data) {
-              // Hide updating state.
-              item.setMeta({ isUpdating: false });
-
-              // if (!error && !data) return;
-              if (error || !data) {
-                console.log(
-                  "[ERROR]",
-                  "[VISUAL-CONSOLE-CLIENT]",
-                  "[API]",
-                  error ? error.message : "Invalid response"
-                );
-
-                // TODO: Recover from error.
-
-                done();
-                return;
-              }
-
-              if (typeof data === "string") {
-                try {
-                  data = JSON.parse(data);
-                } catch (error) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  // TODO: Recover from error.
-
-                  done();
-                  return; // Stop task execution.
-                }
-              }
-
-              visualConsole.updateElement(data);
-
-              done();
-            }
-          );
-        } else {
-          abortable = createVisualConsoleItem(
-            baseUrl,
-            visualConsole.props.id,
-            data,
-            function(error, data) {
-              if (error || !data) {
-                console.log(
-                  "[ERROR]",
-                  "[VISUAL-CONSOLE-CLIENT]",
-                  "[API]",
-                  error ? error.message : "Invalid response"
-                );
-
-                // TODO: Recover from error.
-
-                done();
-                return;
-              }
-
-              if (typeof data === "string") {
-                try {
-                  data = JSON.parse(data);
-                } catch (error) {
-                  console.log(
-                    "[ERROR]",
-                    "[VISUAL-CONSOLE-CLIENT]",
-                    "[API]",
-                    error ? error.message : "Invalid response"
-                  );
-
-                  // TODO: Recover from error.
-
-                  done();
-                  return; // Stop task execution.
-                }
-              }
-
-              data["receivedAt"] = new Date();
-              var newItem = visualConsole.addElement(data);
-              newItem.setMeta({ editMode: true });
-
-              done();
-            }
-          );
-        }
-
-        return {
-          cancel: function() {
-            abortable.abort();
-          }
-        };
-      })
-      .init();
-    console.log("Form submit", e.data);
-    $formElement.dialog("close");
-  });
-  */
 }
 
 /**

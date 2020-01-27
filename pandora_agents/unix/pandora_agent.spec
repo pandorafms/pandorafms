@@ -18,7 +18,8 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
-PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+#PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+Requires(pre,preun):/usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
 AutoReq:            0
 Provides:           %{name}-%{version}

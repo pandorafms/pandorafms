@@ -3821,10 +3821,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['custom'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
+
+                    if ($fired == 0) {
                         $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3833,10 +3838,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['default'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
+
+                    if ($fired == 0) {
                         $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3845,10 +3855,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['unavailable'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
+
+                    if ($fired == 0) {
                         $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;

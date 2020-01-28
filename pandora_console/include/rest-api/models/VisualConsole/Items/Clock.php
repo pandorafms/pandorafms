@@ -387,6 +387,10 @@ final class Clock extends Item
      */
     public function getDefaultGeneralValues(array $values): array
     {
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);
 
@@ -397,10 +401,6 @@ final class Clock extends Item
 
         if (isset($values['height']) === false) {
             $values['height'] = 100;
-        }
-
-        if (isset($values['isLinkEnabled']) === false) {
-            $values['isLinkEnabled'] = false;
         }
 
         return $values;

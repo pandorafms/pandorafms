@@ -145,6 +145,7 @@ function createVisualConsole(
         data.link != null &&
         data.link.length > 0 &&
         (data.linkedLayoutAgentId == null || data.linkedLayoutAgentId === 0) &&
+        data.linkedLayoutNodeId === 0 &&
         e.nativeEvent.metaKey === false
       ) {
         // Override the link to another VC if it isn't on remote console.

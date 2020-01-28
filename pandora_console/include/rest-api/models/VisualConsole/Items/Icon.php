@@ -215,12 +215,12 @@ final class Icon extends Item
      */
     public function getDefaultGeneralValues(array $values): array
     {
-        // Retrieve global - common inputs.
-        $values = parent::getDefaultGeneralValues($values);
-
         if (isset($values['isLinkEnabled']) === false) {
             $values['isLinkEnabled'] = false;
         }
+
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
 
         return $values;
     }

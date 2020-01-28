@@ -75,6 +75,10 @@ final class Label extends Item
      */
     public function getDefaultGeneralValues(array $values): array
     {
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);
 
@@ -85,10 +89,6 @@ final class Label extends Item
 
         if (isset($values['height']) === false) {
             $values['height'] = 10;
-        }
-
-        if (isset($values['isLinkEnabled']) === false) {
-            $values['isLinkEnabled'] = false;
         }
 
         return $values;

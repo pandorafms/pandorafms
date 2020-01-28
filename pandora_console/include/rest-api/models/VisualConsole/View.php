@@ -507,7 +507,6 @@ class View extends \HTML
         }
 
         if (isset($itemId) === false || $itemId === 0) {
-            // TODO: ACL.
             // CreateVC.
             $class = VisualConsole::getItemClass((int) $data['type']);
             try {

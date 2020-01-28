@@ -399,6 +399,10 @@ final class Clock extends Item
             $values['height'] = 100;
         }
 
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
         return $values;
     }
 

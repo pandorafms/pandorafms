@@ -2194,20 +2194,17 @@ class Item extends CachedModel
                     && is_array($node_visual_maps) === true
                 ) {
                     foreach ($node_visual_maps as $node_visual_map) {
-                        // Add nodeID.
-                        $node_visual_map['nodeId'] = (int) $server['id'];
-
                         // ID.
-                        $node_visual_map['id'] = $node_visual_map['id'];
-                        $node_visual_map['id'] .= '|';
-                        $node_visual_map['id'] .= $server['id'];
+                        $id = $node_visual_map['id'];
+                        $id .= '|';
+                        $id .= $server['id'];
 
                         // Name = vc_name - (node).
-                        $node_visual_map['name'] = $node_visual_map['name'];
-                        $node_visual_map['name'] .= ' - (';
-                        $node_visual_map['name'] .= $server['server_name'].')';
+                        $name = $node_visual_map['name'];
+                        $name .= ' - (';
+                        $name .= $server['server_name'].')';
 
-                        $result[] = $node_visual_map;
+                        $result[$id] = $name;
                     }
                 }
 

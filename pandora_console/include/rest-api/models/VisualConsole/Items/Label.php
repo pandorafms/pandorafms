@@ -87,6 +87,10 @@ final class Label extends Item
             $values['height'] = 10;
         }
 
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
         return $values;
     }
 

@@ -523,6 +523,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         divParent.appendChild(divSpinner);
         const containerVC = document.getElementById("visual-console-container");
         if (containerVC != null) {
+          containerVC.classList.add("is-updating");
           containerVC.appendChild(divParent);
         }
       }

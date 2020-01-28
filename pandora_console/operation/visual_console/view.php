@@ -400,6 +400,22 @@ ui_require_css_file('form');
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 
+        //Remove spinner change VC.
+        document
+            .getElementById("visual-console-container")
+            .classList.remove("is-updating");
+
+        var div = document
+            .getElementById("visual-console-container")
+            .querySelector(".div-visual-console-spinner");
+
+        if (div !== null) {
+            var parent = div.parentElement;
+            if (parent !== null) {
+            parent.removeChild(div);
+            }
+        }
+
         // Change the background color when the fullscreen mode is enabled.
         if (prevProps
             && prevProps.backgroundColor != newProps.backgroundColor

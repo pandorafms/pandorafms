@@ -27,6 +27,7 @@ use Thread::Semaphore;
 use Time::Local;
 use XML::Parser::Expat;
 use XML::Simple;
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
 use JSON qw(decode_json);

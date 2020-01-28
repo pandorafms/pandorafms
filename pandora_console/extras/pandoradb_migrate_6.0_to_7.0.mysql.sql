@@ -2438,6 +2438,21 @@ CREATE TABLE `tagent_repository` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `treport_content_item`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treport_content_item` (
+	`id` INTEGER UNSIGNED NOT NULL auto_increment,
+	`id_report_content` INTEGER UNSIGNED NOT NULL,
+	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL DEFAULT 0,
+	`server_name` text,
+	`operation` text,
+	PRIMARY KEY(`id`),
+	FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
+		ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tdeployment_hosts`
 -- ----------------------------------------------------------------------
 CREATE TABLE `tdeployment_hosts` (

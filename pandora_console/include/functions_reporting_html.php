@@ -3028,6 +3028,10 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table1->data = [];
 
         $table1->head = [];
+        if (isset($item['data'][0]['failover'])) {
+            $table1->head[-1] = __('Failover');
+        }
+
         $table1->head[0] = __('Agent');
         // HACK it is saved in show_graph field.
         // Show interfaces instead the modules.
@@ -3076,6 +3080,10 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table1->head[8] = __('% Ok');
 
         $table1->headstyle = [];
+        if (isset($item['data'][0]['failover'])) {
+            $table1->headstyle[-1]  = 'text-align: left';
+        }
+
         $table1->headstyle[0]  = 'text-align: left';
         $table1->headstyle[1]  = 'text-align: left';
         $table1->headstyle[2]  = 'text-align: center';
@@ -3085,6 +3093,10 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table1->headstyle[6]  = 'text-align: center';
         $table1->headstyle[7]  = 'text-align: right';
         $table1->headstyle[8]  = 'text-align: right';
+
+        if (isset($item['data'][0]['failover'])) {
+            $table1->style[-1]  = 'text-align: left';
+        }
 
         $table1->style[0]  = 'text-align: left';
         $table1->style[1]  = 'text-align: left';
@@ -3101,6 +3113,10 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table2->data = [];
 
         $table2->head = [];
+        if (isset($item['data'][0]['failover'])) {
+            $table2->head[-1] = __('Failover');
+        }
+
         $table2->head[0] = __('Agent');
         // HACK it is saved in show_graph field.
         // Show interfaces instead the modules.
@@ -3135,12 +3151,20 @@ function reporting_html_availability($table, $item, $pdf=0)
         }
 
         $table2->headstyle = [];
+        if (isset($item['data'][0]['failover'])) {
+            $table2->headstyle[-1] = 'text-align: left';
+        }
+
         $table2->headstyle[0] = 'text-align: left';
         $table2->headstyle[1] = 'text-align: left';
         $table2->headstyle[2] = 'text-align: right';
         $table2->headstyle[3] = 'text-align: right';
         $table2->headstyle[4] = 'text-align: right';
         $table2->headstyle[5] = 'text-align: right';
+
+        if (isset($item['data'][0]['failover'])) {
+            $table2->style[-1] = 'text-align: left';
+        }
 
         $table2->style[0] = 'text-align: left';
         $table2->style[1] = 'text-align: left';
@@ -3151,8 +3175,21 @@ function reporting_html_availability($table, $item, $pdf=0)
 
         foreach ($item['data'] as $row) {
             $table_row = [];
-            $table_row[] = $row['agent'];
-            $table_row[] = $row['availability_item'];
+            if (isset($row['failover'])) {
+                if (strpos($row['failover'], 'failover') !== false) {
+                    $table_row[] = __('Failover');
+                } else {
+                    $table_row[] = ucfirst($row['failover']);
+                }
+            }
+
+            if (isset($row['failover']) && $row['failover'] === 'result') {
+                $table_row[] = '--';
+                $table_row[] = '--';
+            } else {
+                $table_row[] = $row['agent'];
+                $table_row[] = $row['availability_item'];
+            }
 
             if ($row['time_total'] != 0 && $item['fields']['total_time']) {
                 $table_row[] = human_time_description_raw(
@@ -3229,6 +3266,10 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table_row[] = '<span style="font-size: '.$font_size.'; font-weight:bold;">'.sla_truncate($row['SLA'], $config['graph_precision']).'%</span>';
 
             $table_row2 = [];
+            if (isset($row['failover'])) {
+                $table_row2[] = ucfirst($row['failover']);
+            }
+
             $table_row2[] = $row['agent'];
             $table_row2[] = $row['availability_item'];
             if ($item['fields']['total_checks']) {

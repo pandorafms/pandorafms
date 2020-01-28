@@ -1609,6 +1609,14 @@ switch ($action) {
                                 $values['agent_min_value'] = get_parameter(
                                     'agent_min_value'
                                 );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
+                                );
                                 $good_format = true;
                             break;
 

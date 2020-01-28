@@ -70,7 +70,7 @@ class User
                 $this->sessions[$data['phpsessionid']] = 1;
                 $info = \db_get_row_filter(
                     'tsessions_php',
-                    ['id_session' => $data['phpsessionid']]
+                    ['id_session' => io_safe_input($data['phpsessionid'])]
                 );
 
                 if ($info !== false) {

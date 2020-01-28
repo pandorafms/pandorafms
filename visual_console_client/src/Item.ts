@@ -514,6 +514,17 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       if (this.meta.editMode) {
         e.preventDefault();
         e.stopPropagation();
+      } else {
+        // Add loading click item.
+        const divParent = document.createElement("div");
+        divParent.className = "div-visual-console-spinner";
+        const divSpinner = document.createElement("div");
+        divSpinner.className = "visual-console-spinner";
+        divParent.appendChild(divSpinner);
+        const containerVC = document.getElementById("visual-console-container");
+        if (containerVC != null) {
+          containerVC.appendChild(divParent);
+        }
       }
 
       if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {

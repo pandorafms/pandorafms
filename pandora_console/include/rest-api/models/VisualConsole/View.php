@@ -267,8 +267,6 @@ class View extends \HTML
      */
     public function processForm()
     {
-        hd($_POST, true);
-
         global $config;
         // Inserted data in new item.
         $vCId = \get_parameter('vCId', 0);

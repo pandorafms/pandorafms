@@ -2197,6 +2197,11 @@ class Item extends CachedModel
                         // Add nodeID.
                         $node_visual_map['nodeId'] = (int) $server['id'];
 
+                        // ID.
+                        $node_visual_map['id'] = $node_visual_map['id'];
+                        $node_visual_map['id'] .= '|';
+                        $node_visual_map['id'] .= $server['id'];
+
                         // Name = vc_name - (node).
                         $node_visual_map['name'] = $node_visual_map['name'];
                         $node_visual_map['name'] .= ' - (';
@@ -2234,8 +2239,10 @@ class Item extends CachedModel
         $getAllVisualConsoleValue = $values['linkedLayoutId'];
         if (\is_metaconsole() === true) {
             $getAllVisualConsoleValue = $values['linkedLayoutId'];
-            $getAllVisualConsoleValue .= '|';
-            $getAllVisualConsoleValue .= $values['linkedLayoutNodeId'];
+            if ($values['linkedLayoutNodeId'] !== 0) {
+                $getAllVisualConsoleValue .= '|';
+                $getAllVisualConsoleValue .= $values['linkedLayoutNodeId'];
+            }
         }
 
         $inputs[] = [

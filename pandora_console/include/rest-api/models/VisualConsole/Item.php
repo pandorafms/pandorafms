@@ -1093,12 +1093,13 @@ class Item extends CachedModel
                     $node = \metaconsole_get_connection_by_id(
                         $linkedLayoutNodeId
                     );
+
+                    // TODO: Link to a public view.
                     return \ui_meta_get_node_url(
                         $node,
                         'network',
-                        // TODO: Link to a public view.
                         'operation/visual_console/view',
-                        [],
+                        ['id' => $vcId],
                         // No autologin from the public view.
                         !$config['public_view']
                     );

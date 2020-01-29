@@ -28,6 +28,98 @@ final class ColorCloud extends Item
     protected static $useLinkedModule = true;
 
 
+     /**
+      * Encode the ranges color value.
+      *
+      * @param array $data Unknown input data structure.
+      *
+      * @return array Ranges color.
+      */
+    private static function encodeColorRanges(array $data): array
+    {
+        $colorRangeArray = [];
+
+        if (isset($data['colorRanges']) === true
+            && is_array($data['colorRanges']) === true
+        ) {
+            if (empty($data['colorRanges']) === false) {
+                foreach ($data['colorRanges'] as $colorRange) {
+                    if (\is_numeric($colorRange['fromValue']) === true
+                        && \is_numeric($colorRange['toValue']) === true
+                        && static::notEmptyStringOr(
+                            $colorRange['color'],
+                            null
+                        ) !== null
+                    ) {
+                        $colorRangeArray[] = [
+                            'color'      => $colorRange['color'],
+                            'from_value' => (float) $colorRange['fromValue'],
+                            'to_value'   => (float) $colorRange['toValue'],
+                        ];
+                    }
+                }
+            } else {
+                $colorRangeArray = [];
+            }
+        }
+
+        return $colorRangeArray;
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $colorRanges = null;
+
+        $defaultColor = null;
+
+        if (isset($data['defaultColor']) === true) {
+            $defaultColor = static::extractDefaultColor($data);
+        }
+
+        if (isset($data['colorRanges']) === true) {
+            $colorRanges = static::encodeColorRanges($data);
+        }
+
+        if (empty($data['id']) === true) {
+            $return['label'] = json_encode(
+                [
+                    'default_color' => $defaultColor,
+                    'color_ranges'  => $colorRanges,
+                ]
+            );
+        } else {
+            $prevData = $this->toArray();
+            $prevDataDefaultColor = static::extractDefaultColor(
+                ['defaultColor' => $prevData['defaultColor']]
+            );
+            $prevDataColorRanges = static::encodeColorRanges(
+                ['colorRanges' => $prevData['colorRanges']]
+            );
+
+            $return['label'] = json_encode(
+                [
+                    'default_color' => ($defaultColor !== null) ? $defaultColor : $prevDataDefaultColor,
+                    'color_ranges'  => ($colorRanges !== null) ? $colorRanges : $prevDataColorRanges,
+                ]
+            );
+        }
+
+        return $return;
+    }
+
+
     /**
      * Returns a valid representation of the model.
      *
@@ -143,10 +235,6 @@ final class ColorCloud extends Item
     {
         $dynamicDataEncoded = static::notEmptyStringOr($data['label'], null);
 
-        if ($dynamicDataEncoded === null) {
-            throw new \InvalidArgumentException('dynamic data not found');
-        }
-
         $result = [];
 
         try {
@@ -212,10 +300,6 @@ final class ColorCloud extends Item
         $moduleId = $linkedModule['moduleId'];
         $metaconsoleId = $linkedModule['metaconsoleId'];
 
-        if ($moduleId === null) {
-            throw new \InvalidArgumentException('missing module Id');
-        }
-
         $dynamicData = static::extractDynamicData($data);
         // Set the initial color.
         $data['color'] = $dynamicData['defaultColor'];
@@ -275,6 +359,227 @@ final class ColorCloud extends Item
         }
 
         return $data;
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[ColorCloud]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => false,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                ],
+            ];
+
+            // Default color.
+            $inputs[] = [
+                'label'     => __('Default color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'defaultColor',
+                    'type'    => 'color',
+                    'value'   => $values['defaultColor'],
+                    'return'  => true,
+                ],
+            ];
+
+            // Label.
+            $inputs[] = [
+                'label' => __('Add new range').':',
+            ];
+
+            $baseUrl = ui_get_full_url('/', false, false, false);
+            // Default ranges.
+            $inputs[] = [
+                'block_id'      => 'default-ranges',
+                'class'         => 'flex-row flex-start w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label'     => __('From'),
+                        'arguments' => [
+                            'id'     => 'rangeDefaultFrom',
+                            'name'   => 'rangeDefaultFrom',
+                            'type'   => 'number',
+                            'value'  => 0,
+                            'return' => true,
+                            'min'    => 0,
+                        ],
+                    ],
+                    [
+                        'label'     => __('To'),
+                        'arguments' => [
+                            'id'     => 'rangeDefaultTo',
+                            'name'   => 'rangeDefaultTo',
+                            'type'   => 'number',
+                            'value'  => 0,
+                            'return' => true,
+                            'min'    => 0,
+                        ],
+                    ],
+                    [
+                        'label'     => __('Color'),
+                        'arguments' => [
+                            'wrapper' => 'div',
+                            'name'    => 'rangeDefaultColor',
+                            'type'    => 'color',
+                            'value'   => '#000000',
+                            'return'  => true,
+                        ],
+                    ],
+                    [
+                        'arguments' => [
+                            'name'       => 'add',
+                            'label'      => '',
+                            'type'       => 'button',
+                            'attributes' => 'class="add-item-img"',
+                            'return'     => true,
+                            'script'     => 'createColorRange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
+                        ],
+                    ],
+                ],
+            ];
+
+            // Label.
+            $inputs[] = [
+                'label' => __('Current ranges').':',
+            ];
+
+            if (isset($values['colorRanges']) === true
+                && is_array($values['colorRanges']) === true
+                && empty($values['colorRanges']) === false
+            ) {
+                foreach ($values['colorRanges'] as $k => $v) {
+                    $uniqId = \uniqid();
+                    $inputs[] = [
+                        'block_id'      => $uniqId,
+                        'class'         => 'interval-color-ranges flex-row flex-start w100p',
+                        'direct'        => 1,
+                        'block_content' => [
+                            [
+                                'label'     => __('From'),
+                                'arguments' => [
+                                    'name'   => 'rangeFrom[]',
+                                    'type'   => 'number',
+                                    'value'  => $v['fromValue'],
+                                    'return' => true,
+                                    'min'    => 0,
+                                ],
+                            ],
+                            [
+                                'label'     => __('To'),
+                                'arguments' => [
+                                    'name'   => 'rangeTo[]',
+                                    'type'   => 'number',
+                                    'value'  => $v['toValue'],
+                                    'return' => true,
+                                    'min'    => 0,
+                                ],
+                            ],
+                            [
+                                'label'     => __('Color'),
+                                'arguments' => [
+                                    'wrapper' => 'div',
+                                    'id'      => 'rangeColor'.$uniqId,
+                                    'name'    => 'rangeColor[]',
+                                    'type'    => 'color',
+                                    'value'   => $v['color'],
+                                    'return'  => true,
+                                ],
+                            ],
+                            [
+                                'arguments' => [
+                                    'name'       => 'remove-'.$uniqId,
+                                    'label'      => '',
+                                    'type'       => 'button',
+                                    'attributes' => 'class="remove-item-img"',
+                                    'return'     => true,
+                                    'script'     => 'removeColorRange(
+                                        \''.$uniqId.'\'
+                                    )',
+                                ],
+                            ],
+                        ],
+                    ];
+                }
+            }
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 300;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 180;
+        }
+
+        return $values;
     }
 
 

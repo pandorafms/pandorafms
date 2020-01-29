@@ -3,7 +3,9 @@ import {
   Size,
   AnyObject,
   WithModuleProps,
-  ItemMeta
+  ItemMeta,
+  LinkedVisualConsoleProps,
+  WithAgentProps
 } from "./lib/types";
 import {
   sizePropsDecoder,
@@ -16,9 +18,11 @@ import {
   humanTime,
   addMovementListener,
   debounce,
-  addResizementListener
+  addResizementListener,
+  t
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
+import { FormContainer, InputGroup } from "./Form";
 
 // Enum: https://www.typescriptlang.org/docs/handbook/enums.html.
 export const enum ItemType {
@@ -56,19 +60,18 @@ export interface ItemProps extends Position, Size {
   isOnTop: boolean;
   parentId: number | null;
   aclGroupId: number | null;
+  cacheExpiration: number | null;
 }
 
-// FIXME: Fix type compatibility.
-export interface ItemClickEvent<Props extends ItemProps> {
-  // data: Props;
-  data: AnyObject;
+export interface ItemClickEvent {
+  item: VisualConsoleItem<ItemProps>;
   nativeEvent: Event;
 }
 
 // FIXME: Fix type compatibility.
-export interface ItemRemoveEvent<Props extends ItemProps> {
+export interface ItemRemoveEvent {
   // data: Props;
-  data: AnyObject;
+  item: VisualConsoleItem<ItemProps>;
 }
 
 export interface ItemMovedEvent {
@@ -83,8 +86,12 @@ export interface ItemResizedEvent {
   newSize: Size;
 }
 
+export interface ItemSelectionChangedEvent {
+  selected: boolean;
+}
+
 /**
- * Extract a valid enum value from a raw label positi9on value.
+ * Extract a valid enum value from a raw label position value.
  * @param labelPosition Raw value.
  */
 const parseLabelPosition = (
@@ -128,9 +135,85 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     isOnTop: parseBoolean(data.isOnTop),
     parentId: parseIntOr(data.parentId, null),
     aclGroupId: parseIntOr(data.aclGroupId, null),
+    cacheExpiration: parseIntOr(data.cacheExpiration, null),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
+}
+
+//TODO: Document
+export function titleItem(id: number): string {
+  let title = "";
+  switch (id) {
+    case ItemType.STATIC_GRAPH:
+      title = t("Static image");
+      break;
+    case ItemType.MODULE_GRAPH:
+      title = t("Module graph");
+      break;
+    case ItemType.SIMPLE_VALUE:
+      title = t("Simple value");
+      break;
+    case ItemType.PERCENTILE_BAR:
+      title = t("Percentile item");
+      break;
+    case ItemType.LABEL:
+      title = t("Label");
+      break;
+    case ItemType.ICON:
+      title = t("Icon");
+      break;
+    case ItemType.SIMPLE_VALUE_MAX:
+      title = t("Simple value");
+      break;
+    case ItemType.SIMPLE_VALUE_MIN:
+      title = t("Simple value");
+      break;
+    case ItemType.SIMPLE_VALUE_AVG:
+      title = t("Simple value");
+      break;
+    case ItemType.PERCENTILE_BUBBLE:
+      title = t("Percentile item");
+      break;
+    case ItemType.SERVICE:
+      title = t("Service");
+      break;
+    case ItemType.GROUP_ITEM:
+      title = t("Group");
+      break;
+    case ItemType.BOX_ITEM:
+      title = t("Box");
+      break;
+    case ItemType.LINE_ITEM:
+      title = t("Line");
+      break;
+    case ItemType.AUTO_SLA_GRAPH:
+      title = t("Event history graph");
+      break;
+    case ItemType.CIRCULAR_PROGRESS_BAR:
+      title = t("Percentile item");
+      break;
+    case ItemType.CIRCULAR_INTERIOR_PROGRESS_BAR:
+      title = t("Percentile item");
+      break;
+    case ItemType.DONUT_GRAPH:
+      title = t("Serialized pie graph");
+      break;
+    case ItemType.BARS_GRAPH:
+      title = t("Bars graph");
+      break;
+    case ItemType.CLOCK:
+      title = t("Clock");
+      break;
+    case ItemType.COLOR_CLOUD:
+      title = t("Color cloud");
+      break;
+    default:
+      title = t("Item");
+      break;
+  }
+
+  return title;
 }
 
 /**
@@ -142,19 +225,31 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   // Metadata of the item.
   private _metadata: ItemMeta;
   // Reference to the DOM element which will contain the item.
-  public elementRef: HTMLElement;
-  public readonly labelElementRef: HTMLElement;
+  public elementRef: HTMLElement = document.createElement("div");
+  public labelElementRef: HTMLElement = document.createElement("div");
   // Reference to the DOM element which will contain the view of the item which extends this class.
-  protected readonly childElementRef: HTMLElement;
+  protected childElementRef: HTMLElement = document.createElement("div");
   // Event manager for click events.
-  private readonly clickEventManager = new TypedEvent<ItemClickEvent<Props>>();
+  private readonly clickEventManager = new TypedEvent<ItemClickEvent>();
+  // Event manager for double click events.
+  private readonly dblClickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for moved events.
   private readonly movedEventManager = new TypedEvent<ItemMovedEvent>();
+  // Event manager for stopped movement events.
+  private readonly movementFinishedEventManager = new TypedEvent<
+    ItemMovedEvent
+  >();
   // Event manager for resized events.
   private readonly resizedEventManager = new TypedEvent<ItemResizedEvent>();
+  // Event manager for resize finished events.
+  private readonly resizeFinishedEventManager = new TypedEvent<
+    ItemResizedEvent
+  >();
   // Event manager for remove events.
-  private readonly removeEventManager = new TypedEvent<
-    ItemRemoveEvent<Props>
+  private readonly removeEventManager = new TypedEvent<ItemRemoveEvent>();
+  // Event manager for selection change events.
+  private readonly selectionChangedEventManager = new TypedEvent<
+    ItemSelectionChangedEvent
   >();
   // List of references to clean the event listeners.
   private readonly disposables: Disposable[] = [];
@@ -164,6 +259,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private debouncedMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
+      // Update the metadata information.
+      // Don't use the .meta property cause we don't need DOM updates.
+      this._metadata.isBeingMoved = false;
+
       const prevPosition = {
         x: this.props.x,
         y: this.props.y
@@ -178,7 +277,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       // Save the new position to the props.
       this.move(x, y);
       // Emit the movement event.
-      this.movedEventManager.emit({
+      this.movementFinishedEventManager.emit({
         item: this,
         prevPosition: prevPosition,
         newPosition: newPosition
@@ -197,8 +296,30 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.removeMovement = addMovementListener(
       element,
       (x: Position["x"], y: Position["y"]) => {
+        const prevPosition = {
+          x: this.props.x,
+          y: this.props.y
+        };
+        const newPosition = { x, y };
+
+        this.meta = {
+          ...this.meta,
+          isSelected: true
+        };
+
+        if (!this.positionChanged(prevPosition, newPosition)) return;
+
+        // Update the metadata information.
+        // Don't use the .meta property cause we don't need DOM updates.
+        this._metadata.isBeingMoved = true;
         // Move the DOM element.
         this.moveElement(x, y);
+        // Emit the movement event.
+        this.movedEventManager.emit({
+          item: this,
+          prevPosition: prevPosition,
+          newPosition: newPosition
+        });
         // Run the save function.
         this.debouncedMovementSave(x, y);
       }
@@ -219,21 +340,23 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   private debouncedResizementSave = debounce(
     500, // ms.
     (width: Size["width"], height: Size["height"]) => {
+      // Update the metadata information.
+      // Don't use the .meta property cause we don't need DOM updates.
+      this._metadata.isBeingResized = false;
+
       const prevSize = {
         width: this.props.width,
         height: this.props.height
       };
-      const newSize = {
-        width: width,
-        height: height
-      };
+      const newSize = { width, height };
 
       if (!this.sizeChanged(prevSize, newSize)) return;
 
       // Save the new position to the props.
       this.resize(width, height);
-      // Emit the resizement event.
-      this.resizedEventManager.emit({
+
+      // Emit the resize finished event.
+      this.resizeFinishedEventManager.emit({
         item: this,
         prevSize: prevSize,
         newSize: newSize
@@ -252,6 +375,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.removeResizement = addResizementListener(
       element,
       (width: Size["width"], height: Size["height"]) => {
+        // Update the metadata information.
+        // Don't use the .meta property cause we don't need DOM updates.
+        this._metadata.isBeingResized = true;
+
         // The label it's outside the item's size, so we need
         // to get rid of its size to get the real size of the
         // item's content.
@@ -273,8 +400,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
           }
         }
 
+        const prevSize = {
+          width: this.props.width,
+          height: this.props.height
+        };
+        const newSize = { width, height };
+
+        if (!this.sizeChanged(prevSize, newSize)) return;
+
         // Move the DOM element.
         this.resizeElement(width, height);
+        // Emit the resizement event.
+        this.resizedEventManager.emit({
+          item: this,
+          prevSize,
+          newSize
+        });
         // Run the save function.
         this.debouncedResizementSave(width, height);
       }
@@ -296,10 +437,21 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   protected abstract createDomElement(): HTMLElement;
 
-  public constructor(props: Props, metadata: ItemMeta) {
+  public constructor(
+    props: Props,
+    metadata: ItemMeta,
+    deferInit: boolean = false
+  ) {
     this.itemProps = props;
     this._metadata = metadata;
 
+    if (!deferInit) this.init();
+  }
+
+  /**
+   * To create and append the DOM elements.
+   */
+  protected init(): void {
     /*
      * Get a HTMLElement which represents the container box
      * of the Visual Console item. This element will manage
@@ -317,12 +469,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.childElementRef = this.createDomElement();
 
     // Insert the elements into the container.
-    this.elementRef.append(this.childElementRef, this.labelElementRef);
+    this.elementRef.appendChild(this.childElementRef);
+    this.elementRef.appendChild(this.labelElementRef);
 
     // Resize element.
-    this.resizeElement(props.width, props.height);
+    this.resizeElement(this.itemProps.width, this.itemProps.height);
     // Set label position.
-    this.changeLabelPosition(props.labelPosition);
+    this.changeLabelPosition(this.itemProps.labelPosition);
   }
 
   /**
@@ -339,32 +492,66 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     }
 
     box.className = "visual-console-item";
-    box.style.zIndex = this.props.isOnTop ? "2" : "1";
+    if (this.props.isOnTop) {
+      box.classList.add("is-on-top");
+    }
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
-    // Init the click listener.
+
+    // Init the click listeners.
+    box.addEventListener("dblclick", e => {
+      if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {
+        this.unSelectItem();
+        this.selectItem();
+
+        this.dblClickEventManager.emit({
+          item: this,
+          nativeEvent: e
+        });
+      }
+    });
     box.addEventListener("click", e => {
       if (this.meta.editMode) {
         e.preventDefault();
         e.stopPropagation();
       } else {
-        this.clickEventManager.emit({ data: this.props, nativeEvent: e });
+        // Add loading click item.
+        if (this.itemProps.isLinkEnabled) {
+          const divParent = document.createElement("div");
+          divParent.className = "div-visual-console-spinner";
+          const divSpinner = document.createElement("div");
+          divSpinner.className = "visual-console-spinner";
+          divParent.appendChild(divSpinner);
+          const containerVC = document.getElementById(
+            "visual-console-container"
+          );
+          if (containerVC != null) {
+            containerVC.classList.add("is-updating");
+            containerVC.appendChild(divParent);
+          }
+        }
+      }
+
+      if (!this.meta.isBeingMoved && !this.meta.isBeingResized) {
+        this.clickEventManager.emit({
+          item: this,
+          nativeEvent: e
+        });
       }
     });
 
     // Metadata state.
     if (this.meta.editMode) {
       box.classList.add("is-editing");
-      // Init the movement listener.
-      this.initMovementListener(box);
-      // Init the resizement listener.
-      this.initResizementListener(box);
     }
     if (this.meta.isFetching) {
       box.classList.add("is-fetching");
     }
     if (this.meta.isUpdating) {
       box.classList.add("is-updating");
+    }
+    if (this.meta.isSelected) {
+      box.classList.add("is-selected");
     }
 
     return box;
@@ -388,8 +575,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       const cell = document.createElement("td");
 
       cell.innerHTML = label;
-      row.append(cell);
-      table.append(emptyRow1, row, emptyRow2);
+      row.appendChild(cell);
+      table.appendChild(emptyRow1);
+      table.appendChild(row);
+      table.appendChild(emptyRow2);
       table.style.textAlign = "center";
 
       // Change the table size depending on its position.
@@ -411,7 +600,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       }
 
       // element.innerHTML = this.props.label;
-      element.append(table);
+      element.appendChild(table);
     }
 
     return element;
@@ -482,6 +671,15 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param newProps
    */
   public set props(newProps: Props) {
+    this.setProps(newProps);
+  }
+
+  /**
+   * Clasic and protected version of the setter of the `props` property.
+   * Useful to override it from children classes.
+   * @param newProps
+   */
+  protected setProps(newProps: Props) {
     const prevProps = this.props;
     // Update the internal props.
     this.itemProps = newProps;
@@ -512,14 +710,26 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
-   * Clasic and protected version of the setter of the `meta` property.
+   * Classic version of the setter of the `meta` property.
    * Useful to override it from children classes.
    * @param newProps
    */
-  protected setMeta(newMetadata: ItemMeta) {
+  public setMeta(newMetadata: Partial<ItemMeta>): void {
     const prevMetadata = this._metadata;
     // Update the internal meta.
-    this._metadata = newMetadata;
+    this._metadata = {
+      ...prevMetadata,
+      ...newMetadata
+    };
+
+    if (
+      typeof newMetadata.isSelected !== "undefined" &&
+      prevMetadata.isSelected !== newMetadata.isSelected
+    ) {
+      this.selectionChangedEventManager.emit({
+        selected: newMetadata.isSelected
+      });
+    }
 
     // From this point, things which rely on this.props can access to the changes.
 
@@ -572,12 +782,16 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
       this.changeLabelPosition(this.props.labelPosition);
     }
+    //Change z-index class is-on-top
+    if (!prevProps || prevProps.isOnTop !== this.props.isOnTop) {
+      if (this.props.isOnTop) {
+        this.elementRef.classList.add("is-on-top");
+      } else {
+        this.elementRef.classList.remove("is-on-top");
+      }
+    }
     // Change link.
-    if (
-      prevProps &&
-      (prevProps.isLinkEnabled !== this.props.isLinkEnabled ||
-        (this.props.isLinkEnabled && prevProps.link !== this.props.link))
-    ) {
+    if (prevProps && prevProps.isLinkEnabled !== this.props.isLinkEnabled) {
       const container = this.createContainerDomElement();
       // Add the children of the old element.
       container.innerHTML = this.elementRef.innerHTML;
@@ -585,7 +799,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       const attrs = this.elementRef.attributes;
       for (let i = 0; i < attrs.length; i++) {
         if (attrs[i].nodeName !== "id") {
-          container.setAttributeNode(attrs[i]);
+          let cloneIsNeeded = this.elementRef.getAttributeNode(
+            attrs[i].nodeName
+          );
+          if (cloneIsNeeded !== null) {
+            container.setAttributeNode(<any>cloneIsNeeded.cloneNode());
+          }
         }
       }
       // Replace the reference.
@@ -597,16 +816,21 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       this.elementRef = container;
     }
 
+    if (
+      prevProps &&
+      (this.props.isLinkEnabled && prevProps.link !== this.props.link)
+    ) {
+      if (this.props.link !== null) {
+        this.elementRef.setAttribute("href", this.props.link);
+      }
+    }
+
     // Change metadata related things.
     if (!prevMeta || prevMeta.editMode !== this.meta.editMode) {
       if (this.meta.editMode) {
         this.elementRef.classList.add("is-editing");
-        this.initMovementListener(this.elementRef);
-        this.initResizementListener(this.elementRef);
       } else {
         this.elementRef.classList.remove("is-editing");
-        this.stopMovementListener();
-        this.stopResizementListener();
       }
     }
     if (!prevMeta || prevMeta.isFetching !== this.meta.isFetching) {
@@ -616,11 +840,36 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.classList.remove("is-fetching");
       }
     }
+
     if (!prevMeta || prevMeta.isUpdating !== this.meta.isUpdating) {
       if (this.meta.isUpdating) {
         this.elementRef.classList.add("is-updating");
+
+        const divParent = document.createElement("div");
+        divParent.className = "div-visual-console-spinner";
+        const divSpinner = document.createElement("div");
+        divSpinner.className = "visual-console-spinner";
+        divParent.appendChild(divSpinner);
+        this.elementRef.appendChild(divParent);
       } else {
         this.elementRef.classList.remove("is-updating");
+
+        const div = this.elementRef.querySelector(
+          ".div-visual-console-spinner"
+        );
+        if (div !== null) {
+          const parent = div.parentElement;
+          if (parent !== null) {
+            parent.removeChild(div);
+          }
+        }
+      }
+    }
+    if (!prevMeta || prevMeta.isSelected !== this.meta.isSelected) {
+      if (this.meta.isSelected) {
+        this.elementRef.classList.add("is-selected");
+      } else {
+        this.elementRef.classList.remove("is-selected");
       }
     }
   }
@@ -630,7 +879,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   public remove(): void {
     // Call the remove event.
-    this.removeEventManager.emit({ data: this.props });
+    this.removeEventManager.emit({ item: this });
     // Event listeners.
     this.disposables.forEach(disposable => {
       try {
@@ -785,13 +1034,29 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * To add an event handler to the click of the linked visual console elements.
    * @param listener Function which is going to be executed when a linked console is clicked.
    */
-  public onClick(listener: Listener<ItemClickEvent<Props>>): Disposable {
+  public onClick(listener: Listener<ItemClickEvent>): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
      * call them when the item should be cleared.
      */
     const disposable = this.clickEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * To add an event handler to the double click of the linked visual console elements.
+   * @param listener Function which is going to be executed when a linked console is double clicked.
+   */
+  public onDblClick(listener: Listener<ItemClickEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.dblClickEventManager.on(listener);
     this.disposables.push(disposable);
 
     return disposable;
@@ -814,6 +1079,22 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
+   * To add an event handler to the movement stopped of visual console elements.
+   * @param listener Function which is going to be executed when a linked console's movement is finished.
+   */
+  public onMovementFinished(listener: Listener<ItemMovedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.movementFinishedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
    * To add an event handler to the resizement of visual console elements.
    * @param listener Function which is going to be executed when a linked console is moved.
    */
@@ -830,10 +1111,26 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
+   * To add an event handler to the resizement finish of visual console elements.
+   * @param listener Function which is going to be executed when a linked console is finished resizing.
+   */
+  public onResizeFinished(listener: Listener<ItemResizedEvent>): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.resizeFinishedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
    * To add an event handler to the removal of the item.
    * @param listener Function which is going to be executed when a item is removed.
    */
-  public onRemove(listener: Listener<ItemRemoveEvent<Props>>): Disposable {
+  public onRemove(listener: Listener<ItemRemoveEvent>): Disposable {
     /*
      * The '.on' function returns a function which will clean the event
      * listener when executed. We store all the 'dispose' functions to
@@ -843,6 +1140,68 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     this.disposables.push(disposable);
 
     return disposable;
+  }
+
+  /**
+   * To add an event handler to item selection.
+   * @param listener Function which is going to be executed when a item is removed.
+   */
+  public onSelectionChanged(
+    listener: Listener<ItemSelectionChangedEvent>
+  ): Disposable {
+    /*
+     * The '.on' function returns a function which will clean the event
+     * listener when executed. We store all the 'dispose' functions to
+     * call them when the item should be cleared.
+     */
+    const disposable = this.selectionChangedEventManager.on(listener);
+    this.disposables.push(disposable);
+
+    return disposable;
+  }
+
+  /**
+   * Select an item.
+   * @param itemId Item Id.
+   * @param unique To remove the selection of other items or not.
+   */
+  public selectItem(): void {
+    this.meta = {
+      ...this.meta,
+      isSelected: true
+    };
+
+    this.initMovementListener(this.elementRef);
+    if (this.props.type !== 13) {
+      this.initResizementListener(this.elementRef);
+    }
+  }
+
+  /**
+   * Unselect an item.
+   * @param itemId Item Id.
+   */
+  public unSelectItem(): void {
+    this.meta = {
+      ...this.meta,
+      isSelected: false
+    };
+
+    this.stopMovementListener();
+    if (this.props.type !== 13) {
+      this.stopResizementListener();
+    }
+  }
+
+  // TODO: Document
+  public getFormContainer(): FormContainer {
+    return VisualConsoleItem.getFormContainer(this.props);
+  }
+
+  // TODO: Document
+  public static getFormContainer(props: Partial<ItemProps>): FormContainer {
+    const title: string = props.type ? titleItem(props.type) : t("Item");
+    return new FormContainer(title, [], []);
   }
 }
 

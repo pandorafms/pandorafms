@@ -129,4 +129,101 @@ final class Icon extends Item
     }
 
 
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Icon]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // List images VC.
+            if (isset($values['imageSrc']) === false) {
+                $values['imageSrc'] = 'appliance';
+            } else {
+                $explode_url = explode('/', $values['imageSrc']);
+                $total = count($explode_url);
+                $values['imageSrc'] = substr(
+                    $explode_url[($total - 1)],
+                    0,
+                    -4
+                );
+            }
+
+            $baseUrl = ui_get_full_url('/', false, false, false);
+
+            $inputs[] = [
+                'label'     => __('Image'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => self::getListImagesVC(),
+                    'name'     => 'imageSrc',
+                    'selected' => $values['imageSrc'],
+                    'script'   => 'imageVCChange(\''.$baseUrl.'\',\''.$values['vCId'].'\',1)',
+                    'return'   => true,
+                ],
+            ];
+
+            $images = self::imagesElementsVC($values['imageSrc'], true);
+
+            $inputs[] = [
+                'block_id'      => 'image-item',
+                'class'         => 'flex-row flex-end w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    ['label' => $images],
+                ],
+            ];
+
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        return $values;
+    }
+
+
 }

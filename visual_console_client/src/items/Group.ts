@@ -5,7 +5,8 @@ import {
   notEmptyStringOr,
   stringIsEmpty,
   decodeBase64,
-  parseBoolean
+  parseBoolean,
+  t
 } from "../lib";
 import Item, { ItemProps, itemBasePropsDecoder, ItemType } from "../Item";
 
@@ -59,7 +60,6 @@ export function groupPropsDecoder(data: AnyObject): GroupProps | never {
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
 }
-
 export default class Group extends Item<GroupProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
@@ -67,14 +67,35 @@ export default class Group extends Item<GroupProps> {
 
     if (!this.props.showStatistics && this.props.statusImageSrc !== null) {
       // Icon with status.
-      element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
+      element.style.backgroundImage = `url(${this.props.statusImageSrc})`;
+      element.style.backgroundRepeat = "no-repeat";
       element.style.backgroundSize = "contain";
       element.style.backgroundPosition = "center";
     } else if (this.props.showStatistics && this.props.html != null) {
       // Stats table.
+      element.style.backgroundImage = "none";
       element.innerHTML = this.props.html;
     }
 
     return element;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (!this.props.showStatistics && this.props.statusImageSrc !== null) {
+      // Icon with status.
+      element.style.backgroundImage = `url(${this.props.statusImageSrc})`;
+      element.style.backgroundRepeat = "no-repeat";
+      element.style.backgroundSize = "contain";
+      element.style.backgroundPosition = "center";
+      element.innerHTML = "";
+    } else if (this.props.showStatistics && this.props.html != null) {
+      // Stats table.
+      element.style.backgroundImage = "none";
+      element.innerHTML = this.props.html;
+    }
   }
 }

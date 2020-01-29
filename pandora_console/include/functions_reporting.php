@@ -7919,6 +7919,7 @@ function reporting_simple_graph(
                 'server_id'          => $id_meta,
                 'height'             => $config['graph_image_height'],
                 'landscape'          => $content['landscape'],
+                'backgroundColor'    => 'transparent',
                 'return_img_base_64' => true,
             ];
 

@@ -1,4 +1,4 @@
-/* global $ */
+/* global $ uniqId*/
 /* exported load_modal */
 /*JS to Show user modals :
   - Confirm dialogs.
@@ -60,12 +60,19 @@ function logo_preview(icon_name, icon_path, incoming_options) {
 }
 
 // Advanced Form control.
+// eslint-disable-next-line no-unused-vars
 function load_modal(settings) {
   var AJAX_RUNNING = 0;
   var data = new FormData();
   if (settings.extradata) {
     settings.extradata.forEach(function(item) {
-      if (item.value != undefined) data.append(item.name, item.value);
+      if (item.value != undefined) {
+        if (item.value instanceof Object || item.value instanceof Array) {
+          data.append(item.name, JSON.stringify(item.value));
+        } else {
+          data.append(item.name, item.value);
+        }
+      }
     });
   }
   data.append("page", settings.onshow.page);
@@ -97,6 +104,10 @@ function load_modal(settings) {
       opacity: 0.5,
       background: "black"
     };
+  }
+
+  if (settings.beforeClose == undefined) {
+    settings.beforeClose = function() {};
   }
 
   settings.target.html("Loading modal...");
@@ -168,7 +179,6 @@ function load_modal(settings) {
       text: settings.modal.ok,
       click: function() {
         if (AJAX_RUNNING) return;
-
         if (settings.onsubmit != undefined) {
           if (settings.onsubmit.preaction != undefined) {
             settings.onsubmit.preaction();
@@ -189,56 +199,83 @@ function load_modal(settings) {
           formdata.append("method", settings.onsubmit.method);
 
           var flagError = false;
+          if (Array.isArray(settings.form) === false) {
+            $("#" + settings.form + " :input").each(function() {
+              if (this.checkValidity() === false) {
+                $(this).attr("title", this.validationMessage);
+                $(this).tooltip({
+                  tooltipClass: "uitooltip",
+                  position: {
+                    my: "right bottom",
+                    at: "right top",
+                    using: function(position, feedback) {
+                      $(this).css(position);
+                      $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+                    }
+                  }
+                });
+                $(this).tooltip("open");
 
-          $("#" + settings.form + " :input").each(function() {
-            if (this.checkValidity() === false) {
-              $(this).attr("title", this.validationMessage);
-              $(this).tooltip({
-                tooltipClass: "uitooltip",
-                position: {
-                  my: "right bottom",
-                  at: "right top",
-                  using: function(position, feedback) {
-                    $(this).css(position);
-                    $("<div>")
-                      .addClass("arrow")
-                      .addClass(feedback.vertical)
-                      .addClass(feedback.horizontal)
-                      .appendTo(this);
+                var element = $(this);
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+
+                flagError = true;
+              }
+
+              if (this.type == "file") {
+                if ($(this).prop("files")[0]) {
+                  formdata.append(this.name, $(this).prop("files")[0]);
+                }
+              } else {
+                if ($(this).attr("type") == "checkbox") {
+                  if (this.checked) {
+                    formdata.append(this.name, "on");
+                  }
+                } else {
+                  formdata.append(this.name, $(this).val());
+                }
+              }
+            });
+          } else {
+            settings.form.forEach(function(element) {
+              $("#" + element + " :input").each(function() {
+                // TODO VALIDATE ALL INPUTS.
+                if (this.type == "file") {
+                  if ($(this).prop("files")[0]) {
+                    formdata.append(this.name, $(this).prop("files")[0]);
+                  }
+                } else {
+                  if ($(this).attr("type") == "checkbox") {
+                    if (this.checked) {
+                      formdata.append(this.name, "on");
+                    }
+                  } else {
+                    formdata.append(this.name, $(this).val());
                   }
                 }
               });
-              $(this).tooltip("open");
-
-              var element = $(this);
-              setTimeout(
-                function(element) {
-                  element.tooltip("destroy");
-                  element.removeAttr("title");
-                },
-                3000,
-                element
-              );
-
-              flagError = true;
-            }
-
-            if (this.type == "file") {
-              if ($(this).prop("files")[0]) {
-                formdata.append(this.name, $(this).prop("files")[0]);
-              }
-            } else {
-              if ($(this).attr("type") == "checkbox") {
-                if (this.checked) {
-                  formdata.append(this.name, "on");
-                }
-              } else {
-                formdata.append(this.name, $(this).val());
-              }
-            }
-          });
+            });
+          }
 
           if (flagError === false) {
+            if (
+              settings.onsubmitClose != undefined &&
+              settings.onsubmitClose == 1
+            ) {
+              $(this).dialog("close");
+            }
+
             $.ajax({
               method: "post",
               url: settings.url,
@@ -289,17 +326,32 @@ function load_modal(settings) {
         modal: true,
         title: settings.modal.title,
         width: width,
+        minHeight:
+          settings.onshow.minHeight != undefined
+            ? settings.onshow.minHeight
+            : "auto",
+        maxHeight:
+          settings.onshow.maxHeight != undefined
+            ? settings.onshow.maxHeight
+            : "auto",
         overlay: settings.modal.overlay,
         buttons: required_buttons,
-        closeOnEscape: false,
+        closeOnEscape: true,
         open: function() {
-          $(".ui-dialog-titlebar-close").hide();
+          //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
-        }
+
+          if (settings.cleanup != undefined) {
+            settings.cleanup();
+          }
+
+          $(this).dialog("destroy");
+        },
+        beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {
@@ -308,7 +360,9 @@ function load_modal(settings) {
   });
 }
 
-//Function that shows a dialog box to confirm closures of generic manners. The modal id is random
+// Function that shows a dialog box to confirm closures of generic manners.
+// The modal id is random.
+// eslint-disable-next-line no-unused-vars
 function confirmDialog(settings) {
   var randomStr = uniqId();
 
@@ -365,6 +419,7 @@ function confirmDialog(settings) {
  *
  * @return {void}
  */
+// eslint-disable-next-line no-unused-vars
 function generalShowMsg(data, idMsg) {
   var title = data.title[data.error];
   var text = data.text[data.error];

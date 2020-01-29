@@ -203,7 +203,7 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/auto_sla_graph.png',
                 true,
-                ['title' => __('Auto SLA Graph')]
+                ['title' => __('Event history graph')]
             );
         break;
 

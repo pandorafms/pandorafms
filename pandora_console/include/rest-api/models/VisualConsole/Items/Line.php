@@ -218,64 +218,74 @@ final class Line extends Model
     protected function encode(array $data): array
     {
         $result = [];
+        $result['type'] = LINE_ITEM;
 
         $id = static::getId($data);
         if ($id) {
             $result['id'] = $id;
         }
 
-        $id_layout = static::getIdLayout($data);
-        if ($id_layout) {
-            $result['id_layout'] = $id_layout;
+        $layoutId = static::getIdLayout($data);
+        if ($layoutId > 0) {
+            $result['id_layout'] = $layoutId;
         }
 
-        $pos_x = static::parseIntOr(
-            static::issetInArray($data, ['x', 'pos_x', 'posX']),
+        $startX = static::parseIntOr(
+            static::issetInArray($data, ['pos_x', 'startX']),
             null
         );
-        if ($pos_x !== null) {
-            $result['pos_x'] = $pos_x;
+        if ($startX !== null) {
+            $result['pos_x'] = $startX;
         }
 
-        $pos_y = static::parseIntOr(
-            static::issetInArray($data, ['y', 'pos_y', 'posY']),
+        $startY = static::parseIntOr(
+            static::issetInArray($data, ['pos_y', 'startY']),
             null
         );
-        if ($pos_y !== null) {
-            $result['pos_y'] = $pos_y;
+        if ($startY !== null) {
+            $result['pos_y'] = $startY;
         }
 
-        $height = static::getHeight($data);
-        if ($height !== null) {
-            $result['height'] = $height;
-        }
-
-        $width = static::getWidth($data);
-        if ($width !== null) {
-            $result['width'] = $width;
-        }
-
-        $type = static::parseIntOr(
-            static::issetInArray($data, ['type']),
+        $endX = static::parseIntOr(
+            static::issetInArray($data, ['width', 'endX']),
             null
         );
-        if ($type !== null) {
-            $result['type'] = $type;
+        if ($endX !== null) {
+            $result['width'] = $endX;
         }
 
-        $border_width = static::getBorderWidth($data);
-        if ($border_width !== null) {
-            $result['border_width'] = $border_width;
+        $endY = static::parseIntOr(
+            static::issetInArray($data, ['height', 'endY']),
+            null
+        );
+        if ($endY !== null) {
+            $result['height'] = $endY;
         }
 
-        $border_color = static::extractBorderColor($data);
-        if ($border_color !== null) {
-            $result['border_color'] = $border_color;
+        $borderWidth = static::getBorderWidth($data);
+        if ($borderWidth !== null) {
+            if ($borderWidth < 1) {
+                $borderWidth = 1;
+            }
+
+            $result['border_width'] = $borderWidth;
         }
 
-        $show_on_top = static::issetInArray($data, ['isOnTop', 'show_on_top', 'showOnTop']);
-        if ($show_on_top !== null) {
-            $result['show_on_top'] = static::parseBool($show_on_top);
+        $borderColor = static::extractBorderColor($data);
+        if ($borderColor !== null) {
+            $result['border_color'] = $borderColor;
+        }
+
+        $showOnTop = static::issetInArray(
+            $data,
+            [
+                'isOnTop',
+                'show_on_top',
+                'showOnTop',
+            ]
+        );
+        if ($showOnTop !== null) {
+            $result['show_on_top'] = static::parseBool($showOnTop);
         }
 
         return $result;
@@ -367,41 +377,121 @@ final class Line extends Model
      *
      * @param array $data Unknown input data structure.
      *
-     * @return boolean The modeled element data structure stored into the DB.
+     * @return integer The modeled element data structure stored into the DB.
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[]): int
     {
-        $data_model = $this->encode($this->toArray());
-        $newData = $this->encode($data);
-
-        $save = \array_merge($data_model, $newData);
-
-        if (!empty($save)) {
-            if (empty($save['id'])) {
+        if (empty($data) === false) {
+            if (empty($data['id']) === true) {
                 // Insert.
+                $save = static::encode($data);
                 $result = \db_process_sql_insert('tlayout_data', $save);
+                if ($result !== false) {
+                    $item = static::fromDB(['id' => $result]);
+                    $item->setData($item->toArray());
+                }
             } else {
                 // Update.
-                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+                $dataModelEncode = $this->encode($this->toArray());
+                $dataEncode = $this->encode($data);
+
+                $save = array_merge($dataModelEncode, $dataEncode);
+
+                $result = \db_process_sql_update(
+                    'tlayout_data',
+                    $save,
+                    ['id' => $save['id']]
+                );
+                // Invalidate the item's cache.
+                if ($result !== false && $result > 0) {
+                    $item = static::fromDB(['id' => $save['id']]);
+                    // Update the model.
+                    if (empty($item) === false) {
+                        $this->setData($item->toArray());
+                    }
+                }
             }
         }
 
-        // Update the model.
-        if ($result) {
-            if (empty($save['id'])) {
-                $item = static::fromDB(['id' => $result]);
-            } else {
-                $item = static::fromDB(['id' => $save['id']]);
-            }
+        return $result;
+    }
 
-            if (!empty($item)) {
-                $this->setData($item->toArray());
-            }
-        }
+
+    /**
+     * Delete a line in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        $result = db_process_sql_delete(
+            'tlayout_data',
+            ['id' => $itemId]
+        );
 
         return (bool) $result;
+    }
+
+
+    /**
+     * Generates inputs for form (global, common).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        $inputs = [];
+
+        if ($values['tabSelected'] === 'specific') {
+            // Width.
+            if ($values['borderWidth'] < 1) {
+                $values['borderWidth'] = 1;
+            }
+
+            $inputs[] = [
+                'label'     => __('Width'),
+                'arguments' => [
+                    'name'   => 'borderWidth',
+                    'type'   => 'number',
+                    'value'  => $values['borderWidth'],
+                    'return' => true,
+                    'min'    => 1,
+                ],
+            ];
+
+            // Color.
+            $inputs[] = [
+                'label'     => __('Color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'borderColor',
+                    'type'    => 'color',
+                    'value'   => $values['borderColor'],
+                    'return'  => true,
+                ],
+            ];
+
+            // Show on top.
+            $inputs[] = [
+                'label'     => __('Show on top'),
+                'arguments' => [
+                    'name'  => 'isOnTop',
+                    'id'    => 'isOnTop',
+                    'type'  => 'switch',
+                    'value' => $values['isOnTop'],
+                ],
+            ];
+        }
+
+        return $inputs;
     }
 
 

@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+/* globals jQuery, d3 */
+
 // The recipient is the selector of the html element
 // The elements is an array with the names of the wheel elements
 // The matrix must be a 2 dimensional array with a row and a column for each element
@@ -2293,6 +2295,7 @@ function print_interior_circular_progress_bar(
   })();
 }
 
+// eslint-disable-next-line no-unused-vars
 function print_donut_graph(
   recipient,
   width,
@@ -2309,40 +2312,13 @@ function print_donut_graph(
 
   svg.append("g").attr("class", "slices");
 
-  var radius = 120;
-  var increment_y = 60;
-  var increment_y_padding = 25;
-  var decrement_x_padding = 150;
-  if (width >= 500) {
-    radius = 180;
-    increment_y = 60;
-    increment_y_padding = 20;
-    decrement_x_padding = 40;
-  } else if (width >= 400) {
-    radius = 140;
-    increment_y = 40;
-    increment_y_padding = 20;
-    decrement_x_padding = 40;
-  } else if (width >= 300) {
-    radius = 100;
-    increment_y = 40;
-    increment_y_padding = 15;
-    decrement_x_padding = 40;
-  } else if (width >= 200) {
-    radius = 50;
-    increment_y = 40;
-    increment_y_padding = 15;
-    decrement_x_padding = 25;
-  } else if (width >= 100) {
-    radius = 20;
-    increment_y = 20;
-    increment_y_padding = 8;
-    decrement_x_padding = 25;
-  } else {
-    radius = 10;
-    increment_y = 10;
-    increment_y_padding = 3;
-    decrement_x_padding = 5;
+  var heightLegend = 25 * module_data.length;
+
+  var maxRadius = (height - heightLegend) / 2;
+
+  var radius = maxRadius;
+  if (maxRadius > width / 2) {
+    radius = width / 2;
   }
 
   var arc = d3.svg
@@ -2365,37 +2341,22 @@ function print_donut_graph(
     svg
       .append("g")
       .append("rect")
-      .attr(
-        "transform",
-        "translate(" +
-          (width / 2 - (radius + decrement_x_padding)) +
-          "," +
-          (height / 2 - radius - increment_y) +
-          ")"
-      )
       .attr("fill", m_d.color)
-      .attr("x", -20)
-      .attr("y", -10)
-      .attr("width", 20)
-      .attr("height", 10);
+      .attr("x", 20)
+      .attr("y", 20 * (key + 1))
+      .attr("width", 25)
+      .attr("height", 15);
 
     svg
       .append("g")
       .append("text")
       .attr("fill", resume_color)
-      .attr(
-        "transform",
-        "translate(" +
-          (width / 2 - (radius + decrement_x_padding) + 10) +
-          "," +
-          (height / 2 - radius - increment_y) +
-          ")"
-      )
+      .attr("transform", "translate(" + 40 + "," + 20 * (key + 1) + ")")
+      .attr("x", 15)
+      .attr("y", 10)
       .text(m_d.tag_name)
       .style("font-family", "smallfontFont")
       .style("font-size", "7pt");
-
-    increment_y -= increment_y_padding;
   });
 
   function donutData() {
@@ -2425,7 +2386,7 @@ function print_donut_graph(
       .attr("class", "slice")
       .attr(
         "transform",
-        "translate(" + width / 2 + "," + (height - radius) + ")"
+        "translate(" + width / 2 + "," + (height + heightLegend) / 2 + ")"
       );
 
     slice

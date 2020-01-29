@@ -3874,17 +3874,22 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
 
     $width_img  = 500;
 
-    // Set height image.
-    $height_img = 170;
-    $params['height'] = 170;
-    if ((int) $params['landscape'] === 1) {
-        $height_img = 150;
-        $params['height'] = 150;
-    }
+    if ($params['vconsole'] === false) {
+        // Set height image.
+        $height_img = 170;
+        $params['height'] = 170;
+        if ((int) $params['landscape'] === 1) {
+            $height_img = 150;
+            $params['height'] = 150;
+        }
 
-    if ($type_graph_pdf === 'slicebar') {
-        $width_img  = 360;
-        $height_img = 70;
+        if ($type_graph_pdf === 'slicebar') {
+            $width_img  = 360;
+            $height_img = 70;
+        }
+    } else {
+        $width_img = $params['width'];
+        $height_img = $params['height'];
     }
 
     $params_encode_json = urlencode(json_encode($params));

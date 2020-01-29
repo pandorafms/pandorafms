@@ -7,13 +7,15 @@ import {
   linkedVCPropsDecoder,
   modulePropsDecoder,
   decodeBase64,
-  stringIsEmpty
+  stringIsEmpty,
+  t
 } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type DonutGraphProps = {
   type: ItemType.DONUT_GRAPH;
   html: string;
+  legendBackgroundColor: string;
 } & ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
@@ -40,6 +42,9 @@ export function donutGraphPropsDecoder(
     html: !stringIsEmpty(data.html)
       ? data.html
       : decodeBase64(data.encodedHtml),
+    legendBackgroundColor: stringIsEmpty(data.legendBackgroundColor)
+      ? "#000000"
+      : data.legendBackgroundColor,
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };

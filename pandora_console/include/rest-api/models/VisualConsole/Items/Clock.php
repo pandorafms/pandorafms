@@ -21,6 +21,96 @@ final class Clock extends Item
 
 
     /**
+     * Encode type item.
+     *
+     * @param array $data Data for encode.
+     *
+     * @return string Return color.
+     */
+    protected function encodeColor(array $data): ?string
+    {
+        $color = null;
+        if (isset($data['color']) === true) {
+            if (empty($data['color']) === true) {
+                $color = '#F0F0F0';
+            } else {
+                $color = $data['color'];
+            }
+        }
+
+        return $color;
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $color = static::encodeColor($data);
+        if ($color !== null) {
+            $return['fill_color'] = $color;
+        }
+
+        $clock_animation = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'clockType',
+                    'clock_animation',
+                    'clockAnimation',
+                ]
+            ),
+            null
+        );
+        if ($clock_animation !== null) {
+            $return['clock_animation'] = $clock_animation;
+        }
+
+        $time_format = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'clockFormat',
+                    'time_format',
+                    'timeFormat',
+                ]
+            ),
+            null
+        );
+        if ($time_format !== null) {
+            $return['time_format'] = $time_format;
+        }
+
+        $timezone = static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'timezone',
+                    'timeZone',
+                    'time_zone',
+                    'clockTimezone',
+                ]
+            ),
+            null
+        );
+        if ($timezone !== null) {
+            $return['timezone'] = $timezone;
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -148,6 +238,172 @@ final class Clock extends Item
             static::issetInArray($data, ['color', 'fill_color']),
             null
         );
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Clock]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Time zone.
+            $baseUrl = ui_get_full_url('/', false, false, false);
+            $fields = [
+                'Africa'     => __('Africa'),
+                'America'    => __('America'),
+                'Antarctica' => __('Antarctica'),
+                'Arctic'     => __('Arctic'),
+                'Asia'       => __('Asia'),
+                'Atlantic'   => __('Atlantic'),
+                'Australia'  => __('Australia'),
+                'Europe'     => __('Europe'),
+                'Indian'     => __('Indian'),
+                'Pacific'    => __('Pacific'),
+                'UTC'        => __('UTC'),
+            ];
+
+            if (isset($values['clockTimezone']) === false
+                && empty($values['clockTimezone']) === true
+            ) {
+                $values['zone'] = 'Europe';
+                $values['clockTimezone'] = 'Europe/Amsterdam';
+            } else {
+                $zone = explode('/', $values['clockTimezone']);
+                $values['zone'] = $zone[0];
+            }
+
+            $zones = self::zonesVC($values['zone']);
+
+            $inputs[] = [
+                'block_id'      => 'timeZone-item',
+                'class'         => 'flex-row flex-start w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label' => __('Time zone'),
+                    ],
+                    [
+                        'arguments' => [
+                            'type'     => 'select',
+                            'fields'   => $fields,
+                            'name'     => 'zone',
+                            'selected' => $values['zone'],
+                            'script'   => 'timeZoneVCChange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
+                            'return'   => true,
+                        ],
+                    ],
+                    [
+                        'arguments' => [
+                            'type'     => 'select',
+                            'fields'   => $zones,
+                            'name'     => 'clockTimezone',
+                            'selected' => $values['clockTimezone'],
+                            'return'   => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Clock animation.
+            $fields = [
+                'analogic' => __('Simple analogic'),
+                'digital'  => __('Simple digital'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Clock animation'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockType',
+                    'selected' => $values['clockType'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Time format.
+            $fields = [
+                'time'     => __('Only time'),
+                'datetime' => __('Time and date'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Time format'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'clockFormat',
+                    'selected' => $values['clockFormat'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Element color.
+            $inputs[] = [
+                'label'     => __('Fill color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'color',
+                    'type'    => 'color',
+                    'value'   => $values['color'],
+                    'return'  => true,
+                ],
+            ];
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 100;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 100;
+        }
+
+        return $values;
     }
 
 

@@ -112,8 +112,6 @@ export default class Percentile extends Item<PercentileProps> {
     const progress = this.getProgress();
     // Main element.
     const element = document.createElement("div");
-    // SVG container.
-    const svg = document.createElementNS(svgNS, "svg");
 
     var formatValue;
     if (this.props.value != null) {
@@ -124,30 +122,36 @@ export default class Percentile extends Item<PercentileProps> {
       }
     }
 
+    // SVG container.
+    const svg = document.createElementNS(svgNS, "svg");
+
     switch (this.props.percentileType) {
       case "progress-bar":
         {
           const backgroundRect = document.createElementNS(svgNS, "rect");
           backgroundRect.setAttribute("fill", colors.background);
           backgroundRect.setAttribute("fill-opacity", "0.5");
-          backgroundRect.setAttribute("width", "100");
-          backgroundRect.setAttribute("height", "20");
+          backgroundRect.setAttribute("width", "100%");
+          backgroundRect.setAttribute("height", "100%");
           backgroundRect.setAttribute("rx", "5");
           backgroundRect.setAttribute("ry", "5");
           const progressRect = document.createElementNS(svgNS, "rect");
           progressRect.setAttribute("fill", colors.progress);
           progressRect.setAttribute("fill-opacity", "1");
-          progressRect.setAttribute("width", `${progress}`);
-          progressRect.setAttribute("height", "20");
+          progressRect.setAttribute("width", `${progress}%`);
+          progressRect.setAttribute("height", "100%");
           progressRect.setAttribute("rx", "5");
           progressRect.setAttribute("ry", "5");
           const text = document.createElementNS(svgNS, "text");
           text.setAttribute("text-anchor", "middle");
           text.setAttribute("alignment-baseline", "middle");
-          text.setAttribute("font-size", "12");
+          text.setAttribute("font-size", "15");
           text.setAttribute("font-family", "arial");
           text.setAttribute("font-weight", "bold");
-          text.setAttribute("transform", "translate(50 11)");
+          text.setAttribute(
+            "transform",
+            `translate(${this.props.width / 2}, 17.5)`
+          );
           text.setAttribute("fill", colors.text);
 
           if (this.props.valueType === "value") {
@@ -160,8 +164,8 @@ export default class Percentile extends Item<PercentileProps> {
             text.textContent = `${progress}%`;
           }
 
-          // Auto resize SVG using the view box magic: https://css-tricks.com/scale-svg/
-          svg.setAttribute("viewBox", "0 0 100 20");
+          svg.setAttribute("width", "100%");
+          svg.setAttribute("height", "100%");
           svg.append(backgroundRect, progressRect, text);
         }
         break;
@@ -257,9 +261,49 @@ export default class Percentile extends Item<PercentileProps> {
         break;
     }
 
-    element.append(svg);
+    if (svg !== null) element.append(svg);
 
     return element;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (this.meta.isBeingResized === false) {
+      this.resizeElement(this.props.width, this.props.height);
+    }
+    element.innerHTML = this.createDomElement().innerHTML;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected resizeElement(width: number, height: number): void {
+    if (this.props.percentileType === "progress-bar") {
+      super.resizeElement(width, 35);
+    } else {
+      super.resizeElement(width, width);
+    }
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  public resize(width: number): void {
+    this.resizeElement(width, width);
+    let height = this.props.maxValue || 0;
+    if (this.props.percentileType === "progress-bar") {
+      height = 35;
+    }
+    super.setProps({
+      ...this.props, // Object spread: http://es6-features.org/#SpreadOperator
+      width,
+      height
+    });
   }
 
   private getProgress(): number {

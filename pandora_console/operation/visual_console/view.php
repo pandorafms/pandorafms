@@ -167,11 +167,6 @@ if ($aclWrite || $aclManage) {
         true,
         ['title' => __('Wizard')]
     ).'</a>';
-    $options['editor']['text'] = '<a href="'.$baseUrl.'&tab=editor&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/builder.png',
-        true,
-        ['title' => __('Builder')]
-    ).'</a>';
 }
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(

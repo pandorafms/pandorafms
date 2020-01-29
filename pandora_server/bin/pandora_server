@@ -580,14 +580,14 @@ sub main() {
 	# Only if console_api_url was not defined
 	if( !defined($Config{"console_api_url"}) ) {
 		my $console_api_url = pandora_get_tconfig_token ($DBH, 'public_url', '');
-
+		my $include_api = 'include/api.php';
 		# If public_url is empty in database
 		if ( $console_api_url eq '' ) {
-			$console_api_url = 'http://localhost/pandora_console/';
-			logger(\%Config, "Assuming default path for API url: " . $console_api_url, 3);
+			$Config{"console_api_url"} = 'http://localhost/pandora_console/' . $include_api;
+			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
+		} else {
+			$Config{"console_api_url"} = $console_api_url . $include_api;	
 		}
-
-		$Config{"console_api_url"} = $console_api_url . 'include/api.php';
 	}
 
 	# Definition of configuration file

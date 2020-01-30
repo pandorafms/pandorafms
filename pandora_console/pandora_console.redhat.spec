@@ -86,3 +86,4 @@ fi
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console
+%attr(0644, root, root) %{_sysconfdir}/logrotate.d/pandora_console

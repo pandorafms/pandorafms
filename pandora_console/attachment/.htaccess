@@ -3,8 +3,9 @@
 #Allow from localhost
 
 #pandora disable phpexec
-<Files *.php>
+<FilesMatch "\.(txt|php)$">
 Deny from all
 Allow from localhost
-</Files>
+</FilesMatch>
 php_flag engine off
+

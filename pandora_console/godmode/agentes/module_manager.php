@@ -832,7 +832,7 @@ foreach ($modules as $module) {
 
     $data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);
 
-    $data[6] = ui_print_status_image($status, $title, true);
+    $data[6] = ui_print_status_image($status, htmlspecialchars($title), true);
 
     // MAX / MIN values
     if ($module['id_tipo_modulo'] != 25) {

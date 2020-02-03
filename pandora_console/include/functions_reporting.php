@@ -3679,7 +3679,7 @@ function agents_get_network_interfaces_array(
 /**
  * reporting alert get fired
  */
-function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime)
+function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime, $return_empty=true)
 {
     $fired = [];
     $firedTimes = get_module_alert_fired(
@@ -3709,7 +3709,11 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
         if ($fireTime['utimestamp'] > $datelimit && $fireTime['utimestamp'] <= $datetime) {
             $fired[] = $fireTime['timestamp'];
         } else {
-            $fired[] = $empty;
+            if ($return_empty === true) {
+                $fired[] = $empty;
+            } else {
+                continue;
+            }
         }
     }
 
@@ -3823,7 +3827,7 @@ function reporting_alert_report_group($report, $content)
                     $fired = $action['fired'];
 
                     if ($fired == 0) {
-                        $data_action[$naction]['fired'] = '----------------------------';
+                        $data_action[$naction]['fired'] = __('Not triggered');
                     } else if ($fired > 0) {
                         if ($fired > $datelimit && $fired < $datetime) {
                             $data_action[$naction]['fired'] = $fired;
@@ -3840,7 +3844,7 @@ function reporting_alert_report_group($report, $content)
                     $fired = $action['fired'];
 
                     if ($fired == 0) {
-                        $data_action[$naction]['fired'] = '----------------------------';
+                        $data_action[$naction]['fired'] = __('Not triggered');
                     } else if ($fired > 0) {
                         if ($fired > $datelimit && $fired < $datetime) {
                             $data_action[$naction]['fired'] = $fired;
@@ -3857,7 +3861,7 @@ function reporting_alert_report_group($report, $content)
                     $fired = $action['fired'];
 
                     if ($fired == 0) {
-                        $data_action[$naction]['fired'] = '----------------------------';
+                        $data_action[$naction]['fired'] = __('Not triggered');
                     } else if ($fired > 0) {
                         if ($fired > $datelimit && $fired < $datetime) {
                             $data_action[$naction]['fired'] = $fired;
@@ -3877,7 +3881,8 @@ function reporting_alert_report_group($report, $content)
                 $agent_module['id_agent_module'],
                 $actions['id'],
                 (int) $content['period'],
-                (int) $report['datetime']
+                (int) $report['datetime'],
+                false
             );
             $module_actions['actions']        = $data_action;
 

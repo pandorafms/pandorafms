@@ -821,7 +821,7 @@ function mainAgentsModules()
                         break;
 
                         case AGENT_MODULE_STATUS_UNKNOWN:
-                            ui_print_status_image('module_unknown.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_unknown.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_NORMAL_ALERT:

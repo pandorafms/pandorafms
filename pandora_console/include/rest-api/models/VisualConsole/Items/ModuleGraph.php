@@ -356,6 +356,8 @@ final class ModuleGraph extends Item
                 throw new \InvalidArgumentException('missing module Id');
             }
 
+            $imageOnly = false;
+
             $params = [
                 'agent_module_id'    => $moduleId,
                 'period'             => $period,
@@ -376,7 +378,10 @@ final class ModuleGraph extends Item
                 'show_title'         => false,
             ];
 
-            $imgbase64 = 'data:image/jpg;base64,';
+            if ($imageOnly !== false) {
+                $imgbase64 = 'data:image/jpg;base64,';
+            }
+
             $imgbase64 .= \grafico_modulo_sparse($params);
         }
 

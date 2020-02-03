@@ -3931,8 +3931,14 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
  */
 function get_product_name()
 {
+    global $config;
+
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+        if ($config['rb_product_name_alt']) {
+            return $config['rb_product_name_alt'];
+        }
+
         return 'Pandora FMS';
     }
 

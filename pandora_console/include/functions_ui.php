@@ -1691,8 +1691,10 @@ function ui_process_page_head($string, $bitfield)
         }
     }
 
+    $text_subtitle = isset($config['rb_product_name_alt']) ? '' : ' - '.__('the Flexible Monitoring System');
+
     $output .= "\n\t";
-    $output .= '<title>'.get_product_name().' - '.__('the Flexible Monitoring System').'</title>
+    $output .= '<title>'.get_product_name().$text_subtitle.'</title>
 		<meta http-equiv="expires" content="never" />
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />

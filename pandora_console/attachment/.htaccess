@@ -1,3 +1,11 @@
-Order deny,allow
-Deny from All
+#Order deny,allow
+#Deny from All
+#Allow from localhost
+
+#pandora disable phpexec
+<FilesMatch "\.(txt|php)$">
+Deny from all
 Allow from localhost
+</FilesMatch>
+php_flag engine off
+

@@ -123,7 +123,7 @@ class Tree
             return '';
         }
 
-        return " AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ";
+        return " AND tam.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchModule'])."%%' ";
     }
 
 
@@ -133,7 +133,7 @@ class Tree
             return '';
         }
 
-        return " AND LOWER(ta.alias) LIKE LOWER('%%".$this->filter['searchAgent']."%%')";
+        return " AND LOWER(ta.alias) LIKE LOWER('%%".str_replace('%', '%%', $this->filter['searchAgent'])."%%')";
     }
 
 
@@ -331,7 +331,7 @@ class Tree
             return '';
         }
 
-        return " AND tg.nombre LIKE '%%".$this->filter['searchGroup']."%%'";
+        return " AND tg.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchGroup'])."%%'";
     }
 
 

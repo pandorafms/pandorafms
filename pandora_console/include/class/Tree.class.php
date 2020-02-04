@@ -623,7 +623,7 @@ class Tree
             }
         }
 
-        $module['statusImageHTML'] = ui_print_status_image($statusType, $statusTitle, true);
+        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
 
         // HTML of the server type image
         $module['serverTypeHTML'] = servers_show_type($module['server_type']);

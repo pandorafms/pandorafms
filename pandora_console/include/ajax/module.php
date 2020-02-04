@@ -1022,7 +1022,7 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_status_image($status, $title, true);
+            $data[5] = ui_print_status_image($status, htmlspecialchars($title), true);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 

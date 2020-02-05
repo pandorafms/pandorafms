@@ -81,19 +81,6 @@ class View extends \HTML
         $activetabs = 2;
         if ($type === LABEL) {
             $activetabs = 0;
-            $tabs = [
-                [
-                    'name' => __('Label settings'),
-                    'id'   => 'tab-label',
-                    'href' => $url.'&tabSelected=label',
-                    'img'  => 'zoom.png',
-                ],[
-                    'name' => __('General settings'),
-                    'id'   => 'tab-general',
-                    'href' => $url.'&tabSelected=general',
-                    'img'  => 'pencil.png',
-                ],
-            ];
         } else if ($type === LINE_ITEM) {
             $activetabs = 0;
             $tabs = [
@@ -501,6 +488,9 @@ class View extends \HTML
             break;
 
             case LABEL:
+                $data['isLinkEnabled'] = true;
+            break;
+
             default:
                 // Not posible.
             break;

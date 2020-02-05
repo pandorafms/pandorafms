@@ -699,7 +699,8 @@ li#li-timeZone-item > select:not(:first-child) {
 }
 
 div.label,
-div.simple-value {
+div.simple-value,
+div.module-graph {
   display: inline-table;
   min-width: -webkit-fit-content;
   min-width: -moz-fit-content;

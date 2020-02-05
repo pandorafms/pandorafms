@@ -60,6 +60,16 @@ final class Label extends Item
             );
         }
 
+        if ($values['tabSelected'] === 'specific') {
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
         return $inputs;
     }
 
@@ -75,10 +85,6 @@ final class Label extends Item
      */
     public function getDefaultGeneralValues(array $values): array
     {
-        if (isset($values['isLinkEnabled']) === false) {
-            $values['isLinkEnabled'] = false;
-        }
-
         // Retrieve global - common inputs.
         $values = parent::getDefaultGeneralValues($values);
 

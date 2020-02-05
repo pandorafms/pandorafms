@@ -516,7 +516,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         e.stopPropagation();
       } else {
         // Add loading click item.
-        if (this.itemProps.isLinkEnabled) {
+        if (this.itemProps.isLinkEnabled && this.itemProps.link != null) {
           const divParent = document.createElement("div");
           divParent.className = "div-visual-console-spinner";
           const divSpinner = document.createElement("div");

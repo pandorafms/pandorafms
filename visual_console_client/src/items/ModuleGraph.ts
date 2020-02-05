@@ -96,6 +96,7 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
     //}px`;
 
     element.innerHTML = this.props.html;
+    element.className = "module-graph";
 
     // Remove the overview graph.
     const legendP = element.getElementsByTagName("p");

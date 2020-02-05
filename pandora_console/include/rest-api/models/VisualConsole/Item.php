@@ -1885,16 +1885,18 @@ class Item extends CachedModel
                     ],
                 ];
 
-                // Link enabled.
-                $inputs[] = [
-                    'label'     => __('Link enabled'),
-                    'arguments' => [
-                        'name'  => 'isLinkEnabled',
-                        'id'    => 'isLinkEnabled',
-                        'type'  => 'switch',
-                        'value' => $values['isLinkEnabled'],
-                    ],
-                ];
+                if ($values['type'] !== LABEL) {
+                    // Link enabled.
+                    $inputs[] = [
+                        'label'     => __('Link enabled'),
+                        'arguments' => [
+                            'name'  => 'isLinkEnabled',
+                            'id'    => 'isLinkEnabled',
+                            'type'  => 'switch',
+                            'value' => $values['isLinkEnabled'],
+                        ],
+                    ];
+                }
 
                 // Show on top.
                 $inputs[] = [
@@ -2232,7 +2234,21 @@ class Item extends CachedModel
     {
         // LinkConsoleInputGroup.
         $fields = self::getAllVisualConsole($values['vCId']);
-        \array_unshift($fields, ['id' => 0, 'name' => __('None')]);
+
+        if ($fields === false) {
+            $fields = [];
+        } else {
+            $fields = \array_reduce(
+                $fields,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+        }
+
+        $fields[0] = __('None');
 
         $getAllVisualConsoleValue = $values['linkedLayoutId'];
         if (\is_metaconsole() === true) {

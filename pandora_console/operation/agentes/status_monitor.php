@@ -1362,7 +1362,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_OK,
-                        __('NORMAL').': '.$row['datos'],
+                        __('NORMAL').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1376,7 +1376,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
-                        __('CRITICAL').': '.$row['datos'],
+                        __('CRITICAL').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1390,7 +1390,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_WARNING,
-                        __('WARNING').': '.$row['datos'],
+                        __('WARNING').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1404,7 +1404,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_UNKNOWN,
-                        __('UNKNOWN').': '.$row['datos'],
+                        __('UNKNOWN').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1418,7 +1418,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_NO_DATA,
-                        __('NO DATA').': '.$row['datos'],
+                        __('NO DATA').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1437,7 +1437,7 @@ if (!empty($result)) {
                         } else {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.$row['datos'],
+                                __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.htmlspecialchars($row['datos']),
                                 true
                             );
                         }
@@ -1453,7 +1453,7 @@ if (!empty($result)) {
                         } else {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.$row['datos'],
+                                __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.htmlspecialchars($row['datos']),
                                 true
                             );
                         }
@@ -1469,7 +1469,7 @@ if (!empty($result)) {
                         } else {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.$row['datos'],
+                                __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.htmlspecialchars($row['datos']),
                                 true
                             );
                         }

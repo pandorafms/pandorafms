@@ -3647,7 +3647,7 @@ function events_get_response_target(
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent has not an IP, display N/A.
-        if ($ip === false) {
+        if ($ip === false || $ip === '') {
             $ip = __('N/A');
         }
 

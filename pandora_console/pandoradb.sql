@@ -2375,8 +2375,9 @@ CREATE TABLE IF NOT EXISTS `tpolicies` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` text NOT NULL default '',
 	`description` varchar(255) NOT NULL default '',
-	`id_group` int(10) unsigned default '0',  
-	`status` int(10) unsigned NOT NULL default 0,  
+	`id_group` int(10) unsigned default '0',
+	`status` int(10) unsigned NOT NULL default 0,
+	`force_apply` tinyint(1) default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

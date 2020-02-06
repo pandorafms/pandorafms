@@ -738,27 +738,36 @@ function add_new_link(new_link) {
 }
 
 function move_to_networkmap(node) {
-  var params = [];
-  params.push("get_networkmap_from_fictional=1");
-  params.push("id=" + node.id_db);
-  params.push("id_map=" + node.map_id);
-  params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+  // Checks if is widget or not
+  var widget = false;
+  widget = $("#hidden-widget").val();
 
-  jQuery.ajax({
-    data: params.join("&"),
-    dataType: "json",
-    type: "POST",
-    url: "ajax.php",
-    success: function(data) {
-      if (data["correct"]) {
-        window.location =
-          "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
-          data["id_networkmap"];
-      } else {
-        edit_node(node, true);
+  if (widget == true) {
+    var id_cell = $(".widget_content").data("id_cell");
+    move_to_networkmap_widget(node.networkmap_id, id_cell);
+  } else {
+    var params = [];
+    params.push("get_networkmap_from_fictional=1");
+    params.push("id=" + node.id_db);
+    params.push("id_map=" + node.map_id);
+    params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+    jQuery.ajax({
+      data: params.join("&"),
+      dataType: "json",
+      type: "POST",
+      url: "ajax.php",
+      success: function(data) {
+        if (data["correct"]) {
+          window.location =
+            "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
+            data["id_networkmap"];
+        } else {
+          edit_node(node, true);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function edit_node(data_node, dblClick) {
@@ -4515,4 +4524,39 @@ function update_fictional_node_popup(id) {
     radious,
     color
   );
+}
+
+function move_to_networkmap_widget(networkmap_id, id_cell) {
+  var params = [];
+
+  $(".widget_content").each(function(i) {
+    $("#body_cell").empty();
+  });
+
+  var pathname = window.location.pathname;
+  var path;
+
+  if (
+    pathname == "/pandora_console/enterprise/dashboard/public_dashboard.php"
+  ) {
+    path = "../../ajax.php";
+  } else {
+    path = "ajax.php";
+  }
+
+  params.push("networkmap=true");
+  params.push("networkmap_id=" + networkmap_id);
+
+  params.push("page=enterprise/include/ajax/map_enterprise.ajax");
+  jQuery.ajax({
+    data: params.join("&"),
+    dataType: "html",
+    type: "POST",
+    url: path,
+    success: function(data) {
+      $(".widget_content").each(function(i) {
+        $("#body_cell").append(data);
+      });
+    }
+  });
 }

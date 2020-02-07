@@ -1521,10 +1521,10 @@ function paint_graph_status(
     //delete elements
     svg.selectAll("g").remove();
 
-    width_x = 101;
-    height_x = 50;
-    legend_width_x = 190;
-    legend_height_x = 80;
+    var width_x = 101;
+    var height_x = 50;
+    var legend_width_x = 190;
+    var legend_height_x = 80;
 
     svg
       .append("g")

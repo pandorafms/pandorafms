@@ -1004,8 +1004,14 @@ if (check_login()) {
                 $data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
+            $module_description = '';
+            if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
+                $module_description = utf8_decode($module['descripcion']);
+            } else {
+                $module_description = $module['descripcion'];
+            }
 
-            $data[4] = ui_print_string_substr($module['descripcion'], 60, true, 8);
+            $data[4] = ui_print_string_substr($module_description, 60, true, 8);
 
 
             if ($module['datos'] != strip_tags($module['datos'])) {

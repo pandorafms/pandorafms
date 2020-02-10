@@ -97,17 +97,6 @@ echo '<td>';
 html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd" style="margin-top:0px"');
 echo '</table></form>';
 
-// Get the total number of Elements for the pagination
-$sqlCount = sprintf(
-    'SELECT COUNT(*)
-	FROM tgis_data_history
-	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)
-	ORDER BY end_timestamp DESC',
-    $agentId,
-    (get_system_time() - $period)
-);
-$countData = (int) db_get_value_sql($sqlCount);
-
 // Get the elements to present in this page
 switch ($config['dbtype']) {
     case 'mysql':
@@ -147,32 +136,38 @@ switch ($config['dbtype']) {
 
 $result = db_get_all_rows_sql($sql, true);
 
-if ($result === false) {
-    $sql2 = sprintf(
-        '
-		SELECT current_longitude AS longitude, current_latitude AS latitude, current_altitude AS altitude, 
-		start_timestamp, description, number_of_packages, manual_placement
-		FROM tgis_data_status
-		WHERE tagente_id_agente = %d
-		ORDER BY start_timestamp DESC
-		LIMIT %d OFFSET %d',
-        $agentId,
-        $config['block_size'],
-        (int) get_parameter('offset')
-    );
+$sql2 = sprintf(
+    '
+    SELECT current_longitude AS longitude, current_latitude AS latitude, current_altitude AS altitude, 
+    start_timestamp, description, number_of_packages, manual_placement
+    FROM tgis_data_status
+    WHERE tagente_id_agente = %d
+    ORDER BY start_timestamp DESC
+    LIMIT %d OFFSET %d',
+    $agentId,
+    $config['block_size'],
+    (int) get_parameter('offset')
+);
 
     $result2 = db_get_all_rows_sql($sql2, true);
 
-    if ($result2 === false) {
+if ($result === false && $result2 === false) {
         ui_print_empty_data(__('This agent doesn\'t have any GIS data.'));
+} else {
+    if ($result === false) {
+        $result = $result2;
     } else {
         $result2[0]['end_timestamp'] = date('Y-m-d H:i:s');
-        $result = $result2;
+        array_unshift($result, $result2[0]);
     }
 }
 
+
 if ($result !== false) {
     echo '<h4>'.__('Positional data from the last').' '.human_time_description_raw($period).'</h4>';
+
+    // Get the total elements for UI pagination
+    $countData = count($result);
 
     if ($countData > 0) {
         ui_pagination($countData, false);

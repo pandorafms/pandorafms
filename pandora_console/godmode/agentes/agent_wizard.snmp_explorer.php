@@ -546,7 +546,7 @@ if ($create_modules) {
             $module_values = $common_values;
 
             $module_values['descripcion'] = sprintf(__('Check if the process %s is running or not'), $process);
-            $module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_proc');
+            $module_values['id_tipo_modulo'] = modules_get_type_id('generic_proc');
             $module_values['id_modulo'] = MODULE_PLUGIN;
             $module_values['id_plugin'] = $plugin['id'];
 
@@ -738,11 +738,16 @@ $servers_to_exec[0] = __('Local console');
 if (enterprise_installed()) {
     enterprise_include_once('include/functions_satellite.php');
 
-    $rows = get_proxy_servers(true);
+    $rows = get_proxy_servers();
+
+    // Check if satellite server has remote configuration enabled.
+    $satellite_remote = config_agents_has_remote_configuration($id_agent);
+
     foreach ($rows as $row) {
         if ($row['server_type'] != 13) {
             $s_type = ' (Standard)';
         } else {
+            $id_satellite = $row['id_server'];
             $s_type = ' (Satellite)';
         }
 
@@ -750,8 +755,16 @@ if (enterprise_installed()) {
     }
 }
 
-$table->data[1][2] = '<b>'.__('Server to execute command').'</b>';
-$table->data[1][3] = html_print_select($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
+$table->data[1][2] = '<b>'.__('Server to execute command').'</b>'.ui_print_help_icon('agent_snmp_explorer_tab', true);
+$table->data[1][3] = html_print_select(
+    $servers_to_exec,
+    'server_to_exec',
+    $server_to_exec,
+    'satellite_remote_warn('.$id_satellite.','.$satellite_remote.')',
+    '',
+    '',
+    true
+);
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
@@ -1020,6 +1033,8 @@ ui_require_javascript_file('pandora_modules');
 var separator = '<?php echo $separator; ?>';
 
 $(document).ready (function () {
+    $('#server_to_exec option').trigger('change');
+    
     $("#walk_form").submit(function() {
         $("#oid_loading").show ();
     });

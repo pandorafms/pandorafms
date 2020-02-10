@@ -208,7 +208,7 @@ if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').': '.ui_print_help_tip(__("The agent's name must be the same as the one defined at the console"), true).'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
     $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 40%;">';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 70%;">';
 
     if ($id_agente) {
         $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
@@ -275,7 +275,7 @@ if ($new_agent) {
 
 $table_alias = '<div class="label_select"><p class="input_label">'.__('Alias').': '.ui_print_help_tip(__('Characters /,\,|,%,#,&,$ will be ignored'), true).'</p>';
 $table_alias .= '<div class='.$label_select_parent.'>';
-$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true).'</div>';
+$table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true, false, true).'</div>';
 if ($new_agent) {
     $table_alias .= '<div class="label_select_child_right">'.html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true).__('Use alias as name').'</div>';
 }
@@ -612,17 +612,19 @@ if (enterprise_installed()) {
         $cascade_protection,
         true
     ).__('Cascade protection').'&nbsp;';
+
+    $table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
+        $modules_values,
+        'cascade_protection_module',
+        $cascade_protection_module,
+        '',
+        '',
+        0,
+        true
+    );
 }
 
-$table_adv_parent .= __('Module').'&nbsp;'.html_print_select(
-    $modules_values,
-    'cascade_protection_module',
-    $cascade_protection_module,
-    '',
-    '',
-    0,
-    true
-).'</div></div>';
+$table_adv_parent .= '</div></div>';
 
 // Learn mode / Normal mode.
 $table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': </p>';
@@ -667,7 +669,7 @@ $table_adv_status .= html_print_checkbox_switch(
     $disabled,
     true
 );
-$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled mode').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
 $table_adv_status .= '</div>';
 
 // Url address.
@@ -765,7 +767,7 @@ $table_adv_agent_icon .= html_print_select(
 ).'</div>';
 
 if ($config['activate_gis']) {
-    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Ignore new GIS data:').'</p>';
+    $table_adv_gis = '<div class="label_select_simple label_simple_one_item"><p class="input_label input_label_simple">'.__('Update new GIS data:').'</p>';
     if ($new_agent) {
         $update_gis_data = true;
     }
@@ -774,11 +776,14 @@ if ($config['activate_gis']) {
 }
 
 
+if (enterprise_installed()) {
+    $advanced_div = '<div class="secondary_groups_list">';
+} else {
+    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+}
 
 // General display distribution.
-$table_adv_options = '
-        <div class="secondary_groups_list">
-           '.$adv_secondary_groups_label.'
+$table_adv_options = $advanced_div.$adv_secondary_groups_label.'
             <div class="sg_source">
                 '.$adv_secondary_groups_left.'
             </div>
@@ -804,20 +809,20 @@ $table_adv_options .= '
         '.$table_adv_gis.$table_adv_agent_icon.$table_adv_url.$table_adv_quiet.$table_adv_status.$table_adv_remote.$table_adv_safe.'
         </div>';
 
-
-echo '<div class="ui_toggle">';
-ui_toggle(
-    $table_adv_options,
-    __('Advanced options'),
-    '',
-    '',
-    true,
-    false,
-    'white_box white_box_opened',
-    'no-border flex'
-);
-echo '</div>';
-
+if (enterprise_installed()) {
+    echo '<div class="ui_toggle">';
+    ui_toggle(
+        $table_adv_options,
+        __('Advanced options'),
+        '',
+        '',
+        true,
+        false,
+        'white_box white_box_opened',
+        'no-border flex'
+    );
+    echo '</div>';
+}
 
 $table = new stdClass();
 $table->width = '100%';
@@ -825,7 +830,7 @@ $table->class = 'custom_fields_table';
 
 $table->head = [
     0 => __('Click to display').ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url]').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url]'),
+        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
         true
     ),
 ];
@@ -931,18 +936,48 @@ foreach ($fields as $field) {
     $i += 2;
 }
 
-if (!empty($fields)) {
+if (enterprise_installed()) {
+    if (!empty($fields)) {
+        echo '<div class="ui_toggle">';
+        ui_toggle(
+            html_print_table($table, true),
+            __('Custom fields'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+        echo '</div>';
+    }
+} else {
     echo '<div class="ui_toggle">';
     ui_toggle(
-        html_print_table($table, true),
-        __('Custom fields'),
+        $table_adv_options,
+        __('Advanced options'),
         '',
         '',
         true,
         false,
         'white_box white_box_opened',
-        'no-border'
+        'no-border flex'
     );
+    if (!empty($fields)) {
+        ui_toggle(
+            html_print_table($table, true),
+            __('Custom fields'),
+            '',
+            '',
+            true,
+            false,
+            'white_box white_box_opened',
+            'no-border'
+        );
+    }
+
+    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+
     echo '</div>';
 }
 

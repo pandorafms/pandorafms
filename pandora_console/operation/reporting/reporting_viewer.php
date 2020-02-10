@@ -17,7 +17,6 @@ global $config;
 check_login();
 
 enterprise_hook('open_meta_frame');
-
 $id_report = (int) get_parameter('id');
 
 if (! $id_report) {
@@ -125,7 +124,7 @@ if (!defined('METACONSOLE')) {
 }
 
 // Page header for metaconsole
-if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
+if (is_metaconsole()) {
     // Bread crumbs
     ui_meta_add_breadcrumb(['link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder', 'text' => __('Reporting')]);
 

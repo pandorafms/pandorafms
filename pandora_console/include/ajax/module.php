@@ -1004,8 +1004,14 @@ if (check_login()) {
                 $data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
+            $module_description = '';
+            if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
+                $module_description = utf8_decode($module['descripcion']);
+            } else {
+                $module_description = $module['descripcion'];
+            }
 
-            $data[4] = ui_print_string_substr($module['descripcion'], 60, true, 8);
+            $data[4] = ui_print_string_substr($module_description, 60, true, 8);
 
 
             if ($module['datos'] != strip_tags($module['datos'])) {
@@ -1022,7 +1028,7 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_status_image($status, $title, true);
+            $data[5] = ui_print_status_image($status, htmlspecialchars($title), true);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 
@@ -1113,7 +1119,7 @@ if (check_login()) {
             }
 
             if ($module['id_tipo_modulo'] != 25) {
-                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical']);
+                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse']);
             } else {
                 $data[6] = '';
             }
@@ -1141,17 +1147,18 @@ if (check_login()) {
                     $draw_events = 0;
                 }
 
-                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;label='.rawurlencode(
-                    urlencode(
-                        base64_encode($module['nombre'])
-                    )
-                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
+                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
                 if (!is_snapshot_data($module['datos'])) {
                     $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
                 }
 
                 $server_name = '';
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.modules_get_agentmodule_name($module['id_agente_modulo'])."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+
+                $modules_get_agentmodule_name = modules_get_agentmodule_name($module['id_agente_modulo']);
+                // Escape the double quotes that may have the name of the module.
+                $modules_get_agentmodule_name = str_replace('&quot;', '\"', $modules_get_agentmodule_name);
+
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
             }
 
             if ($module['estado'] == 3) {

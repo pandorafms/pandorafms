@@ -21,27 +21,42 @@ require_once 'include/functions_menu.php';
 $menu_godmode = [];
 $menu_godmode['class'] = 'godmode';
 
-
-if (check_acl($config['id_user'], 0, 'PM')) {
+if (check_acl($config['id_user'], 0, 'AR')
+    || check_acl($config['id_user'], 0, 'AW')
+    || check_acl($config['id_user'], 0, 'RR')
+    || check_acl($config['id_user'], 0, 'RW')
+    || check_acl($config['id_user'], 0, 'PM')
+) {
     $sub = [];
-    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Main');
+    $sub['godmode/servers/discovery&wiz=main']['text'] = __('Start');
     $sub['godmode/servers/discovery&wiz=main']['id'] = 'Discovery';
-
     $sub['godmode/servers/discovery&wiz=tasklist']['text'] = __('Task list');
     $sub['godmode/servers/discovery&wiz=tasklist']['id'] = 'tasklist';
 
-    $sub2 = [];
-    $sub2['godmode/servers/discovery&wiz=hd&mode=netscan']['text'] = __('Network scan');
-    enterprise_hook('hostdevices_submenu');
-    $sub2['godmode/servers/discovery&wiz=hd&mode=customnetscan']['text'] = __('Custom network scan');
-    $sub2['godmode/servers/discovery&wiz=hd&mode=managenetscanscripts']['text'] = __('Manage scan scripts');
-    $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
-    $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
-    $sub['godmode/servers/discovery&wiz=hd']['sub2'] = $sub2;
+    if (check_acl($config['id_user'], 0, 'AW')
+        || check_acl($config['id_user'], 0, 'PM')
+    ) {
+        if (check_acl($config['id_user'], 0, 'AW')) {
+            $sub2 = [];
+            $sub2['godmode/servers/discovery&wiz=hd&mode=netscan']['text'] = __('Network scan');
+            enterprise_hook('hostdevices_submenu');
+            $sub2['godmode/servers/discovery&wiz=hd&mode=customnetscan']['text'] = __('Custom network scan');
+        }
 
-    enterprise_hook('applications_menu');
-    enterprise_hook('cloud_menu');
-    enterprise_hook('console_task_menu');
+        if (check_acl($config['id_user'], 0, 'PM')) {
+            $sub2['godmode/servers/discovery&wiz=hd&mode=managenetscanscripts']['text'] = __('Manage scan scripts');
+        }
+
+        $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
+        $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
+        $sub['godmode/servers/discovery&wiz=hd']['sub2'] = $sub2;
+    }
+
+    if (check_acl($config['id_user'], 0, 'AW')) {
+        enterprise_hook('applications_menu');
+        enterprise_hook('cloud_menu');
+        enterprise_hook('console_task_menu');
+    }
 
     // Add to menu.
     $menu_godmode['discovery']['text'] = __('Discovery');
@@ -92,7 +107,7 @@ if (!empty($sub)) {
 }
 
 $sub = [];
-if (check_acl($config['id_user'], 0, 'AW')) {
+if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/groups/group_list']['text'] = __('Manage agents groups');
     $sub['godmode/groups/group_list']['id'] = 'Manage agents groups';
 }
@@ -295,11 +310,17 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=ehorus']['text'] = __('eHorus');
     $sub2['godmode/setup/setup&amp;section=ehorus']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=integria']['text'] = __('Integria IMS');
+    $sub2['godmode/setup/setup&amp;section=integria']['refr'] = 0;
+
     $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
+
     if ($config['activate_gis']) {
-        $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');
+        $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
 
     $sub['general']['sub2'] = $sub2;
@@ -321,13 +342,15 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
     $sub = [];
 
     if (check_acl($config['id_user'], 0, 'PM')) {
-        // Audit //meter en extensiones
+        // Audit //meter en extensiones.
         $sub['godmode/admin_access_logs']['text'] = __('System audit log');
         $sub['godmode/admin_access_logs']['id'] = 'System audit log';
         $sub['godmode/setup/links']['text'] = __('Links');
         $sub['godmode/setup/links']['id'] = 'Links';
-        $sub['extras/pandora_diag']['text'] = __('Diagnostic info');
-        $sub['extras/pandora_diag']['id'] = 'Diagnostic info';
+        $sub['tools/diagnostics']['text'] = __('Diagnostic info');
+        $sub['tools/diagnostics']['id'] = 'Diagnostic info';
+        enterprise_hook('omnishell');
+
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';
         $sub['godmode/setup/file_manager']['text'] = __('File manager');
@@ -381,9 +404,6 @@ if (is_array($config['extensions'])) {
                 if (strlen($extmenu['fatherId']) > 0) {
                     if (array_key_exists('subfatherId', $extmenu)) {
                         if (strlen($extmenu['subfatherId']) > 0) {
-                            if ($extmenu['name'] = 'DB schema check') {
-                            }
-
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['text'] = __($extmenu['name']);
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['id'] = $extmenu['name'];
                             $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['refr'] = 0;

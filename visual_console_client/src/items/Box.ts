@@ -1,5 +1,5 @@
 import { AnyObject } from "../lib/types";
-import { parseIntOr, notEmptyStringOr } from "../lib";
+import { parseIntOr, notEmptyStringOr, t } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 interface BoxProps extends ItemProps {
@@ -13,6 +13,7 @@ interface BoxProps extends ItemProps {
   borderWidth: number;
   borderColor: string | null;
   fillColor: string | null;
+  fillTransparent: boolean | null;
 }
 
 /**
@@ -35,7 +36,8 @@ export function boxPropsDecoder(data: AnyObject): BoxProps | never {
     // Custom properties.
     borderWidth: parseIntOr(data.borderWidth, 0),
     borderColor: notEmptyStringOr(data.borderColor, null),
-    fillColor: notEmptyStringOr(data.fillColor, null)
+    fillColor: notEmptyStringOr(data.fillColor, null),
+    fillTransparent: data.fillTransparent
   };
 }
 
@@ -46,8 +48,12 @@ export default class Box extends Item<BoxProps> {
     // To prevent this item to expand beyond its parent.
     box.style.boxSizing = "border-box";
 
-    if (this.props.fillColor) {
-      box.style.backgroundColor = this.props.fillColor;
+    if (this.props.fillTransparent) {
+      box.style.backgroundColor = "transparent";
+    } else {
+      if (this.props.fillColor) {
+        box.style.backgroundColor = this.props.fillColor;
+      }
     }
 
     // Border.
@@ -64,5 +70,32 @@ export default class Box extends Item<BoxProps> {
     }
 
     return box;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (this.props.fillTransparent) {
+      element.style.backgroundColor = "transparent";
+    } else {
+      if (this.props.fillColor) {
+        element.style.backgroundColor = this.props.fillColor;
+      }
+    }
+
+    // Border.
+    if (this.props.borderWidth > 0) {
+      element.style.borderStyle = "solid";
+      // Control the max width to prevent this item to expand beyond its parent.
+      const maxBorderWidth = Math.min(this.props.width, this.props.height) / 2;
+      const borderWidth = Math.min(this.props.borderWidth, maxBorderWidth);
+      element.style.borderWidth = `${borderWidth}px`;
+
+      if (this.props.borderColor) {
+        element.style.borderColor = this.props.borderColor;
+      }
+    }
   }
 }

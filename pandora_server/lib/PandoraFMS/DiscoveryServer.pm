@@ -56,7 +56,25 @@ my $TaskSem :shared;
 use constant {
     OS_OTHER => 10,
     OS_ROUTER => 17,
-    OS_SWITCH => 18
+    OS_SWITCH => 18,
+	STEP_SCANNING => 1,
+	STEP_AFT => 2,
+	STEP_TRACEROUTE => 3,
+	STEP_GATEWAY => 4,
+	STEP_STATISTICS => 1,
+	STEP_APP_SCAN => 2,
+	STEP_CUSTOM_QUERIES => 3,
+	DISCOVERY_HOSTDEVICES => 0,
+	DISCOVERY_HOSTDEVICES_CUSTOM => 1,
+	DISCOVERY_CLOUD_AWS => 2,
+	DISCOVERY_APP_VMWARE => 3,
+	DISCOVERY_APP_MYSQL => 4,
+	DISCOVERY_APP_ORACLE => 5,
+	DISCOVERY_CLOUD_AWS_EC2 => 6,
+	DISCOVERY_CLOUD_AWS_RDS => 7,
+	DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
+	DISCOVERY_DEPLOY_AGENTS => 9,
+	DISCOVERY_APP_SAP => 10,
 };
 
 ########################################################################################
@@ -194,6 +212,31 @@ sub data_consumer ($$) {
         if (defined($r) && $r eq 'ERR') {
             # Could not generate extra cnf, skip this task.
             return;
+        }
+
+
+        if ($task->{'type'} == DISCOVERY_APP_SAP) {
+            # SAP TASK, retrieve license.
+            $task->{'sap_license'} = pandora_get_config_value(
+                $dbh,
+                'sap_license'
+            );
+
+            # Retrieve credentials for task (optional).
+            if (defined($task->{'auth_strings'})
+                && $task->{'auth_strings'} ne ''
+            ) {
+                my $key = credential_store_get_key(
+                    $pa_config,
+                    $dbh,
+                    $task->{'auth_strings'}
+                );
+
+                # Inside an eval, here it shouln't fail unless bad configured.
+                $task->{'username'} = $key->{'username'};
+                $task->{'password'} = $key->{'password'};
+
+            }
         }
 
         my $recon = new PandoraFMS::Recon::Base(
@@ -343,6 +386,9 @@ sub exec_recon_script ($$$) {
 sub PandoraFMS::Recon::Base::guess_os($$) {
     my ($self, $device) = @_;
 
+	$DEVNULL = '/dev/null' if (!defined($DEVNULL));
+	$DEVNULL = '/NUL' if ($^O =~ /win/i && !defined($DEVNULL));
+
     # OS detection disabled. Use the device type.
     if ($self->{'os_detection'} == 0) {
         my $device_type = $self->get_device_type($device);
@@ -354,18 +400,23 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     }
 
     # Use xprobe2 if available
-    if (-e $self->{pa_config}->{xprobe2}) {
-        my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
+    if (-x $self->{'pa_config'}->{'xprobe2'}) {
+        my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
         if ($? == 0) {
-            return pandora_get_os($self->{'dbh'}, $output);
+            if($return =~ /Running OS:(.*)/) {
+                return pandora_get_os($self->{'dbh'}, $1);
+            }
         }
     }
     
     # Use nmap by default
-    if (-e $self->{pa_config}->{nmap}) {
-        my $output = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL | grep 'Aggressive OS guesses'`;
+    if (-x $self->{'pa_config'}->{'nmap'}) {
+        my $return = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL`;
         return OS_OTHER if ($? != 0);
-        return pandora_get_os($self->{'dbh'}, $output);
+
+        if ($return =~ /Aggressive OS guesses:\s*(.*)/) {
+            return pandora_get_os($self->{'dbh'}, $1);
+        }
     }
 
     return OS_OTHER;
@@ -377,7 +428,11 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 sub PandoraFMS::Recon::Base::tcp_scan ($$) {
     my ($self, $host) = @_;
 
-    my $open_ports = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host | grep open | wc -l`;
+    my $r = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host`;
+
+    # Same as ""| grep open | wc -l" but multi-OS;
+    my $open_ports = () = $r =~ /open/gm;
+
     return $open_ports;
 }
 
@@ -526,7 +581,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
             return undef;
         }
 
-        if ($agent->{'address'} ne '') {
+        if (defined($agent->{'address'}) && $agent->{'address'} ne '') {
             pandora_add_agent_address(
                 $pa_config, $agent_id, $agent->{'agent_name'},
                 $agent->{'address'}, $dbh
@@ -572,44 +627,14 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
     # Clean name.
     $device = clean_blank($device);
 
-    my @agents = get_db_rows($self->{'dbh'},
-        'SELECT * FROM taddress, taddress_agent, tagente
-         WHERE tagente.id_agente = taddress_agent.id_agent
-            AND taddress_agent.id_a = taddress.id_a
-            AND ip = ?', $device
-    );
-
-    # Does the host already exist?
-    my $agent;
-    foreach my $candidate (@agents) {
-      $agent = {map {$_} %$candidate}; # copy contents, do not use shallow copy
-      # exclude $device itself, because it handle corner case when target includes NAT
-      my @registered = map {$_->{ip}} get_db_rows($self->{'dbh'},
-          'SELECT ip FROM taddress, taddress_agent, tagente
-           WHERE tagente.id_agente = taddress_agent.id_agent
-              AND taddress_agent.id_a = taddress.id_a
-              AND tagente.id_agente = ?
-            AND taddress.ip != ?', $agent->{id_agente}, $device
-      );
-      foreach my $ip_addr (@registered) {
-        my @matched = grep { $_ =~ /^$ip_addr$/ } $self->get_addresses($device);
-        if (scalar(@matched) == 0) {
-            $agent = undef;
-            last;
-        }
-      }
-      last if(defined($agent)); # exit loop if match all ip_addr
-    }
-
-    if (!defined($agent)) {
-        $agent = get_agent_from_name($self->{'dbh'}, $device);
-    }
+    # Resolve hostnames.
+    my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($device), AF_INET) : $device);
+    # Fallback to device IP if host name could not be resolved.
+    $host_name = $device if (!defined($host_name) || $host_name eq '');
+    my $agent = locate_agent($self->{'pa_config'}, $self->{'dbh'}, $host_name);
 
     my ($agent_id, $agent_learning);
     if (!defined($agent)) {
-
-        # Resolve hostnames.
-        my $host_name = $self->{'resolve_names'} == 1 ? gethostbyaddr (inet_aton($device), AF_INET) : $device;
         $host_name = $device unless defined ($host_name);
 
         # Guess the OS.

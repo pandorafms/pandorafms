@@ -21,6 +21,7 @@ use strict;
 use warnings;
 use POSIX qw(strftime);
 use threads;
+use Digest::MD5 qw(md5_hex);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -97,9 +98,6 @@ sub pandora_startup () {
 	
 	# Grab config tokens shared with the console and not in the .conf	
 	pandora_get_sharedconfig (\%Config, $DBH);
-	
-	# Generate the encryption key after reading the passphrase.
-	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
 	# Kill any running server threads.
 	stop_server_threads();
@@ -211,7 +209,9 @@ sub pandora_crash () {
 		}
 		$full_error .= $error_line;
 	}
-	
+
+	# Could crash before parse configuration.
+	$Config{'rb_product_name'} = 'PandoraFMS' unless defined($Config{'rb_product_name'}) && $Config{'rb_product_name'} ne '';
 	logger (\%Config, $Config{'rb_product_name'} . ' Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
 	
 	# It's interesting show by console problems, not only in logs. This helps
@@ -365,9 +365,11 @@ sub pandora_server_tasks ($) {
 
 		# COMMON TASKS (master and non-master) 
 		# ---------------------------------------------------------------
-
-		# Rotate Log File
 		if (($counter % 30) == 0) {
+			# Update configuration options from the console.
+			pandora_get_sharedconfig ($pa_config, $dbh);
+
+			# Rotate the log file.
 			pandora_rotate_logfile($pa_config);
 			
 			# Set event storm protection
@@ -379,6 +381,16 @@ sub pandora_server_tasks ($) {
 			&& !is_metaconsole($pa_config)
 			&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
 			pandora_self_monitoring ($pa_config, $dbh);
+		}
+
+		# Pandora sample agent
+		if (defined($pa_config->{'sample_agent'})) {
+			if ($pa_config->{'sample_agent'} == 1
+			&& !is_metaconsole($pa_config)
+			&& $counter % $pa_config->{'sample_agent_interval'} == 0){
+				pandora_sample_agent ($pa_config);
+			}
+			pandora_update_config_token ($dbh, 'sample_agent', $pa_config->{'sample_agent'});
 		}
 
 		# Avoid counter overflow
@@ -563,6 +575,139 @@ sub main() {
 		logger(\%Config, "Warmup mode for events started.", 3);
 		pandora_event (\%Config, "Warmup mode for alerts started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
 		pandora_event (\%Config, "Warmup mode for events started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	}
+
+	# Only if console_api_url was not defined
+	if( !defined($Config{"console_api_url"}) ) {
+		my $console_api_url = pandora_get_tconfig_token ($DBH, 'public_url', '');
+		my $include_api = 'include/api.php';
+		# If public_url is empty in database
+		if ( $console_api_url eq '' ) {
+			$Config{"console_api_url"} = 'http://localhost/pandora_console/' . $include_api;
+			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
+		} else {
+			$Config{"console_api_url"} = $console_api_url . $include_api;	
+		}
+	}
+
+	# Definition of configuration file
+	my $cfg_file = $Config{'pandora_path'};
+	my $cfg_file_output = $Config{'pandora_path'} . "_backup";
+
+	# Only if console_api_pass was not defined
+	if ( !defined($Config{"console_api_pass"}) ) {
+		my $console_api_pass = pandora_get_tconfig_token ($DBH, 'api_password', '');
+		# If api_password is empty in database
+		if ( $console_api_pass eq '' ) {
+			$console_api_pass = '1234';
+			db_process_update ($DBH, 'tconfig', {'value' => $console_api_pass}, {'token' => 'api_password'});
+		}
+		# Definition of console_api_pass in config
+		$Config{"console_api_pass"} = $console_api_pass;
+		# Watch if paramether is added or not (even if it is commented)
+		my $console_api_pass_control = undef;
+		if ( open (CFGin, "<$cfg_file") && open (CFGout, ">>$cfg_file_output") ) {
+			while(my $row = <CFGin>) {
+				if (chomp($row) =~ (m/^#\sconsole_api_pass\s(.*)/i)) {
+					$console_api_pass_control = 1;
+					print CFGout "\nconsole_api_pass " .$Config{"console_api_pass"} . "\n";
+				} else {
+					print CFGout "$row\n";
+				}
+			}
+			# Only if the parameter was not added
+			if ( !defined($console_api_pass_control) ) {
+				print CFGout "\n# console_api_pass: Console password\n";
+				print CFGout "console_api_pass " .$Config{"console_api_pass"} . "\n";
+			}
+			# Close both files
+			close (CFGin);
+			close (CFGout);
+			# Convert the output file in the original configuration file
+			rename $cfg_file_output, $cfg_file;
+		}
+	}
+
+	# Only if console_pass was not defined.
+	if ( !defined($Config{"console_pass"}) ){
+		# Randomized parametrization of console_pass.
+		if (open (CFG, ">>$cfg_file")) {
+			my $valid_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			my $num_char = 8;
+			my $randomized_string = '';
+			for (my $i = 0; $i < $num_char; $i++) {
+				$randomized_string .= substr($valid_chars, rand(length($valid_chars)), 1);
+			}
+
+			$Config{"console_pass"} = $randomized_string;
+			print CFG "\n# console_pass: Console password\n";
+			print CFG "# To make sure console_api_url, console_api_pass, console_user and console_pass are properly configured run:\n";
+			print CFG "#   curl '<console_api_url>?op=get&op2=test&apipass=<console_api_pass>&user=<console_user>&pass=<console_pass>'\n";
+			print CFG "# It should return a string similar to:\n";
+			print CFG "# OK,{VERSION},{BUILD}\n";
+			print CFG "console_pass " .$Config{"console_pass"} . "\n";
+
+			close (CFG);
+		} else {
+			logger(\%Config, "[WARNING] Error with configuration file when define `console_pass`: $!", 3);
+		}
+	}
+
+	# Only if console_user was not defined
+	if ( !defined($Config{"console_user"}) ) {
+		my $pandora_uid = pandora_get_tconfig_token ($DBH, 'pandora_uid', '');
+
+		if ( $pandora_uid ne '' && $pandora_uid ne 'OFFLINE' ) {
+			$Config{"console_user"} = "internal_API_$pandora_uid";
+		} else {
+			$Config{"console_user"} = "internal_API";
+		}
+
+		# If user not exists in DB, is necessary to create it
+		if ( get_user_exists($DBH, $Config{"console_user"}) == -1 ) {
+
+			# Definition of API user parameters
+			my $api_user_parameters = {};
+			$api_user_parameters->{'id_user'} = $Config{"console_user"};
+			$api_user_parameters->{'password'} = md5_hex($Config{"console_pass"});
+			$api_user_parameters->{'comments'} = "Internal user, used for generating reports and email attachments";
+			$api_user_parameters->{'is_admin'} = 0;
+			$api_user_parameters->{'not_login'} = 1;
+
+			# Profile creation for API purpouses
+			my $api_profile_parameters = {};
+			$api_profile_parameters->{'id_usuario'} = $Config{"console_user"};
+			$api_profile_parameters->{'id_perfil'} = 1;
+			$api_profile_parameters->{'id_grupo'} = 0;
+			$api_profile_parameters->{'assigned_by'} = "system";
+			$api_profile_parameters->{'id_policy'} = 0;
+
+			# Insert in DB
+			my $res_tusuario = db_process_insert($DBH, 'id_user', 'tusuario', $api_user_parameters);
+			my $res_tusuario_perfil = db_process_insert($DBH, 'id_user', 'tusuario_perfil', $api_profile_parameters);
+
+			# If the user was inserted in DB, must write it in configuration file
+			if ( $res_tusuario_perfil > 0 ) {
+				if (open (CFG, ">>$cfg_file")) {
+					print CFG "\n# Console User (created for API use)\n";
+					print CFG "console_user " . $Config{"console_user"} . "\n";
+					close (CFG);
+				} else {
+					logger(\%Config, "Warning. Was not possible edit configuration file for add console user", 3);
+				}
+			} else {
+				logger(\%Config, "Warning. Was not possible creating console user for API.", 3);
+			}
+		}
+	}
+
+	# Testing API url
+	my $curl_execution = "'".$Config{'console_api_url'}."?op=get&op2=test&apipass=".$Config{"console_api_pass"}."&user=".$Config{"console_user"}."&pass=".$Config{"console_pass"}."'";
+	my $exe_testing_api = `curl $curl_execution`;
+	my @res_testing_api = split(',', $exe_testing_api);
+	if ( $res_testing_api[0] ne 'OK' ) {
+		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
+		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);
 	}
 
 	# Generate 'going up' events

@@ -102,9 +102,9 @@ define('SECONDS_1MONTH', 2592000);
 define('SECONDS_2MONTHS', 5184000);
 define('SECONDS_3MONTHS', 7776000);
 define('SECONDS_6MONTHS', 15552000);
-define('SECONDS_1YEAR', 31104000);
-define('SECONDS_2YEARS', 62208000);
-define('SECONDS_3YEARS', 93312000);
+define('SECONDS_1YEAR', 31536000);
+define('SECONDS_2YEARS', 63072000);
+define('SECONDS_3YEARS', 94608000);
 
 
 
@@ -147,7 +147,7 @@ define('COL_UNKNOWN', '#B2B2B2');
 define('COL_DOWNTIME', '#976DB1');
 define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
-define('COL_MINOR', '#B2B2B2');
+define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#E4E4E4');
 define('COL_MAINTENANCE', '#4a83f3');
@@ -355,6 +355,12 @@ define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
 
+// Type of Webserver Modules.
+define('MODULE_WEBSERVER_CHECK_LATENCY', 30);
+define('MODULE_WEBSERVER_CHECK_SERVER_RESPONSE', 31);
+define('MODULE_WEBSERVER_RETRIEVE_NUMERIC_DATA', 32);
+define('MODULE_WEBSERVER_RETRIEVE_STRING_DATA', 33);
+
 // SNMP CONSTANTS.
 define('SNMP_DIR_MIBS', 'attachment/mibs');
 
@@ -531,7 +537,7 @@ define('NODE_GENERIC', 3);
 define('STATUS_OK', 0);
 define('STATUS_ERROR', 1);
 
-// Maps (new networkmaps and  new visualmaps).
+// Maps new networkmaps and  new visualmaps.
 define('MAP_TYPE_NETWORKMAP', 0);
 define('MAP_TYPE_VISUALMAP', 1);
 
@@ -584,6 +590,7 @@ define('DISCOVERY_CLOUD_AWS_EC2', 6);
 define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
+define('DISCOVERY_APP_SAP', 10);
 
 
 // Discovery types matching definition.
@@ -624,3 +631,30 @@ define('DEFAULT_NODE_COLOR', COL_NOTINIT);
 define('DEFAULT_NODE_IMAGE', 'images/networkmap/unknown.png');
 
 define('NODE_IMAGE_PADDING', 5);
+
+// Pandora Database HA constants.
+define('HA_ACTION_NONE', 0);
+define('HA_ACTION_DEPLOY', 1);
+define('HA_ACTION_RECOVER', 2);
+define('HA_ACTION_PROMOTE', 3);
+define('HA_ACTION_DEMOTE', 4);
+define('HA_ACTION_DISABLE', 5);
+define('HA_ACTION_ENABLE', 6);
+define('HA_ACTION_CLEANUP', 7);
+define('HA_ACTION_RESYNC', 8);
+
+define('HA_UNINITIALIZED', 0);
+define('HA_ONLINE', 1);
+define('HA_PENDING', 2);
+define('HA_PROCESSING', 3);
+define('HA_DISABLED', 4);
+define('HA_FAILED', 5);
+
+
+define('WELCOME_STARTED', 1);
+define('W_CONFIGURE_MAIL', 1);
+define('W_CREATE_AGENT', 2);
+define('W_CREATE_MODULE', 3);
+define('W_CREATE_ALERT', 4);
+define('W_CREATE_TASK', 5);
+define('WELCOME_FINISHED', -1);

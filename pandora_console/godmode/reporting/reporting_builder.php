@@ -1,4 +1,22 @@
 <script type="text/javascript">
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+}
+
+
     function check_all_checkboxes() {
         if ($("input[name=all_delete]").prop("checked")) {
             $(".check_delete").prop("checked", true);
@@ -129,7 +147,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 }
 
 // Constant with fonts directory.
-define('_MPDF_TTFONTPATH', 'include/fonts/');
+define('_MPDF_TTFONTPATH', $config['homedir'].'/include/fonts/');
 
 $activeTab = get_parameter('tab', 'main');
 $action = get_parameter('action', 'list');
@@ -578,7 +596,7 @@ switch ($action) {
                 break;
             }
 
-            if (! $delete) {
+            if (! $delete && !empty($type_access_selected)) {
                 db_pandora_audit(
                     'ACL Violation',
                     'Trying to access report builder deletion'
@@ -1189,8 +1207,7 @@ switch ($action) {
                 $report_id_user = get_parameter('report_id_user');
                 $non_interactive = get_parameter('non_interactive', 0);
 
-                // Pretty font by default for pdf.
-                $custom_font = 'FreeSans.ttf';
+                $custom_font = $config['custom_report_front_font'];
 
                 switch ($type_access_selected) {
                     case 'group_view':
@@ -1266,7 +1283,6 @@ switch ($action) {
                         $metaconsole_report = (int) is_metaconsole();
 
                         if ($config['custom_report_front']) {
-                            $custom_font = $config['custom_report_front_font'];
                             $logo = $config['custom_report_front_logo'];
                             $header = $config['custom_report_front_header'];
                             $first_page = $config['custom_report_front_firstpage'];
@@ -1396,6 +1412,9 @@ switch ($action) {
                             $items_label,
                             $name_it
                         );
+
+                        $values['landscape'] = get_parameter('landscape');
+                        $values['pagebreak'] = get_parameter('pagebreak');
 
                         /*
                             Added support for projection graphs,
@@ -1589,6 +1608,14 @@ switch ($action) {
                                 );
                                 $values['agent_min_value'] = get_parameter(
                                     'agent_min_value'
+                                );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
                                 );
                                 $good_format = true;
                             break;
@@ -1890,6 +1917,11 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
+                        if ($values['type'] == 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
+                        }
+
+
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
@@ -1899,10 +1931,6 @@ switch ($action) {
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
-                            0
-                        );
-                        $style['show_in_landscape'] = get_parameter(
-                            'show_in_landscape',
                             0
                         );
                         $style['hide_notinit_agents'] = get_parameter(
@@ -1983,10 +2011,6 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                            case 'TTRT':
-                            case 'TTO':
-                            case 'MTBF':
-                            case 'MTTR':
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {
@@ -2080,6 +2104,9 @@ switch ($action) {
                             $items_label,
                             $name_it
                         );
+
+                        $values['landscape'] = get_parameter('landscape');
+                        $values['pagebreak'] = get_parameter('pagebreak');
 
                         // Support for projection graph, prediction date
                         // and SLA reports 'top_n_value', 'top_n' and 'text'
@@ -2446,6 +2473,10 @@ switch ($action) {
                             $values['id_agent'] = get_parameter('group');
                         }
 
+                        if ($values['type'] == 'sumatory') {
+                            $values['uncompressed_module'] = get_parameter('uncompressed_module', 0);
+                        }
+
                         $values['header_definition'] = get_parameter('header');
                         $values['column_separator'] = get_parameter('field');
                         $values['line_separator'] = get_parameter('line');
@@ -2465,10 +2496,6 @@ switch ($action) {
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
-                            0
-                        );
-                        $style['show_in_landscape'] = get_parameter(
-                            'show_in_landscape',
                             0
                         );
                         $style['hide_notinit_agents'] = get_parameter(
@@ -2585,10 +2612,6 @@ switch ($action) {
                             case 'avg_value':
                             case 'projection_graph':
                             case 'prediction_date':
-                            case 'TTRT':
-                            case 'TTO':
-                            case 'MTBF':
-                            case 'MTTR':
                             case 'simple_baseline_graph':
                             case 'nt_top_n':
                                 if ($label != '') {
@@ -3115,17 +3138,19 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
         break;
     }
 
-    ui_print_page_header(
-        $textReportName,
-        'images/op_reporting.png',
-        false,
-        $helpers,
-        false,
-        $buttons,
-        false,
-        '',
-        60
-    );
+    if ($action !== 'update' && !is_metaconsole()) {
+        ui_print_page_header(
+            $textReportName,
+            'images/op_reporting.png',
+            false,
+            $helpers,
+            false,
+            $buttons,
+            false,
+            '',
+            60
+        );
+    }
 }
 
 if ($resultOperationDB !== null) {
@@ -3147,6 +3172,26 @@ if ($resultOperationDB !== null) {
         __('Successfull action'),
         __('Unsuccessful action<br><br>'.$err)
     );
+
+    if ($action == 'update') {
+        $buttons[$activeTab]['active'] = false;
+        $activeTab = 'list_items';
+        $buttons[$activeTab]['active'] = true;
+
+        if (!is_metaconsole()) {
+            ui_print_page_header(
+                $textReportName,
+                'images/op_reporting.png',
+                false,
+                $helpers,
+                false,
+                $buttons,
+                false,
+                '',
+                60
+            );
+        }
+    }
 }
 
 switch ($activeTab) {

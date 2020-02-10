@@ -77,6 +77,7 @@
 }
 
 #opacity{
+background:black;opacity:0.1;left:0px;top:0px;width:100%;height:100%;
     background:black;
     opacity:0.1;
     left:0px;
@@ -99,12 +100,11 @@ img.modalclose {
 </style>
 </head>
 <body>
-    
 <div id="alert_messages_na">
     
     <div class='modalheade'>
         <span class='modalheadertex'>
-            <?php echo __('Database error'); ?>        
+            <?php echo __('Database error'); ?>
         </span>
         <img class='modalclose' src='<?php echo $config['homeurl']; ?>images/icono_cerrar.png'>  
     </div>
@@ -113,14 +113,44 @@ img.modalclose {
         <img class='modalcontentim' src='<?php echo $config['homeurl']; ?>/images/mysqlerr.png'>
         <div class='modalcontenttex'>
             <?php
-            echo __('Failure to connect to Database server, please check the configuration file config.php or contact system administrator if you need assistance.');
+            if ($config['history_db_connection'] === false) {
+                echo __('Failure to connect to historical database, please check the configuration or contact system administrator if you need assistance.');
+            } else {
+                echo __('Failure to connect to Database server, please check the configuration file config.php or contact system administrator if you need assistance.');
+            }
+
             ?>
         </div>
     </div>
-    <a href='https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration' target='_blank'>
-    <div class='modalwikibutto'>
-        <span class='modalwikibuttontex'> <?php echo __('Documentation'); ?></span>
-    </div>
+    <?php
+    $custom_conf_enabled = false;
+    foreach ($config as $key => $value) {
+        if (preg_match('/._alt/i', $key)) {
+            $custom_conf_enabled = true;
+            break;
+        }
+    }
+
+    if (!$custom_conf_enabled || isset($config['custom_docs_url_alt'])) {
+        if (isset($config['custom_docs_url_alt'])) {
+            $docs_url = $config['custom_docs_url_alt'];
+        } else {
+            $docs_url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration';
+        }
+
+        echo '
+                <a href="'.ui_get_full_external_url($docs_url).'" target="_blank">
+            <div class="modalwikibutto">
+                <span class="modalwikibuttontex">'.__('Documentation').'
+            </span>
+            </div>
+            </a>
+            ';
+    }
+
+    ?>
+      
+    
     </a>
 </div>
     

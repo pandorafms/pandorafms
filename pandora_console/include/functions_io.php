@@ -455,7 +455,7 @@ function __($string /*, variable arguments */)
             return $string;
         }
 
-        return $l10n->translate($string);
+        return str_replace('\'', '`', $l10n->translate($string));
     }
 
     $args = func_get_args();
@@ -465,7 +465,7 @@ function __($string /*, variable arguments */)
         return vsprintf($string, $args);
     }
 
-    return vsprintf($l10n->translate($string), $args);
+    return vsprintf(str_replace('\'', '`', $l10n->translate($string)), $args);
 }
 
 
@@ -507,7 +507,7 @@ function ___($string /*, variable arguments */)
 }
 
 
-/*
+/**
  * json_encode for multibyte characters.
  *
  * @param string Text string to be encoded.
@@ -528,7 +528,7 @@ function io_json_mb_encode($string, $encode_options=0)
 }
 
 
-/*
+/**
  * Prepare the given password to be stored in the Pandora FMS Database,
  * encrypting it if necessary.
  *
@@ -541,16 +541,22 @@ function io_input_password($password)
     global $config;
 
     enterprise_include_once('include/functions_crypto.php');
-    $ciphertext = enterprise_hook('openssl_encrypt_decrypt', ['encrypt', io_safe_output($password)]);
+    $ciphertext = enterprise_hook(
+        'openssl_encrypt_decrypt',
+        [
+            'encrypt',
+            io_safe_input($password),
+        ]
+    );
     if ($ciphertext === ENTERPRISE_NOT_HOOK) {
-            return $password;
+            return io_safe_input($password);
     }
 
     return $ciphertext;
 }
 
 
-/*
+/**
  * Process the given password read from the Pandora FMS Database,
  * decrypting it if necessary.
  *
@@ -563,10 +569,17 @@ function io_output_password($password)
     global $config;
 
     enterprise_include_once('include/functions_crypto.php');
-    $plaintext = enterprise_hook('openssl_encrypt_decrypt', ['decrypt', io_safe_output($password)]);
+    $plaintext = enterprise_hook(
+        'openssl_encrypt_decrypt',
+        [
+            'decrypt',
+            $password,
+        ]
+    );
+
     if ($plaintext === ENTERPRISE_NOT_HOOK) {
-            return $password;
+            return io_safe_output($password);
     }
 
-    return $plaintext;
+    return io_safe_output($plaintext);
 }

@@ -26,7 +26,7 @@
 }
 
 .agent_options_column_left {
-  padding-right: 50px;
+  padding-right: 60px;
 }
 
 .agent_qr {
@@ -61,7 +61,7 @@ a#qr_code_agent_view {
 .first_row .agent_options_column_right select,
 .first_row .agent_options_column_right input,
 .first_row .agent_options_column_left select#grupo {
-  width: 95%;
+  width: 93%;
   box-sizing: border-box;
 }
 

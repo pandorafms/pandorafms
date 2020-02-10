@@ -919,9 +919,10 @@ function servers_get_info($id_server=-1)
 
                 // Remote servers LAG Calculation (server_type != 0).
                 if ($server['server_type'] != 0) {
+                    // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
                     $result = db_get_row_sql(
                         'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag
+                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS "lag"
                         FROM tagente_estado, tagente_modulo, tagente
                         WHERE utimestamp > 0
                             AND tagente.disabled = 0
@@ -935,9 +936,10 @@ function servers_get_info($id_server=-1)
                     );
                 } else {
                     // Local/Dataserver server LAG calculation.
+                    // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
                     $result = db_get_row_sql(
                         'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag
+                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS "lag"
                         FROM tagente_estado, tagente_modulo, tagente
                         WHERE utimestamp > 0
                             AND tagente.disabled = 0

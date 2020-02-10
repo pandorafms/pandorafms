@@ -58,6 +58,27 @@ global $config;
 
 check_login();
 
+if (is_ajax()) {
+    enterprise_include_once('include/functions_cron.php');
+
+    $test_address = get_parameter('test_address', '');
+
+    $res = enterprise_hook(
+        'send_email_attachment',
+        [
+            $test_address,
+            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            __('Testing Pandora FMS email'),
+            null,
+        ]
+    );
+
+    echo $res;
+
+    // Exit after ajax response.
+    exit();
+}
+
 $table = new StdClass();
 $table->class = 'databox filters';
 $table->id = 'setup_general';
@@ -67,6 +88,12 @@ $table->size = [];
 $table->size[0] = '30%';
 $table->style[0] = 'font-weight:bold';
 $table->size[1] = '70%';
+
+$table_mail_conf = new stdClass();
+$table_mail_conf->width = '100%';
+$table_mail_conf->class = 'databox filters';
+$table_mail_conf->data = [];
+$table_mail_conf->style[0] = 'font-weight: bold';
 
 // Current config["language"] could be set by user, not taken from global setup !
 $current_system_lang = db_get_sql(
@@ -330,12 +357,76 @@ echo '<legend>'.__('General options').'</legend>';
     html_print_input_hidden('update_config', 1);
     html_print_table($table);
 
+$encryption = [
+    'ssl'   => 'SSL/TLS',
+    'sslv2' => 'SSLv2',
+    'sslv3' => 'SSLv3',
+    'tls'   => 'STARTTLS',
+];
+
 echo '</fieldset>';
+
+echo '<fieldset>';
+echo '<legend>'.__('Mail configuration').'</legend>';
+
+$table_mail_conf->data[0][0] = __('From address');
+$table_mail_conf->data[0][1] = html_print_input_text('email_from_dir', $config['email_from_dir'], '', 30, 100, true);
+
+$table_mail_conf->data[1][0] = __('From name');
+$table_mail_conf->data[1][2] = html_print_input_text('email_from_name', $config['email_from_name'], '', 30, 100, true);
+
+$table_mail_conf->data[2][0] = __('SMTP Server');
+$table_mail_conf->data[2][1] = html_print_input_text('email_smtpServer', $config['email_smtpServer'], '', 30, 100, true);
+
+$table_mail_conf->data[3][0] = __('SMTP Port');
+$table_mail_conf->data[3][1] = html_print_input_text('email_smtpPort', $config['email_smtpPort'], '', 30, 100, true);
+
+$table_mail_conf->data[4][0] = __('Encryption');
+$table_mail_conf->data[4][1] = html_print_select($encryption, 'email_encryption', $config['email_encryption'], '', __('none'), 0, true);
+
+$table_mail_conf->data[5][0] = __('Email user');
+$table_mail_conf->data[5][1] = html_print_input_text('email_username', $config['email_username'], '', 30, 100, true);
+
+$table_mail_conf->data[6][0] = __('Email password');
+$table_mail_conf->data[6][1] = html_print_input_password('email_password', io_output_password($config['email_password']), '', 30, 100, true);
+
+$uniqid = uniqid();
+
+$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('$uniqid');", 'class="sub next"', true).ui_print_help_tip(__('Check the current saved email configuration by sending a test email to a desired account.'), true);
+
+print_email_test_modal_window($uniqid);
+
+html_print_input_hidden('update_config', 1);
+html_print_table($table_mail_conf);
+
+
+echo '</fieldset>';
+
+echo '<fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
+
+// Print the modal window for the summary of each alerts group
+function print_email_test_modal_window($id)
+{
+    // Email config table.
+    $table_mail_test = new stdClass();
+    $table_mail_test->width = '100%';
+    $table_mail_test->class = 'databox filters';
+    $table_mail_test->data = [];
+    $table_mail_test->style[0] = 'font-weight: bold';
+    $table_mail_test->colspan[1][0] = 2;
+
+    $table_mail_test->data[0][0] = __('Address').ui_print_help_tip(__('Email address to which the test email will be sent. Please check your inbox after email is sent.'), true);
+    $table_mail_test->data[0][1] = html_print_input_text('email_test_address', '', '', 40, 100, true);
+
+    $table_mail_test->data[1][0] = html_print_button(__('Send'), 'email_test', false, '', 'class="sub next"', true).'&nbsp&nbsp<span id="email_test_sent_message" style="display:none;">Email sent</span><span id="email_test_failure_message" style="display:none;">Email could not been sent</span>';
+
+    echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" style="display:none">'.html_print_table($table_mail_test, true).'</div>';
+}
 
 
 ?>
@@ -372,6 +463,40 @@ function show_timezone () {
                 $("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
             });
         }
+    });
+}
+
+function show_email_test(id) {
+    $('#email_test_sent_message').hide();
+    $('#email_test_failure_message').hide();
+
+    $("#email_test_"+id).dialog({
+        resizable: true,
+        draggable: true,
+        modal: true,
+        height: 175,
+        width: 450,
+        overlay: {
+            opacity: 0.5,
+            background: "black"
+        }
+    });
+}
+
+function perform_email_test () {
+    var test_address = $('#text-email_test_address').val();
+
+    $.ajax({
+        type: "POST",
+        url: "ajax.php",
+        data: "page=godmode/setup/setup_general&test_address="+test_address,
+        dataType: "html",
+        success: function(data) {
+            $('#email_test_sent_message').show();
+        },
+        error: function() {
+            $('#email_test_failure_message').show();
+        },
     });
 }
 
@@ -431,5 +556,7 @@ $(document).ready (function () {
         });
         }
     })
+
+    $('input#button-email_test').click(perform_email_test);
 });
 </script>

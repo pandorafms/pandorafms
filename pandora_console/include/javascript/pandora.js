@@ -1,3 +1,6 @@
+/* global $ */
+/* exported load_modal */
+
 var ENTERPRISE_DIR = "enterprise";
 
 /* Function to hide/unhide a specific Div id */
@@ -709,7 +712,7 @@ function post_process_select_init_unit(name, selected) {
     });
 
     if (select_or_text) {
-      $("#" + name + "_select option[value=" + selected + "]").attr(
+      $("#" + name + "_select option[value='" + selected + "']").attr(
         "selected",
         true
       );
@@ -725,7 +728,7 @@ function post_process_select_init_unit(name, selected) {
 
   $("#" + name + "_select").change(function() {
     var value = $("#" + name + "_select").val();
-    $("#" + name + "_select option[value=" + value + "]").attr(
+    $("#" + name + "_select option[value='" + value + "']").attr(
       "selected",
       true
     );
@@ -830,8 +833,9 @@ function post_process_select_events(name) {
  * This function initialize the values of the control
  *
  * @param name string with the name of the select for time
+ * @param allow_zero bool Allow the use of the value zero
  */
-function period_select_init(name) {
+function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").hide();
   $("#" + name + "_default").show();
@@ -846,7 +850,7 @@ function period_select_init(name) {
     } else {
       $("#" + name + "_select option:eq(1)").prop("selected", true);
     }
-  } else if ($("#text-" + name + "_text").val() == 0) {
+  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
     $("#" + name + "_manual").show();
     $("#" + name + "_default").hide();
@@ -1760,7 +1764,7 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number" || Number.isNaN(value)) {
+  if (typeof value !== "number" || isNaN(value)) {
     return value;
   }
 
@@ -1822,148 +1826,34 @@ function ellipsize(str, max, ellipse) {
   return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
 }
 
-/**
- * Display a dialog with an image
- *
- * @param {string} icon_name The name of the icon you will display
- * @param {string} icon_path The path to the icon
- * @param {Object} incoming_options All options
- * 		grayed: {bool} True to display the background black
- * 		title {string} 'Logo preview' by default
- */
-function logo_preview(icon_name, icon_path, incoming_options) {
-  // Get the options
-  options = {
-    grayed: false,
-    title: "Logo preview"
-  };
-  $.extend(options, incoming_options);
+function uniqId() {
+  var randomStr =
+    Math.random()
+      .toString(36)
+      .substring(2, 15) +
+    Math.random()
+      .toString(36)
+      .substring(2, 15);
 
-  if (icon_name == "") return;
-
-  $dialog = $("<div></div>");
-  $image = $('<img src="' + icon_path + '">');
-  $image.css("max-width", "500px").css("max-height", "500px");
-
-  try {
-    $dialog
-      .hide()
-      .html($image)
-      .dialog({
-        title: options.title,
-        resizable: true,
-        draggable: true,
-        modal: true,
-        dialogClass: options.grayed ? "dialog-grayed" : "",
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        minHeight: 1,
-        width: $image.width,
-        close: function() {
-          $dialog.empty().remove();
-        }
-      })
-      .show();
-  } catch (err) {
-    // console.log(err);
-  }
+  return randomStr;
 }
 
-// Advanced Form control.
-/* global $ */
-/* exported load_modal */
-function load_modal(settings) {
-  var AJAX_RUNNING = 0;
-  var data = new FormData();
-  if (settings.extradata) {
-    settings.extradata.forEach(function(item) {
-      if (item.value != undefined) data.append(item.name, item.value);
-    });
-  }
-  data.append("page", settings.onshow.page);
-  data.append("method", settings.onshow.method);
-
-  var width = 630;
-  if (settings.onshow.width) {
-    width = settings.onshow.width;
-  }
-
+/**
+ * Function for AJAX request.
+ *
+ * @param {string} id Id container append data.
+ * @param {json} settings Json with settings.
+ *
+ * @return {void}
+ */
+function ajaxRequest(id, settings) {
   $.ajax({
-    method: "post",
+    type: settings.type,
+    dataType: settings.html,
     url: settings.url,
-    processData: false,
-    contentType: false,
-    data: data,
+    data: settings.data,
     success: function(data) {
-      settings.target.html(data);
-      settings.target.dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        title: settings.modal.title,
-        width: width,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        buttons: [
-          {
-            class:
-              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-            text: settings.modal.cancel,
-            click: function() {
-              $(this).dialog("close");
-              settings.cleanup();
-            }
-          },
-          {
-            class:
-              "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-            text: settings.modal.ok,
-            click: function() {
-              if (AJAX_RUNNING) return;
-              AJAX_RUNNING = 1;
-              var formdata = new FormData();
-              if (settings.extradata) {
-                settings.extradata.forEach(function(item) {
-                  if (item.value != undefined)
-                    formdata.append(item.name, item.value);
-                });
-              }
-              formdata.append("page", settings.onsubmit.page);
-              formdata.append("method", settings.onsubmit.method);
-
-              $("#" + settings.form + " :input").each(function() {
-                if (this.type == "file") {
-                  if ($(this).prop("files")[0]) {
-                    formdata.append(this.name, $(this).prop("files")[0]);
-                  }
-                } else {
-                  formdata.append(this.name, $(this).val());
-                }
-              });
-
-              $.ajax({
-                method: "post",
-                url: settings.url,
-                processData: false,
-                contentType: false,
-                data: formdata,
-                success: function(data) {
-                  settings.ajax_callback(data);
-                  AJAX_RUNNING = 0;
-                }
-              });
-            }
-          }
-        ],
-        closeOnEscape: false,
-        open: function() {
-          $(".ui-dialog-titlebar-close").hide();
-        }
-      });
+      $("#" + id).append(data);
     }
   });
 }

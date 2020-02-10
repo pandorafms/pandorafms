@@ -35,7 +35,9 @@ enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
-enterprise_include_once('meta/include/functions_events_meta.php');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
 
 
 /**
@@ -622,7 +624,37 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
         break;
     }
 
-    return db_process_sql($update_sql);
+    $result = db_process_sql($update_sql);
+
+    if ($result) {
+        switch ($status) {
+            case EVENT_STATUS_NEW:
+                $status_string = 'New';
+            break;
+
+            case EVENT_STATUS_VALIDATED:
+                $status_string = 'Validated';
+            break;
+
+            case EVENT_STATUS_INPROCESS:
+                $status_string = 'In process';
+            break;
+
+            default:
+                $status_string = '';
+            break;
+        }
+
+        events_comment(
+            $id_evento,
+            '',
+            'Change status to '.$status_string,
+            is_metaconsole() ? true : false,
+            $history
+        );
+    }
+
+    return $result;
 }
 
 
@@ -749,43 +781,78 @@ function events_get_all(
     }
 
     if (isset($filter['severity']) && $filter['severity'] > 0) {
-        switch ($filter['severity']) {
-            case EVENT_CRIT_MAINTENANCE:
-            case EVENT_CRIT_INFORMATIONAL:
-            case EVENT_CRIT_NORMAL:
-            case EVENT_CRIT_MINOR:
-            case EVENT_CRIT_WARNING:
-            case EVENT_CRIT_MAJOR:
-            case EVENT_CRIT_CRITICAL:
-            default:
-                $sql_filters[] = sprintf(
-                    ' AND criticity = %d ',
-                    $filter['severity']
-                );
-            break;
+        if (is_array($filter['severity'])) {
+            if (!in_array(-1, $filter['severity'])) {
+                $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
+                if ($not_normal !== false) {
+                    unset($filter['severity'][$not_normal]);
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                } else {
+                    $critical_warning = array_search(EVENT_CRIT_WARNING_OR_CRITICAL, $filter['severity']);
+                    if ($critical_warning !== false) {
+                        unset($filter['severity'][$critical_warning]);
+                        $filter['severity'][] = EVENT_CRIT_WARNING;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_WARNING_OR_CRITICAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_WARNING,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                    $critical_normal = array_search(EVENT_CRIT_OR_NORMAL, $filter['severity']);
+                    if ($critical_normal !== false) {
+                        unset($filter['severity'][$critical_normal]);
+                        $filter['severity'][] = EVENT_CRIT_NORMAL;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_NOT_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND criticity != %d',
-                    EVENT_CRIT_NORMAL
-                );
-            break;
+                    if (!empty($filter['severity'])) {
+                        $filter['severity'] = implode(',', $filter['severity']);
+                        $sql_filters[] = sprintf(
+                            ' AND criticity IN (%s)',
+                            $filter['severity']
+                        );
+                    }
+                }
+            }
+        } else {
+            switch ($filter['severity']) {
+                case EVENT_CRIT_MAINTENANCE:
+                case EVENT_CRIT_INFORMATIONAL:
+                case EVENT_CRIT_NORMAL:
+                case EVENT_CRIT_MINOR:
+                case EVENT_CRIT_WARNING:
+                case EVENT_CRIT_MAJOR:
+                case EVENT_CRIT_CRITICAL:
+                default:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity = %d ',
+                        $filter['severity']
+                    );
+                break;
 
-            case EVENT_CRIT_OR_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_NORMAL,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                case EVENT_CRIT_WARNING_OR_CRITICAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_WARNING,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+
+                case EVENT_CRIT_NOT_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                break;
+
+                case EVENT_CRIT_OR_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_NORMAL,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+            }
         }
     }
 
@@ -878,9 +945,11 @@ function events_get_all(
     $agent_join_filters = [];
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
+    $conditionMetaconsole = '';
     if (is_metaconsole()) {
         $tagente_table = 'tmetaconsole_agent';
         $tagente_field = 'id_tagente';
+        $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
     }
 
     // Agent alias.
@@ -922,6 +991,16 @@ function events_get_all(
             ' AND lower(te.id_extra) like lower("%%%s%%") ',
             $filter['id_extra']
         );
+    }
+
+    if (is_metaconsole()) {
+        // Id source event.
+        if (!empty($filter['id_source_event'])) {
+            $sql_filters[] = sprintf(
+                ' AND lower(te.id_source_event) like lower("%%%s%%") ',
+                $filter['id_source_event']
+            );
+        }
     }
 
     // User comment.
@@ -1040,6 +1119,8 @@ function events_get_all(
         }
     }
 
+    $user_admin_group_all = ($user_is_admin && $groups == 0) ? '' : 'tasg.';
+
     // TAgs ACLS.
     if (check_acl($config['id_user'], 0, 'ER')) {
         $tags_acls_condition = tags_get_acl_tags(
@@ -1064,7 +1145,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1090,7 +1171,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1116,7 +1197,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1214,20 +1295,23 @@ function events_get_all(
 
     $server_join = '';
     if (is_metaconsole()) {
-        $server_join = ' INNER JOIN tmetaconsole_setup ts
-            ON ts.id = te.server_id AND ts.server_name = ta.server_name';
+        $server_join = ' LEFT JOIN tmetaconsole_setup ts
+            ON ts.id = te.server_id';
         if (!empty($filter['server_id'])) {
             $server_join = sprintf(
                 ' INNER JOIN tmetaconsole_setup ts
-                  ON ts.id = te.server_id AND ts.server_name = ta.server_name AND ts.id= %d',
+                  ON ts.id = te.server_id AND ts.id= %d',
                 $filter['server_id']
             );
         }
     }
 
     // Secondary groups.
-    db_process_sql('SET group_concat_max_len = 9999999');
-    $event_lj = events_get_secondary_groups_left_join($table);
+    $event_lj = '';
+    if (!$user_is_admin || ($user_is_admin && isset($groups) && $groups > 0)) {
+        db_process_sql('SET group_concat_max_len = 9999999');
+        $event_lj = events_get_secondary_groups_left_join($table);
+    }
 
     $group_selects = '';
     if ($group_by != '') {
@@ -1243,6 +1327,11 @@ function events_get_all(
                 unset($fields[$idx]);
             }
         }
+    } else {
+        $idx = array_search('te.user_comment', $fields);
+        if ($idx !== false) {
+            $fields[$idx] = 'te.user_comment AS comments';
+        }
     }
 
     $sql = sprintf(
@@ -1253,6 +1342,7 @@ function events_get_all(
          %s
          %s JOIN %s ta
            ON ta.%s = te.id_agente
+           %s
            %s
          %s JOIN tgrupo tg
            ON te.id_grupo = tg.id_grupo
@@ -1273,6 +1363,7 @@ function events_get_all(
         $tagente_join,
         $tagente_table,
         $tagente_field,
+        $conditionMetaconsole,
         join(' ', $agent_join_filters),
         $tgrupo_join,
         join(' ', $tgrupo_join_filters),
@@ -1487,6 +1578,13 @@ function events_get_events_grouped(
         $groupby_extra = ', server_id';
     } else {
         $groupby_extra = '';
+    }
+
+    if (is_metaconsole()) {
+            $id_source_event = get_parameter('id_source_event');
+        if ($id_source_event != '') {
+            $sql_post .= "AND id_source_event = $id_source_event";
+        }
     }
 
     db_process_sql('SET group_concat_max_len = 9999999');
@@ -2735,6 +2833,10 @@ function events_get_agent(
         $date = time_w_fixed_tz($date);
     }
 
+    if (is_metaconsole() && $events_group === false) {
+        $id_server = true;
+    }
+
     if (empty($date)) {
         $date = get_system_time();
     }
@@ -3165,7 +3267,7 @@ function events_get_event_filter_select($manage=true)
     } else {
         $user_groups = users_get_groups(
             $config['id_user'],
-            'EW',
+            'ER',
             users_can_manage_group_all(),
             true
         );
@@ -3545,7 +3647,7 @@ function events_get_response_target(
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent has not an IP, display N/A.
-        if ($ip === false) {
+        if ($ip === false || $ip === '') {
             $ip = __('N/A');
         }
 
@@ -3883,7 +3985,7 @@ function events_page_details($event, $server='')
     global $config;
 
     // If server is provided, get the hash parameters.
-    if (!empty($server) && defined('METACONSOLE')) {
+    if (!empty($server) && is_metaconsole()) {
         $hashdata = metaconsole_get_server_hashdata($server);
         $hashstring = '&amp;loginhash=auto&loginhash_data='.$hashdata.'&loginhash_user='.str_rot13($config['id_user']);
         $serverstring = $server['server_url'].'/';
@@ -3972,7 +4074,7 @@ function events_page_details($event, $server='')
 
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
-        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto']);
+        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
         $table_details->data[] = $data;
 
         $data = [];
@@ -4079,7 +4181,6 @@ function events_page_details($event, $server='')
                 'type'    => $graph_type,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id_agente_modulo'],
-                'label'   => base64_encode($module['nombre']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -4185,7 +4286,7 @@ function events_page_details($event, $server='')
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
-    if (!empty($server) && defined('METACONSOLE')) {
+    if (!empty($server) && is_metaconsole()) {
         metaconsole_restore_db();
     }
 
@@ -4362,6 +4463,15 @@ function events_page_general($event)
 
     global $group_rep;
 
+    $secondary_groups = '';
+    if (isset($event['id_agente']) && $event['id_agente'] > 0) {
+        enterprise_include_once('include/functions_agents.php');
+        $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
+        if (!empty($secondary_groups_selected)) {
+            $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
+        }
+    }
+
     // General.
     $table_general = new stdClass;
     $table_general->cellspacing = 0;
@@ -4378,7 +4488,7 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Event name');
-    $data[1] = events_display_name($event['evento']);
+    $data[1] = '<span style="word-break: break-word;">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
 
     $data = [];
@@ -4488,6 +4598,14 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
+    if (!empty($secondary_groups)) {
+        $data = [];
+        $data[0] = __('Secondary groups');
+        $data[1] = $secondary_groups;
+
+        $table_general->data[] = $data;
+    }
+
     $data = [];
     $data[0] = __('Contact');
     $data[1] = '';
@@ -4555,116 +4673,98 @@ function events_page_comments($event, $ajax=false)
     // Comments.
     global $config;
 
-    $comments = '';
-
-    $comments = $event['user_comment'];
-    if (isset($event['comments'])) {
-        $comments = explode('<br>', $event['comments']);
-    }
-
     $table_comments = new stdClass;
     $table_comments->width = '100%';
     $table_comments->data = [];
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
-    $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+    $comments = ($event['user_comment'] ?? '');
 
-    if (is_array($comments)) {
-        foreach ($comments as $comm) {
-            if (empty($comm)) {
-                continue;
-            }
-
-            $comments_array[] = json_decode(io_safe_output($comm), true);
-        }
+    if (empty($comments)) {
+        $table_comments->style[0] = 'text-align:center;';
+        $table_comments->colspan[0][0] = 2;
+        $data = [];
+        $data[0] = __('There are no comments');
+        $table_comments->data[] = $data;
     } else {
-        // If comments are not stored in json, the format is old.
-        $comments_array = json_decode(io_safe_output($comments), true);
-    }
-
-    foreach ($comments_array as $comm) {
-        // Show the comments more recent first.
-        if (is_array($comm)) {
-            $comm = array_reverse($comm);
-        }
-
-        if (empty($comm)) {
-            $comments_format = 'old';
-        } else {
-            $comments_format = 'new';
-        }
-
-        switch ($comments_format) {
-            case 'new':
+        if (is_array($comments)) {
+            foreach ($comments as $comm) {
                 if (empty($comm)) {
-                    $table_comments->style[0] = 'text-align:center;';
-                    $table_comments->colspan[0][0] = 2;
-                    $data = [];
-                    $data[0] = __('There are no comments');
-                    $table_comments->data[] = $data;
+                    continue;
                 }
 
-                if (isset($comm) === true
-                    && is_array($comm) === true
-                ) {
+                $comments_array[] = io_safe_output(json_decode($comm, true));
+            }
+        } else {
+            $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+            // If comments are not stored in json, the format is old.
+            $comments_array[] = io_safe_output(json_decode($comments, true));
+        }
+
+        foreach ($comments_array as $comm) {
+            // Show the comments more recent first.
+            if (is_array($comm)) {
+                $comm = array_reverse($comm);
+            }
+
+            if (empty($comm)) {
+                $comments_format = 'old';
+            } else {
+                $comments_format = 'new';
+            }
+
+            switch ($comments_format) {
+                case 'new':
                     foreach ($comm as $c) {
                         $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
                         $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                        $data[1] = $c['comment'];
+                        $data[1] = '<p style="word-break: break-word;">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
                         $table_comments->data[] = $data;
                     }
-                }
-            break;
+                break;
 
-            case 'old':
-                $comm = explode('<br>', $comments);
+                case 'old':
+                    $comm = explode('<br>', $comments);
 
-                // Split comments and put in table.
-                $col = 0;
-                $data = [];
-
-                foreach ($comm as $c) {
-                    switch ($col) {
-                        case 0:
-                            $row_text = preg_replace('/\s*--\s*/', '', $c);
-                            $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
-                            $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
-                            $row_text = preg_replace('/[\[|\]]/', '', $row_text);
-                        break;
-
-                        case 1:
-                            $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
-                        break;
-
-                        default:
-                            // Ignore.
-                        break;
-                    }
-
-                    $data[$col] = $row_text;
-
-                    $col++;
-
-                    if ($col == 2) {
-                        $col = 0;
-                        $table_comments->data[] = $data;
-                        $data = [];
-                    }
-                }
-
-                if (count($comm) == 1 && $comm[0] == '') {
-                    $table_comments->style[0] = 'text-align:center;';
-                    $table_comments->colspan[0][0] = 2;
+                    // Split comments and put in table.
+                    $col = 0;
                     $data = [];
-                    $data[0] = __('There are no comments');
-                    $table_comments->data[] = $data;
-                }
-            break;
 
-            default:
-                // Ignore.
-            break;
+                    foreach ($comm as $c) {
+                        switch ($col) {
+                            case 0:
+                                $row_text = preg_replace('/\s*--\s*/', '', $c);
+                                $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
+                                $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
+                                $row_text = preg_replace('/[\[|\]]/', '', $row_text);
+                            break;
+
+                            case 1:
+                                $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
+                            break;
+
+                            default:
+                                // Ignore.
+                            break;
+                        }
+
+                        $data[$col] = $row_text;
+
+                        $col++;
+
+                        if ($col == 2) {
+                            $col = 0;
+                            $table_comments->data[] = $data;
+                            $data = [];
+                        }
+                    }
+                break;
+
+                default:
+                    // Ignore.
+                break;
+            }
         }
     }
 
@@ -6633,4 +6733,298 @@ function events_get_secondary_groups_left_join($table)
 
     return 'LEFT JOIN tmetaconsole_agent_secondary_group tasg
 		ON te.id_agente = tasg.id_tagente AND te.server_id = tasg.id_tmetaconsole_setup';
+}
+
+
+/**
+ * Replace macros in any string given an event id.
+ * If server_id > 0, it's a metaconsole query.
+ *
+ * @param integer $event_id Event identifier.
+ * @param integer $value    String value in which we want to apply macros.
+ *
+ * @return string The response text with the macros applied.
+ */
+function events_get_field_value_by_event_id(
+    int $event_id,
+    $value
+) {
+    global $config;
+
+    $meta = false;
+    $event = db_get_row('tevento', 'id_evento', $event_id);
+
+    // Replace each macro.
+    if (strpos($value, '_agent_address_') !== false) {
+        if ($meta) {
+            $agente_table_name = 'tmetaconsole_agent';
+            $filter = [
+                'id_tagente'            => $event['id_agente'],
+                'id_tmetaconsole_setup' => $server_id,
+            ];
+        } else {
+            $agente_table_name = 'tagente';
+            $filter = ['id_agente' => $event['id_agente']];
+        }
+
+        $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
+        // If agent does not have an IP, display N/A.
+        if ($ip === false) {
+            $ip = __('N/A');
+        }
+
+        $value = str_replace('_agent_address_', $ip, $value);
+    }
+
+    if (strpos($value, '_agent_id_') !== false) {
+        $value = str_replace('_agent_id_', $event['id_agente'], $value);
+    }
+
+    if (strpos($value, '_module_address_') !== false) {
+        if ($event['id_agentmodule'] != 0) {
+            if ($meta) {
+                $server = metaconsole_get_connection_by_id($server_id);
+                metaconsole_connect($server);
+            }
+
+            $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
+            if (empty($module['ip_target'])) {
+                $module['ip_target'] = __('N/A');
+            }
+
+            $value = str_replace('_module_address_', $module['ip_target'], $value);
+            if (empty($module['nombre'])) {
+                $module['nombre'] = __('N/A');
+            }
+
+            if ($meta) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $value = str_replace('_module_address_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_module_name_') !== false) {
+        if ($event['id_agentmodule'] != 0) {
+            if ($meta) {
+                $server = metaconsole_get_connection_by_id($server_id);
+                metaconsole_connect($server);
+            }
+
+            $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
+            if (empty($module['ip_target'])) {
+                $module['ip_target'] = __('N/A');
+            }
+
+            $value = str_replace(
+                '_module_name_',
+                io_safe_output($module['nombre']),
+                $value
+            );
+
+            if ($meta) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $value = str_replace('_module_name_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_event_id_') !== false) {
+        $value = str_replace('_event_id_', $event['id_evento'], $value);
+    }
+
+    if (strpos($value, '_user_id_') !== false) {
+        if (!empty($event['id_usuario'])) {
+            $value = str_replace('_user_id_', $event['id_usuario'], $value);
+        } else {
+            $value = str_replace('_user_id_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_group_id_') !== false) {
+        $value = str_replace('_group_id_', $event['id_grupo'], $value);
+    }
+
+    if (strpos($value, '_group_name_') !== false) {
+        $value = str_replace(
+            '_group_name_',
+            groups_get_name($event['id_grupo'], true),
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_utimestamp_') !== false) {
+        $value = str_replace(
+            '_event_utimestamp_',
+            $event['utimestamp'],
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_date_') !== false) {
+        $value = str_replace(
+            '_event_date_',
+            date($config['date_format'], $event['utimestamp']),
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_text_') !== false) {
+        $value = str_replace(
+            '_event_text_',
+            events_display_name($event['evento']),
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_type_') !== false) {
+        $value = str_replace(
+            '_event_type_',
+            events_print_type_description($event['event_type'], true),
+            $value
+        );
+    }
+
+    if (strpos($value, '_alert_id_') !== false) {
+        $value = str_replace(
+            '_alert_id_',
+            empty($event['is_alert_am']) ? __('N/A') : $event['is_alert_am'],
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_severity_id_') !== false) {
+        $value = str_replace('_event_severity_id_', $event['criticity'], $value);
+    }
+
+    if (strpos($value, '_event_severity_text_') !== false) {
+        $value = str_replace(
+            '_event_severity_text_',
+            get_priority_name($event['criticity']),
+            $value
+        );
+    }
+
+    if (strpos($value, '_module_id_') !== false) {
+        $value = str_replace('_module_id_', $event['id_agentmodule'], $value);
+    }
+
+    if (strpos($value, '_event_tags_') !== false) {
+        $value = str_replace('_event_tags_', $event['tags'], $value);
+    }
+
+    if (strpos($value, '_event_extra_id_') !== false) {
+        if (empty($event['id_extra'])) {
+            $value = str_replace('_event_extra_id_', __('N/A'), $value);
+        } else {
+            $value = str_replace('_event_extra_id_', $event['id_extra'], $value);
+        }
+    }
+
+    if (strpos($value, '_event_source_') !== false) {
+        $value = str_replace('_event_source_', $event['source'], $value);
+    }
+
+    if (strpos($value, '_event_instruction_') !== false) {
+        $value = str_replace(
+            '_event_instruction_',
+            events_display_instructions($event['event_type'], $event, false),
+            $value
+        );
+    }
+
+    if (strpos($value, '_owner_user_') !== false) {
+        if (empty($event['owner_user'])) {
+            $value = str_replace('_owner_user_', __('N/A'), $value);
+        } else {
+            $value = str_replace('_owner_user_', $event['owner_user'], $value);
+        }
+    }
+
+    if (strpos($value, '_event_status_') !== false) {
+        $event_st = events_display_status($event['estado']);
+        $value = str_replace('_event_status_', $event_st['title'], $value);
+    }
+
+    if (strpos($value, '_group_custom_id_') !== false) {
+        $group_custom_id = db_get_value_sql(
+            sprintf(
+                'SELECT custom_id FROM tgrupo WHERE id_grupo=%s',
+                $event['id_grupo']
+            )
+        );
+        $event_st = events_display_status($event['estado']);
+        $value = str_replace('_group_custom_id_', $group_custom_id, $value);
+    }
+
+    // Parse the event custom data.
+    if (!empty($event['custom_data'])) {
+        $custom_data = json_decode(base64_decode($event['custom_data']));
+        foreach ($custom_data as $key => $val) {
+            $value = str_replace('_customdata_'.$key.'_', $val, $value);
+        }
+    }
+
+    // This will replace the macro with the current logged user.
+    if (strpos($value, '_current_user_') !== false) {
+        $value = str_replace('_current_user_', $config['id_user'], $value);
+    }
+
+    return $value;
+
+}
+
+
+function events_get_instructions($event)
+{
+    if (!is_array($event)) {
+        return '';
+    }
+
+    switch ($event['event_type']) {
+        case 'going_unknown':
+            if ($event['unknown_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']));
+            }
+        break;
+
+        case 'going_up_warning':
+        case 'going_down_warning':
+            if ($event['warning_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['warning_instructions']));
+            }
+        break;
+
+        case 'going_up_critical':
+        case 'going_down_critical':
+            if ($event['critical_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['critical_instructions']));
+            }
+        break;
+    }
+
+    if (!isset($value)) {
+        return '';
+    }
+
+    $max_text_length = 300;
+    $over_text = io_safe_output($value);
+    if (strlen($over_text) > ($max_text_length + 3)) {
+        $over_text = substr($over_text, 0, $max_text_length).'...';
+    }
+
+    $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
+    $output .= ' style="display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left">';
+    $output .= $value;
+    $output .= '</div>';
+    $output .= '<center>';
+    $output .= '<span id="value_event_'.$event['id_evento'].'" style="white-space: nowrap;">';
+    $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
+    $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
+    $output .= html_print_image('images/default_list.png', true, ['title' => $over_text]).'</a></span>';
+    $output .= '</center>';
+
+    return $output;
 }

@@ -18,7 +18,8 @@ export type StaticGraphProps = {
   statusImageSrc: string | null; // URL?
   lastValue: string | null;
 } & ItemProps &
-  (WithModuleProps | LinkedVisualConsoleProps);
+  WithModuleProps &
+  LinkedVisualConsoleProps;
 
 /**
  * Extract a valid enum value from a raw unknown value.
@@ -70,7 +71,8 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
     const element = document.createElement("div");
     element.className = "static-graph";
-    element.style.background = `url(${imgSrc}) no-repeat`;
+    element.style.backgroundImage = `url(${imgSrc})`;
+    element.style.backgroundRepeat = "no-repeat";
     element.style.backgroundSize = "contain";
     element.style.backgroundPosition = "center";
 
@@ -85,5 +87,14 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     }
 
     return element;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
+    element.style.backgroundImage = `url(${imgSrc})`;
   }
 }

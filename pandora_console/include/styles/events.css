@@ -30,7 +30,6 @@ div.mini-criticity.h100p {
 form.flex-row div.filter_input,
 form.flex-row ul {
   width: 30%;
-  min-width: 300px;
   display: flex;
   flex-direction: row;
   align-items: baseline;
@@ -47,12 +46,13 @@ div.filter_input_little {
   flex-direction: row;
   align-items: baseline;
   flex-wrap: nowrap;
-  margin: 0.5em 0 0.5em 1em;
+  margin: 0.5em 0 0.5em 0em;
 }
 
 form.flex-row div.filter_input.large {
   flex: 1;
-  min-width: 470px;
+  min-width: 700px;
+  max-width: 100%;
 }
 
 div.filter_input > label,
@@ -120,6 +120,8 @@ table.dataTable tbody td {
 
 .filter_input {
   align-items: center;
+  min-width: 400px;
+  max-width: 450px;
 }
 
 .filter_input_little > select,
@@ -289,7 +291,7 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
   border-bottom: 1px solid #ccc;
 }
 li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-active {
-  border-bottom: 1px solid #fff;
+  border-bottom: 2px solid #fff;
 }
 
 tr.group {

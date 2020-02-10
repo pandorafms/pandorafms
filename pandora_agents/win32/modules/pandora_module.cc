@@ -1422,48 +1422,48 @@ Pandora_Module::evaluatePreconditions () {
 							buffer[read] = '\0';
 							output += (char *) buffer;
 					}
-				
-				try {
-					double_output = Pandora_Strutils::strtodouble (output);
-				} catch (Pandora_Strutils::Invalid_Conversion e) {
-					double_output = 0;
+
+					try {
+						double_output = Pandora_Strutils::strtodouble (output);
+					} catch (Pandora_Strutils::Invalid_Conversion e) {
+						double_output = 0;
+					}
+		
+					if (dwRet == WAIT_OBJECT_0) { 
+						break;
+					} else if(this->getTimeout() < GetTickCount() - tickbase) {
+						/* STILL_ACTIVE */
+						TerminateProcess(pi.hThread, STILL_ACTIVE);
+						pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
+						break;
+					}
 				}
 	
-				if (dwRet == WAIT_OBJECT_0) { 
-					break;
-				} else if(this->getTimeout() < GetTickCount() - tickbase) {
-					/* STILL_ACTIVE */
-					TerminateProcess(pi.hThread, STILL_ACTIVE);
-					pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
-					break;
+				GetExitCodeProcess (pi.hProcess, &retval);
+		
+				if (retval != 0) {
+					if (! TerminateJobObject (job, 0)) {
+						pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
+						GetLastError ());
+					}
+					if (retval != STILL_ACTIVE) {
+						pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
+						this->module_name.c_str (), retval);
+					}
+					/* Close job, process and thread handles. */
+					CloseHandle (job);
+					CloseHandle (pi.hProcess);
+					CloseHandle (pi.hThread);
+					CloseHandle (new_stdout);
+					CloseHandle (out_read);
+					return 0;
 				}
-			}
-	
-			GetExitCodeProcess (pi.hProcess, &retval);
-	
-			if (retval != 0) {
-				if (! TerminateJobObject (job, 0)) {
-					pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
-					GetLastError ());
-				}
-	            if (retval != STILL_ACTIVE) {
-					pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
-	                this->module_name.c_str (), retval);
-	            }
+			
 				/* Close job, process and thread handles. */
 				CloseHandle (job);
 				CloseHandle (pi.hProcess);
 				CloseHandle (pi.hThread);
-				CloseHandle (new_stdout);
-				CloseHandle (out_read);
-				return 0;
 			}
-		
-			/* Close job, process and thread handles. */
-			CloseHandle (job);
-			CloseHandle (pi.hProcess);
-			CloseHandle (pi.hThread);
-		}
 
 			CloseHandle (new_stdout);
 			CloseHandle (out_read);
@@ -1693,4 +1693,32 @@ Pandora_Module::getAsync () {
 	return this->async;
 }
 					
+/**
+ * Get current exections
+ */
+long
+Pandora_Module::getExecutions () {
+	return this->executions;
+}
 
+/**
+ * Set current execution (global) used for brokers.
+ */
+void
+Pandora_Module::setExecutions (long executions) {
+	this->executions = executions;
+}
+
+/** 
+ * Checks if the module has intensive conditions.
+ * 
+ * @return true if the module's intensive condition list is not empty, false if it is.
+ */
+bool
+Pandora_Module::isIntensive () {
+	if (this->intensive_condition_list == NULL || this->intensive_condition_list->size () <= 0) {
+		return false;
+	}
+
+	return true;
+}

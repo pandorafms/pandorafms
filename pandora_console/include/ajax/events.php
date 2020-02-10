@@ -84,7 +84,7 @@ $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
 $get_comments = get_parameter('get_comments', 0);
 $get_events_fired = (bool) get_parameter('get_events_fired');
-
+$get_id_source_event = get_parameter('get_id_source_event');
 if ($get_comments) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
@@ -128,7 +128,7 @@ if ($get_comments) {
         );
 
         if ($events !== false) {
-            $event = $events[0];
+            $event = $events;
         }
     }
 
@@ -231,7 +231,7 @@ if ($save_event_filter) {
     $values['id_name'] = get_parameter('id_name');
     $values['id_group'] = get_parameter('id_group');
     $values['event_type'] = get_parameter('event_type');
-    $values['severity'] = get_parameter('severity');
+    $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
     $values['text_agent'] = get_parameter('text_agent');
@@ -253,7 +253,7 @@ if ($save_event_filter) {
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
-
+    $values['id_source_event'] = get_parameter('id_source_event');
     $exists = (bool) db_get_value_filter(
         'id_filter',
         'tevent_filter',
@@ -278,7 +278,7 @@ if ($update_event_filter) {
     $id = get_parameter('id');
     $values['id_group'] = get_parameter('id_group');
     $values['event_type'] = get_parameter('event_type');
-    $values['severity'] = get_parameter('severity');
+    $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
     $values['text_agent'] = get_parameter('text_agent');
@@ -300,6 +300,7 @@ if ($update_event_filter) {
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
+    $values['id_source_event'] = get_parameter('id_source_event');
 
     if (io_safe_output($values['tag_with']) == '["0"]') {
         $values['tag_with'] = '[]';
@@ -376,8 +377,9 @@ if ($load_filter_modal) {
     }
 
     $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    if (!is_metaconsole()) {
-        $table->style[0] = 'width: 50%; width:50%;';
+    $filter_id_width = '200px';
+    if (is_metaconsole()) {
+        $filter_id_width = '150px';
     }
 
     $data = [];
@@ -390,7 +392,12 @@ if ($load_filter_modal) {
         '',
         __('None'),
         0,
-        true
+        true,
+        false,
+        true,
+        '',
+        false,
+        'margin-left:5px; width:'.$filter_id_width.';'
     );
     $data[1] = html_print_submit_button(
         __('Load filter'),
@@ -411,10 +418,11 @@ function show_filter() {
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 450
     });
 }
-
+//aki
 function load_form_filter() {
     jQuery.post (
         "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -431,8 +439,10 @@ function load_form_filter() {
                     $("#id_group").val(val);
                 if (i == 'event_type')
                     $("#event_type").val(val);
-                if (i == 'severity')
-                    $("#severity").val(val);
+                if (i == 'severity') {
+                    const multiple = val.split(",");
+                    $("#severity").val(multiple);
+                }
                 if (i == 'status')
                     $("#status").val(val);
                 if (i == 'search')
@@ -465,6 +475,8 @@ function load_form_filter() {
                     $("#text-id_extra").val(val);
                 if (i == 'user_comment')
                     $("#text-user_comment").val(val);
+                if (i == 'id_source_event')
+                    $("#text-id_source_event").val(val);
             });
             reorder_tags_inputs();
             // Update the info with the loaded filter
@@ -685,7 +697,8 @@ function save_new_filter() {
             "date_to": $("#text-date_to").val(),
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
-            "user_comment": $("#text-user_comment").val()
+            "user_comment": $("#text-user_comment").val(),
+            "id_source_event": $("#text-id_source_event").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -754,7 +767,9 @@ function save_update_filter() {
         "date_to": $("#text-date_to").val(),
         "source": $("#text-source").val(),
         "id_extra": $("#text-id_extra").val(),
-        "user_comment": $("#text-user_comment").val()
+        "user_comment": $("#text-user_comment").val(),
+        "id_source_event": $("#text-id_source_event").val()
+
         },
         function (data) {
             $(".info_box").hide();
@@ -908,6 +923,8 @@ if ($perform_event_response) {
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
+    $command_timeout = $event_response['command_timeout'];
+
     if (enterprise_installed()) {
         if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
             $commandExclusions = [
@@ -939,7 +956,11 @@ if ($perform_event_response) {
                     break;
                 }
 
-                system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' 90 '.io_safe_output($command).' 2>&1"', $ret_val);
+                if (empty($server_data['port'])) {
+                    system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                } else {
+                    system('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                }
             }
         } else {
             switch (PHP_OS) {
@@ -956,7 +977,7 @@ if ($perform_event_response) {
                 break;
             }
 
-            system($timeout_bin.' 90 '.io_safe_output($command).' 2>&1');
+            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
         }
     } else {
         switch (PHP_OS) {
@@ -973,7 +994,13 @@ if ($perform_event_response) {
             break;
         }
 
-        system($timeout_bin.' 90 '.io_safe_output($command).' 2>&1');
+            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
+    }
+
+    if ($ret_val != 0) {
+        echo "<div style='text-align:left'>";
+        echo __('Error executing response');
+        echo '</div><br>';
     }
 
     return;
@@ -1283,7 +1310,6 @@ if ($get_extended_event) {
     // If metaconsole switch to node to get details and custom fields.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
-        metaconsole_connect($server);
     } else {
         $server = '';
     }
@@ -1294,11 +1320,8 @@ if ($get_extended_event) {
         $related = events_page_related($event, $server);
     }
 
-    // Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct
-    // node connection was lost.
     if ($meta) {
-        $server = metaconsole_get_connection_by_id($server_id);
-            metaconsole_connect($server);
+        metaconsole_connect($server);
     }
 
     $custom_fields = events_page_custom_fields($event);
@@ -1562,7 +1585,7 @@ if ($get_list_events_agents) {
     $id_agent = get_parameter('id_agent');
     $server_id = get_parameter('server_id');
     $event_type = get_parameter('event_type');
-    $severity = get_parameter('severity');
+    $severity = implode(',', get_parameter('severity', -1));
     $status = get_parameter('status');
     $search = get_parameter('search');
     $id_agent_module = get_parameter('id_agent_module');
@@ -1574,7 +1597,6 @@ if ($get_list_events_agents) {
     $date_from = get_parameter('date_from');
     $date_to = get_parameter('date_to');
     $id_user = $config['id_user'];
-    $server_id = get_parameter('server_id');
 
     $returned_sql = events_sql_events_grouped_agents(
         $id_agent,
@@ -1810,4 +1832,3 @@ if ($get_events_fired) {
 
     echo io_json_mb_encode($return);
 }
-

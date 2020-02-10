@@ -304,7 +304,7 @@ if (!empty($result)) {
     } else if ($filter_performed) {
         echo $filter_form;
     } else {
-        include $config['homedir'].'/general/firts_task/tags.php';
+        include $config['homedir'].'/general/first_task/tags.php';
         return;
     }
 }

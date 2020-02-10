@@ -153,6 +153,7 @@ $checks_in_ok_status = true;
 $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
+$uncompressed_module = true;
 
 switch ($action) {
     case 'new':
@@ -162,7 +163,6 @@ switch ($action) {
         $description = null;
         $sql = null;
         $show_in_same_row = 0;
-        $show_in_landscape = 0;
         $hide_notinit_agents = 0;
         $priority_mode = REPORT_PRIORITY_MODE_OK;
         $failover_mode = 0;
@@ -170,6 +170,8 @@ switch ($action) {
         $server_name = '';
         $server_id = 0;
         $dyn_height = 230;
+        $landscape = false;
+        $pagebreak = false;
     break;
 
     case 'save':
@@ -189,12 +191,8 @@ switch ($action) {
             case 'top_n':
             case 'exception':
             case 'general':
-            case 'network_interfaces_report':
             case 'availability':
-            case 'event_report_log':
-            case 'increment':
             case 'availability_graph':
-            case 'agent_module':
                 $get_data_editor = true;
             break;
 
@@ -207,7 +205,6 @@ switch ($action) {
                 $description = null;
                 $sql = null;
                 $show_in_same_row = 0;
-                $show_in_landscape = 0;
                 $hide_notinit_agents = 0;
                 $server_name = '';
                 $server_id = 0;
@@ -232,12 +229,20 @@ switch ($action) {
 
             $style = json_decode(io_safe_output($item['style']), true);
 
+            $name_from_template = $style['name_label'];
+
             $show_in_same_row = $style['show_in_same_row'];
-            $show_in_landscape = $style['show_in_landscape'];
             $hide_notinit_agents = $style['hide_notinit_agents'];
             $dyn_height = $style['dyn_height'];
             $type = $item['type'];
-            $name = $item['name'];
+            $name = $style['name_label'];
+
+            if ($name === null || $name === '') {
+                $name = $item['name'];
+            }
+
+            $landscape = $item['landscape'];
+            $pagebreak = $item['pagebreak'];
 
             switch ($type) {
                 case 'event_report_log':
@@ -427,6 +432,7 @@ switch ($action) {
                     );
                     $idAgentModule = $item['id_agent_module'];
                     $period = $item['period'];
+                    $uncompressed_module = $item['uncompressed_module'];
                 break;
 
                 case 'historical_data':
@@ -475,50 +481,6 @@ switch ($action) {
                     $header = $item['header_definition'];
                     $field = $item['column_separator'];
                     $line = $item['line_separator'];
-                    $period = $item['period'];
-                break;
-
-                case 'TTRT':
-                    $description = $item['description'];
-                    $idAgentModule = $item['id_agent_module'];
-                    $idAgent = db_get_value_filter(
-                        'id_agente',
-                        'tagente_modulo',
-                        ['id_agente_modulo' => $idAgentModule]
-                    );
-                    $period = $item['period'];
-                break;
-
-                case 'TTO':
-                    $description = $item['description'];
-                    $idAgentModule = $item['id_agent_module'];
-                    $idAgent = db_get_value_filter(
-                        'id_agente',
-                        'tagente_modulo',
-                        ['id_agente_modulo' => $idAgentModule]
-                    );
-                    $period = $item['period'];
-                break;
-
-                case 'MTBF':
-                    $description = $item['description'];
-                    $idAgentModule = $item['id_agent_module'];
-                    $idAgent = db_get_value_filter(
-                        'id_agente',
-                        'tagente_modulo',
-                        ['id_agente_modulo' => $idAgentModule]
-                    );
-                    $period = $item['period'];
-                break;
-
-                case 'MTTR':
-                    $description = $item['description'];
-                    $idAgentModule = $item['id_agent_module'];
-                    $idAgent = db_get_value_filter(
-                        'id_agente',
-                        'tagente_modulo',
-                        ['id_agente_modulo' => $idAgentModule]
-                    );
                     $period = $item['period'];
                 break;
 
@@ -662,6 +624,8 @@ switch ($action) {
                     $unknown_checks = $item['unknown_checks'];
                     $agent_max_value = $item['agent_max_value'];
                     $agent_min_value = $item['agent_min_value'];
+                    $failover_mode = $item['failover_mode'];
+                    $failover_type = $item['failover_type'];
                 break;
 
                 case 'group_report':
@@ -786,10 +750,6 @@ switch ($action) {
                 case 'avg_value':
                 case 'projection_graph':
                 case 'prediction_date':
-                case 'TTRT':
-                case 'TTO':
-                case 'MTBF':
-                case 'MTTR':
                 case 'simple_baseline_graph':
                 case 'event_report_log':
                 case 'increment':
@@ -809,7 +769,6 @@ switch ($action) {
         }
     break;
 }
-
 
 $urlForm = $config['homeurl'].'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action='.$actionParameter.'&id_report='.$idReport;
 
@@ -868,18 +827,33 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_input_text(
-                    'name',
-                    $name,
-                    '',
-                    80,
-                    100,
-                    false,
-                    false,
-                    false,
-                    '',
-                    'fullwidth'
-                );
+                if ($name_from_template != '') {
+                    html_print_input_text(
+                        'name',
+                        $name_from_template,
+                        '',
+                        80,
+                        100,
+                        false,
+                        false,
+                        false,
+                        '',
+                        'fullwidth'
+                    );
+                } else {
+                    html_print_input_text(
+                        'name',
+                        $name,
+                        '',
+                        80,
+                        100,
+                        false,
+                        false,
+                        false,
+                        '',
+                        'fullwidth'
+                    );
+                }
                 ?>
             </td>
         </tr>
@@ -928,6 +902,28 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <?php
+        if ($meta) {
+            ?>
+        <tr id="row_servers" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
+            <td style="">
+                <?php
+                html_print_select(
+                    $servers,
+                    'combo_server',
+                    $server_name,
+                    '',
+                    __('Local metaconsole'),
+                    0
+                );
+                ?>
+            </td>
+        </tr>
+            <?php
+        }
+        ?>
 
         <tr id="row_label" style="" class="datos">
             <td style="font-weight:bold;">
@@ -1317,7 +1313,7 @@ $class = 'databox filters';
 
                     if (metaconsole_load_external_db($connection) == NOERR) {
                         $agent_name = db_get_value_filter(
-                            'nombre',
+                            'alias',
                             'tagente',
                             ['id_agente' => $idAgent]
                         );
@@ -1565,10 +1561,8 @@ $class = 'databox filters';
                     $all_modules = '';
                 } else {
                     $all_modules = db_get_all_rows_sql(
-                        'SELECT DISTINCT nombre, id_agente_modulo
-                            FROM tagente_modulo
-                            WHERE id_agente
-                                IN ('.implode(',', array_values($id_agents)).')'
+                        'SELECT DISTINCT nombre FROM 
+							tagente_modulo WHERE id_agente IN ('.implode(',', array_values($id_agents)).')'
                     );
                 }
 
@@ -1869,28 +1863,6 @@ $class = 'databox filters';
             </td>
             <td style="" id="max_items_example"></td>
         </tr>
-
-        <?php
-        if ($meta) {
-            ?>
-        <tr id="row_servers" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
-            <td style="">
-                <?php
-                html_print_select(
-                    $servers,
-                    'combo_server',
-                    $server_name,
-                    '',
-                    __('Select server'),
-                    0
-                );
-                ?>
-            </td>
-        </tr>
-            <?php
-        }
-        ?>
 
         <tr id="row_header" style="" class="datos">
             <td style="font-weight:bold;">
@@ -2230,7 +2202,7 @@ $class = 'databox filters';
         <tr id="row_show_address_agent" style="" class="datos">
             <td style="font-weight:bold;">
                 <?php
-                echo __('Show address instead module name.').ui_print_help_tip(
+                echo __('Show address instead module name').ui_print_help_tip(
                     __('Show the main address of agent.'),
                     true
                 );
@@ -2586,25 +2558,6 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_in_landscape" style="" class="datos">
-            <td style="font-weight:bold;">
-            <?php
-            echo __('Show in landscape');
-            ?>
-            </td>
-            <td>
-                <?php
-                html_print_checkbox(
-                    'show_in_landscape',
-                    1,
-                    $show_in_landscape,
-                    false,
-                    false
-                );
-                ?>
-            </td>
-        </tr>
-
         <tr id="row_priority_mode" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
@@ -2794,6 +2747,41 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <tr id="row_uncompressed_module" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Uncompress module').ui_print_help_tip(
+                __('Use uncompressed module data.'),
+                true
+            );
+            ?>
+            </td>
+            <td style="">
+            <?php
+            html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_landscape" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Show item in landscape format (only PDF)');
+            ?>
+            </td>
+            <td><?php html_print_checkbox('landscape', 1, $landscape); ?></td>
+        </tr>
+
+        <tr id="row_pagebreak" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Page break at the end of the item (only PDF)');
+            ?>
+            </td>
+            <td><?php html_print_checkbox('pagebreak', 1, $pagebreak); ?></td>
+        </tr>
+
     </tbody>
 </table>
 
@@ -3273,6 +3261,13 @@ function print_General_list($width, $action, $idItem=null, $type='general')
         $meta = false;
     }
 
+    $failover_mode = db_get_value(
+        'failover_mode',
+        'treport_content',
+        'id_rc',
+        $idItem
+    );
+
     $operation = [
         'avg' => __('rate'),
         'max' => __('max'),
@@ -3294,6 +3289,18 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     <th class="header" scope="col">
                         <?php echo __('Module'); ?>
                     </th>
+                    <?php
+                    if ($failover_mode) {
+                        ?>
+                        <th class="header" scope="col">
+                            <?php echo __('Agent Failover'); ?>
+                        </th>
+                        <th class="header" scope="col">
+                            <?php echo __('Module Failover'); ?>
+                        </th>
+                        <?php
+                    }
+                    ?>
                     <th class="header" scope="col">
                         <?php echo __('Action'); ?>
                     </th>
@@ -3328,7 +3335,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                 case 'new':
                     ?>
                     <tr id="general_template" style="" class="datos">
-                        <td colspan="3">
+                        <td colspan="4">
                             <?php
                             echo __('Please save the report to start adding items into the list.');
                             ?>
@@ -3375,19 +3382,50 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                             ['id_agente_modulo' => $item['id_agent_module']]
                         );
 
+                        if (isset($item['id_agent_module_failover']) === true
+                            && $item['id_agent_module_failover'] !== 0
+                        ) {
+                            $idAgentFailover = db_get_value_filter(
+                                'id_agente',
+                                'tagente_modulo',
+                                ['id_agente_modulo' => $item['id_agent_module_failover']]
+                            );
+                            $nameAgentFailover = agents_get_alias(
+                                $idAgentFailover
+                            );
+
+                            $nameModuleFailover = db_get_value_filter(
+                                'nombre',
+                                'tagente_modulo',
+                                ['id_agente_modulo' => $item['id_agent_module_failover']]
+                            );
+                        }
+
                         $server_name_element = '';
                         if ($meta && $server_name != '') {
                             $server_name_element .= ' ('.$server_name.')';
                         }
 
                         if ($type == 'availability') {
-                            echo '<tr id="general_'.$item['id'].'" style="" class="datos">
-								<td>'.printSmallFont($nameAgent).$server_name_element.'</td>
-								<td>'.printSmallFont($nameModule).'</td>
-								<td style="text-align: center;">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
-								</td>
-							</tr>';
+                            if ($failover_mode) {
+                                echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                                    <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
+                                    <td>'.printSmallFont($nameModule).'</td>
+                                    <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
+                                    <td>'.printSmallFont($nameModuleFailover).'</td>
+                                    <td style="text-align: center;">
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+                                    </td>
+                                </tr>';
+                            } else {
+                                echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                                    <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
+                                    <td>'.printSmallFont($nameModule).'</td>
+                                    <td style="text-align: center;">
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+                                    </td>
+                                </tr>';
+                            }
                         } else {
                             echo '<tr id="general_'.$item['id'].'" style="" class="datos">
 								<td>'.printSmallFont($nameAgent).$server_name_element.'</td>
@@ -3413,6 +3451,15 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                             <td class="agent_name"></td>
                             <td class="module_name"></td>
                             <?php
+                            if ($type == 'availability'
+                                && $failover_mode
+                            ) {
+                                ?>
+                                <td class="agent_name_failover"></td>
+                                <td class="module_name_failover"></td>
+                                <?php
+                            }
+
                             if ($type != 'availability') {
                                 ?>
                                 <td class="operation_name"></td>
@@ -3466,6 +3513,43 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                 </select>
                             </td>
                             <?php
+                            if ($type == 'availability' && $failover_mode) {
+                                ?>
+                                <td class="sla_list_agent_failover_col">
+                                    <input id="hidden-id_agent_failover" name="id_agent_failover" value="" type="hidden">
+                                    <input id="hidden-server_name_failover" name="server_name_failover" value="" type="hidden">
+                                    <?php
+                                    $params = [];
+                                    $params['show_helptip'] = true;
+                                    $params['input_name'] = 'agent_failover';
+                                    $params['value'] = '';
+                                    $params['use_hidden_input_idagent'] = true;
+                                    $params['hidden_input_idagent_id'] = 'hidden-id_agent_failover';
+                                    $params['javascript_is_function_select'] = true;
+                                    $params['selectbox_id'] = 'id_agent_module_failover';
+                                    $params['add_none_module'] = false;
+                                    if ($meta) {
+                                        $params['use_input_id_server'] = true;
+                                        $params['input_id_server_id'] = 'hidden-id_server';
+                                        $params['disabled_javascript_on_blur_function'] = true;
+                                    }
+
+                                    ui_print_agent_autocomplete_input($params);
+                                    ?>
+                                </td>
+                                <td class="sla_list_module_failover_col">
+                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" style="max-width: 180px">
+                                        <option value="0">
+                                            <?php
+                                            echo __('Select an Agent first');
+                                            ?>
+                                        </option>
+                                    </select>
+                                </td>
+                                <?php
+                            }
+                            ?>
+                            <?php
                             if ($type !== 'availability') {
                                 ?>
                                 <td>
@@ -3516,6 +3600,30 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 }
 
 
+echo "<div id='message_no_name'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a name.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_agent'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select an agent.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_module'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a module.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_sql_query'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a SQL query.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_url'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a URL.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_interval_option'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please checked a custom interval option.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -3529,8 +3637,22 @@ $(document).ready (function () {
 
     $("#id_agents").change(agent_changed_by_multiple_agents);
 
+    // Load selected modules by default
+    $("#id_agents2").trigger('click');
+
+    $('#combo_server').change (function (){
+        $("#id_agents").html('');
+            $("#id_agents2").html('');
+            $("#module").html('');
+            $("#inventory_modules").html('');
+    })
+
     $("#combo_group").change (
         function () {
+            $("#id_agents").html('');
+            $("#id_agents2").html('');
+            $("#module").html('');
+            $("#inventory_modules").html('');
             jQuery.post ("ajax.php",
                 {"page" : "operation/agentes/ver_agente",
                     "get_agents_group_json" : 1,
@@ -3540,9 +3662,6 @@ $(document).ready (function () {
                     "recursion" : $('#checkbox-recursion').is(':checked')
                 },
                 function (data, status) {
-                    $("#id_agents").html('');
-                    $("#id_agents2").html('');
-                    $("#module").html('');
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -3570,9 +3689,7 @@ $(document).ready (function () {
                     "recursion" : $('#checkbox-recursion').is(':checked')
                 },
                 function (data, status) {
-                    $("#id_agents").html('');
                     $("#id_agents2").html('');
-                    $("#module").html('');
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -3712,6 +3829,12 @@ $(document).ready (function () {
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
+
+        if($('#text-name').val() == ''){
+            dialog_message('#message_no_name');
+                return false;
+        }
+
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3719,10 +3842,6 @@ $(document).ready (function () {
             case 'event_report_module':
             case 'simple_graph':
             case 'simple_baseline_graph':
-            case 'TTRT':
-            case 'TTO':
-            case 'MTBF':
-            case 'MTTR':
             case 'prediction_date':
             case 'projection_graph':
             case 'avg_value':
@@ -3734,25 +3853,109 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'event_report_log':
+            case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
-                    alert( <?php echo "'".__('Please select Agent')."'"; ?> );
+                    dialog_message('#message_no_agent');
                     return false;
                 }
                 break;
+            case 'agent_module':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                      return false;
+                      }
+                      break;
+            case 'inventory':
+            case 'inventory_changes':
+                 if ($("select#id_agents>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
             default:
                 break;
         }
 
-        if($('#text-name').val() == ''){
-            alert( <?php echo "'".__('Please insert a name')."'"; ?> );
-                return false;
+        switch (type){
+            case 'alert_report_module':
+            case 'event_report_module':
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 'prediction_date':
+            case 'projection_graph':
+            case 'monitor_report':
+            case 'module_histogram_graph':
+            case 'avg_value':
+            case 'max_value':
+            case 'min_value':
+            case 'database_serialized':
+            case 'sumatory':
+            case 'historical_data':
+            case 'increment':
+
+                if ($("#id_agent_module").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                break;
+            case 'agent_module':
+                if ($("select#module>option:selected").val() == undefined) {
+                    dialog_message('#message_no_module');
+                    return false;
+                    }
+                    break;
+            case 'inventory':
+            case 'inventory_changes':
+                if ($("select#inventory_modules>option:selected").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'sql':
+                if ($("#textarea_sql").val() == ''
+                && $("select#id_custom>option:selected").val() == 0) {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'sql_graph_pie':
+            case 'sql_graph_hbar':
+            case 'sql_graph_vbar':
+                if ($("#textarea_sql").val() == '') {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'url':
+                if ($("#text-url").val() == '') {
+                    dialog_message('#message_no_url');
+                     return false;
+                }
+                    break;
+            default:
+                break;
         }
 
+        if (type == 'avg_value' || type == 'max_value' || type == 'min_value') {
+            if (($('input:radio[name=visual_format]:checked').val() != 1
+            && $('input:radio[name=visual_format]:checked').val() != 2
+            && $('input:radio[name=visual_format]:checked').val() != 3)
+            && $("#checkbox-lapse_calc").is(":checked")) {
+                dialog_message('#message_no_interval_option');
+                     return false;
+            }
+        }
 
     });
 
     $("#submit-edit_item").click(function () {
         var type = $('#type').val();
+
+        if($('#text-name').val() == ''){
+            dialog_message('#message_no_name');
+                return false;
+        }
         switch (type){
             case 'alert_report_module':
             case 'alert_report_agent':
@@ -3760,10 +3963,6 @@ $(document).ready (function () {
             case 'event_report_module':
             case 'simple_graph':
             case 'simple_baseline_graph':
-            case 'TTRT':
-            case 'TTO':
-            case 'MTBF':
-            case 'MTTR':
             case 'prediction_date':
             case 'projection_graph':
             case 'avg_value':
@@ -3775,14 +3974,97 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
-                    alert( <?php echo "'".__('Please select Agent')."'"; ?> );
+                    dialog_message('#message_no_agent');
                     return false;
                 }
                 break;
+            case 'agent_module':
+                if ($("select#id_agents2>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
+            case 'inventory':
+                if ($("select#id_agents>option:selected").val() == undefined) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                    }
+                    break;
             default:
                 break;
         }
+
+        switch (type){
+            case 'alert_report_module':
+            case 'event_report_module':
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 'prediction_date':
+            case 'projection_graph':
+            case 'monitor_report':
+            case 'module_histogram_graph':
+            case 'avg_value':
+            case 'max_value':
+            case 'min_value':
+            case 'database_serialized':
+            case 'sumatory':
+            case 'historical_data':
+            case 'increment':
+
+                if ($("#id_agent_module").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                break;
+            case 'agent_module':
+                if ($("select#module>option:selected").val() == undefined) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'inventory':
+                if ($("select#inventory_modules>option:selected").val() == 0) {
+                    dialog_message('#message_no_module');
+                    return false;
+                }
+                    break;
+            case 'sql':
+                if ($("#textarea_sql").val() == ''
+                && $("select#id_custom>option:selected").val() == 0) {
+                    dialog_message('#message_no_sql_query');
+                    return false;
+                }
+                    break;
+            case 'sql_graph_pie':
+            case 'sql_graph_hbar':
+            case 'sql_graph_vbar':
+                if ($("#textarea_sql").val() == '') {
+                    dialog_message('#message_no_sql_query');
+                     return false;
+                }
+                    break;
+            case 'url':
+                if ($("#text-url").val() == '') {
+                    dialog_message('#message_no_url');
+                     return false;
+                }
+                    break;
+            default:
+                break;
+        }
+
+        if (type == 'avg_value' || type == 'max_value' || type == 'min_value') {
+            if (($('input:radio[name=visual_format]:checked').val() != 1
+            && $('input:radio[name=visual_format]:checked').val() != 2
+            && $('input:radio[name=visual_format]:checked').val() != 3)
+            && $("#checkbox-lapse_calc").is(":checked")) {
+                dialog_message('#message_no_interval_option');
+                     return false;
+            }
+        }
+
     });
 
     $("#checkbox-lapse_calc").change(function () {
@@ -3797,11 +4079,14 @@ $(document).ready (function () {
     });
 
     $("#checkbox-checkbox_show_resume").change(function(){
-        if($(this).is(":checked")){
+        type = $("#type").val();
+        if($(this).is(":checked") && type !== 'general'){
             $("#row_select_fields2").show();
+            $("#row_select_fields3").show();
         }
         else{
             $("#row_select_fields2").hide();
+            $("#row_select_fields3").hide();
         }
     });
 
@@ -4305,6 +4590,10 @@ function addGeneralRow() {
     var idAgent = $("input[name=id_agent_general]").val();
     var serverId = $("input[name=id_server]").val();
     var idModule = $("#id_agent_module_general").val();
+    var nameAgentFailover = $("input[name=agent_failover]").val();
+    var idModuleFailover = $("#id_agent_module_failover").val();
+    var nameModuleFailover = $("#id_agent_module_failover :selected").text();
+
     var operation;
     if ($("#id_operation_module_general").length) {
         operation = $("#id_operation_module_general").val();
@@ -4390,10 +4679,63 @@ function addGeneralRow() {
             }
         });
 
+        if (nameAgentFailover != '') {
+            //Truncate nameAgentFailover
+            var params = [];
+            params.push("truncate_text=1");
+            params.push("text=" + nameAgentFailover);
+            params.push("page=include/ajax/reporting.ajax");
+            jQuery.ajax ({
+                data: params.join ("&"),
+                type: 'POST',
+                url: action=
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                + "/ajax.php",
+                async: false,
+                timeout: 10000,
+                success: function (data) {
+                    nameAgentFailover = data;
+                }
+            });
+
+            //Truncate nameModuleFailover
+            var params = [];
+            params.push("truncate_text=1");
+            params.push("text=" + nameModuleFailover);
+            params.push("page=include/ajax/reporting.ajax");
+            jQuery.ajax ({
+                data: params.join ("&"),
+                type: 'POST',
+                url: action=
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                + "/ajax.php",
+                async: false,
+                timeout: 10000,
+                success: function (data) {
+                    nameModuleFailover = data;
+                }
+            });
+        }
+
         var params = [];
         params.push("add_general=1");
         params.push("id=" + $("input[name=id_item]").val());
         params.push("id_module=" + idModule);
+        params.push("id_module_failover=" + idModuleFailover);
         params.push("id_server=" + serverId);
         params.push("operation=" + operation);
         params.push("id_agent=" + idAgent);
@@ -4420,6 +4762,8 @@ function addGeneralRow() {
                     $("#row", row).attr('id', 'general_' + data['id']);
                     $(".agent_name", row).html(nameAgent);
                     $(".module_name", row).html(nameModule);
+                    $(".agent_name_failover", row).html(nameAgentFailover);
+                    $(".module_name_failover", row).html(nameModuleFailover);
                     $(".operation_name", row).html(nameOperation);
                     $(".delete_button", row).attr(
                         'href',
@@ -4434,6 +4778,15 @@ function addGeneralRow() {
                     $("#id_operation_module_general").val('avg');
                     $("#id_agent_module_general").empty();
                     $("#id_agent_module_general").attr('disabled', 'true');
+
+                    $("input[name=id_agent_failover]").val('');
+                    $("input[name=agent_failover]").val('');
+                    $("#id_agent_module_failover").empty();
+                    $("#id_agent_module_failover").attr('disabled', 'true');
+                    $("#id_agent_module_failover").append(
+                        $("<option></option>")
+                        .attr ("value", 0)
+                        .html ($("#module_sla_text").html()));
                 }
             }
         });
@@ -4489,7 +4842,6 @@ function chooseType() {
     $("#row_lapse_calc").hide();
     $("#row_lapse").hide();
     $("#row_visual_format").hide();
-    $("#row_show_in_landscape").hide();
     $('#row_hide_notinit_agents').hide();
     $('#row_priority_mode').hide();
     $("#row_module_group").hide();
@@ -4523,6 +4875,7 @@ function chooseType() {
     $('#row_select_fields').hide();
     $("#row_select_fields2").hide();
     $("#row_select_fields3").hide();
+    $("#row_uncompressed_module").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -4731,6 +5084,7 @@ function chooseType() {
             $("#row_module").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            $("#row_uncompressed_module").show();
             break;
 
         case 'historical_data':
@@ -4790,38 +5144,6 @@ function chooseType() {
             $("#row_header").show();
             $("#row_field_separator").show();
             $("#row_line_separator").show();
-            $("#row_period").show();
-            $("#row_historical_db_check").hide();
-            break;
-
-        case 'TTRT':
-            $("#row_description").show();
-            $("#row_agent").show();
-            $("#row_module").show();
-            $("#row_period").show();
-            $("#row_historical_db_check").hide();
-            break;
-
-        case 'TTO':
-            $("#row_description").show();
-            $("#row_agent").show();
-            $("#row_module").show();
-            $("#row_period").show();
-            $("#row_historical_db_check").hide();
-            break;
-
-        case 'MTBF':
-            $("#row_description").show();
-            $("#row_agent").show();
-            $("#row_module").show();
-            $("#row_period").show();
-            $("#row_historical_db_check").hide();
-            break;
-
-        case 'MTTR':
-            $("#row_description").show();
-            $("#row_agent").show();
-            $("#row_module").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
             break;
@@ -4952,6 +5274,12 @@ function chooseType() {
                  $("#row_select_fields3").hide();
              }
             $("#row_historical_db_check").hide();
+
+            $("#row_failover_mode").show();
+            var failover_checked = $("input[name='failover_mode']").prop("checked");
+            if(failover_checked){
+                $("#row_failover_type").show();
+            }
             break;
 
         case 'group_report':
@@ -5021,6 +5349,29 @@ function chooseType() {
             $("#id_agents").change(event_change_id_agent_inventory);
             $("#id_agents").trigger('change');
 
+            $("#combo_server").change(function() {
+                $('#hidden-date_selected').val('');
+                updateInventoryDates(
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+                updateAgents($(this).val(),
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+            });
             $("#combo_group").change(function() {
                 updateAgents($(this).val(),
                 <?php
@@ -5049,6 +5400,30 @@ function chooseType() {
             $("#id_agents").trigger('change');
 
             $("#row_servers").show();
+
+            $("#combo_server").change(function() {
+                $('#hidden-date_selected').val('');
+                updateInventoryDates(
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+                updateAgents($(this).val(),
+                <?php
+                echo '"'.ui_get_full_url(
+                    false,
+                    false,
+                    false,
+                    false
+                ).'"';
+                ?>
+                );
+            });
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -5178,10 +5553,6 @@ function chooseType() {
         case 'min_value':
         case 'max_value':
         case 'avg_value':
-        case 'TTRT':
-        case 'TTO':
-        case 'MTBF':
-        case 'MTTR':
         case 'simple_baseline_graph':
             $("#row_label").show();
             break;
@@ -5240,5 +5611,21 @@ function source_change_agents() {
         },
         "json"
     );
+}
+
+function dialog_message(message_id) {
+  $(message_id)
+    .css("display", "inline")
+    .dialog({
+      modal: true,
+      show: "blind",
+      hide: "blind",
+      width: "400px",
+      buttons: {
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
 }
 </script>

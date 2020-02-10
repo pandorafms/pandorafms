@@ -21,7 +21,7 @@ daemon 1
 # insecure 0
 
 # Filters (regexp:dir;regexp:dir...)
-filters .*\.conf:conf;.*\.md5:md5;.*\.zip:collections;.*\.lock:trans
+filters .*\.conf:conf;.*\.md5:md5;.*\.zip:collections;.*\.lock:trans;.*\.rcmd:commands
 
 # [-m] Maximum file size allowed by the server in bytes
 #max_size 2000000

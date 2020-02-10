@@ -101,6 +101,10 @@ foreach ($servers as $server) {
         $data[2] .= ui_print_help_tip(__('This is a master server'), true);
     }
 
+    if ($server['exec_proxy'] == 1) {
+        $data[2] .= html_print_image('images/star.png', true, ['title' => __('Exec server enabled')]);
+    }
+
     // $data[2] .= '</span> <span style="font-size:8px;"> v' .. '</span>';
     switch ($server['type']) {
         case 'snmp':
@@ -154,7 +158,7 @@ foreach ($servers as $server) {
         if ($server['type'] == 'recon') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist').'">';
             $data[8] .= html_print_image(
-                'images/firts_task/icono_grande_reconserver.png',
+                'images/first_task/icono_grande_reconserver.png',
                 true,
                 [
                     'title' => __('Manage Discovery tasks'),

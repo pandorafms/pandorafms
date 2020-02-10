@@ -27,6 +27,7 @@ use Thread::Semaphore;
 use Time::Local;
 use XML::Parser::Expat;
 use XML::Simple;
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
 use JSON qw(decode_json);
@@ -81,8 +82,11 @@ sub new ($$;$) {
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
 
 	# Load external .enc files for XML::Parser.
-	if ($config->{'enc_dir'} ne '' && !grep {$_ eq $config->{'enc_dir'}} @XML::Parser::Expat::Encoding_Path) {
+	if ($config->{'enc_dir'} ne '') {
 		push(@XML::Parser::Expat::Encoding_Path, $config->{'enc_dir'});
+		if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+			push(@XML::SAX::ExpatXS::Encoding::Encoding_Path, $config->{'enc_dir'});
+		}
 	}
 
 	if ($config->{'autocreate_group'} > 0 && !defined(get_group_name ($dbh, $config->{'autocreate_group'}))) {
@@ -230,7 +234,7 @@ sub data_consumer ($$) {
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
-		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '0' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists
 		if (! -f $file_name) {
@@ -309,7 +313,7 @@ sub process_xml_data ($$$$$) {
 		my $utimestamp = 0;
 		eval {
 			if ($timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/) {
-				$utimestamp = timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
+				$utimestamp = strftime("%s", $6, $5, $4, $3, $2 -1 , $1 - 1900);
 			}
 		};
 		
@@ -602,8 +606,12 @@ sub process_xml_data ($$$$$) {
 	# Process events
 	process_events_dataserver($pa_config, $data, $agent_id, $group_id, $dbh);
 
-	# Process disovery modules
+	# Process discovery modules
 	enterprise_hook('process_discovery_data', [$pa_config, $data, $server_id, $dbh]);
+
+	# Process command responses
+	enterprise_hook('process_rcmd_report', [$pa_config, $data, $server_id, $dbh, $agent_id, $timestamp]);
+
 }
 
 ##########################################################################
@@ -833,7 +841,7 @@ sub process_module_data ($$$$$$$$$$) {
 	}
 	my $utimestamp;
 	eval {
- 		$utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+ 		$utimestamp = strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 	};
 	if ($@) {
 		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);

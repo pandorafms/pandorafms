@@ -16,10 +16,10 @@ global $config;
 // Check user credentials
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'RR')) {
+if (! check_acl($config['id_user'], 0, 'RR') || enterprise_installed() === false) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access Inventory Module Management'
+        'Trying to access Graph container'
     );
     include 'general/noaccess.php';
     return;
@@ -125,6 +125,20 @@ if ($report_r && $report_w) {
                         get_graphs_container(id_container,hash,time);
                     }
                 });
+
+                $("div[id^=period_container_] a").on('click', function(e){
+                    if ($("div[id^=period_container_][id$=_default]").css('display') == 'none') {
+                        $('#refresh_custom_time').show();
+                        $('#refresh_custom_time').on('click', function(e){
+                            var time = $('input[id *= hidden-period_container_'+hash+']').val();
+                            get_graphs_container(id_container,hash,time);
+                        });                
+                    } 
+                    else if ($("div[id^=period_container_][id$=_manual]").css('display') == 'none') {
+                        $('#refresh_custom_time').hide();
+                    }
+                });
+
             }
         });
     }

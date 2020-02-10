@@ -38,6 +38,7 @@ Where options:
 Optional parameters:
 	
 	[-priority <priority>]		: 10 Maintance, 0 Informative, 1 Low, 2 Medium, 3 Serious, 4 Very serious
+	[-owner <owner>]		: Free text
 	[-desc <description>]		: Free text
 	[-type <ticket_type>]		: Type ID (must exist in Integria IMS)
 	[-inventory <inventory_id>]	: Inventory ID (must exist in Integria IMS)
@@ -94,6 +95,7 @@ sub tool_api_main () {
 	my $ticket_name = "";
 	my $group_id = -1;
 	my $ticket_priority = 0;
+	my $ticket_owner = '';
 	my $ticket_description = '';
 	my $ticket_type = '';
 	my $ticket_inventory = '';
@@ -155,6 +157,9 @@ sub tool_api_main () {
 			if ($line eq '-priority') {
 				$ticket_priority = $ARGV[$i + 1];
 			}
+			if ($line eq '-owner') {
+				$ticket_owner = $ARGV[$i + 1];
+			}
 			if ($line eq '-desc') {
 				$ticket_description = $ARGV[$i + 1];
 			}
@@ -193,6 +198,7 @@ sub tool_api_main () {
 		$data_ticket = $ticket_name .
 				"|;|" . $group_id .
 				"|;|" . $ticket_priority .
+				"|;|" . $ticket_owner .
 				"|;|" . $ticket_description .
 				"|;|" . $ticket_inventory .
 				"|;|" . $ticket_type .

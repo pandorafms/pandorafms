@@ -87,7 +87,7 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                 echo '</td>';
 
                 echo '<td style="border:1px solid #FFF; text-align:center;">';
-                echo '<a href="'.$config['custom_docs_url'].'" target="_blank" style="text-decoration:none;">'.html_print_image(
+                echo '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank" style="text-decoration:none;">'.html_print_image(
                     'images/documentation.png',
                     true,
                     [
@@ -96,7 +96,7 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                     ]
                 ).'</a>';
                 echo '<br style="margin-bottom: 40px;" />';
-                echo '<a style="font-size: 9pt;" href="'.$config['custom_docs_url'].'" target="_blank">'.__('Documentation').'</span></a>';
+                echo '<a style="font-size: 9pt;"href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Documentation').'</span></a>';
                 echo '</td>';
                 echo '</tr>';
                 echo '</table>';

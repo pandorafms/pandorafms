@@ -1,5 +1,7 @@
 var system = require("system");
 
+/* global phantom */
+
 if (system.args.length < 3 || system.args.length > 11) {
   phantom.exit(1);
 }
@@ -14,6 +16,7 @@ var viewport_width = system.args[7];
 var viewport_height = system.args[8];
 var session_id = system.args[9];
 var base_64 = system.args[10];
+var post_data = "";
 
 if (!viewport_width) {
   viewport_width = 750;
@@ -47,6 +50,29 @@ if (type_graph_pdf == "combined") {
 
 var page = require("webpage").create();
 
+page.onResourceError = function(resourceError) {
+  console.log(
+    "Unable to load resource (#" +
+      resourceError.id +
+      "URL:" +
+      resourceError.url +
+      ")"
+  );
+  console.log(
+    "Error code: " +
+      resourceError.errorCode +
+      ". Description: " +
+      resourceError.errorString
+  );
+  phantom.exit(1);
+};
+
+// Not supposed to be prompted messages.
+page.onPrompt = function() {
+  console.log("Prompt message detected.");
+  phantom.exit(1);
+};
+
 page.viewportSize = {
   width: viewport_width,
   height: viewport_height
@@ -61,12 +87,14 @@ page.onConsoleMessage = function(msg) {
 page.onError = function(msg) {
   console.log(msg);
   page.close();
+  phantom.exit();
 };
 
-page.onCallback = function(st) {
+page.onCallback = function() {
   if (!base_64) {
     page.render(output_filename, { format: "png" });
   } else {
+    page.settings.loadImages = false;
     var base64 = page.renderBase64("png");
     // do not remove this console.output
     console.log(base64);
@@ -74,4 +102,27 @@ page.onCallback = function(st) {
   phantom.exit();
 };
 
-page.open(url, "POST", post_data, function(status) {});
+page.open(url, "POST", post_data, function(status) {
+  if (status == "fail") {
+    console.out("Failed to generate chart.");
+    phantom.exit();
+  }
+});
+
+phantom.onError = function(msg, trace) {
+  var msgStack = ["PHANTOM ERROR: " + msg];
+  if (trace && trace.length) {
+    msgStack.push("TRACE:");
+    trace.forEach(function(t) {
+      msgStack.push(
+        " -> " +
+          (t.file || t.sourceURL) +
+          ": " +
+          t.line +
+          (t.function ? " (in function " + t.function + ")" : "")
+      );
+    });
+  }
+  console.log(msgStack.join("\n"));
+  phantom.exit(1);
+};

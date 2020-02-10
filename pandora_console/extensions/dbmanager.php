@@ -22,6 +22,17 @@ function dbmanager_query($sql, &$error, $dbconnection)
     }
 
     $sql = html_entity_decode($sql, ENT_QUOTES);
+
+    // Extract the text in quotes to add html entities before query db.
+    $patttern = '/(?:"|\')+([^"\']*)(?:"|\')+/m';
+    $sql = preg_replace_callback(
+        $patttern,
+        function ($matches) {
+            return '"'.io_safe_input($matches[1]).'"';
+        },
+        $sql
+    );
+
     if ($config['mysqli']) {
         $result = mysqli_query($dbconnection, $sql);
         if ($result === false) {

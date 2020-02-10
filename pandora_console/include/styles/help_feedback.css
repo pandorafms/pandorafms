@@ -1,0 +1,77 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+div#main_pure {
+  background-color: #fefefe;
+  text-align: left;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  width: 100%;
+  position: static;
+}
+
+div.help_feedback {
+  position: fixed;
+  bottom: 0;
+  height: auto;
+  background-color: #fff;
+  right: 3em;
+}
+
+.help_feedback label {
+  font-weight: normal;
+}
+
+.help_feedback * {
+  font-family: "lato", "courier", sans-serif;
+  font-size: 8pt;
+}
+
+.help_feedback .white_table_graph_header {
+  background: #82b92e;
+  color: #fff;
+}
+
+.help_feedback .white_table_graph {
+  margin-bottom: 0;
+  box-shadow: 0px 5px 6px 2px #888;
+}
+
+.help_feedback .white-box-content form {
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.help_feedback .explain {
+  margin: 10px auto;
+}
+
+.textarea_feedback {
+  margin-top: 10px;
+}
+
+.email_feedback {
+  max-width: 200px;
+  margin-left: 39px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bolder;
+}
+
+.btn_submit_feed_back {
+  margin: 15px 0 0 0;
+}
+
+.btn {
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.flex-row-baseline.w100p label {
+  cursor: pointer;
+}

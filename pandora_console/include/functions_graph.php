@@ -572,7 +572,7 @@ function grafico_modulo_sparse_data(
 
 
 /**
- * Functions tu create graphs.
+ * Functions to create graphs.
  *
  * @param array $params Details builds graphs. For example:
  * 'agent_module_id'     => $agent_module_id,
@@ -854,6 +854,10 @@ function grafico_modulo_sparse($params)
         if (modules_is_unit_macro($params['unit'])) {
             $params['unit'] = '';
         }
+    }
+
+    if (empty($params['divisor'])) {
+        $params['divisor'] = get_data_multiplier($params['unit']);
     }
 
     if (!$params['array_data_create']) {
@@ -1446,9 +1450,20 @@ function graphic_combined_module(
                 $data_module_graph['agent_name'] = modules_get_agentmodule_agent_name(
                     $agent_module_id
                 );
-                $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
-                    $agent_module_id
-                );
+
+                if (is_metaconsole()) {
+                    $data_module_graph['agent_alias'] = db_get_value(
+                        'alias',
+                        'tagente',
+                        'id_agente',
+                        (int) $module_data['id_agente']
+                    );
+                } else {
+                    $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
+                        $agent_module_id
+                    );
+                }
+
                 $data_module_graph['agent_id'] = $module_data['id_agente'];
                 $data_module_graph['module_name'] = $module_data['nombre'];
                 $data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
@@ -1466,6 +1481,10 @@ function graphic_combined_module(
                 $data_module_graph['c_inv'] = $module_data['critical_inverse'];
                 $data_module_graph['module_id'] = $agent_module_id;
                 $data_module_graph['unit'] = $module_data['unit'];
+
+                $params['unit'] = $module_data['unit'];
+
+                $params['divisor'] = get_data_multiplier($params['unit']);
 
                 // Stract data.
                 $array_data_module = grafico_modulo_sparse_data(
@@ -1761,7 +1780,7 @@ function graphic_combined_module(
 
                 $search_in_history_db = db_search_in_history_db($datelimit);
 
-                $temp[$module] = modules_get_agentmodule($module);
+                $temp[$module] = io_safe_output(modules_get_agentmodule($module));
                 $query_last_value = sprintf(
                     '
                     SELECT datos
@@ -1787,7 +1806,7 @@ function graphic_combined_module(
                 if (!empty($params_combined['labels'])
                     && isset($params_combined['labels'][$module])
                 ) {
-                    $label = io_safe_input($params_combined['labels'][$module]);
+                    $label = io_safe_output($params_combined['labels'][$module]);
                 } else {
                     $alias = db_get_value(
                         'alias',
@@ -3595,7 +3614,32 @@ function graph_custom_sql_graph(
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
 
+    if (is_metaconsole()) {
+        $server = metaconsole_get_connection_names();
+        $connection = metaconsole_get_connection($server);
+        metaconsole_connect($connection);
+    }
+
     $report_content = db_get_row('treport_content', 'id_rc', $id);
+
+    if ($report_content == false || $report_content == '') {
+        $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+    }
+
+    if ($report_content == false || $report_content == '') {
+        enterprise_hook('metaconsole_restore_db');
+        $report_content = db_get_row('treport_content', 'id_rc', $id);
+        if ($report_content == false || $report_content == '') {
+            $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        }
+
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_names();
+            $connection = metaconsole_get_connection($server);
+            metaconsole_connect($connection);
+        }
+    }
+
     if ($id != null) {
         $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$id);
     } else {
@@ -3609,22 +3653,9 @@ function graph_custom_sql_graph(
         $sql = io_safe_output($sql['sql']);
     }
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
-        $metaconsole_connection = enterprise_hook('metaconsole_get_connection', [$report_content['server_name']]);
-
-        if ($metaconsole_connection === false) {
-            return false;
-        }
-
-        if (enterprise_hook('metaconsole_load_external_db', [$metaconsole_connection]) != NOERR) {
-            // ui_print_error_message ("Error connecting to ".$server_name);
-            return false;
-        }
-    }
-
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         enterprise_hook('metaconsole_restore_db');
     }
 
@@ -3817,43 +3848,39 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
         $full_legend[$cont] = $name;
 
         $top = ($datelimit + ($periodtime * ($i + 1)));
-        $event = db_get_row_filter(
+
+        $events = db_get_all_rows_filter(
             'tevento',
             ['id_agente' => $id_agent,
                 'utimestamp > '.$bottom,
-                'utimestamp < '.$top
+                'utimestamp < '.$top,
             ],
             'criticity, utimestamp'
         );
 
-        if (!empty($event['utimestamp'])) {
+        if (!empty($events)) {
             $data[$cont]['utimestamp'] = $periodtime;
-            switch ($event['criticity']) {
-                case EVENT_CRIT_WARNING:
-                    $data[$cont]['data'] = 2;
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $data[$cont]['data'] = 3;
-                break;
-
-                default:
-                    $data[$cont]['data'] = 1;
-                break;
+            $event_criticity = array_column($events, 'criticity');
+            if (array_search(EVENT_CRIT_CRITICAL, $event_criticity) !== false) {
+                $data[$cont]['data'] = EVENT_CRIT_CRITICAL;
+            } else if (array_search(EVENT_CRIT_WARNING, $event_criticity) !== false) {
+                $data[$cont]['data'] = EVENT_CRIT_WARNING;
+            } else {
+                $data[$cont]['data'] = EVENT_CRIT_NORMAL;
             }
         } else {
             $data[$cont]['utimestamp'] = $periodtime;
-            $data[$cont]['data'] = 1;
+            $data[$cont]['data'] = EVENT_CRIT_NORMAL;
         }
 
         $cont++;
     }
 
     $colors = [
-        1 => COL_NORMAL,
-        2 => COL_WARNING,
-        3 => COL_CRITICAL,
-        4 => COL_UNKNOWN,
+        1                   => COL_UNKNOWN,
+        EVENT_CRIT_NORMAL   => COL_NORMAL,
+        EVENT_CRIT_WARNING  => COL_WARNING,
+        EVENT_CRIT_CRITICAL => COL_CRITICAL,
     ];
 
     // Draw slicebar graph
@@ -3877,7 +3904,7 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false)
+function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false, $ttl=1)
 {
     global $config;
     global $graphic_type;
@@ -3953,7 +3980,7 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
     $out = flot_slicesbar_graph(
         $data,
         $period,
-        100,
+        $width,
         $height,
         $full_legend,
         $colors,
@@ -3966,7 +3993,8 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
         $id_agent,
         [],
         true,
-        1
+        $ttl,
+        true
     );
 
     if ($return) {
@@ -4834,7 +4862,7 @@ function graph_nodata_image($width=300, $height=110, $type='area', $text='')
     // if ($text == '') {
     // $text = __('No data to show');
     // }
-    $text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
+    $text_div = '<div class="nodata_text" style="text-align:center; padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
 
     $image_div = $text_div.'<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\''.$image.'\');"><div></div></div>';
 

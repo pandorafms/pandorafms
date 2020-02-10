@@ -392,13 +392,6 @@ class ConsoleSupervisor
         $this->checkDefaultPassword();
 
         /*
-         * Check if there's an active subscription.
-         *    NOTIF.NEWSLETTER.SUBSCRIPTION
-         */
-
-        $this->checkNewsletterSubscription();
-
-        /*
          * Check if there're new updates.
          *    NOTIF.UPDATEMANAGER.OPENSETUP
          *    NOTIF.UPDATEMANAGER.UPDATE
@@ -608,7 +601,6 @@ class ConsoleSupervisor
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
             case 'NOTIF.SECURITY.DEFAULT_PASSWORD':
-            case 'NOTIF.NEWSLETTER.SUBSCRIPTION':
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
             case 'NOTIF.UPDATEMANAGER.MINOR':
@@ -2001,41 +1993,6 @@ class ConsoleSupervisor
 
 
     /**
-     * Check if instance is subscribed to newsletter.
-     *
-     * @return void
-     */
-    public function checkNewsletterSubscription()
-    {
-        global $config;
-        $login = get_parameter('login', false);
-
-        // Newsletter advice.
-        $newsletter = db_get_value(
-            'middlename',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
-        if (!$config['disabled_newsletter']
-            && $newsletter != 1
-            && $login === false
-        ) {
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.NEWSLETTER.SUBSCRIPTION',
-                    'title'   => __('Not subscribed to the newsletter'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to subscribe to the newsletter'),
-                    'url'     => 'javascript: force_run_newsletter();',
-                ]
-            );
-        } else {
-            $this->cleanNotifications('NOTIF.NEWSLETTER.SUBSCRIPTION');
-        }
-    }
-
-
-    /**
      * Check if user 'admin' is enabled and using default password.
      *
      * @return void
@@ -2354,25 +2311,51 @@ class ConsoleSupervisor
     public function checkConsoleServerVersions()
     {
         global $config;
-        // List all servers except satellite server
+        // List all servers except satellite server.
         $server_version_list = db_get_all_rows_sql(
-            'SELECT name, version FROM tserver WHERE server_type != '.SERVER_TYPE_ENTERPRISE_SATELLITE
+            sprintf(
+                'SELECT `name`, `version` 
+                FROM tserver 
+                WHERE server_type != %d
+                GROUP BY `version`',
+                SERVER_TYPE_ENTERPRISE_SATELLITE
+            )
         );
 
-        foreach ($server_version_list as $server) {
-            if (strpos($server['version'], $config['current_package_enterprise']) === false) {
-                $title_ver_misaligned = $server['name'].' version misaligned with Console';
-                $message_ver_misaligned = 'Server '.$server['name'].' and this console have different versions. This might cause several malfunctions. Please, update this server.';
+        $missed = 0;
 
-                $this->notify(
-                    [
-                        'type'    => 'NOTIF.SERVER.MISALIGNED',
-                        'title'   => __($title_ver_misaligned),
-                        'message' => __($message_ver_misaligned),
-                        'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
-                    ]
-                );
+        if (is_array($server_version_list) === true) {
+            foreach ($server_version_list as $server) {
+                if (strpos(
+                    $server['version'],
+                    $config['current_package_enterprise']
+                ) === false
+                ) {
+                    $missed++;
+                    $title_ver_misaligned = __(
+                        '%s version misaligned with Console',
+                        $server['name']
+                    );
+                    $message_ver_misaligned = __(
+                        'Server %s and this console have different versions. This might cause several malfunctions. Please, update this server.',
+                        $server['name']
+                    );
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SERVER.MISALIGNED',
+                            'title'   => __($title_ver_misaligned),
+                            'message' => __($message_ver_misaligned),
+                            'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                        ]
+                    );
+                }
             }
+        }
+
+        // Cleanup notifications if exception is recovered.
+        if ($missed == 0) {
+            $this->cleanNotifications('NOTIF.SERVER.MISALIGNED');
         }
     }
 

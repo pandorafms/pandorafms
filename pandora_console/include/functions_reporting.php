@@ -179,6 +179,10 @@ function reporting_make_reporting_data(
     $report['group_name'] = groups_get_name($report['id_group']);
     $report['contents'] = [];
 
+    if (empty($report['period'])) {
+        $report['period'] = $period;
+    }
+
     if (empty($contents)) {
         return reporting_check_structure_report($report);
     }
@@ -186,6 +190,8 @@ function reporting_make_reporting_data(
     $metaconsole_on = is_metaconsole();
     $index_content = 0;
     foreach ($contents as $content) {
+        $content['name'] = io_safe_input($content['name']);
+        $content['description'] = io_safe_input($content['description']);
         if (!empty($content['id_agent_module']) && !empty($content['id_agent'])
             && tags_has_user_acl_tags($config['id_user'])
         ) {
@@ -224,7 +230,12 @@ function reporting_make_reporting_data(
 
         // General reports with 0 period means last value
         // Avoid to overwrite it by template value.
-        if (!empty($period) && ($content['type'] !== 'general' && $content['period'] != 0)) {
+        $general_last_value = false;
+        if ($content['type'] === 'general' && $content['period'] == 0) {
+            $general_last_value = true;
+        }
+
+        if (!empty($period) && $general_last_value === false) {
             $content['period'] = $period;
         }
 
@@ -283,16 +294,8 @@ function reporting_make_reporting_data(
         }
 
         if (isset($content['style']['name_label'])) {
-            // Add macros name.
-            $items_label = [];
-            $items_label['type'] = $content['type'];
-            $items_label['id_agent'] = $content['id_agent'];
-            $items_label['id_agent_module'] = $content['id_agent_module'];
-            $items_label['modules'] = $modules_to_macro;
-            $items_label['agents'] = $agents_to_macro;
-            $items_label['visual_format'] = $visual_format;
-            $metaconsole_on = is_metaconsole();
             $server_name = $content['server_name'];
+            $metaconsole_on = is_metaconsole();
 
             // Metaconsole connection.
             if ($metaconsole_on && $server_name != '') {
@@ -301,6 +304,15 @@ function reporting_make_reporting_data(
                     continue;
                 }
             }
+
+            // Add macros name.
+            $items_label = [];
+            $items_label['type'] = $content['type'];
+            $items_label['id_agent'] = $content['id_agent'];
+            $items_label['id_agent_module'] = $content['id_agent_module'];
+            $items_label['modules'] = $modules_to_macro;
+            $items_label['agents'] = $agents_to_macro;
+            $items_label['visual_format'] = $visual_format;
 
             $items_label['agent_description'] = agents_get_description(
                 $content['id_agent']
@@ -314,6 +326,17 @@ function reporting_make_reporting_data(
             $items_label['agent_alias'] = agents_get_alias(
                 $content['id_agent']
             );
+
+            // This is for metaconsole. It is an array with modules and server (id node).
+            if (is_array($content['id_agent_module'])) {
+                $modules_server_array = $content['id_agent_module'];
+                $modules_array = [];
+                foreach ($modules_server_array as $value) {
+                    $modules_array[] = $value['module'];
+                }
+
+                $content['id_agent_module'] = $modules_array;
+            }
 
             $modules = agents_get_modules(
                 $agent_value,
@@ -505,43 +528,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            /*
-                case 'MTTR':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'MTTR',
-                    $pdf
-                );
-                break;
-
-                case 'MTBF':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'MTBF',
-                    $pdf
-                );
-                break;
-
-                case 'TTO':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'TTO',
-                    $pdf
-                );
-                break;
-
-                case 'TTRT':
-                $report['contents'][] = reporting_value(
-                    $report,
-                    $content,
-                    'TTRT',
-                    $pdf
-                );
-                break;
-            */
             case 'agent_configuration':
                 $report['contents'][] = io_safe_output(
                     reporting_agent_configuration(
@@ -787,7 +773,7 @@ function reporting_make_reporting_data(
                     continue;
                 }
 
-                    $report['contents'][] = $report_control;
+                $report['contents'][] = $report_control;
             break;
 
             case 'top_n':
@@ -886,6 +872,8 @@ function reporting_SLA(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -912,6 +900,10 @@ function reporting_SLA(
     $edge_interval = 10;
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $slas = db_get_all_rows_field_filter(
             'treport_content_sla_combined',
             'id_report_content',
@@ -1386,6 +1378,8 @@ function reporting_event_top_n(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $top_n = $content['top_n'];
 
     switch ($top_n) {
@@ -1416,6 +1410,10 @@ function reporting_event_top_n(
     $return['top_n'] = $content['top_n_value'];
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         // Get all the related data.
         $sql = sprintf(
             'SELECT id_agent_module, server_name
@@ -1584,7 +1582,10 @@ function reporting_event_top_n(
                         $data['module'] = $module_name[$i];
 
                         $data['value'] = $dt;
-                        $data['formated_value'] = format_for_graph($dt, 2).' '.$units[$i];
+
+                        $divisor = get_data_multiplier($units[$i]);
+
+                        $data['formated_value'] = format_for_graph($dt, 2, '.', ',', $divisor, $units[$i]);
                         $data_return[] = $data;
                     }
 
@@ -1637,12 +1638,15 @@ function reporting_event_top_n(
 
                     $data_pie_graph[$item_name] = $data_top[$i];
                     $data_hbar[$item_name]['g'] = $data_top[$i];
+
+                    $divisor = get_data_multiplier($units[$i]);
+
                     if ($show_graph == 0 || $show_graph == 1) {
                         $data = [];
                         $data['agent'] = $an;
                         $data['module'] = $module_name[$i];
                         $data['value'] = $data_top[$i];
-                        $data['formated_value'] = format_for_graph($data_top[$i], 2).' '.$units[$i];
+                        $data['formated_value'] = format_for_graph($data_top[$i], 2, '.', ',', $divisor, $units[$i]);
                         $data_return[] = $data;
                     }
 
@@ -1718,14 +1722,15 @@ function reporting_event_top_n(
                     $i++;
                 }
 
+                $unit = $data_top_values['units'][0];
                 $avg = ($avg / $i);
 
                 $return['resume']['min']['value'] = $min;
-                $return['resume']['min']['formated_value'] = format_for_graph($min, 2);
+                $return['resume']['min']['formated_value'] = format_for_graph($min, 2, '.', ',', $divisor, $unit);
                 $return['resume']['avg']['value'] = $avg;
-                $return['resume']['avg']['formated_value'] = format_for_graph($avg, 2);
+                $return['resume']['avg']['formated_value'] = format_for_graph($avg, 2, '.', ',', $divisor, $unit);
                 $return['resume']['max']['value'] = $max;
-                $return['resume']['max']['formated_value'] = format_for_graph($max, 2);
+                $return['resume']['max']['formated_value'] = format_for_graph($max, 2, '.', ',', $divisor, $unit);
             }
 
             $return['data'] = $data_return;
@@ -1764,6 +1769,8 @@ function reporting_event_report_group(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = groups_get_name($content['id_group'], true);
     if (!empty($content['style']['event_filter_search'])) {
         $return['subtitle'] .= ' ('.$content['style']['event_filter_search'].')';
@@ -1787,6 +1794,27 @@ function reporting_event_report_group(
     $event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
     $event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
     $event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
+
+    if (isset($content['recursion']) && $content['recursion'] == 1 && $content['id_group'] != 0) {
+        $propagate = db_get_value(
+            'propagate',
+            'tgrupo',
+            'id_grupo',
+            $content['id_group']
+        );
+
+        if ($propagate) {
+            $children = groups_get_children($content['id_group']);
+            $_groups = [ $content['id_group'] ];
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    $_groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            $content['id_group'] = $_groups;
+        }
+    }
 
     $data = events_get_agent(
         false,
@@ -2023,6 +2051,8 @@ function reporting_event_report_module(
     ];
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.io_safe_output($module_name);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -2129,6 +2159,8 @@ function reporting_inventory_changes($report, $content, $type)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = agents_get_alias($content['id_agent']);
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -2196,6 +2228,8 @@ function reporting_inventory($report, $content, $type)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -2265,6 +2299,8 @@ function reporting_agent_module($report, $content)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $group_name = groups_get_name($content['id_group'], true);
     if ($content['id_module_group'] == 0) {
         $module_group_name = __('All');
@@ -2353,6 +2389,8 @@ function reporting_exception(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $exception_condition = $content['exception_condition'];
     switch ($exception_condition) {
         case REPORT_EXCEPTION_CONDITION_EVERYTHING:
@@ -2439,6 +2477,9 @@ function reporting_exception(
             WHERE id_report_content = %d',
             $content['id_rc']
         );
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
 
         $exceptions = db_process_sql($sql);
     } else {
@@ -2824,14 +2865,15 @@ function reporting_group_report($report, $content)
         $content['name'] = __('Group Report');
     }
 
-    if ($config['metaconsole']) {
-        $id_meta = metaconsole_get_id_server($content['server_name']);
-
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
+    if (is_metaconsole()) {
+        $server = metaconsole_get_connection_names();
+        $connection = metaconsole_get_connection($server);
     }
 
+    $return['server_name'] = $server[0];
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = groups_get_name($content['id_group'], true);
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -2934,6 +2976,8 @@ function reporting_event_report_agent(
 
     $return['label'] = $label;
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = io_safe_output($agent_alias);
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -3143,6 +3187,8 @@ function reporting_historical_data($report, $content)
     ];
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -3266,6 +3312,8 @@ function reporting_database_serialized($report, $content)
     ];
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -3276,6 +3324,7 @@ function reporting_database_serialized($report, $content)
     }
 
     $return['keys'] = $keys;
+    $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
 
@@ -3401,6 +3450,8 @@ function reporting_group_configuration($report, $content)
     $group_name = groups_get_name($content['id_group'], true);
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $group_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -3474,6 +3525,8 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     $group_name = groups_get_name($content['id_group']);
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $group_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -3488,7 +3541,8 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     $return['failed'] = null;
     $return['data'] = [];
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole()) {
+        metaconsole_restore_db();
         $server_names = metaconsole_get_connection_names();
         if (isset($server_names) && is_array($server_names)) {
             foreach ($server_names as $key => $value) {
@@ -3505,7 +3559,8 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
                         $content,
                         $report,
                         $fullscale,
-                        $pdf
+                        $pdf,
+                        $id_meta
                     );
                     metaconsole_restore_db();
                 }
@@ -3558,15 +3613,17 @@ function agents_get_network_interfaces_array(
                 $width = null;
 
                 $params = [
-                    'period'     => $content['period'],
-                    'width'      => $width,
-                    'unit_name'  => array_fill(0, count($interface['traffic']), __('bytes/s')),
-                    'date'       => $report['datetime'],
-                    'only_image' => $pdf,
-                    'homeurl'    => $config['homeurl'],
-                    'fullscale'  => $fullscale,
-                    'server_id'  => $id_meta,
-                    'height'     => $config['graph_image_height'],
+                    'period'             => $content['period'],
+                    'width'              => $width,
+                    'unit_name'          => array_fill(0, count($interface['traffic']), __('bytes/s')),
+                    'date'               => $report['datetime'],
+                    'only_image'         => $pdf,
+                    'homeurl'            => $config['homeurl'],
+                    'fullscale'          => $fullscale,
+                    'server_id'          => $id_meta,
+                    'height'             => $config['graph_image_height'],
+                    'landscape'          => $content['landscape'],
+                    'return_img_base_64' => true,
                 ];
 
                 $params_combined = [
@@ -3578,11 +3635,21 @@ function agents_get_network_interfaces_array(
                     case 'dinamic':
                     case 'static':
                         if (!empty($interface['traffic'])) {
-                            $row_interface['chart'] = graphic_combined_module(
-                                array_values($interface['traffic']),
-                                $params,
-                                $params_combined
-                            );
+                            if ($pdf === false) {
+                                $row_interface['chart'] = graphic_combined_module(
+                                    array_values($interface['traffic']),
+                                    $params,
+                                    $params_combined
+                                );
+                            } else {
+                                $row_interface['chart'] = '<img src="data:image/jpg;base64,';
+                                $row_interface['chart'] .= graphic_combined_module(
+                                    array_values($interface['traffic']),
+                                    $params,
+                                    $params_combined
+                                );
+                                $row_interface['chart'] .= '" />';
+                            }
                         }
                     break;
 
@@ -3612,7 +3679,7 @@ function agents_get_network_interfaces_array(
 /**
  * reporting alert get fired
  */
-function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime)
+function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime, $return_empty=true)
 {
     $fired = [];
     $firedTimes = get_module_alert_fired(
@@ -3642,7 +3709,11 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
         if ($fireTime['utimestamp'] > $datelimit && $fireTime['utimestamp'] <= $datetime) {
             $fired[] = $fireTime['timestamp'];
         } else {
-            $fired[] = $empty;
+            if ($return_empty === true) {
+                $fired[] = $empty;
+            } else {
+                continue;
+            }
         }
     }
 
@@ -3673,6 +3744,8 @@ function reporting_alert_report_group($report, $content)
     $group_name = groups_get_name($content['id_group'], true);
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $group_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -3752,10 +3825,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['custom'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
-                        $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+
+                    if ($fired == 0) {
+                        $data_action[$naction]['fired'] = __('Not triggered');
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3764,10 +3842,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['default'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
-                        $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+
+                    if ($fired == 0) {
+                        $data_action[$naction]['fired'] = __('Not triggered');
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3776,10 +3859,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['unavailable'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
-                        $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+
+                    if ($fired == 0) {
+                        $data_action[$naction]['fired'] = __('Not triggered');
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3793,7 +3881,8 @@ function reporting_alert_report_group($report, $content)
                 $agent_module['id_agent_module'],
                 $actions['id'],
                 (int) $content['period'],
-                (int) $report['datetime']
+                (int) $report['datetime'],
+                false
             );
             $module_actions['actions']        = $data_action;
 
@@ -3858,6 +3947,8 @@ function reporting_alert_report_agent($report, $content)
     ];
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -4026,6 +4117,8 @@ function reporting_alert_report_module($report, $content)
     ];
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -4187,8 +4280,23 @@ function reporting_sql_graph(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
+
+    $module_source = db_get_all_rows_sql(
+        'SELECT id_agent_module
+         FROM tgraph_source
+         WHERE id_graph = '.$content['id_gs']
+    );
+
+    if (isset($module_source) && is_array($module_source)) {
+        $modules = [];
+        foreach ($module_source as $key => $value) {
+            $modules[$key] = $value['id_agent_module'];
+        }
+    }
 
     switch ($type) {
         case 'dinamic':
@@ -4206,6 +4314,9 @@ function reporting_sql_graph(
         break;
 
         case 'data':
+            $data = [];
+            $data = db_get_all_rows_sql($content['external_source']);
+            $return['chart'] = $data;
         break;
     }
 
@@ -4267,6 +4378,8 @@ function reporting_monitor_report($report, $content)
     ];
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -4279,6 +4392,7 @@ function reporting_monitor_report($report, $content)
         );
     }
 
+    $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
 
@@ -4373,6 +4487,8 @@ function reporting_netflow(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -4406,6 +4522,7 @@ function reporting_netflow(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        case 'data':
             $return['chart'] = netflow_draw_item(
                 ($report['datetime'] - $content['period']),
                 $report['datetime'],
@@ -4450,13 +4567,17 @@ function reporting_prediction_date($report, $content)
     $agent_name = io_safe_output(
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
+    $agent_name_db = io_safe_output(modules_get_agentmodule_agent_name($content['id_agent_module']));
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
+    $return['agent_name_db'] = $agent_name_db;
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
 
@@ -4501,12 +4622,14 @@ function reporting_projection_graph(
 
     $module_name = io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
     $agent_name = io_safe_output(modules_get_agentmodule_agent_alias($content['id_agent_module']));
+    $agent_name_db = io_safe_output(modules_get_agentmodule_agent_name($content['id_agent_module']));
 
     $return['title']       = $content['name'];
     $return['subtitle']    = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date']        = reporting_get_date_text($report, $content);
     $return['label']       = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['agent_name_db'] = $agent_name_db;
     $return['agent_name']  = $agent_name;
     $return['module_name'] = $module_name;
 
@@ -4516,27 +4639,38 @@ function reporting_projection_graph(
         case 'dinamic':
         case 'static':
             $params = [
-                'period'     => $content['period'],
-                'width'      => $width,
-                'date'       => $report['datetime'],
-                'unit'       => '',
-                'only_image' => $pdf,
-                'homeurl'    => ui_get_full_url(false, false, false, false).'/',
-                'ttl'        => $ttl,
-                'server_id'  => $id_meta,
-                'height'     => $config['graph_image_height'],
+                'period'             => $content['period'],
+                'width'              => $width,
+                'date'               => $report['datetime'],
+                'unit'               => '',
+                'only_image'         => $pdf,
+                'homeurl'            => ui_get_full_url(false, false, false, false).'/',
+                'ttl'                => $ttl,
+                'server_id'          => $id_meta,
+                'height'             => $config['graph_image_height'],
+                'landscape'          => $content['landscape'],
+                'return_img_base_64' => true,
             ];
 
             $params_combined = [
                 'projection' => $content['top_n_value'],
             ];
 
-            $return['chart'] = graphic_combined_module(
-                [$content['id_agent_module']],
-                $params,
-                $params_combined
-            );
-
+            if ($pdf === true) {
+                $return['chart'] = '<img src="data:image/jpg;base64,';
+                $return['chart'] .= graphic_combined_module(
+                    [$content['id_agent_module']],
+                    $params,
+                    $params_combined
+                );
+                $return['chart'] .= '" />';
+            } else {
+                $return['chart'] = graphic_combined_module(
+                    [$content['id_agent_module']],
+                    $params,
+                    $params_combined
+                );
+            }
         break;
 
         case 'data':
@@ -4570,6 +4704,8 @@ function reporting_agent_configuration($report, $content)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -4702,23 +4838,6 @@ function reporting_value($report, $content, $type, $pdf=false)
         case 'sum':
             $return['type'] = 'sumatory';
         break;
-
-        /*
-            case 'MTTR':
-            $return['type'] = 'MTTR';
-            break;
-
-            case 'MTBF':
-            $return['type'] = 'MTBF';
-            break;
-
-            case 'TTO':
-            $return['type'] = 'TTO';
-            break;
-
-            case 'TTRT':
-            $return['type'] = 'TTRT';
-        break;*/
     }
 
     if (empty($content['name'])) {
@@ -4738,23 +4857,6 @@ function reporting_value($report, $content, $type, $pdf=false)
             case 'sum':
                 $content['name'] = __('Summatory');
             break;
-
-            /*
-                case 'MTTR':
-                $content['name'] = __('MTTR');
-                break;
-
-                case 'MTBF':
-                $content['name'] = __('MTBF');
-                break;
-
-                case 'TTO':
-                $content['name'] = __('TTO');
-                break;
-
-                case 'TTRT':
-                $content['name'] = __('TTRT');
-            break;*/
         }
     }
 
@@ -4771,6 +4873,9 @@ function reporting_value($report, $content, $type, $pdf=false)
     $agent_name = io_safe_output(
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
+    $agent_name_db = io_safe_output(
+        modules_get_agentmodule_agent_name($content['id_agent_module'])
+    );
     $unit = db_get_value(
         'unit',
         'tagente_modulo',
@@ -4779,6 +4884,8 @@ function reporting_value($report, $content, $type, $pdf=false)
     );
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -4787,6 +4894,7 @@ function reporting_value($report, $content, $type, $pdf=false)
     $return['id_agent'] = $content['id_agent'];
     $return['id_agent_module'] = $content['id_agent_module'];
 
+    $return['agent_name_db'] = $agent_name_db;
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
 
@@ -4795,25 +4903,29 @@ function reporting_value($report, $content, $type, $pdf=false)
     }
 
     $params = [
-        'agent_module_id' => $content['id_agent_module'],
-        'period'          => $content['period'],
-        'width'           => '600px',
-        'pure'            => false,
-        'date'            => $report['datetime'],
-        'only_image'      => $only_image,
-        'homeurl'         => ui_get_full_url(false, false, false, false),
-        'ttl'             => 1,
-        'type_graph'      => $config['type_module_charts'],
-        'time_interval'   => $content['lapse'],
-        'server_id'       => $id_meta,
-        'height'          => $config['graph_image_height'],
-        'fullscale'       => true,
+        'agent_module_id'    => $content['id_agent_module'],
+        'period'             => $content['period'],
+        'width'              => '600px',
+        'pure'               => false,
+        'date'               => $report['datetime'],
+        'only_image'         => $only_image,
+        'homeurl'            => ui_get_full_url(false, false, false, false),
+        'ttl'                => 1,
+        'type_graph'         => $config['type_module_charts'],
+        'time_interval'      => $content['lapse'],
+        'server_id'          => $id_meta,
+        'height'             => $config['graph_image_height'],
+        'fullscale'          => true,
+        'landscape'          => $content['landscape'],
+        'return_img_base_64' => true,
     ];
 
     switch ($type) {
         case 'max':
         case 'min':
         case 'avg':
+            $divisor = get_data_multiplier($unit);
+
             if ($content['lapse_calc'] == 0) {
                 switch ($type) {
                     case 'max':
@@ -4844,7 +4956,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
                 } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
+                    $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
                 }
             } else {
                 $return['visual_format'] = $content['visual_format'];
@@ -4852,17 +4964,17 @@ function reporting_value($report, $content, $type, $pdf=false)
                 switch ($type) {
                     case 'max':
                         $params['force_interval'] = 'max_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
 
                     case 'min':
                         $params['force_interval'] = 'min_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
 
                     case 'avg':
                         $params['force_interval'] = 'avg_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision']).' '.$unit;
+                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
                     break;
                 }
 
@@ -4873,28 +4985,34 @@ function reporting_value($report, $content, $type, $pdf=false)
                 ];
 
                 if ($content['visual_format'] != 1) {
-                    $graph = grafico_modulo_sparse($params);
+                    if ($only_image === false) {
+                        $graph = grafico_modulo_sparse($params);
+                    } else {
+                        $graph = '<img src="data:image/jpg;base64,'.grafico_modulo_sparse($params).'" />';
+                    }
+
                     $return['data'][] = ['value' => $graph];
                 }
 
                 if ($content['visual_format'] != 2) {
                     $time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module'], true);
-                    for ($i = $report['datetime']; $i > ($report['datetime'] - $content['period']); $i -= $content['lapse']) {
+
+                    for ($i = ($report['datetime'] - $content['period']); $i < $report['datetime']; $i += $content['lapse']) {
                         $row = [];
-                        $row[__('Lapse')] = date('Y-m-d H:i:s', ($i - $content['lapse'] + 1)).' to '.date('Y-m-d H:i:s', $i);
+                        $row[__('Lapse')] = date('Y-m-d H:i:s', ($i + 1)).' to '.date('Y-m-d H:i:s', (($i + $content['lapse']) ));
 
                         if ($i > $time_begin['utimestamp']) {
                             switch ($type) {
                                 case 'max':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], $i), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
 
                                 case 'min':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], $i), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
 
                                 case 'avg':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], $i), $config['graph_precision']).' '.$unit;
+                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
                                 break;
                             }
                         } else {
@@ -4923,54 +5041,11 @@ function reporting_value($report, $content, $type, $pdf=false)
             if (!$config['simple_module_value']) {
                 $formated_value = $value;
             } else {
-                $formated_value = format_for_graph($value, $config['graph_precision']).' '.$unit;
+                $divisor = get_data_multiplier($unit);
+
+                $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
             }
         break;
-
-        /*
-            case 'MTTR':
-            $value = reporting_get_agentmodule_mttr(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            $formated_value = null;
-            break;
-
-            case 'MTBF':
-            $value = reporting_get_agentmodule_mtbf(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            $formated_value = null;
-            break;
-
-            case 'TTO':
-            $value = reporting_get_agentmodule_tto(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            if ($value == 0) {
-                $formated_value = null;
-            } else {
-                $formated_value = human_time_description_raw($value);
-            }
-            break;
-
-            case 'TTRT':
-            $value = reporting_get_agentmodule_ttr(
-                $content['id_agent_module'],
-                $content['period'],
-                $report['datetime']
-            );
-            if ($value == 0) {
-                $formated_value = null;
-            } else {
-                $formated_value = human_time_description_raw($value);
-            }
-        break;*/
     }
 
     $return['data'] = [
@@ -4998,6 +5073,8 @@ function reporting_url($report, $content, $type='dinamic')
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
@@ -5035,6 +5112,8 @@ function reporting_text($report, $content)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
@@ -5056,6 +5135,8 @@ function reporting_sql($report, $content)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
@@ -5069,37 +5150,13 @@ function reporting_sql($report, $content)
     }
 
     if ($content['treport_custom_sql_id'] != 0) {
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        '`sql`',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-
-            case 'postgresql':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        '"sql"',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-
-            case 'oracle':
-                $sql = io_safe_output(
-                    db_get_value_filter(
-                        'sql',
-                        'treport_custom_sql',
-                        ['id' => $content['treport_custom_sql_id']]
-                    )
-                );
-            break;
-        }
+        $sql = io_safe_output(
+            db_get_value_filter(
+                '`sql`',
+                'treport_custom_sql',
+                ['id' => $content['treport_custom_sql_id']]
+            )
+        );
     } else {
         $sql = io_safe_output($content['external_source']);
     }
@@ -6203,6 +6260,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text(
         $report,
@@ -6217,23 +6276,6 @@ function reporting_availability($report, $content, $date=false, $time=false)
         $return['kind_availability'] = 'module';
     }
 
-    if (empty($content['subitems'])) {
-        $sql = sprintf(
-            '
-            SELECT id_agent_module,
-                server_name, operation
-            FROM treport_content_item
-            WHERE id_report_content = %d',
-            $content['id_rc']
-        );
-
-        $items = db_process_sql($sql);
-    } else {
-        $items = $content['subitems'];
-    }
-
-    $data = [];
-
     $avg = 0;
     $min = null;
     $min_text = '';
@@ -6241,180 +6283,241 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $max_text = '';
     $count = 0;
 
-    $style = io_safe_output($content['style']);
-    if ($style['hide_notinit_agents']) {
-        $aux_id_agents = $agents;
-        $i = 0;
-        foreach ($items as $item) {
-            $utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
-            if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))) {
-                unset($items[$i]);
+    if ($content['failover_mode']) {
+        $availability_graph_data = reporting_availability_graph($report, $content, false, true);
+        $data = $availability_graph_data['data'];
+
+        foreach ($data as $key => $item_data) {
+            $percent_ok = $item_data['sla_value'];
+            $data[$key]['SLA'] = $percent_ok;
+
+            if ($item_data['failover'] != 'result') {
+                $data[$key]['availability_item'] = $item_data['module'];
+                $text = $item_data['agent'].' ('.$item_data['module'].')';
+                $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
+                if (is_null($min)) {
+                    $min = $percent_ok;
+                    $min_text = $text;
+                } else {
+                    if ($min > $percent_ok) {
+                        $min = $percent_ok;
+                        $min_text = $text;
+                    }
+                }
+
+                if (is_null($max)) {
+                    $max = $percent_ok;
+                    $max_text = $text;
+                } else {
+                    if ($max < $percent_ok) {
+                        $max = $percent_ok;
+                        $max_text = $text;
+                    }
+                }
+
+                $count++;
+            } else {
+                $data[$key]['availability_item'] = '--';
+                $data[$key]['agent'] = '--';
+            }
+        }
+    } else {
+        if (empty($content['subitems'])) {
+            if (is_metaconsole()) {
+                metaconsole_restore_db();
             }
 
-            $i++;
-        }
-    }
+            $sql = sprintf(
+                '
+                SELECT id_agent_module, id_agent_module_failover,
+                    server_name, operation
+                FROM treport_content_item
+                WHERE id_report_content = %d',
+                $content['id_rc']
+            );
 
-    if (!empty($items)) {
-        foreach ($items as $item) {
-            // aaMetaconsole connection
-            $server_name = $item['server_name'];
-            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
-                $connection = metaconsole_get_connection($server_name);
-                if (metaconsole_load_external_db($connection) != NOERR) {
-                    // ui_print_error_message ("Error connecting to ".$server_name);
+            $items = db_process_sql($sql);
+        } else {
+            $items = $content['subitems'];
+        }
+
+        $data = [];
+
+        $style = io_safe_output($content['style']);
+        if ($style['hide_notinit_agents']) {
+            $aux_id_agents = $agents;
+            $i = 0;
+            foreach ($items as $item) {
+                $utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
+                if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))) {
+                    unset($items[$i]);
+                }
+
+                $i++;
+            }
+        }
+
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                // aaMetaconsole connection
+                $server_name = $item['server_name'];
+                if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                    $connection = metaconsole_get_connection($server_name);
+                    if (metaconsole_load_external_db($connection) != NOERR) {
+                        // ui_print_error_message ("Error connecting to ".$server_name);
+                        continue;
+                    }
+                }
+
+                if (modules_is_disable_agent($item['id_agent_module'])
+                    || modules_is_not_init($item['id_agent_module'])
+                ) {
+                    // Restore dbconnection
+                    if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                        metaconsole_restore_db();
+                    }
+
                     continue;
                 }
-            }
 
-            if (modules_is_disable_agent($item['id_agent_module'])
-                || modules_is_not_init($item['id_agent_module'])
-            ) {
+                $row = [];
+
+                $text = '';
+
+                $row['data'] = reporting_advanced_sla(
+                    $item['id_agent_module'],
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    null,
+                    // min_value -> dynamic
+                    null,
+                    // max_value -> dynamic
+                    null,
+                    // inverse_interval -> dynamic
+                    [
+                        '1' => $content['sunday'],
+                        '2' => $content['monday'],
+                        '3' => $content['tuesday'],
+                        '4' => $content['wednesday'],
+                        '5' => $content['thursday'],
+                        '6' => $content['friday'],
+                        '7' => $content['saturday'],
+                    ],
+                    $content['time_from'],
+                    $content['time_to']
+                );
+
+                // HACK it is saved in show_graph field.
+                // Show interfaces instead the modules
+                if ($content['show_graph']) {
+                    $text = $row['data']['availability_item'] = agents_get_address(
+                        modules_get_agentmodule_agent($item['id_agent_module'])
+                    );
+
+                    if (empty($text)) {
+                        $text = $row['data']['availability_item'] = __('No Address');
+                    }
+                } else {
+                    $text = $row['data']['availability_item'] = modules_get_agentmodule_name(
+                        $item['id_agent_module']
+                    );
+                }
+
+                $row['data']['agent'] = modules_get_agentmodule_agent_alias(
+                    $item['id_agent_module']
+                );
+
+                $text = $row['data']['agent'].' ('.$text.')';
+
                 // Restore dbconnection
                 if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
                     metaconsole_restore_db();
                 }
 
-                continue;
-            }
+                // find order
+                $row['data']['order'] = $row['data']['SLA'];
 
-            $row = [];
-
-            $text = '';
-
-            $row['data'] = reporting_advanced_sla(
-                $item['id_agent_module'],
-                ($report['datetime'] - $content['period']),
-                $report['datetime'],
-                null,
-                // min_value -> dynamic
-                null,
-                // max_value -> dynamic
-                null,
-                // inverse_interval -> dynamic
-                [
-                    '1' => $content['sunday'],
-                    '2' => $content['monday'],
-                    '3' => $content['tuesday'],
-                    '4' => $content['wednesday'],
-                    '5' => $content['thursday'],
-                    '6' => $content['friday'],
-                    '7' => $content['saturday'],
-                ],
-                $content['time_from'],
-                $content['time_to']
-            );
-
-            // HACK it is saved in show_graph field.
-            // Show interfaces instead the modules
-            if ($content['show_graph']) {
-                $text = $row['data']['availability_item'] = agents_get_address(
-                    modules_get_agentmodule_agent($item['id_agent_module'])
-                );
-
-                if (empty($text)) {
-                    $text = $row['data']['availability_item'] = __('No Address');
-                }
-            } else {
-                $text = $row['data']['availability_item'] = modules_get_agentmodule_name(
-                    $item['id_agent_module']
-                );
-            }
-
-            $row['data']['agent'] = modules_get_agentmodule_agent_alias(
-                $item['id_agent_module']
-            );
-
-            $text = $row['data']['agent'].' ('.$text.')';
-
-            // Restore dbconnection
-            if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
-                metaconsole_restore_db();
-            }
-
-            // find order
-            $row['data']['order'] = $row['data']['SLA'];
-
-            $percent_ok = $row['data']['SLA'];
-            $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
-            if (is_null($min)) {
-                $min = $percent_ok;
-                $min_text = $text;
-            } else {
-                if ($min > $percent_ok) {
+                $percent_ok = $row['data']['SLA'];
+                $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
+                if (is_null($min)) {
                     $min = $percent_ok;
                     $min_text = $text;
+                } else {
+                    if ($min > $percent_ok) {
+                        $min = $percent_ok;
+                        $min_text = $text;
+                    }
                 }
-            }
 
-            if (is_null($max)) {
-                $max = $percent_ok;
-                $max_text = $text;
-            } else {
-                if ($max < $percent_ok) {
+                if (is_null($max)) {
                     $max = $percent_ok;
                     $max_text = $text;
+                } else {
+                    if ($max < $percent_ok) {
+                        $max = $percent_ok;
+                        $max_text = $text;
+                    }
                 }
+
+                $data[] = $row['data'];
+                $count++;
             }
 
-            $data[] = $row['data'];
-            $count++;
-        }
+            switch ($content['order_uptodown']) {
+                case REPORT_ITEM_ORDER_BY_AGENT_NAME:
+                    $temp = [];
+                    foreach ($data as $row) {
+                        $i = 0;
+                        foreach ($temp as $t_row) {
+                            if (strcmp($row['data']['agent'], $t_row['agent']) < 0) {
+                                break;
+                            }
 
-        switch ($content['order_uptodown']) {
-            case REPORT_ITEM_ORDER_BY_AGENT_NAME:
-                $temp = [];
-                foreach ($data as $row) {
-                    $i = 0;
-                    foreach ($temp as $t_row) {
-                        if (strcmp($row['data']['agent'], $t_row['agent']) < 0) {
-                            break;
+                            $i++;
                         }
 
-                        $i++;
+                        array_splice($temp, $i, 0, [$row]);
                     }
 
-                    array_splice($temp, $i, 0, [$row]);
-                }
+                    $data = $temp;
+                break;
 
-                $data = $temp;
-            break;
+                case REPORT_ITEM_ORDER_BY_ASCENDING:
+                    $temp = [];
+                    foreach ($data as $row) {
+                        $i = 0;
+                        foreach ($temp as $t_row) {
+                            if ($row['data']['SLA'] < $t_row['order']) {
+                                break;
+                            }
 
-            case REPORT_ITEM_ORDER_BY_ASCENDING:
-                $temp = [];
-                foreach ($data as $row) {
-                    $i = 0;
-                    foreach ($temp as $t_row) {
-                        if ($row['data']['SLA'] < $t_row['order']) {
-                            break;
+                            $i++;
                         }
 
-                        $i++;
+                        array_splice($temp, $i, 0, [$row]);
                     }
 
-                    array_splice($temp, $i, 0, [$row]);
-                }
+                    $data = $temp;
+                break;
 
-                $data = $temp;
-            break;
+                case REPORT_ITEM_ORDER_BY_DESCENDING:
+                    $temp = [];
+                    foreach ($data as $row) {
+                        $i = 0;
+                        foreach ($temp as $t_row) {
+                            if ($row['data']['SLA'] > $t_row['order']) {
+                                break;
+                            }
 
-            case REPORT_ITEM_ORDER_BY_DESCENDING:
-                $temp = [];
-                foreach ($data as $row) {
-                    $i = 0;
-                    foreach ($temp as $t_row) {
-                        if ($row['data']['SLA'] > $t_row['order']) {
-                            break;
+                            $i++;
                         }
 
-                        $i++;
+                        array_splice($temp, $i, 0, [$row]);
                     }
 
-                    array_splice($temp, $i, 0, [$row]);
-                }
-
-                $data = $temp;
-            break;
+                    $data = $temp;
+                break;
+            }
         }
     }
 
@@ -6453,7 +6556,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
   *
   * @return array Generates a structure the report.
   */
-function reporting_availability_graph($report, $content, $pdf=false)
+function reporting_availability_graph($report, $content, $pdf=false, $failover=false)
 {
     global $config;
     $return = [];
@@ -6468,6 +6571,8 @@ function reporting_availability_graph($report, $content, $pdf=false)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['failover_type'] = $content['failover_type'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -6487,9 +6592,13 @@ function reporting_availability_graph($report, $content, $pdf=false)
     $edge_interval = 10;
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $slas = io_safe_output(
             db_get_all_rows_field_filter(
-                'treport_content_sla_combined',
+                ($failover) ? 'treport_content_item' : 'treport_content_sla_combined',
                 'id_report_content',
                 $content['id_rc']
             )
@@ -6894,9 +7003,19 @@ function prepare_data_for_paint(
     $alias_agent = modules_get_agentmodule_agent_alias(
         $sla['id_agent_module']
     );
-    $name_module = modules_get_agentmodule_name(
-        $sla['id_agent_module']
-    );
+
+    if ($content['show_graph']) {
+        $name_module = agents_get_address(
+            modules_get_agentmodule_agent($sla['id_agent_module'])
+        );
+        if (empty($name_module)) {
+            $name_module = __('No Address');
+        }
+    } else {
+        $name_module = modules_get_agentmodule_name(
+            $sla['id_agent_module']
+        );
+    }
 
     $data['agent'] = $alias_agent;
     $data['module'] = $name_module;
@@ -7072,6 +7191,8 @@ function reporting_increment($report, $content)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['id_agent_module'] = $content['id_agent_module'];
     $return['id_agent'] = $content['id_agent'];
@@ -7089,6 +7210,7 @@ function reporting_increment($report, $content)
                                      AND utimestamp <= '.(time() - $period).' ORDER BY utimestamp DESC';
         $sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = '.$id_agent_module.' ORDER BY utimestamp DESC';
 
+        metaconsole_restore_db();
         $servers = db_get_all_rows_sql(
             'SELECT *
         FROM tmetaconsole_setup
@@ -7171,6 +7293,8 @@ function reporting_general($report, $content)
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text(
         $report,
@@ -7192,6 +7316,10 @@ function reporting_general($report, $content)
     $return['show_in_same_row'] = $content['style']['show_in_same_row'];
 
     if (empty($content['subitems'])) {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
         $generals = db_get_all_rows_filter(
             'treport_content_item',
             ['id_report_content' => $content['id_rc']]
@@ -7282,6 +7410,8 @@ function reporting_general($report, $content)
             }
         }
 
+        $divisor = get_data_multiplier($unit);
+
         switch ($content['group_by_agent']) {
             case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
                 $id_agent_module[$index] = $row['id_agent_module'];
@@ -7312,7 +7442,7 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2).' '.$unit;
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                     }
                 }
             break;
@@ -7331,7 +7461,7 @@ function reporting_general($report, $content)
 
             if ($change_min) {
                 $return['min']['value'] = $data_res[$index];
-                $return['min']['formated_value'] = format_for_graph($data_res[$index], 2).' '.$unit;
+                $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                 $return['min']['agent'] = $ag_name;
                 $return['min']['module'] = $mod_name;
             }
@@ -7347,7 +7477,7 @@ function reporting_general($report, $content)
 
             if ($change_max) {
                 $return['max']['value'] = $data_res[$index];
-                $return['max']['formated_value'] = format_for_graph($data_res[$index], 2).' '.$unit;
+                $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
                 $return['max']['agent'] = $ag_name;
                 $return['max']['module'] = $mod_name;
             }
@@ -7465,13 +7595,15 @@ function reporting_general($report, $content)
                         break;
                     }
 
+                    $divisor = get_data_multiplier($units[$i]);
+
                     if (!is_numeric($d) || $is_string[$i]) {
                         $data['value'] = $d;
                         // to see the chains on the table
                         $data['formated_value'] = $d;
                     } else {
                         $data['value'] = $d;
-                        $data['formated_value'] = format_for_graph($d, 2).' '.$units[$i];
+                        $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, $units[$i]);
                     }
                 }
 
@@ -7503,12 +7635,10 @@ function reporting_custom_graph(
 
     if ($type_report == 'custom_graph') {
         if (is_metaconsole()) {
-            $servers = metaconsole_get_connection_names();
-            foreach ($servers as $server) {
-                $connection = metaconsole_get_connection($server);
-                if (metaconsole_connect($connection) != NOERR) {
-                    continue;
-                }
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server  = metaconsole_get_connection_by_id($id_meta);
+            if (metaconsole_connect($server) != NOERR) {
+                return false;
             }
         }
     }
@@ -7560,8 +7690,39 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
+    if ($type_report != 'automatic_graph') {
+        $module_source = db_get_all_rows_sql(
+            'SELECT id_agent_module
+             FROM tgraph_source
+             WHERE id_graph = '.$content['id_gs']
+        );
+
+        if (isset($module_source) && is_array($module_source)) {
+            $modules = [];
+            foreach ($module_source as $key => $value) {
+                $modules[$key] = $value['id_agent_module'];
+            }
+        }
+    }
+
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
     $return['title'] = $content['name'];
-    $return['subtitle'] = io_safe_output($graph['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = $graph['name'];
+    $return['agent_name'] = $agent_alias;
+    $return['module_name'] = $module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text(
         $report,
@@ -7576,16 +7737,18 @@ function reporting_custom_graph(
         case 'dinamic':
         case 'static':
             $params = [
-                'period'     => $content['period'],
-                'width'      => $width,
-                'date'       => $report['datetime'],
-                'only_image' => $pdf,
-                'homeurl'    => ui_get_full_url(false, false, false, false),
-                'ttl'        => $ttl,
-                'percentil'  => $graphs[0]['percentil'],
-                'fullscale'  => $graphs[0]['fullscale'],
-                'server_id'  => $id_meta,
-                'height'     => $config['graph_image_height'],
+                'period'             => $content['period'],
+                'width'              => $width,
+                'date'               => $report['datetime'],
+                'only_image'         => $pdf,
+                'homeurl'            => ui_get_full_url(false, false, false, false),
+                'ttl'                => $ttl,
+                'percentil'          => $graphs[0]['percentil'],
+                'fullscale'          => $graphs[0]['fullscale'],
+                'server_id'          => $id_meta,
+                'height'             => $config['graph_image_height'],
+                'landscape'          => $content['landscape'],
+                'return_img_base_64' => true,
             ];
 
             $params_combined = [
@@ -7598,12 +7761,34 @@ function reporting_custom_graph(
                 'labels'         => $content['style']['label'],
             ];
 
-            $return['chart'] = graphic_combined_module(
-                $modules,
-                $params,
-                $params_combined
-            );
+            if ($pdf === true) {
+                $return['chart'] = '<img src="data:image/jpg;base64,';
+                $return['chart'] .= graphic_combined_module(
+                    $modules,
+                    $params,
+                    $params_combined
+                );
+                $return['chart'] .= '" />';
+            } else {
+                $return['chart'] = graphic_combined_module(
+                    $modules,
+                    $params,
+                    $params_combined
+                );
+            }
+        break;
 
+        case 'data':
+            $data = [];
+            foreach ($modules as $key => $value) {
+                $data[$value] = modules_get_agentmodule_data(
+                    $value,
+                    $content['period'],
+                    $report['datetime']
+                );
+            }
+
+            $return['chart'] = $data;
         break;
     }
 
@@ -7688,7 +7873,10 @@ function reporting_simple_graph(
     }
 
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
+    $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];
@@ -7731,28 +7919,35 @@ function reporting_simple_graph(
             }
 
             $params = [
-                'agent_module_id' => $content['id_agent_module'],
-                'period'          => $content['period'],
-                'title'           => $label,
-                'pure'            => false,
-                'date'            => $report['datetime'],
-                'only_image'      => $only_image,
-                'homeurl'         => ui_get_full_url(
+                'agent_module_id'    => $content['id_agent_module'],
+                'period'             => $content['period'],
+                'title'              => $label,
+                'pure'               => false,
+                'date'               => $report['datetime'],
+                'only_image'         => $only_image,
+                'homeurl'            => ui_get_full_url(
                     false,
                     false,
                     false,
                     false
                 ),
-                'ttl'             => $ttl,
-                'compare'         => $time_compare_overlapped,
-                'show_unknown'    => true,
-                'percentil'       => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-                'fullscale'       => $fullscale,
-                'server_id'       => $id_meta,
-                'height'          => $config['graph_image_height'],
+                'ttl'                => $ttl,
+                'compare'            => $time_compare_overlapped,
+                'show_unknown'       => true,
+                'percentil'          => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
+                'fullscale'          => $fullscale,
+                'server_id'          => $id_meta,
+                'height'             => $config['graph_image_height'],
+                'landscape'          => $content['landscape'],
+                'backgroundColor'    => 'transparent',
+                'return_img_base_64' => true,
             ];
 
-            $return['chart'] = grafico_modulo_sparse($params);
+            if ($only_image === false) {
+                $return['chart'] = grafico_modulo_sparse($params);
+            } else {
+                $return['chart'] = '<img src="data:image/jpg;base64,'.grafico_modulo_sparse($params).'" />';
+            }
         break;
 
         case 'data':
@@ -7896,13 +8091,8 @@ function reporting_set_conf_charts(
         case 'static':
             $ttl = 2;
             $only_image = true;
-            if ($content['style']['show_in_landscape']) {
-                $height = 1100;
-                $width = 1700;
-            } else {
-                $height = 360;
-                $width = 780;
-            }
+            $height = 360;
+            $width = 780;
         break;
 
         case 'data':
@@ -12080,7 +12270,7 @@ function reporting_translate_sla_status_for_graph($status)
  */
 function reporting_header_table_for_pdf($title='', $description='')
 {
-    $result_pdf .= '<pagebreak>';
+    $result_pdf = '<pagebreak>';
     $result_pdf .= '<table class="header_table databox">';
     $result_pdf .= '<thead class="header_tr"><tr>';
     $result_pdf .= '<th class="th_first" colspan="2">';
@@ -12108,6 +12298,8 @@ function reporting_nt_top_n_report($period, $content, $pdf)
     $return = [];
     $return['type'] = 'nt_top_n';
     $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
 
     // Get the data sent and received

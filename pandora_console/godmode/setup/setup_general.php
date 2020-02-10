@@ -63,9 +63,20 @@ if (is_ajax()) {
 
     $test_address = get_parameter('test_address', '');
 
-    $res = enterprise_hook('send_email_attachment', [$test_address, __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'), __('Testing Pandora FMS email'), null]);
+    $res = enterprise_hook(
+        'send_email_attachment',
+        [
+            $test_address,
+            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            __('Testing Pandora FMS email'),
+            null,
+        ]
+    );
 
     echo $res;
+
+    // Exit after ajax response.
+    exit();
 }
 
 $table = new StdClass();
@@ -390,6 +401,8 @@ html_print_table($table_mail_conf);
 
 
 echo '</fieldset>';
+
+echo '<fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');

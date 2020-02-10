@@ -1105,6 +1105,57 @@ $table->data['edit1'][1] = '<table width="100%">';
             // Store the macros in base64 into a hidden control to move between pages
             $table->data['edit21'][0] = html_print_input_hidden('macros', base64_encode($macros), true);
 
+            $table->colspan['edit23'][1] = 3;
+            $table->data['edit23'][0] = __('Command');
+            $table->data['edit23'][1] = html_print_input_text_extended(
+                'tcp_send',
+                '',
+                'command_text',
+                '',
+                100,
+                10000,
+                false,
+                '',
+                '',
+                true
+            );
+
+            require_once $config['homedir'].'/include/class/CredentialStore.class.php';
+            $array_credential_identifier = CredentialStore::getKeys('CUSTOM');
+
+            $table->data['edit24'][0] = __('Credential identifier');
+            $table->data['edit24'][1] = html_print_select(
+                $array_credential_identifier,
+                'custom_string_1',
+                '',
+                '',
+                __('None'),
+                '',
+                true,
+                false,
+                false
+            );
+
+            $array_os = [
+                'inherited' => __('Inherited'),
+                'linux'     => __('Linux'),
+                'windows'   => __('Windows'),
+            ];
+
+            $table->data['edit24'][2] = __('Target OS');
+            $table->data['edit24'][3] = html_print_select(
+                $array_os,
+                'custom_string_2',
+                '',
+                '',
+                '',
+                '',
+                true,
+                false,
+                false,
+                ''
+            );
+
             if (!empty($id_plugin)) {
                 $preload = db_get_sql("SELECT description FROM tplugin WHERE id = $id_plugin");
                 $preload = io_safe_output($preload);
@@ -1221,6 +1272,8 @@ $(document).ready (function () {
             "tr#delete_table-edit20, " +
             "tr#delete_table-edit21, " +
             "tr#delete_table-edit22, " +
+            "tr#delete_table-edit23, " +
+            "tr#delete_table-edit24, " +
             "tr#delete_table-edit15").hide ();
         
         var params = {
@@ -1296,6 +1349,8 @@ $(document).ready (function () {
             "tr#delete_table-edit20, " +
             "tr#delete_table-edit21, " +
             "tr#delete_table-edit22, " +
+            "tr#delete_table-edit23, " +
+            "tr#delete_table-edit24, " +
             "tr#delete_table-edit15").show ();
         
         switch($('#module_type').val()) {
@@ -1353,6 +1408,13 @@ $(document).ready (function () {
                 $("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
                 "#delete_table-edit3-3,#delete_table-edit35").hide();
                 break;
+            case '34':
+            case '35':
+            case '36':
+            case '37':
+                $("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+                $("#edit1-1-str,#edit1-3-str,#delete_table-edit5").hide();
+                break;
         default:
             }
     }
@@ -1391,6 +1453,8 @@ $(document).ready (function () {
             "tr#delete_table-edit20, " +
             "tr#delete_table-edit21, " +
             "tr#delete_table-edit22, " +
+            "tr#delete_table-edit23, " +
+            "tr#delete_table-edit24, " +
             "tr#delete_table-edit15").hide ();
         $('input[type=checkbox]').attr('checked', false);
         $('input[type=checkbox]').attr('disabled', true);
@@ -1447,6 +1511,8 @@ $(document).ready (function () {
                             "tr#delete_table-edit20, " +
                             "tr#delete_table-edit21, " +
                             "tr#delete_table-edit22, " +
+                            "tr#delete_table-edit23, " +
+                            "tr#delete_table-edit24, " +
                             "tr#delete_table-edit15").hide ();
                     }
                 }
@@ -1497,6 +1563,8 @@ $(document).ready (function () {
                         "tr#delete_table-edit20, " +
                         "tr#delete_table-edit21, " +
                         "tr#delete_table-edit22, " +
+                        "tr#delete_table-edit23, " +
+                        "tr#delete_table-edit24, " +
                         "tr#delete_table-edit15").show ();
                 }
                 else {
@@ -1528,6 +1596,8 @@ $(document).ready (function () {
                             "tr#delete_table-edit20, " +
                             "tr#delete_table-edit21, " +
                             "tr#delete_table-edit22, " +
+                            "tr#delete_table-edit23, " +
+                            "tr#delete_table-edit24, " +
                             "tr#delete_table-edit15").hide ();
                     }
                 }
@@ -1618,6 +1688,8 @@ $(document).ready (function () {
                 "tr#delete_table-edit20, " +
                 "tr#delete_table-edit21, " +
                 "tr#delete_table-edit22, " +
+                "tr#delete_table-edit23, " +
+                "tr#delete_table-edit24, " +
                 "tr#delete_table-edit15").hide ();
             
             jQuery.post ("ajax.php",
@@ -1858,6 +1930,9 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'field_number',
         'tcp_send2',
         'plugin_parameter_text',
+        'command_text',
+        'command_credential_identifier',
+        'command_os',
     ];
     $values = [];
 

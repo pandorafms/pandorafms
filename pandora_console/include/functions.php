@@ -262,6 +262,11 @@ function format_for_graph(
     $divider=1000,
     $sufix=''
 ) {
+    // Exception to exclude modules whose unit is already formatted as KB (satellite modules)
+    if (!empty($sufix) && $sufix == 'KB') {
+        return;
+    }
+
     $shorts = [
         '',
         'K',
@@ -1994,7 +1999,12 @@ function get_snmpwalk(
     if (enterprise_installed()) {
         if ($server_to_exec != 0) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+
+            if (empty($server_data['port'])) {
+                exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            } else {
+                exec('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            }
         } else {
             exec($command_str, $output, $rc);
         }
@@ -2503,12 +2513,13 @@ function get_user_dashboards($id_user)
 /**
  * Get all the possible periods in seconds.
  *
- * @param bool Flag to show or not custom fist option
- * @param bool Show the periods by default if it is empty
+ * @param boolean $custom       Flag to show or not custom fist option
+ * @param boolean $show_default Show the periods by default if it is empty
+ * @param boolean $allow_zero   Allow the use of the value zero.
  *
- * @return The possible periods in an associative array.
+ * @return array The possible periods in an associative array.
  */
-function get_periods($custom=true, $show_default=true)
+function get_periods($custom=true, $show_default=true, $allow_zero=false)
 {
     global $config;
 
@@ -2520,6 +2531,10 @@ function get_periods($custom=true, $show_default=true)
 
     if (empty($config['interval_values'])) {
         if ($show_default) {
+            if ($allow_zero === true) {
+                $periods[0] = sprintf(__('%s seconds'), '0');
+            }
+
             $periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
             $periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
             $periods[SECONDS_1HOUR] = __('1 hour');
@@ -3851,14 +3866,30 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $file_js  = $config['homedir'].'/include/web2image.js';
     $url      = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
-    $img_file = 'img_'.uniqid().'.png';
-    $img_path = $config['homedir'].'/attachment/'.$img_file;
-    $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    if (!$params['return_img_base_64']) {
+        $img_file = 'img_'.uniqid().'.png';
+        $img_path = $config['homedir'].'/attachment/'.$img_file;
+        $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    }
 
     $width_img  = 500;
-    $height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
 
-    $params['height'] = $height_img;
+    if ($params['vconsole'] === false) {
+        // Set height image.
+        $height_img = 170;
+        $params['height'] = 170;
+        if ((int) $params['landscape'] === 1) {
+            $height_img = 150;
+            $params['height'] = 150;
+        }
+
+        if ($type_graph_pdf === 'slicebar') {
+            $width_img  = 360;
+            $height_img = 70;
+        }
+    } else {
+        $height_img = $params['height'];
+    }
 
     $params_encode_json = urlencode(json_encode($params));
 
@@ -3881,11 +3912,10 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $img_content = join("\n", $result);
 
     if ($params['return_img_base_64']) {
-        // To be used in alerts
-        $width_img = 500;
+        // To be used in alerts.
         return $img_content;
     } else {
-        // to be used in PDF files
+        // to be used in PDF files.
         $config['temp_images'][] = $img_path;
         return '<img src="'.$img_url.'" />';
     }
@@ -3900,8 +3930,14 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
  */
 function get_product_name()
 {
+    global $config;
+
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+        if ($config['rb_product_name_alt']) {
+            return $config['rb_product_name_alt'];
+        }
+
         return 'Pandora FMS';
     }
 
@@ -4089,6 +4125,18 @@ function mask2cidr($mask)
     $long = ip2long($mask);
     $base = ip2long('255.255.255.255');
     return (32 - log((($long ^ $base) + 1), 2));
+}
+
+
+/**
+ * convert the cidr prefix to subnet mask
+ *
+ * @param  int cidr prefix
+ * @return string subnet mask
+ */
+function cidr2mask($int)
+{
+    return long2ip(-1 << (32 - (int) $int));
 }
 
 
@@ -5404,6 +5452,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'omnishell':
+            if ($es) {
+                $result .= 'Omnishell&printable=yes';
+            } else {
+                $result .= 'Omnishell&printable=yes';
+            }
+        break;
+
         case 'module_type_tab':
             if ($es) {
                 $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
@@ -5417,6 +5473,61 @@ function get_help_info($section_name)
                 $result .= 'Pandora_GIS&printable=yes#Operaci.C3.B3n';
             } else {
                 $result .= 'GIS&printable=yes#Operation';
+            }
+        break;
+
+        case 'quickshell_settings':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Websocket_Engine';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Websocket_engine';
+            }
+        break;
+
+        case 'discovery':
+            if ($es) {
+                $result .= 'Discovery&printable=yes';
+            } else {
+                $result .= 'Discovery&printable=yes';
+            }
+
+        case 'alert_configure':
+            if ($es) {
+                $result .= 'Alerts#Correlation_alert_creation';
+            } else {
+                $result .= 'Alerts#Correlation_alert_creation';
+            }
+        break;
+
+        case 'alert_correlation':
+            if ($es) {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            } else {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            }
+        break;
+
+        case 'alert_rules':
+            if ($es) {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            } else {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            }
+        break;
+
+        case 'alert_fields':
+            if ($es) {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            } else {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            }
+        break;
+
+        case 'alert_triggering':
+            if ($es) {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            } else {
+                $result .= 'Alerts#Configuring_an_alert_template';
             }
         break;
     }
@@ -5446,4 +5557,109 @@ if (!function_exists('getallheaders')) {
     }
 
 
+}
+
+
+/**
+ * Update config token that contains custom module units.
+ *
+ * @param  string Name of new module unit.
+ * @return boolean Success or failure.
+ */
+function add_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_module_units = get_custom_module_units();
+
+    $custom_module_units[$value] = $value;
+
+    $new_conf = json_encode($custom_module_units);
+
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+function get_custom_module_units()
+{
+    global $config;
+
+    if (!isset($config['custom_module_units'])) {
+        $custom_module_units = [];
+    } else {
+        $custom_module_units = json_decode(
+            io_safe_output($config['custom_module_units']),
+            true
+        );
+    }
+
+    return $custom_module_units;
+}
+
+
+function delete_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_units = get_custom_module_units();
+
+    unset($custom_units[io_safe_output($value)]);
+
+    $new_conf = json_encode($custom_units);
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Get multiplier to be applied on module data in order to represent it properly. Based on setup configuration and module's unit, either 1000 or 1024 will be returned.
+ *
+ * @param string Module's unit.
+ *
+ * @return integer Multiplier.
+ */
+function get_data_multiplier($unit)
+{
+    global $config;
+
+    switch ($config['use_data_multiplier']) {
+        case 0:
+            if (strpos(strtolower($unit), 'yte') !== false) {
+                $multiplier = 1024;
+            } else {
+                $multiplier = 1000;
+            }
+        break;
+
+        case 2:
+            $multiplier = 1024;
+        break;
+
+        case 1:
+        default:
+            $multiplier = 1000;
+        break;
+    }
+
+    return $multiplier;
 }

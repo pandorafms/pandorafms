@@ -353,6 +353,18 @@ function config_update_config()
                     if (!config_update_value('email_password', get_parameter('email_password'))) {
                         $error_update[] = __('Email password');
                     }
+
+                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
+                        $error_update[] = __('WebSocket bind address');
+                    }
+
+                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
+                        $error_update[] = __('WebSocket port');
+                    }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
+                    }
                 break;
 
                 case 'enterprise':
@@ -441,6 +453,10 @@ function config_update_config()
 
                         if (!config_update_value('ipam_ocuppied_warning_treshold', get_parameter('ipam_ocuppied_warning_treshold'))) {
                             $error_update[] = __('Ipam Ocuppied Manager Warning');
+                        }
+
+                        if (!config_update_value('sap_license', get_parameter('sap_license'))) {
+                            $error_update[] = __('SAP/R3 Plugin Licence');
                         }
 
                         $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
@@ -1264,11 +1280,45 @@ function config_update_config()
                     }
 
                     // --------------------------------------------------
+                    // --------------------------------------------------
+                    // MODULE CUSTOM UNITS
+                    // --------------------------------------------------
+                    $custom_unit = get_parameter('custom_module_unit');
+                    $custom_unit_to_delete = get_parameter('custom_module_unit_to_delete', '');
+
+                    if (!empty($custom_unit)) {
+                        if (!add_custom_module_unit(
+                            $custom_unit
+                        )
+                        ) {
+                            $error_update[] = __('Add custom module unit');
+                        }
+                    }
+
+                    if (!empty($custom_unit_to_delete)) {
+                        if (!delete_custom_module_unit($custom_unit_to_delete)) {
+                            $error_update[] = __('Delete custom module unit');
+                        }
+                    }
+
+                    // --------------------------------------------------
                     if (!config_update_value('custom_report_info', get_parameter('custom_report_info'))) {
                         $error_update[] = __('Custom report info');
                     }
 
                     // Juanma (06/05/2014) New feature: Custom front page for reports.
+                    if (!config_update_value('font_size_item_report', get_parameter('font_size_item_report', 2))) {
+                        $error_update[] = __('HTML font size for SLA (em)');
+                    }
+
+                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 14))) {
+                        $error_update[] = __('PDF font size (px)');
+                    }
+
+                    if (!config_update_value('interval_description', (string) get_parameter('interval_description', 'large'))) {
+                        $error_update[] = __('Interval description');
+                    }
+
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
                         $error_update[] = __('Custom report front');
                     }
@@ -1295,6 +1345,10 @@ function config_update_config()
 
                     if (!config_update_value('csv_divider', (string) get_parameter('csv_divider', ';'))) {
                         $error_update[] = __('CSV divider');
+                    }
+
+                    if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
+                        $error_update[] = __('Use data multiplier');
                     }
                 break;
 
@@ -1383,19 +1437,35 @@ function config_update_config()
                         $error_update[] = __('Database password');
                     }
 
-                    if (!config_update_value('history_db_days', get_parameter('history_db_days'))) {
+                    $history_db_days = get_parameter('history_db_days');
+                    if (!is_numeric($history_db_days)
+                        || $history_db_days <= 0
+                        || !config_update_value('history_db_days', $history_db_days)
+                    ) {
                         $error_update[] = __('Days');
                     }
 
-                    if (!config_update_value('history_event_days', get_parameter('history_event_days'))) {
+                    $history_event_days = get_parameter('history_event_days');
+                    if (!is_numeric($history_event_days)
+                        || $history_event_days <= 0
+                        || !config_update_value('history_event_days', $history_event_days)
+                    ) {
                         $error_update[] = __('Event Days');
                     }
 
-                    if (!config_update_value('history_db_step', get_parameter('history_db_step'))) {
+                    $history_db_step = get_parameter('history_db_step');
+                    if (!is_numeric($history_db_step)
+                        || $history_db_step <= 0
+                        || !config_update_value('history_db_step', $history_db_step)
+                    ) {
                         $error_update[] = __('Step');
                     }
 
-                    if (!config_update_value('history_db_delay', get_parameter('history_db_delay'))) {
+                    $history_db_delay = get_parameter('history_db_delay');
+                    if (!is_numeric($history_db_delay)
+                        || $history_db_delay <= 0
+                        || !config_update_value('history_db_delay', $history_db_delay)
+                    ) {
                         $error_update[] = __('Delay');
                     }
                 break;
@@ -1883,18 +1953,14 @@ function config_process_config()
         config_update_value('unique_ip', 0);
     }
 
+    if (!isset($config['welcome_state'])) {
+        config_update_value('welcome_state', WELCOME_STARTED);
+    }
+
      /*
       * Parse the ACL IP list for access API
       */
 
-    $temp_list_ACL_IPs_for_API = [];
-    if (isset($config['list_ACL_IPs_for_API'])) {
-        if (!empty($config['list_ACL_IPs_for_API'])) {
-            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
-        }
-    }
-
-    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
     /*
@@ -2780,6 +2846,10 @@ function config_process_config()
         config_update_value('csv_divider', ';');
     }
 
+    if (!isset($config['use_data_multiplier'])) {
+        config_update_value('use_data_multiplier', '1');
+    }
+
     if (!isset($config['command_snapshot'])) {
         config_update_value('command_snapshot', 1);
     }
@@ -2791,6 +2861,18 @@ function config_process_config()
     // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
+    }
+
+    if (!isset($config['font_size_item_report'])) {
+        config_update_value('font_size_item_report', 2);
+    }
+
+    if (!isset($config['global_font_size_report'])) {
+        config_update_value('global_font_size_report', 14);
+    }
+
+    if (!isset($config['interval_description'])) {
+        config_update_value('interval_description', 'large');
     }
 
     if (!isset($config['custom_report_front_font'])) {
@@ -2948,6 +3030,15 @@ function config_process_config()
 
     // Finally, check if any value was overwritten in a form.
     config_update_config();
+
+    $temp_list_ACL_IPs_for_API = [];
+    if (isset($config['list_ACL_IPs_for_API'])) {
+        if (!empty($config['list_ACL_IPs_for_API'])) {
+            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+        }
+    }
+
+    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
 }
 
 

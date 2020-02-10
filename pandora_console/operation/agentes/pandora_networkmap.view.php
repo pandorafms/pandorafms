@@ -576,8 +576,8 @@ if (is_ajax()) {
         $filter = json_encode($array_filter);
 
         // ACL for the network map.
-        $networkmap_write = check_acl($config['id_user'], $networkmap['id_group'], 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $networkmap['id_group'], 'MM');
+        $networkmap_write = check_acl($config['id_user'], $networkmap['id_group_map'], 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $networkmap['id_group_map'], 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -713,11 +713,7 @@ if (is_ajax()) {
 
                         $values['options'] = json_encode($options);
 
-                        $return_update = db_process_sql_update('tnetworkmap_enterprise', $values, ['id' => $id_ent_map]);
-                        if (!$return_update) {
-                            $return_data['ent'] = false;
-                            break;
-                        }
+                        db_process_sql_update('tnetworkmap_enterprise', $values, ['id' => $id_ent_map]);
                     }
                 }
             }
@@ -735,11 +731,7 @@ if (is_ajax()) {
                 } else {
                     $values['text_filter'] = 'migrated';
 
-                    $return_update = db_process_sql_update('tnetwork_map', $values, ['id_networkmap' => $id_open_map]);
-                    if (!$return_update) {
-                        $return_data['open'] = false;
-                        break;
-                    }
+                    db_process_sql_update('tnetwork_map', $values, ['id_networkmap' => $id_open_map]);
                 }
             }
         }
@@ -808,9 +800,9 @@ if ($networkmap === false) {
     return;
 } else {
     // ACL for the network map.
-    $networkmap_read = check_acl($config['id_user'], $networkmap['id_group'], 'MR');
-    $networkmap_write = check_acl($config['id_user'], $networkmap['id_group'], 'MW');
-    $networkmap_manage = check_acl($config['id_user'], $networkmap['id_group'], 'MM');
+    $networkmap_read = check_acl($config['id_user'], $networkmap['id_group_map'], 'MR');
+    $networkmap_write = check_acl($config['id_user'], $networkmap['id_group_map'], 'MW');
+    $networkmap_manage = check_acl($config['id_user'], $networkmap['id_group_map'], 'MM');
 
     if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
         db_pandora_audit(

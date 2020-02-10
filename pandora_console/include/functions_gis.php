@@ -275,7 +275,16 @@ function gis_activate_select_control($layers=null)
     $(document).ready (
         function () {
             var layers = map.getLayersByClass("OpenLayers.Layer.Vector");
-            var select = new OpenLayers.Control.SelectFeature(layers);
+            var select = new OpenLayers.Control.SelectFeature(layers, {
+                clickout: true,
+                multiple: true,
+                toggle: true,
+                autoActivate: true,
+                onSelect: function() {
+                    OpenLayers.Control.SelectFeature.prototype.unselectAll.apply(
+                        select);
+                }
+            });
             map.addControl(select);
             select.activate();
         }

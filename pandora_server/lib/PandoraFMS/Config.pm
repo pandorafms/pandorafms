@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.739";
-my $pandora_build = "191008";
+my $pandora_version = "7.0NG.743";
+my $pandora_build = "200210";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -79,7 +79,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-20".substr($pandora_build,0,2)." " . pandora_get_initial_copyright_notice() . "\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	print "You can download latest versions and documentation at official web page.\n\n";
 
@@ -275,6 +275,8 @@ sub pandora_load_config {
 	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
 	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
+	$pa_config->{"rcmd_timeout"} = 10; # Introduced on 7.0.740
+	$pa_config->{"rcmd_timeout_bin"} = '/usr/bin/timeout'; # Introduced on 7.0.743
 	$pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
 	$pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
@@ -302,6 +304,8 @@ sub pandora_load_config {
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
+	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
 	$pa_config->{"snmpserver"} = 0; # 4.0
@@ -347,6 +351,18 @@ sub pandora_load_config {
 	$pa_config->{"recon_timing_template"} = 3; # > 5.1
 
 	$pa_config->{"fping"} = "/usr/sbin/fping"; # > 5.1SP2
+
+	# Discovery SAP
+	$pa_config->{"java"} = "/usr/bin/java";
+
+	# Discovery SAP utils
+	$pa_config->{"sap_utils"} = "/usr/share/pandora_server/util/recon_scripts/SAP";
+	
+	# Discovery SAP Artica environment
+	$pa_config->{"sap_artica_test"} = 0;
+
+	# Remote execution modules, option ssh_launcher
+	$pa_config->{"ssh_launcher"} = "/usr/bin/ssh_launcher";
 
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
@@ -397,6 +413,12 @@ sub pandora_load_config {
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
 
+	# Sample Agent
+	$pa_config->{'sample_agent'} = 0; 
+	
+	# Sample agent interval
+	$pa_config->{'sample_agent_interval'} = 600;
+
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
 
@@ -430,12 +452,6 @@ sub pandora_load_config {
 	
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
-
-	# Console API connection
-	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 6.0
-	$pa_config->{"console_api_pass"} = ''; # 6.0
-	$pa_config->{"console_user"} = 'admin'; # 6.0
-	$pa_config->{"console_pass"} = 'pandora'; # 6.0
 
 	# Database password encryption passphrase
 	$pa_config->{"encryption_passphrase"} = ''; # 6.0
@@ -782,6 +798,12 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^snmp_timeout\s+([0-9]*)/i) {
 			$pa_config->{"snmp_timeout"} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^rcmd_timeout\s+([0-9]*)/i) {
+			$pa_config->{"rcmd_timeout"} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^rcmd_timeout_bin\s(.*)/i) {
+			$pa_config->{"rcmd_timeout_bin"} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^tcp_checks\s+([0-9]*)/i) {
 			$pa_config->{"tcp_checks"} = clean_blank($1);
 		}
@@ -830,6 +852,18 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^fping\s(.*)/i) {
 			$pa_config->{'fping'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^java\s(.*)/i) {
+			$pa_config->{'java'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_utils\s(.*)/i) {
+			$pa_config->{'sap_utils'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_artica_test\s(.*)/i) {
+			$pa_config->{'sap_artica_test'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ssh_launcher\s(.*)/i) {
+			$pa_config->{'ssh_launcher'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 
@@ -946,11 +980,23 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^sample_agent\s+([0-1])/i) {
+			$pa_config->{'sample_agent'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sample_agent_interval\s+([0-9]*)/i) {
+			$pa_config->{'sample_agent_interval'} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^event_window\s+([0-9]*)/i) {
 			$pa_config->{'event_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
+			$pa_config->{'log_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
+			$pa_config->{'preload_windows'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);
@@ -1205,6 +1251,9 @@ sub pandora_load_config {
 		}
 		
 	} # end of loop for parameter #
+
+	# Generate the encryption key after reading the passphrase.
+	$pa_config->{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{"encryption_passphrase"}]);
 
 	# Set to RDBMS' standard port
 	if (!defined($pa_config->{'dbport'})) {

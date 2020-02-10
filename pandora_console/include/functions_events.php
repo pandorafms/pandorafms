@@ -35,7 +35,9 @@ enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
-enterprise_include_once('meta/include/functions_events_meta.php');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
 
 
 /**
@@ -622,7 +624,37 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
         break;
     }
 
-    return db_process_sql($update_sql);
+    $result = db_process_sql($update_sql);
+
+    if ($result) {
+        switch ($status) {
+            case EVENT_STATUS_NEW:
+                $status_string = 'New';
+            break;
+
+            case EVENT_STATUS_VALIDATED:
+                $status_string = 'Validated';
+            break;
+
+            case EVENT_STATUS_INPROCESS:
+                $status_string = 'In process';
+            break;
+
+            default:
+                $status_string = '';
+            break;
+        }
+
+        events_comment(
+            $id_evento,
+            '',
+            'Change status to '.$status_string,
+            is_metaconsole() ? true : false,
+            $history
+        );
+    }
+
+    return $result;
 }
 
 
@@ -749,43 +781,78 @@ function events_get_all(
     }
 
     if (isset($filter['severity']) && $filter['severity'] > 0) {
-        switch ($filter['severity']) {
-            case EVENT_CRIT_MAINTENANCE:
-            case EVENT_CRIT_INFORMATIONAL:
-            case EVENT_CRIT_NORMAL:
-            case EVENT_CRIT_MINOR:
-            case EVENT_CRIT_WARNING:
-            case EVENT_CRIT_MAJOR:
-            case EVENT_CRIT_CRITICAL:
-            default:
-                $sql_filters[] = sprintf(
-                    ' AND criticity = %d ',
-                    $filter['severity']
-                );
-            break;
+        if (is_array($filter['severity'])) {
+            if (!in_array(-1, $filter['severity'])) {
+                $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
+                if ($not_normal !== false) {
+                    unset($filter['severity'][$not_normal]);
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                } else {
+                    $critical_warning = array_search(EVENT_CRIT_WARNING_OR_CRITICAL, $filter['severity']);
+                    if ($critical_warning !== false) {
+                        unset($filter['severity'][$critical_warning]);
+                        $filter['severity'][] = EVENT_CRIT_WARNING;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_WARNING_OR_CRITICAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_WARNING,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                    $critical_normal = array_search(EVENT_CRIT_OR_NORMAL, $filter['severity']);
+                    if ($critical_normal !== false) {
+                        unset($filter['severity'][$critical_normal]);
+                        $filter['severity'][] = EVENT_CRIT_NORMAL;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
 
-            case EVENT_CRIT_NOT_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND criticity != %d',
-                    EVENT_CRIT_NORMAL
-                );
-            break;
+                    if (!empty($filter['severity'])) {
+                        $filter['severity'] = implode(',', $filter['severity']);
+                        $sql_filters[] = sprintf(
+                            ' AND criticity IN (%s)',
+                            $filter['severity']
+                        );
+                    }
+                }
+            }
+        } else {
+            switch ($filter['severity']) {
+                case EVENT_CRIT_MAINTENANCE:
+                case EVENT_CRIT_INFORMATIONAL:
+                case EVENT_CRIT_NORMAL:
+                case EVENT_CRIT_MINOR:
+                case EVENT_CRIT_WARNING:
+                case EVENT_CRIT_MAJOR:
+                case EVENT_CRIT_CRITICAL:
+                default:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity = %d ',
+                        $filter['severity']
+                    );
+                break;
 
-            case EVENT_CRIT_OR_NORMAL:
-                $sql_filters[] = sprintf(
-                    ' AND (criticity = %d OR criticity = %d)',
-                    EVENT_CRIT_NORMAL,
-                    EVENT_CRIT_CRITICAL
-                );
-            break;
+                case EVENT_CRIT_WARNING_OR_CRITICAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_WARNING,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+
+                case EVENT_CRIT_NOT_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                break;
+
+                case EVENT_CRIT_OR_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_NORMAL,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+            }
         }
     }
 
@@ -926,6 +993,16 @@ function events_get_all(
         );
     }
 
+    if (is_metaconsole()) {
+        // Id source event.
+        if (!empty($filter['id_source_event'])) {
+            $sql_filters[] = sprintf(
+                ' AND lower(te.id_source_event) like lower("%%%s%%") ',
+                $filter['id_source_event']
+            );
+        }
+    }
+
     // User comment.
     if (!empty($filter['user_comment'])) {
         $sql_filters[] = sprintf(
@@ -1042,6 +1119,8 @@ function events_get_all(
         }
     }
 
+    $user_admin_group_all = ($user_is_admin && $groups == 0) ? '' : 'tasg.';
+
     // TAgs ACLS.
     if (check_acl($config['id_user'], 0, 'ER')) {
         $tags_acls_condition = tags_get_acl_tags(
@@ -1066,7 +1145,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EW')) {
@@ -1092,7 +1171,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     } else if (check_acl($config['id_user'], 0, 'EM')) {
@@ -1118,7 +1197,7 @@ function events_get_all(
             // Table tag for id_grupo.
             'te.',
             // Alt table tag for id_grupo.
-            'tasg.'
+            $user_admin_group_all
         );
         // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
     }
@@ -1228,8 +1307,11 @@ function events_get_all(
     }
 
     // Secondary groups.
-    db_process_sql('SET group_concat_max_len = 9999999');
-    $event_lj = events_get_secondary_groups_left_join($table);
+    $event_lj = '';
+    if (!$user_is_admin || ($user_is_admin && isset($groups) && $groups > 0)) {
+        db_process_sql('SET group_concat_max_len = 9999999');
+        $event_lj = events_get_secondary_groups_left_join($table);
+    }
 
     $group_selects = '';
     if ($group_by != '') {
@@ -1244,6 +1326,11 @@ function events_get_all(
             if ($idx !== false) {
                 unset($fields[$idx]);
             }
+        }
+    } else {
+        $idx = array_search('te.user_comment', $fields);
+        if ($idx !== false) {
+            $fields[$idx] = 'te.user_comment AS comments';
         }
     }
 
@@ -1491,6 +1578,13 @@ function events_get_events_grouped(
         $groupby_extra = ', server_id';
     } else {
         $groupby_extra = '';
+    }
+
+    if (is_metaconsole()) {
+            $id_source_event = get_parameter('id_source_event');
+        if ($id_source_event != '') {
+            $sql_post .= "AND id_source_event = $id_source_event";
+        }
     }
 
     db_process_sql('SET group_concat_max_len = 9999999');
@@ -3553,7 +3647,7 @@ function events_get_response_target(
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent has not an IP, display N/A.
-        if ($ip === false) {
+        if ($ip === false || $ip === '') {
             $ip = __('N/A');
         }
 
@@ -3980,7 +4074,7 @@ function events_page_details($event, $server='')
 
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
-        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto']);
+        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
         $table_details->data[] = $data;
 
         $data = [];
@@ -4087,7 +4181,6 @@ function events_page_details($event, $server='')
                 'type'    => $graph_type,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id_agente_modulo'],
-                'label'   => base64_encode($module['nombre']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -4192,6 +4285,10 @@ function events_page_details($event, $server='')
     $table_details->data[] = $data;
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
+
+    if (!empty($server) && is_metaconsole()) {
+        metaconsole_restore_db();
+    }
 
     return $details;
 }
@@ -4366,6 +4463,15 @@ function events_page_general($event)
 
     global $group_rep;
 
+    $secondary_groups = '';
+    if (isset($event['id_agente']) && $event['id_agente'] > 0) {
+        enterprise_include_once('include/functions_agents.php');
+        $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
+        if (!empty($secondary_groups_selected)) {
+            $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
+        }
+    }
+
     // General.
     $table_general = new stdClass;
     $table_general->cellspacing = 0;
@@ -4492,6 +4598,14 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
+    if (!empty($secondary_groups)) {
+        $data = [];
+        $data[0] = __('Secondary groups');
+        $data[1] = $secondary_groups;
+
+        $table_general->data[] = $data;
+    }
+
     $data = [];
     $data[0] = __('Contact');
     $data[1] = '';
@@ -4559,116 +4673,98 @@ function events_page_comments($event, $ajax=false)
     // Comments.
     global $config;
 
-    $comments = '';
-
-    $comments = $event['user_comment'];
-    if (isset($event['comments'])) {
-        $comments = explode('<br>', $event['comments']);
-    }
-
     $table_comments = new stdClass;
     $table_comments->width = '100%';
     $table_comments->data = [];
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
-    $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+    $comments = ($event['user_comment'] ?? '');
 
-    if (is_array($comments)) {
-        foreach ($comments as $comm) {
-            if (empty($comm)) {
-                continue;
-            }
-
-            $comments_array[] = json_decode(io_safe_output($comm), true);
-        }
+    if (empty($comments)) {
+        $table_comments->style[0] = 'text-align:center;';
+        $table_comments->colspan[0][0] = 2;
+        $data = [];
+        $data[0] = __('There are no comments');
+        $table_comments->data[] = $data;
     } else {
-        // If comments are not stored in json, the format is old.
-        $comments_array = json_decode(io_safe_output($comments), true);
-    }
-
-    foreach ($comments_array as $comm) {
-        // Show the comments more recent first.
-        if (is_array($comm)) {
-            $comm = array_reverse($comm);
-        }
-
-        if (empty($comm)) {
-            $comments_format = 'old';
-        } else {
-            $comments_format = 'new';
-        }
-
-        switch ($comments_format) {
-            case 'new':
+        if (is_array($comments)) {
+            foreach ($comments as $comm) {
                 if (empty($comm)) {
-                    $table_comments->style[0] = 'text-align:center;';
-                    $table_comments->colspan[0][0] = 2;
-                    $data = [];
-                    $data[0] = __('There are no comments');
-                    $table_comments->data[] = $data;
+                    continue;
                 }
 
-                if (isset($comm) === true
-                    && is_array($comm) === true
-                ) {
+                $comments_array[] = io_safe_output(json_decode($comm, true));
+            }
+        } else {
+            $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+            // If comments are not stored in json, the format is old.
+            $comments_array[] = io_safe_output(json_decode($comments, true));
+        }
+
+        foreach ($comments_array as $comm) {
+            // Show the comments more recent first.
+            if (is_array($comm)) {
+                $comm = array_reverse($comm);
+            }
+
+            if (empty($comm)) {
+                $comments_format = 'old';
+            } else {
+                $comments_format = 'new';
+            }
+
+            switch ($comments_format) {
+                case 'new':
                     foreach ($comm as $c) {
                         $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
                         $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                        $data[1] = $c['comment'];
+                        $data[1] = '<p style="word-break: break-word;">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
                         $table_comments->data[] = $data;
                     }
-                }
-            break;
+                break;
 
-            case 'old':
-                $comm = explode('<br>', $comments);
+                case 'old':
+                    $comm = explode('<br>', $comments);
 
-                // Split comments and put in table.
-                $col = 0;
-                $data = [];
-
-                foreach ($comm as $c) {
-                    switch ($col) {
-                        case 0:
-                            $row_text = preg_replace('/\s*--\s*/', '', $c);
-                            $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
-                            $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
-                            $row_text = preg_replace('/[\[|\]]/', '', $row_text);
-                        break;
-
-                        case 1:
-                            $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
-                        break;
-
-                        default:
-                            // Ignore.
-                        break;
-                    }
-
-                    $data[$col] = $row_text;
-
-                    $col++;
-
-                    if ($col == 2) {
-                        $col = 0;
-                        $table_comments->data[] = $data;
-                        $data = [];
-                    }
-                }
-
-                if (count($comm) == 1 && $comm[0] == '') {
-                    $table_comments->style[0] = 'text-align:center;';
-                    $table_comments->colspan[0][0] = 2;
+                    // Split comments and put in table.
+                    $col = 0;
                     $data = [];
-                    $data[0] = __('There are no comments');
-                    $table_comments->data[] = $data;
-                }
-            break;
 
-            default:
-                // Ignore.
-            break;
+                    foreach ($comm as $c) {
+                        switch ($col) {
+                            case 0:
+                                $row_text = preg_replace('/\s*--\s*/', '', $c);
+                                $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
+                                $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
+                                $row_text = preg_replace('/[\[|\]]/', '', $row_text);
+                            break;
+
+                            case 1:
+                                $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
+                            break;
+
+                            default:
+                                // Ignore.
+                            break;
+                        }
+
+                        $data[$col] = $row_text;
+
+                        $col++;
+
+                        if ($col == 2) {
+                            $col = 0;
+                            $table_comments->data[] = $data;
+                            $data = [];
+                        }
+                    }
+                break;
+
+                default:
+                    // Ignore.
+                break;
+            }
         }
     }
 

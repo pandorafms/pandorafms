@@ -520,17 +520,17 @@ if (! isset($config['id_user'])) {
                             break;
 
                             case 'Group view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/group_view';
                             break;
 
                             case 'Alert detail':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/alerts_status';
                             break;
 
                             case 'Tactical view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/tactical';
                             break;
 
@@ -872,12 +872,6 @@ if (! isset($config['id_user'])) {
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
         $iduser = $_SESSION['id_usuario'];
-
-        /*
-         * Check why is not available.
-         * logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
-         */
-
         unset($_SESSION['id_usuario']);
         unset($iduser);
 
@@ -913,7 +907,6 @@ if (! isset($config['id_user'])) {
         $_POST = [];
         $config['auth_error'] = __("User doesn\'t exist.");
         $iduser = $_SESSION['id_usuario'];
-        logoff_db($iduser, $_SERVER['REMOTE_ADDR']);
         unset($_SESSION['id_usuario']);
         unset($iduser);
         include_once 'general/login_page.php';
@@ -933,7 +926,6 @@ if (! isset($config['id_user'])) {
             $_POST = [];
             $config['auth_error'] = __('User only can use the API.');
             $iduser = $_SESSION['id_usuario'];
-            logoff_db($iduser, $_SERVER['REMOTE_ADDR']);
             unset($_SESSION['id_usuario']);
             unset($iduser);
             include_once 'general/login_page.php';
@@ -956,7 +948,6 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
 if (isset($_GET['bye'])) {
     include 'general/logoff.php';
     $iduser = $_SESSION['id_usuario'];
-    db_logoff($iduser, $_SERVER['REMOTE_ADDR']);
 
     $_SESSION = [];
     session_destroy();
@@ -1243,9 +1234,13 @@ if ($searchPage) {
 
             if (isset($_GET['sec2'])) {
                 $file = $_GET['sec2'].'.php';
+                // Make file path absolute to prevent accessing remote files.
+                $file = __DIR__.'/'.$file;
                 // Translate some secs.
                 $main_sec = get_sec($_GET['sec']);
                 $_GET['sec'] = ($main_sec == false) ? $_GET['sec'] : $main_sec;
+
+                // Third condition is aimed to prevent from traversal attack.
                 if (!file_exists($file)
                     || ($_GET['sec2'] != 'general/logon_ok' && enterprise_hook(
                         'enterprise_acl',
@@ -1256,7 +1251,8 @@ if ($searchPage) {
                             true,
                             isset($_GET['sec3']) ? $_GET['sec3'] : '',
                         ]
-                    ) == false)
+                    ) == false
+                    || strpos(realpath($file), __DIR__) === false)
                 ) {
                     unset($_GET['sec2']);
                     include 'general/noaccess.php';

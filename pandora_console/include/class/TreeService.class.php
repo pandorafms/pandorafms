@@ -141,11 +141,13 @@ class TreeService extends Tree
 					FROM tservice ts
 					LEFT JOIN tservice_element tse
 						ON ts.id=tse.id_service
-					GROUP BY id
+                    WHERE
+                        1=1
+                        %s
+					    GROUP BY id
 					) as t1  
 					ON tss.id_service_child = t1.id
 					WHERE tss.id_service_child IS NULL
-					%s
 					",
             $groups_acl
         );

@@ -832,7 +832,7 @@ foreach ($modules as $module) {
 
     $data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);
 
-    $data[6] = ui_print_status_image($status, $title, true);
+    $data[6] = ui_print_status_image($status, htmlspecialchars($title), true);
 
     // MAX / MIN values
     if ($module['id_tipo_modulo'] != 25) {
@@ -842,7 +842,9 @@ foreach ($modules as $module) {
             $module['str_warning'],
             $module['max_critical'],
             $module['min_critical'],
-            $module['str_critical']
+            $module['str_critical'],
+            $module['warning_inverse'],
+            $module['critical_inverse']
         );
     } else {
         $data[7] = '';

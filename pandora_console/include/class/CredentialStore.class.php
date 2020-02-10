@@ -403,6 +403,8 @@ class CredentialStore extends Wizard
     {
         global $config;
 
+        $filter = [];
+
         if ($product !== false) {
             $filter['product'] = $product;
         }
@@ -430,7 +432,7 @@ class CredentialStore extends Wizard
             return $return;
         }
 
-        return false;
+        return [];
     }
 
 
@@ -864,6 +866,7 @@ class CredentialStore extends Wizard
                     'CUSTOM' => __('Custom'),
                     'AWS'    => __('Aws'),
                     'AZURE'  => __('Azure'),
+                    'SAP'    => __('SAP'),
                 // 'GOOGLE' => __('Google'),
                 ],
                 'selected'    => (isset($values['product']) ? $values['product'] : 'CUSTOM'),
@@ -898,6 +901,7 @@ class CredentialStore extends Wizard
             case 'GOOGLE':
                 // Need further investigation.
             case 'CUSTOM':
+            case 'SAP':
                 $user_label = __('Account ID');
                 $pass_label = __('Password');
                 $extra1 = false;
@@ -1036,7 +1040,12 @@ class CredentialStore extends Wizard
                 $('#div-extra_2 label').text('<?php echo __('Subscription id'); ?>');
                 $('#div-extra_1').show();
                 $('#div-extra_2').show();
-            } 
+            } else if ($('#product :selected').val() == "SAP") {
+                $('#div-username label').text('<?php echo __('Account ID.'); ?>');
+                $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-extra_1').hide();
+                $('#div-extra_2').hide();
+            }
         }
 
         /**

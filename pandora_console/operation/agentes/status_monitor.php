@@ -1362,7 +1362,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_OK,
-                        __('NORMAL').': '.$row['datos'],
+                        __('NORMAL').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1376,7 +1376,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
-                        __('CRITICAL').': '.$row['datos'],
+                        __('CRITICAL').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1390,7 +1390,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_WARNING,
-                        __('WARNING').': '.$row['datos'],
+                        __('WARNING').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1404,7 +1404,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_UNKNOWN,
-                        __('UNKNOWN').': '.$row['datos'],
+                        __('UNKNOWN').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1418,7 +1418,7 @@ if (!empty($result)) {
                 } else {
                     $data[6] = ui_print_status_image(
                         STATUS_MODULE_NO_DATA,
-                        __('NO DATA').': '.$row['datos'],
+                        __('NO DATA').': '.htmlspecialchars($row['datos']),
                         true
                     );
                 }
@@ -1437,7 +1437,7 @@ if (!empty($result)) {
                         } else {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.$row['datos'],
+                                __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.htmlspecialchars($row['datos']),
                                 true
                             );
                         }
@@ -1453,7 +1453,7 @@ if (!empty($result)) {
                         } else {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.$row['datos'],
+                                __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.htmlspecialchars($row['datos']),
                                 true
                             );
                         }
@@ -1469,7 +1469,7 @@ if (!empty($result)) {
                         } else {
                             $data[6] = ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
-                                __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.$row['datos'],
+                                __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.htmlspecialchars($row['datos']),
                                 true
                             );
                         }
@@ -1485,7 +1485,8 @@ if (!empty($result)) {
 
             // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
             if (!is_metaconsole()) {
-                $acl_graphs = check_acl($config['id_user'], $row['id_group'], 'RR');
+                $agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+                $acl_graphs = check_acl_one_of_groups($config['id_user'], $agent_groups, 'RR');
             } else {
                 $acl_graphs = true;
             }
@@ -1501,7 +1502,6 @@ if (!empty($result)) {
                     'type'    => $graph_type,
                     'period'  => SECONDS_1DAY,
                     'id'      => $row['id_agente_modulo'],
-                    'label'   => base64_encode($row['module_name']),
                     'refresh' => SECONDS_10MINUTES,
                 ];
 
@@ -1541,7 +1541,9 @@ if (!empty($result)) {
                 $row['str_warning'],
                 $row['max_critical'],
                 $row['min_critical'],
-                $row['str_critical']
+                $row['str_critical'],
+                $row['warning_inverse'],
+                $row['critical_inverse']
             );
 
             if (is_numeric($row['datos']) && !modules_is_string_type($row['module_type'])) {
@@ -1707,7 +1709,9 @@ if (!empty($result)) {
 
     html_print_table($table);
 
-    ui_pagination($count, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    if ($count_modules > $config['block_size']) {
+        ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    }
 } else {
     if ($first_interaction) {
         ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);
@@ -1716,10 +1720,9 @@ if (!empty($result)) {
     }
 }
 
-// End Build List Result
-//
+// End Build List Result.
 echo "<div id='monitor_details_window'></div>";
-// strict user hidden
+// Strict user hidden.
 echo '<div id="strict_hidden" style="display:none;">';
 html_print_input_text('strict_user_hidden', $strict_user);
 echo '</div>';
@@ -1756,8 +1759,8 @@ $('#moduletype').click(function() {
     );
 
     return false;
-  });
-    
+});
+
 $('#ag_group').change (function () {
     strict_user = $('#text-strict_user_hidden').val();
     

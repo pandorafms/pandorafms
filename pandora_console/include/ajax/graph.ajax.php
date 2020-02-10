@@ -171,8 +171,9 @@ if ($get_graphs) {
                         '',
                         false,
                         $periods,
-                        'vertical-align: middle;'
+                        'vertical-align: middle; margin-bottom:0;'
                     );
+                    $single_table .= html_print_image('images/refresh_mc.png', true, ['id' => 'refresh_custom_time', 'title' => 'Refresh graph', 'style' => 'cursor:pointer; vertical-align: middle; display:none;']);
                 $single_table .= '</td>';
             $single_table .= '</tr>';
         $single_table .= '</table>';

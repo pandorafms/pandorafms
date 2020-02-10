@@ -102,8 +102,8 @@ sub data_producer ($) {
 		WHERE server_name = ?
 		AND tagente_modulo.id_agente = tagente.id_agente
 		AND tagente.disabled = 0
-		AND tagente_modulo.id_tipo_modulo > 5
-		AND tagente_modulo.id_tipo_modulo < 19 '
+		AND ((tagente_modulo.id_tipo_modulo > 5 AND tagente_modulo.id_tipo_modulo < 19 )
+			OR (tagente_modulo.id_tipo_modulo > 33 AND tagente_modulo.id_tipo_modulo < 38 )) '
 		. (defined ($network_filter) ? $network_filter : ' ') .
 		'AND tagente_modulo.disabled = 0
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
@@ -116,8 +116,8 @@ sub data_producer ($) {
 		AND tagente_modulo.id_agente = tagente.id_agente
 		AND tagente.disabled = 0
 		AND tagente_modulo.disabled = 0
-		AND tagente_modulo.id_tipo_modulo > 5
-		AND tagente_modulo.id_tipo_modulo < 19 '
+		AND ((tagente_modulo.id_tipo_modulo > 5 AND tagente_modulo.id_tipo_modulo < 19 )
+			OR (tagente_modulo.id_tipo_modulo > 33 AND tagente_modulo.id_tipo_modulo < 38 )) '
 		. (defined ($network_filter) ? $network_filter : ' ') .
 		'AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()))
@@ -468,6 +468,13 @@ sub exec_network_module ($$$$) {
 	my $tcp_rcv = $module->{'tcp_rcv'};
 	my $timeout = $module->{'max_timeout'};
 	my $retries = $module->{'max_retries'};
+	my $target_os = pandora_get_os($dbh, $module->{'custom_string_2'});
+
+	if ($module->{'custom_string_2'} eq "inherited" ) {
+		$target_os = $agent_row->{'id_os'};
+	} elsif (!defined($target_os) || "$target_os" eq '0') {
+		$target_os = $agent_row->{'id_os'};
+	}
 
 	# Use the agent address by default
 	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto') {
@@ -545,6 +552,32 @@ sub exec_network_module ($$$$) {
 			    $module_result = 1;
 		    }
         }
+
+		# -------------------------------------------------------
+	    # CMD Module
+	    # -------------------------------------------------------
+		elsif (($id_tipo_modulo == 34)
+			|| ($id_tipo_modulo == 35)
+			|| ($id_tipo_modulo == 36)
+			|| ($id_tipo_modulo == 37)) { # CMD Module
+			$module_data = enterprise_hook(
+				'remote_execution_module',
+				[
+					$pa_config,
+					$dbh,
+					$module,
+					$target_os,
+					$ip_target,
+					$tcp_port
+				]
+			);
+			if (!defined($module_data) || "$module_data" eq "") {
+				$module_result = 1;
+			} else {
+				# Success.
+				$module_result = 0;
+			}
+		}
     }
 
 	# Write data section

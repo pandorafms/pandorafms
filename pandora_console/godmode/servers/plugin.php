@@ -398,7 +398,7 @@ if (($create != '') || ($view != '')) {
     }
 
     $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" style="vertical-align: bottom;">';
-    $data[1] .= html_print_image('images/file.png', true);
+    $data[1] .= html_print_image('images/file.png', true, false, false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
 
@@ -928,10 +928,10 @@ if (($create != '') || ($view != '')) {
                     $other['plugin_type'] = $plugin_meta['plugin_type'];
                     $other['macros'] = urlencode($plugin_meta['macros']);
                     $other['parameters'] = urlencode($plugin_meta['parameters']);
-                    $other = implode('%7C', $other);
+                    $other = implode('%7E', $other);
 
                     $auth_token = json_decode($value['auth_token']);
-                    $url = $value['server_url'].'include/api.php?op=set&op2=push_plugin'.'&id='.$pluginid.'&other_mode=url_encode_separator_%7C&other='.$other."&apipass=$auth_token->api_password"."&user=$auth_token->console_user&pass=$auth_token->console_password";
+                    $url = $value['server_url'].'include/api.php?op=set&op2=push_plugin'.'&id='.$pluginid.'&other_mode=url_encode_separator_%7E&other='.$other."&apipass=$auth_token->api_password"."&user=$auth_token->console_user&pass=$auth_token->console_password";
                     $file_path = realpath($plugin_meta['execute']);
                     $post = '';
                     if (file_exists($file_path)) {

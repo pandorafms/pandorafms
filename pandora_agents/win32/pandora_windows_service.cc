@@ -1918,16 +1918,19 @@ Pandora_Windows_Service::pandora_run_broker (string config, long executions) {
 			}
 
 			/* Evaluate intensive conditions */
-			intensive_match = module->evaluateIntensiveConditions ();
-			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
-				module->setNoOutput ();
-				this->broker_modules->goNext ();
-				continue;
-			}
-			module->setIntensiveMatch (intensive_match);
-			
-			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
-				module->setTimestamp (this->run_time);
+			if (module->isIntensive()) {
+				intensive_match = module->evaluateIntensiveConditions ();
+				if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+					module->setNoOutput ();
+					this->broker_modules->goNext ();
+					continue;
+				}
+
+				if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+					module->setTimestamp (this->run_time);
+				}
+
+				module->setIntensiveMatch (intensive_match);
 			}
 			
 			/* Evaluate module conditions */
@@ -2038,16 +2041,19 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 			}
 
 			/* Evaluate intensive conditions */
-			intensive_match = module->evaluateIntensiveConditions ();
-			if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
-				module->setNoOutput ();
-				this->modules->goNext ();
-				continue;
-			}
-			module->setIntensiveMatch (intensive_match);
-			
-			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
-				module->setTimestamp (this->run_time);
+			if (module->isIntensive()) {
+				intensive_match = module->evaluateIntensiveConditions ();
+				if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+					module->setNoOutput ();
+					this->modules->goNext ();
+					continue;
+				}
+
+				if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+					module->setTimestamp (this->run_time);
+				}
+
+				module->setIntensiveMatch (intensive_match);
 			}
 			
 			/* Evaluate module conditions */

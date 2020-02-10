@@ -1,0 +1,92 @@
+.modal {
+  overflow: hidden;
+}
+
+.welcome_modal_window {
+  overflow: hidden;
+}
+
+#welcome_modal_window * {
+  font-size: 10pt;
+}
+
+#welcome_form ul.wizard > li {
+  padding: 1em;
+  padding-bottom: 0.6em;
+  padding-top: 0.6em;
+  padding-left: 0.7em;
+}
+
+#welcome_form label {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+}
+.content_position {
+  display: flex;
+  margin-top: 5px;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+}
+
+.learn_content_indented {
+  text-indent: 1.5em;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+}
+
+#lbl_learn {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+}
+
+.go {
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+.pending {
+  background-image: url(../../images/darrowright.png);
+  background-image: url(../../images/arrow-icon.png);
+}
+
+.completed {
+  background-image: url(../../images/input_tick_badge.png);
+}
+
+.centered_full {
+  padding: 1em;
+  text-align: center;
+}
+
+#welcome_form li.centered_full > label {
+  width: auto;
+}
+
+#welcome_form ul.wizard li.white_box {
+  padding: 0;
+  margin-bottom: 2em;
+}
+
+#welcome_form ul.wizard li.centered_full {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+#welcome_form li:not(.centered_full):not(.white_box) {
+  border-left: 4px solid #79a930;
+}
+
+#welcome_form li:not(.centered_full):not(.white_box).row_grey {
+  border-left: 4px solid #d6d6d6;
+}
+
+#welcome_form li.hole {
+  margin-bottom: 0.8em;
+}
+
+#welcome_form li.extra {
+  padding-bottom: 2.5em;
+}

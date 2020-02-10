@@ -81,6 +81,12 @@ if (!$modules || !$searchModules) {
 
         $intervalCell = modules_get_interval($module['id_agente_modulo']);
 
+
+        $module_last_value = modules_get_last_value($module['id_agente_modulo']);
+        if (!is_numeric($module_last_value)) {
+            $module_last_value = htmlspecialchars($module_last_value);
+        }
+
         if ($utimestamp_sql['utimestamp'] == 0
             && (                ($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23)
             && $module['id_tipo_modulo'] != 100)
@@ -93,25 +99,25 @@ if (!$modules || !$searchModules) {
         } else if ($status_sql['estado'] == 0) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_OK,
-                __('NORMAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('NORMAL').': '.$module_last_value,
                 true
             );
         } else if ($status_sql['estado'] == 1) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_CRITICAL,
-                __('CRITICAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('CRITICAL').': '.$module_last_value,
                 true
             );
         } else if ($status_sql['estado'] == 2) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_WARNING,
-                __('WARNING').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('WARNING').': '.$module_last_value,
                 true
             );
         } else if ($status_sql['estado'] == 3) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_UNKNOWN,
-                __('UNKNOWN').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('UNKNOWN').': '.$module_last_value,
                 true
             );
         } else {
@@ -120,7 +126,7 @@ if (!$modules || !$searchModules) {
                 case 0:
                     $statusCell = ui_print_status_image(
                         STATUS_MODULE_OK,
-                        __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                        __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.$module_last_value,
                         true
                     );
                 break;
@@ -128,7 +134,7 @@ if (!$modules || !$searchModules) {
                 case 1:
                     $statusCell = ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
-                        __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                        __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.$module_last_value,
                         true
                     );
                 break;
@@ -136,7 +142,7 @@ if (!$modules || !$searchModules) {
                 case 2:
                     $statusCell = ui_print_status_image(
                         STATUS_MODULE_WARNING,
-                        __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.modules_get_last_value($module['id_agente_modulo']),
+                        __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.$module_last_value,
                         true
                     );
                 break;
@@ -152,11 +158,7 @@ if (!$modules || !$searchModules) {
             $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
             $win_handle = dechex(crc32($module['id_agente_modulo'].$module['module_name']));
 
-            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module['id_agente_modulo'].'&'.'label='.rawurlencode(
-                urlencode(
-                    base64_encode($module['module_name'])
-                )
-            ).'&'.'refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
+            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module['id_agente_modulo'].'&'.'refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
 
             $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => 0, 'alt' => '']).'</a>';
             $graphCell .= '&nbsp;'."<a href='index.php?".'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$module['id_agente'].'&amp;'.'tab=data_view&'.'period='.SECONDS_1DAY.'&amp;'.'id='.$module['id_agente_modulo']."'>".html_print_image(

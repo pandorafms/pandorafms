@@ -114,11 +114,10 @@ export default class SimpleValue extends Item<SimpleValueProps> {
   }
 
   /**
-   * @override Item.createLabelDomElement
-   * Create a new label for the visual console item.
-   * @return Item label.
-   */
-  protected createLabelDomElement(): HTMLElement {
+   * Generate a element size
+   * using the current size and the default values.
+   * @return The size.
+   */ protected createLabelDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "visual-console-item-label";
     // Always return an empty label.

@@ -52,6 +52,7 @@ if ($event_response_id > 0) {
     $event_response['modal_height'] = 0;
     $event_response['params'] = '';
     $event_response['server_to_exec'] = '';
+    $event_response['command_timeout'] = 90;
 }
 
 $table = new stdClass();
@@ -175,6 +176,11 @@ $data[3] = '<div id="server_to_exec_value" style="display:none;">'.html_print_se
 
 $table->data[4] = $data;
 
+$data = [];
+$data[0] = '<div id="command_timeout_label" style="display:none;" class="labels">'.__('Command timeout (s)');
+$data[1] = '<div id="command_timeout_value" style="display:none;">'.html_print_input_text('command_timeout', $event_response['command_timeout'], '', 4, 5, true);
+
+$table->data[5] = $data;
 if ($event_response_id == 0) {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);
@@ -214,11 +220,17 @@ $('#type').change(function() {
             $('#new_window').attr('disabled','disabled');
             $('#server_to_exec_label').css('display','');
             $('#server_to_exec_value').css('display','');
+            $('#command_timeout_label').css('display','');
+            $('#command_timeout_value').css('display','');
+
             break;
         case 'url':
             $('#new_window').removeAttr('disabled');
             $('#server_to_exec_label').css('display','none');
             $('#server_to_exec_value').css('display','none');
+            $('#command_timeout_label').css('display','none');
+            $('#command_timeout_value').css('display','none');
+
             break;
     }
 });

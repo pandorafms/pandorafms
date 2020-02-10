@@ -132,7 +132,7 @@ function add_component_selection($id_network_component_type)
 require_once 'include/functions_network_components.php';
 enterprise_include_once('include/functions_policies.php');
 
-// If code comes from policies disable export select
+// If code comes from policies disable export select.
 global $__code_from;
 
 $disabledBecauseInPolicy = false;
@@ -209,8 +209,7 @@ $table_simple->data[0][1] = html_print_input_text_extended(
     $largeClassDisabledBecauseInPolicy,
     true
 );
-// $table_simple->data[0][1] = html_print_input_text ('name',
-// io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
+
 if (!empty($id_agent_module) && isset($id_agente)) {
     $table_simple->data[0][1] .= '&nbsp;<b>'.__('ID').'</b>&nbsp;&nbsp;'.$id_agent_module.' ';
 
@@ -237,7 +236,13 @@ if ($policy_link != 0) {
 }
 
 $table_simple->data[0][2] = __('Disabled');
-$table_simple->data[0][2] .= html_print_checkbox('disabled', 1, $disabled, true, $disabled_enable);
+$table_simple->data[0][2] .= html_print_checkbox(
+    'disabled',
+    1,
+    $disabled,
+    true,
+    $disabled_enable
+);
 $table_simple->data[0][3] = __('Module group');
 $table_simple->data[0][3] .= html_print_select_from_sql(
     'SELECT id_mg, name FROM tmodule_group ORDER BY name',
@@ -260,12 +265,18 @@ if ((isset($id_agent_module) && $id_agent_module) || $id_policy_module != 0) {
 
 $in_policy = strstr($page, 'policy_modules');
 if (!$in_policy) {
-    // Cannot select the current module to be itself parent
-    $module_parent_filter = $id_agent_module ? ['tagente_modulo.id_agente_modulo' => "<>$id_agent_module"] : '';
+    // Cannot select the current module to be itself parent.
+    $module_parent_filter = ($id_agent_module) ? ['tagente_modulo.id_agente_modulo' => "<>$id_agent_module"] : '';
     $table_simple->data[1][0] = __('Module parent');
-    $modules_can_be_parent = agents_get_modules($id_agente, false, $module_parent_filter);
-    // If the user cannot have access to parent module, only print the name
-    if ($parent_module_id != 0 && !in_array($parent_module_id, array_keys($modules_can_be_parent))) {
+    $modules_can_be_parent = agents_get_modules(
+        $id_agente,
+        false,
+        $module_parent_filter
+    );
+    // If the user cannot have access to parent module, only print the name.
+    if ($parent_module_id != 0
+        && !in_array($parent_module_id, array_keys($modules_can_be_parent))
+    ) {
         $table_simple->data[1][1] = db_get_value(
             'nombre',
             'tagente_modulo',
@@ -305,7 +316,11 @@ if (!$edit) {
     }
 
     $table_simple->data[2][1] = '<em>'.modules_get_moduletype_description($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
-    $table_simple->data[2][1] .= html_print_input_hidden('type_names', base64_encode(io_json_mb_encode($type_names_hash)), true);
+    $table_simple->data[2][1] .= html_print_input_hidden(
+        'type_names',
+        base64_encode(io_json_mb_encode($type_names_hash)),
+        true
+    );
 } else {
     if (isset($id_module_type)) {
         $idModuleType = $id_module_type;
@@ -313,20 +328,30 @@ if (!$edit) {
         $idModuleType = '';
     }
 
-    // Removed web analysis and log4x from select
+    // Removed web analysis and log4x from select.
+    $tipe_not_in = '24, 25';
+    // TODO: FIX credential store for remote command in metaconsole.
+    if (is_metaconsole()) {
+        $tipe_not_in = '24, 25, 34, 35, 36, 37';
+    }
+
     $sql = sprintf(
-        'SELECT id_tipo, descripcion, nombre
+        'SELECT id_tipo, descripcion, nombre, categoria
 		FROM ttipo_modulo
-		WHERE categoria IN (%s) AND id_tipo NOT IN (24, 25)
-		ORDER BY descripcion',
-        implode(',', $categories)
+		WHERE categoria IN (%s)
+        AND id_tipo NOT IN (%s)
+		ORDER BY id_tipo ASC',
+        implode(',', $categories),
+        $tipe_not_in
     );
 
     $type_names = db_get_all_rows_sql($sql);
 
     $type_names_hash = [];
     $type_description_hash = [];
-    if (isset($type_names) && is_array($type_names)) {
+    if (isset($type_names) === true
+        && is_array($type_names) === true
+    ) {
         foreach ($type_names as $tn) {
             $type_names_hash[$tn['id_tipo']] = $tn['nombre'];
             $type_description_hash[$tn['id_tipo']] = $tn['descripcion'];
@@ -342,7 +367,7 @@ if (!$edit) {
         0,
         true,
         false,
-        true,
+        false,
         '',
         false,
         false,
@@ -350,8 +375,12 @@ if (!$edit) {
         100
     );
 
-    // Store the relation between id and name of the types on a hidden field
-    $table_simple->data[2][1] .= html_print_input_hidden('type_names', base64_encode(io_json_mb_encode($type_names_hash)), true);
+    // Store the relation between id and name of the types on a hidden field.
+    $table_simple->data[2][1] .= html_print_input_hidden(
+        'type_names',
+        base64_encode(io_json_mb_encode($type_names_hash)),
+        true
+    );
 }
 
 if ($edit_module) {
@@ -380,15 +409,32 @@ if ($edit_module) {
         $help_header = 'webserver_module_tab';
     }
 
-    $table_simple->data[2][0] = __('Type').' '.ui_print_help_icon($help_header, true);
+    $table_simple->data[2][0] = __('Type').' ';
+    $table_simple->data[2][0] .= ui_print_help_icon($help_header, true);
 }
 
 if ($disabledBecauseInPolicy) {
-    $table_simple->data[2][3] .= html_print_input_hidden('id_module_group', $id_module_group, true);
+    $table_simple->data[2][3] .= html_print_input_hidden(
+        'id_module_group',
+        $id_module_group,
+        true
+    );
 }
 
 $table_simple->data[3][0] = __('Dynamic Threshold Interval');
-$table_simple->data[3][1] = html_print_extended_select_for_time('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px', false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
+$table_simple->data[3][1] = html_print_extended_select_for_time(
+    'dynamic_interval',
+    $dynamic_interval,
+    '',
+    'None',
+    '0',
+    10,
+    true,
+    'width:150px',
+    false,
+    $classdisabledBecauseInPolicy,
+    $disabledBecauseInPolicy
+);
 $table_simple->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
 if ($in_policy) {
     $table_simple->cellclass[2][2] = 'hide_dinamic';

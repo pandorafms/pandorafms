@@ -1022,7 +1022,7 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_status_image($status, $title, true);
+            $data[5] = ui_print_status_image($status, htmlspecialchars($title), true);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 
@@ -1113,7 +1113,7 @@ if (check_login()) {
             }
 
             if ($module['id_tipo_modulo'] != 25) {
-                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical']);
+                $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse']);
             } else {
                 $data[6] = '';
             }
@@ -1141,11 +1141,7 @@ if (check_login()) {
                     $draw_events = 0;
                 }
 
-                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;label='.rawurlencode(
-                    urlencode(
-                        base64_encode($module['nombre'])
-                    )
-                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
+                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
                 if (!is_snapshot_data($module['datos'])) {
                     $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
                 }

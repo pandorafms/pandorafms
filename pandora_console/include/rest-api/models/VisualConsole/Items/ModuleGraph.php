@@ -36,6 +36,97 @@ final class ModuleGraph extends Item
 
 
     /**
+     * Extract the "show Legend" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed If the statistics should be shown or not.
+     */
+    private static function getShowLegend(array $data)
+    {
+        return static::issetInArray($data, ['showLegend', 'show_statistics']);
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $id_custom_graph = static::extractIdCustomGraph($data);
+        if ($id_custom_graph !== null) {
+            $return['id_custom_graph'] = $id_custom_graph;
+        }
+
+        $type_graph = static::getTypeGraph($data);
+        if ($type_graph !== null) {
+            $return['type_graph'] = $type_graph;
+        }
+
+        $show_legend = static::getShowLegend($data);
+        if ($show_legend !== null) {
+            $return['show_statistics'] = static::parseBool($show_legend);
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Extract a custom id graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of an agent.
+     */
+    private static function extractIdCustomGraph(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'id_custom_graph',
+                    'idCustomGraph',
+                    'customGraphId',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
+     * Extract a type graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
+     */
+    private static function getTypeGraph(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'typeGraph',
+                    'type_graph',
+                    'graphType',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -50,6 +141,7 @@ final class ModuleGraph extends Item
         $return['type'] = MODULE_GRAPH;
         $return['backgroundType'] = static::extractBackgroundType($data);
         $return['period'] = static::extractPeriod($data);
+        $return['showLegend'] = static::extractShowLegend($data);
 
         $customGraphId = static::extractCustomGraphId($data);
 
@@ -68,7 +160,8 @@ final class ModuleGraph extends Item
      *
      * @param array $data Unknown input data structure.
      *
-     * @return string 'transparent', 'white' or 'black'. 'transparent' by default.
+     * @return string 'transparent', 'white' or 'black'.
+     * 'transparent' by default.
      */
     private static function extractBackgroundType(array $data): string
     {
@@ -98,6 +191,21 @@ final class ModuleGraph extends Item
         return static::parseIntOr(
             static::issetInArray($data, ['period']),
             null
+        );
+    }
+
+
+    /**
+     * Extract the "show Legend" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean If the statistics should be shown or not.
+     */
+    private static function extractShowLegend(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['showLegend', 'show_statistics'])
         );
     }
 
@@ -168,10 +276,11 @@ final class ModuleGraph extends Item
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
-        $imageOnly = false;
+        $imageOnly = true;
 
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
+        $showLegend = static::extractShowLegend($data);
         $customGraphId = static::extractCustomGraphId($data);
         $graphType = static::extractGraphType($data);
         $linkedModule = static::extractLinkedModule($data);
@@ -205,21 +314,26 @@ final class ModuleGraph extends Item
          * the height of one of it to replicate the legacy functionality.
          */
 
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
+
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
 
             $params = [
-                'period'          => $period,
-                'width'           => (int) $data['width'],
-                'height'          => ($data['height'] - 30),
-                'title'           => '',
-                'unit_name'       => null,
-                'show_alerts'     => false,
-                'only_image'      => $imageOnly,
-                'vconsole'        => true,
-                'document_ready'  => false,
-                'backgroundColor' => $backgroundType,
+                'period'             => $period,
+                'width'              => $width,
+                'height'             => $height,
+                'title'              => '',
+                'unit_name'          => null,
+                'show_alerts'        => false,
+                'only_image'         => $imageOnly,
+                'vconsole'           => true,
+                'backgroundColor'    => $backgroundType,
+                'return_img_base_64' => true,
+                'show_legend'        => true,
+                'show_title'         => false,
             ];
 
             $paramsCombined = [
@@ -230,7 +344,8 @@ final class ModuleGraph extends Item
                 'modules_series' => $customGraph['modules_series'],
             ];
 
-            $data['html'] = \graphic_combined_module(
+            $imgbase64 = 'data:image/jpg;base64,';
+            $imgbase64 .= \graphic_combined_module(
                 false,
                 $params,
                 $paramsCombined
@@ -242,30 +357,292 @@ final class ModuleGraph extends Item
             }
 
             $params = [
-                'agent_module_id' => $moduleId,
-                'period'          => $period,
-                'show_events'     => false,
-                'width'           => (int) $data['width'],
-                'height'          => ($data['height'] - 30),
-                'title'           => \modules_get_agentmodule_name($moduleId),
-                'unit'            => \modules_get_unit($moduleId),
-                'only_image'      => $imageOnly,
-                'menu'            => false,
-                'backgroundColor' => $backgroundType,
-                'type_graph'      => $graphType,
-                'vconsole'        => true,
-                'document_ready'  => false,
+                'agent_module_id'    => $moduleId,
+                'period'             => $period,
+                'show_events'        => false,
+                'width'              => $width,
+                'height'             => $height,
+                'title'              => \modules_get_agentmodule_name(
+                    $moduleId
+                ),
+                'unit'               => \modules_get_unit($moduleId),
+                'only_image'         => $imageOnly,
+                'menu'               => false,
+                'backgroundColor'    => $backgroundType,
+                'type_graph'         => $graphType,
+                'vconsole'           => true,
+                'return_img_base_64' => true,
+                'show_legend'        => $showLegend,
+                'show_title'         => false,
             ];
 
-            $data['html'] = \grafico_modulo_sparse($params);
+            $imgbase64 = 'data:image/jpg;base64,';
+            $imgbase64 .= \grafico_modulo_sparse($params);
         }
 
+        $data['html'] = $imgbase64;
         // Restore connection.
         if ($nodeConnected === true) {
             \metaconsole_restore_db();
         }
 
         return $data;
+    }
+
+
+    /**
+     * Return List custom graph.
+     *
+     * @return array
+     */
+    public function getListCustomGraph():array
+    {
+        include_once 'include/functions_custom_graphs.php';
+        enterprise_include_once('include/functions_metaconsole.php');
+        $data = [];
+        if (is_metaconsole() === true) {
+            $data = metaconsole_get_custom_graphs(true);
+        } else {
+            $data = custom_graphs_get_user(
+                $config['id_user'],
+                false,
+                true,
+                'RR'
+            );
+        }
+
+        $data[0] = __('None');
+
+        return array_reverse($data);
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[ModuleGraph]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Default values.
+            if (isset($values['period']) === false) {
+                $values['period'] = 3600;
+            }
+
+            // Background color.
+            $fields = [
+                'white'       => __('White'),
+                'black'       => __('Black'),
+                'transparent' => __('Transparent'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Background color'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'backgroundType',
+                    'selected' => $values['backgroundType'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            $hiddenModule = false;
+            $hiddenCustom = true;
+            $checkedModule = true;
+            $checkedCustom = false;
+            if (isset($values['customGraphId']) === true
+                && $values['customGraphId'] !== 0
+            ) {
+                $hiddenModule = true;
+                $hiddenCustom = false;
+                $checkedModule = false;
+                $checkedCustom = true;
+            }
+
+            // Choose Type module graph if graph normal or custom.
+            $inputs[] = [
+                'wrapper'       => 'div',
+                'class'         => 'flex-row-vcenter',
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label'     => __('Module Graph'),
+                        'arguments' => [
+                            'type'         => 'radio_button',
+                            'attributes'   => 'class="btn"',
+                            'name'         => 'choosetype',
+                            'value'        => 'module',
+                            'checkedvalue' => $checkedModule,
+                            'script'       => 'typeModuleGraph(\'module\')',
+                            'return'       => true,
+                        ],
+                    ],
+                    [
+                        'label'     => __('Custom Graph'),
+                        'arguments' => [
+                            'type'         => 'radio_button',
+                            'attributes'   => 'class="btn"',
+                            'name'         => 'choosetype',
+                            'value'        => 'custom',
+                            'checkedvalue' => $checkedCustom,
+                            'script'       => 'typeModuleGraph(\'custom\')',
+                            'return'       => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Autocomplete agents.
+            $inputs[] = [
+                'id'        => 'MGautoCompleteAgent',
+                'hidden'    => $hiddenModule,
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => false,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'id'        => 'MGautoCompleteModule',
+                'hidden'    => $hiddenModule,
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                ],
+            ];
+
+            // Custom graph.
+            $fields = self::getListCustomGraph();
+            $inputs[] = [
+                'id'        => 'MGcustomGraph',
+                'hidden'    => $hiddenCustom,
+                'label'     => __('Custom graph'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'customGraphId',
+                    'selected' => $values['customGraphId'],
+                    'return'   => true,
+                ],
+            ];
+
+            // Period.
+            $inputs[] = [
+                'label'     => __('Period'),
+                'arguments' => [
+                    'name'          => 'period',
+                    'type'          => 'interval',
+                    'value'         => $values['period'],
+                    'nothing'       => __('None'),
+                    'nothing_value' => 0,
+                ],
+            ];
+
+            // Graph Type.
+            $fields = [
+                'line' => __('Line'),
+                'area' => __('Area'),
+            ];
+
+            $inputs[] = [
+                'id'        => 'MGgraphType',
+                'hidden'    => $hiddenModule,
+                'label'     => __('Graph Type'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'graphType',
+                    'selected' => $values['graphType'],
+                    'return'   => true,
+                ],
+            ];
+
+            // Show legend.
+            $inputs[] = [
+                'id'        => 'MGshowLegend',
+                'hidden'    => $hiddenModule,
+                'label'     => __('Show legend'),
+                'arguments' => [
+                    'name'  => 'showLegend',
+                    'id'    => 'showLegend',
+                    'type'  => 'switch',
+                    'value' => $values['showLegend'],
+                ],
+            ];
+
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 300;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 180;
+        }
+
+        return $values;
     }
 
 

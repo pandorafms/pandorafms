@@ -303,6 +303,7 @@ namespace Pandora_Modules {
 		time_t      getTimestamp ();
 		void        setIntensiveMatch (unsigned char intensive_match);
 		unsigned char getIntensiveMatch ();
+		bool        isIntensive ();
 
 	};
 }

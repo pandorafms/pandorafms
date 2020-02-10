@@ -1453,6 +1453,20 @@ function networkmap_delete_nodes($id_map)
 }
 
 
+/**
+ * Delete relations given id_map
+ *
+ * @param  integer $id_map
+ * @return integer result
+ */
+function networkmap_delete_relations($id_map)
+{
+    $result = db_process_sql_delete('trel_item', ['id_map' => $id_map]);
+
+    return $result;
+}
+
+
 function get_networkmaps($id)
 {
     $groups = array_keys(users_get_groups(null, 'IW'));
@@ -2327,7 +2341,13 @@ function migrate_older_open_maps($id)
     $new_map_filter = [];
     $new_map_filter['dont_show_subgroups'] = $old_networkmap['dont_show_subgroups'];
     $new_map_filter['node_radius'] = 40;
-    $new_map_filter['id_migrate_map'] = $id;
+    $new_map_filter['x_offs'] = 0;
+    $new_map_filter['y_offs'] = 0;
+    $new_map_filter['z_dash'] = '0.5';
+    $new_map_filter['node_sep'] = '0.1';
+    $new_map_filter['rank_sep'] = 1;
+    $new_map_filter['mindist'] = 1;
+    $new_map_filter['kval'] = '0.1';
     $map_values['filter'] = json_encode($new_map_filter);
 
     $map_values['description'] = 'Mapa open migrado';
@@ -2340,11 +2360,7 @@ function migrate_older_open_maps($id)
     $map_values['source_period'] = 60;
     $map_values['source'] = 0;
     $map_values['source_data'] = $old_networkmap['id_group'];
-    if ($old_networkmap['type'] == 'radial_dinamic') {
-        $map_values['generation_method'] = 6;
-    } else {
-        $map_values['generation_method'] = 4;
-    }
+    $map_values['generation_method'] = 3;
 
     $map_values['generated'] = 0;
 

@@ -135,6 +135,10 @@ $id_agent = get_parameter(
     'filter[id_agent]',
     $filter['id_agent']
 );
+$text_module = get_parameter(
+    'filter[text_module]',
+    $filter['text_module']
+);
 $id_agent_module = get_parameter(
     'filter[id_agent_module]',
     $filter['id_agent_module']
@@ -179,6 +183,14 @@ $date_to = get_parameter(
     'filter[date_to]',
     $filter['date_to']
 );
+$time_from = get_parameter(
+    'filter[time_from]',
+    $filter['time_from']
+);
+$time_to = get_parameter(
+    'filter[time_to]',
+    $filter['time_to']
+);
 $source = get_parameter(
     'filter[source]',
     $filter['source']
@@ -196,6 +208,43 @@ $history = get_parameter(
     $filter['history']
 );
 $section = get_parameter('section', false);
+
+$id_source_event = get_parameter(
+    'filter[id_source_event]',
+    $filter['id_source_event']
+);
+
+$server_id = get_parameter(
+    'filter[server_id]',
+    $filter['id_server_meta']
+);
+
+if (is_metaconsole()) {
+    // Connect to node database.
+    $id_node = $server_id;
+    if ($id_node != 0) {
+        if (metaconsole_connect(null, $id_node) != NOERR) {
+            return false;
+        }
+    }
+}
+
+
+if (empty($text_agent) && !empty($id_agent)) {
+    $text_agent = agents_get_alias($id_agent);
+}
+
+if (empty($text_module) && !empty($id_agent_module)) {
+    $text_module = modules_get_agentmodule_name($id_agent_module);
+    $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
+}
+
+if (is_metaconsole()) {
+    // Return to metaconsole database.
+    if ($id_node != 0) {
+        metaconsole_restore_db();
+    }
+}
 
 // Ajax responses.
 if (is_ajax()) {
@@ -280,6 +329,14 @@ if (is_ajax()) {
                     $events,
                     function ($carry, $item) {
                         $tmp = (object) $item;
+                        $tmp->meta = is_metaconsole();
+                        if (is_metaconsole()) {
+                            if ($tmp->server_name !== null) {
+                                $tmp->data_server = metaconsole_get_servers($tmp->server_id);
+                                $tmp->server_url_hash = metaconsole_get_servers_url_hash($tmp->data_server);
+                            }
+                        }
+
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         if (strlen($tmp->evento) >= 255) {
                             $tmp->evento = ui_print_truncate_text($tmp->evento, 255, $tmp->evento, true, false);
@@ -287,6 +344,10 @@ if (is_ajax()) {
 
                         if ($tmp->module_name) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
+                        }
+
+                        if ($tmp->comments) {
+                            $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
@@ -384,6 +445,7 @@ if ($user_filter !== false) {
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
+        $id_source_event = $filter['id_source_event'];
     }
 }
 
@@ -832,22 +894,6 @@ $in = '<div class="filter_input"><label>'.__('Event type').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Criticity - severity.
-$severity_select .= html_print_select(
-    get_priorities(),
-    'severity',
-    $severity,
-    '',
-    __('All'),
-    '-1',
-    true,
-    false,
-    false
-);
-$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
-$in .= $severity_select.'</div>';
-$inputs[] = $in;
-
 // Event status.
 $data = html_print_select(
     events_get_all_status(),
@@ -896,6 +942,28 @@ $inputs[] = $in;
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
 $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
+$in .= $data.'</div>';
+$inputs[] = $in;
+
+if (empty($severity) && $severity !== '0') {
+    $severity = -1;
+}
+
+// Criticity - severity.
+$data = html_print_select(
+    get_priorities(),
+    'severity',
+    $severity,
+    '',
+    __('All'),
+    -1,
+    true,
+    true,
+    true,
+    '',
+    false
+);
+$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
@@ -1006,7 +1074,7 @@ $adv_inputs[] = $in;
 $user_users = users_get_user_users(
     $config['id_user'],
     $access,
-    users_can_manage_group_all()
+    true
 );
 
 $data = html_print_select(
@@ -1039,8 +1107,20 @@ $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
-// Gap.
-$adv_inputs[] = '<div class="filter_input"></div>';
+if (is_metaconsole()) {
+    $data = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
+    $in .= $data.'</div>';
+    $adv_inputs[] = $in;
+}
+
 
 // Date from.
 $data = html_print_input_text(
@@ -1527,7 +1607,7 @@ function process_datatables_callback(table, settings) {
                 // Agent id.
                 target = i;
             }
-            if(label == '<?php echo __('Agent name'); ?>') {
+            if(label == '<?php echo addslashes(__('Agent name')); ?>') {
                 // Agent id.
                 target = i;
                 break;
@@ -1590,9 +1670,33 @@ function process_datatables_callback(table, settings) {
 
     }
 
+    // Uncheck checkbox to select all.
+    if ($('#checkbox-all_validate_box').length) {
+        $('#checkbox-all_validate_box').uncheck();
+    }
 }
 
 function process_datatables_item(item) {
+
+    // Url to go to node from meta.
+    var server_url = '';
+    var hashdata = '';
+    if(item.meta === true){
+        if(typeof item.data_server !== 'undefined' && typeof item.server_url_hash !== 'undefined'){
+            server_url = item.data_server.server_url;
+            hashdata = item.server_url_hash;
+        }
+    }
+
+
+    // Show comments events.
+    item.user_comment = item.comments
+
+    if(typeof item.comments !== 'undefined' && item.comments.length > 80) {
+        item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
+        item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
+        item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+    }
 
     // Grouped events.
     if(item.max_id_evento) {
@@ -1828,9 +1932,19 @@ function process_datatables_item(item) {
 
     /* Update column content now to avoid json poisoning. */
 
+
+    // Url to agent view.
+    var url_link = '<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>';
+    var url_link_hash = '';
+    if(item.meta === true){   
+        url_link = server_url+'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
+        url_link_hash = hashdata;
+    }
+
+
     /* Agent name link */
     if (item.id_agente > 0) {
-        item.agent_name = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>' +item.id_agente+'">' + item.agent_name + '</a>';
+        item.agent_name = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
     } else {
         item.agent_name = '';
     }
@@ -1840,11 +1954,11 @@ function process_datatables_item(item) {
         <?php
         if (in_array('agent_name', $fields)) {
             ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.id_agente + '</a>';
+            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
             <?php
         } else {
             ?>
-            item.id_agente = '<a href="<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='); ?>'+item.id_agente+'">' + item.agent_name + '</a>';
+            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
             <?php
         }
         ?>

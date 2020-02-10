@@ -148,6 +148,14 @@ wmiserver 0
 
 network_timeout 5
 
+# Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
+
+rcmd_timeout 10
+
+# Pandora FMS remote execution commands timeout tool filepath (by default at /usr/bin)
+
+rcmd_timeout_bin C:\PandoraFMS\Pandora_Server\bin\pandora_exec.exe
+
 # Server keepalive (in seconds)
 
 server_keepalive 45
@@ -329,6 +337,15 @@ restart_delay 60
 
 # Self monitoring interval (in seconds).
 #self_monitoring_interval 300
+
+# Pandora Sample Agent. If enabled, every 10 minutes, this embedded agent 
+# will make sample data. Disabled by default.
+
+sample_agent 0
+
+# Pandora Sample Agent interval (in seconds).
+
+sample_agent_interval 600
 
 # Update parent from the agent xml
 

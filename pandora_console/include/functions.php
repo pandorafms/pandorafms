@@ -3888,7 +3888,6 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
             $height_img = 70;
         }
     } else {
-        $width_img = $params['width'];
         $height_img = $params['height'];
     }
 

@@ -2248,8 +2248,6 @@ class Item extends CachedModel
             );
         }
 
-        $fields[0] = __('None');
-
         $getAllVisualConsoleValue = $values['linkedLayoutId'];
         if (\is_metaconsole() === true) {
             $getAllVisualConsoleValue = $values['linkedLayoutId'];
@@ -2262,12 +2260,14 @@ class Item extends CachedModel
         $inputs[] = [
             'label'     => __('Linked visual console'),
             'arguments' => [
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'getAllVisualConsole',
-                'selected' => $getAllVisualConsoleValue,
-                'script'   => 'linkedVisualConsoleChange()',
-                'return'   => true,
+                'type'          => 'select',
+                'fields'        => $fields,
+                'name'          => 'getAllVisualConsole',
+                'selected'      => $getAllVisualConsoleValue,
+                'script'        => 'linkedVisualConsoleChange()',
+                'return'        => true,
+                'nothing'       => __('None'),
+                'nothing_value' => 0,
             ],
         ];
 

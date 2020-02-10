@@ -710,6 +710,10 @@ div.module-graph {
   min-height: fit-content;
 }
 
+.textDecorationNone:hover {
+  text-decoration: none;
+}
+
 /* Styles for the solid icons */
 
 .fa {

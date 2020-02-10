@@ -426,8 +426,6 @@ final class ModuleGraph extends Item
             []
         );
 
-        $data[0] = __('None');
-
         return $data;
     }
 
@@ -573,11 +571,13 @@ final class ModuleGraph extends Item
                 'hidden'    => $hiddenCustom,
                 'label'     => __('Custom graph'),
                 'arguments' => [
-                    'type'     => 'select',
-                    'fields'   => $fields,
-                    'name'     => 'customGraphId',
-                    'selected' => $values['customGraphId'],
-                    'return'   => true,
+                    'type'          => 'select',
+                    'fields'        => $fields,
+                    'name'          => 'customGraphId',
+                    'selected'      => $values['customGraphId'],
+                    'return'        => true,
+                    'nothing'       => __('None'),
+                    'nothing_value' => 0,
                 ],
             ];
 

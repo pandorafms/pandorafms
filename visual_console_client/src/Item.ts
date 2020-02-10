@@ -486,12 +486,18 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     let box;
     if (this.props.isLinkEnabled) {
       box = document.createElement("a") as HTMLAnchorElement;
-      if (this.props.link) box.href = this.props.link;
+
+      if (this.props.link) {
+        box.href = this.props.link;
+      } else {
+        box.className = "textDecorationNone";
+      }
     } else {
       box = document.createElement("div") as HTMLDivElement;
+      box.className = "textDecorationNone";
     }
 
-    box.className = "visual-console-item";
+    box.classList.add("visual-console-item");
     if (this.props.isOnTop) {
       box.classList.add("is-on-top");
     }

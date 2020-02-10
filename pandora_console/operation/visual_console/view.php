@@ -505,6 +505,7 @@ if ($edit_capable === true) {
             $('#edit-controls').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
+            visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
             $('#edit-controls').css('visibility', 'hidden');
         }

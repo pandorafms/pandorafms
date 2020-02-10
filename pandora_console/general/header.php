@@ -213,8 +213,10 @@ if ($config['menu_type'] == 'classic') {
             $select[0]['autorefresh_white_list']
         );
 
-        if ($_GET['sec2'] === 'operation/visual_console/render_view'
-            && $config['legacy_vc']
+        if ($config['legacy_vc']
+            || ($_GET['sec2'] !== 'operation/visual_console/render_view')
+            || (($_GET['sec2'] !== 'operation/visual_console/render_view')
+            && $config['legacy_vc'])
         ) {
             if ($autorefresh_list !== null
                 && array_search($_GET['sec2'], $autorefresh_list) !== false

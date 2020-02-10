@@ -531,3 +531,7 @@ div.module-graph {
   min-width: fit-content;
   min-height: fit-content;
 }
+
+.textDecorationNone:hover {
+  text-decoration: none;
+}

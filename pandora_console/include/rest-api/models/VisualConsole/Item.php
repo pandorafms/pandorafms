@@ -1052,6 +1052,19 @@ class Item extends CachedModel
             // The layout can be from another node.
             $linkedLayoutNodeId = $linkedVisualConsole['linkedLayoutNodeId'];
 
+            // Check ACL.
+            $visualConsole = VC::fromDB(['id' => $vcId]);
+            $visualConsoleData = $visualConsole->toArray();
+            $vcGroupId = $visualConsoleData['groupId'];
+
+            $aclRead = \check_acl($config['id_user'], $vcGroupId, 'VR');
+            // To build the link to another visual console
+            // you must have read permissions of the visual console
+            // with which it is linked.
+            if ($aclRead === 0) {
+                return null;
+            }
+
             if (empty($linkedLayoutNodeId) === true && \is_metaconsole()) {
                 /*
                  * A Visual Console from this console.

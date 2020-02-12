@@ -19,6 +19,15 @@ div#vc-controls div.vc-refr {
 div#vc-controls div.vc-refr > div {
   display: inline;
 }
+div#vc-controls div.vc-title-meta,
+div#vc-controls div.vc-refr-meta {
+  margin-top: 5px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+div#vc-controls div.vc-refr-meta > div {
+  display: inline;
+}
 div#vc-controls img.vc-qr {
   margin-top: 12px;
   margin-left: 8px;

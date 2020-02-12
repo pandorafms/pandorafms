@@ -591,6 +591,8 @@ define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
+define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 11);
+
 
 
 // Discovery types matching definition.

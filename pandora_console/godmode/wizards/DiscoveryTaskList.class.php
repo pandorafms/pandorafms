@@ -375,7 +375,7 @@ class DiscoveryTaskList extends Wizard
             // Status.
             $table->headstyle[5] .= 'min-width: 100px; width: 100px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 200px; width: 150px;';
+            $table->headstyle[6] .= 'min-width: 200px; width: 250px;';
             // Progress.
             $table->headstyle[7] .= 'min-width: 150px; width: 150px;';
             // Updated at.
@@ -564,6 +564,16 @@ class DiscoveryTaskList extends Wizard
                         $data[6] .= __('Discovery.Agent.Deployment');
                     break;
 
+                    case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
+                        // Discovery Applications Oracle.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications Microsoft SQL Server')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.Microsoft SQL Server');
+                    break;
+
                     case DISCOVERY_HOSTDEVICES:
                     default:
                         if ($task['id_recon_script'] == 0) {
@@ -621,6 +631,7 @@ class DiscoveryTaskList extends Wizard
                         && $task['type'] != DISCOVERY_APP_MYSQL
                         && $task['type'] != DISCOVERY_APP_ORACLE
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                        && $task['type'] != DISCOVERY_APP_MICROSOFT_SQL_SERVER
                     ) {
                         if (check_acl($config['id_user'], 0, 'MR')) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
@@ -762,6 +773,9 @@ class DiscoveryTaskList extends Wizard
         switch ($task['type']) {
             case DISCOVERY_APP_MYSQL:
             return 'wiz=app&mode=mysql&page=0';
+
+            case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
+            return 'wiz=app&mode=MicrosoftSQLServer&page=0';
 
             case DISCOVERY_APP_ORACLE:
             return 'wiz=app&mode=oracle&page=0';

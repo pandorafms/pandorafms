@@ -111,7 +111,7 @@ final class EventsHistory extends Item
             static::extractMaxTime($data),
             '',
             true,
-            2
+            1
         );
 
         $data['html'] = $html;

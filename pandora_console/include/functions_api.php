@@ -12195,7 +12195,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $id_agent = $other['data'][2];
             if (is_metaconsole()) {
                 // On metaconsole, connect with the node to check the permissions
-                $agent_cache = db_get_row('tmetaconsole_agent', 'id_agente', $id_agent);
+                $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
                 if ($agent_cache === false) {
                     returnError('id_not_found', 'string');
                     return;
@@ -12372,7 +12372,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                     $return,
                     $user_comment,
                     'Added comment',
-                    defined('METACONSOLE'),
+                    is_metaconsole(),
                     $config['history_db_enabled']
                 );
                 if ($other['data'][13] != '') {
@@ -12384,7 +12384,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                             $return,
                             $owner_user,
                             true,
-                            defined('METACONSOLE'),
+                            is_metaconsole(),
                             $config['history_db_enabled']
                         );
                     }

@@ -316,7 +316,12 @@ if ($pure === true) {
 
     // Quit fullscreen.
     echo '<li class="nomn">';
-    $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
+    if (is_metaconsole()) {
+        $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$visualConsoleId.'&refr='.$refr;
+    } else {
+        $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
+    }
+
     echo '<a class="vc-btn-no-fullscreen" href="'.$urlNoFull.'">';
     echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
     echo '</a>';
@@ -324,7 +329,12 @@ if ($pure === true) {
 
     // Countdown.
     echo '<li class="nomn">';
-    echo '<div class="vc-refr">';
+    if (is_metaconsole()) {
+        echo '<div class="vc-refr-meta">';
+    } else {
+        echo '<div class="vc-refr">';
+    }
+
     echo '<div id="vc-refr-form">';
     echo __('Refresh').':';
     echo html_print_select(
@@ -344,7 +354,12 @@ if ($pure === true) {
 
     // Console name.
     echo '<li class="nomn">';
-    echo '<div class="vc-title">'.$visualConsoleName.'</div>';
+    if (is_metaconsole()) {
+        echo '<div class="vc-title-meta">'.$visualConsoleName.'</div>';
+    } else {
+        echo '<div class="vc-title">'.$visualConsoleName.'</div>';
+    }
+
     echo '</li>';
 
     echo '</ul>';

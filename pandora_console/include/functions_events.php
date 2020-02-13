@@ -2231,7 +2231,7 @@ function events_create_event(
     }
 
     $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $table_events = 'tmetaconsole_event';
 
         $sql = sprintf(

@@ -259,16 +259,16 @@ div.installation_step {
 }
 
 .popup-button-green span {
-  color: #fff !important;
+  color: #fff;
 }
 
 .popup-button-green:hover {
-  background-color: transparent !important;
+  background-color: transparent;
   border: 1px solid #82b92e;
-  color: #82b92e !important;
+  color: #82b92e;
 }
 
 .popup-button-green:hover span {
-  color: #82b92e !important;
+  color: #82b92e;
 }
 /* POPUP -END */

@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.735";
-my $pandora_build = "190619";
+my $pandora_version = "7.0NG.743";
+my $pandora_build = "200217";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -79,7 +79,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-20".substr($pandora_build,0,2)." " . pandora_get_initial_copyright_notice() . "\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	print "You can download latest versions and documentation at official web page.\n\n";
 
@@ -187,6 +187,33 @@ sub pandora_get_sharedconfig ($$) {
 		[$dbh]
 	);
 	$pa_config->{'rb_product_name'} = 'Pandora FMS' unless (defined ($pa_config->{'rb_product_name'}) && $pa_config->{'rb_product_name'} ne '');
+
+	# Mail transport agent configuration. Local configuration takes precedence.
+	if ($pa_config->{"mta_local"} eq 0) {
+		$pa_config->{"mta_address"} = pandora_get_tconfig_token ($dbh, 'email_smtpServer', '');
+		$pa_config->{"mta_from"} = '"' . pandora_get_tconfig_token ($dbh, 'email_from_name', 'Pandora FMS') . '" <' . 
+		                           pandora_get_tconfig_token ($dbh, 'email_from_dir', 'pandora@pandorafms.org') . '>';
+		$pa_config->{"mta_pass"} = pandora_get_tconfig_token ($dbh, 'email_password', '');
+		$pa_config->{"mta_port"} = pandora_get_tconfig_token ($dbh, 'email_smtpPort', '');
+		$pa_config->{"mta_user"} = pandora_get_tconfig_token ($dbh, 'email_username', '');
+		$pa_config->{"mta_encryption"} = pandora_get_tconfig_token ($dbh, 'email_encryption', '');
+
+		# Auto-negotiate the auth mechanism, since it cannot be set from the console.
+		# Do not include PLAIN, it generates the following error:
+		# 451 4.5.0 SMTP protocol violation, see RFC 2821
+		$pa_config->{"mta_auth"} = 'DIGEST-MD5 CRAM-MD5 LOGIN';
+
+		# Fix the format of mta_encryption.
+		if ($pa_config->{"mta_encryption"} eq 'tls') {
+			$pa_config->{"mta_encryption"} = 'starttls';
+		}
+		elsif ($pa_config->{"mta_encryption"} =~ m/^ssl/) {
+			$pa_config->{"mta_encryption"} = 'ssl';
+		}
+		else {
+			$pa_config->{"mta_encryption"} = 'none';
+		}
+	}
 }
 
 ##########################################################################
@@ -248,6 +275,8 @@ sub pandora_load_config {
 	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
 	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
+	$pa_config->{"rcmd_timeout"} = 10; # Introduced on 7.0.740
+	$pa_config->{"rcmd_timeout_bin"} = '/usr/bin/timeout'; # Introduced on 7.0.743
 	$pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
 	$pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
@@ -275,6 +304,8 @@ sub pandora_load_config {
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
+	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
 	$pa_config->{"snmpserver"} = 0; # 4.0
@@ -303,12 +334,14 @@ sub pandora_load_config {
 	$pa_config->{"dynamic_constant"} = 10; # 7.0
 	
 	# Internal MTA for alerts, each server need its own config.
-	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
-	$pa_config->{"mta_port"} = '25'; # Introduced on 2.0
+	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
+	$pa_config->{"mta_port"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_user"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_pass"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0 (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
 	$pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
+	$pa_config->{"mta_encryption"} = 'none'; # 7.0 739
+	$pa_config->{"mta_local"} = 0; # 7.0 739
 	$pa_config->{"mail_in_separate"} = 1; # 1: eMail deliver alert mail in separate mails.
 					      # 0: eMail deliver 1 mail with all destination.
 
@@ -319,6 +352,18 @@ sub pandora_load_config {
 
 	$pa_config->{"fping"} = "/usr/sbin/fping"; # > 5.1SP2
 
+	# Discovery SAP
+	$pa_config->{"java"} = "/usr/bin/java";
+
+	# Discovery SAP utils
+	$pa_config->{"sap_utils"} = "/usr/share/pandora_server/util/recon_scripts/SAP";
+	
+	# Discovery SAP Artica environment
+	$pa_config->{"sap_artica_test"} = 0;
+
+	# Remote execution modules, option ssh_launcher
+	$pa_config->{"ssh_launcher"} = "/usr/bin/ssh_launcher";
+
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
 
@@ -328,11 +373,20 @@ sub pandora_load_config {
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 
+	# Winexe allows to exec commands on remote windows systems (optional)
+	$pa_config->{"winexe"} = "/usr/bin/winexe";
+
+	# PsExec allows to exec commands on remote windows systems from windows servers (optional)
+	$pa_config->{"psexec"} = 'C:\PandoraFMS\Pandora_Server\bin\PsExec.exe';
 	
+	# plink allows to exec commands on remote linux systems from windows servers (optional)
+	$pa_config->{"plink"} = 'C:\PandoraFMS\Pandora_Server\bin\plink.exe';
+
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
 	$pa_config->{'autocreate_group'} = -1;
+	$pa_config->{'autocreate_group_force'} = 1;
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)
@@ -358,6 +412,12 @@ sub pandora_load_config {
 
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
+
+	# Sample Agent
+	$pa_config->{'sample_agent'} = 0; 
+	
+	# Sample agent interval
+	$pa_config->{'sample_agent_interval'} = 600;
 
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
@@ -392,12 +452,6 @@ sub pandora_load_config {
 	
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
-
-	# Console API connection
-	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 6.0
-	$pa_config->{"console_api_pass"} = ''; # 6.0
-	$pa_config->{"console_user"} = 'admin'; # 6.0
-	$pa_config->{"console_pass"} = 'pandora'; # 6.0
 
 	# Database password encryption passphrase
 	$pa_config->{"encryption_passphrase"} = ''; # 6.0
@@ -494,6 +548,8 @@ sub pandora_load_config {
 
 	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
 
+	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0 737
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -579,6 +635,7 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mta_address\s(.*)/i) { 
 			$pa_config->{'mta_address'}= clean_blank($1); 
+			$pa_config->{'mta_local'}=1;
 		}
 		elsif ($parametro =~ m/^mta_port\s(.*)/i) { 
 			$pa_config->{'mta_port'}= clean_blank($1); 
@@ -588,6 +645,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
 			$pa_config->{'mta_from'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^mta_encryption\s(.*)/i) { 
+			$pa_config->{'mta_encryption'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^mail_in_separate\s+([0-9]*)/i) { 
 			$pa_config->{'mail_in_separate'}= clean_blank($1); 
@@ -738,6 +798,12 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^snmp_timeout\s+([0-9]*)/i) {
 			$pa_config->{"snmp_timeout"} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^rcmd_timeout\s+([0-9]*)/i) {
+			$pa_config->{"rcmd_timeout"} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^rcmd_timeout_bin\s(.*)/i) {
+			$pa_config->{"rcmd_timeout_bin"} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^tcp_checks\s+([0-9]*)/i) {
 			$pa_config->{"tcp_checks"} = clean_blank($1);
 		}
@@ -787,6 +853,18 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^fping\s(.*)/i) {
 			$pa_config->{'fping'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^java\s(.*)/i) {
+			$pa_config->{'java'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_utils\s(.*)/i) {
+			$pa_config->{'sap_utils'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_artica_test\s(.*)/i) {
+			$pa_config->{'sap_artica_test'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ssh_launcher\s(.*)/i) {
+			$pa_config->{'ssh_launcher'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 
 		}
@@ -802,6 +880,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^winexe\s(.*)/i) {
+			$pa_config->{'winexe'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^psexec\s(.*)/i) {
+			$pa_config->{'psexec'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^plink\s(.*)/i) {
+			$pa_config->{'plink'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^snmpget\s(.*)/i) {
 			$pa_config->{'snmpget'}= clean_blank($1); 
 		}
@@ -810,6 +897,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^autocreate_group\s+([0-9*]*)/i) {
 			$pa_config->{'autocreate_group'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^autocreate_group_force\s+([0-1])/i) {
+			$pa_config->{'autocreate_group_force'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^discovery_threads\s+([0-9]*)/i) {
 			$pa_config->{'discovery_threads'}= clean_blank($1);
@@ -890,11 +980,23 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^sample_agent\s+([0-1])/i) {
+			$pa_config->{'sample_agent'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sample_agent_interval\s+([0-9]*)/i) {
+			$pa_config->{'sample_agent_interval'} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^event_window\s+([0-9]*)/i) {
 			$pa_config->{'event_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
+			$pa_config->{'log_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
+			$pa_config->{'preload_windows'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);
@@ -916,6 +1018,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_file\s+(.*)/i) {
 			$pa_config->{'event_file'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_inhibit_alerts\s+([0-1])/i) {
+			$pa_config->{'event_inhibit_alerts'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^text_going_down_normal\s+(.*)/i) {
 			$pa_config->{'text_going_down_normal'} = safe_input ($1);
@@ -995,7 +1100,7 @@ sub pandora_load_config {
 			$pa_config->{'console_pass'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) { # 6.0
-			$pa_config->{'encryption_passphrase'}= safe_input(clean_blank($1));
+			$pa_config->{'encryption_passphrase'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^unknown_interval\s+([0-9]*)/i) { # > 5.1SP2
 			$pa_config->{'unknown_interval'}= clean_blank($1);
@@ -1146,6 +1251,9 @@ sub pandora_load_config {
 		}
 		
 	} # end of loop for parameter #
+
+	# Generate the encryption key after reading the passphrase.
+	$pa_config->{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{"encryption_passphrase"}]);
 
 	# Set to RDBMS' standard port
 	if (!defined($pa_config->{'dbport'})) {

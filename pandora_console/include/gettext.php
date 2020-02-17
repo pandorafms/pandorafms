@@ -104,7 +104,7 @@ class gettext_reader {
    * @param boolean enable_cache Enable or disable caching of strings (default on)
    */
   function gettext_reader($Reader, $enable_cache = true) {
-  	$machine = @shell_exec('uname -m');
+  	$machine = php_uname("m");
   	
   	$enabled64Bits = false;
 	if (preg_match('/64/', $machine)) {

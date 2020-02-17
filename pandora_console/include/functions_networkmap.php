@@ -450,14 +450,26 @@ function networkmap_generate_dot(
                         $nodes[$node_count] = $module;
                 }
             } else {
-                $have_relations_a = db_get_value('id', 'tmodule_relationship', 'module_a', $module['id_agente_modulo']);
-                $have_relations_b = db_get_value('id', 'tmodule_relationship', 'module_b', $module['id_agente_modulo']);
+                $sql_a = sprintf(
+                    'SELECT id
+                    FROM tmodule_relationship
+                    WHERE module_a = %d AND type = "direct"',
+                    $module['id_agente_modulo']
+                );
+                $sql_b = sprintf(
+                    'SELECT id
+                    FROM tmodule_relationship
+                    WHERE module_b = %d AND type = "direct"',
+                    $module['id_agente_modulo']
+                );
+                $have_relations_a = db_get_value_sql($sql_a);
+                $have_relations_b = db_get_value_sql($sql_b);
 
                 if ($have_relations_a || $have_relations_b) {
-                    // Save node parent information to define edges later
+                    // Save node parent information to define edges later.
                     $parents[$node_count] = $module['parent'] = $agent['id_node'];
 
-                    // Add node
+                    // Add node.
                     $nodes[$node_count] = $module;
                 }
             }
@@ -1441,6 +1453,20 @@ function networkmap_delete_nodes($id_map)
 }
 
 
+/**
+ * Delete relations given id_map
+ *
+ * @param  integer $id_map
+ * @return integer result
+ */
+function networkmap_delete_relations($id_map)
+{
+    $result = db_process_sql_delete('trel_item', ['id_map' => $id_map]);
+
+    return $result;
+}
+
+
 function get_networkmaps($id)
 {
     $groups = array_keys(users_get_groups(null, 'IW'));
@@ -1807,9 +1833,9 @@ function networkmap_links_to_js_links(
 
         if (($relation['parent_type'] == NODE_MODULE) && ($relation['child_type'] == NODE_MODULE)) {
             if (($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
-                $item['link_color'] = '#FC4444';
+                $item['link_color'] = '#e63c52';
             } else if (($item['status_start'] == AGENT_MODULE_STATUS_WARNING) || ($item['status_end'] == AGENT_MODULE_STATUS_WARNING)) {
-                $item['link_color'] = '#FAD403';
+                $item['link_color'] = '#f3b200';
             }
 
             $agent = agents_get_agent_id_by_module_id(
@@ -1837,9 +1863,9 @@ function networkmap_links_to_js_links(
             }
         } else if ($relation['child_type'] == NODE_MODULE) {
             if ($item['status_start'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-                $item['link_color'] = '#FC4444';
+                $item['link_color'] = '#e63c52';
             } else if ($item['status_start'] == AGENT_MODULE_STATUS_WARNING) {
-                $item['link_color'] = '#FAD403';
+                $item['link_color'] = '#f3b200';
             }
 
             $agent2 = agents_get_agent_id_by_module_id(
@@ -1864,9 +1890,9 @@ function networkmap_links_to_js_links(
             }
         } else if ($relation['parent_type'] == NODE_MODULE) {
             if ($item['status_end'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-                $item['link_color'] = '#FC4444';
+                $item['link_color'] = '#e63c52';
             } else if ($item['status_end'] == AGENT_MODULE_STATUS_WARNING) {
-                $item['link_color'] = '#FAD403';
+                $item['link_color'] = '#f3b200';
             }
 
             $agent = agents_get_agent_id_by_module_id(
@@ -2315,7 +2341,13 @@ function migrate_older_open_maps($id)
     $new_map_filter = [];
     $new_map_filter['dont_show_subgroups'] = $old_networkmap['dont_show_subgroups'];
     $new_map_filter['node_radius'] = 40;
-    $new_map_filter['id_migrate_map'] = $id;
+    $new_map_filter['x_offs'] = 0;
+    $new_map_filter['y_offs'] = 0;
+    $new_map_filter['z_dash'] = '0.5';
+    $new_map_filter['node_sep'] = '0.1';
+    $new_map_filter['rank_sep'] = 1;
+    $new_map_filter['mindist'] = 1;
+    $new_map_filter['kval'] = '0.1';
     $map_values['filter'] = json_encode($new_map_filter);
 
     $map_values['description'] = 'Mapa open migrado';
@@ -2328,11 +2360,7 @@ function migrate_older_open_maps($id)
     $map_values['source_period'] = 60;
     $map_values['source'] = 0;
     $map_values['source_data'] = $old_networkmap['id_group'];
-    if ($old_networkmap['type'] == 'radial_dinamic') {
-        $map_values['generation_method'] = 6;
-    } else {
-        $map_values['generation_method'] = 4;
-    }
+    $map_values['generation_method'] = 3;
 
     $map_values['generated'] = 0;
 

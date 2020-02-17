@@ -36,7 +36,7 @@ if ($servers === false) {
     $recon_task = db_get_all_rows_sql('SELECT * FROM trecon_task');
     if ($recon_task === false) {
         ui_print_page_header(__('Recon View'), 'images/op_recon.png', false, '', false);
-        include_once $config['homedir'].'/general/firts_task/recon_view.php';
+        include_once $config['homedir'].'/general/first_task/recon_view.php';
         return;
     } else {
         include_once $config['homedir'].'/include/functions_graph.php';

@@ -155,6 +155,8 @@ if (!empty($sub2)) {
 
 enterprise_hook('cluster_menu');
 enterprise_hook('aws_menu');
+enterprise_hook('SAP_view');
+
 
 if (!empty($sub)) {
     $menu_operation['estado']['text'] = __('Monitoring');
@@ -373,10 +375,36 @@ if (check_acl($config['id_user'], 0, 'ER')
         $pss = get_user_info($config['id_user']);
         $hashup = md5($config['id_user'].$pss['password']);
 
+        $user_filter = db_get_row_sql(
+            sprintf(
+                'SELECT f.id_filter, f.id_name
+                FROM tevent_filter f
+                INNER JOIN tusuario u
+                    ON u.default_event_filter=f.id_filter
+                WHERE u.id_user = "%s" ',
+                $config['id_user']
+            )
+        );
+        if ($user_filter !== false) {
+            $user_event_filter = events_get_event_filter($user_filter['id_filter']);
+        } else {
+            // Default.
+            $user_event_filter = [
+                'status'        => EVENT_NO_VALIDATED,
+                'event_view_hr' => $config['event_view_hr'],
+                'group_rep'     => 1,
+                'tag_with'      => [],
+                'tag_without'   => [],
+                'history'       => false,
+            ];
+        }
+
+        $fb64 = base64_encode(json_encode($user_event_filter));
+
         // RSS.
-        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['text'] = __('RSS');
-        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['id'] = 'RSS';
-        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure=']['type'] = 'direct';
+        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
+        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
+        $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
 
         // Marquee.
         $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
@@ -453,6 +481,7 @@ if (check_acl($config['id_user'], 0, 'IR')
     $sub2 = [];
     $sub2['operation/incidents/incident']['text'] = __('List of Incidents');
     $sub2[$sec2sub]['text'] = __('Statistics');
+    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS Tickets');
 
     $sub[$sec2]['sub2'] = $sub2;
     $sec2 = $temp_sec2;

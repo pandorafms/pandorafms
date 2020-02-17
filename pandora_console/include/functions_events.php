@@ -25,13 +25,156 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
+enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_modules_meta.php');
+if (is_metaconsole()) {
+    $id_source_event = get_parameter('id_source_event');
+}
+
+
+/**
+ * Translates a numeric value module_status into descriptive text.
+ *
+ * @param integer $status Module status.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_module_status($status)
+{
+    switch ($status) {
+        case AGENT_MODULE_STATUS_NORMAL:
+        return __('NORMAL');
+
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return __('CRITICAL');
+
+        case AGENT_MODULE_STATUS_NO_DATA:
+        return __('NOT INIT');
+
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        return __('ALERT');
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return __('WARNING');
+
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates a numeric value event_type into descriptive text.
+ *
+ * @param integer $event_type Event type.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_event_type($event_type)
+{
+    // Event type prepared.
+    switch ($event_type) {
+        case EVENTS_ALERT_FIRED:
+        case EVENTS_ALERT_RECOVERED:
+        case EVENTS_ALERT_CEASED:
+        case EVENTS_ALERT_MANUAL_VALIDATION:
+        return __('ALERT');
+
+        case EVENTS_RECON_HOST_DETECTED:
+        case EVENTS_SYSTEM:
+        case EVENTS_ERROR:
+        case EVENTS_NEW_AGENT:
+        case EVENTS_CONFIGURATION_CHANGE:
+        return __('SYSTEM');
+
+        case EVENTS_GOING_UP_WARNING:
+        case EVENTS_GOING_DOWN_WARNING:
+        return __('WARNING');
+
+        case EVENTS_GOING_DOWN_NORMAL:
+        case EVENTS_GOING_UP_NORMAL:
+        return __('NORMAL');
+
+        case EVENTS_GOING_DOWN_CRITICAL:
+        case EVENTS_GOING_UP_CRITICAL:
+        return __('CRITICAL');
+
+        case EVENTS_UNKNOWN:
+        case EVENTS_GOING_UNKNOWN:
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates a numeric value event_status into descriptive text.
+ *
+ * @param integer $status Event status.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_event_status($status)
+{
+    switch ($status) {
+        case EVENT_STATUS_NEW:
+        default:
+        return __('NEW');
+
+        case EVENT_STATUS_INPROCESS:
+        return __('IN PROCESS');
+
+        case EVENT_STATUS_VALIDATED:
+        return __('VALIDATED');
+    }
+}
+
+
+/**
+ * Translates a numeric value criticity into descriptive text.
+ *
+ * @param integer $criticity Event criticity.
+ *
+ * @return string Descriptive text.
+ */
+function events_translate_event_criticity($criticity)
+{
+    switch ($criticity) {
+        case EVENT_CRIT_CRITICAL:
+        return __('CRITICAL');
+
+        case EVENT_CRIT_MAINTENANCE:
+        return __('MAINTENANCE');
+
+        case EVENT_CRIT_INFORMATIONAL:
+        return __('INFORMATIONAL');
+
+        case EVENT_CRIT_MAJOR:
+        return __('MAJOR');
+
+        case EVENT_CRIT_MINOR:
+        return __('MINOR');
+
+        case EVENT_CRIT_NORMAL:
+        return __('NORMAL');
+
+        case EVENT_CRIT_WARNING:
+        return __('WARNING');
+
+        default:
+        return __('UNKNOWN');
+    }
+}
 
 
 /**
@@ -66,6 +209,1218 @@ function events_get_all_fields()
     $columns['module_status'] = __('Module status');
 
     return $columns;
+}
+
+
+/**
+ * Same as events_get_column_names but retrieving only one result.
+ *
+ * @param string $field Raw field name.
+ *
+ * @return string Traduction.
+ */
+function events_get_column_name($field, $table_alias=false)
+{
+    switch ($field) {
+        case 'id_evento':
+        return __('Event Id');
+
+        case 'evento':
+        return __('Event Name');
+
+        case 'id_agente':
+        return __('Agent ID');
+
+        case 'agent_name':
+        return __('Agent name');
+
+        case 'agent_alias':
+        return __('Agent alias');
+
+        case 'id_usuario':
+        return __('User');
+
+        case 'id_grupo':
+        return __('Group');
+
+        case 'estado':
+        return __('Status');
+
+        case 'timestamp':
+        return __('Timestamp');
+
+        case 'event_type':
+        return __('Event Type');
+
+        case 'id_agentmodule':
+        return __('Module Name');
+
+        case 'id_alert_am':
+        return __('Alert');
+
+        case 'criticity':
+        return __('Severity');
+
+        case 'user_comment':
+        return __('Comment');
+
+        case 'tags':
+        return __('Tags');
+
+        case 'source':
+        return __('Source');
+
+        case 'id_extra':
+        return __('Extra Id');
+
+        case 'owner_user':
+        return __('Owner');
+
+        case 'ack_utimestamp':
+        return __('ACK Timestamp');
+
+        case 'instructions':
+        return __('Instructions');
+
+        case 'server_name':
+        return __('Server Name');
+
+        case 'data':
+        return __('Data');
+
+        case 'module_status':
+        return __('Module Status');
+
+        case 'options':
+        return __('Options');
+
+        case 'mini_severity':
+            if ($table_alias === true) {
+                return 'S';
+            } else {
+                return __('Severity mini');
+            }
+
+        default:
+        return __($field);
+    }
+}
+
+
+/**
+ * Return column names from fields selected.
+ *
+ * @param array $fields Array of fields.
+ *
+ * @return array Names array.
+ */
+function events_get_column_names($fields, $table_alias=false)
+{
+    if (!isset($fields) || !is_array($fields)) {
+        return [];
+    }
+
+    $names = [];
+    foreach ($fields as $f) {
+        if (is_array($f)) {
+            $name = [];
+            $name['text'] = events_get_column_name($f['text'], $table_alias);
+            $name['class'] = $f['class'];
+            $name['style'] = $f['style'];
+            $name['extra'] = $f['extra'];
+            $name['id'] = $f['id'];
+            $names[] = $name;
+        } else {
+            $names[] = events_get_column_name($f, $table_alias);
+        }
+    }
+
+    return $names;
+
+}
+
+
+/**
+ * Validates all events matching target filter.
+ *
+ * @param integer $id_evento Master event.
+ * @param array   $filter    Optional. Filter options.
+ * @param boolean $history   Apply on historical table.
+ *
+ * @return integer Events validated or false if error.
+ */
+function events_delete($id_evento, $filter=null, $history=false)
+{
+    if (!isset($id_evento) || $id_evento <= 0) {
+        return false;
+    }
+
+    if (!isset($filter) || !is_array($filter)) {
+        $filter = ['group_rep' => 0];
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+
+    switch ($filter['group_rep']) {
+        case '0':
+        case '2':
+        default:
+            // No groups option direct update.
+            $delete_sql = sprintf(
+                'DELETE FROM %s
+                 WHERE id_evento = %d',
+                $table,
+                $id_evento
+            );
+        break;
+
+        case '1':
+            // Group by events.
+            $sql = events_get_all(
+                ['te.*'],
+                $filter,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort_field.
+                null,
+                // Historical table.
+                $history,
+                // Return_sql.
+                true
+            );
+
+            $target_ids = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
+                    ON tu.estado = tf.estado
+                    AND tu.evento = tf.evento
+                    AND tu.id_agente = tf.id_agente
+                    AND tu.id_agentmodule = tf.id_agentmodule
+                    AND tf.max_id_evento = %d',
+                    $table,
+                    $sql,
+                    $id_evento
+                )
+            );
+
+            // Try to avoid deadlock while updating full set.
+            if ($target_ids !== false && count($target_ids) > 0) {
+                $target_ids = array_reduce(
+                    $target_ids,
+                    function ($carry, $item) {
+                        $carry[] = $item['id_evento'];
+                        return $carry;
+                    }
+                );
+
+                $delete_sql = sprintf(
+                    'DELETE FROM %s WHERE id_evento IN (%s)',
+                    $table,
+                    join(', ', $target_ids)
+                );
+            }
+        break;
+    }
+
+    return db_process_sql($delete_sql);
+}
+
+
+/**
+ * Retrieves all events related to matching one.
+ *
+ * @param integer $id_evento Master event (max_id_evento).
+ * @param array   $filter    Filters.
+ * @param boolean $count     Count results or get results.
+ * @param boolean $history   Apply on historical table.
+ *
+ * @return array Events or false in case of error.
+ */
+function events_get_related_events(
+    $id_evento,
+    $filter=null,
+    $count=false,
+    $history=false
+) {
+    global $config;
+
+    if (!isset($id_evento) || $id_evento <= 0) {
+        return false;
+    }
+
+    if (!isset($filter) || !is_array($filter)) {
+        $filter = ['group_rep' => 0];
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+    $select = '*';
+    if ($count === true) {
+        $select = 'count(*) as n';
+    };
+
+    switch ($filter['group_rep']) {
+        case '0':
+        case '2':
+        default:
+            // No groups option direct update.
+            $related_sql = sprintf(
+                'SELECT %s FROM %s
+                 WHERE id_evento = %d',
+                $select,
+                $table,
+                $id_evento
+            );
+        break;
+
+        case '1':
+            // Group by events.
+            $sql = events_get_all(
+                ['te.*'],
+                $filter,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort_field.
+                null,
+                // Historical table.
+                $history,
+                // Return_sql.
+                true
+            );
+            $related_sql = sprintf(
+                'SELECT %s FROM %s tu INNER JOIN ( %s ) tf
+                WHERE tu.estado = tf.estado
+                AND tu.evento = tf.evento
+                AND tu.id_agente = tf.id_agente
+                AND tu.id_agentmodule = tf.id_agentmodule
+                AND tf.max_id_evento = %d',
+                $select,
+                $table,
+                $sql,
+                $id_evento
+            );
+        break;
+    }
+
+    if ($count === true) {
+        $r = db_get_all_rows_sql($related_sql);
+
+        return $r[0]['n'];
+    }
+
+    return db_get_all_rows_sql($related_sql);
+
+}
+
+
+/**
+ * Validates all events matching target filter.
+ *
+ * @param integer $id_evento Master event.
+ * @param integer $status    Target status.
+ * @param array   $filter    Optional. Filter options.
+ * @param boolean $history   Apply on historical table.
+ *
+ * @return integer Events validated or false if error.
+ */
+function events_update_status($id_evento, $status, $filter=null, $history=false)
+{
+    global $config;
+
+    if (!$status) {
+        error_log('No hay estado');
+        return false;
+    }
+
+    if (!isset($id_evento) || $id_evento <= 0) {
+        error_log('No hay id_evento');
+        return false;
+    }
+
+    if (!isset($filter) || !is_array($filter)) {
+        $filter = ['group_rep' => 0];
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+
+    switch ($filter['group_rep']) {
+        case '0':
+        case '2':
+        default:
+            // No groups option direct update.
+            $update_sql = sprintf(
+                'UPDATE %s
+                 SET estado = %d
+                 WHERE id_evento = %d',
+                $table,
+                $status,
+                $id_evento
+            );
+        break;
+
+        case '1':
+            // Group by events.
+            $sql = events_get_all(
+                ['te.*'],
+                $filter,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort_field.
+                null,
+                // Historical table.
+                $history,
+                // Return_sql.
+                true
+            );
+
+            $target_ids = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT tu.id_evento FROM %s tu INNER JOIN ( %s ) tf
+                    ON tu.estado = tf.estado
+                    AND tu.evento = tf.evento
+                    AND tu.id_agente = tf.id_agente
+                    AND tu.id_agentmodule = tf.id_agentmodule
+                    AND tf.max_id_evento = %d',
+                    $table,
+                    $sql,
+                    $id_evento
+                )
+            );
+
+            // Try to avoid deadlock while updating full set.
+            if ($target_ids !== false && count($target_ids) > 0) {
+                $target_ids = array_reduce(
+                    $target_ids,
+                    function ($carry, $item) {
+                        $carry[] = $item['id_evento'];
+                        return $carry;
+                    }
+                );
+
+                $update_sql = sprintf(
+                    'UPDATE %s
+                    SET estado = %d,
+                        ack_utimestamp = %d,
+                        id_usuario = "%s"
+                    WHERE id_evento IN (%s)',
+                    $table,
+                    $status,
+                    time(),
+                    $config['id_user'],
+                    join(',', $target_ids)
+                );
+            }
+        break;
+    }
+
+    $result = db_process_sql($update_sql);
+
+    if ($result) {
+        switch ($status) {
+            case EVENT_STATUS_NEW:
+                $status_string = 'New';
+            break;
+
+            case EVENT_STATUS_VALIDATED:
+                $status_string = 'Validated';
+            break;
+
+            case EVENT_STATUS_INPROCESS:
+                $status_string = 'In process';
+            break;
+
+            default:
+                $status_string = '';
+            break;
+        }
+
+        events_comment(
+            $id_evento,
+            '',
+            'Change status to '.$status_string,
+            is_metaconsole() ? true : false,
+            $history
+        );
+    }
+
+    return $result;
+}
+
+
+/**
+ * Retrieve all events filtered.
+ *
+ * @param array   $fields     Fields to retrieve.
+ * @param array   $filter     Filters to be applied.
+ * @param integer $offset     Offset (pagination).
+ * @param integer $limit      Limit (pagination).
+ * @param string  $order      Sort order.
+ * @param string  $sort_field Sort field.
+ * @param boolean $history    Apply on historical table.
+ * @param boolean $return_sql Return SQL (true) or execute it (false).
+ * @param string  $having     Having filter.
+ *
+ * @return array Events.
+ * @throws Exception On error.
+ */
+function events_get_all(
+    $fields,
+    array $filter,
+    $offset=null,
+    $limit=null,
+    $order=null,
+    $sort_field=null,
+    $history=false,
+    $return_sql=false,
+    $having=''
+) {
+    global $config;
+
+    $user_is_admin = users_is_admin();
+
+    if (!is_array($filter)) {
+        error_log('[events_get_all] Filter must be an array.');
+        throw new Exception('[events_get_all] Filter must be an array.');
+    }
+
+    $count = false;
+    if (!is_array($fields) && $fields == 'count') {
+        $fields = ['te.*'];
+        $count = true;
+    } else if (!is_array($fields)) {
+        error_log('[events_get_all] Fields must be an array or "count".');
+        throw new Exception('[events_get_all] Fields must be an array or "count".');
+    }
+
+    if (isset($filter['date_from'])
+        && !empty($filter['date_from'])
+        && $filter['date_from'] != '0000-00-00'
+    ) {
+        $date_from = $filter['date_from'];
+    }
+
+    if (isset($filter['time_from'])) {
+        $time_from = $filter['time_from'];
+    }
+
+    if (isset($date_from)) {
+        if (!isset($time_from)) {
+            $time_from = '00:00:00';
+        }
+
+        $from = $date_from.' '.$time_from;
+        $sql_filters[] = sprintf(
+            ' AND te.utimestamp >= %d',
+            strtotime($from)
+        );
+    }
+
+    if (isset($filter['date_to'])
+        && !empty($filter['date_to'])
+        && $filter['date_to'] != '0000-00-00'
+    ) {
+        $date_to = $filter['date_to'];
+    }
+
+    if (isset($filter['time_to'])) {
+        $time_to = $filter['time_to'];
+    }
+
+    if (isset($date_to)) {
+        if (!isset($time_to)) {
+            $time_to = '23:59:59';
+        }
+
+        $to = $date_to.' '.$time_to;
+        $sql_filters[] = sprintf(
+            ' AND te.utimestamp <= %d',
+            strtotime($to)
+        );
+    }
+
+    if (!isset($from)) {
+        if (isset($filter['event_view_hr']) && ($filter['event_view_hr'] > 0)) {
+            $sql_filters[] = sprintf(
+                ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
+                $filter['event_view_hr']
+            );
+        }
+    }
+
+    if (isset($filter['id_agent']) && $filter['id_agent'] > 0) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_agente = %d ',
+            $filter['id_agent']
+        );
+    }
+
+    if (!empty($filter['event_type']) && $filter['event_type'] != 'all') {
+        if ($filter['event_type'] == 'warning'
+            || $filter['event_type'] == 'critical'
+            || $filter['event_type'] == 'normal'
+        ) {
+            $sql_filters[] = ' AND event_type LIKE "%'.$filter['event_type'].'%"';
+        } else if ($filter['event_type'] == 'not_normal') {
+            $sql_filters[] = ' AND (event_type LIKE "%warning%"
+              OR event_type LIKE "%critical%"
+              OR event_type LIKE "%unknown%")';
+        } else {
+            $sql_filters[] = ' AND event_type = "'.$filter['event_type'].'"';
+        }
+    }
+
+    if (isset($filter['severity']) && $filter['severity'] > 0) {
+        if (is_array($filter['severity'])) {
+            if (!in_array(-1, $filter['severity'])) {
+                $not_normal = array_search(EVENT_CRIT_NOT_NORMAL, $filter['severity']);
+                if ($not_normal !== false) {
+                    unset($filter['severity'][$not_normal]);
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                } else {
+                    $critical_warning = array_search(EVENT_CRIT_WARNING_OR_CRITICAL, $filter['severity']);
+                    if ($critical_warning !== false) {
+                        unset($filter['severity'][$critical_warning]);
+                        $filter['severity'][] = EVENT_CRIT_WARNING;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
+
+                    $critical_normal = array_search(EVENT_CRIT_OR_NORMAL, $filter['severity']);
+                    if ($critical_normal !== false) {
+                        unset($filter['severity'][$critical_normal]);
+                        $filter['severity'][] = EVENT_CRIT_NORMAL;
+                        $filter['severity'][] = EVENT_CRIT_CRITICAL;
+                    }
+
+                    if (!empty($filter['severity'])) {
+                        $filter['severity'] = implode(',', $filter['severity']);
+                        $sql_filters[] = sprintf(
+                            ' AND criticity IN (%s)',
+                            $filter['severity']
+                        );
+                    }
+                }
+            }
+        } else {
+            switch ($filter['severity']) {
+                case EVENT_CRIT_MAINTENANCE:
+                case EVENT_CRIT_INFORMATIONAL:
+                case EVENT_CRIT_NORMAL:
+                case EVENT_CRIT_MINOR:
+                case EVENT_CRIT_WARNING:
+                case EVENT_CRIT_MAJOR:
+                case EVENT_CRIT_CRITICAL:
+                default:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity = %d ',
+                        $filter['severity']
+                    );
+                break;
+
+                case EVENT_CRIT_WARNING_OR_CRITICAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_WARNING,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+
+                case EVENT_CRIT_NOT_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND criticity != %d',
+                        EVENT_CRIT_NORMAL
+                    );
+                break;
+
+                case EVENT_CRIT_OR_NORMAL:
+                    $sql_filters[] = sprintf(
+                        ' AND (criticity = %d OR criticity = %d)',
+                        EVENT_CRIT_NORMAL,
+                        EVENT_CRIT_CRITICAL
+                    );
+                break;
+            }
+        }
+    }
+
+    $groups = $filter['id_group_filter'];
+    if (isset($groups) && $groups > 0) {
+        $propagate = db_get_value(
+            'propagate',
+            'tgrupo',
+            'id_grupo',
+            $groups
+        );
+
+        if (!$propagate) {
+            $sql_filters[] = sprintf(
+                ' AND (te.id_grupo = %d OR tasg.id_group = %d)',
+                $groups
+            );
+        } else {
+            $children = groups_get_children($groups);
+            $_groups = [ $groups ];
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    $_groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            $groups = $_groups;
+
+            $sql_filters[] = sprintf(
+                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                join(',', $groups),
+                join(',', $groups)
+            );
+        }
+    }
+
+    // Skip system messages if user is not PM.
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        $sql_filters[] = ' AND te.id_grupo != 0 ';
+    }
+
+    if (isset($filter['status'])) {
+        switch ($filter['status']) {
+            case EVENT_ALL:
+            default:
+                // Do not filter.
+            break;
+
+            case EVENT_NEW:
+            case EVENT_VALIDATE:
+            case EVENT_PROCESS:
+                $sql_filters[] = sprintf(
+                    ' AND estado = %d',
+                    $filter['status']
+                );
+            break;
+
+            case EVENT_NO_VALIDATED:
+                $sql_filters[] = sprintf(
+                    ' AND (estado = %d OR estado = %d)',
+                    EVENT_NEW,
+                    EVENT_PROCESS
+                );
+            break;
+        }
+    }
+
+    if (!$user_is_admin) {
+        $ER_groups = users_get_groups($config['id_user'], 'ER', false);
+        $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
+        $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
+    }
+
+    if (!$user_is_admin && !users_can_manage_group_all('ER')) {
+        // Get groups where user have ER grants.
+        $sql_filters[] = sprintf(
+            ' AND (te.id_grupo IN ( %s ) OR tasg.id_group IN (%s))',
+            join(', ', array_keys($ER_groups)),
+            join(', ', array_keys($ER_groups))
+        );
+    }
+
+    $table = events_get_events_table(is_metaconsole(), $history);
+    $tevento = sprintf(
+        ' %s te',
+        $table
+    );
+
+    // Prepare agent join sql filters.
+    $agent_join_filters = [];
+    $tagente_table = 'tagente';
+    $tagente_field = 'id_agente';
+    $conditionMetaconsole = '';
+    if (is_metaconsole()) {
+        $tagente_table = 'tmetaconsole_agent';
+        $tagente_field = 'id_tagente';
+        $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
+    }
+
+    // Agent alias.
+    if (!empty($filter['agent_alias'])) {
+        $agent_join_filters[] = sprintf(
+            ' AND ta.alias = "%s" ',
+            $filter['agent_alias']
+        );
+    }
+
+    // Free search.
+    if (!empty($filter['search'])) {
+        if (isset($config['dbconnection']->server_version)
+            && $config['dbconnection']->server_version > 50600
+        ) {
+            // Use "from_base64" requires mysql 5.6 or greater.
+            $custom_data_search = 'from_base64(te.custom_data)';
+        } else {
+            // Custom data is JSON encoded base64, if 5.6 or lower,
+            // user is condemned to use plain search.
+            $custom_data_search = 'te.custom_data';
+        }
+
+        $sql_filters[] = vsprintf(
+            ' AND (lower(ta.alias) like lower("%%%s%%")
+                OR te.id_evento like "%%%s%%"
+                OR lower(te.evento) like lower("%%%s%%")
+                OR lower(te.user_comment) like lower("%%%s%%")
+                OR lower(te.id_extra) like lower("%%%s%%")
+                OR lower(te.source) like lower("%%%s%%") 
+                OR lower('.$custom_data_search.') like lower("%%%s%%") )',
+            array_fill(0, 7, $filter['search'])
+        );
+    }
+
+    // Id extra.
+    if (!empty($filter['id_extra'])) {
+        $sql_filters[] = sprintf(
+            ' AND lower(te.id_extra) like lower("%%%s%%") ',
+            $filter['id_extra']
+        );
+    }
+
+    if (is_metaconsole()) {
+        // Id source event.
+        if (!empty($filter['id_source_event'])) {
+            $sql_filters[] = sprintf(
+                ' AND lower(te.id_source_event) like lower("%%%s%%") ',
+                $filter['id_source_event']
+            );
+        }
+    }
+
+    // User comment.
+    if (!empty($filter['user_comment'])) {
+        $sql_filters[] = sprintf(
+            ' AND lower(te.user_comment) like lower("%%%s%%") ',
+            $filter['user_comment']
+        );
+    }
+
+    // Source.
+    if (!empty($filter['source'])) {
+        $sql_filters[] = sprintf(
+            ' AND lower(te.source) like lower("%%%s%%") ',
+            $filter['source']
+        );
+    }
+
+    // Validated or in process by.
+    if (!empty($filter['id_user_ack'])) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_usuario like lower("%%%s%%") ',
+            $filter['id_user_ack']
+        );
+    }
+
+    $tag_names = [];
+    // With following tags.
+    if (!empty($filter['tag_with'])) {
+        $tag_with = base64_decode($filter['tag_with']);
+        $tags = json_decode($tag_with, true);
+        if (is_array($tags) && !in_array('0', $tags)) {
+            if (!$user_is_admin) {
+                $user_tags = array_flip(tags_get_tags_for_module_search());
+                if ($user_tags != null) {
+                    foreach ($tags as $id_tag) {
+                        // User cannot filter with those tags.
+                        if (!array_search($id_tag, $user_tags)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            foreach ($tags as $id_tag) {
+                if (!isset($tags_names[$id_tag])) {
+                    $tags_names[$id_tag] = tags_get_name($id_tag);
+                }
+
+                $_tmp .= ' AND ( ';
+                $_tmp .= sprintf(
+                    ' tags LIKE "%s" OR',
+                    $tags_names[$id_tag]
+                );
+
+                $_tmp .= sprintf(
+                    ' tags LIKE "%s,%%" OR',
+                    $tags_names[$id_tag]
+                );
+
+                $_tmp .= sprintf(
+                    ' tags LIKE "%%,%s" OR',
+                    $tags_names[$id_tag]
+                );
+
+                $_tmp .= sprintf(
+                    ' tags LIKE "%%,%s,%%" ',
+                    $tags_names[$id_tag]
+                );
+
+                $_tmp .= ') ';
+            }
+
+            $sql_filters[] = $_tmp;
+        }
+    }
+
+    // Without following tags.
+    if (!empty($filter['tag_without'])) {
+        $tag_without = base64_decode($filter['tag_without']);
+        $tags = json_decode($tag_without, true);
+        if (is_array($tags) && !in_array('0', $tags)) {
+            foreach ($tags as $id_tag) {
+                if (!isset($tags_names[$id_tag])) {
+                    $tags_names[$id_tag] = tags_get_name($id_tag);
+                }
+
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%s" ',
+                    $tags_names[$id_tag]
+                );
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%s,%%" ',
+                    $tags_names[$id_tag]
+                );
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%%,%s" ',
+                    $tags_names[$id_tag]
+                );
+                $_tmp .= sprintf(
+                    ' AND tags NOT LIKE "%%,%s,%%" ',
+                    $tags_names[$id_tag]
+                );
+            }
+
+            $sql_filters[] = $_tmp;
+        }
+    }
+
+    // Filter/ Only alerts.
+    if (isset($filter['filter_only_alert'])) {
+        if ($filter['filter_only_alert'] == 0) {
+            $sql_filters[] = ' AND event_type NOT LIKE "%alert%"';
+        } else if ($filter['filter_only_alert'] == 1) {
+            $sql_filters[] = ' AND event_type LIKE "%alert%"';
+        }
+    }
+
+    $user_admin_group_all = ($user_is_admin && $groups == 0) ? '' : 'tasg.';
+
+    // TAgs ACLS.
+    if (check_acl($config['id_user'], 0, 'ER')) {
+        $tags_acls_condition = tags_get_acl_tags(
+            // Id_user.
+            $config['id_user'],
+            // Id_group.
+            $ER_groups,
+            // Access.
+            'ER',
+            // Return_mode.
+            'event_condition',
+            // Query_prefix.
+            'AND',
+            // Query_table.
+            '',
+            // Meta.
+            is_metaconsole(),
+            // Childrens_ids.
+            [],
+            // Force_group_and_tag.
+            true,
+            // Table tag for id_grupo.
+            'te.',
+            // Alt table tag for id_grupo.
+            $user_admin_group_all
+        );
+        // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
+    } else if (check_acl($config['id_user'], 0, 'EW')) {
+        $tags_acls_condition = tags_get_acl_tags(
+            // Id_user.
+            $config['id_user'],
+            // Id_group.
+            $EW_groups,
+            // Access.
+            'EW',
+            // Return_mode.
+            'event_condition',
+            // Query_prefix.
+            'AND',
+            // Query_table.
+            '',
+            // Meta.
+            is_metaconsole(),
+            // Childrens_ids.
+            [],
+            // Force_group_and_tag.
+            true,
+            // Table tag for id_grupo.
+            'te.',
+            // Alt table tag for id_grupo.
+            $user_admin_group_all
+        );
+        // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
+    } else if (check_acl($config['id_user'], 0, 'EM')) {
+        $tags_acls_condition = tags_get_acl_tags(
+            // Id_user.
+            $config['id_user'],
+            // Id_group.
+            $EM_groups,
+            // Access.
+            'EM',
+            // Return_mode.
+            'event_condition',
+            // Query_prefix.
+            'AND',
+            // Query_table.
+            '',
+            // Meta.
+            is_metaconsole(),
+            // Childrens_ids.
+            [],
+            // Force_group_and_tag.
+            true,
+            // Table tag for id_grupo.
+            'te.',
+            // Alt table tag for id_grupo.
+            $user_admin_group_all
+        );
+        // FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)".
+    }
+
+    if (($tags_acls_condition != ERR_WRONG_PARAMETERS)
+        && ($tags_acls_condition != ERR_ACL)
+    ) {
+        $sql_filters[] = $tags_acls_condition;
+    }
+
+    // Module search.
+    $agentmodule_join = 'LEFT JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
+    if (is_metaconsole()) {
+        $agentmodule_join = '';
+    } else if (!empty($filter['module_search'])) {
+        $agentmodule_join = 'INNER JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
+        $sql_filters[] = sprintf(
+            ' AND am.nombre = "%s" ',
+            $filter['module_search']
+        );
+    }
+
+    // Order.
+    $order_by = '';
+    if (isset($order, $sort_field)) {
+        $order_by = events_get_sql_order($sort_field, $order);
+    }
+
+    // Pagination.
+    $pagination = '';
+    if (isset($limit, $offset) && $limit > 0) {
+        $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
+    }
+
+    $extra = '';
+    if (is_metaconsole()) {
+        $extra = ', server_id';
+    }
+
+    // Group by.
+    $group_by = 'GROUP BY ';
+    $tagente_join = 'LEFT';
+    switch ($filter['group_rep']) {
+        case '0':
+        default:
+            // All events.
+            $group_by = '';
+        break;
+
+        case '1':
+            // Group by events.
+            $group_by .= 'te.estado, te.evento, te.id_agente, te.id_agentmodule';
+            $group_by .= $extra;
+        break;
+
+        case '2':
+            // Group by agents.
+            $tagente_join = 'INNER';
+            // $group_by .= 'te.id_agente, te.event_type';
+            // $group_by .= $extra;
+            $group_by = '';
+            $order_by = events_get_sql_order('id_agente', 'asc');
+            if (isset($order, $sort_field)) {
+                $order_by .= ','.events_get_sql_order(
+                    $sort_field,
+                    $order,
+                    0,
+                    true
+                );
+            }
+        break;
+    }
+
+    $tgrupo_join = 'LEFT';
+    $tgrupo_join_filters = [];
+    if (isset($groups)
+        && (is_array($groups)
+        || $groups > 0)
+    ) {
+        $tgrupo_join = 'INNER';
+        if (is_array($groups)) {
+            $tgrupo_join_filters[] = sprintf(
+                ' AND (tg.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                join(', ', $groups),
+                join(', ', $groups)
+            );
+        } else {
+            $tgrupo_join_filters[] = sprintf(
+                ' AND (tg.id_grupo = %s OR tasg.id_group = %s)',
+                $groups,
+                $groups
+            );
+        }
+    }
+
+    $server_join = '';
+    if (is_metaconsole()) {
+        $server_join = ' LEFT JOIN tmetaconsole_setup ts
+            ON ts.id = te.server_id';
+        if (!empty($filter['server_id'])) {
+            $server_join = sprintf(
+                ' INNER JOIN tmetaconsole_setup ts
+                  ON ts.id = te.server_id AND ts.id= %d',
+                $filter['server_id']
+            );
+        }
+    }
+
+    // Secondary groups.
+    $event_lj = '';
+    if (!$user_is_admin || ($user_is_admin && isset($groups) && $groups > 0)) {
+        db_process_sql('SET group_concat_max_len = 9999999');
+        $event_lj = events_get_secondary_groups_left_join($table);
+    }
+
+    $group_selects = '';
+    if ($group_by != '') {
+        $group_selects = ',COUNT(id_evento) AS event_rep
+        ,GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,
+        MAX(utimestamp) as timestamp_last,
+        MIN(utimestamp) as timestamp_first,
+        MAX(id_evento) as max_id_evento';
+
+        if ($count === false) {
+            $idx = array_search('te.user_comment', $fields);
+            if ($idx !== false) {
+                unset($fields[$idx]);
+            }
+        }
+    } else {
+        $idx = array_search('te.user_comment', $fields);
+        if ($idx !== false) {
+            $fields[$idx] = 'te.user_comment AS comments';
+        }
+    }
+
+    $sql = sprintf(
+        'SELECT %s
+            %s
+         FROM %s
+         %s
+         %s
+         %s JOIN %s ta
+           ON ta.%s = te.id_agente
+           %s
+           %s
+         %s JOIN tgrupo tg
+           ON te.id_grupo = tg.id_grupo
+           %s
+         %s
+         WHERE 1=1
+         %s
+         %s
+         %s
+         %s
+         %s
+         ',
+        join(',', $fields),
+        $group_selects,
+        $tevento,
+        $event_lj,
+        $agentmodule_join,
+        $tagente_join,
+        $tagente_table,
+        $tagente_field,
+        $conditionMetaconsole,
+        join(' ', $agent_join_filters),
+        $tgrupo_join,
+        join(' ', $tgrupo_join_filters),
+        $server_join,
+        join(' ', $sql_filters),
+        $group_by,
+        $order_by,
+        $pagination,
+        $having
+    );
+
+    if (!$user_is_admin) {
+        // XXX: Confirm there's no extra grants unhandled!.
+        $can_manage = '0 as user_can_manage';
+        if (!empty($EM_groups)) {
+            $can_manage = sprintf(
+                '(tbase.id_grupo IN (%s)) as user_can_manage',
+                join(', ', array_keys($EM_groups))
+            );
+        }
+
+        $can_write = '0 as user_can_write';
+        if (!empty($EW_groups)) {
+            $can_write = sprintf(
+                '(tbase.id_grupo IN (%s)) as user_can_write',
+                join(', ', array_keys($EW_groups))
+            );
+        }
+
+        $sql = sprintf(
+            'SELECT
+                tbase.*,
+                %s,
+                %s
+            FROM
+                (',
+            $can_manage,
+            $can_write
+        ).$sql.') tbase';
+    } else {
+        $sql = 'SELECT
+                tbase.*,
+                1 as user_can_manage,
+                1 as user_can_write
+            FROM
+                ('.$sql.') tbase';
+    }
+
+    if ($count) {
+        $sql = 'SELECT count(*) as nitems FROM ('.$sql.') tt';
+    }
+
+    if ($return_sql) {
+        return $sql;
+    }
+
+    return db_get_all_rows_sql($sql);
 }
 
 
@@ -192,7 +1547,7 @@ function events_get_events_no_grouped(
 /**
  * Return all events matching sql_post grouped.
  *
- * @param [type]  $sql_post   Sql_post.
+ * @param string  $sql_post   Sql_post.
  * @param integer $offset     Offset.
  * @param integer $pagination Pagination.
  * @param boolean $meta       Meta.
@@ -213,7 +1568,7 @@ function events_get_events_grouped(
     $total=false,
     $history_db=false,
     $order='down',
-    $sort_field='timestamp'
+    $sort_field='utimestamp'
 ) {
     global $config;
 
@@ -223,6 +1578,13 @@ function events_get_events_grouped(
         $groupby_extra = ', server_id';
     } else {
         $groupby_extra = '';
+    }
+
+    if (is_metaconsole()) {
+            $id_source_event = get_parameter('id_source_event');
+        if ($id_source_event != '') {
+            $sql_post .= "AND id_source_event = $id_source_event";
+        }
     }
 
     db_process_sql('SET group_concat_max_len = 9999999');
@@ -431,7 +1793,7 @@ function events_change_status(
         $ack_user = $config['id_user'];
     } else {
         $acl_utimestamp = 0;
-        $ack_user = '';
+        $ack_user = $config['id_user'];
     }
 
     switch ($new_status) {
@@ -869,7 +2231,7 @@ function events_create_event(
     }
 
     $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $table_events = 'tmetaconsole_event';
 
         $sql = sprintf(
@@ -1034,7 +2396,7 @@ function events_print_event_table(
         }
 
         $table->head[$i] = __('Timestamp');
-        $table->headstyle[$i] = 'width: 120px;';
+        $table->headstyle[$i] = 'width: 150px;';
         $table->style[$i++] = 'word-break: break-word;';
 
         $table->head[$i] = __('Status');
@@ -1130,10 +2492,10 @@ function events_print_event_table(
         }
 
         $events_table = html_print_table($table, true);
-        $out = '<table width="100%"><tr><td style="width: 90%; vertical-align: top; padding-top: 0px;">';
-        $out .= $events_table;
+        $out = $events_table;
 
         if (!$tactical_view) {
+            $out .= '<table width="100%"><tr><td style="width: 90%; vertical-align: top; padding-top: 0px;">';
             if ($agent_id != 0) {
                 $out .= '</td><td style="width: 200px; vertical-align: top;">';
                 $out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
@@ -1149,9 +2511,9 @@ function events_print_event_table(
 						<legend>'.__('Event graph by agent').'</legend>'.grafico_eventos_grupo(180, 60).'</fieldset>';
                 $out .= '</td></tr></table>';
             }
-        }
 
-        $out .= '</td></tr></table>';
+            $out .= '</td></tr></table>';
+        }
 
         unset($table);
 
@@ -1469,6 +2831,10 @@ function events_get_agent(
 
     if (!is_numeric($date)) {
         $date = time_w_fixed_tz($date);
+    }
+
+    if (is_metaconsole() && $events_group === false) {
+        $id_server = true;
     }
 
     if (empty($date)) {
@@ -1901,7 +3267,7 @@ function events_get_event_filter_select($manage=true)
     } else {
         $user_groups = users_get_groups(
             $config['id_user'],
-            'EW',
+            'ER',
             users_can_manage_group_all(),
             true
         );
@@ -1914,7 +3280,7 @@ function events_get_event_filter_select($manage=true)
     $sql = '
 		SELECT id_filter, id_name
 		FROM tevent_filter
-		WHERE id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
+		WHERE id_group_filter IN (0, '.implode(',', array_keys($user_groups)).')';
 
     $event_filters = db_get_all_rows_sql($sql);
 
@@ -1946,6 +3312,7 @@ function events_page_responses($event, $childrens_ids=[])
     //
     // Responses.
     //
+    $table_responses = new StdClass();
     $table_responses->cellspacing = 2;
     $table_responses->cellpadding = 2;
     $table_responses->id = 'responses_table';
@@ -2280,7 +3647,7 @@ function events_get_response_target(
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent has not an IP, display N/A.
-        if ($ip === false) {
+        if ($ip === false || $ip === '') {
             $ip = __('N/A');
         }
 
@@ -2618,7 +3985,7 @@ function events_page_details($event, $server='')
     global $config;
 
     // If server is provided, get the hash parameters.
-    if (!empty($server) && defined('METACONSOLE')) {
+    if (!empty($server) && is_metaconsole()) {
         $hashdata = metaconsole_get_server_hashdata($server);
         $hashstring = '&amp;loginhash=auto&loginhash_data='.$hashdata.'&loginhash_user='.str_rot13($config['id_user']);
         $serverstring = $server['server_url'].'/';
@@ -2707,7 +4074,7 @@ function events_page_details($event, $server='')
 
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
-        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto']);
+        $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
         $table_details->data[] = $data;
 
         $data = [];
@@ -2814,7 +4181,6 @@ function events_page_details($event, $server='')
                 'type'    => $graph_type,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id_agente_modulo'],
-                'label'   => base64_encode($module['nombre']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -2895,7 +4261,7 @@ function events_page_details($event, $server='')
 
     $data = [];
     $data[0] = __('Instructions');
-    $data[1] = events_display_instructions($event['event_type'], $event, true);
+    $data[1] = html_entity_decode(events_display_instructions($event['event_type'], $event, true));
     $table_details->data[] = $data;
 
     $data = [];
@@ -2920,7 +4286,7 @@ function events_page_details($event, $server='')
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
-    if (!empty($server) && defined('METACONSOLE')) {
+    if (!empty($server) && is_metaconsole()) {
         metaconsole_restore_db();
     }
 
@@ -3097,6 +4463,15 @@ function events_page_general($event)
 
     global $group_rep;
 
+    $secondary_groups = '';
+    if (isset($event['id_agente']) && $event['id_agente'] > 0) {
+        enterprise_include_once('include/functions_agents.php');
+        $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
+        if (!empty($secondary_groups_selected)) {
+            $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
+        }
+    }
+
     // General.
     $table_general = new stdClass;
     $table_general->cellspacing = 0;
@@ -3113,7 +4488,7 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Event name');
-    $data[1] = events_display_name($event['evento']);
+    $data[1] = '<span style="word-break: break-word;">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
 
     $data = [];
@@ -3140,6 +4515,8 @@ function events_page_general($event)
 
         $data[1] = $user_owner;
     }
+
+    $table_general->cellclass[3][1] = 'general_owner';
 
     $table_general->data[] = $data;
 
@@ -3208,6 +4585,8 @@ function events_page_general($event)
         $data[1] = '<i>'.__('N/A').'</i>';
     }
 
+    $table_general->cellclass[7][1] = 'general_status';
+
     $table_general->data[] = $data;
 
     $data = [];
@@ -3218,6 +4597,14 @@ function events_page_general($event)
     }
 
     $table_general->data[] = $data;
+
+    if (!empty($secondary_groups)) {
+        $data = [];
+        $data[0] = __('Secondary groups');
+        $data[1] = $secondary_groups;
+
+        $table_general->data[] = $data;
+    }
 
     $data = [];
     $data[0] = __('Contact');
@@ -3255,10 +4642,14 @@ function events_page_general($event)
     $table_general->data[] = $data;
 
     $table_data = $table_general->data;
-    $table_data_total = count($table_data);
+    if (is_array($table_data)) {
+        $table_data_total = count($table_data);
+    } else {
+        $table_data_total = -1;
+    }
 
     for ($i = 0; $i <= $table_data_total; $i++) {
-        if (count($table_data[$i]) == 2) {
+        if (is_array($table_data[$i]) && count($table_data[$i]) == 2) {
             $table_general->colspan[$i][1] = 2;
             $table_general->style[2] = 'text-align:center; width:10%;';
         }
@@ -3273,12 +4664,11 @@ function events_page_general($event)
 /**
  * Generate 'comments' page for event viewer.
  *
- * @param array $event         Event.
- * @param array $childrens_ids Children ids.
+ * @param array $event Event.
  *
  * @return string HTML.
  */
-function events_page_comments($event, $childrens_ids=[])
+function events_page_comments($event, $ajax=false)
 {
     // Comments.
     global $config;
@@ -3289,93 +4679,93 @@ function events_page_comments($event, $childrens_ids=[])
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
-    $event_comments = $event['user_comment'];
-    $event_comments = str_replace(["\n", '&#x0a;'], '<br>', $event_comments);
+    $comments = ($event['user_comment'] ?? '');
 
-    // If comments are not stored in json, the format is old.
-    $event_comments_array = json_decode($event_comments, true);
-
-    // Show the comments more recent first.
-    if (is_array($event_comments_array)) {
-        $event_comments_array = array_reverse($event_comments_array);
-    }
-
-    if (empty($event_comments_array)) {
-        $comments_format = 'old';
+    if (empty($comments)) {
+        $table_comments->style[0] = 'text-align:center;';
+        $table_comments->colspan[0][0] = 2;
+        $data = [];
+        $data[0] = __('There are no comments');
+        $table_comments->data[] = $data;
     } else {
-        $comments_format = 'new';
-    }
-
-    switch ($comments_format) {
-        case 'new':
-            if (empty($event_comments_array)) {
-                $table_comments->style[0] = 'text-align:center;';
-                $table_comments->colspan[0][0] = 2;
-                $data = [];
-                $data[0] = __('There are no comments');
-                $table_comments->data[] = $data;
-            }
-
-            if (isset($event_comments_array) === true
-                && is_array($event_comments_array) === true
-            ) {
-                foreach ($event_comments_array as $c) {
-                    $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
-                    $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                    $data[1] = $c['comment'];
-                    $table_comments->data[] = $data;
-                }
-            }
-        break;
-
-        case 'old':
-            $comments_array = explode('<br>', $event_comments);
-
-            // Split comments and put in table.
-            $col = 0;
-            $data = [];
-
-            foreach ($comments_array as $c) {
-                switch ($col) {
-                    case 0:
-                        $row_text = preg_replace('/\s*--\s*/', '', $c);
-                        $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
-                        $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
-                        $row_text = preg_replace('/[\[|\]]/', '', $row_text);
-                    break;
-
-                    case 1:
-                        $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
-                    break;
-
-                    default:
-                        // Ignore.
-                    break;
+        if (is_array($comments)) {
+            foreach ($comments as $comm) {
+                if (empty($comm)) {
+                    continue;
                 }
 
-                $data[$col] = $row_text;
+                $comments_array[] = io_safe_output(json_decode($comm, true));
+            }
+        } else {
+            $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
+            // If comments are not stored in json, the format is old.
+            $comments_array[] = io_safe_output(json_decode($comments, true));
+        }
 
-                $col++;
+        foreach ($comments_array as $comm) {
+            // Show the comments more recent first.
+            if (is_array($comm)) {
+                $comm = array_reverse($comm);
+            }
 
-                if ($col == 2) {
+            if (empty($comm)) {
+                $comments_format = 'old';
+            } else {
+                $comments_format = 'new';
+            }
+
+            switch ($comments_format) {
+                case 'new':
+                    foreach ($comm as $c) {
+                        $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
+                        $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
+                        $data[1] = '<p style="word-break: break-word;">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
+                        $table_comments->data[] = $data;
+                    }
+                break;
+
+                case 'old':
+                    $comm = explode('<br>', $comments);
+
+                    // Split comments and put in table.
                     $col = 0;
-                    $table_comments->data[] = $data;
                     $data = [];
-                }
-            }
 
-            if (count($comments_array) == 1 && $comments_array[0] == '') {
-                $table_comments->style[0] = 'text-align:center;';
-                $table_comments->colspan[0][0] = 2;
-                $data = [];
-                $data[0] = __('There are no comments');
-                $table_comments->data[] = $data;
-            }
-        break;
+                    foreach ($comm as $c) {
+                        switch ($col) {
+                            case 0:
+                                $row_text = preg_replace('/\s*--\s*/', '', $c);
+                                $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
+                                $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
+                                $row_text = preg_replace('/[\[|\]]/', '', $row_text);
+                            break;
 
-        default:
-            // Ignore.
-        break;
+                            case 1:
+                                $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
+                            break;
+
+                            default:
+                                // Ignore.
+                            break;
+                        }
+
+                        $data[$col] = $row_text;
+
+                        $col++;
+
+                        if ($col == 2) {
+                            $col = 0;
+                            $table_comments->data[] = $data;
+                            $data = [];
+                        }
+                    }
+                break;
+
+                default:
+                    // Ignore.
+                break;
+            }
+        }
     }
 
     if (((tags_checks_event_acl(
@@ -3392,18 +4782,37 @@ function events_page_comments($event, $childrens_ids=[])
         $childrens_ids
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
-        $comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea('comment', 3, 10, '', 'style="min-height: 15px; padding:0; width: 100%; disabled"', true);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">';
+        $comments_form .= html_print_textarea(
+            'comment',
+            3,
+            10,
+            '',
+            'style="min-height: 15px; padding:0; width: 100%; disabled"',
+            true
+        );
 
-        $comments_form .= '<br><div style="text-align:right; margin-top:10px;">'.html_print_button(__('Add comment'), 'comment_button', false, 'event_comment();', 'class="sub next"', true).'</div><br></div>';
+        $comments_form .= '<br><div style="text-align:right; margin-top:10px;">';
+        $comments_form .= html_print_button(
+            __('Add comment'),
+            'comment_button',
+            false,
+            'event_comment();',
+            'class="sub next"',
+            true
+        );
+        $comments_form .= '</div><br></div>';
     } else {
         $comments_form = ui_print_message(
             __('If event replication is ongoing, it won\'t be possible to enter comments here. This option is only to allow local pandora users to see comments, but not to operate with them. The operation, when event replication is enabled, must be done only in the Metaconsole.')
         );
     }
 
-    $comments = '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
+    if ($ajax) {
+        return $comments_form.html_print_table($table_comments, true);
+    }
 
-    return $comments;
+    return '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
 }
 
 
@@ -3551,10 +4960,6 @@ function events_get_count_events_by_agent(
 
     $tagente = 'tagente';
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tagente = 'tmetaconsole_agent';
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT id_agente,
@@ -3564,7 +4969,7 @@ function events_get_count_events_by_agent(
 		COUNT(*) AS count
 		FROM %s t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) %s 
+			AND id_grupo IN (%s) 
 		GROUP BY id_agente',
         $tagente,
         $tevento,
@@ -3731,9 +5136,6 @@ function events_get_count_events_validated_by_user(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT id_usuario,
@@ -3909,9 +5311,6 @@ function events_get_count_events_by_criticity(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf(
         'SELECT criticity,
@@ -4117,9 +5516,6 @@ function events_get_count_events_validated(
     }
 
     $tevento = 'tevento';
-    if ($dbmeta) {
-        $tevento = 'tmetaconsole_event';
-    }
 
     $sql = sprintf('SELECT estado, COUNT(*) AS count FROM %s WHERE %s %s GROUP BY estado', $tevento, $sql_filter, $sql_where);
 
@@ -5248,13 +6644,14 @@ function events_list_events_grouped_agents($sql)
 /**
  * Retrieves SQL for custom order.
  *
- * @param string  $sort_field Field.
- * @param string  $sort       Order.
- * @param integer $group_rep  Group field.
+ * @param string  $sort_field  Field.
+ * @param string  $sort        Order.
+ * @param integer $group_rep   Group field.
+ * @param boolean $only-fields Return only fields.
  *
  * @return string SQL.
  */
-function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=0)
+function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=0, $only_fields=false)
 {
     $sort_field_translated = $sort_field;
     switch ($sort_field) {
@@ -5303,11 +6700,19 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
         break;
 
         default:
-            // Ignore.
+            $sort_field_translated = $sort_field;
         break;
     }
 
-    $dir = ($sort == 'up') ? 'ASC' : 'DESC';
+    if (strtolower($sort) != 'asc' && strtolower($sort) != 'desc') {
+        $dir = ($sort == 'up') ? 'ASC' : 'DESC';
+    } else {
+        $dir = $sort;
+    }
+
+    if ($only_fields) {
+        return $sort_field_translated.' '.$dir;
+    }
 
     return 'ORDER BY '.$sort_field_translated.' '.$dir;
 }
@@ -5322,14 +6727,304 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
  */
 function events_get_secondary_groups_left_join($table)
 {
-    if (users_is_admin()) {
-        return '';
-    }
-
     if ($table == 'tevento') {
         return 'LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent';
     }
 
     return 'LEFT JOIN tmetaconsole_agent_secondary_group tasg
 		ON te.id_agente = tasg.id_tagente AND te.server_id = tasg.id_tmetaconsole_setup';
+}
+
+
+/**
+ * Replace macros in any string given an event id.
+ * If server_id > 0, it's a metaconsole query.
+ *
+ * @param integer $event_id Event identifier.
+ * @param integer $value    String value in which we want to apply macros.
+ *
+ * @return string The response text with the macros applied.
+ */
+function events_get_field_value_by_event_id(
+    int $event_id,
+    $value
+) {
+    global $config;
+
+    $meta = false;
+    $event = db_get_row('tevento', 'id_evento', $event_id);
+
+    // Replace each macro.
+    if (strpos($value, '_agent_address_') !== false) {
+        if ($meta) {
+            $agente_table_name = 'tmetaconsole_agent';
+            $filter = [
+                'id_tagente'            => $event['id_agente'],
+                'id_tmetaconsole_setup' => $server_id,
+            ];
+        } else {
+            $agente_table_name = 'tagente';
+            $filter = ['id_agente' => $event['id_agente']];
+        }
+
+        $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
+        // If agent does not have an IP, display N/A.
+        if ($ip === false) {
+            $ip = __('N/A');
+        }
+
+        $value = str_replace('_agent_address_', $ip, $value);
+    }
+
+    if (strpos($value, '_agent_id_') !== false) {
+        $value = str_replace('_agent_id_', $event['id_agente'], $value);
+    }
+
+    if (strpos($value, '_module_address_') !== false) {
+        if ($event['id_agentmodule'] != 0) {
+            if ($meta) {
+                $server = metaconsole_get_connection_by_id($server_id);
+                metaconsole_connect($server);
+            }
+
+            $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
+            if (empty($module['ip_target'])) {
+                $module['ip_target'] = __('N/A');
+            }
+
+            $value = str_replace('_module_address_', $module['ip_target'], $value);
+            if (empty($module['nombre'])) {
+                $module['nombre'] = __('N/A');
+            }
+
+            if ($meta) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $value = str_replace('_module_address_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_module_name_') !== false) {
+        if ($event['id_agentmodule'] != 0) {
+            if ($meta) {
+                $server = metaconsole_get_connection_by_id($server_id);
+                metaconsole_connect($server);
+            }
+
+            $module = db_get_row('tagente_modulo', 'id_agente_modulo', $event['id_agentmodule']);
+            if (empty($module['ip_target'])) {
+                $module['ip_target'] = __('N/A');
+            }
+
+            $value = str_replace(
+                '_module_name_',
+                io_safe_output($module['nombre']),
+                $value
+            );
+
+            if ($meta) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $value = str_replace('_module_name_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_event_id_') !== false) {
+        $value = str_replace('_event_id_', $event['id_evento'], $value);
+    }
+
+    if (strpos($value, '_user_id_') !== false) {
+        if (!empty($event['id_usuario'])) {
+            $value = str_replace('_user_id_', $event['id_usuario'], $value);
+        } else {
+            $value = str_replace('_user_id_', __('N/A'), $value);
+        }
+    }
+
+    if (strpos($value, '_group_id_') !== false) {
+        $value = str_replace('_group_id_', $event['id_grupo'], $value);
+    }
+
+    if (strpos($value, '_group_name_') !== false) {
+        $value = str_replace(
+            '_group_name_',
+            groups_get_name($event['id_grupo'], true),
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_utimestamp_') !== false) {
+        $value = str_replace(
+            '_event_utimestamp_',
+            $event['utimestamp'],
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_date_') !== false) {
+        $value = str_replace(
+            '_event_date_',
+            date($config['date_format'], $event['utimestamp']),
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_text_') !== false) {
+        $value = str_replace(
+            '_event_text_',
+            events_display_name($event['evento']),
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_type_') !== false) {
+        $value = str_replace(
+            '_event_type_',
+            events_print_type_description($event['event_type'], true),
+            $value
+        );
+    }
+
+    if (strpos($value, '_alert_id_') !== false) {
+        $value = str_replace(
+            '_alert_id_',
+            empty($event['is_alert_am']) ? __('N/A') : $event['is_alert_am'],
+            $value
+        );
+    }
+
+    if (strpos($value, '_event_severity_id_') !== false) {
+        $value = str_replace('_event_severity_id_', $event['criticity'], $value);
+    }
+
+    if (strpos($value, '_event_severity_text_') !== false) {
+        $value = str_replace(
+            '_event_severity_text_',
+            get_priority_name($event['criticity']),
+            $value
+        );
+    }
+
+    if (strpos($value, '_module_id_') !== false) {
+        $value = str_replace('_module_id_', $event['id_agentmodule'], $value);
+    }
+
+    if (strpos($value, '_event_tags_') !== false) {
+        $value = str_replace('_event_tags_', $event['tags'], $value);
+    }
+
+    if (strpos($value, '_event_extra_id_') !== false) {
+        if (empty($event['id_extra'])) {
+            $value = str_replace('_event_extra_id_', __('N/A'), $value);
+        } else {
+            $value = str_replace('_event_extra_id_', $event['id_extra'], $value);
+        }
+    }
+
+    if (strpos($value, '_event_source_') !== false) {
+        $value = str_replace('_event_source_', $event['source'], $value);
+    }
+
+    if (strpos($value, '_event_instruction_') !== false) {
+        $value = str_replace(
+            '_event_instruction_',
+            events_display_instructions($event['event_type'], $event, false),
+            $value
+        );
+    }
+
+    if (strpos($value, '_owner_user_') !== false) {
+        if (empty($event['owner_user'])) {
+            $value = str_replace('_owner_user_', __('N/A'), $value);
+        } else {
+            $value = str_replace('_owner_user_', $event['owner_user'], $value);
+        }
+    }
+
+    if (strpos($value, '_event_status_') !== false) {
+        $event_st = events_display_status($event['estado']);
+        $value = str_replace('_event_status_', $event_st['title'], $value);
+    }
+
+    if (strpos($value, '_group_custom_id_') !== false) {
+        $group_custom_id = db_get_value_sql(
+            sprintf(
+                'SELECT custom_id FROM tgrupo WHERE id_grupo=%s',
+                $event['id_grupo']
+            )
+        );
+        $event_st = events_display_status($event['estado']);
+        $value = str_replace('_group_custom_id_', $group_custom_id, $value);
+    }
+
+    // Parse the event custom data.
+    if (!empty($event['custom_data'])) {
+        $custom_data = json_decode(base64_decode($event['custom_data']));
+        foreach ($custom_data as $key => $val) {
+            $value = str_replace('_customdata_'.$key.'_', $val, $value);
+        }
+    }
+
+    // This will replace the macro with the current logged user.
+    if (strpos($value, '_current_user_') !== false) {
+        $value = str_replace('_current_user_', $config['id_user'], $value);
+    }
+
+    return $value;
+
+}
+
+
+function events_get_instructions($event)
+{
+    if (!is_array($event)) {
+        return '';
+    }
+
+    switch ($event['event_type']) {
+        case 'going_unknown':
+            if ($event['unknown_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']));
+            }
+        break;
+
+        case 'going_up_warning':
+        case 'going_down_warning':
+            if ($event['warning_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['warning_instructions']));
+            }
+        break;
+
+        case 'going_up_critical':
+        case 'going_down_critical':
+            if ($event['critical_instructions'] != '') {
+                $value = str_replace("\n", '<br>', io_safe_output($event['critical_instructions']));
+            }
+        break;
+    }
+
+    if (!isset($value)) {
+        return '';
+    }
+
+    $max_text_length = 300;
+    $over_text = io_safe_output($value);
+    if (strlen($over_text) > ($max_text_length + 3)) {
+        $over_text = substr($over_text, 0, $max_text_length).'...';
+    }
+
+    $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
+    $output .= ' style="display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left">';
+    $output .= $value;
+    $output .= '</div>';
+    $output .= '<center>';
+    $output .= '<span id="value_event_'.$event['id_evento'].'" style="white-space: nowrap;">';
+    $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
+    $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
+    $output .= html_print_image('images/default_list.png', true, ['title' => $over_text]).'</a></span>';
+    $output .= '</center>';
+
+    return $output;
 }

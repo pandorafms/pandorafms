@@ -79,10 +79,10 @@ $table->class = 'databox filters';
 $table->style[0][1] = 'text-align: right; vertical-align: top;';
 
 $table->data[0][0] = '<div id="chat_box" style="width: 95%;
-	height: 300px; background: #ffffff; border: 1px inset black;
+	height: 300px; background: #ffffff; border: 1px solid #cbcbcb; border-radius: 5px;
 	overflow: auto; padding: 10px;"></div>';
 $table->data[0][1] = '<h4>'.__('Users Online').'</h4>'.'<div id="userlist_box" style="width: 90% !important; height: 200px !important;
-		height: 300px; background: #ffffff; border: 1px inset black;
+		height: 300px; background: #ffffff; border: 1px solid #cbcbcb; border-radius: 5px;
 		overflow: auto; padding-right: 10px;"></div>';
 $table->data[1][0] = '<b>'.__('Message').'</b> &nbsp;&nbsp;'.html_print_input_text(
     'message_box',
@@ -115,16 +115,16 @@ echo "<div style='width:100%'>".html_print_button(
             //Enter key.
             if (e.keyCode == 13) {
                 send_message();
+                check_users();
             }
         });
         
         init_webchat();
     });
-    
-    $(window).unload(function () {
+    $(window).on("beforeunload",function () {
         exit_webchat();
     });
-    
+
     function init_webchat() {
         send_login_message();
         long_polling_check_messages();
@@ -165,9 +165,13 @@ echo "<div style='width:100%'>".html_print_button(
                     check_users();
                     
                     if (first_time) {
+                        var date_first_message = unix_timestamp(data['log'][0]['timestamp']);
+                        if(!date_first_message){
+                            date_first_message = unix_timestamp(new Date()/1000);
+                        }
                         print_messages({
                             0: {'type' : 'notification',
-                                'text': '<?php echo __('Connection established...get last 24h messages...'); ?>'}
+                                'text': '<?php echo __('Connection established - Retrieving messages since '); ?>'+date_first_message}
                             }, true);
                         first_time = false;
                     }
@@ -307,5 +311,25 @@ echo "<div style='width:100%'>".html_print_button(
             success: function(data) {
             }
         });
+    }
+
+    // Function to convert a timestamp to human date.
+    function unix_timestamp(timestamp){
+        var date = new Date(timestamp*1000);
+
+        const monthNames = [
+            "January", "February", "March", "April",
+             "May", "June", "July", "August",
+             "September", "October", "November", "December"
+        ];
+        var month = monthNames[date.getMonth()];
+
+        var day =  date.getDate();
+        var year =  date.getFullYear();
+
+        var hour = date.getHours();
+        var min = date.getMinutes();
+
+        return month + ' ' + day + ', '+ year + ', ' + hour+ ':' + min;  
     }
 </script>

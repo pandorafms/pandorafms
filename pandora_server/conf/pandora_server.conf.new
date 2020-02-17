@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.735
+# Version 7.0NG.743
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -130,9 +130,15 @@ networkserver 1
 
 dataserver 1
 
-# Activate (1) Pandora FMS Recon server
+# Activate (1) Pandora FMS Discovery server
 
-reconserver 1
+discoveryserver 1
+
+# Discovery SAP (PANDORA FMS ENTERPRISE ONLY)
+# java /usr/bin/java
+
+# Discovery SAP utils (PANDORA FMS ENTERPRISE ONLY)
+# sap_utils /usr/share/pandora_server/util/recon_scripts/SAP
 
 # pluginserver : 1 or 0. Set to 1 to activate plugin server with this setup
 
@@ -155,6 +161,17 @@ wmiserver 1
 # Network timeout (in seconds) for timeout in network connections for Network agents
 
 network_timeout 4
+
+# Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
+
+rcmd_timeout 10
+
+# Pandora FMS remote execution commands timeout tool filepath (by default at /usr/bin)
+
+rcmd_timeout_bin /usr/bin/timeout
+
+# Remote execution modules, ssh_launcher extra option (PANDORA FMS ENTERPRISE ONLY).
+ssh_launcher /usr/share/pandora_server/util/ssh_launcher.sh
 
 # Server keepalive (in seconds)
 
@@ -226,8 +243,9 @@ recon_threads 1
 dataserver_threads 1
 
 # mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# If not set, the MTA configuration specified in the Pandora FMS Console will be used.
 
-mta_address localhost
+#mta_address localhost
 
 # mta_port, this is the mail server port (default 25)
 
@@ -249,6 +267,10 @@ mta_address localhost
 #           probably you need to change it to avoid problems with your antispam
 
 #mta_from Pandora FMS <pandora@mydomain.com>
+
+# SMTP encryption protocol (none, ssl, starttls)
+
+#mta_encryption none
 
 # Set 1 if want eMail deliver alert in separate mail  (default). 
 # Set 0 if want eMail deliver shared mail by all destination.
@@ -303,6 +325,11 @@ fsnmp /usr/bin/pandorafsnmp
 # will be dropped. We use the Group ID #10 (Unknown) for a "valid" default value, please change as your own decision.
 
 autocreate_group 10
+
+# If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
+# If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).
+
+autocreate_group_force 1
 
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable (for security purposes, for example).
@@ -366,6 +393,15 @@ self_monitoring 1
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
 
+# Pandora Sample Agent. If enabled, every 10 minutes, this embedded agent 
+# will make sample data. Disabled by default.
+
+sample_agent 0
+
+# Pandora Sample Agent interval (in seconds).
+
+sample_agent_interval 600
+
 # Update parent from the agent xml
 
 #update_parent 1
@@ -420,9 +456,20 @@ export_threads 1
 
 eventserver 0
 
-# Event Server event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
+
+# Correlated Alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+
+log_window 3600
+
+# Pre-load windows on start with available information. (PANDORA FMS ENTERPRISE ONLY).
+#preload_windows 0
+
+# If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
+
+event_inhibit_alerts 0
 
 # Enable (1) or disable (0) Pandora FMS Enterprise ICMP Server (PANDORA FMS ENTERPRISE ONLY).
 # You need nmap 5.20 or higher in order to use this !
@@ -516,20 +563,10 @@ async_recovery 1
 # Required for some features like the module graphs macros.
 
 # console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
-console_api_url http://localhost/pandora_console/include/api.php
+# console_api_url http://localhost/pandora_console/include/api.php
 
 # console_api_pass: Api pass
 # console_api_pass 1234
-
-# console_user: Console user name (admin by default)
-console_user admin
-
-# console_pass: Console password (pandora by default)
-# To make sure console_api_url, console_api_pass, console_user and console_pass are properly configured run:
-# 	curl "<console_api_url>?op=get&op2=test&apipass=<console_api_pass>&user=<console_user>&pass=<console_pass>"
-# It should return a string similar to:
-# 	OK,{VERSION},{BUILD}
-console_pass pandora
 
 # Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).
 #encryption_passphrase passphrase
@@ -601,6 +638,9 @@ syslog_threads 2
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
 
+# Sync Server
+#syncserver
+
 # Port tentacle server
 #sync_port 41121
 
@@ -619,7 +659,7 @@ syslog_max 65535
 # Sync timeout
 #sync_timeout 10
 
-# Address 
+# Address
 # sync_address
 
 # Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch

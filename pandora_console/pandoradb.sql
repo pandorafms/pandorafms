@@ -694,6 +694,20 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
+-- Table `tcredential_store`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcredential_store` (
+	`identifier` varchar(100) NOT NULL,
+	`id_group` mediumint(4) unsigned NOT NULL DEFAULT 0,
+	`product` enum('CUSTOM', 'AWS', 'AZURE', 'GOOGLE', 'SAP') default 'CUSTOM',
+	`username` text,
+	`password` text,
+	`extra_1` text,
+	`extra_2` text,
+	PRIMARY KEY (`identifier`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
 -- Table `tincidencia`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tincidencia` (
@@ -806,6 +820,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
+	`type` ENUM('direct', 'failover') DEFAULT 'direct',
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`)
 		ON DELETE CASCADE,
@@ -1005,6 +1020,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
 	`exec_proxy` tinyint(1) UNSIGNED NOT NULL default 0,
+	`port` int(5) unsigned NOT NULL default 0,
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1083,7 +1099,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`id_name` varchar(600) NOT NULL,
 	`id_group` int(10) NOT NULL default 0,
 	`event_type` text NOT NULL,
-	`severity` int(10) NOT NULL default -1,
+	`severity` text NOT NULL,
 	`status` int(10) NOT NULL default -1,
 	`search` TEXT,
 	`text_agent` TEXT,
@@ -1101,6 +1117,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`source` tinytext NOT NULL,
 	`id_extra` tinytext NOT NULL,
 	`user_comment` text NOT NULL,
+	`id_source_event` int(10)  NULL default 0,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1387,8 +1404,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`type` varchar(30) default 'simple_graph',
 	`period` int(11) NOT NULL default 0,
 	`order` int (11) NOT NULL default 0,
-	`name` varchar(150) NULL,
-	`description` mediumtext, 
+	`name` varchar(300) NULL,
+	`description` mediumtext,
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`text` TEXT,
 	`external_source` Text,
@@ -1438,6 +1455,11 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
+	`uncompressed_module` TINYINT DEFAULT '0',
+	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
+	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1450,6 +1472,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
 	`id` INTEGER UNSIGNED NOT NULL auto_increment,
 	`id_report_content` INTEGER UNSIGNED NOT NULL,
 	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL,
 	`sla_max` double(18,2) NOT NULL default 0,
 	`sla_min` double(18,2) NOT NULL default 0,
 	`sla_limit` double(18,2) NOT NULL default 0,
@@ -1463,14 +1486,15 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
 -- Table `treport_content_item`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_content_item` (
-	`id` INTEGER UNSIGNED NOT NULL auto_increment, 
-	`id_report_content` INTEGER UNSIGNED NOT NULL, 
-	`id_agent_module` int(10) unsigned NOT NULL, 
+	`id` INTEGER UNSIGNED NOT NULL auto_increment,
+	`id_report_content` INTEGER UNSIGNED NOT NULL,
+	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_agent_module_failover` int(10) unsigned NOT NULL DEFAULT 0,
 	`server_name` text,
 	`operation` text,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
-		ON UPDATE CASCADE ON DELETE CASCADE 
+		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -2049,6 +2073,7 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 	`new_window` TINYINT(4)  NOT NULL DEFAULT 0,
 	`params` TEXT  NOT NULL,
 	`server_to_exec` int(10) unsigned NOT NULL DEFAULT 0,
+	`command_timeout` int(5) unsigned NOT NULL DEFAULT 90,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2165,6 +2190,7 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
 	`generated` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
+	`id_group_map` INT(10) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2420,14 +2446,17 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 -- Table `tdatabase`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdatabase` (
-	`id` int(10) unsigned NOT NULL auto_increment,
-	`host` varchar(100) default '',
-	`os_port` int(4) unsigned default '22',
-	`os_user` varchar(100) default '',
-	`db_port` int(4) unsigned default '3306',
+	`id` INT(10) unsigned NOT NULL auto_increment,
+	`host` VARCHAR(255) default '',
+	`label` VARCHAR(255) default '',
+	`os_port` INT UNSIGNED NOT NULL DEFAULT 22,
+	`os_user` VARCHAR(255) default '',
+	`db_port` INT UNSIGNED NOT NULL DEFAULT 3306,
 	`status` tinyint(1) unsigned default '0',
 	`action` tinyint(1) unsigned default '0',
-	`last_error` varchar(255) default '',
+	`ssh_key` TEXT,
+	`ssh_pubkey` TEXT,
+	`last_error` TEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
@@ -2750,16 +2779,32 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 	`count` int(4) NOT NULL default '1',
 	`agent` text default '',
 	`id_usuario` varchar(100) NOT NULL default '',
-	`id_grupo` mediumint(4) NOT NULL default '0',
+	`id_grupo` mediumint(4) default NULL,
 	`evento` text NOT NULL default '',
-	`event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default 'unknown',
+	`event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '',
 	`module` text default '',
 	`alert` text default '',
-	`criticity` int(4) unsigned NOT NULL default '0',
+	`criticity` int(4) unsigned default NULL,
 	`user_comment` text NOT NULL,
 	`id_tag` integer(10) unsigned NOT NULL default '0',
 	`name` text default '',
 	`group_recursion` INT(1) unsigned default 0,
+	`log_content` text,
+	`log_source` text,
+	`log_agent` text,
+	`operator_agent` text COMMENT 'Operator for agent',
+	`operator_id_usuario` text COMMENT 'Operator for id_usuario',
+	`operator_id_grupo` text COMMENT 'Operator for id_grupo',
+	`operator_evento` text COMMENT 'Operator for evento',
+	`operator_event_type` text COMMENT 'Operator for event_type',
+	`operator_module` text COMMENT 'Operator for module',
+	`operator_alert` text COMMENT 'Operator for alert',
+	`operator_criticity` text COMMENT 'Operator for criticity',
+	`operator_user_comment` text COMMENT 'Operator for user_comment',
+	`operator_id_tag` text COMMENT 'Operator for id_tag',
+	`operator_log_content` text COMMENT 'Operator for log_content',
+	`operator_log_source` text COMMENT 'Operator for log_source',
+	`operator_log_agent` text COMMENT 'Operator for log_agent',
 	PRIMARY KEY  (`id_event_rule`),
 	KEY `idx_id_event_alert` (`id_event_alert`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -2783,7 +2828,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`field8` text NOT NULL default '',
 	`field9` text NOT NULL default '',
 	`field10` text NOT NULL default '',
-	`time_threshold` int(10) NOT NULL default '0',
+	`time_threshold` int(10) NOT NULL default 86400,
 	`max_alerts` int(4) unsigned NOT NULL default '1',
 	`min_alerts` int(4) unsigned NOT NULL default '0',
 	`time_from` time default '00:00:00',
@@ -2808,6 +2853,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`priority` tinyint(4) default '0',
 	`force_execution` tinyint(1) default '0',
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
+	`special_days` tinyint(1) default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2912,6 +2958,7 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`footer` MEDIUMTEXT default NULL,
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
+	`agent_regex` varchar(600) BINARY NOT NULL default '',
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2978,6 +3025,11 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
 	`current_month` TINYINT(1) DEFAULT '1',
+	`failover_mode` tinyint(1) DEFAULT '1',
+	`failover_type` tinyint(1) DEFAULT '1',
+	`uncompressed_module` TINYINT DEFAULT '0',
+	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
+	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3081,6 +3133,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
+	KEY `server_id` (`server_id`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- Criticity: 0 - Maintance (grey)
@@ -3219,6 +3272,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
+	KEY `id_tagente_idx` (`id_tagente`),
 	KEY `disabled` (`disabled`),
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3392,6 +3446,7 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
     `id_tmetaconsole_setup` int(10) NOT NULL,
     `id_group` mediumint(4) unsigned NOT NULL,
     PRIMARY KEY(`id`),
+	KEY `id_tagente` (`id_tagente`),
     FOREIGN KEY(`id_agent`) REFERENCES tmetaconsole_agent(`id_agente`)
         ON DELETE CASCADE,
 	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)
@@ -3496,6 +3551,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
+	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -3590,3 +3646,76 @@ CREATE TABLE IF NOT EXISTS `tvisual_console_elements_cache` (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_repository`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tagent_repository` (
+  `id` SERIAL,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `version` VARCHAR(10) DEFAULT '',
+  `path` text,
+  `uploaded_by` VARCHAR(100) DEFAULT '',
+  `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tdeployment_hosts`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdeployment_hosts` (
+  `id` SERIAL,
+  `id_cs` VARCHAR(100),
+  `ip` VARCHAR(100) NOT NULL UNIQUE,
+  `id_os` INT(10) UNSIGNED DEFAULT 0,
+  `os_version` VARCHAR(100) DEFAULT '' COMMENT "OS version in STR format",
+  `arch` ENUM('x64', 'x86') DEFAULT 'x64',
+  `current_agent_version` VARCHAR(100) DEFAULT '' COMMENT "String latest installed agent",
+  `target_agent_version_id` BIGINT UNSIGNED,
+  `deployed` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was deployed",
+  `server_ip` varchar(100) default NULL COMMENT "Where to point target agent",
+  `last_err` text,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_cs`) REFERENCES `tcredential_store`(`identifier`)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (`id_os`) REFERENCES `tconfig_os`(`id_os`)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`target_agent_version_id`) REFERENCES  `tagent_repository`(`id`)
+    ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command` (
+  `id` SERIAL,
+  `name` varchar(150) NOT NULL,
+  `timeout` int(10) unsigned NOT NULL default 30,
+  `retries` int(10) unsigned NOT NULL default 3,
+  `preconditions` text,
+  `script` text,
+  `postconditions` text,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `id_group` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tremote_command_target`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tremote_command_target` (
+  `id` SERIAL,
+  `rcmd_id` bigint unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  `stdout` MEDIUMTEXT,
+  `stderr` MEDIUMTEXT,
+  `errorlevel` int(10) unsigned NOT NULL default 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

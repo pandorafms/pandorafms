@@ -1,26 +1,60 @@
 <?php
+/**
+ * Net tools utils.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage NetTools
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Begin.
+global $config;
+
+// Requires.
+require_once $config['homedir'].'/include/functions.php';
+
+// This extension is usefull only if the agent has associated IP.
 $id_agente = get_parameter('id_agente');
-
-// This extension is usefull only if the agent has associated IP
 $address = agents_get_address($id_agente);
 
 if (!empty($address) || empty($id_agente)) {
-    extensions_add_opemode_tab_agent('network_tools', 'Network Tools', 'extensions/net_tools/nettool.png', 'main_net_tools', 'v1r1', 'AW');
+    extensions_add_opemode_tab_agent(
+        'network_tools',
+        'Network Tools',
+        'extensions/net_tools/nettool.png',
+        'main_net_tools',
+        'v1r1',
+        'AW'
+    );
 }
 
 
+/**
+ * Searchs for command.
+ *
+ * @param string $command Command.
+ *
+ * @return string Path.
+ */
 function whereis_the_command($command)
 {
     global $config;
@@ -63,6 +97,9 @@ function whereis_the_command($command)
                     return $snmpget_path;
                 }
             break;
+
+            default:
+            return null;
         }
     }
 
@@ -87,85 +124,20 @@ function whereis_the_command($command)
 }
 
 
-function main_net_tools()
+/**
+ * Execute net tools action.
+ *
+ * @param integer $operation    Operation.
+ * @param string  $ip           Ip.
+ * @param string  $community    Community.
+ * @param string  $snmp_version SNMP version.
+ *
+ * @return void
+ */
+function net_tools_execute($operation, $ip, $community, $snmp_version)
 {
-    $id_agente = get_parameter('id_agente');
-    $principal_ip = db_get_sql("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
-
-    $list_address = db_get_all_rows_sql('select id_a from taddress_agent where id_agent = '.$id_agente);
-    foreach ($list_address as $address) {
-        $ids[] = join(',', $address);
-    }
-
-    $ids_address = implode(',', $ids);
-    $ips = db_get_all_rows_sql('select ip from taddress where id_a in ('.$ids_address.')');
-
-    if ($ips == '') {
-        echo "<div class='error' style='margin-top:5px'>".__('The agent hasn\'t got IP').'</div>';
-        return;
-    }
-
-    echo "
-		<script type='text/javascript'>
-			function mostrarColumns(ValueSelect) {
-				value = ValueSelect.value;
-				if (value == 3) {
-					$('netToolTable').css('width','100%');
-					$('#snmpcolumn').show();
-				}
-				else {
-					$('netToolTable').css('width','100%');
-					$('#snmpcolumn').hide();
-				}
-			}
-		</script>";
-
-    echo '<div>';
-    echo "<form name='actionbox' method='post'>";
-    echo "<table class='databox filters' width=100% id=netToolTable>";
-    echo '<tr><td>';
-    echo __('Operation');
-    ui_print_help_tip(
-        __('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools')
-    );
-    echo '</td><td>';
-    echo "<select name='operation' onChange='mostrarColumns(this);'>";
-    echo "<option value='1'>".__('Traceroute');
-    echo "<option value='2'>".__('Ping host & Latency');
-    echo "<option value='3'>".__('SNMP Interface status');
-    echo "<option value='4'>".__('Basic TCP Port Scan');
-    echo "<option value='5'>".__('DiG/Whois Lookup');
-    echo '</select>';
-    echo '</td>';
-    echo '<td>';
-    echo __('IP address');
-    echo '</td><td>';
-    echo "<select name='select_ips'>";
-    foreach ($ips as $ip) {
-        if ($ip['ip'] == $principal_ip) {
-            echo "<option value='".$ip['ip']."' selected = 'selected'>".$ip['ip'];
-        } else {
-            echo "<option value='".$ip['ip']."'>".$ip['ip'];
-        }
-    }
-
-    echo '</select>';
-    echo '</td>';
-    echo "<td id='snmpcolumn' style=\"display:none;\">";
-    echo __('SNMP Community').'&nbsp;';
-    echo "<input name=community type=text value='public'>";
-    echo '</td><td>';
-    echo "<input style='margin:0px;' name=submit type=submit class='sub next' value='".__('Execute')."'>";
-    echo '</td>';
-    echo '</tr></table>';
-    echo '</form>';
-
-    $operation = get_parameter('operation', 0);
-    $community = get_parameter('community', 'public');
-    $ip = get_parameter('select_ips');
-
     if (!validate_address($ip)) {
-        ui_print_error_message(__('The ip or dns name entered cannot be resolved'));
+            ui_print_error_message(__('The ip or dns name entered cannot be resolved'));
     } else {
         switch ($operation) {
             case 1:
@@ -175,7 +147,7 @@ function main_net_tools()
                 } else {
                     echo '<h3>'.__('Traceroute to ').$ip.'</h3>';
                     echo '<pre>';
-                    echo system("$traceroute $ip");
+                    echo system($traceroute.' '.$ip);
                     echo '</pre>';
                 }
             break;
@@ -187,7 +159,7 @@ function main_net_tools()
                 } else {
                     echo '<h3>'.__('Ping to %s', $ip).'</h3>';
                     echo '<pre>';
-                    echo system("$ping -c 5 $ip");
+                    echo system($ping.' -c 5 '.$ip);
                     echo '</pre>';
                 }
             break;
@@ -199,7 +171,7 @@ function main_net_tools()
                 } else {
                     echo '<h3>'.__('Basic TCP Scan on ').$ip.'</h3>';
                     echo '<pre>';
-                    echo system("$nmap -F $ip");
+                    echo system($nmap.' -F '.$ip);
                     echo '</pre>';
                 }
             break;
@@ -212,7 +184,7 @@ function main_net_tools()
                     ui_print_error_message(__('Dig executable does not exist.'));
                 } else {
                     echo '<pre>';
-                    echo system("dig $ip");
+                    echo system('dig '.$ip);
                     echo '</pre>';
                 }
 
@@ -221,51 +193,227 @@ function main_net_tools()
                     ui_print_error_message(__('Whois executable does not exist.'));
                 } else {
                     echo '<pre>';
-                    echo system("whois $ip");
+                    echo system('whois '.$ip);
                     echo '</pre>';
                 }
             break;
 
             case 3:
+                $snmp_obj = [
+                    'ip_target'      => $ip,
+                    'snmp_version'   => $snmp_version,
+                    'snmp_community' => $community,
+                    'format'         => '-Oqn',
+                ];
+
+                $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.3.0';
+                $result = get_h_snmpwalk($snmp_obj);
                 echo '<h3>'.__('SNMP information for ').$ip.'</h3>';
-
-                $snmpget = whereis_the_command('snmpget');
-                if (empty($snmpget)) {
-                    ui_print_error_message(__('SNMPget executable does not exist.'));
+                echo '<h4>'.__('Uptime').'</h4>';
+                echo '<pre>';
+                if (empty($result)) {
+                    ui_print_error_message(__('Target unreachable.'));
+                    break;
                 } else {
-                    echo '<h4>'.__('Uptime').'</h4>';
-                    echo '<pre>';
-                    echo exec("$snmpget -Ounv -v1 -c $community $ip .1.3.6.1.2.1.1.3.0 ");
-                    echo '</pre>';
-                    echo '<h4>'.__('Device info').'</h4>';
-                    echo '<pre>';
-
-                    echo system("$snmpget -Ounv -v1 -c $community $ip .1.3.6.1.2.1.1.1.0 ");
-                    echo '</pre>';
-
-                    echo '<h4>Interface Information</h4>';
-                    echo '<table class=databox>';
-                    echo '<tr><th>'.__('Interface');
-                    echo '<th>'.__('Status');
-
-                    $int_max = exec("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.1.0 ");
-
-                    for ($ax = 0; $ax < $int_max; $ax++) {
-                        $interface = exec("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.2.$ax ");
-                        $estado = exec("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.8.$ax ");
-                        echo "<tr><td>$interface<td>$estado";
-                    }
-
-                    echo '</table>';
+                    echo array_pop($result);
                 }
+
+                echo '</pre>';
+                echo '<h4>'.__('Device info').'</h4>';
+                echo '<pre>';
+                $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.1.0';
+                $result = get_h_snmpwalk($snmp_obj);
+                if (empty($result)) {
+                    ui_print_error_message(__('Target unreachable.'));
+                    break;
+                } else {
+                    echo array_pop($result);
+                }
+
+                echo '</pre>';
+
+                echo '<h4>Interface Information</h4>';
+
+                $table = new StdClass();
+                $table->class = 'databox';
+                $table->head = [];
+                $table->head[] = __('Interface');
+                $table->head[] = __('Status');
+
+                $i = 0;
+
+                $base_oid = '.1.3.6.1.2.1.2.2.1';
+                $idx_oids = '.1';
+                $names_oids = '.2';
+                $status_oids = '.8';
+
+                $snmp_obj['base_oid'] = $base_oid.$idx_oids;
+                $idx = get_h_snmpwalk($snmp_obj);
+
+                $snmp_obj['base_oid'] = $base_oid.$names_oids;
+                $names = get_h_snmpwalk($snmp_obj);
+
+                $snmp_obj['base_oid'] = $base_oid.$status_oids;
+                $statuses = get_h_snmpwalk($snmp_obj);
+
+                foreach ($idx as $k => $v) {
+                    $index = str_replace($base_oid.$idx_oids, '', $k);
+                    $name = $names[$base_oid.$names_oids.$index];
+
+                    $status = $statuses[$base_oid.$status_oids.$index];
+
+                    $table->data[$i][0] = $name;
+                    $table->data[$i++][1] = $status;
+                }
+
+                html_print_table($table);
+            break;
+
+            default:
+                // Ignore.
             break;
         }
+    }
+
+}
+
+
+/**
+ * Main function.
+ *
+ * @return void
+ */
+function main_net_tools()
+{
+    $operation = get_parameter('operation', 0);
+    $community = get_parameter('community', 'public');
+    $ip = get_parameter('select_ips');
+    $snmp_version = get_parameter('select_version');
+
+    // Show form.
+    $id_agente = get_parameter('id_agente', 0);
+    $principal_ip = db_get_sql(
+        sprintf(
+            'SELECT direccion FROM tagente WHERE id_agente = %d',
+            $id_agente
+        )
+    );
+
+    $list_address = db_get_all_rows_sql(
+        sprintf(
+            'SELECT id_a FROM taddress_agent WHERE id_agent = %d',
+            $id_agente
+        )
+    );
+    foreach ($list_address as $address) {
+        $ids[] = join(',', $address);
+    }
+
+    $ips = db_get_all_rows_sql(
+        sprintf(
+            'SELECT ip FROM taddress WHERE id_a IN (%s)',
+            join(',', $ids)
+        )
+    );
+
+    if ($ips == '') {
+        echo "<div class='error' style='margin-top:5px'>".__('The agent hasn\'t got IP').'</div>';
+        return;
+    }
+
+    // Javascript.
+    ?>
+<script type='text/javascript'>
+    $(document).ready(function(){
+        mostrarColumns($('#operation :selected').val());
+    });
+
+    function mostrarColumns(value) {
+        if (value == 3) {
+            $('.snmpcolumn').show();
+        }
+        else {
+            $('.snmpcolumn').hide();
+        }
+    }
+</script>
+    <?php
+    echo '<div>';
+    echo "<form name='actionbox' method='post'>";
+    echo "<table class='databox filters' width=100% id=netToolTable>";
+    echo '<tr><td>';
+    echo __('Operation');
+    ui_print_help_tip(
+        __('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools')
+    );
+    echo '</td><td>';
+
+    html_print_select(
+        [
+            1 => __('Traceroute'),
+            2 => __('Ping host & Latency'),
+            3 => __('SNMP Interface status'),
+            4 => __('Basic TCP Port Scan'),
+            5 => __('DiG/Whois Lookup'),
+        ],
+        'operation',
+        $operation,
+        'mostrarColumns(this.value)',
+        __('Please select')
+    );
+
+    echo '</td>';
+    echo '<td>';
+    echo __('IP address');
+    echo '</td><td>';
+
+    $ips_for_select = array_reduce(
+        $ips,
+        function ($carry, $item) {
+            $carry[$item['ip']] = $item['ip'];
+            return $carry;
+        }
+    );
+
+    html_print_select(
+        $ips_for_select,
+        'select_ips',
+        $principal_ip
+    );
+    echo '</td>';
+    echo "<td class='snmpcolumn'>";
+    echo __('SNMP Version');
+    html_print_select(
+        [
+            '1'  => 'v1',
+            '2c' => 'v2c',
+        ],
+        'select_version',
+        $snmp_version
+    );
+    echo '</td><td class="snmpcolumn">';
+    echo __('SNMP Community').'&nbsp;';
+    html_print_input_text('community', $community);
+    echo '</td><td>';
+    echo "<input style='margin:0px;' name=submit type=submit class='sub next' value='".__('Execute')."'>";
+    echo '</td>';
+    echo '</tr></table>';
+    echo '</form>';
+
+    if ($operation) {
+        // Execute form.
+        net_tools_execute($operation, $ip, $community, $snmp_version);
     }
 
     echo '</div>';
 }
 
 
+/**
+ * Add option.
+ *
+ * @return void
+ */
 function godmode_net_tools()
 {
     global $config;

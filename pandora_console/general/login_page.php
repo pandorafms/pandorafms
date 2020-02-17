@@ -82,33 +82,71 @@ if (!empty($page) && !empty($sec)) {
 }
 
 $login_body_style = '';
+$login_body_class = '';
 // Overrides the default background with the defined by the user.
 if (!empty($config['login_background'])) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
     $login_body_style = "style=\"background:linear-gradient(74deg, #02020255 36%, transparent 36%), url('".$background_url."');\"";
 }
 
+// Support for Internet Explorer and Microsoft Edge browsers
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Edge') !== false) {
+    $login_body_class = "class='login_body_trident'";
+}
+
+// Get alternative custom in case of db fail.
+$custom_fields = [
+    'custom_logo_login',
+    'custom_splash_login',
+    'custom_title1_login',
+    'custom_title2_login',
+    'rb_product_name',
+    'custom_docs_url',
+    'custom_support_url',
+];
+
+foreach ($custom_fields as $field) {
+    if (!isset($config[$field])) {
+        if (isset($config[$field.'_alt'])) {
+            $config[$field] = $config[$field.'_alt'];
+            $custom_conf_enabled = true;
+        }
+    }
+}
+
 // Get the custom icons.
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
-echo '<div id="login_body" '.$login_body_style.'>';
+echo '<div id="login_body" '.$login_body_class.' '.$login_body_style.'>';
 echo '<div id="header_login">';
 
-        echo '<div id="list_icon_docs_support"><ul>';
-if ($docs_logo !== false) {
-    echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
-}
+echo '<div id="list_icon_docs_support"><ul>';
 
-            echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank">'.__('Docs').'</li>';
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if ($support_logo !== false) {
-        echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+if (isset($config['custom_docs_url'])) {
+    if ($docs_logo !== false) {
+        echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
     }
 
-    echo '<li><a href="'.$config['custom_support_url'].'" target="_blank">'.__('Support').'</li>';
-} else {
-    echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li>'.__('Support').'</li>';
+    echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
+} else if (!$custom_conf_enabled) {
+    echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li><a href="http://wiki.pandorafms.com/" target="_blank">'.__('Docs').'</li>';
+}
+
+if (isset($config['custom_support_url'])) {
+    if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+        if ($support_logo !== false) {
+            echo '<li id="li_margin_left"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+        }
+
+        echo '<li><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
+    } else {
+        echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+        echo '<li>'.__('Support').'</li>';
+    }
+} else if (!$custom_conf_enabled) {
+    echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+    echo '<li><a href="https://support.artica.es" target="_blank">'.__('Docs').'</li>';
 }
 
         echo '</ul></div>';
@@ -133,7 +171,7 @@ if (defined('METACONSOLE')) {
         html_print_image('enterprise/images/custom_logo_login/'.$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 } else {
-    if (!isset($config['custom_logo_login']) || $config['custom_logo_login'] == 0) {
+    if (!isset($config['custom_logo_login']) || $config['custom_logo_login'] === 0) {
         html_print_image('images/custom_logo_login/pandora_logo.png', false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
         html_print_image('images/custom_logo_login/'.$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
@@ -376,6 +414,9 @@ if (isset($correct_reset_pass_process)) {
 }
 
 if (isset($login_failed)) {
+    $nick = get_parameter_post('nick');
+    $fails = db_get_value('failed_attempt', 'tusuario', 'id_user', $nick);
+    $attemps = ($config['number_attempts'] - $fails);
     echo '<div id="login_failed" title="'.__('Login failed').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -386,6 +427,12 @@ if (isset($login_failed)) {
                     echo '<h1>'.__('ERROR').'</h1>';
                     echo '<p>'.$config['auth_error'].'</p>';
                 echo '</div>';
+    if ($config['enable_pass_policy']) {
+        echo '<div class="text_message_alert">';
+            echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
+        echo '</div>';
+    }
+
                 echo '<div class="button_message_alert">';
                     html_print_submit_button('Ok', 'hide-login-error', false);
                 echo '</div>';
@@ -414,9 +461,14 @@ if ($login_screen == 'logout') {
 }
 
 switch ($login_screen) {
-    case 'error_authconfig':
     case 'error_dbconfig':
-        $title = __('Problem with %s database', get_product_name());
+    case 'error_authconfig':
+        if (!isset($config['rb_product_name_alt'])) {
+            $title = __('Problem with %s database', get_product_name());
+        } else {
+            $title = __('Problem with %s database', $config['rb_product_name_alt']);
+        }
+
         $message = __(
             'Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
 		Probably your database, hostname, user or password values are incorrect or
@@ -518,6 +570,7 @@ if ($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' 
 ui_require_css_file('dialog');
 ui_require_css_file('jquery-ui.min', 'include/styles/js/');
 ui_require_jquery_file('jquery-ui.min');
+ui_require_jquery_file('jquery-ui_custom');
 ?>
 
 <?php
@@ -679,5 +732,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $("#final_process_correct").dialog('close');
         });        
     });
+
     /* ]]> */
 </script>

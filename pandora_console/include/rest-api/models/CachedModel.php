@@ -76,6 +76,7 @@ abstract class CachedModel extends Model
     {
         global $config;
 
+        // TODO: Remove references to the VC items. This class should be usable with any resource.
         if ($filter['cache_expiration'] > 0) {
             // Obtain the item's data from cache.
             $cachedData = static::fetchCachedData($filter);

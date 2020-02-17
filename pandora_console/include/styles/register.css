@@ -1,42 +1,47 @@
 input[type="submit"].submit-cancel,
+button.submit-cancel.ui-button.ui-corner-all.ui-widget,
 button.submit-cancel {
-  color: #fb4444 !important;
-  border: 1px solid #fb4444 !important;
-  background: #fff !important;
+  color: #fb4444;
+  border: 1px solid #fb4444;
+  background: #fff;
   padding: 5px;
   font-size: 1.3em;
-  margin: 0.5em 1em 0.5em 0 !important;
-  cursor: pointer !important;
-  text-align: center !important;
-  height: 30px !important;
-  width: 90px !important;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  text-align: center;
+  height: 30px;
+  width: auto;
+  min-width: 90px;
 }
 
 input[type="submit"].submit-cancel:hover,
+button.submit-cancel.ui-button.ui-corner-all.ui-widget:hover,
 button.submit-cancel:hover {
-  color: #fff !important;
-  background: #fb4444 !important;
+  color: #fff;
+  background: #fb4444;
 }
 
 input[type="submit"].submit-next,
-button.submit-next,
+button.submit-next.ui-button.ui-corner-all.ui-widget,
 input[type="button"].submit-next {
-  color: #82b92e !important;
-  border: 1px solid #82b92e !important;
-  background: #fff !important;
+  color: #82b92e;
+  border: 1px solid #82b92e;
+  background: #fff;
   padding: 5px;
   font-size: 1.3em;
-  margin: 0.5em 1em 0.5em 0 !important;
-  cursor: pointer !important;
-  text-align: center !important;
-  height: 30px !important;
+  margin: 0.5em 1em 0.5em 0;
+  cursor: pointer;
+  text-align: center;
+  height: 30px;
+  width: auto;
+  min-width: 90px;
 }
 
 input[type="submit"].submit-next:hover,
-button.submit-next:hover,
+button.submit-next.ui-button.ui-corner-all.ui-widget:hover,
 input[type="button"].submit-next:hover {
-  color: #fff !important;
-  background: #82b92e !important;
+  color: #fff;
+  background: #82b92e;
 }
 
 div.submit_buttons_container {

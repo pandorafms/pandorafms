@@ -2,11 +2,14 @@
  * Discovery css global
  */
 
+ul.bigbuttonlist {
+  min-height: 200px;
+}
+
 li.discovery {
   display: inline-block;
   float: left;
   width: 250px;
-  height: 120px;
   margin: 15px;
   padding-bottom: 50px;
 }
@@ -28,7 +31,7 @@ li.discovery > a label {
 }
 
 div.data_container > label {
-  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-family: "lato", "Open Sans", sans-serif;
   font-weight: lighter;
 }
 
@@ -117,7 +120,7 @@ div.arrow_box:before {
   min-height: 55px;
   width: 100%;
   padding-right: 0px;
-  margin-left: 0px !important;
+  margin-left: 0px;
   margin-bottom: 20px;
   height: 55px;
   box-sizing: border-box;
@@ -132,21 +135,21 @@ div.arrow_box:before {
 }
 
 .breadcrumbs_container {
-  padding-left: 10px;
   padding-top: 4px;
   text-indent: 0.25em;
+  padding-left: 2.5em;
 }
 
 .breadcrumb_link {
   color: #848484;
-  font-size: 10pt !important;
-  font-family: "lato-bolder", "Open Sans", sans-serif !important;
-  text-decoration: none !important;
+  font-size: 10pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  text-decoration: none;
 }
 
 span.breadcrumb_link {
   color: #d0d0d0;
-  font-size: 12pt !important;
+  font-size: 12pt;
 }
 
 .breadcrumb_link.selected {
@@ -166,6 +169,11 @@ span.breadcrumb_link {
 
 form.discovery * {
   font-size: 10pt;
+}
+
+form.discovery .label_select b {
+  font-family: "lato", "Open Sans", sans-serif;
+  font-weight: bolder;
 }
 
 .edit_discovery_info {
@@ -188,7 +196,7 @@ form.discovery * {
 }
 
 label {
-  color: #343434 !important;
+  color: #343434;
   font-weight: bold;
 }
 
@@ -196,16 +204,19 @@ label {
   width: 100%;
 }
 
+li > input[type="number"],
 li > input[type="text"],
+li > input[type="email"],
 li > input[type="password"],
+li > input[type="email"],
 .discovery_text_input > input[type="password"],
 .discovery_text_input > input[type="text"],
 #interval_manual > input[type="text"] {
-  background-color: transparent !important;
+  background-color: transparent;
   border: none;
-  border-radius: 0 !important;
+  border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif !important;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
@@ -234,7 +245,7 @@ li > input[type="password"],
 }
 
 .discovery_textarea_input {
-  background-color: #fbfbfb !important;
+  background-color: #fbfbfb;
   padding-left: 10px;
   width: 100%;
   height: 100px;
@@ -256,4 +267,60 @@ a.tip {
 
 .discovery_interval_select_width {
   width: 90%;
+}
+
+a.ext_link {
+  margin-left: 1em;
+  font-size: 8pt;
+}
+
+div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitooltip {
+  background: grey;
+  opacity: 0.9;
+  border-radius: 4px;
+  box-shadow: 6px 5px 9px -9px black;
+  padding: 6px;
+}
+
+.ui-tooltip-content {
+  background: transparent;
+  color: #fff;
+  font-weight: bold;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+}
+
+.arrow {
+  width: 70px;
+  height: 16px;
+  overflow: hidden;
+  position: absolute;
+  left: 50%;
+  margin-left: -35px;
+  bottom: -16px;
+}
+.arrow.top {
+  top: -16px;
+  bottom: auto;
+}
+.arrow.left {
+  left: 50%;
+}
+.arrow:after {
+  background: grey;
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: -20px;
+  width: 25px;
+  height: 25px;
+  box-shadow: 6px 5px 9px -9px black;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.arrow.top:after {
+  bottom: -20px;
+  top: auto;
 }

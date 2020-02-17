@@ -10,7 +10,9 @@
 
   var plot;
   var plotOptions = {
-    legend: { container: $("#chartLegend") },
+    legend: {
+      container: $("#chartLegend")
+    },
     xaxis: {
       tickFormatter: function(timestamp, axis) {
         var date = new Date(timestamp * 1000);
@@ -131,47 +133,6 @@
     resetDataPooling();
   }
 
-  // Set the form OID to the value selected in the SNMP browser
-  function setOID() {
-    if ($("#snmp_browser_version").val() == "3") {
-      $("#text-snmp_oid").val($("#table1-0-1").text());
-    } else {
-      $("#text-snmp_oid").val($("#snmp_selected_oid").text());
-    }
-
-    // Close the SNMP browser
-    $(".ui-dialog-titlebar-close").trigger("click");
-  }
-
-  // Show the SNMP browser window
-  function snmpBrowserWindow() {
-    // Keep elements in the form and the SNMP browser synced
-    $("#text-target_ip").val($("#text-ip_target").val());
-    $("#text-community").val($("#text-snmp_community").val());
-    $("#snmp_browser_version").val($("#snmp_version").val());
-    $("#snmp3_browser_auth_user").val($("#snmp3_auth_user").val());
-    $("#snmp3_browser_security_level").val($("#snmp3_security_level").val());
-    $("#snmp3_browser_auth_method").val($("#snmp3_auth_method").val());
-    $("#snmp3_browser_auth_pass").val($("#snmp3_auth_pass").val());
-    $("#snmp3_browser_privacy_method").val($("#snmp3_privacy_method").val());
-    $("#snmp3_browser_privacy_pass").val($("#snmp3_privacy_pass").val());
-
-    $("#snmp_browser_container")
-      .show()
-      .dialog({
-        title: "",
-        resizable: true,
-        draggable: true,
-        modal: true,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        width: 920,
-        height: 500
-      });
-  }
-
   function shortNumber(number) {
     if (Math.round(number) != number) return number;
     number = Number.parseInt(number);
@@ -187,6 +148,7 @@
 
     return number + " " + shorts[pos];
   }
+
   function roundToTwo(num) {
     return +(Math.round(num + "e+2") + "e-2");
   }

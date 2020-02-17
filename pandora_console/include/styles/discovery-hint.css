@@ -1,0 +1,10 @@
+/*
+ * Discovery show help css
+ */
+li.discovery:not(:first-child) > a:hover {
+  color: #000;
+}
+
+li.discovery:not(:first-child) div.data_container:not(:hover) {
+  box-shadow: 2px 2px 10px #80ba27;
+}

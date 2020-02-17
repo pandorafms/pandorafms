@@ -82,6 +82,9 @@ if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     return;
 }
 
+$alive_animation = agents_get_status_animation(
+    agents_get_interval_status($agent, false)
+);
 
 /*
  * START: TABLE AGENT BUILD.
@@ -252,7 +255,7 @@ $table_agent = '
             </div>
         </div>
         <div class="agent_details_info">
-            '.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
+            '.$alive_animation.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
         </div>
     </div>';
 
@@ -314,7 +317,16 @@ $data[1] = ui_progress(
     1.8,
     '#BBB',
     true,
-    ($agent['intervalo'] * (100 - $progress) / 100).' s'
+    ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto']))).' s',
+    [
+        'page'     => 'operation/agentes/ver_agente',
+        'interval' => (100 / $agent['intervalo']),
+        'data'     => [
+            'id_agente'       => $id_agente,
+            'refresh_contact' => 1,
+        ],
+
+    ]
 );
 
 if ($progress > 100) {
@@ -420,7 +432,7 @@ if (!empty($addresses)) {
     // $data_opcional = [];
     $data_opcional[] = '<b>'.__('Other IP addresses').'</b>';
     if (!empty($addresses)) {
-        $data_opcional[] = '<div style="overflow-y: scroll;">'.implode('<br>', $addresses).'</div>';
+        $data_opcional[] = '<div style="overflow-y: scroll; max-height:50px;">'.implode('<br>', $addresses).'</div>';
     }
 }
 
@@ -449,26 +461,25 @@ if ($fields === false) {
 
 $custom_fields = [];
 foreach ($fields as $field) {
-    $data = [];
-    $data[0] = '<b>'.$field['name'].ui_print_help_tip(__('Custom field'), true).'</b>';
-        $custom_value = db_get_all_rows_sql(
-            'select tagent_custom_data.description,tagent_custom_fields.is_password_type from tagent_custom_fields 
-			INNER JOIN tagent_custom_data ON tagent_custom_fields.id_field = tagent_custom_data.id_field where tagent_custom_fields.id_field = '.$field['id_field'].' and tagent_custom_data.id_agent = '.$id_agente
-        );
+    $custom_value = db_get_all_rows_sql(
+        'select tagent_custom_data.description,tagent_custom_fields.is_password_type from tagent_custom_fields 
+        INNER JOIN tagent_custom_data ON tagent_custom_fields.id_field = tagent_custom_data.id_field where tagent_custom_fields.id_field = '.$field['id_field'].' and tagent_custom_data.id_agent = '.$id_agente
+    );
 
-    if ($custom_value[0]['description'] === false || $custom_value[0]['description'] == '') {
-        $custom_value[0]['description'] = '<i>-'.__('empty').'-</i>';
-    } else {
+    if ($custom_value[0]['description'] !== false && $custom_value[0]['description'] != '') {
+        $data = [];
+
+        $data[0] = '<b>'.$field['name'].ui_print_help_tip(__('Custom field'), true).'</b>';
         $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
-    }
 
-    if ($custom_value[0]['is_password_type']) {
-            $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
-    } else {
-        $data[1] = $custom_value[0]['description'];
-    }
+        if ($custom_value[0]['is_password_type']) {
+                $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+        } else {
+            $data[1] = $custom_value[0]['description'];
+        }
 
-    $custom_fields[] = $data;
+        $custom_fields[] = $data;
+    }
 }
 
 $custom_fields_count = count($custom_fields);
@@ -505,12 +516,12 @@ $access_agent = db_get_value_sql(
 );
 
 if ($config['agentaccess'] && $access_agent > 0) {
-    $table_access_rate = '<div class="box-shadow white_table_graph" id="table_access_rate">
+    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">
                             <div class="white_table_graph_header">'.html_print_image(
         'images/arrow_down_green.png',
         true
     ).'<span>'.__('Agent access rate (24h)').'</span></div>
-    <div class="white_table_graph_content min-height-100">
+    <div class="white_table_graph_content h80p">
 '.graphic_agentaccess(
         $id_agente,
         '95%',
@@ -739,6 +750,7 @@ if (!empty($network_interfaces)) {
 ?>
     <script type="text/javascript">
         $(document).ready (function () {
+
             $("#agent_data_main").find("thead").click (function () {
                 close_table('#agent_data_main');
             })
@@ -785,12 +797,12 @@ if (!empty($network_interfaces)) {
 <?php
 // EVENTS.
 if ($config['agentaccess'] && $access_agent > 0) {
-    $extra_class = 'min-height-100';
+    $extra_class = 'h80p';
 } else {
     $extra_class = '';
 }
 
-$table_events = '<div class="box-shadow white_table_graph" id="table_events">
+$table_events = '<div class="white_table_graph" id="table_events">
             <div class="white_table_graph_header">'.html_print_image(
     'images/arrow_down_green.png',
     true
@@ -813,7 +825,15 @@ $table_events = '<div class="box-shadow white_table_graph" id="table_events">
 
 $agent_contact = html_print_table($table_contact, true);
 
-$agent_info = empty($table_data->data) ? '' : html_print_table($table_data, true);
+if (empty($table_data->data)) {
+    $agent_info = '';
+} else {
+    if (count($table_data->data) === 1 && $config['activate_gis'] && $dataPositionAgent === false) {
+        $agent_info = '';
+    } else {
+        $agent_info = html_print_table($table_data, true);
+    }
+}
 
 $agent_incidents = !isset($table_incident) ? '' : html_print_table($table_incident, true);
 

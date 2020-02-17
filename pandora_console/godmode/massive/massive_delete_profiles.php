@@ -92,7 +92,9 @@ if ($delete_profiles) {
     );
 }
 
-html_print_table($table);
+if ($table !== null) {
+    html_print_table($table);
+}
 
 unset($table);
 

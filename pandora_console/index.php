@@ -1,17 +1,32 @@
 <?php
+/**
+ * Index.
+ *
+ * @category   Main entrypoint.
+ * @package    Pandora FMS
+ * @subpackage Opensource.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// Enable profiler for testing
+// Begin.
 if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
@@ -24,17 +39,18 @@ if (__PAN_XHPROF__ === 1) {
     }
 }
 
-// Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
+// Set character encoding to UTF-8
+// fixes a lot of multibyte character issues.
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 
 // Set to 1 to do not check for installer or config file (for development!).
-// Activate gives more error information, not useful for production sites
+// Activate gives more error information, not useful for production sites.
 $develop_bypass = 0;
 
 if ($develop_bypass != 1) {
-    // If no config file, automatically try to install
+    // If no config file, automatically try to install.
     if (! file_exists('include/config.php')) {
         if (! file_exists('install.php')) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
@@ -74,14 +90,14 @@ if ($develop_bypass != 1) {
         }
     }
 
-    // Check for installer presence
+    // Check installer presence.
     if (file_exists('install.php')) {
         $login_screen = 'error_install';
         include 'general/error_screen.php';
         exit;
     }
 
-    // Check perms for config.php
+    // Check perms for config.php.
     if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
         if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != '0600')
             && (substr(sprintf('%o', fileperms('include/config.php')), -4) != '0660')
@@ -110,15 +126,18 @@ if ($develop_bypass != 1) {
     }
 }
 
-if ((! file_exists('include/config.php')) || (! is_readable('include/config.php'))) {
+if ((! file_exists('include/config.php'))
+    || (! is_readable('include/config.php'))
+) {
     $login_screen = 'error_noconfig';
     include 'general/error_screen.php';
     exit;
 }
 
-//
-// PLEASE DO NOT CHANGE ORDER //////
-//
+/*
+ * DO NOT CHANGE ORDER OF FOLLOWING REQUIRES.
+ */
+
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
 
@@ -128,11 +147,11 @@ if (isset($config['error'])) {
     exit;
 }
 
-// If metaconsole activated, redirect to it
-if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
-    header('Location: '.$config['homeurl'].'enterprise/meta');
+// If metaconsole activated, redirect to it.
+if (is_metaconsole()) {
+    header('Location: '.ui_get_full_url('index.php'));
+    // Always exit after sending location headers.
     exit;
-    // Always exit after sending location headers
 }
 
 if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
@@ -141,12 +160,12 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
     $query = '';
-    if (sizeof($_REQUEST)) {
-        // Some (old) browsers don't like the ?&key=var
+    if (count($_REQUEST)) {
+        // Some (old) browsers don't like the ?&key=var.
         $query .= '?1=1';
     }
 
-    // We don't clean these variables up as they're only being passed along
+    // We don't clean these variables up as they're only being passed along.
     foreach ($_GET as $key => $value) {
         if ($key == 1) {
             continue;
@@ -162,12 +181,12 @@ if (!empty($config['https']) && empty($_SERVER['HTTPS'])) {
     $url = ui_get_full_url($query);
 
     // Prevent HTTP response splitting attacks
-    // http://en.wikipedia.org/wiki/HTTP_response_splitting
+    // http://en.wikipedia.org/wiki/HTTP_response_splitting.
     $url = str_replace("\n", '', $url);
 
     header('Location: '.$url);
+    // Always exit after sending location headers.
     exit;
-    // Always exit after sending location headers
 }
 
 // Pure mode (without menu, header and footer).
@@ -188,20 +207,21 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>'."\n";
 
-// This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
+// This starts the page head. In the callback function,
+// $page['head'] array content will be processed into the head.
 ob_start('ui_process_page_head');
 
-// Enterprise main
+// Enterprise main.
 enterprise_include('index.php');
 
 echo '<script type="text/javascript">';
     echo 'var dispositivo = navigator.userAgent.toLowerCase();';
     echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
-        echo 'document.location = "'.$config['homeurl'].'mobile";  }';
+        echo 'document.location = "'.ui_get_full_url('/mobile').'";  }';
 echo '</script>';
 
 // This tag is included in the buffer passed to ui_process_page_head so
-// technically it can be stripped
+// technically it can be stripped.
 echo '</head>'."\n";
 
 require_once 'include/functions_themes.php';
@@ -212,13 +232,13 @@ $config['remote_addr'] = $_SERVER['REMOTE_ADDR'];
 $sec2 = get_parameter_get('sec2');
 $sec2 = safe_url_extraclean($sec2);
 $page = $sec2;
-// Reference variable for old time sake
+// Reference variable for old time sake.
 $sec = get_parameter_get('sec');
 $sec = safe_url_extraclean($sec);
 
 $process_login = false;
 
-// Update user password
+// Update user password.
 $change_pass = get_parameter_post('renew_password', 0);
 
 if ($change_pass == 1) {
@@ -235,14 +255,14 @@ $searchPage = false;
 $search = get_parameter_get('head_search_keywords');
 if (strlen($search) > 0) {
     $config['search_keywords'] = io_safe_input(trim(io_safe_output(get_parameter('keywords'))));
-    // If not search category providad, we'll use an agent search
+    // If not search category providad, we'll use an agent search.
     $config['search_category'] = get_parameter('search_category', 'all');
     if (($config['search_keywords'] != 'Enter keywords to search') && (strlen($config['search_keywords']) > 0)) {
         $searchPage = true;
     }
 }
 
-// Login process
+// Login process.
 if (! isset($config['id_user'])) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
@@ -250,50 +270,53 @@ if (! isset($config['id_user'])) {
 
     if (isset($_GET['login'])) {
         include_once 'include/functions_db.php';
-        // Include it to use escape_string_sql function
+        // Include it to use escape_string_sql function.
         $config['auth_error'] = '';
-        // Set this to the error message from the authorization mechanism
+        // Set this to the error message from the authorization mechanism.
         $nick = get_parameter_post('nick');
-        // This is the variable with the login
+        // This is the variable with the login.
         $pass = get_parameter_post('pass');
-        // This is the variable with the password
+        // This is the variable with the password.
         $nick = db_escape_string_sql($nick);
         $pass = db_escape_string_sql($pass);
 
-        // Since now, only the $pass variable are needed
+        // Since now, only the $pass variable are needed.
         unset($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
 
-        // If the auth_code exists, we assume the user has come through the double auth page
+        // If the auth_code exists, we assume the user has come from
+        // double authorization page.
         if (isset($_POST['auth_code'])) {
             $double_auth_success = false;
 
-            // The double authentication is activated and the user has surpassed the first step (the login).
+            // The double authentication is activated and the user has
+            // surpassed the first step (the login).
             // Now the authentication code provided will be checked.
             if (isset($_SESSION['prepared_login_da'])) {
                 if (isset($_SESSION['prepared_login_da']['id_user'])
                     && isset($_SESSION['prepared_login_da']['timestamp'])
                 ) {
-                    // The user has a maximum of 5 minutes to introduce the double auth code
+                    // The user has a maximum of 5 minutes to introduce
+                    // the double auth code.
                     $dauth_period = SECONDS_2MINUTES;
                     $now = time();
                     $dauth_time = $_SESSION['prepared_login_da']['timestamp'];
 
                     if (($now - $dauth_period) < $dauth_time) {
-                        // Nick
+                        // Nick.
                         $nick = $_SESSION['prepared_login_da']['id_user'];
-                        // Code
+                        // Code.
                         $code = (string) get_parameter_post('auth_code');
 
                         if (!empty($code)) {
                             $result = validate_double_auth_code($nick, $code);
 
                             if ($result === true) {
-                                // Double auth success
+                                // Double auth success.
                                 $double_auth_success = true;
                             } else {
-                                // Screen
+                                // Screen.
                                 $login_screen = 'double_auth';
-                                // Error message
+                                // Error message.
                                 $config['auth_error'] = __('Invalid code');
 
                                 if (!isset($_SESSION['prepared_login_da']['attempts'])) {
@@ -303,9 +326,9 @@ if (! isset($config['id_user'])) {
                                 $_SESSION['prepared_login_da']['attempts']++;
                             }
                         } else {
-                            // Screen
+                            // Screen.
                             $login_screen = 'double_auth';
-                            // Error message
+                            // Error message.
                             $config['auth_error'] = __("The code shouldn't be empty");
 
                             if (!isset($_SESSION['prepared_login_da']['attempts'])) {
@@ -315,27 +338,27 @@ if (! isset($config['id_user'])) {
                             $_SESSION['prepared_login_da']['attempts']++;
                         }
                     } else {
-                        // Expired login
+                        // Expired login.
                         unset($_SESSION['prepared_login_da']);
 
-                        // Error message
+                        // Error message.
                         $config['auth_error'] = __('Expired login');
                     }
                 } else {
-                    // If the code doesn't exist, remove the prepared login
+                    // If the code doesn't exist, remove the prepared login.
                     unset($_SESSION['prepared_login_da']);
 
-                    // Error message
+                    // Error message.
                     $config['auth_error'] = __('Login error');
                 }
-            }
-            // If $_SESSION['prepared_login_da'] doesn't exist, the user have to do the login again
-            else {
-                // Error message
+            } else {
+                // If $_SESSION['prepared_login_da'] doesn't exist, the user
+                // must login again.
+                // Error message.
                 $config['auth_error'] = __('Login error');
             }
 
-            // Remove the authenticator code
+            // Remove the authenticator code.
             unset($_POST['auth_code'], $code);
 
             if (!$double_auth_success) {
@@ -347,6 +370,8 @@ if (! isset($config['id_user'])) {
                     $_SERVER['REMOTE_ADDR']
                 );
                 while (@ob_end_flush()) {
+                    // Dumping...
+                    continue;
                 }
 
                 exit('</html>');
@@ -355,18 +380,28 @@ if (! isset($config['id_user'])) {
 
         $login_button_saml = get_parameter('login_button_saml', false);
         if (isset($double_auth_success) && $double_auth_success) {
-            // This values are true cause there are checked before complete the 2nd auth step
+            // This values are true cause there are checked before complete
+            // the 2nd auth step.
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            include_once ENTERPRISE_DIR.'/include/auth/saml.php';
+            $saml_configured = include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/include/auth/saml.php';
+
+            if (!$saml_configured) {
+                include_once 'general/noaccesssaml.php';
+            }
 
             $saml_user_id = saml_process_user_login();
+
+            if (!$saml_user_id) {
+                include_once 'general/noaccesssaml.php';
+            }
+
 
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {
                 include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+                $as = new SimpleSAML_Auth_Simple($config['saml_source']);
                 $as->logout();
             }
         } else {
@@ -391,28 +426,34 @@ if (! isset($config['id_user'])) {
                     include_once 'general/login_page.php';
                     db_pandora_audit('Password expired', 'Password expired: '.$nick, $nick);
                     while (@ob_end_flush()) {
+                        // Dumping...
+                        continue;
                     }
 
                     exit('</html>');
                 }
 
-                // Checks if password has expired
+                // Checks if password has expired.
                 $check_status = check_pass_status($nick, $pass);
 
                 switch ($check_status) {
                     case PASSSWORD_POLICIES_FIRST_CHANGE:
-                        // first change
+                        // First change.
                     case PASSSWORD_POLICIES_EXPIRED:
-                        // pass expired
+                        // Pass expired.
                         $expired_pass = true;
                         login_change_password($nick, '', $check_status);
+                    break;
+
+                    default:
+                        // Ignore.
                     break;
                 }
             }
         }
 
         if (($nick_in_db !== false) && $expired_pass) {
-            // login ok and password has expired
+            // Login ok and password has expired.
             include_once 'general/login_page.php';
             db_pandora_audit(
                 'Password expired',
@@ -420,30 +461,38 @@ if (! isset($config['id_user'])) {
                 $nick
             );
             while (@ob_end_flush()) {
+                // Dumping...
+                continue;
             }
 
             exit('</html>');
         } else if (($nick_in_db !== false) && (!$expired_pass)) {
-            // login ok and password has not expired
-            // Double auth check
-            if ((!isset($double_auth_success) || !$double_auth_success) && is_double_auth_enabled($nick_in_db)) {
-                // Store this values in the session to know if the user login was correct
+            // Login ok and password has not expired.
+            // Double auth check.
+            if ((!isset($double_auth_success)
+                || !$double_auth_success)
+                && is_double_auth_enabled($nick_in_db)
+            ) {
+                // Store this values in the session to know if the user login
+                // was correct.
                 $_SESSION['prepared_login_da'] = [
                     'id_user'   => $nick_in_db,
                     'timestamp' => time(),
                     'attempts'  => 0,
                 ];
 
-                // Load the page to introduce the double auth code
+                // Load the page to introduce the double auth code.
                 $login_screen = 'double_auth';
                 include_once 'general/login_page.php';
                 while (@ob_end_flush()) {
+                    // Dumping...
+                    continue;
                 }
 
                 exit('</html>');
             }
 
-            // login ok and password has not expired
+            // Login ok and password has not expired.
             $process_login = true;
 
             if (is_user_admin($nick)) {
@@ -455,7 +504,7 @@ if (! isset($config['id_user'])) {
             if (!isset($_GET['sec2']) && !isset($_GET['sec'])) {
                 // Avoid the show homepage when the user go to
                 // a specific section of pandora
-                // for example when timeout the sesion
+                // for example when timeout the sesion.
                 unset($_GET['sec2']);
                 $_GET['sec'] = 'general/logon_ok';
                 $home_page = '';
@@ -471,21 +520,22 @@ if (! isset($config['id_user'])) {
                             break;
 
                             case 'Group view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/group_view';
                             break;
 
                             case 'Alert detail':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/alerts_status';
                             break;
 
                             case 'Tactical view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/tactical';
                             break;
 
                             case 'Default':
+                            default:
                                 $_GET['sec'] = 'general/logon_ok';
                             break;
 
@@ -521,11 +571,14 @@ if (! isset($config['id_user'])) {
             $_SESSION['id_usuario'] = $nick_in_db;
             $config['id_user'] = $nick_in_db;
 
-            // Check if connection goes through F5 balancer. If it does, then don't call config_prepare_session() or user will be back to login all the time
+            // Check if connection goes through F5 balancer. If it does, then
+            // don't call config_prepare_session() or user will be back to login
+            // all the time.
             $prepare_session = true;
             foreach ($_COOKIE as $key => $value) {
                 if (preg_match('/BIGipServer*/', $key)) {
                     $prepare_session = false;
+                    break;
                 }
             }
 
@@ -534,9 +587,13 @@ if (! isset($config['id_user'])) {
             }
 
             if (is_user_admin($config['id_user'])) {
-                // PHP configuration values
-                $PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
-                $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+                // PHP configuration values.
+                $PHPupload_max_filesize = config_return_in_bytes(
+                    ini_get('upload_max_filesize')
+                );
+                $PHPmemory_limit = config_return_in_bytes(
+                    ini_get('memory_limit')
+                );
                 $PHPmax_execution_time = ini_get('max_execution_time');
 
                 if ($PHPmax_execution_time !== '0') {
@@ -571,43 +628,60 @@ if (! isset($config['id_user'])) {
 
             $l10n = null;
             if (file_exists('./include/languages/'.$user_language.'.mo')) {
-                $l10n = new gettext_reader(new CachedFileReader('./include/languages/'.$user_language.'.mo'));
+                $cacheFileReader = new CachedFileReader(
+                    './include/languages/'.$user_language.'.mo'
+                );
+                $l10n = new gettext_reader($cacheFileReader);
                 $l10n->load_tables();
             }
         } else {
-            // login wrong
+            // Login wrong.
             $blocked = false;
 
-            if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+            if ((!is_user_admin($nick) || $config['enable_pass_policy_admin'])
+                && file_exists(ENTERPRISE_DIR.'/load_enterprise.php')
+            ) {
                 $blocked = login_check_blocked($nick);
             }
 
             if (!$blocked) {
                 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+                    // Checks failed attempts.
                     login_check_failed($nick);
-                    // Checks failed attempts
                 }
 
                 $login_failed = true;
                 include_once 'general/login_page.php';
-                db_pandora_audit('Logon Failed', 'Invalid login: '.$nick, $nick);
+                db_pandora_audit(
+                    'Logon Failed',
+                    'Invalid login: '.$nick,
+                    $nick
+                );
                 while (@ob_end_flush()) {
+                    // Dumping...
+                    continue;
                 }
 
                 exit('</html>');
             } else {
                 include_once 'general/login_page.php';
-                db_pandora_audit('Logon Failed', 'Invalid login: '.$nick, $nick);
+                db_pandora_audit(
+                    'Logon Failed',
+                    'Invalid login: '.$nick,
+                    $nick
+                );
                 while (@ob_end_flush()) {
+                    // Dumping...
+                    continue;
                 }
 
                 exit('</html>');
             }
         }
 
-        // Form the url
+        // Form the url.
         $query_params_redirect = $_GET;
-        // Visual console do not want sec2
+        // Visual console do not want sec2.
         if ($home_page == 'Visual console') {
             unset($query_params_redirect['sec2']);
         }
@@ -621,15 +695,19 @@ if (! isset($config['id_user'])) {
             $redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
         }
 
-        header('Location: '.$config['homeurl'].'index.php'.$redirect_url);
+        header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
     } else if (isset($_GET['loginhash'])) {
-        // Hash login process
+        // Hash login process.
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
 
-        if ($config['loginhash_pwd'] != '' && $loginhash_data == md5($loginhash_user.io_output_password($config['loginhash_pwd']))) {
+        if ($config['loginhash_pwd'] != ''
+            && $loginhash_data == md5(
+                $loginhash_user.io_output_password($config['loginhash_pwd'])
+            )
+        ) {
             db_logon($loginhash_user, $_SERVER['REMOTE_ADDR']);
             $_SESSION['id_usuario'] = $loginhash_user;
             $config['id_user'] = $loginhash_user;
@@ -637,6 +715,8 @@ if (! isset($config['id_user'])) {
             include_once 'general/login_page.php';
             db_pandora_audit('Logon Failed (loginhash', '', 'system');
             while (@ob_end_flush()) {
+                // Dumping...
+                    continue;
             }
 
             exit('</html>');
@@ -758,7 +838,7 @@ if (! isset($config['id_user'])) {
                         $body .= '<p />';
                         $body .= __('Please click the link below to reset your password');
                         $body .= '<p />';
-                        $body .= '<a href="'.$config['homeurl'].'index.php?reset_hash='.$cod_hash.'">'.__('Reset your password').'</a>';
+                        $body .= '<a href="'.ui_get_full_url('index.php?reset_hash='.$cod_hash).'">'.__('Reset your password').'</a>';
                         $body .= '<p />';
                         $body .= get_product_name();
                         $body .= '<p />';
@@ -781,6 +861,8 @@ if (! isset($config['id_user'])) {
         }
 
         while (@ob_end_flush()) {
+            // Dumping...
+            continue;
         }
 
         exit('</html>');
@@ -790,11 +872,14 @@ if (! isset($config['id_user'])) {
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
         $iduser = $_SESSION['id_usuario'];
-        // logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]); check why is not available
         unset($_SESSION['id_usuario']);
         unset($iduser);
 
-        if ($config['loginhash_pwd'] != '' && $loginhash_data == md5($loginhash_user.io_output_password($config['loginhash_pwd']))) {
+        if ($config['loginhash_pwd'] != ''
+            && $loginhash_data == md5(
+                $loginhash_user.io_output_password($config['loginhash_pwd'])
+            )
+        ) {
             db_logon($loginhash_user, $_SERVER['REMOTE_ADDR']);
             $_SESSION['id_usuario'] = $loginhash_user;
             $config['id_user'] = $loginhash_user;
@@ -802,6 +887,8 @@ if (! isset($config['id_user'])) {
             include_once 'general/login_page.php';
             db_pandora_audit('Logon Failed (loginhash', '', 'system');
             while (@ob_end_flush()) {
+                // Dumping...
+                continue;
             }
 
             exit('</html>');
@@ -814,17 +901,18 @@ if (! isset($config['id_user'])) {
         '*'
     );
     if ($user_in_db == false) {
-        // logout
+        // Logout.
         $_REQUEST = [];
         $_GET = [];
         $_POST = [];
         $config['auth_error'] = __("User doesn\'t exist.");
         $iduser = $_SESSION['id_usuario'];
-        logoff_db($iduser, $_SERVER['REMOTE_ADDR']);
         unset($_SESSION['id_usuario']);
         unset($iduser);
         include_once 'general/login_page.php';
         while (@ob_end_flush()) {
+            // Dumping...
+            continue;
         }
 
         exit('</html>');
@@ -832,17 +920,18 @@ if (! isset($config['id_user'])) {
         if (((bool) $user_in_db['is_admin'] === false)
             && ((bool) $user_in_db['not_login'] === true)
         ) {
-            // logout
+            // Logout.
             $_REQUEST = [];
             $_GET = [];
             $_POST = [];
             $config['auth_error'] = __('User only can use the API.');
             $iduser = $_SESSION['id_usuario'];
-            logoff_db($iduser, $_SERVER['REMOTE_ADDR']);
             unset($_SESSION['id_usuario']);
             unset($iduser);
             include_once 'general/login_page.php';
             while (@ob_end_flush()) {
+                // Dumping...
+                continue;
             }
 
             exit('</html>');
@@ -850,16 +939,15 @@ if (! isset($config['id_user'])) {
     }
 }
 
-// Enterprise support
+// Enterprise support.
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     include_once ENTERPRISE_DIR.'/load_enterprise.php';
 }
 
-// Log off
+// Log off.
 if (isset($_GET['bye'])) {
     include 'general/logoff.php';
     $iduser = $_SESSION['id_usuario'];
-    db_logoff($iduser, $_SERVER['REMOTE_ADDR']);
 
     $_SESSION = [];
     session_destroy();
@@ -873,6 +961,8 @@ if (isset($_GET['bye'])) {
     }
 
     while (@ob_end_flush()) {
+        // Dumping...
+        continue;
     }
 
     exit('</html>');
@@ -880,10 +970,11 @@ if (isset($_GET['bye'])) {
 
 clear_pandora_error_for_header();
 
-// ----------------------------------------------------------------------
-// EXTENSIONS
-// ----------------------------------------------------------------------
 /*
+ * ----------------------------------------------------------------------
+ *  EXTENSIONS
+ * ----------------------------------------------------------------------
+ *
  * Load the basic configurations of extension and add extensions into menu.
  * Load here, because if not, some extensions not load well, I don't why.
  */
@@ -892,7 +983,7 @@ $config['logged'] = false;
 extensions_load_extensions($process_login);
 
 if ($process_login) {
-     // Call all extensions login function
+    // Call all extensions login function.
     extensions_call_login_function();
 
     unset($_SESSION['new_update']);
@@ -983,7 +1074,7 @@ if (get_parameter('login', 0) !== 0) {
     }
 }
 
-// Header
+// Header.
 if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
     include 'general/header.php';
@@ -999,24 +1090,27 @@ if ($config['pure'] == 0) {
     echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
 } else {
     echo '<div id="main_pure">';
-    // Require menu only to build structure to use it in ACLs
+    // Require menu only to build structure to use it in ACLs.
     include 'operation/menu.php';
     include 'godmode/menu.php';
 }
 
-// http://es2.php.net/manual/en/ref.session.php#64525
-// Session locking concurrency speedup!
+/*
+ * Session locking concurrency speedup!
+ * http://es2.php.net/manual/en/ref.session.php#64525
+ */
+
 session_write_close();
 
 
-// Main block of content
+// Main block of content.
 if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
 
 
 
-// Page loader / selector
+// Page loader / selector.
 if ($searchPage) {
     include 'operation/search_results.php';
 } else {
@@ -1040,7 +1134,7 @@ if ($searchPage) {
 
         $page .= '.php';
 
-        // Enterprise ACL check
+        // Enterprise ACL check.
         if (enterprise_hook(
             'enterprise_acl',
             [
@@ -1070,7 +1164,7 @@ if ($searchPage) {
             }
         }
     } else {
-        // home screen chosen by the user
+        // Home screen chosen by the user.
         $home_page = '';
         if (isset($config['id_user'])) {
             $user_info = users_get_user_by_id($config['id_user']);
@@ -1101,6 +1195,7 @@ if ($searchPage) {
                 break;
 
                 case 'Default':
+                default:
                     $_GET['sec2'] = 'general/logon_ok';
                 break;
 
@@ -1139,12 +1234,15 @@ if ($searchPage) {
 
             if (isset($_GET['sec2'])) {
                 $file = $_GET['sec2'].'.php';
-                // Translate some secs
+                // Make file path absolute to prevent accessing remote files.
+                $file = __DIR__.'/'.$file;
+                // Translate some secs.
                 $main_sec = get_sec($_GET['sec']);
-                $_GET['sec'] = $main_sec == false ? $_GET['sec'] : $main_sec;
+                $_GET['sec'] = ($main_sec == false) ? $_GET['sec'] : $main_sec;
+
+                // Third condition is aimed to prevent from traversal attack.
                 if (!file_exists($file)
-                    || (                        $_GET['sec2'] != 'general/logon_ok'
-                    && enterprise_hook(
+                    || ($_GET['sec2'] != 'general/logon_ok' && enterprise_hook(
                         'enterprise_acl',
                         [
                             $config['id_user'],
@@ -1153,7 +1251,8 @@ if ($searchPage) {
                             true,
                             isset($_GET['sec3']) ? $_GET['sec3'] : '',
                         ]
-                    ) == false                    )
+                    ) == false
+                    || strpos(realpath($file), __DIR__) === false)
                 ) {
                     unset($_GET['sec2']);
                     include 'general/noaccess.php';
@@ -1172,13 +1271,13 @@ if ($searchPage) {
 if ($config['pure'] == 0) {
     echo '<div style="clear:both"></div>';
     echo '</div>';
-    // main
+    // Main.
     echo '<div style="clear:both">&nbsp;</div>';
     echo '</div>';
-    // page (id = page)
+    // Page (id = page).
 } else {
     echo '</div>';
-    // main_pure
+    // Main pure.
 }
 
 echo '<div id="wiz_container">';
@@ -1189,27 +1288,30 @@ echo '</div>';
 
 if ($config['pure'] == 0) {
     echo '</div>';
-    // container div
+    // Container div.
+    echo '</div>';
     echo '<div style="clear:both"></div>';
+
     echo '<div id="foot">';
     include 'general/footer.php';
-    echo '</div>';
 }
 
-// Clippy function
+// Clippy function.
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
 while (@ob_end_flush()) {
+    // Dumping...
+    continue;
 }
 
 db_print_database_debug();
 echo '</html>';
 
 $run_time = format_numeric((microtime(true) - $config['start_time']), 3);
-echo "\n<!-- Page generated in $run_time seconds -->\n";
+echo "\n<!-- Page generated in ".$run_time." seconds -->\n";
 
-// Values from PHP to be recovered from JAVASCRIPT
+// Values from PHP to be recovered from JAVASCRIPT.
 require 'include/php_to_js_values.php';
 
 
@@ -1217,12 +1319,16 @@ require 'include/php_to_js_values.php';
 
 <script type="text/javascript" language="javascript">
 
-    // When there are less than 5 rows, all rows must be white
-    if($('table.info_table tr').length < 5){
-        $('table.info_table tbody > tr').css('background-color', '#fff');
+       // When there are less than 5 rows, all rows must be white
+       var theme = "<?php echo $config['style']; ?>";
+        if(theme === 'pandora'){
+        if($('table.info_table tr').length < 5){
+            $('table.info_table tbody > tr').css('background-color', '#fff');
+        }
     }
 
-    // When the user scrolls down 400px from the top of the document, show the button.
+    // When the user scrolls down 400px from the top of the document, show the
+    // button.
     window.onscroll = function() {scrollFunction()};
 
     function scrollFunction() {
@@ -1235,18 +1341,24 @@ require 'include/php_to_js_values.php';
 
     // When the user clicks on the button, scroll to the top of the document.
     function topFunction() {
-        //document.body.scrollTop = 0; // For Safari.
-        //document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera.
+
+        /*
+         * Safari.
+         * document.body.scrollTop = 0;
+         * For Chrome, Firefox, IE and Opera.
+         * document.documentElement.scrollTop = 0; 
+         */
+
         $("HTML, BODY").animate({ scrollTop: 0 }, 500);
     }
 
-    //Initial load of page
+    // Initial load of page.
     $(document).ready(adjustFooter);
     
-    //Every resize of window
+    // Every resize of window.
     $(window).resize(adjustFooter);
     
-    //Every show/hide call may need footer re-layout
+    // Every show/hide call may need footer re-layout.
     (function() {
         var oShow = jQuery.fn.show;
         var oHide = jQuery.fn.hide;

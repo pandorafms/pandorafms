@@ -26,6 +26,7 @@ if ($searchGraphs) {
     $usergraphs_id = array_keys($usergraphs);
 
     if (empty($usergraphs_id)) {
+        $totalGraphs = 0;
         return;
     }
 
@@ -37,13 +38,16 @@ if ($searchGraphs) {
         'id_graph',
         'name',
         'description',
+
     ];
 
     $totalGraphs = (int) db_get_value_filter('COUNT(id_graph) AS count', 'tgraph', $filter);
 
-    if (! $only_count && $totalGraphs > 0) {
+    if ($totalGraphs > 0) {
         $filter['limit'] = $config['block_size'];
         $filter['offset'] = (int) get_parameter('offset');
         $graphs = db_get_all_rows_filter('tgraph', $filter, $columns);
+    } else {
+        $totalGraphs = 0;
     }
 }

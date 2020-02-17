@@ -124,8 +124,26 @@ function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=t
     }
 
     $groups = users_get_groups($id_user, $privileges, $returnAllGroup);
+    $all_graphs = [];
+    if (is_metaconsole()) {
+        $servers = metaconsole_get_connection_names();
+        foreach ($servers as $key => $server) {
+            $connection = metaconsole_get_connection($server);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
 
-    $all_graphs = db_get_all_rows_in_table('tgraph', 'name');
+            $all_graph = db_get_all_rows_in_table('tgraph', 'name');
+            if ($all_graph !== false) {
+                $all_graphs = array_merge($all_graphs, $all_graph);
+            }
+
+            metaconsole_restore_db();
+        }
+    } else {
+        $all_graphs = db_get_all_rows_in_table('tgraph', 'name');
+    }
+
     if ($all_graphs === false) {
         return [];
     }
@@ -184,7 +202,7 @@ function custom_graphs_search($id_group, $search)
                         FROM tgraph_source
                         WHERE id_graph = '.$graph['id_graph'].''
         );
-
+        $graphs[$graph['id_graph']]['id_graph'] = $graph['id_graph'];
         $graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
         $graphs[$graph['id_graph']]['name'] = $graph['name'];
         $graphs[$graph['id_graph']]['description'] = $graph['description'];

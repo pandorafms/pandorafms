@@ -4,7 +4,14 @@ global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'AW')) {
+if (! check_acl($config['id_user'], 0, 'AR')
+    && ! check_acl($config['id_user'], 0, 'AW')
+    && ! check_acl($config['id_user'], 0, 'AM')
+    && ! check_acl($config['id_user'], 0, 'RR')
+    && ! check_acl($config['id_user'], 0, 'RW')
+    && ! check_acl($config['id_user'], 0, 'RM')
+    && ! check_acl($config['id_user'], 0, 'PM')
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Server Management'
@@ -42,7 +49,19 @@ function get_wiz_class($str)
         return 'ConsoleTasks';
 
         default:
-            // Ignore.
+            // Main, show header.
+            ui_print_page_header(
+                __('Discovery'),
+                '',
+                false,
+                'discovery',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                ''
+            );
         return null;
     }
 }
@@ -81,7 +100,7 @@ function cl_load_cmp($a, $b)
 $classes = glob($config['homedir'].'/godmode/wizards/*.class.php');
 if (enterprise_installed()) {
     $ent_classes = glob(
-        $config['homedir'].'/enterprise/godmode/wizards/*.class.php'
+        $config['homedir'].'/'.ENTERPRISE_DIR.'/godmode/wizards/*.class.php'
     );
     if ($ent_classes === false) {
         $ent_classes = [];
@@ -122,12 +141,25 @@ if ($classname_selected === null) {
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
 
+        $button = $obj->load();
+
+        if ($button === false) {
+            // No acess, skip.
+            continue;
+        }
+
         // DiscoveryTaskList must be first button.
         if ($classname == 'DiscoveryTaskList') {
-            array_unshift($wiz_data, $obj->load());
+            array_unshift($wiz_data, $button);
         } else {
-            $wiz_data[] = $obj->load();
+            $wiz_data[] = $button;
         }
+    }
+
+    // Show hints if there is no task.
+    if (get_parameter('discovery_hint', 0)) {
+        ui_require_css_file('discovery-hint');
+        ui_print_info_message(__('You must create a task first'));
     }
 
     Wizard::printBigButtonsList($wiz_data);

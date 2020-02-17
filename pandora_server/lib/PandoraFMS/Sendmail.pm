@@ -32,7 +32,9 @@ $VERSION = '0.79_16';
 
     'tz'      => '', # only to override automatic detection
     'port'    => 25, # change it if you always use a non-standard port
-    'debug'   => 0 # prints stuff to STDERR
+    'debug'   => 0, # prints stuff to STDERR
+    'encryption'  => 'none', # no, ssl or starttls
+	'timeout' => 5, # timeout for socket reads/writes in seconds
 );
 
 # *******************************************************************
@@ -54,13 +56,20 @@ use vars qw(
             $auth_support
            );
 
-use Socket;
+use IO::Socket::INET;
+use IO::Select;
 use Time::Local; # for automatic time zone detection
 use Sys::Hostname; # for use of hostname in HELO
 
 #use Digest::HMAC_MD5 qw(hmac_md5 hmac_md5_hex);
 
 $auth_support = 'DIGEST-MD5 CRAM-MD5 PLAIN LOGIN';
+
+# IO::Socket object.
+my $S;
+
+# IO::Select object.
+my $Sel;
 
 # use MIME::QuotedPrint if available and configured in %mailcfg
 eval("use MIME::QuotedPrint");
@@ -178,9 +187,9 @@ sub sendmail {
     local $_;
 
     my (%mail, $k,
-        $smtp, $server, $port, $connected, $localhost,
+        $smtp, $server, $port, $localhost,
         $fromaddr, $recip, @recipients, $to, $header,
-        %esmtp, @wanted_methods,
+        %esmtp, @wanted_methods, $encryption
        );
     use vars qw($server_reply);
     # -------- a few internal subs ----------
@@ -191,7 +200,7 @@ sub sendmail {
             $error .= "Server said: $server_reply\n";
             print STDERR "Server said: $server_reply\n" if $^W;
         }
-        close S;
+        close $S if defined($S);
         return 0;
     }
 
@@ -200,31 +209,40 @@ sub sendmail {
         for $i (0..$#_) {
             # accept references, so we don't copy potentially big data
             my $data = ref($_[$i]) ? $_[$i] : \$_[$i];
-            if ($mailcfg{'debug'} > 5) {
+            if ($mailcfg{'debug'} > 9) {
                 if (length($$data) < 500) {
-                    print ">", $$data;
+                    print STDERR ">", $$data;
                 }
                 else {
-                    print "> [...", length($$data), " bytes sent ...]\n";
+                    print STDERR "> [...", length($$data), " bytes sent ...]\n";
                 }
             }
-            print(S $$data) || return 0;
+			my @sockets = $Sel->can_write($mailcfg{'timeout'});
+			return 0 if (!@sockets);
+           	syswrite($sockets[0], $$data) || return 0;
         }
         1;
     }
 
     sub socket_read {
+		my $buffer;
         $server_reply = "";
-        do {
-            $_ = <S>;
-            $server_reply .= $_;
-            #chomp $_;
-            print "<$_" if $mailcfg{'debug'} > 5;
-            if (/^[45]/ or !$_) {
-                chomp $server_reply;
-                return; # return false
-            }
-        } while (/^[\d]+-/);
+
+		while (my @sockets = $Sel->can_read($mailcfg{'timeout'})) {
+			return if (!@sockets);
+			# 16kByte is the maximum size of an SSL frame and because sysread
+			# returns data from only a single SSL frame you can guarantee that
+			# there are no pending data.
+ 		    sysread($sockets[0], $buffer, 65535) || return;
+        	$server_reply .= $buffer;
+			last if ($buffer =~ m/\n$/);
+		}
+
+        print STDERR "<$server_reply" if $mailcfg{'debug'} > 9;
+        if ($server_reply =~ /^[45]/) {
+            chomp $server_reply;
+            return; # return false
+        }
         chomp $server_reply;
         return $server_reply;
     }
@@ -260,13 +278,15 @@ sub sendmail {
     }
 
     $smtp = $mail{'Smtp'} || $mail{'Server'};
-    unshift @{$mailcfg{'smtp'}}, $smtp if ($smtp and $mailcfg{'smtp'}->[0] ne $smtp);
+    $mailcfg{'smtp'}->[0] = $smtp if ($smtp and $mailcfg{'smtp'}->[0] ne $smtp);
+
+    $encryption = $mail{'Encryption'} || $mail{'Encryption'};
 
     # delete non-header keys, so we don't send them later as mail headers
     # I like this syntax, but it doesn't seem to work with AS port 5.003_07:
     # delete @mail{'Smtp', 'Server'};
     # so instead:
-    delete $mail{'Smtp'}; delete $mail{'Server'};
+    delete $mail{'Smtp'}; delete $mail{'Server'}; delete $mail{'Encryption'};
 
     $mailcfg{'port'} = $mail{'Port'} || $mailcfg{'port'} || 25;
     delete $mail{'Port'};
@@ -343,48 +363,36 @@ sub sendmail {
     $localhost = hostname() || 'localhost';
 
     foreach $server ( @{$mailcfg{'smtp'}} ) {
-        # open socket needs to be inside this foreach loop on Linux,
-        # otherwise all servers fail if 1st one fails !??! why?
-        unless ( socket S, AF_INET, SOCK_STREAM, scalar(getprotobyname 'tcp') ) {
-            return fail("socket failed ($!)")
-        }
-
-        print "- trying $server\n" if $mailcfg{'debug'} > 1;
+        print STDERR "- trying $server\n" if $mailcfg{'debug'} > 9;
 
         $server =~ s/\s+//go; # remove spaces just in case of a typo
         # extract port if server name like "mail.domain.com:2525"
         $port = ($server =~ s/:(\d+)$//o) ? $1 : $mailcfg{'port'};
         $smtp = $server; # save $server for use outside foreach loop
 
-        my $smtpaddr = inet_aton $server;
-        unless ($smtpaddr) {
-            $error .= "$server not found\n";
-            next; # next server
+        # load IO::Socket SSL if needed
+        if ($encryption ne 'none') {
+            eval "require IO::Socket::SSL" || return fail("IO::Socket::SSL is not available");
         }
-
         my $retried = 0; # reset retries for each server
-        while ( ( not $connected = connect S, pack_sockaddr_in($port, $smtpaddr) )
-            and ( $retried < $mailcfg{'retries'} )
-              ) {
-            $retried++;
-            $error .= "connect to $server failed ($!)\n";
-            print "- connect to $server failed ($!)\n" if $mailcfg{'debug'} > 1;
-            print "retrying in $mailcfg{'delay'} seconds...\n" if $mailcfg{'debug'} > 1;
-            sleep $mailcfg{'delay'};
+        if ($encryption ne 'ssl') {
+            $S = new IO::Socket::INET(PeerPort => $port, PeerAddr => $server, Proto => 'tcp');
         }
-
-        if ( $connected ) {
-            print "- connected to $server\n" if $mailcfg{'debug'} > 3;
+        else {
+            $S = new IO::Socket::SSL(PeerPort => $port, PeerAddr => $server, Proto => 'tcp', SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE(), Domain => AF_INET);
+        }
+        if ( $S ) {
+            print STDERR "- connected to $server\n" if $mailcfg{'debug'} > 9;
             last;
         }
         else {
             $error .= "connect to $server failed\n";
-            print "- connect to $server failed, next server...\n" if $mailcfg{'debug'} > 1;
+            print STDERR "- connect to $server failed, next server...\n" if $mailcfg{'debug'} > 9;
             next; # next server
         }
     }
 
-    unless ( $connected ) {
+    unless ( $S ) {
         return fail("connect to $smtp failed ($!) no (more) retries!")
     };
 
@@ -397,8 +405,9 @@ sub sendmail {
               ;
     }
 
-    my($oldfh) = select(S); $| = 1; select($oldfh);
-
+	$Sel = new IO::Select() || return fail("IO::Select error");
+	$Sel->add($S);
+	
     socket_read()
         || return fail("Connection error from $smtp on port $port ($_)");
     socket_write("EHLO $localhost$CRLF")
@@ -418,8 +427,37 @@ sub sendmail {
             || return fail("send HELO error (lost connection?)");
     }
 
-    if ($auth) {
-        warn "AUTH requested\n" if ($mailcfg{debug} > 4);
+    # STARTTLS
+    if ($encryption eq 'starttls') {
+        defined($esmtp{'STARTTLS'})
+            || return fail('STARTTLS not supported');
+        socket_write("STARTTLS$CRLF") || return fail("send STARTTLS error");
+        socket_read()
+            || return fail('STARTTLS error');
+        IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
+            || return fail("start_SSL failed");
+
+        # The client SHOULD send an EHLO command as the
+        # first command after a successful TLS negotiation.
+        socket_write("EHLO $localhost$CRLF")
+            || return fail("send EHLO error (lost connection?)");
+        my $ehlo = socket_read();
+        if ($ehlo) {
+            # The server MUST discard any knowledge
+            # obtained from the client.
+            %esmtp = ();
+
+            # parse EHLO response
+            map {
+                s/^\d+[- ]//;
+                my ($k, $v) = split /\s+/, $_, 2;
+                $esmtp{$k} = $v || 1 if $k;
+            } split(/\n/, $ehlo);
+        }
+    }
+
+    if (defined($auth) && $auth->{'user'} ne '') {
+        warn "AUTH requested\n" if ($mailcfg{debug} > 9);
         # reduce wanted methods to those supported
         my @methods = grep {$esmtp{'AUTH'}=~/(^|\s)$_(\s|$)/i}
                         grep {$auth_support =~ /(^|\s)$_(\s|$)/i}
@@ -480,9 +518,9 @@ sub sendmail {
                 my $challenge = socket_read()
                     || return fail("AUTH DIGEST-MD5 failed: $server_reply");
                 $challenge =~ s/^\d+\s+//; $challenge =~ s/[\r\n]+$//;
-                warn "\nCHALLENGE=", decode_base64($challenge), "\n" if ($mailcfg{debug} > 10);
+                warn "\nCHALLENGE=", decode_base64($challenge), "\n" if ($mailcfg{debug} > 9);
                 my $response = _digest_md5($auth->{user}, $auth->{password}, decode_base64($challenge), $auth->{realm});
-                warn "\nRESPONSE=$response\n" if ($mailcfg{debug} > 10);
+                warn "\nRESPONSE=$response\n" if ($mailcfg{debug} > 9);
                 socket_write(encode_base64($response, ""), $CRLF)
                     || return fail("AUTH DIGEST-MD5 failed: $server_reply");
                 my $status = socket_read()
@@ -562,7 +600,7 @@ sub sendmail {
     socket_write("QUIT$CRLF")
            || return fail("send QUIT error");
     socket_read();
-    close S;
+    close $S;
 
     return 1;
 } # end sub sendmail

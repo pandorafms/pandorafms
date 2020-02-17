@@ -295,12 +295,41 @@ function grafico_modulo_sparse_data(
         return false;
     }
 
-    $array_data['sum'.$series_suffix]['agent_module_id'] = $agent_module_id;
-    $array_data['sum'.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-    $array_data['sum'.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
-    $array_data['sum'.$series_suffix]['module_name'] = $data_module_graph['module_name'];
-    $array_data['sum'.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
-    $array_data['sum'.$series_suffix]['unit'] = $data_module_graph['unit'];
+    $array_data = series_suffix_leyend(
+        'sum',
+        $series_suffix,
+        $agent_module_id,
+        $data_module_graph,
+        $array_data
+    );
+
+    if ($params['percentil']) {
+        $array_data = series_suffix_leyend(
+            'percentil',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+    }
+
+    if ($params['type_mode_graph']) {
+        $array_data = series_suffix_leyend(
+            'min',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+
+        $array_data = series_suffix_leyend(
+            'max',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+    }
 
     // This is for a specific type of report that consists in passing
     // an interval and doing the average sum and avg.
@@ -376,12 +405,6 @@ function grafico_modulo_sparse_data(
             1 => $acum_array_data[($i - 1)][1],
         ];
         $array_data['sum1']['data'] = $acum_array_data;
-    }
-
-    if ($params['percentil']) {
-        $percentil_value = $array_data['percentil'.$series_suffix]['data'][0][1];
-    } else {
-        $percentil_value = 0;
     }
 
     $events = [];
@@ -549,7 +572,7 @@ function grafico_modulo_sparse_data(
 
 
 /**
- * Functions tu create graphs.
+ * Functions to create graphs.
  *
  * @param array $params Details builds graphs. For example:
  * 'agent_module_id'     => $agent_module_id,
@@ -831,6 +854,10 @@ function grafico_modulo_sparse($params)
         if (modules_is_unit_macro($params['unit'])) {
             $params['unit'] = '';
         }
+    }
+
+    if (empty($params['divisor'])) {
+        $params['divisor'] = get_data_multiplier($params['unit']);
     }
 
     if (!$params['array_data_create']) {
@@ -1277,12 +1304,34 @@ function graphic_combined_module(
                 array_push($modules, $source['id_agent_module']);
                 array_push($weights, $source['weight']);
                 if ($source['label'] != '' || $params_combined['labels']) {
-                    $item['type'] = 'custom_graph';
-                    $item['id_agent'] = agents_get_module_id(
+                    $id_agent = agents_get_module_id(
                         $source['id_agent_module']
                     );
-                    $item['id_agent_module'] = $source['id_agent_module'];
-                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($item, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
+                    $agent_description = agents_get_description($id_agent);
+                    $agent_group = agents_get_agent_group($id_agent);
+                    $agent_address = agents_get_address($id_agent);
+                    $agent_alias = agents_get_alias($id_agent);
+                    $module_name = modules_get_agentmodule_name(
+                        $source['id_agent_module']
+                    );
+
+                    $module_description = modules_get_agentmodule_descripcion(
+                        $source['id_agent_module']
+                    );
+
+                    $items_label = [
+                        'type'               => 'custom_graph',
+                        'id_agent'           => $id_agent,
+                        'id_agent_module'    => $source['id_agent_module'],
+                        'agent_description'  => $agent_description,
+                        'agent_group'        => $agent_group,
+                        'agent_address'      => $agent_address,
+                        'agent_alias'        => $agent_alias,
+                        'module_name'        => $module_name,
+                        'module_description' => $module_description,
+                    ];
+
+                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($items_label, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
                 }
             }
         }
@@ -1401,9 +1450,20 @@ function graphic_combined_module(
                 $data_module_graph['agent_name'] = modules_get_agentmodule_agent_name(
                     $agent_module_id
                 );
-                $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
-                    $agent_module_id
-                );
+
+                if (is_metaconsole()) {
+                    $data_module_graph['agent_alias'] = db_get_value(
+                        'alias',
+                        'tagente',
+                        'id_agente',
+                        (int) $module_data['id_agente']
+                    );
+                } else {
+                    $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
+                        $agent_module_id
+                    );
+                }
+
                 $data_module_graph['agent_id'] = $module_data['id_agente'];
                 $data_module_graph['module_name'] = $module_data['nombre'];
                 $data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
@@ -1421,6 +1481,10 @@ function graphic_combined_module(
                 $data_module_graph['c_inv'] = $module_data['critical_inverse'];
                 $data_module_graph['module_id'] = $agent_module_id;
                 $data_module_graph['unit'] = $module_data['unit'];
+
+                $params['unit'] = $module_data['unit'];
+
+                $params['divisor'] = get_data_multiplier($params['unit']);
 
                 // Stract data.
                 $array_data_module = grafico_modulo_sparse_data(
@@ -1448,8 +1512,6 @@ function graphic_combined_module(
                 $max = $array_data['sum'.$i]['max'];
                 $min = $array_data['sum'.$i]['min'];
                 $avg = $array_data['sum'.$i]['avg'];
-
-                $percentil_value = $array_data['percentil'.$i]['data'][0][1];
 
                 if ($config['fixed_graph'] == false) {
                     $water_mark = [
@@ -1499,7 +1561,8 @@ function graphic_combined_module(
                         $array_data,
                         $params_combined['average'],
                         $params_combined['summatory'],
-                        $params_combined['modules_series']
+                        $params_combined['modules_series'],
+                        $date_array
                     );
                 }
             }
@@ -1717,7 +1780,7 @@ function graphic_combined_module(
 
                 $search_in_history_db = db_search_in_history_db($datelimit);
 
-                $temp[$module] = modules_get_agentmodule($module);
+                $temp[$module] = io_safe_output(modules_get_agentmodule($module));
                 $query_last_value = sprintf(
                     '
                     SELECT datos
@@ -1743,7 +1806,7 @@ function graphic_combined_module(
                 if (!empty($params_combined['labels'])
                     && isset($params_combined['labels'][$module])
                 ) {
-                    $label = io_safe_input($params_combined['labels'][$module]);
+                    $label = io_safe_output($params_combined['labels'][$module]);
                 } else {
                     $alias = db_get_value(
                         'alias',
@@ -2161,7 +2224,7 @@ function graphic_combined_module(
             $graph_values = $temp;
 
             if (!$params['vconsole']) {
-                $width  = 1024;
+                $width  = $width;
                 $height = 500;
             }
 
@@ -2200,7 +2263,7 @@ function graphic_combined_module(
  * @param boolean $average        Average.
  * @param boolean $summatory      Summatory.
  * @param boolean $modules_series Series module.
- * @param boolean $baseline       Baseline data.
+ * @param array   $date_array     Date data.
  *
  * @return array Data.
  */
@@ -2209,106 +2272,82 @@ function combined_graph_summatory_average(
     $average=false,
     $summatory=false,
     $modules_series=false,
-    $baseline=false
+    $date_array=[]
 ) {
     if (isset($array_data) && is_array($array_data)) {
+        $reduce_array = [];
         foreach ($array_data as $key => $value) {
             if (strpos($key, 'sum') !== false) {
-                $data_array_reverse[$key] = array_reverse($value['data']);
-                if (!$modules_series) {
-                    unset($array_data[$key]);
-                }
+                $last = $date_array['start_date'];
+                $reduce_array = array_reduce(
+                    $value['data'],
+                    function ($carry, $item) use ($date_array, $last, $reduce_array) {
+                        $slice_start = $date_array['start_date'];
+                        $iterator = $last;
+
+                        // JS to PHP timestamp format.
+                        $item[0] /= 1000;
+                        while ($iterator <= $date_array['final_date']) {
+                            if ($item[0] >= $slice_start && $item[0] < $iterator) {
+                                $array = [];
+                                $val = 0;
+                                $n = 0;
+
+                                if (is_array($reduce_array[$slice_start])) {
+                                    $val = $reduce_array[$slice_start]['value'];
+                                    $n = ($reduce_array[$slice_start]['n'] + 1);
+                                }
+
+                                $array['value'] = ($item[1] + $val);
+                                $array['n'] = $n;
+                                $array['t'] = ($slice_start * 1000);
+
+                                $carry[$slice_start] = $array;
+                                $last = $iterator;
+                                break;
+                            } else {
+                                $slice_start = $iterator;
+                                $iterator += 300;
+                            }
+                        }
+
+                        $i++;
+                        return $carry;
+                    },
+                    $reduce_array
+                );
+            }
+
+            if (!$modules_series) {
+                unset($array_data[$key]);
             }
         }
 
-        if (isset($data_array_reverse) && is_array($data_array_reverse)) {
-            $array_sum_reverse = [];
-            $array_avg_reverse = [];
-            $data_array_prev = false;
-            $data_array_pop = [];
-            $count = 0;
+        $reduce_array_summatory = [];
+        $reduce_array_average = [];
+        $i = 0;
+        foreach ($reduce_array as $item) {
+            $reduce_array_summatory[$i][0] = $item['t'];
+            $reduce_array_summatory[$i][1] = $item['value'];
 
-            $count_data_array_reverse = count($data_array_reverse['sum0']);
-            while ($count_data_array_reverse > 0) {
-                foreach ($data_array_reverse as $key_reverse => $value_reverse) {
-                    if (is_array($value_reverse) && count($value_reverse) > 0) {
-                        $data_array_pop[$key_reverse] = array_pop(
-                            $data_array_reverse[$key_reverse]
-                        );
-                        $count_data_array_reverse--;
-                    }
-                }
+            $reduce_array_average[$i][0] = $item['t'];
+            $reduce_array_average[$i][1] = ($item['value'] / ($item['n'] + 1));
 
-                if (isset($data_array_pop) && is_array($data_array_pop)) {
-                    $acum_data  = 0;
-                    $acum_array = [];
-                    $sum_data   = 0;
-                    $count_pop  = 0;
-                    foreach ($data_array_pop as $key_pop => $value_pop) {
-                        if ($value_pop[0] > $acum_data) {
-                            if ($acum_data != 0) {
-                                $sum_data = ($sum_data + $data_array_prev[$key_pop][1]);
-                                $data_array_reverse[$key_pop][] = $value_pop;
-                                $data_array_prev[$acum_key] = $acum_array;
-                            } else {
-                                if ($data_array_prev[$key_pop] == false) {
-                                    $data_array_prev[$key_pop] = $value_pop;
-                                }
+            $i++;
+        }
 
-                                $acum_key   = $key_pop;
-                                $acum_data  = $value_pop[0];
-                                $acum_array = $value_pop;
-                                $sum_data   = $value_pop[1];
-                            }
-                        } else if ($value_pop[0] < $acum_data) {
-                            $sum_data = ($sum_data + $data_array_prev[$key_pop][1]);
-                            $data_array_reverse[$acum_key][] = $acum_array;
-                            $data_array_prev[$key_pop] = $value_pop;
-                            $acum_key   = $key_pop;
-                            $acum_data  = $value_pop[0];
-                            $acum_array = $value_pop;
-                        } else if ($value_pop[0] == $acum_data) {
-                            $data_array_prev[$key_pop] = $value_pop;
-                            $sum_data += $value_pop[1];
-                        }
+        if ($summatory && isset($reduce_array_summatory)
+            && is_array($reduce_array_summatory)
+            && count($reduce_array_summatory) > 0
+        ) {
+            $array_data['summatory']['data'] = $reduce_array_summatory;
+        }
 
-                        $count_pop++;
-                    }
-
-                    if ($summatory) {
-                        $array_sum_reverse[$count][0] = $acum_data;
-                        $array_sum_reverse[$count][1] = $sum_data;
-                    }
-
-                    if ($average) {
-                        $array_avg_reverse[$count][0] = $acum_data;
-                        $array_avg_reverse[$count][1] = ($sum_data / $count_pop);
-                    }
-                }
-
-                $count++;
-            }
-
-            if ($summatory && isset($array_sum_reverse)
-                && is_array($array_sum_reverse)
-                && count($array_sum_reverse) > 0
-            ) {
-                $array_data['summatory']['data']  = $array_sum_reverse;
-                $array_data['summatory']['color'] = 'purple';
-            }
-
-            if ($average && isset($array_avg_reverse)
-                && is_array($array_avg_reverse)
-                && count($array_avg_reverse) > 0
-            ) {
-                if ($baseline) {
-                    $array_data['baseline']['data']  = $array_avg_reverse;
-                    $array_data['baseline']['color'] = 'green';
-                } else {
-                    $array_data['average']['data']  = $array_avg_reverse;
-                    $array_data['average']['color'] = 'orange';
-                }
-            }
+        if ($average && isset($reduce_array_average)
+            && is_array($reduce_array_average)
+            && count($reduce_array_average) > 0
+        ) {
+            $array_data['average']['data'] = $reduce_array_average;
         }
 
         return $array_data;
@@ -2344,14 +2383,21 @@ function graphic_agentaccess(
     $date = get_system_time();
     $datelimit = ($date - $period);
     $data_array = [];
+    $interval = agents_get_interval($id_agent);
 
     $data = db_get_all_rows_sql(
-        "SELECT count(*) as data, min(utimestamp) as utimestamp
-        FROM tagent_access
-        WHERE id_agent = $id_agent
-        AND utimestamp > $datelimit
-        AND utimestamp < $date
-        GROUP by ROUND(utimestamp / 1800)"
+        sprintf(
+            'SELECT utimestamp, count(*) as data
+             FROM tagent_access
+             WHERE id_agent = %d
+             AND utimestamp > %d
+             AND utimestamp < %d
+             GROUP BY ROUND(utimestamp/%d)',
+            $id_agent,
+            $datelimit,
+            $date,
+            $interval
+        )
     );
 
     if (isset($data) && is_array($data)) {
@@ -2533,13 +2579,13 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     }
 
     // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
-    $colors[__('Critical')] = COL_CRITICAL;
-    $colors[__('Warning')] = COL_WARNING;
-    $colors[__('Normal')] = COL_NORMAL;
-    $colors[__('Unknown')] = COL_UNKNOWN;
+    $colors['Critical'] = COL_CRITICAL;
+    $colors['Warning'] = COL_WARNING;
+    $colors['Normal'] = COL_NORMAL;
+    $colors['Unknown'] = COL_UNKNOWN;
 
     if ($show_not_init) {
-        $colors[__('Not init')] = COL_NOTINIT;
+        $colors['Not init'] = COL_NOTINIT;
     }
 
     if (array_sum($data) == 0) {
@@ -2794,7 +2840,8 @@ function graph_sla_slicebar(
         true,
         $ttl,
         false,
-        false
+        false,
+        $date
     );
 }
 
@@ -3162,6 +3209,21 @@ function graphic_incident_source($width=320, $height=200)
 }
 
 
+function series_suffix_leyend($series_name, $series_suffix, $id_agent, $data_module_graph, $array_data)
+{
+        global $config;
+
+        $array_data[$series_name.$series_suffix]['agent_module_id'] = $id_agent;
+        $array_data[$series_name.$series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+        $array_data[$series_name.$series_suffix]['agent_name'] = $data_module_graph['agent_name'];
+        $array_data[$series_name.$series_suffix]['module_name'] = $data_module_graph['module_name'];
+        $array_data[$series_name.$series_suffix]['agent_alias'] = $data_module_graph['agent_alias'];
+        $array_data[$series_name.$series_suffix]['unit'] = $data_module_graph['unit'];
+
+        return $array_data;
+}
+
+
 function graph_events_validated($width=300, $height=200, $extra_filters=[], $meta=false, $history=false)
 {
     global $config;
@@ -3223,7 +3285,7 @@ function graph_events_validated($width=300, $height=200, $extra_filters=[], $met
         $config['fontpath'],
         $config['font_size'],
         1,
-        false,
+        'bottom',
         $colors
     );
 }
@@ -3524,7 +3586,9 @@ function grafico_eventos_usuario($width, $height)
         '',
         $water_mark,
         $config['fontpath'],
-        $config['font_size']
+        $config['font_size'],
+        1,
+        'bottom'
     );
 }
 
@@ -3551,7 +3615,32 @@ function graph_custom_sql_graph(
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
 
+    if (is_metaconsole()) {
+        $server = metaconsole_get_connection_names();
+        $connection = metaconsole_get_connection($server);
+        metaconsole_connect($connection);
+    }
+
     $report_content = db_get_row('treport_content', 'id_rc', $id);
+
+    if ($report_content == false || $report_content == '') {
+        $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+    }
+
+    if ($report_content == false || $report_content == '') {
+        enterprise_hook('metaconsole_restore_db');
+        $report_content = db_get_row('treport_content', 'id_rc', $id);
+        if ($report_content == false || $report_content == '') {
+            $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        }
+
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_names();
+            $connection = metaconsole_get_connection($server);
+            metaconsole_connect($connection);
+        }
+    }
+
     if ($id != null) {
         $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$id);
     } else {
@@ -3565,22 +3654,9 @@ function graph_custom_sql_graph(
         $sql = io_safe_output($sql['sql']);
     }
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
-        $metaconsole_connection = enterprise_hook('metaconsole_get_connection', [$report_content['server_name']]);
-
-        if ($metaconsole_connection === false) {
-            return false;
-        }
-
-        if (enterprise_hook('metaconsole_load_external_db', [$metaconsole_connection]) != NOERR) {
-            // ui_print_error_message ("Error connecting to ".$server_name);
-            return false;
-        }
-    }
-
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         enterprise_hook('metaconsole_restore_db');
     }
 
@@ -3773,43 +3849,39 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
         $full_legend[$cont] = $name;
 
         $top = ($datelimit + ($periodtime * ($i + 1)));
-        $event = db_get_row_filter(
+
+        $events = db_get_all_rows_filter(
             'tevento',
             ['id_agente' => $id_agent,
                 'utimestamp > '.$bottom,
-                'utimestamp < '.$top
+                'utimestamp < '.$top,
             ],
             'criticity, utimestamp'
         );
 
-        if (!empty($event['utimestamp'])) {
+        if (!empty($events)) {
             $data[$cont]['utimestamp'] = $periodtime;
-            switch ($event['criticity']) {
-                case EVENT_CRIT_WARNING:
-                    $data[$cont]['data'] = 2;
-                break;
-
-                case EVENT_CRIT_CRITICAL:
-                    $data[$cont]['data'] = 3;
-                break;
-
-                default:
-                    $data[$cont]['data'] = 1;
-                break;
+            $event_criticity = array_column($events, 'criticity');
+            if (array_search(EVENT_CRIT_CRITICAL, $event_criticity) !== false) {
+                $data[$cont]['data'] = EVENT_CRIT_CRITICAL;
+            } else if (array_search(EVENT_CRIT_WARNING, $event_criticity) !== false) {
+                $data[$cont]['data'] = EVENT_CRIT_WARNING;
+            } else {
+                $data[$cont]['data'] = EVENT_CRIT_NORMAL;
             }
         } else {
             $data[$cont]['utimestamp'] = $periodtime;
-            $data[$cont]['data'] = 1;
+            $data[$cont]['data'] = EVENT_CRIT_NORMAL;
         }
 
         $cont++;
     }
 
     $colors = [
-        1 => COL_NORMAL,
-        2 => COL_WARNING,
-        3 => COL_CRITICAL,
-        4 => COL_UNKNOWN,
+        1                   => COL_UNKNOWN,
+        EVENT_CRIT_NORMAL   => COL_NORMAL,
+        EVENT_CRIT_WARNING  => COL_WARNING,
+        EVENT_CRIT_CRITICAL => COL_CRITICAL,
     ];
 
     // Draw slicebar graph
@@ -3833,7 +3905,7 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false)
+function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false, $ttl=1)
 {
     global $config;
     global $graphic_type;
@@ -3909,7 +3981,7 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
     $out = flot_slicesbar_graph(
         $data,
         $period,
-        100,
+        $width,
         $height,
         $full_legend,
         $colors,
@@ -3922,7 +3994,8 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
         $id_agent,
         [],
         true,
-        1
+        $ttl,
+        true
     );
 
     if ($return) {
@@ -4790,7 +4863,7 @@ function graph_nodata_image($width=300, $height=110, $type='area', $text='')
     // if ($text == '') {
     // $text = __('No data to show');
     // }
-    $text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
+    $text_div = '<div class="nodata_text" style="text-align:center; padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
 
     $image_div = $text_div.'<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\''.$image.'\');"><div></div></div>';
 

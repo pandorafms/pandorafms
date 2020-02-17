@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_update_manager.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
@@ -207,6 +208,12 @@ class ConsoleSupervisor
          */
 
         $this->getUMMessages();
+
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
 
     }
 
@@ -385,13 +392,6 @@ class ConsoleSupervisor
         $this->checkDefaultPassword();
 
         /*
-         * Check if there's an active subscription.
-         *    NOTIF.NEWSLETTER.SUBSCRIPTION
-         */
-
-        $this->checkNewsletterSubscription();
-
-        /*
          * Check if there're new updates.
          *    NOTIF.UPDATEMANAGER.OPENSETUP
          *    NOTIF.UPDATEMANAGER.UPDATE
@@ -433,6 +433,12 @@ class ConsoleSupervisor
          */
 
         $this->getUMMessages();
+
+        /*
+         * Check if the Server and Console has
+         * the same versions.
+         */
+        $this->checkConsoleServerVersions();
 
     }
 
@@ -595,7 +601,6 @@ class ConsoleSupervisor
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
             case 'NOTIF.SECURITY.DEFAULT_PASSWORD':
-            case 'NOTIF.NEWSLETTER.SUBSCRIPTION':
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
             case 'NOTIF.UPDATEMANAGER.MINOR':
@@ -726,7 +731,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.LICENSE.LIMITED',
                     'title'   => __('Limited mode.'),
                     'message' => io_safe_output($config['limited_mode']),
-                    'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
         } else {
@@ -744,7 +749,7 @@ class ConsoleSupervisor
                         'Your license will expire in %d days. Please, contact our sales department.',
                         $days_to_expiry
                     ),
-                    'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
         } else if ($days_to_expiry < 0) {
@@ -754,7 +759,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
                     'title'   => __('Expired license'),
                     'message' => __('Your license has expired. Please, contact our sales department.'),
-                    'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
             return false;
@@ -831,7 +836,7 @@ class ConsoleSupervisor
                         'Directory %s is not writable. Please, configure corresponding permissions.',
                         $config['attachment_store']
                     ),
-                    'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                 ]
             );
             return;
@@ -853,7 +858,7 @@ class ConsoleSupervisor
                         'There are more than %d files in attachment, consider cleaning up attachment directory manually.',
                         $config['num_files_attachment']
                     ),
-                    'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                 ]
             );
         } else {
@@ -872,20 +877,22 @@ class ConsoleSupervisor
     {
         global $config;
 
+        $remote_config_dir = io_safe_output($config['remote_config']);
+
         if (enterprise_installed()
             && isset($config['license_nms'])
             && $config['license_nms'] != 1
         ) {
-            if (is_readable($config['remote_config']) !== true) {
+            if (is_readable($remote_config_dir) !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG',
                         'title'   => __('Remote configuration directory is not readable'),
                         'message' => __(
                             'Remote configuration directory %s is not readable. Please, adjust configuration.',
-                            $config['remote_config']
+                            $remote_config_dir
                         ),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
                 );
                 return;
@@ -895,16 +902,16 @@ class ConsoleSupervisor
                 );
             }
 
-            if (is_writable($config['remote_config'].'/conf') !== true) {
+            if (is_writable($remote_config_dir.'/conf') !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.CONF',
                         'title'   => __('Remote configuration directory is not writable'),
                         'message' => __(
                             'Remote configuration directory %s is not writable. Please, adjust configuration.',
-                            $config['remote_config'].'/conf'
+                            $remote_config_dir.'/conf'
                         ),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
                 );
             } else {
@@ -913,16 +920,16 @@ class ConsoleSupervisor
                 );
             }
 
-            if (is_writable($config['remote_config'].'/collections') !== true) {
+            if (is_writable($remote_config_dir.'/collections') !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.COLLECTIONS',
                         'title'   => __('Remote collections directory is not writable'),
                         'message' => __(
                             'Collections directory %s is not writable. Please, adjust configuration.',
-                            $config['remote_config'].'/collections'
+                            $remote_config_dir.'/collections'
                         ),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
                 );
             } else {
@@ -931,16 +938,16 @@ class ConsoleSupervisor
                 );
             }
 
-            if (is_writable($config['remote_config'].'/md5') !== true) {
+            if (is_writable($remote_config_dir.'/md5') !== true) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.MD5',
                         'title'   => __('Remote md5 directory is not writable'),
                         'message' => __(
                             'MD5 directory %s is not writable. Please, adjust configuration.',
-                            $config['remote_config'].'/md5'
+                            $remote_config_dir.'/md5'
                         ),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
                     ]
                 );
             } else {
@@ -956,7 +963,7 @@ class ConsoleSupervisor
         $MAX_BADXML_FILES_DATA_IN = 150;
 
         $filecount = $this->countFiles(
-            $config['remote_config'],
+            $remote_config_dir,
             '',
             $MAX_FILES_DATA_IN
         );
@@ -969,9 +976,9 @@ class ConsoleSupervisor
                     'message' => __(
                         'There are more than %d files in %s. Consider checking DataServer performance',
                         $MAX_FILES_DATA_IN,
-                        $config['remote_config']
+                        $remote_config_dir
                     ),
-                    'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                 ]
             );
         } else {
@@ -979,7 +986,7 @@ class ConsoleSupervisor
         }
 
         $filecount = $this->countFiles(
-            $config['remote_config'],
+            $remote_config_dir,
             '/^.*BADXML$/',
             $MAX_BADXML_FILES_DATA_IN
         );
@@ -992,9 +999,9 @@ class ConsoleSupervisor
                     'message' => __(
                         'There are more than %d files in %s. Consider checking software agents.',
                         $MAX_BADXML_FILES_DATA_IN,
-                        $config['remote_config']
+                        $remote_config_dir
                     ),
-                    'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                 ]
             );
         } else {
@@ -1080,7 +1087,7 @@ class ConsoleSupervisor
                                 $modules_queued,
                                 $queue['queued_modules']
                             ),
-                            'url'     => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                            'url'     => ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'),
                         ]
                     );
                 } else {
@@ -1190,7 +1197,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.SERVER.STATUS.'.$server['id_server'],
                     'title'   => $msg,
                     'message' => $description,
-                    'url'     => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                    'url'     => ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'),
                 ]
             );
         }
@@ -1262,9 +1269,11 @@ class ConsoleSupervisor
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
         $PHPmemory_limit_min = config_return_in_bytes('500M');
+        $PHPSerialize_precision = ini_get('serialize_precision');
 
         // PhantomJS status.
-        $result_ejecution = exec($config['phantomjs_bin'].'/phantomjs --version');
+        $phantomjs_dir = io_safe_output($config['phantomjs_bin']);
+        $result_ejecution = exec($phantomjs_dir.'/phantomjs --version');
 
         // PHP version checks.
         $php_version = phpversion();
@@ -1437,6 +1446,31 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.PHP.VERSION');
         }
+
+        if ($PHPSerialize_precision != -1) {
+            $url = 'https://www.php.net/manual/en/ini.core.php#ini.serialize-precision';
+            if ($config['language'] == 'es') {
+                $url = 'https://www.php.net/manual/es/ini.core.php#ini.serialize-precision';
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PHP.SERIALIZE_PRECISION',
+                    'title'   => sprintf(
+                        __("Not recommended '%s' value in PHP configuration"),
+                        'serialize_precision'
+                    ),
+                    'message' => sprintf(
+                        __('Recommended value is: %s'),
+                        sprintf('-1')
+                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
+        }
+
     }
 
 
@@ -1473,7 +1507,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.HISTORYDB',
                         'title'   => __('Historical database not available'),
                         'message' => __('Historical database is enabled, though not accessible with the current configuration.'),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=hist_db'),
                     ]
                 );
             } else {
@@ -1520,7 +1554,7 @@ class ConsoleSupervisor
                         'Your database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.',
                         io_safe_output(get_product_name())
                     ),
-                    'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                 ]
             );
         } else {
@@ -1580,7 +1614,7 @@ class ConsoleSupervisor
                             'Historical database maintenance problem.'
                         ),
                         'message' => __('Your historical database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.', get_product_name()),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
                     ]
                 );
             } else {
@@ -1619,7 +1653,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.HISTORYDB.MR',
                         'title'   => __('Historical database MR mismatch'),
                         'message' => __('Your historical database is not using the same schema as the main DB. This could produce anomalies while storing historical data.'),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=hist_db'),
                     ]
                 );
             } else {
@@ -1661,7 +1695,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
                         'title'   => __('Log collector cannot connect to ElasticSearch'),
                         'message' => __('ElasticSearch is not available using current configuration.'),
-                        'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=log',
+                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=log'),
                     ]
                 );
             } else {
@@ -1731,7 +1765,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.METACONSOLE.DB_CONNECTION',
                     'title'   => __('Metaconsole DB is not available.'),
                     'message' => __('Cannot connect with Metaconsole DB using current configuration.'),
-                    'url'     => 'index.php?sec=general&sec2=godmode/setup/setup&section=enterprise',
+                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=enterprise'),
                 ]
             );
         }
@@ -1760,7 +1794,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.DOWNTIME',
                     'title'   => __('Scheduled downtime running.'),
                     'message' => __('A scheduled downtime is running. Some monitoring data won\'t be available while downtime is taking place.'),
-                    'url'     => 'index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list',
+                    'url'     => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'),
                 ]
             );
             return;
@@ -1921,7 +1955,7 @@ class ConsoleSupervisor
                             date('M j, G:i:s ', $next_downtime_begin),
                             date('M j, G:i:s ', $next_downtime_end)
                         ),
-                        'url'     => 'index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list',
+                        'url'     => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'),
                     ]
                 );
                 return;
@@ -1940,6 +1974,7 @@ class ConsoleSupervisor
     public function checkUpdateManagerRegistration()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
         if (update_manager_verify_registration() === false) {
@@ -1953,41 +1988,6 @@ class ConsoleSupervisor
             );
         } else {
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
-        }
-    }
-
-
-    /**
-     * Check if instance is subscribed to newsletter.
-     *
-     * @return void
-     */
-    public function checkNewsletterSubscription()
-    {
-        global $config;
-        $login = get_parameter('login', false);
-
-        // Newsletter advice.
-        $newsletter = db_get_value(
-            'middlename',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
-        if (license_free() === true
-            && $newsletter != 1
-            && $login === false
-        ) {
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.NEWSLETTER.SUBSCRIPTION',
-                    'title'   => __('Not subscribed to the newsletter'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to subscribe to the newsletter'),
-                    'url'     => 'javascript: force_run_newsletter();',
-                ]
-            );
-        } else {
-            $this->cleanNotifications('NOTIF.NEWSLETTER.SUBSCRIPTION');
         }
     }
 
@@ -2016,7 +2016,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.SECURITY.DEFAULT_PASSWORD',
                     'title'   => __('Default password for "Admin" user has not been changed'),
                     'message' => __('Please, change the default password since it is a commonly reported vulnerability.'),
-                    'url'     => 'index.php?sec=gusuarios&sec2=godmode/users/user_list',
+                    'url'     => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list'),
                 ]
             );
         } else {
@@ -2034,15 +2034,17 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if (($config['fontpath'] == '')
-            || (file_exists($config['fontpath']) === false)
+        $fontpath = io_safe_output($config['fontpath']);
+
+        if (($fontpath == '')
+            || (file_exists($fontpath) === false)
         ) {
             $this->notify(
                 [
                     'type'    => 'NOTIF.MISC.FONTPATH',
                     'title'   => __('Default font doesn\'t exist'),
                     'message' => __('Your defined font doesn\'t exist or is not defined. Please, check font parameters in your config'),
-                    'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis',
+                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis'),
                 ]
             );
         } else {
@@ -2069,7 +2071,7 @@ class ConsoleSupervisor
                         'Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production environment. This value is located in the main index.php file',
                         get_product_name()
                     ),
-                    'url'     => 'index.php',
+                    'url'     => ui_get_full_url('index.php'),
                 ]
             );
         } else {
@@ -2092,7 +2094,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.MISC.EVENTSTORMPROTECTION',
                     'title'   => __('Event storm protection is enabled.'),
                     'message' => __('Some events may get lost while this mode is enabled. The server must be restarted after altering this setting.'),
-                    'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
+                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=general'),
                 ]
             );
         } else {
@@ -2119,7 +2121,7 @@ class ConsoleSupervisor
                                 'type'    => 'NOTIF.UPDATEMANAGER.OPENSETUP',
                                 'title'   => __('Failed to retrieve updates, please configure utility'),
                                 'message' => $message,
-                                'url'     => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
+                                'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=general'),
                             ]
                         );
                     }
@@ -2138,8 +2140,8 @@ class ConsoleSupervisor
                             'New %s Console update',
                             get_product_name()
                         ),
-                        'message' => __('There is a new update available. Please<a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online"> go to Administration:Setup:Update Manager</a> for more details.'),
-                        'url'     => 'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online',
+                        'message' => __('There is a new update available. Please<a style="font-weight:bold;" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
+                        'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online'),
                     ]
                 );
             } else {
@@ -2177,7 +2179,7 @@ class ConsoleSupervisor
                         'There is one or more minor releases available. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
-                    'url'     => 'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
                 ]
             );
         } else {
@@ -2226,7 +2228,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.CRON.CONFIGURED',
                     'title'   => __('DiscoveryConsoleTasks is not configured.'),
                     'message' => __($message_conf_cron),
-                    'url'     => 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist',
+                    'url'     => ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist'),
                 ]
             );
         } else {
@@ -2244,6 +2246,7 @@ class ConsoleSupervisor
     public function getUMMessages()
     {
         global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
 
         if (update_manager_verify_registration() === false) {
             // Console not subscribed.
@@ -2260,8 +2263,6 @@ class ConsoleSupervisor
         // Only ask for messages once a day.
         $future = (time() + 2 * SECONDS_1HOUR);
         config_update_value('last_um_check', $future);
-
-        include_once $config['homedir'].'/include/functions_update_manager.php';
 
         $params = [
             'pandora_uid' => $config['pandora_uid'],
@@ -2298,6 +2299,63 @@ class ConsoleSupervisor
                     $source_id
                 );
             }
+        }
+    }
+
+
+    /**
+     * Check if all servers and console versions are the same
+     *
+     * @return void
+     */
+    public function checkConsoleServerVersions()
+    {
+        global $config;
+        // List all servers except satellite server.
+        $server_version_list = db_get_all_rows_sql(
+            sprintf(
+                'SELECT `name`, `version` 
+                FROM tserver 
+                WHERE server_type != %d
+                GROUP BY `version`',
+                SERVER_TYPE_ENTERPRISE_SATELLITE
+            )
+        );
+
+        $missed = 0;
+
+        if (is_array($server_version_list) === true) {
+            foreach ($server_version_list as $server) {
+                if (strpos(
+                    $server['version'],
+                    $config['current_package_enterprise']
+                ) === false
+                ) {
+                    $missed++;
+                    $title_ver_misaligned = __(
+                        '%s version misaligned with Console',
+                        $server['name']
+                    );
+                    $message_ver_misaligned = __(
+                        'Server %s and this console have different versions. This might cause several malfunctions. Please, update this server.',
+                        $server['name']
+                    );
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SERVER.MISALIGNED',
+                            'title'   => __($title_ver_misaligned),
+                            'message' => __($message_ver_misaligned),
+                            'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Cleanup notifications if exception is recovered.
+        if ($missed == 0) {
+            $this->cleanNotifications('NOTIF.SERVER.MISALIGNED');
         }
     }
 

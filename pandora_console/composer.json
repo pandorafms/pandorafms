@@ -1,5 +1,5 @@
 {
-  "name": "Pandora FMS",
+  "name": "pandorafms/console",
   "description": "Pandora Flexible Monitoring System ",
   "authors": [
     {
@@ -14,7 +14,9 @@
   "autoload": {
     "psr-4": {
       "Models\\": "include/rest-api/models",
-      "Enterprise\\Models\\": "enterprise/include/rest-api/models"
+      "Enterprise\\Models\\": "enterprise/include/rest-api/models",
+      "PandoraFMS\\": "include/lib",
+      "PandoraFMS\\Enterprise\\": "enterprise/include/lib"
     }
   },
   "autoload-dev": {

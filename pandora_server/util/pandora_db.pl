@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.735 PS190619";
+my $version = "7.0NG.743 PS200217";
 
 # Pandora server configuration
 my %conf;
@@ -136,7 +136,7 @@ sub pandora_purgedb ($$) {
 		pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
 		
 		# Delete sessions data
-		pandora_delete_old_session_data ($dbh, $ulimit_timestamp);
+		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
 		
@@ -678,6 +678,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
    	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
+	$conf->{'_session_timeout'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'session_timeout'");
 
 	$conf->{'_big_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'big_operation_step_datos_purge'");
 	$conf->{'_small_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'small_operation_step_datos_purge'");
@@ -990,12 +991,28 @@ sub pandora_delete_old_export_data {
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
-	my ($dbh, $ulimit_timestamp) = @_;
+    my ($conf, $dbh, $ulimit_timestamp) = @_;
+
+    my $session_timeout = $conf->{'_session_timeout'};
+
+	if ($session_timeout ne '') {
+		if ($session_timeout == -1) {
+			# The session expires in 10 years
+			$session_timeout = 315576000;
+		} else {
+			$session_timeout *= 60;
+		}
+
+		$ulimit_timestamp = time() - $session_timeout;
+	}
 
 	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
+
+	db_do ($dbh, "DELETE FROM tsessions_php WHERE
+	data IS NULL OR id_session REGEXP '^cron-'");
 }
 
 ###############################################################################

@@ -14,6 +14,7 @@
 /* global holding_area_dimensions */
 /* global networkmap_id */
 /* global enterprise_installed */
+/* global networkmap_write */
 /* global force */
 /* global layer_graph_nodes */
 /* global layer_graph_links */
@@ -669,7 +670,7 @@ function update_link(row_index, id_link) {
           temp_link["arrow_start"] = "module";
           temp_link["id_module_start"] = interface_source;
           temp_link["status_start"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["link_color"] = data["status"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = interface_source;
@@ -679,7 +680,7 @@ function update_link(row_index, id_link) {
           temp_link["arrow_end"] = "module";
           temp_link["id_module_end"] = interface_target;
           temp_link["status_end"] = data["status"];
-          temp_link["link_color"] = data["status"] == "1" ? "#FC4444" : "#999";
+          temp_link["link_color"] = data["status"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = interface_target;
@@ -737,27 +738,36 @@ function add_new_link(new_link) {
 }
 
 function move_to_networkmap(node) {
-  var params = [];
-  params.push("get_networkmap_from_fictional=1");
-  params.push("id=" + node.id_db);
-  params.push("id_map=" + node.map_id);
-  params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+  // Checks if is widget or not
+  var widget = false;
+  widget = $("#hidden-widget").val();
 
-  jQuery.ajax({
-    data: params.join("&"),
-    dataType: "json",
-    type: "POST",
-    url: "ajax.php",
-    success: function(data) {
-      if (data["correct"]) {
-        window.location =
-          "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
-          data["id_networkmap"];
-      } else {
-        edit_node(node, true);
+  if (widget == true) {
+    var id_cell = $(".widget_content").data("id_cell");
+    move_to_networkmap_widget(node.networkmap_id, id_cell);
+  } else {
+    var params = [];
+    params.push("get_networkmap_from_fictional=1");
+    params.push("id=" + node.id_db);
+    params.push("id_map=" + node.map_id);
+    params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+    jQuery.ajax({
+      data: params.join("&"),
+      dataType: "json",
+      type: "POST",
+      url: "ajax.php",
+      success: function(data) {
+        if (data["correct"]) {
+          window.location =
+            "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
+            data["id_networkmap"];
+        } else {
+          edit_node(node, true);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function edit_node(data_node, dblClick) {
@@ -791,8 +801,8 @@ function edit_node(data_node, dblClick) {
       var id_networkmap_lenght = networkmap_id.toString().length;
       var id_node_length = id.length - id_networkmap_lenght;
       id = id.substring(0, id_node_length);
-      var node_selected = graph.nodes[id];
-
+      var index_node = $.inArray(data_node, graph.nodes);
+      var node_selected = graph.nodes[index_node];
       var selected_links = get_relations(node_selected);
 
       $(
@@ -2087,7 +2097,12 @@ function show_menu(item, data) {
         icon: "add_node",
         disabled: function() {
           if (enterprise_installed) {
-            return false;
+            // Check if user can write network maps.
+            if (networkmap_write) {
+              return false;
+            } else {
+              return true;
+            }
           } else {
             return true;
           }
@@ -2099,6 +2114,14 @@ function show_menu(item, data) {
       items_list["center"] = {
         name: set_center_menu,
         icon: "center",
+        disabled: function() {
+          // Check if user can write network maps.
+          if (networkmap_write) {
+            return false;
+          } else {
+            return true;
+          }
+        },
         callback: function(key, options) {
           set_center(networkmap_id);
         }
@@ -2136,7 +2159,12 @@ function show_menu(item, data) {
         icon: "restart_map",
         disabled: function() {
           if (enterprise_installed) {
-            return false;
+            // Check if user can write network maps.
+            if (networkmap_write) {
+              return false;
+            } else {
+              return true;
+            }
           } else {
             return true;
           }
@@ -2329,7 +2357,7 @@ function add_interface_link_js() {
           temp_link["id_module_start"] = source_value;
           temp_link["status_start"] = data["status_start"];
           temp_link["link_color"] =
-            data["status_start"] == "1" ? "#FC4444" : "#999";
+            data["status_start"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_start"] = "";
           temp_link["id_agent_start"] = source_value;
@@ -2340,7 +2368,7 @@ function add_interface_link_js() {
           temp_link["id_module_end"] = target_value;
           temp_link["status_end"] = data["status_end"];
           temp_link["link_color"] =
-            data["status_end"] == "1" ? "#FC4444" : "#999";
+            data["status_end"] == "1" ? "#e63c52" : "#999";
         } else {
           temp_link["arrow_end"] = "";
           temp_link["id_agent_end"] = target_value;
@@ -2849,10 +2877,13 @@ function init_drag_and_drop() {
       var selection = d3.selectAll(".node_selected");
 
       selection.each(function(d) {
-        graph.nodes[d.id].x = d.x + delta[0];
-        graph.nodes[d.id].y = d.y + delta[1];
-        graph.nodes[d.id].px = d.px + delta[0];
-        graph.nodes[d.id].py = d.py + delta[1];
+        // We search the position of this node in the array (index).
+        // This is to avoid errors when deleting nodes (id doesn't match index).
+        var index_node = $.inArray(d, graph.nodes);
+        graph.nodes[index_node].x = d.x + delta[0];
+        graph.nodes[index_node].y = d.y + delta[1];
+        graph.nodes[index_node].px = d.px + delta[0];
+        graph.nodes[index_node].py = d.py + delta[1];
       });
 
       draw_elements_graph();
@@ -4493,4 +4524,39 @@ function update_fictional_node_popup(id) {
     radious,
     color
   );
+}
+
+function move_to_networkmap_widget(networkmap_id, id_cell) {
+  var params = [];
+
+  $(".widget_content").each(function(i) {
+    $("#body_cell").empty();
+  });
+
+  var pathname = window.location.pathname;
+  var path;
+
+  if (
+    pathname == "/pandora_console/enterprise/dashboard/public_dashboard.php"
+  ) {
+    path = "../../ajax.php";
+  } else {
+    path = "ajax.php";
+  }
+
+  params.push("networkmap=true");
+  params.push("networkmap_id=" + networkmap_id);
+
+  params.push("page=enterprise/include/ajax/map_enterprise.ajax");
+  jQuery.ajax({
+    data: params.join("&"),
+    dataType: "html",
+    type: "POST",
+    url: path,
+    success: function(data) {
+      $(".widget_content").each(function(i) {
+        $("#body_cell").append(data);
+      });
+    }
+  });
 }

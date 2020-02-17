@@ -105,7 +105,7 @@ if (check_login()) {
 
             echo __(
                 "This is the online help for %s console. This help is -in best cases- just a brief contextual help, not intented to teach you how to use %s. Official documentation of %s is about 900 pages, and you probably don't need to read it entirely, but sure, you should download it and take a look.<br><br>
-  <a href='%s' target='_blanck' style='color: #82b92e; font-size: 10pt; text-decoration: underline;'>Download the official documentation</a>",
+  <a href='%s' target='_blanck' class='pandora_green_text' style='font-size: 10pt; text-decoration: underline;'>Download the official documentation</a>",
                 get_product_name(),
                 get_product_name(),
                 get_product_name(),

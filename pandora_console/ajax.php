@@ -1,17 +1,34 @@
 <?php
+/**
+ * Ajax handler.
+ *
+ * @category   Ajax handler.
+ * @package    Pandora FMS.
+ * @subpackage OpenSource.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// Enable profiler for testing
+// Begin.
+define('AJAX', true);
+
 if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
@@ -56,7 +73,7 @@ if (isset($_GET['loginhash'])) {
 
 $public_hash = get_parameter('hash', false);
 
-// Check user
+// Check user.
 if ($public_hash == false) {
     check_login();
 } else {
@@ -68,9 +85,9 @@ if ($public_hash == false) {
     }
 }
 
-define('AJAX', true);
 
-// Enterprise support
+
+// Enterprise support.
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     include_once ENTERPRISE_DIR.'/load_enterprise.php';
 }
@@ -86,11 +103,9 @@ if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
     $config['relative_path'] = enterprise_hook('skins_set_image_skin_path', [$config['id_user']]);
 }
 
-if (isset($config['metaconsole'])) {
-    // Not cool way of know if we are executing from metaconsole or normal console
-    if ($config['metaconsole']) {
-        define('METACONSOLE', true);
-    }
+if (is_metaconsole()) {
+    // Backward compatibility.
+    define('METACONSOLE', true);
 }
 
 if (file_exists($page)) {

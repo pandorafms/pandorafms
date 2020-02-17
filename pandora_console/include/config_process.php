@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC190619';
-$pandora_version = 'v7.0NG.735';
+$build_version = 'PC200217';
+$pandora_version = 'v7.0NG.743';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -148,8 +148,6 @@ if (!isset($config['homeurl_static'])) {
     }
 }
 
-db_select_engine();
-$config['dbconnection'] = db_connect();
 
 
 if (! defined('EXTENSIONS_DIR')) {
@@ -159,6 +157,9 @@ if (! defined('EXTENSIONS_DIR')) {
 if (! defined('ENTERPRISE_DIR')) {
     define('ENTERPRISE_DIR', 'enterprise');
 }
+
+db_select_engine();
+$config['dbconnection'] = db_connect();
 
 require_once $ownDir.'functions_config.php';
 

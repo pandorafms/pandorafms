@@ -128,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-            $version = '7.0NG.735';
-            $build = '190619';
+            $version = '7.0NG.743';
+            $build = '200217';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -872,7 +872,19 @@ function install_step4()
 							$config["dbuser"]="pandora";			// DB User
 							$config["dbpass"]="'.$random_password.'";	// DB Password
 							$config["dbhost"]="'.$dbhost.'";			// DB Host
-							$config["homedir"]="'.$path.'";		// Config homedir
+                            $config["homedir"]="'.$path.'";		// Config homedir
+                            // ----------Rebranding--------------------
+                            // Uncomment this lines and add your customs text and paths.
+                            // $config["custom_logo_login_alt"] ="login_logo.png";
+                            // $config["custom_splash_login_alt"] = "splash_image_default.png";
+                            // $config["custom_title1_login_alt"] = "WELCOME TO Pandora FMS";
+                            // $config["custom_title2_login_alt"] = "NEXT GENERATION";
+                            // $config["rb_product_name_alt"] = "Pandora FMS";
+                            // $config["custom_docs_url_alt"] = "http://wiki.pandorafms.com/";
+                            // $config["custom_support_url_alt"] = "https://support.artica.es";
+
+
+                        
 							/*
 							----------Attention--------------------
 							Please note that in certain installations:
@@ -974,7 +986,17 @@ function install_step4()
 							$config["dbuser"]="pandora";			// DB User
 							$config["dbpass"]="'.$random_password.'";	// DB Password
 							$config["dbhost"]="'.$dbhost.'";			// DB Host
-							$config["homedir"]="'.$path.'";		// Config homedir
+                            $config["homedir"]="'.$path.'";		// Config homedir
+                            // ----------Rebranding--------------------
+                            // Uncomment this lines and add your customs text and paths.
+                            // $config["custom_logo_login_alt"] ="login_logo.png";
+                            // $config["custom_splash_login_alt"] = "splash_image_default.png";
+                            // $config["custom_title1_login_alt"] = "WELCOME TO Pandora FMS";
+                            // $config["custom_title2_login_alt"] = "NEXT GENERATION";
+                            // $config["rb_product_name_alt"] = "Pandora FMS";
+                            // $config["custom_docs_url_alt"] = "http://wiki.pandorafms.com/";
+                            // $config["custom_support_url_alt"] = "https://support.artica.es";
+
 							/*
 							----------Attention--------------------
 							Please note that in certain installations:

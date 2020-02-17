@@ -60,96 +60,12 @@ $fields_selected = explode(',', $config['event_fields']);
 
 $result_selected = [];
 
-// show list of fields selected.
+// Show list of fields selected.
 if ($fields_selected[0] != '') {
     foreach ($fields_selected as $field_selected) {
-        switch ($field_selected) {
-            case 'id_evento':
-                $result = __('Event Id');
-            break;
-
-            case 'evento':
-                $result = __('Event Name');
-            break;
-
-            case 'id_agente':
-                $result = __('Agent Name');
-            break;
-
-            case 'id_usuario':
-                $result = __('User');
-            break;
-
-            case 'id_grupo':
-                $result = __('Group');
-            break;
-
-            case 'estado':
-                $result = __('Status');
-            break;
-
-            case 'timestamp':
-                $result = __('Timestamp');
-            break;
-
-            case 'event_type':
-                $result = __('Event Type');
-            break;
-
-            case 'id_agentmodule':
-                $result = __('Module Name');
-            break;
-
-            case 'id_alert_am':
-                $result = __('Alert');
-            break;
-
-            case 'criticity':
-                $result = __('Severity');
-            break;
-
-            case 'user_comment':
-                $result = __('Comment');
-            break;
-
-            case 'tags':
-                $result = __('Tags');
-            break;
-
-            case 'source':
-                $result = __('Source');
-            break;
-
-            case 'id_extra':
-                $result = __('Extra Id');
-            break;
-
-            case 'owner_user':
-                $result = __('Owner');
-            break;
-
-            case 'ack_utimestamp':
-                $result = __('ACK Timestamp');
-            break;
-
-            case 'instructions':
-                $result = __('Instructions');
-            break;
-
-            case 'server_name':
-                $result = __('Server Name');
-            break;
-
-            case 'data':
-                $result = __('Data');
-            break;
-
-            case 'module_status':
-                $result = __('Module Status');
-            break;
-        }
-
-        $result_selected[$field_selected] = $result;
+        $result_selected[$field_selected] = events_get_column_name(
+            $field_selected
+        );
     }
 }
 
@@ -177,7 +93,8 @@ $fields_available = [];
 
 $fields_available['id_evento'] = __('Event Id');
 $fields_available['evento'] = __('Event Name');
-$fields_available['id_agente'] = __('Agent Name');
+$fields_available['id_agente'] = __('Agent ID');
+$fields_available['agent_name'] = __('Agent Name');
 $fields_available['id_usuario'] = __('User');
 $fields_available['id_grupo'] = __('Group');
 $fields_available['estado'] = __('Status');
@@ -196,20 +113,20 @@ $fields_available['instructions'] = __('Instructions');
 $fields_available['server_name'] = __('Server Name');
 $fields_available['data'] = __('Data');
 $fields_available['module_status'] = __('Module Status');
+$fields_available['mini_severity'] = __('Severity mini');
 
-// remove fields already selected
+
+// Remove fields already selected.
 foreach ($fields_available as $key => $available) {
-    foreach ($result_selected as $selected) {
-        if ($selected == $available) {
-            unset($fields_available[$key]);
-        }
+    if (isset($result_selected[$key])) {
+        unset($fields_available[$key]);
     }
 }
 
 $table->data[0][0] = '<b>'.__('Fields available').'</b>';
 $table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
-    'images/darrowright.png',
+    'images/darrowright_green.png',
     true,
     [
         'id'    => 'right',
@@ -217,7 +134,7 @@ $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
-    'images/darrowleft.png',
+    'images/darrowleft_green.png',
     true,
     [
         'id'    => 'left',

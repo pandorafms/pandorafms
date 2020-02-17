@@ -71,7 +71,7 @@ td.scwWeekNumberHead {
 }
 
 td.scwWeek {
-  color: #000 !important;
+  color: #000;
 }
 
 /* Today selector */
@@ -90,5 +90,5 @@ tfoot.scwFoot {
 }
 
 .scwFoot :hover {
-  color: #ffa500 !important;
+  color: #ffa500;
 }

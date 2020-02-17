@@ -1,0 +1,266 @@
+li#li-buttons-alert-list > div {
+  margin-left: 10px;
+}
+
+#rule-builder .rule-builder-actions li {
+  display: inline;
+  width: auto;
+}
+
+#rule-builder .rule-builder-actions li label {
+  width: 0;
+}
+
+div.white_box {
+  min-width: 800px;
+}
+
+#rules,
+ul.sample {
+  margin-bottom: 2em;
+  flex: 1 1 300px;
+}
+
+#rules.flex-row label {
+  flex: 1 1 70px;
+}
+
+#rules.flex-row div {
+  flex: 10 1 200px;
+}
+
+span.rule-title {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: normal;
+  font-size: 2em;
+  text-align: center;
+  display: block;
+  margin-bottom: 0.8em;
+  width: 100%;
+}
+
+li#li-filters_show_action_alerts > label,
+li#li-buttons-alert-list > label,
+li#li-filters-alert-list > label {
+  width: initial;
+}
+
+form#advanced_filters_alert ul li label,
+form#general_filters_alert ul li label {
+  width: 150px;
+}
+
+form#conditions_filters_alert ul li label:first-child {
+  width: 300px;
+}
+
+li#li-name-group input {
+  margin-right: 50px;
+}
+
+li#li-description textarea {
+  flex: 1 1 auto;
+}
+
+li#li-from-to-threshold > label:not(:first-child),
+li#li-time-from-to > label:not(:first-child) {
+  width: initial;
+  margin-right: 15px;
+}
+
+li#li-from-to-threshold > input,
+li#li-time-from-to > input {
+  margin-right: 15px;
+}
+
+form#advanced_filters_alert textarea {
+  flex: 1 1 auto;
+  height: 5em;
+  min-height: 5em;
+}
+
+form#advanced_filters_alert ul li label img {
+  margin-bottom: -2px;
+  margin-left: 5px;
+}
+
+/*DRAG DROP*/
+#threshold_manual,
+#threshold_default {
+  /*TODO: UGLY*/
+  width: initial !important;
+  margin-right: 10px;
+}
+
+img.handle-alerts {
+  width: 20px;
+  cursor: move;
+}
+
+.content {
+  width: 80%;
+  min-height: 4em;
+  padding-bottom: 1em;
+}
+ul.sample {
+  max-width: 50%;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+ul.sample li {
+  padding-bottom: 1em;
+}
+ul.sample li:last-child {
+  padding-bottom: 0;
+}
+div.target {
+  flex-grow: 1;
+  flex-basis: auto;
+  margin-left: 3em;
+  display: flex;
+  flex-direction: column;
+}
+div.target.flex {
+  display: block;
+  border: 2px dashed #ddd;
+  margin-left: 0em;
+  margin-top: 10px;
+  padding: 1em;
+}
+
+.fields,
+.operators,
+.variables,
+.modifiers,
+.nexos,
+.blocks {
+  cursor: move;
+}
+div#rules.show::after {
+  content: "Drop here";
+  position: relative;
+  top: 25%;
+  display: block;
+  left: 37%;
+  font-size: 3em;
+  color: #aaa;
+  overflow: hidden;
+  width: 6em;
+  background: #fff;
+  text-align: center;
+  z-index: 2;
+}
+div#rules.show {
+  box-shadow: 0 0 15px -5px #424242;
+  border: 1px solid #ddd;
+}
+.field {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 5px;
+  font-size: 1.2em;
+  padding-left: 1em;
+  padding-right: 1em;
+  margin: 0 0.5em 0.5em 0px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: 600;
+  background-color: #333;
+  word-break: break-all;
+}
+
+.field.opacityElements {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.log {
+  background-color: #638460;
+}
+.event {
+  background-color: #587cff;
+}
+
+.operator {
+  background-color: #908787;
+}
+
+.variable {
+  background-color: #82b92e;
+}
+
+.modifier {
+  background-color: #cba9d2;
+}
+
+.nexo {
+  background-color: #424242;
+}
+
+.rules div {
+  display: inline-block;
+}
+
+.inEdit {
+  background-color: #888;
+}
+
+.info-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.info-item {
+  width: 25%;
+}
+
+.info-days {
+  width: 65%;
+}
+
+.info-item table.info_table thead tr th {
+  text-align: center;
+}
+
+.info-item table.info_table tbody tr {
+  border-bottom: none;
+}
+
+.info-container table.no-class tbody tr td {
+  padding: 10px;
+}
+
+.mode_table_firing {
+  margin-top: 20px;
+}
+
+.mode_table_firing table.info_table thead tr th {
+  font-weight: bolder;
+}
+
+.mode_table_firing table.info_table thead tr th img {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+#rules select.click-list-elements {
+  border-radius: 0px;
+  background-color: #424242;
+  border: 0px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  font-weight: 600;
+}
+#rules select.click-list-elements.fields-elements-log {
+  background-color: #638460;
+}
+#rules select.click-list-elements.fields-elements-event {
+  background-color: #587cff;
+}
+
+#rules select.click-list-elements:focus {
+  outline-color: transparent;
+}

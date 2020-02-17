@@ -39,6 +39,9 @@ function reporting_xml_get_report($report, $filename, $return=false)
         }
     }
 
+    // Remove entities.
+    $report = io_safe_output($report);
+
     $xml = null;
     $xml = array2XML($report, 'report', $xml);
     $xml = preg_replace('/(<[^>]+>)(<[^>]+>)(<[^>]+>)/', "$1\n$2\n$3", $xml);

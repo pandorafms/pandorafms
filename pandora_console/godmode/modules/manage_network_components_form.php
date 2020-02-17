@@ -1,17 +1,32 @@
 <?php
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
 global $config;
 
 check_login();
@@ -26,12 +41,18 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 }
 
 $create_network_from_module = get_parameter('create_network_from_module');
-$create_network_from_snmp_browser = get_parameter('create_network_from_snmp_browser', 0);
+$create_network_from_snmp_browser = get_parameter(
+    'create_network_from_snmp_browser',
+    0
+);
 $pure = get_parameter('pure', 0);
 
 if ($create_network_from_module) {
     $id_agentmodule = get_parameter('create_module_from');
-    $data_module = db_get_row_filter('tagente_modulo', ['id_agente_modulo' => $id_agentmodule]);
+    $data_module = db_get_row_filter(
+        'tagente_modulo',
+        ['id_agente_modulo' => $id_agentmodule]
+    );
 
     $name = $data_module['nombre'];
     $description = $data_module['descripcion'];
@@ -139,16 +160,25 @@ if (isset($id)) {
         $each_ff = $component['each_ff'];
 
         if ($type >= 15 && $type <= 18) {
-            // New support for snmp v3
+            // New support for snmp v3.
             $snmp_version = $component['tcp_send'];
             $snmp3_auth_user = $component['plugin_user'];
             $snmp3_auth_pass = io_output_password($component['plugin_pass']);
             $snmp3_auth_method = $component['plugin_parameter'];
             $snmp3_privacy_method = $component['custom_string_1'];
-            $snmp3_privacy_pass = io_output_password($component['custom_string_2']);
+            $snmp3_privacy_pass = io_output_password(
+                $component['custom_string_2']
+            );
             $snmp3_security_level = $component['custom_string_3'];
+        } else if ($type >= 34 && $type <= 37) {
+            $command_text = $component['tcp_send'];
+            $command_credential_identifier = $component['custom_string_1'];
+            $command_os = $component['custom_string_2'];
         }
-    } else if (isset($new_component) && $new_component && !$create_network_from_snmp_browser) {
+    } else if (isset($new_component)
+        && $new_component
+        && !$create_network_from_snmp_browser
+    ) {
         $name = '';
         $snmp_oid = '';
         $description = '';
@@ -204,21 +234,13 @@ if (isset($id)) {
         $snmp3_privacy_pass = '';
         $snmp3_auth_method = '';
         $snmp3_security_level = '';
+
+        $command_text = '';
+        $command_os = 'inherited';
+        $command_credential_identifier = '';
     }
 }
 
-if ($create_network_from_snmp_browser) {
-}
-
-/*
- * $id_component_type has these values:
- * 6 - Module WMI
- * 4 - Plugin component
- * 2 - network component
- *
- * You can see this values in file godmode/modules/manage_network_components.php
- * in the last lines (in the call function "html_print_select").
- */
 $table = new stdClass();
 
 if ($id_component_type == 6) {
@@ -243,6 +265,10 @@ if ($id_component_type == 6) {
         4,
         5,
     ];
+    if (enterprise_installed()) {
+        $categories[] = 10;
+    }
+
     include $config['homedir'].'/godmode/modules/manage_network_components_form_common.php';
     include $config['homedir'].'/godmode/modules/manage_network_components_form_network.php';
 } else {
@@ -253,7 +279,7 @@ echo '<form name="component" method="post">';
 
 $table->width = '100%';
 $table->class = 'databox filters';
-// $table came from manage_network_components_form_common.php
+
 if (defined('METACONSOLE')) {
     if ($id) {
         $table->head[0] = __('Update Network Component');
@@ -295,61 +321,78 @@ ui_require_javascript_file('pandora_modules');
 function type_change () {
     // type 1-4 - Generic_xxxxxx
     if ((document.component.type.value > 0) && (document.component.type.value < 5)) {
-        
-        $("input[name=snmp_community]").css({backgroundColor: '#ddd !important'});
+        $("input[name=snmp_community]")
+            .css({backgroundColor: '#ddd '});
         $("input[name=snmp_community]").attr("disabled", true);
-        
-        $("input[name=tcp_rcv]").css({backgroundColor: '#ddd !important'});
+
+        $("input[name=tcp_rcv]").css({backgroundColor: '#ddd '});
         $("input[name=tcp_rcv]").attr("disabled", true);
-        
+
         <?php
         if ($id_component_type != MODULE_WMI) {
             ?>
-            $("input[name=snmp_oid]").css({backgroundColor: '#ddd !important'});
+            $("input[name=snmp_oid]")
+                .css({backgroundColor: '#ddd '});
             $("input[name=snmp_oid]").attr("disabled", true);
-            
-            $("input[name=tcp_send]").css({backgroundColor: '#ddd !important'});
+
+            $("input[name=tcp_send]")
+                .css({backgroundColor: '#ddd '});
             $("input[name=tcp_send]").attr("disabled", true);
-            
-            $("input[name=tcp_port]").css({backgroundColor: '#ddd !important'});
+
+            $("input[name=tcp_port]")
+                .css({backgroundColor: '#ddd '});
             $("input[name=tcp_port]").attr("disabled", true);
             <?php
         }
         ?>
-        
-        $("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd !important'});
+
+        $("input[name=snmp3_auth_user]")
+            .css({backgroundColor: '#ddd '});
         $("input[name=snmp3_auth_user]").attr("disabled", true);
-        
-        $("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd !important'});
+
+        $("input[name=snmp3_auth_pass]")
+            .css({backgroundColor: '#ddd '});
         $("input[name=snmp3_auth_pass]").attr("disabled", true);
-        
-        $("#snmp3_privacy_method").css({backgroundColor: '#ddd !important'});
+
+        $("#snmp3_privacy_method").css({backgroundColor: '#ddd '});
         $("#snmp3_privacy_method").attr("disabled", true);
-        
-        $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd !important'});
+
+        $("input[name=snmp3_privacy_pass]")
+            .css({backgroundColor: '#ddd '});
         $("input[name=snmp3_privacy_pass]").attr("disabled", true);
-        
-        $("#snmp3_auth_method").css({backgroundColor: '#ddd !important'});
+
+        $("#snmp3_auth_method").css({backgroundColor: '#ddd '});
         $("#snmp3_auth_method").attr("disabled", true);
-        
-        $("#snmp3_security_level").css({backgroundColor: '#ddd !important'});
+
+        $("#snmp3_security_level").css({backgroundColor: '#ddd '});
         $("#snmp3_security_level").attr("disabled", true);
+
+        $("#command_text").css({backgroundColor: '#ddd '});
+        $("#command_text").attr("disabled", true);
+
+        $("#command_credential_identifier")
+            .css({backgroundColor: '#ddd '});
+        $("#command_credential_identifier").attr("disabled", true);
+
+        $("#command_os").css({backgroundColor: '#ddd '});
+        $("#command_os").attr("disabled", true);
     }
     // type 15-18- SNMP
-    if ((document.component.type.value > 14) && (document.component.type.value < 19 )) { 
-        document.component.snmp_oid.style.background="#fff";
-        document.component.snmp_oid.style.disabled=false;
-        document.component.snmp_community.style.background="#fff";
-        document.component.snmp_community.disabled=false;
+    if ((document.component.type.value > 14) && (document.component.type.value < 19 )) {
         document.component.snmp_oid.style.background="#fff";
         document.component.snmp_oid.disabled=false;
-        document.component.tcp_send.style.background="#ddd !important";
+
+        document.getElementById('text-snmp_community').style.background="#fff";
+        document.getElementById('text-snmp_community').disabled=false;
+        document.component.snmp_oid.style.background="#fff";
+        document.component.snmp_oid.disabled=false;
+        document.component.tcp_send.style.background="#ddd ";
         document.component.tcp_send.disabled=true;
-        document.component.tcp_rcv.style.background="#ddd !important";
+        document.component.tcp_rcv.style.background="#ddd ";
         document.component.tcp_rcv.disabled=true;
         document.component.tcp_port.style.background="#fff";
         document.component.tcp_port.disabled=false;
-        
+
         document.component.snmp_version.style.background="#fff";
         document.component.snmp_version.disabled=false;
         document.component.snmp3_auth_user.style.background="#fff";
@@ -364,94 +407,161 @@ function type_change () {
         document.component.snmp3_auth_method.disabled=false;
         document.component.snmp3_security_level.style.background="#fff";
         document.component.snmp3_security_level.disabled=false;
-        
+
+        document.component.command_text.style.background="#ddd";
+        document.component.command_text.style.disabled=true;
+        document.component.command_credential_identifier.style.background="#ddd";
+        document.component.command_credential_identifier.disabled=true;
+        document.component.command_os.style.background="#ddd";
+        document.component.command_os.disabled=true;
+
         $("#snmp_version" ).trigger("change");
     }
+
+    if ((document.component.type.value >= 34) && (document.component.type.value <= 37 )) {
+        document.component.snmp_oid.style.background="#ddd";
+        document.component.snmp_oid.disabled=true;
+        document.getElementById('text-snmp_community').style.background="#ddd";
+        document.getElementById('text-snmp_community').disabled=true;
+        document.component.snmp_oid.style.background="#ddd";
+        document.component.snmp_oid.disabled=true;
+        document.component.snmp_version.style.background="#ddd";
+        document.component.snmp_version.disabled=true;
+
+        document.component.tcp_send.style.background="#ddd";
+        document.component.tcp_send.disabled=true;
+        document.component.tcp_rcv.style.background="#ddd";
+        document.component.tcp_rcv.disabled=true;
+        document.component.tcp_port.style.background="#fff";
+        document.component.tcp_port.disabled=false;
+
+        document.component.snmp3_auth_user.style.background="#ddd ";
+        document.component.snmp3_auth_user.disabled=true;
+        document.component.snmp3_auth_pass.background="#ddd ";
+        document.component.snmp3_auth_pass.disabled=true;
+        document.component.snmp3_privacy_method.style.background="#ddd ";
+        document.component.snmp3_privacy_method.disabled=true;
+        document.component.snmp3_privacy_pass.style.background="#ddd ";
+        document.component.snmp3_privacy_pass.disabled=true;
+        document.component.snmp3_auth_method.style.background="#ddd ";
+        document.component.snmp3_auth_method.disabled=true;
+        document.component.snmp3_security_level.style.background="#ddd ";
+        document.component.snmp3_security_level.disabled=true;
+
+        document.component.command_text.style.background="#fff";
+        document.component.command_text.style.disabled=false;
+        document.component.command_credential_identifier.style.background="#fff";
+        document.component.command_credential_identifier.disabled=false;
+        document.component.command_os.style.background="#fff";
+        document.component.command_os.disabled=false;
+    }
+
     // type 6-7 - ICMP
     if ((document.component.type.value == 6) || (document.component.type.value == 7)) {
-        document.component.snmp_oid.style.background="#ddd !important";
+        document.component.snmp_oid.style.background="#ddd ";
         document.component.snmp_oid.disabled=true;
-        document.component.snmp_community.style.background="#ddd !important";
-        document.component.snmp_community.disabled=true;
-        document.component.snmp_oid.style.background="#ddd !important";
+        document.getElementById('text-snmp_community').style.background="#ddd";
+        document.getElementById('text-snmp_community').disabled=true;
+        document.component.snmp_oid.style.background="#ddd ";
         document.component.snmp_oid.disabled=true;
-        document.component.tcp_send.style.background="#ddd !important";
+        document.component.tcp_send.style.background="#ddd ";
         document.component.tcp_send.disabled=true;
-        document.component.tcp_rcv.style.background="#ddd !important";
+        document.component.tcp_rcv.style.background="#ddd ";
         document.component.tcp_rcv.disabled=true;
-        document.component.tcp_port.style.background="#ddd !important";
+        document.component.tcp_port.style.background="#ddd ";
         document.component.tcp_port.disabled=true;
-        
-        document.component.snmp_version.style.background="#ddd !important";
+
+        document.component.snmp_version.style.background="#ddd ";
         document.component.snmp_version.disabled=true;
-        document.component.snmp3_auth_user.style.background="#ddd !important";
+        document.component.snmp3_auth_user.style.background="#ddd ";
         document.component.snmp3_auth_user.disabled=true;
-        document.component.snmp3_auth_pass.background="#ddd !important";
+        document.component.snmp3_auth_pass.background="#ddd ";
         document.component.snmp3_auth_pass.disabled=true;
-        document.component.snmp3_privacy_method.style.background="#ddd !important";
+        document.component.snmp3_privacy_method.style.background="#ddd ";
         document.component.snmp3_privacy_method.disabled=true;
-        document.component.snmp3_privacy_pass.style.background="#ddd !important";
+        document.component.snmp3_privacy_pass.style.background="#ddd ";
         document.component.snmp3_privacy_pass.disabled=true;
-        document.component.snmp3_auth_method.style.background="#ddd !important";
+        document.component.snmp3_auth_method.style.background="#ddd ";
         document.component.snmp3_auth_method.disabled=true;
-        document.component.snmp3_security_level.style.background="#ddd !important";
+        document.component.snmp3_security_level.style.background="#ddd ";
         document.component.snmp3_security_level.disabled=true;
+
+        document.component.command_text.style.background="#ddd";
+        document.component.command_text.style.disabled=true;
+        document.component.command_credential_identifier.style.background="#ddd";
+        document.component.command_credential_identifier.disabled=true;
+        document.component.command_os.style.background="#ddd";
+        document.component.command_os.disabled=true;
     }
     // type 8-11 - TCP
     if ((document.component.type.value > 7) && (document.component.type.value < 12)) {
-        document.component.snmp_oid.style.background="#ddd !important";
+        document.component.snmp_oid.style.background="#ddd ";
         document.component.snmp_oid.disabled=true;
-        document.component.snmp_community.style.background="#ddd !important";
-        document.component.snmp_community.disabled=true;
+        document.getElementById('text-snmp_community').style.background="#ddd ";
+        document.getElementById('text-snmp_community').disabled=true;
         document.component.tcp_send.style.background="#fff";
         document.component.tcp_send.disabled=false;
         document.component.tcp_rcv.style.background="#fff";
         document.component.tcp_rcv.disabled=false;
         document.component.tcp_port.style.background="#fff";
         document.component.tcp_port.disabled=false;
-        
-        document.component.snmp_version.style.background="#ddd !important";
+
+        document.component.snmp_version.style.background="#ddd ";
         document.component.snmp_version.disabled=true;
-        document.component.snmp3_auth_user.style.background="#ddd !important";
+        document.component.snmp3_auth_user.style.background="#ddd ";
         document.component.snmp3_auth_user.disabled=true;
-        document.component.snmp3_auth_pass.background="#ddd !important";
+        document.component.snmp3_auth_pass.background="#ddd ";
         document.component.snmp3_auth_pass.disabled=true;
-        document.component.snmp3_privacy_method.style.background="#ddd !important";
+        document.component.snmp3_privacy_method.style.background="#ddd ";
         document.component.snmp3_privacy_method.disabled=true;
-        document.component.snmp3_privacy_pass.style.background="#ddd !important";
+        document.component.snmp3_privacy_pass.style.background="#ddd ";
         document.component.snmp3_privacy_pass.disabled=true;
-        document.component.snmp3_auth_method.style.background="#ddd !important";
+        document.component.snmp3_auth_method.style.background="#ddd ";
         document.component.snmp3_auth_method.disabled=true;
-        document.component.snmp3_security_level.style.background="#ddd !important";
+        document.component.snmp3_security_level.style.background="#ddd ";
         document.component.snmp3_security_level.disabled=true;
+
+        document.component.command_text.style.background="#ddd";
+        document.component.command_text.style.disabled=true;
+        document.component.command_credential_identifier.style.background="#ddd";
+        document.component.command_credential_identifier.disabled=true;
+        document.component.command_os.style.background="#ddd";
+        document.component.command_os.disabled=true;
     }
     // type 12 - UDP
     if (document.component.type.value == 12) {
-        document.component.snmp_oid.style.background="#ddd !important";
+        document.component.snmp_oid.style.background="#ddd ";
         document.component.snmp_oid.disabled=true;
-        document.component.snmp_community.style.background="#ddd !important";
-        document.component.snmp_community.disabled=true;
+        document.getElementById('text-snmp_community').style.background="#ddd ";
+        document.getElementById('text-snmp_community').disabled=true;
         document.component.tcp_send.style.background="#fff";
         document.component.tcp_send.disabled=false;
         document.component.tcp_rcv.style.background="#fff";
         document.component.tcp_rcv.disabled=false;
         document.component.tcp_port.style.background="#fff";
         document.component.tcp_port.disabled=false;
-        
-        document.component.snmp_version.style.background="#ddd !important";
+
+        document.component.snmp_version.style.background="#ddd ";
         document.component.snmp_version.disabled=true;
-        document.component.snmp3_auth_user.style.background="#ddd !important";
+        document.component.snmp3_auth_user.style.background="#ddd ";
         document.component.snmp3_auth_user.disabled=true;
-        document.component.snmp3_auth_pass.background="#ddd !important";
+        document.component.snmp3_auth_pass.background="#ddd ";
         document.component.snmp3_auth_pass.disabled=true;
-        document.component.snmp3_privacy_method.style.background="#ddd !important";
+        document.component.snmp3_privacy_method.style.background="#ddd ";
         document.component.snmp3_privacy_method.disabled=true;
-        document.component.snmp3_privacy_pass.style.background="#ddd !important";
+        document.component.snmp3_privacy_pass.style.background="#ddd ";
         document.component.snmp3_privacy_pass.disabled=true;
-        document.component.snmp3_auth_method.style.background="#ddd !important";
+        document.component.snmp3_auth_method.style.background="#ddd ";
         document.component.snmp3_auth_method.disabled=true;
-        document.component.snmp3_security_level.style.background="#ddd !important";
+        document.component.snmp3_security_level.style.background="#ddd ";
         document.component.snmp3_security_level.disabled=true;
+
+        document.component.command_text.style.background="#ddd";
+        document.component.command_text.style.disabled=true;
+        document.component.command_credential_identifier.style.background="#ddd";
+        document.component.command_credential_identifier.disabled=true;
+        document.component.command_os.style.background="#ddd";
+        document.component.command_os.disabled=true;
     }
 }
 
@@ -470,7 +580,7 @@ $(document).ready (function () {
             }
         });
     });
-    
+
     $("#left").click (function () {
         jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
                 tag_name = $(value).html();
@@ -485,38 +595,38 @@ $(document).ready (function () {
                 }
         });
     });
-    
+
     $("#submit-crt").click(function () {
         $('#id_tag_selected option').map(function() {
             $(this).prop('selected', true);
         });
     });
-    
+
     $("#submit-upd").click(function () {
         $('#id_tag_selected option').map(function() {
             $(this).prop('selected', true);
         });
     });
-    
+
     if ($("#snmp_version").val() == "3") {
         $("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
         $("input[name=snmp3_auth_user]").removeAttr('disabled');
-        
+
         $("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});
         $("input[name=snmp3_auth_pass]").removeAttr('disabled');
-        
+
         $("#snmp3_privacy_method").css({backgroundColor: '#fff'});
         $("#snmp3_privacy_method").removeAttr('disabled');
-        
+
         $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});
         $("input[name=snmp3_privacy_pass]").removeAttr('disabled');
-        
+
         $("#snmp3_auth_method").css({backgroundColor: '#fff'});
         $("#snmp3_auth_method").removeAttr('disabled');
-        
+
         $("#snmp3_security_level").css({backgroundColor: '#fff'});
         $("#snmp3_security_level").removeAttr('disabled');
-        
+
         $("input[name=active_snmp_v3]").val(1);
         $("input[name=snmp_community]").css({backgroundColor: '#ddd'});
         $("input[name=snmp_community]").attr("disabled",true);
@@ -525,49 +635,47 @@ $(document).ready (function () {
         $("input[name=snmp3_auth_user]").val("");
         $("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});
         $("input[name=snmp3_auth_user]").attr("disabled", true);
-        
+
         $("input[name=snmp3_auth_pass]").val("");
         $("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});
         $("input[name=snmp3_auth_pass]").attr("disabled", true);
-        
+
         $("#snmp3_privacy_method").css({backgroundColor: '#ddd'});
         $("#snmp3_privacy_method").attr("disabled", true);
-        
+
         $("input[name=snmp3_privacy_pass]").val("");
         $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});
         $("input[name=snmp3_privacy_pass]").attr("disabled", true);
-        
+
         $("#snmp3_auth_method").css({backgroundColor: '#ddd'});
         $("#snmp3_auth_method").attr("disabled", true);
-        
+
         $("#snmp3_security_level").css({backgroundColor: '#ddd'});
         $("#snmp3_security_level").attr("disabled", true);
-        
+
         $("input[name=active_snmp_v3]").val(0);
-        $("input[name=snmp_community]").css({backgroundColor: '#fff'});
-        $("input[name=snmp_community]").removeAttr('disabled');
     }
-    
+
     $("#snmp_version").change(function () {
         if (this.value == "3") {
             $("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
             $("input[name=snmp3_auth_user]").removeAttr('disabled');
-            
+
             $("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});
             $("input[name=snmp3_auth_pass]").removeAttr('disabled');
-            
+
             $("#snmp3_privacy_method").css({backgroundColor: '#fff'});
             $("#snmp3_privacy_method").removeAttr('disabled');
-            
+
             $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});
             $("input[name=snmp3_privacy_pass]").removeAttr('disabled');
-            
+
             $("#snmp3_auth_method").css({backgroundColor: '#fff'});
             $("#snmp3_auth_method").removeAttr('disabled');
-            
+
             $("#snmp3_security_level").css({backgroundColor: '#fff'});
             $("#snmp3_security_level").removeAttr('disabled');
-            
+
             $("input[name=active_snmp_v3]").val(1);
             $("input[name=snmp_community]").css({backgroundColor: '#ddd'});
             $("input[name=snmp_community]").attr("disabled",true);
@@ -576,50 +684,50 @@ $(document).ready (function () {
             $("input[name=snmp3_auth_user]").val("");
             $("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});
             $("input[name=snmp3_auth_user]").attr("disabled", true);
-            
+
             $("input[name=snmp3_auth_pass]").val("");
             $("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});
             $("input[name=snmp3_auth_pass]").attr("disabled", true);
-            
+
             $("#snmp3_privacy_method").css({backgroundColor: '#ddd'});
             $("#snmp3_privacy_method").attr("disabled", true);
-            
+
             $("input[name=snmp3_privacy_pass]").val("");
             $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});
             $("input[name=snmp3_privacy_pass]").attr("disabled", true);
-            
+
             $("#snmp3_auth_method").css({backgroundColor: '#ddd'});
             $("#snmp3_auth_method").attr("disabled", true);
-            
+
             $("#snmp3_security_level").css({backgroundColor: '#ddd'});
             $("#snmp3_security_level").attr("disabled", true);
-            
+
             $("input[name=active_snmp_v3]").val(0);
             $("input[name=snmp_community]").css({backgroundColor: '#fff'});
             $("input[name=snmp_community]").removeAttr('disabled');
         }
     });
-    
+
     $("#type"). change(function () {
         if ($("#snmp_version").val() == "3") {
             $("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
             $("input[name=snmp3_auth_user]").removeAttr('disabled');
-            
+
             $("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});
             $("input[name=snmp3_auth_pass]").removeAttr('disabled');
-            
+
             $("#snmp3_privacy_method").css({backgroundColor: '#fff'});
             $("#snmp3_privacy_method").removeAttr('disabled');
-            
+
             $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});
             $("input[name=snmp3_privacy_pass]").removeAttr('disabled');
-            
+
             $("#snmp3_auth_method").css({backgroundColor: '#fff'});
             $("#snmp3_auth_method").removeAttr('disabled');
-            
+
             $("#snmp3_security_level").css({backgroundColor: '#fff'});
             $("#snmp3_security_level").removeAttr('disabled');
-            
+
             $("input[name=active_snmp_v3]").val(1);
             $("input[name=snmp_community]").css({backgroundColor: '#ddd'});
             $("input[name=snmp_community]").attr("disabled",true);
@@ -628,30 +736,28 @@ $(document).ready (function () {
             $("input[name=snmp3_auth_user]").val("");
             $("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});
             $("input[name=snmp3_auth_user]").attr("disabled", true);
-            
+
             $("input[name=snmp3_auth_pass]").val("");
             $("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});
             $("input[name=snmp3_auth_pass]").attr("disabled", true);
-            
+
             $("#snmp3_privacy_method").css({backgroundColor: '#ddd'});
             $("#snmp3_privacy_method").attr("disabled", true);
-            
+
             $("input[name=snmp3_privacy_pass]").val("");
             $("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});
             $("input[name=snmp3_privacy_pass]").attr("disabled", true);
-            
+
             $("#snmp3_auth_method").css({backgroundColor: '#ddd'});
             $("#snmp3_auth_method").attr("disabled", true);
-            
+
             $("#snmp3_security_level").css({backgroundColor: '#ddd'});
             $("#snmp3_security_level").attr("disabled", true);
-            
+
             $("input[name=active_snmp_v3]").val(0);
-            $("input[name=snmp_community]").css({backgroundColor: '#fff'});
-            $("input[name=snmp_community]").removeAttr('disabled');
         }
     });
-    
+
     $("#snmp_version" ).trigger("change");
 });
 

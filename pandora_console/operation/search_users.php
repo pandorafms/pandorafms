@@ -91,7 +91,7 @@ if (!$users || !$searchUsers) {
     }
 
     echo '<br />';
-    ui_pagination($totalUsers);
+    // ui_pagination($totalUsers);
     html_print_table($table);
     unset($table);
     ui_pagination($totalUsers);

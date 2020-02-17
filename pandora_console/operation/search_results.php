@@ -18,7 +18,7 @@ require_once $config['homedir'].'/include/functions_reporting.php';
 enterprise_include('operation/reporting/custom_reporting.php');
 
 $searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0, 'AR');
-$searchUsers = check_acl($config['id_user'], 0, 'UM');
+$searchUsers = $searchPolicies = check_acl($config['id_user'], 0, 'AR');
 $searchMaps = $searchReports = $searchGraphs = check_acl($config['id_user'], 0, 'IR');
 $searchMain = true;
 $searchHelps = true;
@@ -43,6 +43,7 @@ if ($config['search_category'] == 'all') {
 // INI SECURITY ACL
 if ((!$searchAgents && !$searchUsers && !$searchMaps)
     || (!$searchUsers && $searchTab == 'users')
+    || (!$searchPolicies && $searchTab == 'policies')
     || (!$searchAgents && ($searchTab == 'agents' || $searchTab == 'alerts'))
     || (!$searchGraphs && ($searchTab == 'graphs' || $searchTab == 'maps' || $searchTab == 'reports'))
 ) {
@@ -161,29 +162,29 @@ if ($searchModules) {
     $modules_tab = '';
 }
 
-if ($searchHelps) {
-    $helps_tab = [
-        'text'   => "<a href='index.php?search_category=helps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(
-            'images/help_w.png',
+if ($searchPolicies) {
+    $policies_tab = [
+        'text'   => "<a href='index.php?search_category=policies&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(
+            'images/policies.png',
             true,
-            ['title' => __('Helps')]
+            ['title' => __('Policies')]
         ).'</a>',
-        'active' => $searchTab == 'helps',
+        'active' => $searchTab == 'policies',
     ];
 } else {
-    $helps_tab = '';
+    $policies_tab = '';
 }
 
 $onheader = [
-    'main'    => $main_tab,
-    'agents'  => $agents_tab,
-    'modules' => $modules_tab,
-    'alerts'  => $alerts_tab,
-    'users'   => $users_tab,
-    'graphs'  => $graphs_tab,
-    'reports' => $reports_tab,
-    'maps'    => $maps_tab,
-    'helps'   => $helps_tab,
+    'main'     => $main_tab,
+    'agents'   => $agents_tab,
+    'modules'  => $modules_tab,
+    'alerts'   => $alerts_tab,
+    'users'    => $users_tab,
+    'graphs'   => $graphs_tab,
+    'reports'  => $reports_tab,
+    'maps'     => $maps_tab,
+    'policies' => $policies_tab,
 ];
 
 ui_print_page_header(
@@ -212,6 +213,7 @@ switch ($searchTab) {
         include_once 'search_maps.getdata.php';
         include_once 'search_modules.getdata.php';
         include_once 'search_helps.getdata.php';
+        include_once 'search_policies.getdata.php';
 
         include_once 'search_main.php';
     break;
@@ -251,8 +253,9 @@ switch ($searchTab) {
         include_once 'search_modules.php';
     break;
 
-    case 'helps':
-        include_once 'search_helps.getdata.php';
-        include_once 'search_helps.php';
+    case 'policies':
+        include_once 'search_policies.getdata.php';
+        include_once 'search_policies.php';
+
     break;
 }

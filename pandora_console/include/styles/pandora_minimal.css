@@ -129,7 +129,7 @@ td.scwWeekNumberHead {
 }
 
 td.scwWeek {
-  color: #000 !important;
+  color: #000;
 }
 
 /* Today selector */
@@ -148,7 +148,7 @@ tfoot.scwFoot {
 }
 
 .scwFoot :hover {
-  color: #ffa500 !important;
+  color: #ffa500;
 }
 
 input.next {
@@ -164,18 +164,18 @@ input.next {
   margin: 10px auto;
   padding: 5px;
   border: 1px solid #a8a8a8;
-  width: 85% !important;
-  -moz-box-shadow: 0px 2px 2px #010e1b !important;
-  -webkit-box-shadow: 0px 2px 2px #010e1b !important;
-  box-shadow: 0px 2px 2px #010e1b !important;
+  width: 85%;
+  -moz-box-shadow: 0px 2px 2px #010e1b;
+  -webkit-box-shadow: 0px 2px 2px #010e1b;
+  box-shadow: 0px 2px 2px #010e1b;
 }
 
 .info_box .title * {
-  font-size: 10pt !important;
+  font-size: 10pt;
   font-weight: bolder;
 }
 
 .info_box .icon {
-  width: 30px !important;
+  width: 30px;
   text-align: center;
 }

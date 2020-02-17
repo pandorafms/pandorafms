@@ -21,6 +21,7 @@ if (empty($config['homedir'])) {
 }
 
 require_once $config['homedir'].'/include/functions.php';
+require_once $config['homedir'].'/include/graphs/functions_flot.php';
 
 $ttl = get_parameter('ttl', 1);
 $graph_type = get_parameter('graph_type', '');
@@ -55,6 +56,9 @@ switch ($graph_type) {
 
         $out_of_lim_str = io_safe_output(get_parameter('out_of_lim_str', false));
         $out_of_lim_image = get_parameter('out_of_lim_image', false);
+
+        // Add relative path to avoid phar object injection.
+        $out_of_lim_image = '../graphs/'.$out_of_lim_image;
 
         $title = get_parameter('title');
 
@@ -164,42 +168,34 @@ function vbar_graph(
     $backgroundColor='white',
     $from_ux=false,
     $from_wux=false,
-    $tick_color='white'
+    $tick_color='white',
+    $base64=false
 ) {
     setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
     if (empty($chart_data)) {
-        return html_print_image(
-            $no_data_image,
-            true,
-            [
-                'width'  => $width,
-                'height' => $height,
-                'title'  => __('No data to show'),
-            ],
-            false,
-            true
-        );
+        return graph_nodata_image($width, $height, 'vbar');
     }
 
     if ($ttl == 2) {
         $params = [
-            'chart_data'      => $chart_data,
-            'width'           => $width,
-            'height'          => $height,
-            'color'           => $color,
-            'legend'          => $legend,
-            'long_index'      => $long_index,
-            'homeurl'         => $homeurl,
-            'unit'            => $unit,
-            'water_mark_url'  => $water_mark_url,
-            'homedir'         => $homedir,
-            'font'            => $font,
-            'font_size'       => $font_size,
-            'from_ux'         => $from_ux,
-            'from_wux'        => $from_wux,
-            'backgroundColor' => $backgroundColor,
-            'tick_color'      => $tick_color,
+            'chart_data'         => $chart_data,
+            'width'              => $width,
+            'height'             => $height,
+            'color'              => $color,
+            'legend'             => $legend,
+            'long_index'         => $long_index,
+            'homeurl'            => $homeurl,
+            'unit'               => $unit,
+            'water_mark_url'     => $water_mark_url,
+            'homedir'            => $homedir,
+            'font'               => $font,
+            'font_size'          => $font_size,
+            'from_ux'            => $from_ux,
+            'from_wux'           => $from_wux,
+            'backgroundColor'    => $backgroundColor,
+            'tick_color'         => $tick_color,
+            'return_img_base_64' => $base64,
         ];
         return generator_chart_to_pdf('vbar', $params);
     }
@@ -351,36 +347,28 @@ function hbar_graph(
     $backgroundColor='white',
     $tick_color='white',
     $val_min=null,
-    $val_max=null
+    $val_max=null,
+    $base64=false
 ) {
     setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
-    if (empty($chart_data)) {
-        return html_print_image(
-            $no_data_image,
-            true,
-            [
-                'width'  => $width,
-                'height' => $height,
-                'title'  => __('No data to show'),
-            ],
-            false,
-            true
-        );
+    if ($chart_data === false || empty($chart_data) === true) {
+        return graph_nodata_image($width, $height, 'hbar');
     }
 
     if ($ttl == 2) {
         $params = [
-            'chart_data'      => $chart_data,
-            'width'           => $width,
-            'height'          => $height,
-            'water_mark_url'  => $water_mark_url,
-            'font'            => $font,
-            'font_size'       => $font_size,
-            'backgroundColor' => $backgroundColor,
-            'tick_color'      => $tick_color,
-            'val_min'         => $val_min,
-            'val_max'         => $val_max,
+            'chart_data'         => $chart_data,
+            'width'              => $width,
+            'height'             => $height,
+            'water_mark_url'     => $water_mark_url,
+            'font'               => $font,
+            'font_size'          => $font_size,
+            'backgroundColor'    => $backgroundColor,
+            'tick_color'         => $tick_color,
+            'val_min'            => $val_min,
+            'val_max'            => $val_max,
+            'return_img_base_64' => $base64,
         ];
         return generator_chart_to_pdf('hbar', $params);
     }

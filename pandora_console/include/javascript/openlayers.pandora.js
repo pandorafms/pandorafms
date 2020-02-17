@@ -87,9 +87,9 @@ function js_refreshParentLines(layerName) {
       {
         strokeWidth: 2,
         fillOpacity: 0.2,
-        fillColor: "red",
+        fillColor: "black",
         strokeDashstyle: "dash",
-        strokeColor: "red"
+        strokeColor: "black"
       }
     );
 

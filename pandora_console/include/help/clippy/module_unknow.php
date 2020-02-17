@@ -32,7 +32,7 @@ function clippy_module_unknow()
     $return_tours['tours']['module_unknow']['steps'] = [];
     $return_tours['tours']['module_unknow']['steps'][] = [
         'init_step_context' => true,
-        'intro'             => '<table>'.'<tr>'.'<td class="context_help_title">'.__('You have unknown modules in this agent.').'</td>'.'</tr>'.'<tr>'.'<td class="context_help_body">'.__('Unknown modules are modules which receive data normally at least in one occassion, but at this time are not receving data. Please check our troubleshoot help page to help you determine why you have unknown modules.').ui_print_help_icon('context_module_unknow', true, '', 'images/help.png').'</td>'.'</tr>'.'</table>',
+        'intro'             => '<table>'.'<tr>'.'<td class="context_help_title">'.__('You have unknown modules in this agent.').'</td>'.'</tr>'.'<tr>'.'<td class="context_help_body">'.__('Unknown modules are modules which receive data normally at least in one occassion, but at this time are not receving data. Please check our troubleshoot help page to help you determine why you have unknown modules.').'</td>'.'</tr>'.'</table>',
     ];
     $return_tours['tours']['module_unknow']['conf'] = [];
     $return_tours['tours']['module_unknow']['conf']['autostart'] = false;

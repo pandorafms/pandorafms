@@ -123,7 +123,7 @@ class Tree
             return '';
         }
 
-        return " AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ";
+        return " AND tam.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchModule'])."%%' ";
     }
 
 
@@ -133,7 +133,7 @@ class Tree
             return '';
         }
 
-        return " AND LOWER(ta.alias) LIKE LOWER('%%".$this->filter['searchAgent']."%%')";
+        return " AND LOWER(ta.alias) LIKE LOWER('%%".str_replace('%', '%%', $this->filter['searchAgent'])."%%')";
     }
 
 
@@ -331,7 +331,7 @@ class Tree
             return '';
         }
 
-        return " AND tg.nombre LIKE '%%".$this->filter['searchGroup']."%%'";
+        return " AND tg.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchGroup'])."%%'";
     }
 
 
@@ -616,13 +616,14 @@ class Tree
             && $statusType !== STATUS_MODULE_NO_DATA_BALL
         ) {
             if (is_numeric($module['value'])) {
-                $statusTitle .= ' : '.format_for_graph($module['value']);
+                $divisor = get_data_multiplier($module['unit']);
+                $statusTitle .= ' : '.format_for_graph($module['value'], 1, '.', ',', $divisor);
             } else {
                 $statusTitle .= ' : '.substr(io_safe_output($module['value']), 0, 42);
             }
         }
 
-        $module['statusImageHTML'] = ui_print_status_image($statusType, $statusTitle, true);
+        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
 
         // HTML of the server type image
         $module['serverTypeHTML'] = servers_show_type($module['server_type']);
@@ -652,7 +653,6 @@ class Tree
                 'type'    => $graphType,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id'],
-                'label'   => base64_encode($module['name']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -1062,7 +1062,7 @@ class Tree
 
         $columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
-			tam.parent_module_id AS parent, tatm.id AS alerts';
+			tam.parent_module_id AS parent, tatm.id AS alerts, tam.unit';
 
         $sql = "SELECT $columns
 			FROM tagente_modulo tam
@@ -1084,7 +1084,8 @@ class Tree
 				$agent_status_filter
 				$module_search_filter
 				$tag_condition
-			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
+            GROUP BY tam.id_agente_modulo
+            ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
 
         return $sql;
     }

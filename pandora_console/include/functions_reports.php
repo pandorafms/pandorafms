@@ -679,23 +679,6 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Module Histogram graph'),
     ];
 
-    $types['TTRT'] = [
-        'optgroup' => __('ITIL'),
-        'name'     => __('TTRT'),
-    ];
-    $types['TTO'] = [
-        'optgroup' => __('ITIL'),
-        'name'     => __('TTO'),
-    ];
-    $types['MTBF'] = [
-        'optgroup' => __('ITIL'),
-        'name'     => __('MTBF'),
-    ];
-    $types['MTTR'] = [
-        'optgroup' => __('ITIL'),
-        'name'     => __('MTTR'),
-    ];
-
     $types['SLA'] = [
         'optgroup' => __('SLA'),
         'name'     => __('S.L.A.'),
@@ -768,22 +751,34 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Grouped'),
         'name'     => __('General'),
     ];
-    $types['group_report'] = [
-        'optgroup' => __('Grouped'),
-        'name'     => __('Group report'),
-    ];
+    if (is_metaconsole()) {
+        if ($template === false) {
+            $types['group_report'] = [
+                'optgroup' => __('Grouped'),
+                'name'     => __('Group report'),
+            ];
+        }
+    } else {
+        $types['group_report'] = [
+            'optgroup' => __('Grouped'),
+            'name'     => __('Group report'),
+        ];
+    }
+
     $types['exception'] = [
         'optgroup' => __('Grouped'),
         'name'     => __('Exception'),
     ];
     if ($config['metaconsole'] != 1) {
-        $types['agent_module'] = [
-            'optgroup' => __('Grouped'),
-            'name'     => __('Agents/Modules'),
-        ];
+        if (!$template) {
+            $types['agent_module'] = [
+                'optgroup' => __('Grouped'),
+                'name'     => __('Agents/Modules'),
+            ];
+        }
     }
 
-    // Only pandora managers have access to the whole database
+    // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [
             'optgroup' => __('Grouped'),
@@ -815,30 +810,30 @@ function reports_get_report_types($template=false, $not_editor=false)
 
     $types['alert_report_module'] = [
         'optgroup' => __('Alerts'),
-        'name'     => __('Alert report module'),
+        'name'     => __('Module alert report'),
     ];
     $types['alert_report_agent'] = [
         'optgroup' => __('Alerts'),
-        'name'     => __('Alert report agent'),
+        'name'     => __('Agent alert report '),
     ];
     if (!$template) {
         $types['alert_report_group'] = [
             'optgroup' => __('Alerts'),
-            'name'     => __('Alert report group'),
+            'name'     => __('Group alert report'),
         ];
     }
 
-    $types['event_report_agent'] = [
-        'optgroup' => __('Events'),
-        'name'     => __('Event report agent'),
-    ];
     $types['event_report_module'] = [
         'optgroup' => __('Events'),
-        'name'     => __('Event report module'),
+        'name'     => __('Module event report'),
+    ];
+    $types['event_report_agent'] = [
+        'optgroup' => __('Events'),
+        'name'     => __('Agent event report'),
     ];
     $types['event_report_group'] = [
         'optgroup' => __('Events'),
-        'name'     => __('Event report group'),
+        'name'     => __('Group event report'),
     ];
 
     if ($config['enterprise_installed']) {
@@ -877,17 +872,19 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    if ($config['enterprise_installed']) {
+    if ($config['enterprise_installed'] && $template === false) {
         $types['event_report_log'] = [
             'optgroup' => __('Log'),
             'name'     => __('Log report'),
         ];
     }
 
-    $types['nt_top_n'] = [
-        'optgroup' => __('Network traffic'),
-        'name'     => __('Network Traffic Top N'),
-    ];
+    if (!is_metaconsole()) {
+        $types['nt_top_n'] = [
+            'optgroup' => __('Network traffic'),
+            'name'     => __('Network Traffic Top N'),
+        ];
+    }
 
     return $types;
 }

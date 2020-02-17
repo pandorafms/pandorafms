@@ -24,6 +24,7 @@ Version 6.0
 use strict;
 use warnings;
 
+use Scalar::Util qw(looks_like_number);
 use POSIX qw(strftime floor);
 use Sys::Hostname;
 use File::Basename;
@@ -31,6 +32,18 @@ use File::Copy;
 use IO::Socket;
 use Sys::Syslog;
 use Time::Local;
+
+my $YAML = 0;
+# Dynamic load. Avoid unwanted behaviour.
+eval {
+	eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');
+};
+if ($@) {
+	$YAML = 0;
+	print STDERR $@;
+} else {
+	$YAML = 1;
+}
 
 # Agent XML data
 my $Xml;
@@ -41,8 +54,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.735';
-use constant AGENT_BUILD => '190619';
+use constant AGENT_VERSION => '7.0NG.743';
+use constant AGENT_BUILD => '200217';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -187,6 +200,7 @@ my %DefaultConf = (
 	'custom_id' => '',
 	'url_address' => '',
 	'standby' => 0,
+	'cmd_file' => undef,
 );
 my %Conf = %DefaultConf;
 
@@ -239,6 +253,15 @@ my $tentacle_pid = undef;
 # PID of udp_server
 my $udp_server_pid = undef;
 
+# BrokerFlag
+my $BrokerFlag = 0;
+
+# Global loop counter.
+my $LoopCounter = 0;
+
+# Define a max value for loopCounter to avoid overflow.
+use constant MAX_LOOP_COUNTER => 1000000000;
+
 ################################################################################
 # Print usage information and exit.
 ################################################################################
@@ -260,6 +283,91 @@ sub error ($) {
 }
 
 ################################################################################
+# Try to load extra libraries.c
+################################################################################
+sub load_libraries() {
+	# Dynamic load. Avoid unwanted behaviour.
+	eval {eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');};
+	if ($@) {
+		$YAML = 0;
+		print STDERR $@;
+	} else {
+		$YAML = 1;
+	}
+}
+
+################################################################################
+# Erase blank spaces before and after the string
+################################################################################
+sub trim {
+	my $string = shift;
+	if (empty($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
+}
+
+################################################################################
+# Mix hashses
+################################################################################
+sub merge_hashes {
+	my $_h1 = shift;
+	my $_h2 = shift;
+
+	if (ref($_h1) ne "HASH") {
+		return \%{$_h2} if (ref($_h2) eq "HASH");
+	}
+
+	if (ref($_h2) ne "HASH") {
+		return \%{$_h1} if (ref($_h1) eq "HASH");
+	}
+
+	if ((ref($_h1) ne "HASH") && (ref($_h2) ne "HASH")) {
+		return {};
+	}
+
+	my %ret = (%{$_h1}, %{$_h2});
+
+	return \%ret;
+}
+
+################################################################################
+# Empty
+################################################################################
+sub empty {
+	my $str = shift;
+
+	if (!(defined($str)) ){
+		return 1;
+	}
+
+	if(looks_like_number($str)){
+		return 0;
+	}
+
+	if (ref($str) eq "ARRAY") {
+		return (($#{$str}<0)?1:0);
+	}
+
+	if (ref($str) eq "HASH") {
+		my @tmp = keys %{$str};
+		return (($#tmp<0)?1:0);
+	}
+
+	if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+		return 1;
+	}
+	return 0;
+}
+
+################################################################################
 # Check a regular expression. Returns 1 if its valid, 0 otherwise.
 ################################################################################
 sub valid_regexp ($) {
@@ -273,6 +381,27 @@ sub valid_regexp ($) {
 	return 0 if ($@);
 	
 	return 1;
+}
+
+################################################################################
+# Reads a file and returns entire content or undef if error.
+################################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<", $path) ) {
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
 }
 
 ################################################################################
@@ -767,7 +896,21 @@ sub read_config (;$) {
 		next if ($line =~ /^module\s*\w*/);
 
 		#Configuration token
-		if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
+		if ($line =~ /^\s*(\S+)\s+(.*)$/) {
+			# Reserved keyword.
+			next if ($1 eq "commands");
+
+			if ($1 eq "cmd_file") {
+				# Commands
+				if (ref ($Conf{'commands'}) ne "HASH") {
+					$Conf{'commands'} = {};
+				}
+				# Initialize empty command hash.
+				$Conf{'commands'}->{$2} = {};
+				log_message('setup', "Command required $2");
+				next;
+			}
+
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
 			
@@ -914,6 +1057,7 @@ sub read_config (;$) {
 		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq '1');
 	}
+
 }
 
 #################################################################################
@@ -1148,14 +1292,14 @@ sub recv_file {
 		};
 
 		if ($@) {
-			log_message ('error', "Error retrieving file: File transfer command is not responding.");
+			log_message ('error', "Error retrieving file: '.$file.' File transfer command is not responding.");
 			exit 1;
 		}
 
 		# Get the errorlevel
 		my $rc = $? >> 8;
 		if ($rc != 0) {
-			log_message ('error', "Error retrieving file: $output");
+			log_message ('error', "Error retrieving file: '$file' $output");
 		}
 		exit $rc;
 	}
@@ -1223,6 +1367,10 @@ sub check_remote_config () {
 	@Modules = ();
 	%Collections = ();
 	%Conf = %DefaultConf;
+
+	# Supposed to discard current configuration but not.
+	# Cleanup old commands configuration.
+	$Conf{'commands'} = {};
 
 	# Reload the new configuration
 	read_config ();
@@ -1354,6 +1502,336 @@ sub check_collections () {
 }
 
 ################################################################################
+# Check for remote commands defined.
+################################################################################
+sub prepare_commands {
+	if ($YAML == 0) {
+		log_message(
+			'error',
+			'Cannot use commands without YAML dependency, please install it.'
+		);
+		return;
+	}
+
+	# Force configuration file read.
+	my @commands = read_config('cmd_file');
+
+	if (empty(\@commands)) {
+		$Conf{'commands'} = {};
+	} else {
+		foreach my $rcmd (@commands) {
+			$Conf{'commands'}->{trim($rcmd)} = {};
+		}
+	}
+
+	# Cleanup old commands. Not registered.
+	cleanup_old_commands();
+
+	foreach my $ref (keys %{$Conf{'commands'}}) {
+		my $file_content;
+		my $download = 0;
+		my $rcmd_file = $ConfDir.'/commands/'.$ref.'.rcmd';
+
+		# Check for local .rcmd.done files
+		if (-e $rcmd_file.'.done') {
+			# Ignore.
+			delete $Conf{'commands'}->{$ref};
+			next;
+		}
+
+		# Search for local .rcmd file
+		if (-e $rcmd_file) {
+			my $remote_md5_file = $Conf{'temporal'}.'/'.$ref.'.md5';
+
+			$file_content = read_file($rcmd_file);
+			if (recv_file($ref.'.md5', $remote_md5_file) != 0) {
+				# Remote file could not be retrieved, skip.
+				delete $Conf{'commands'}->{$ref};
+				next;
+			}
+
+			my $local_md5 = md5($file_content);
+			my $remote_md5 = md5(read_file($remote_md5_file));
+
+			if ($local_md5 ne $remote_md5) {
+				# Must be downloaded again.
+				$download = 1;
+			}
+		} else {
+			$download = 1;
+		}
+		
+		# Search for remote .rcmd file
+		if ($download == 1) {
+			# Download .rcmd file
+			if (recv_file($ref.'.rcmd') != 0) {
+				# Remote file could not be retrieved, skip.
+				delete $Conf{'commands'}->{$ref};
+				next;
+			} else {
+				# Success
+				move($Conf{'temporal'}.'/'.$ref.'.rcmd', $rcmd_file);
+			}
+		}
+		
+		# Parse and prepare in memory skel.
+		eval {
+			$Conf{'commands'}->{$ref} = YAML::Tiny->read($rcmd_file);
+		};
+		if ($@) {
+			# Failed.
+			log_message('error', 'Failed to decode command. ' . "\n".$@);
+			delete $Conf{'commands'}->{$ref};
+			next;
+		}
+
+	}
+}
+
+################################################################################
+# Command report.
+################################################################################
+sub report_command {
+	my ($ref, $err_level) = @_;
+
+  # Retrieve content from .stdout and .stderr
+	my $stdout_file = $Conf{'temporal'}.'/'.$ref.'.stdout';
+	my $stderr_file = $Conf{'temporal'}.'/'.$ref.'.stderr';
+
+	my $return;
+	eval {
+		$return = {
+			'error_level' => $err_level,
+			'stdout' => read_file($stdout_file),
+			'stderr' => read_file($stderr_file),
+		};
+
+		$return->{'name'} = $Conf{'commands'}->{$ref}->[0]->{'name'};
+	};
+	if ($@) {
+		log_message('error', 'Failed to report command output. ' . $@);
+	}
+
+	# Cleanup
+	unlink($stdout_file) if (-e $stdout_file);
+	unlink($stderr_file) if (-e $stderr_file);
+
+	# Mark command as done.
+	open (my $R_FILE, '> '.$ConfDir.'/commands/'.$ref.'.rcmd.done');
+	print $R_FILE $err_level;
+	close($R_FILE);
+
+
+	$return->{'stdout'} = '' unless defined ($return->{'stdout'});
+	$return->{'stderr'} = '' unless defined ($return->{'stderr'});
+
+	return $return;
+}
+
+################################################################################
+# Cleanup unreferenced rcmd and rcmd.done files.
+################################################################################
+sub cleanup_old_commands {
+	# Cleanup old .rcmd and .rcmd.done files.
+	my %registered = map { $_.'.rcmd' => 1 } keys %{$Conf{'commands'}};
+	if(opendir(my $dir, $ConfDir.'/commands/')) {
+		while (my $item = readdir($dir)) {
+
+			# Skip other files.
+			next if ($item !~ /\.rcmd$/);
+
+			# Clean .rcmd.done file if its command is not referenced in conf.
+			if (!defined($registered{$item})) {
+				if (-e $ConfDir.'/commands/'.$item) {
+					unlink($ConfDir.'/commands/'.$item);
+				}
+				if (-e $ConfDir.'/commands/'.$item.'.done') {
+					unlink($ConfDir.'/commands/'.$item.'.done');
+				}
+			}
+		}
+
+		# Close dir.
+		closedir($dir);
+	}
+
+}
+
+################################################################################
+# Executes a command using defined timeout.
+################################################################################
+sub execute_command_timeout {
+	my ($cmd, $timeout) = @_;
+
+	if (!defined($timeout)
+		|| !looks_like_number($timeout)
+		|| $timeout <= 0
+	) {
+		`$cmd`;
+		return $?>>8;
+	}
+
+	my $remaining_timeout = $timeout;
+
+	my $RET;
+	my $output;
+
+	my $pid = open ($RET, "-|");
+	if (!defined($pid)) {
+		# Failed to fork.
+		log_message('error', '[command] Failed to fork.');
+		return undef;
+	}
+	if ($pid == 0) {
+		# Child.
+		my $ret;
+		eval {
+			local $SIG{ALRM} = sub { die "timeout\n" };
+			alarm $timeout;
+			`$cmd`;
+			alarm 0;
+		};
+
+		my $result = ($?>>8);
+		print $result;
+
+		# Exit child.
+		# Child finishes.
+		exit;
+
+	} else {
+		# Parent waiting.
+		while( --$remaining_timeout > 0 ){
+			if (wait == -1) {
+				last;
+			}
+			# Wait child up to timeout seconds.
+			sleep 1;
+		}
+	}
+
+	if ($remaining_timeout > 0) {
+		# Retrieve output from child.
+		$output = do { local $/; <$RET> };
+		$output = $output>>8;
+	}
+	else {
+		# Timeout expired.
+		return 124;
+	}
+
+	close($RET);
+
+	return $output;
+}
+
+################################################################################
+# Executes a block of commands, returns error level, leaves output in 
+# redirection set by $std_files. E.g:
+# $std_files = ' >>  /tmp/stdout 2>> /tmp/stderr
+################################################################################
+sub execute_command_block {
+	my ($commands, $std_files, $timeout, $retry) = @_;
+
+	return 0 unless defined($commands);
+
+	my $retries = $retry;
+
+	$retries = 1 unless looks_like_number($retries) && $retries > 0;
+
+	my $err_level = 0;
+	$std_files = '' unless defined ($std_files);
+
+	if (ref($commands) ne "ARRAY") {
+		return 0 if $commands eq '';
+
+		do {
+			$err_level = execute_command_timeout(
+				"($commands) $std_files",
+				$timeout
+			);
+
+			# Do not retry if success.
+			last if looks_like_number($err_level) && $err_level == 0;
+		} while ((--$retries) > 0);
+
+	} else {
+		foreach my $comm (@{$commands}) {
+			next unless defined($comm);
+			$retries = $retry;
+			$retries = 1 unless looks_like_number($retries) && $retries > 0;
+
+			do {
+				$err_level = execute_command_timeout(
+					"($comm) $std_files",
+					$timeout
+				);
+
+				# Do not retry if success.
+				last if looks_like_number($err_level) && $err_level == 0;
+
+			} while ((--$retries) > 0);
+
+			# Do not continue evaluating block if failed.
+			last unless ($err_level == 0);
+		}
+	}
+
+	return $err_level;
+}
+
+################################################################################
+# Evalate given command.
+################################################################################
+sub evaluate_command {
+	my ($ref) = @_;
+
+	# Not found.
+	return unless defined $Conf{'commands'}->{$ref};
+
+	# Already completed.
+	return if (-e $ConfDir.'/commands/'.$ref.'.rcmd.done');
+
+	# [0] because how library works.
+	my $cmd = $Conf{'commands'}->{$ref}->[0];
+
+	my $std_files = ' >> '.$Conf{'temporal'}.'/'.$ref.'.stdout ';
+	$std_files .= ' 2>> '.$Conf{'temporal'}.'/'.$ref.'.stderr ';
+
+	# Check preconditions
+	my $err_level;
+	
+	$err_level = execute_command_block(
+		$cmd->{'preconditions'},
+		$std_files,
+		$cmd->{'timeout'}
+	);
+
+	# Precondition not satisfied.
+	return report_command($ref, $err_level) unless ($err_level == 0);
+
+	# Main run.
+	$err_level = execute_command_block(
+		$cmd->{'script'},
+		$std_files,
+		$cmd->{'timeout'}
+	);
+
+	# Script not success.
+	return report_command($ref, $err_level) unless ($err_level == 0);
+
+	# Check postconditions
+	$err_level = execute_command_block(
+		$cmd->{'postconditions'},
+		$std_files,
+		$cmd->{'timeout'}
+	);
+
+	# Return results.
+	return report_command($ref, $err_level);
+}
+
+################################################################################
 # Sleep function
 ################################################################################
 sub sleep_agent {
@@ -1385,6 +1863,7 @@ sub sleep_agent {
 		exit (0);
 	}
 
+	$LoopCounter = ($LoopCounter + 1) % MAX_LOOP_COUNTER;
 	return $iter_base_time;
 }
 
@@ -1699,6 +2178,14 @@ sub exec_module {
 	}
 	
 	# Check module interval
+	if ($BrokerFlag > 0) {
+		if ($LoopCounter == 0) {
+			$module->{'counter'} = $module->{'intensive_interval'};
+		} else {
+			$module->{'counter'} = (($LoopCounter -1 ) % $module->{'intensive_interval'});
+		}
+	}
+
 	if (++($module->{'counter'}) < $module->{'intensive_interval'}) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 		return;
@@ -2395,7 +2882,7 @@ sub cron_valid_date {
 	my $utime;
 	eval {
 		local $SIG{__DIE__} = sub {};
-		$utime = timelocal(0, $min, $hour, $mday, $month, $year);
+		$utime = strftime("%s", 0, $min, $hour, $mday, $month, $year);
 	};
 	if ($@) {
 		return 0;
@@ -2967,6 +3454,8 @@ my $iter_base_time = time();
 $LogFileIdx = -1;
 # Loop
 while (1) {
+	load_libraries();
+
 	if (-e $Conf{'logfile'} && (stat($Conf{'logfile'}))[7] > $Conf{'logsize'}) {
 		rotate_log();
 	}
@@ -2981,11 +3470,13 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
+	# Check scheduled commands
+	prepare_commands() unless ($Conf{'debug'} eq '1');
+
 	# Launch broker agents
 	@BrokerPid = ();
 	my @broker_agents = read_config ('broker_agent');
 	foreach my $broker_agent (@broker_agents) {
-		
 		# Create broker conf file if it does not exist
 		if (! -e "$ConfDir/${broker_agent}.conf") {
 			write_broker_conf($broker_agent);
@@ -2995,7 +3486,9 @@ while (1) {
 			
 		# Broker agent
 		if ($main_agent == 0) {
-		
+			# Mark broker flag.
+			$BrokerFlag = 1;
+
 			# Set the configuration file
 			$ConfFile = "${broker_agent}.conf";
 			
@@ -3106,6 +3599,24 @@ while (1) {
 		# Execute the module
 		} else {
 			exec_module($module, $Conf{'interval'});
+		}
+	}
+
+	if (ref ($Conf{'commands'}) eq "HASH") {
+		foreach my $command (keys %{$Conf{'commands'}}) {
+			my $result = evaluate_command($command);
+			if (ref($result) eq "HASH") {
+				# Process command result.
+				$Xml .= "<cmd_report>\n";
+				$Xml .= "  <cmd_response>\n";
+				$Xml .= "    <cmd_name><![CDATA[".$result->{'name'}."]]></cmd_name>\n";
+				$Xml .= "    <cmd_key><![CDATA[".$command."]]></cmd_key>\n";
+				$Xml .= "    <cmd_errorlevel><![CDATA[".$result->{'error_level'}."]]></cmd_errorlevel>\n";
+				$Xml .= "    <cmd_stdout><![CDATA[".$result->{'stdout'}."]]></cmd_stdout>\n";
+				$Xml .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_stderr>\n";
+				$Xml .= "  </cmd_response>\n";
+				$Xml .= "</cmd_report>\n";
+			}
 		}
 	}
 

@@ -28,6 +28,8 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
+ui_require_css_file('visual_maps');
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
@@ -41,6 +43,9 @@ $config['public_view'] = true;
 ob_start('ui_process_page_head');
 // Enterprise main.
 enterprise_include('index.php');
+
+$url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
+echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
 
 require_once 'include/functions_visual_map.php';
 
@@ -83,7 +88,7 @@ echo '<div id="visual-console-container"></div>';
 echo '<div id="vc-controls" style="z-index:300;">';
 
 echo '<div id="menu_tab">';
-echo '<ul class="mn">';
+echo '<ul class="mn white-box-content box-shadow flex-row">';
 
 // QR code.
 echo '<li class="nomn">';
@@ -134,7 +139,7 @@ if (!users_can_manage_group_all('AR')) {
 }
 
 $ignored_params['refr'] = '';
-ui_require_javascript_file('pandora_visual_console');
+ui_require_javascript_file('pandora_visual_console', 'include/javascript/', true);
 include_javascript_d3();
 visual_map_load_client_resources();
 
@@ -157,6 +162,10 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
+
+    var controls = document.getElementById('vc-controls');
+    autoHideElement(controls, 1000);
+
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 
@@ -214,6 +223,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
+
+    var controls = document.getElementById('vc-controls');
+    autoHideElement(controls, 1000);
 
     // Update the data fetch interval.
     $('select#vc-refr').change(function(event) {

@@ -142,41 +142,43 @@ switch ($status) {
     break;
 }
 
-
-$events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
-$count_events = 0;
-$events_wi_cdata_id = 'OR id_evento IN (';
-if ($events_wi_cdata === false) {
-    $events_wi_cdata = [];
-}
-
-foreach ($events_wi_cdata as $key => $value) {
-    $needle = base64_decode($value['custom_data']);
-    if (($needle != '') && ($search != '')) {
-        if (strpos(strtolower($needle), strtolower($search)) != false) {
-            $events_wi_cdata_id .= $value['id_evento'];
-            $count_events++;
-        }
-    }
-
-    if ($value !== end($events_wi_cdata) && $count_events > 0) {
-        $events_wi_cdata_id .= ',';
-        $events_wi_cdata_id = str_replace(',,', ',', $events_wi_cdata_id);
-    }
-}
-
-$events_wi_cdata_id .= ')';
-
-$events_wi_cdata_id = str_replace(',)', ')', $events_wi_cdata_id);
-
-if ($count_events == 0) {
-    $events_wi_cdata_id = '';
-}
-
+/*
+ * Never use things like this.
+ *
+ * $events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
+ * $count_events = 0;
+ * $events_wi_cdata_id = 'OR id_evento IN (';
+ * if ($events_wi_cdata === false) {
+ *     $events_wi_cdata = [];
+ * }
+ *
+ * foreach ($events_wi_cdata as $key => $value) {
+ *     $needle = base64_decode($value['custom_data']);
+ *     if (($needle != '') && ($search != '')) {
+ *         if (strpos(strtolower($needle), strtolower($search)) != false) {
+ *             $events_wi_cdata_id .= $value['id_evento'];
+ *             $count_events++;
+ *         }
+ *     }
+ *
+ *     if ($value !== end($events_wi_cdata) && $count_events > 0) {
+ *         $events_wi_cdata_id .= ',';
+ *         $events_wi_cdata_id = str_replace(',,', ',', $events_wi_cdata_id);
+ *     }
+ * }
+ *
+ * $events_wi_cdata_id .= ')';
+ *
+ * $events_wi_cdata_id = str_replace(',)', ')', $events_wi_cdata_id);
+ *
+ * if ($count_events == 0) {
+ *     $events_wi_cdata_id = '';
+ * }
+ */
 
 if ($search != '') {
     $filter_resume['free_search'] = $search;
-    $sql_post .= " AND (evento LIKE '%".$search."%' OR id_evento LIKE '%$search%' ".$events_wi_cdata_id.')';
+    $sql_post .= " AND (evento LIKE '%".$search."%' OR id_evento LIKE '%$search%' )";
 }
 
 if ($event_type != '') {
@@ -228,6 +230,13 @@ if ($user_comment != '') {
 if ($source != '') {
     $sql_post .= " AND source LIKE '%$source%'";
 }
+
+if (is_metaconsole()) {
+    if ($id_source_event != '') {
+        $sql_post .= " AND id_source_event LIKE '%$id_source_event%'";
+    }
+}
+
 
 // In metaconsole mode the agent search is performed by name.
 if ($meta) {

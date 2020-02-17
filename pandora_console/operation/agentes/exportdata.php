@@ -243,9 +243,10 @@ if (empty($export_btn) || $show_form) {
         false
     );
 
-    // Agent selector
+    // Agent selector.
     $table->data[1][0] = '<b>'.__('Source agent').'</b>';
 
+    $filter = [];
     if ($group > 0) {
         $filter['id_grupo'] = (array) $group;
     } else {

@@ -184,22 +184,10 @@ final class StaticGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
         if ($width === 0 || $height === 0) {
-            // TODO: This will be the default behaviour after we finish the
-            // builder. Don't delete this code.
-            // $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
-            // $data['width'] = $sizeImage[0];
-            // $data['height'] = $sizeImage[1];
-            // Default value. Will be replaced by a dynamic image size
-            // calculation after the phase 3.
-            $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
-            $imageHeight = $sizeImage[1];
-
-            if ($width === 0) {
-                $data['width'] = 70;
-            }
-
-            if ($height === 0) {
-                $data['height'] = ($imageHeight > 70) ? 70 : $imageHeight;
+            if (isset($imagePath) && $imagePath !== false) {
+                $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
+                $data['width'] = $sizeImage[0];
+                $data['height'] = $sizeImage[1];
             }
         }
 
@@ -250,6 +238,130 @@ final class StaticGraph extends Item
         }
 
         return $data;
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[StaticGraph]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        // Default values.
+        if (isset($values['imageSrc']) === false) {
+            $values['imageSrc'] = 'network';
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // List images VC.
+            if (isset($values['imageSrc']) === false) {
+                $values['imageSrc'] = 'appliance';
+            }
+
+            $baseUrl = ui_get_full_url('/', false, false, false);
+
+            $inputs[] = [
+                'label'     => __('Image'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => self::getListImagesVC(),
+                    'name'     => 'imageSrc',
+                    'selected' => $values['imageSrc'],
+                    'script'   => 'imageVCChange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
+                    'return'   => true,
+                ],
+            ];
+
+            $images = self::imagesElementsVC($values['imageSrc']);
+
+            $inputs[] = [
+                'block_id'      => 'image-item',
+                'class'         => 'flex-row flex-end w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    ['label' => $images],
+                ],
+            ];
+
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => true,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                    'nothing'        => '--',
+                    'nothing_value'  => 0,
+                ],
+            ];
+
+            // Show Last Value.
+            $fields = [
+                'default'  => __('Hide last value on boolean modules'),
+                'disabled' => __('Disabled'),
+                'enabled'  => __('Enabled'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Show Last Value'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'showLastValueTooltip',
+                    'selected' => $values['showLastValueTooltip'],
+                    'return'   => true,
+                ],
+            ];
+
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
+        return $inputs;
     }
 
 

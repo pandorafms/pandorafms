@@ -22,8 +22,8 @@ function include_javascript_d3($return=false)
         $is_include_javascript = true;
 
         if (is_metaconsole()) {
-            $output .= '<script type="text/javascript" src="'.'../../'.'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-            $output .= '<script type="text/javascript" src="'.'../../'.'include/graphs/pandora.d3.js" charset="utf-8"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'../../include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'../../include/graphs/pandora.d3.js" charset="utf-8"></script>';
         } else {
             $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
             $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/graphs/pandora.d3.js" charset="utf-8"></script>';
@@ -190,8 +190,8 @@ function d3_bullet_chart(
 			}
 			
 			.bullet { font: 7px sans-serif; }
-			.bullet .marker.s0 { stroke: #FC4444; stroke-width: 2px; }
-			.bullet .marker.s1 { stroke: #FAD403; stroke-width: 2px; }
+			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
+			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }
 			.bullet .tick line { stroke: #666; stroke-width: .5px; }
 			.bullet .range.s0 { fill: #ddd; }
@@ -462,7 +462,8 @@ function d3_donut_graph($id, $width, $height, $module_data, $resume_color)
     $recipient_name = 'donut_graph_'.$id;
     $recipient_name_to_js = '#donut_graph_'.$id;
 
-    $output = '<div id='.$recipient_name." style='overflow: hidden;'></div>";
+    $output = '';
+    $output .= '<div id='.$recipient_name." style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= '<style type="text/css">
 					path {
@@ -472,6 +473,7 @@ function d3_donut_graph($id, $width, $height, $module_data, $resume_color)
 				</style>';
 
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
+					$('".$recipient_name_to_js."').empty();
 					print_donut_graph('".$recipient_name_to_js."', ".$width.', '.$height.', '.$module_data.", '".$resume_color."');
 				</script>";
 
@@ -740,6 +742,8 @@ function print_donut_narrow_graph(
     array $data,
     $data_total
 ) {
+    global $config;
+
     if (empty($data)) {
         return graph_nodata_image($width, $height, 'pie');
     }
@@ -754,10 +758,31 @@ function print_donut_narrow_graph(
 
     $graph_id = uniqid('graph_');
 
+    // This is for "Style template" in visual styles.
+    switch ($config['style']) {
+        case 'pandora':
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+
+        case 'pandora_black':
+            $textColor = '#fff';
+            $strokeColor = '#222';
+        break;
+
+        default:
+            $textColor = '#000';
+            $strokeColor = '#fff';
+        break;
+    }
+
+    $textColor = json_encode($textColor);
+    $strokeColor = json_encode($strokeColor);
+
     $out = "<div id='$graph_id'></div>";
     $out .= include_javascript_d3(true);
     $out .= "<script type='text/javascript'>
-						donutNarrowGraph($colors, $width, $height, $data_total)
+						donutNarrowGraph($colors, $width, $height, $data_total, $textColor, $strokeColor)
 						.donutbody(d3.select($graph_id))
 						.data($data)
 						.render();	

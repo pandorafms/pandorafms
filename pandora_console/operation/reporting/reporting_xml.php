@@ -91,10 +91,6 @@ check_login();
 $id_report = (int) get_parameter('id');
 $filename = (string) get_parameter('filename');
 
-if (empty($filename)) {
-    $filename = 'pandorafms_report_'.date('Y-m-d_His');
-}
-
 $date_mode = get_parameter('date_mode', 'none');
 
 $period = null;
@@ -131,6 +127,10 @@ $report = reporting_make_reporting_data(
     $period,
     'static'
 );
+
+if (empty($filename)) {
+    $filename = $report['name'].'_report_'.date('Y-m-d_His');
+}
 
 reporting_xml_get_report($report, $filename);
 

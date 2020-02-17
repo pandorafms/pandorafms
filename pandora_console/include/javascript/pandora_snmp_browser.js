@@ -417,3 +417,50 @@ function checkSNMPVersion() {
     $("#snmp3_browser_options").css("display", "none");
   }
 }
+
+// Show the SNMP browser window
+function snmpBrowserWindow() {
+  // Keep elements in the form and the SNMP browser synced
+  $("#text-target_ip").val($("#text-ip_target").val());
+  $("#text-community").val($("#text-snmp_community").val());
+  $("#snmp_browser_version").val($("#snmp_version").val());
+  $("#text-snmp3_browser_auth_user").val($("#text-snmp3_auth_user").val());
+  $("#snmp3_browser_security_level").val($("#snmp3_security_level").val());
+  $("#snmp3_browser_auth_method").val($("#snmp3_auth_method").val());
+  $("#password-snmp3_browser_auth_pass").val(
+    $("#password-snmp3_auth_pass").val()
+  );
+  $("#snmp3_browser_privacy_method").val($("#snmp3_privacy_method").val());
+  $("#password-snmp3_browser_privacy_pass").val(
+    $("#password-snmp3_privacy_pass").val()
+  );
+
+  checkSNMPVersion();
+
+  $("#snmp_browser_container")
+    .show()
+    .dialog({
+      title: "",
+      resizable: true,
+      draggable: true,
+      modal: true,
+      overlay: {
+        opacity: 0.5,
+        background: "black"
+      },
+      width: 920,
+      height: 500
+    });
+}
+
+// Set the form OID to the value selected in the SNMP browser
+function setOID() {
+  if ($("#snmp_browser_version").val() == "3") {
+    $("#text-snmp_oid").val($("#table1-0-1").text());
+  } else {
+    $("#text-snmp_oid").val($("#snmp_selected_oid").text());
+  }
+
+  // Close the SNMP browser
+  $(".ui-dialog-titlebar-close").trigger("click");
+}

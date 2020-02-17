@@ -22,7 +22,7 @@ use constant {
 	STEP_TRACEROUTE => 3,
 	STEP_GATEWAY => 4,
 	STEP_STATISTICS => 1,
-	STEP_DATABASE_SCAN => 2,
+	STEP_APP_SCAN => 2,
 	STEP_CUSTOM_QUERIES => 3,
 	DISCOVERY_HOSTDEVICES => 0,
 	DISCOVERY_HOSTDEVICES_CUSTOM => 1,
@@ -31,10 +31,13 @@ use constant {
 	DISCOVERY_APP_MYSQL => 4,
 	DISCOVERY_APP_ORACLE => 5,
 	DISCOVERY_CLOUD_AWS_EC2 => 6,
-	DISCOVERY_CLOUD_AWS_RDS => 7
+	DISCOVERY_CLOUD_AWS_RDS => 7,
+	DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
+	DISCOVERY_DEPLOY_AGENTS => 9,
+	DISCOVERY_APP_SAP => 10,
 };
 
-# /dev/null
+# $DEVNULL
 my $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
 
 # Some useful OIDs.
@@ -850,7 +853,7 @@ sub get_routes($) {
 	$self->{'routes'} = [];
 
 	# Parse route's output.
-	my @output = `route -n 2>/dev/null`;
+	my @output = `route -n 2>$DEVNULL`;
 	foreach my $line (@output) {
 		chomp($line);
 		if ($line =~ /^0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+).*/) {
@@ -1218,7 +1221,7 @@ sub snmp_responds_v3($$) {
 sub local_arp($) {
 	my ($self) = @_;
 
-	my @output = `arp -an 2>/dev/null`;
+	my @output = `arp -an 2>$DEVNULL`;
 	foreach my $line (@output) {
 		next unless ($line =~ m/\((\S+)\) at ([0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+)/);
 		$self->add_mac(parse_mac($2), $1);
@@ -1284,7 +1287,7 @@ sub ping ($$$) {
 		for (my $i = 0; $i < $retries; $i++) {
 
 			# Note: There is no timeout option.
-			`$ping_command -s -n $host 56 $packets >/dev/null 2>&1`;
+			`$ping_command -s -n $host 56 $packets >$DEVNULL 2>&1`;
 			return 1 if ($? == 0);
 		}
 
@@ -1297,7 +1300,7 @@ sub ping ($$$) {
 		for (my $i = 0; $i < $retries; $i++) {
 
 			# Note: There is no timeout option for ping6.
-			`$ping_command -q -n -c $packets $host >/dev/null 2>&1`;
+			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
 			return 1 if ($? == 0);
 		}
 
@@ -1310,7 +1313,7 @@ sub ping ($$$) {
 		for (my $i = 0; $i < $retries; $i++) {
 
 			# Note: There is no timeout option for ping6.
-			`$ping_command -q -n -c $packets $host >/dev/null 2>&1`;
+			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
 			if ($? == 0) {
 				return 1;
 			}
@@ -1322,7 +1325,7 @@ sub ping ($$$) {
 	# Assume Linux by default.
 	my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping";
 	for (my $i = 0; $i < $retries; $i++) {
-		`$ping_command -q -W $timeout -n -c $packets $host >/dev/null 2>&1`;
+		`$ping_command -q -W $timeout -n -c $packets $host >$DEVNULL 2>&1`;
 		return 1 if ($? == 0);
 	}
 
@@ -1438,12 +1441,13 @@ sub cloud_scan($) {
 
 	my $type = '';
 
-	if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
-	|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+	if (   $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
+		|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
 		$type = 'Aws';
 	} else {
+
 		# Unrecognized task type.
-		call('message', 'Unrecognized task type', 1);
+		$self->call('message', 'Unrecognized task type', 1);
 		$self->call('update_progress', -1);
 		return;
 	}
@@ -1463,9 +1467,11 @@ sub cloud_scan($) {
 	);
 
 	if (!$cloudObj) {
+
 		# Failed to initialize, check Cloud credentials or anything.
-		call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
+		$self->call('message', 'Unable to initialize PandoraFMS::Recon::Cloud::'.$type, 3);
 	} else {
+
 		# Let Cloud object manage scan.
 		$cloudObj->scan();
 	}
@@ -1478,6 +1484,85 @@ sub cloud_scan($) {
 
 
 ##########################################################################
+# Performs a database scan.
+##########################################################################
+sub database_scan($$$) {
+	my ($self, $type, $obj, $global_percent, $targets) = @_;
+
+	my @data;
+	my @modules;
+
+	my $dbObjCfg = $obj->get_config();
+
+	$self->{'summary'}->{'discovered'} += 1;
+	$self->{'summary'}->{'alive'} += 1;
+
+	push @modules,
+	  {
+		name => $type . ' connection',
+		type => 'generic_proc',
+		data => 1,
+		description => $type . ' availability'
+	  };
+
+	# Analyze.
+	$self->{'step'} = STEP_STATISTICS;
+	$self->{'c_network_percent'} = 30;
+	$self->call('update_progress', $global_percent + (30 / (scalar @$targets)));
+	$self->{'c_network_name'} = $obj->get_host();
+
+	# Retrieve connection statistics.
+	# Retrieve uptime statistics
+	# Retrieve query stats
+	# Retrieve connections
+	# Retrieve innodb
+	# Retrieve cache
+	$self->{'c_network_percent'} = 50;
+	$self->call('update_progress', $global_percent + (50 / (scalar @$targets)));
+	push @modules, $obj->get_statistics();
+
+	# Custom queries.
+	$self->{'step'} = STEP_CUSTOM_QUERIES;
+	$self->{'c_network_percent'} = 80;
+	$self->call('update_progress', $global_percent + (80 / (scalar @$targets)));
+	push @modules, $obj->execute_custom_queries();
+
+	if (defined($dbObjCfg->{'scan_databases'})
+		&& "$dbObjCfg->{'scan_databases'}" eq "1") {
+
+		# Skip database scan in Oracle tasks
+		next if defined($self->{'type'}) && $self->{'type'} == DISCOVERY_APP_ORACLE;
+
+		my $__data = $obj->scan_databases();
+
+		if (ref($__data) eq "ARRAY") {
+			if (defined($dbObjCfg->{'agent_per_database'})
+				&& $dbObjCfg->{'agent_per_database'} == 1) {
+
+				# Agent per database detected.
+				push @data, @{$__data};
+
+			} else {
+
+				# Merge modules into engine agent.
+				my @_modules = map {
+					map { $_ }
+					  @{$_->{'module_data'}}
+				} @{$__data};
+
+				push @modules, @_modules;
+			}
+		}
+	}
+
+	return {
+		'modules' => \@modules,
+		'data' => \@data
+	};
+}
+
+
+##########################################################################
 # Perform an Application scan.
 ##########################################################################
 sub app_scan($) {
@@ -1485,14 +1570,18 @@ sub app_scan($) {
 	my ($progress, $step);
 
 	my $type = '';
+	my $db_scan = 0;
 
+	# APP object initialization.
 	if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL) {
 		$type = 'MySQL';
 	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
 		$type = 'Oracle';
+	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
+		$type = 'SAP';
 	} else {
 		# Unrecognized task type.
-		call('message', 'Unrecognized task type', 1);
+		$self->call('message', 'Unrecognized task type', 1);
 		$self->call('update_progress', -1);
 		return;
 	}
@@ -1503,15 +1592,22 @@ sub app_scan($) {
 	my $global_percent = 0;
 	my $i = 0;
 	foreach my $target (@targets) {
+		if (   !defined($target)
+			|| $target eq ''
+			|| $target =~ /^#/) {
+			# Ignore empty target or commented one.
+			next;
+		}
+
 		my @data;
 		my @modules;
 
-		$self->{'step'} = STEP_DATABASE_SCAN;
+		$self->{'step'} = STEP_APP_SCAN;
 		$self->{'c_network_name'} = $target;
 		$self->{'c_network_percent'} = 0;
 
 		# Send message
-		call('message', 'Checking target ' . $target, 10);
+		$self->call('message', 'Checking target ' . $target, 10);
 
 		# Force target acquirement.
 		$self->{'task_data'}->{'dbhost'} = $target;
@@ -1522,103 +1618,91 @@ sub app_scan($) {
 		$self->call('update_progress', $global_percent + (10 / (scalar @targets)));
 
 		# Connect to target.
-		my $dbObj = PandoraFMS::Recon::Util::enterprise_new(
+		my $obj = PandoraFMS::Recon::Util::enterprise_new(
 			'PandoraFMS::Recon::Applications::'.$type,
-			$self->{'task_data'}
+			{
+				%{$self->{'task_data'}},
+				'target' => $target,
+				'pa_config' => $self->{'pa_config'},
+				'parent' => $self
+			},
 		);
 
-		if (!$dbObj->is_connected()) {
-			call('message', 'Cannot connect to target ' . $target, 3);
-			$global_percent += $global_step;
-			$self->{'c_network_percent'} = 90;
-			# Update progress
-			$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
-			$self->{'summary'}->{'not_alive'} += 1;
-			push @modules, {
-				name => $type . ' connection',
-				type => 'generic_proc',
-				data => 0,
-				description => $type . ' availability'
-			};
+		if (defined($obj)) {
 
-		} else {
-			my $dbObjCfg = $dbObj->get_config();
+			# Verify if object is connected. If cannot connect to current target
+			# return with module.
+			if (!$obj->is_connected()) {
+				$self->call('message', 'Cannot connect to target ' . $target, 3);
+				$global_percent += $global_step;
+				$self->{'c_network_percent'} = 90;
 
-			$self->{'summary'}->{'discovered'} += 1;
-			$self->{'summary'}->{'alive'} += 1;
+				# Update progress
+				$self->call('update_progress', $global_percent + (90 / (scalar @targets)));
+				$self->{'summary'}->{'not_alive'} += 1;
+				push @modules, {
+					name => $type . ' connection',
+					type => 'generic_proc',
+					data => 0,
+					description => $type . ' availability'
+				};
 
-			push @modules, {
-				name => $type . ' connection',
-				type => 'generic_proc',
-				data => 1,
-				description => $type . ' availability'
-			};
+			} else {
+				#
+				# $results is always a hash with:
+				#   @modules => 'global' modules.
+				#   @data => {
+				#	    'agent_data' => {}
+				#     'module_data' => []
+				#   }
+				my $results;
 
-			# Analyze.
-			$self->{'step'} = STEP_STATISTICS;
-			$self->{'c_network_percent'} = 30;
-			$self->call('update_progress', $global_percent + (30 / (scalar @targets)));
-			$self->{'c_network_name'} = $dbObj->get_host();
+				# Scan connected obj.
+				if (   $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
+					|| $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
 
-			# Retrieve connection statistics.
-			# Retrieve uptime statistics
-			# Retrieve query stats
-			# Retrieve connections
-			# Retrieve innodb
-			# Retrieve cache
-			$self->{'c_network_percent'} = 50;
-			$self->call('update_progress', $global_percent + (50 / (scalar @targets)));
-			push @modules, $dbObj->get_statistics();
+					# Database.
+					$results = $self->database_scan($type, $obj, $global_percent, \@targets);
 
-			# Custom queries.
-			$self->{'step'} = STEP_CUSTOM_QUERIES;
-			$self->{'c_network_percent'} = 80;
-			$self->call('update_progress', $global_percent + (80 / (scalar @targets)));
-			push @modules, $dbObj->execute_custom_queries();
+				} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
 
-			if (defined($dbObjCfg->{'scan_databases'})
-			&& $dbObjCfg->{'scan_databases'} == 1) {
-				# Skip database scan in Oracle tasks
-				next if $self->{'type'} == DISCOVERY_APP_ORACLE;
+					# SAP scan
+					$results = $obj->scan();
 
-				my $__data = $dbObj->scan_databases();
+				}
 
-				if (ref($__data) eq "ARRAY") {
-					if (defined($dbObjCfg->{'agent_per_database'})
-					&& $dbObjCfg->{'agent_per_database'} == 1) {
-						# Agent per database detected.
-						push @data, @{$__data};
-					} else {
-						# Merge modules into engine agent.
-						my @_modules = map { 
-							map { $_ } @{$_->{'module_data'}}
-						} @{$__data};
+				# Add results.
+				if (ref($results) eq 'HASH') {
+					if (defined($results->{'modules'})) {
+						push @modules, @{$results->{'modules'}};
+					}
 
-						push @modules, @_modules;
+					if (defined($results->{'data'})) {
+						push @data, @{$results->{'data'}};
 					}
 				}
 			}
+
+			# Put engine agent at the beginning of the list.
+			my $version = $obj->get_version();
+			unshift @data, {
+				'agent_data' => {
+					'agent_name' => $obj->get_agent_name(),
+					'os' => $type,
+					'os_version' => (defined($version) ? $version : 'Discovery'),
+					'interval' => $self->{'task_data'}->{'interval_sweep'},
+					'id_group' => $self->{'task_data'}->{'id_group'},
+					'address' => $obj->get_host(),
+					'description' => '',
+				},
+				'module_data' => \@modules,
+			};
+
+			$self->call('create_agents', \@data);
+
+			# Destroy item.
+			undef($obj);
 		}
-
-		# Put engine agent at the beginning of the list.
-		my $version = $dbObj->get_version();
-		unshift @data,{
-			'agent_data' => {
-				'agent_name' => $dbObj->get_agent_name(),
-				'os' => $type,
-				'os_version' => (defined($version) ? $version : 'Discovery'),
-				'interval' => $self->{'task_data'}->{'interval_sweep'},
-				'id_group' => $self->{'task_data'}->{'id_group'},
-				'address' => $dbObj->get_host(),
-				'description' => '',
-			},
-			'module_data' => \@modules,
-		};
-
-		$self->call('create_agents', \@data);
-
-		# Destroy item.
-		undef($dbObj);
 
 		$global_percent += $global_step;
 		$self->{'c_network_percent'} = 100;
@@ -1632,31 +1716,75 @@ sub app_scan($) {
 
 }
 
+
+##########################################################################
+# Perform a deployment scan.
+##########################################################################
+sub deploy_scan($) {
+	my $self = shift;
+	my ($progress, $step);
+
+	my $type = '';
+
+	# Initialize deployer object.
+	my $deployer = PandoraFMS::Recon::Util::enterprise_new(
+		'PandoraFMS::Recon::Deployer',
+		[
+			task_data => $self->{'task_data'},
+			parent => $self
+		]
+
+	);
+
+	if (!$deployer) {
+
+		# Failed to initialize, check Cloud credentials or anything.
+		$self->call('message', 'Unable to initialize PandoraFMS::Recon::Deployer', 3);
+	} else {
+
+		# Let deployer object manage scan.
+		$deployer->scan();
+	}
+
+	# Update progress.
+	# Done!
+	$self->{'step'} = '';
+	$self->call('update_progress', -1);
+}
+
+
 ##########################################################################
 # Perform a network scan.
 ##########################################################################
 sub scan($) {
 	my ($self) = @_;
-	my ($progress, $step);
+	my ($progress, $step) = 1, 0;
 
 	# 1%
 	$self->call('update_progress', 1);
 
 	if (defined($self->{'task_data'})) {
-		if ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
-		||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
-			# Database scan.
+		if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
+			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
+			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
+			# Application scan.
+			$self->call('message', "Scanning application ...", 6);
 			return $self->app_scan();
 		}
 
 		if ($self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
+
 			# Cloud scan.
 			return $self->cloud_scan();
+		}
+
+		if($self->{'task_data'}->{'type'} == DISCOVERY_DEPLOY_AGENTS) {
+			return $self->deploy_scan();
 		}
 	}
 
 	# Find devices.
-	$self->call('message', "[1/5] Scanning the network...", 3);
+	$self->call('message', "[1/4] Scanning the network...", 3);
 	$self->{'step'} = STEP_SCANNING;
 	$self->call('update_progress', $progress);
 	$self->scan_subnet();
@@ -1672,7 +1800,7 @@ sub scan($) {
 		$self->call('delete_connections');
 
 		# Connectivity from address forwarding tables.
-		$self->call('message', "[1/4] Finding address forwarding table connectivity...", 3);
+		$self->call('message', "[2/4] Finding address forwarding table connectivity...", 3);
 		$self->{'step'} = STEP_AFT;
 		($progress, $step) = (50, 20.0 / scalar(@hosts)); # From 50% to 70%.
 		for (my $i = 0; defined($hosts[$i]); $i++) {
@@ -1790,7 +1918,7 @@ sub snmp_get_command {
 	my ($self, $device, $oid, $community, $vlan) = @_;
 	$vlan = defined($vlan) ? "\@" . $vlan : '';
 
-	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
+	my $command = "snmpwalk -M$DEVNULL -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
 	if ($self->{'snmp_version'} eq "3") {
 		if ($self->{'community'}) { # Context
 			$command .= " -N $self->{'community'} ";
@@ -1806,7 +1934,7 @@ sub snmp_get_command {
 		$command .= " -c$community$vlan ";
 	}
 
-	return "$command $device $oid 2>/dev/null";
+	return "$command $device $oid 2>$DEVNULL";
 
 }
 

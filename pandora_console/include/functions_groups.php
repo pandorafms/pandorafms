@@ -298,6 +298,51 @@ function groups_get_childrens_ids($parent, $groups=null)
 
 
 /**
+ * Return a array of id_group of children of given parent.
+ *
+ * @param integer $parent          The id_grupo parent to search its children.
+ * @param array   $ignorePropagate Ignore propagate.
+ */
+function groups_get_children($parent, $ignorePropagate=false)
+{
+    static $groups;
+
+    if (empty($groups)) {
+        $aux_groups = [];
+        $groups = db_get_all_rows_in_table('tgrupo');
+        foreach ($groups as $key => $value) {
+            $aux_groups[$value['id_grupo']] = $value;
+        }
+
+        $groups = $aux_groups;
+    }
+
+    $return = [];
+    foreach ($groups as $key => $g) {
+        if ($g['id_grupo'] == 0) {
+            continue;
+        }
+
+        if ($ignorePropagate || $parent == 0 || $groups[$parent]['propagate']) {
+            if ($g['parent'] == $parent) {
+                $return += [$g['id_grupo'] => $g];
+                if ($g['propagate'] || $ignorePropagate) {
+                    $return += groups_get_children(
+                        $g['id_grupo'],
+                        $ignorePropagate
+                    );
+                }
+            }
+        }
+    }
+
+    return $return;
+}
+
+
+/**
+ * XXX: This is not working. Expects 'propagate' on CHILD not on PARENT!!!
+ *
  * Return a array of id_group of childrens (to branches down)
  *
  * @param integer $parent The id_group parent to search the childrens.
@@ -505,7 +550,7 @@ function groups_get_id_recursive($id_parent, $all=false)
     // Check propagate
     $propagate = db_get_value_filter('propagate', 'tgrupo', ['id_grupo' => $id_parent]);
 
-    if (($propagate != 1) || $all) {
+    if (($propagate == 1) || $all) {
         $children = db_get_all_rows_filter('tgrupo', ['parent' => $id_parent, 'disabled' => 0], ['id_grupo']);
 
         if ($children === false) {

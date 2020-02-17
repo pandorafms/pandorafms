@@ -297,7 +297,14 @@ if (defined('METACONSOLE')) {
     $form_filter = "<form method='post'>";
     $form_filter .= html_print_table($table, true);
     $form_filter .= '</form>';
-    ui_toggle($form_filter, __('Users control filter'), __('Toggle filter(s)'), !$search);
+    ui_toggle(
+        $form_filter,
+        __('Users control filter'),
+        __('Toggle filter(s)'),
+        '',
+        '',
+        !$search
+    );
 }
 
 // Urls to sort the table.
@@ -411,9 +418,11 @@ if ($own_info['is_admin']) {
 else {
     foreach ($info1 as $key => $usr) {
         $u = get_user_info($key);
-        $g = users_get_groups($key, 'AR', $u['is_admin']);
+        $g = users_get_groups($key, false, $u['is_admin']);
         $result = array_intersect($g, $own_groups);
-        if (!$usr['is_admin'] && !empty($result)) {
+
+        // Show users without profile too.
+        if (!$usr['is_admin'] && !empty($result) || (!$usr['is_admin'] && db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $usr['id_user']) === false)) {
             $info[$key] = $usr;
         }
 
@@ -495,8 +504,8 @@ foreach ($info as $user_id => $user_info) {
             foreach ($result as $row) {
                 $data[4] .= "<div style='float:left;'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= '</div>';
-                $data[4] .= "<div style='float:right; padding-right:10px;'>";
+                $data[4] .= ' / </div>';
+                $data[4] .= "<div style='float:left; padding-left:5px;'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
                 $data[4] .= '<br />';

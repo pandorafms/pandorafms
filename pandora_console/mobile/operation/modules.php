@@ -485,6 +485,8 @@ class Modules
                 $temp_modules = db_get_all_rows_sql($sql_select.$sql.$sql_limit);
 
                 foreach ($temp_modules as $result_element_key => $result_element_value) {
+                    $result_element_value['server_id'] = $server['id'];
+                    $result_element_value['server_name'] = $server['server_name'];
                     array_push($modules_db, $result_element_value);
                 }
 
@@ -684,7 +686,19 @@ class Modules
 
                     $row[7] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
                 } else {
-                    $row[7] = $row[__('Data')] = '<span style="white-space: nowrap;">'.'<span style="display: none;" class="show_collapside">'.$row[__('Status')].'&nbsp;&nbsp;</span>'.'<a data-ajax="false" class="ui-link" '.'href="index.php?page=module_graph&id='.$module['id_agente_modulo'].'&id_agent='.$this->id_agent.'">'.$output.'</a>'.'</span>';
+                    if ($system->getConfig('metaconsole')) {
+                        $row[__('Data')] = '<span style="white-space: nowrap;">';
+                        $row[__('Data')] .= '<span style="display: none;" class="show_collapside">';
+                        $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
+                        $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
+                        $row[__('Data')] .= 'href="index.php?page=module_graph&id='.$module['id_agente_modulo'];
+                        $row[__('Data')] .= '&server_id='.$module['server_id'];
+                        $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
+                        $row[__('Data')] .= $output.'</a></span>';
+                        $row[7] = $row[__('Data')];
+                    } else {
+                        $row[7] = $row[__('Data')] = '<span style="white-space: nowrap;">'.'<span style="display: none;" class="show_collapside">'.$row[__('Status')].'&nbsp;&nbsp;</span>'.'<a data-ajax="false" class="ui-link" '.'href="index.php?page=module_graph&id='.$module['id_agente_modulo'].'&id_agent='.$this->id_agent.'">'.$output.'</a>'.'</span>';
+                    }
                 }
 
                 if (!$ajax) {

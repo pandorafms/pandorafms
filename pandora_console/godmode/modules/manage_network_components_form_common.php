@@ -77,7 +77,7 @@ $sql = sprintf(
     'SELECT id_tipo, descripcion
 	FROM ttipo_modulo
 	WHERE categoria IN (%s)
-	ORDER BY descripcion',
+	ORDER BY id_tipo ASC',
     implode(',', $categories)
 );
 $table->data[1][1] = html_print_select_from_sql(

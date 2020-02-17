@@ -63,6 +63,7 @@ if ($get_agents_group) {
 if ($search_agents && (!is_metaconsole() || $force_local)) {
     $id_agent = (int) get_parameter('id_agent');
     $string = (string) get_parameter('q');
+    $string = strtoupper($string);
     // q is what autocomplete plugin gives
     $id_group = (int) get_parameter('id_group', -1);
     $addedItems = html_entity_decode((string) get_parameter('add'));
@@ -98,11 +99,11 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_alias = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_alias[] = '(alias LIKE "%'.$string.'%")';
+            $filter_alias[] = '(UPPER(alias) LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
-            $filter_alias[] = '(alias LIKE \'%'.$string.'%\')';
+            $filter_alias[] = '(UPPER(alias) LIKE \'%'.$string.'%\')';
         break;
 
         case 'oracle':
@@ -127,11 +128,11 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_agents = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_agents[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+            $filter_agents[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) COLLATE utf8_general_ci LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
-            $filter_agents[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre LIKE \'%'.$string.'%\')';
+            $filter_agents[] = '(UPPER(alias) NOT LIKE \'%'.$string.'%\' AND UPPER(nombre) LIKE \'%'.$string.'%\')';
         break;
 
         case 'oracle':
@@ -156,11 +157,11 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_address = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_address[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
+            $filter_address[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND UPPER(direccion) LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
-            $filter_address[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion LIKE \'%'.$string.'%\')';
+            $filter_address[] = '(UPPER(alias) NOT LIKE \'%'.$string.'%\' AND UPPER(nombre) NOT LIKE \'%'.$string.'%\' AND UPPER(direccion) LIKE \'%'.$string.'%\')';
         break;
 
         case 'oracle':
@@ -185,11 +186,11 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
     $filter_description = $filter;
     switch ($config['dbtype']) {
         case 'mysql':
-            $filter_description[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
+            $filter_description[] = '(UPPER(alias) NOT LIKE "%'.$string.'%" AND UPPER(nombre) COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND UPPER(direccion) NOT LIKE "%'.$string.'%" AND UPPER(comentarios) LIKE "%'.$string.'%")';
         break;
 
         case 'postgresql':
-            $filter_description[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
+            $filter_description[] = '(UPPER(alias) NOT LIKE \'%'.$string.'%\' AND UPPER(nombre) NOT LIKE \'%'.$string.'%\' AND UPPER(direccion) NOT LIKE \'%'.$string.'%\' AND UPPER(comentarios) LIKE \'%'.$string.'%\')';
         break;
 
         case 'oracle':

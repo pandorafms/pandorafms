@@ -30,19 +30,21 @@ if ($php_version_array[0] < 7) {
 
 $tab = get_parameter('tab', 'online');
 
-$buttons = [
-    'setup'   => [
-        'active' => ($tab == 'setup') ? true : false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options')]).'</a>',
-    ],
-    'offline' => [
+$buttons['setup'] = [
+    'active' => ($tab == 'setup') ? true : false,
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options')]).'</a>',
+];
+
+if (enterprise_installed()) {
+    $buttons['offline'] = [
         'active' => ($tab == 'offline') ? true : false,
         'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager')]).'</a>',
-    ],
-    'online'  => [
-        'active' => ($tab == 'online') ? true : false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager')]).'</a>',
-    ],
+    ];
+}
+
+$buttons['online'] = [
+    'active' => ($tab == 'online') ? true : false,
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager')]).'</a>',
 ];
 
 

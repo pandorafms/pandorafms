@@ -81,8 +81,8 @@ if ($edit_networkmap) {
         $id_group = $values['id_group'];
 
         // ACL for the network map.
-        $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
+        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -94,6 +94,9 @@ if ($edit_networkmap) {
         }
 
         $name = io_safe_output($values['name']);
+
+        // Id group of the map itself, not data source.
+        $id_group_map = $values['id_group_map'];
 
         $description = $values['description'];
 
@@ -267,8 +270,8 @@ if ($not_found) {
         $config['id_user'],
         'AR',
         true,
-        'id_group',
-        $id_group,
+        'id_group_map',
+        $id_group_map,
         '',
         '',
         '',
@@ -329,6 +332,28 @@ if ($not_found) {
     $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
     $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
 
+    $table->data['source_data_group'][0] = __('Source group');
+    $table->data['source_data_group'][1] = html_print_select_groups(
+        $config['id_user'],
+        'AR',
+        true,
+        'id_group',
+        $id_group,
+        '',
+        '',
+        '',
+        true
+    );
+    $table->data['source_data_group'][1] .= html_print_image(
+        'images/error.png',
+        true,
+        [
+            'id'    => 'group_change_warning',
+            'title' => __('Source id group changed. All elements in networkmap will be lost.'),
+            'style' => 'display : none',
+        ]
+    );
+
     $table->data['source_data_dont_show_subgroups'][0] = __('Don\'t show subgroups:');
     $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox(
         'dont_show_subgroups',
@@ -379,18 +404,18 @@ if ($not_found) {
     $table->data['kval'][0] = __('Default ideal node separation');
     $table->data['kval'][1] = html_print_input_text('kval', $kval, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_help_tip(__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
 
-    echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+    echo '<form id="networkmap_options_form" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 
     html_print_table($table);
 
-    echo "<div style='width: ".$table->width."; text-align: right;'>";
+    echo "<div style='width: ".$table->width."; text-align: right; margin-top:20px;'>";
     if ($new_networkmap) {
         html_print_input_hidden('save_networkmap', 1);
         html_print_submit_button(
             __('Save networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub next"'
         );
     }
 
@@ -401,7 +426,7 @@ if ($not_found) {
             __('Update networkmap'),
             'crt',
             false,
-            'class="sub"'
+            'class="sub upd"'
         );
     }
 
@@ -420,8 +445,11 @@ $(document).ready(function() {
                 .css('display', 'none');
             $("#form_editor-source_data_dont_show_subgroups")
                 .css('display', 'none');
+            $("#form_editor-source_data_group")
+                .css('display', 'none');
             $("#form_editor-source_data_recon_task")
                 .css('display', '');
+            
         }
         else if (source == 'ip_mask') {
             $("#form_editor-source_data_ip_mask")
@@ -430,6 +458,8 @@ $(document).ready(function() {
                 .css('display', 'none');
             $("#form_editor-source_data_dont_show_subgroups")
                 .css('display', 'none');
+            $("#form_editor-source_data_group")
+                .css('display', 'none');
         }
         else if (source == 'group') {
             $("#form_editor-source_data_ip_mask")
@@ -437,6 +467,8 @@ $(document).ready(function() {
             $("#form_editor-source_data_recon_task")
                 .css('display', 'none');
             $("#form_editor-source_data_dont_show_subgroups")
+                .css('display', '');
+                $("#form_editor-source_data_group")
                 .css('display', '');
         }
     });
@@ -508,5 +540,53 @@ $(document).ready(function() {
     
     $("input[name='source']").trigger("change");
     $("#method").trigger("change");
+
+    
+    // Control if id_group has changed.
+    var id_group_old = $("#id_group").val();
+    var id_group_changed = false;
+
+    $("#id_group").on('change',{id_group_old: id_group_old}, function () {
+        
+        var id_group_new = $("#id_group").val();
+        if((id_group_old != id_group_new) && (update_networkmap == 1 )) {
+            id_group_changed = true;
+            $("#group_change_warning").show();
+
+        } else {
+            id_group_changed = false;
+            $("#group_change_warning").hide();
+        }
+    });
+
+    var update_networkmap = 0;
+    // Show advice if id_group has changed.
+    update_networkmap = $("input[name='update_networkmap']").val();
+
+    $( "#submit-crt" ).click(function( event ) {
+
+        if(update_networkmap == 1 && id_group_changed === true) {
+            confirmDialog({
+                        title: '<?php echo __('Are you sure?'); ?>',
+                        message: '<?php echo __('Source id group changed. All elements in Networkmap will be lost'); ?>',
+                        ok: '<?php echo __('OK'); ?>',
+                        cancel: '<?php echo __('Cancel'); ?>',
+                        onDeny: function() {
+                            // Continue execution.
+                            return false;
+                        },
+                        onAccept: function () {
+                            // Submit form
+                            $("#networkmap_options_form").submit();
+                        }
+                    })
+            event.preventDefault();
+        }
+ 
 });
+
+
+});
+
+
 </script>

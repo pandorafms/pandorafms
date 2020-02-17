@@ -566,11 +566,11 @@ function modules_update_agent_module(
 /**
  * Creates a module in an agent.
  *
- * @param int Agent id.
- * @param int Module name id.
- * @param array Extra values for the module.
- * @param bool Disable the ACL checking, for default false.
- * @param mixed Array with tag's ids or false.
+ * @param integer $id_agent   Agent id.
+ * @param integer $name       Module name id.
+ * @param array   $values     Extra values for the module.
+ * @param boolean $disableACL Disable the ACL checking, for default false.
+ * @param mixed   $tags       Array with tag's ids or false.
  *
  * @return New module id if the module was created. False if not.
  */
@@ -584,7 +584,9 @@ function modules_create_agent_module(
     global $config;
 
     if (!$disableACL) {
-        if (!users_is_admin() && (empty($id_agent) || ! users_access_to_agent($id_agent, 'AW'))) {
+        if (!users_is_admin() && (empty($id_agent)
+            || !users_access_to_agent($id_agent, 'AW'))
+        ) {
             return false;
         }
     }
@@ -593,7 +595,7 @@ function modules_create_agent_module(
         return ERR_INCOMPLETE;
     }
 
-    // Check for non valid characters in module name
+    // Check for non valid characters in module name.
     if (mb_ereg_match('[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]', io_safe_output($name)) !== false) {
         return ERR_GENERIC;
     }
@@ -605,23 +607,33 @@ function modules_create_agent_module(
     $values['nombre'] = $name;
     $values['id_agente'] = (int) $id_agent;
 
-    $exists = (bool) db_get_value_filter('id_agente_modulo', 'tagente_modulo', ['nombre' => $name, 'id_agente' => (int) $id_agent]);
+    $exists = (bool) db_get_value_filter(
+        'id_agente_modulo',
+        'tagente_modulo',
+        [
+            'nombre'    => $name,
+            'id_agente' => (int) $id_agent,
+        ]
+    );
 
     if ($exists) {
         return ERR_EXIST;
     }
 
-    // Encrypt passwords
+    // Encrypt passwords.
     if (isset($values['plugin_pass'])) {
         $values['plugin_pass'] = io_input_password($values['plugin_pass']);
     }
 
-    // Encrypt SNMPv3 passwords
-    if (isset($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] >= 15 && $values['id_tipo_modulo'] <= 18)
+    // Encrypt SNMPv3 passwords.
+    if (isset($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] >= 15
+        && $values['id_tipo_modulo'] <= 18)
         && isset($values['tcp_send']) && ($values['tcp_send'] == 3)
         && isset($values['custom_string_2'])
     ) {
-        $values['custom_string_2'] = io_input_password($values['custom_string_2']);
+        $values['custom_string_2'] = io_input_password(
+            $values['custom_string_2']
+        );
     }
 
     $id_agent_module = db_process_sql_insert('tagente_modulo', $values);
@@ -645,25 +657,33 @@ function modules_create_agent_module(
     }
 
     if (isset($values['id_tipo_modulo'])
-        && ($values['id_tipo_modulo'] == 21 || $values['id_tipo_modulo'] == 22 || $values['id_tipo_modulo'] == 23)
+        && ($values['id_tipo_modulo'] == 21
+        || $values['id_tipo_modulo'] == 22
+        || $values['id_tipo_modulo'] == 23)
     ) {
-        // Async modules start in normal status
+        // Async modules start in normal status.
         $status = AGENT_MODULE_STATUS_NORMAL;
     } else {
-        // Sync modules start in unknown status
+        // Sync modules start in unknown status.
         $status = AGENT_MODULE_STATUS_NO_DATA;
+    }
+
+    // Condition for cron modules. Don't touch.
+    $time = 0;
+    if (empty($values['interval']) === false) {
+        $time = (time() - (int) $values['interval']);
     }
 
     $result = db_process_sql_insert(
         'tagente_estado',
         [
             'id_agente_modulo'  => $id_agent_module,
-            'datos'             => 0,
+            'datos'             => '',
             'timestamp'         => '01-01-1970 00:00:00',
             'estado'            => $status,
             'known_status'      => $status,
             'id_agente'         => (int) $id_agent,
-            'utimestamp'        => (time() - (int) $values['interval']),
+            'utimestamp'        => $time,
             'status_changes'    => 0,
             'last_status'       => $status,
             'last_known_status' => $status,
@@ -680,12 +700,20 @@ function modules_create_agent_module(
         return ERR_DB;
     }
 
-    // Update module status count if the module is not created disabled
+    // Update module status count if the module is not created disabled.
     if (!isset($values['disabled']) || $values['disabled'] == 0) {
         if ($status == 0) {
-            db_process_sql('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente='.(int) $id_agent);
+            db_process_sql(
+                'UPDATE tagente
+                SET total_count=total_count+1, normal_count=normal_count+1
+                WHERE id_agente='.(int) $id_agent
+            );
         } else {
-            db_process_sql('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente='.(int) $id_agent);
+            db_process_sql(
+                'UPDATE tagente
+                SET total_count=total_count+1, notinit_count=notinit_count+1
+                WHERE id_agente='.(int) $id_agent
+            );
         }
     }
 
@@ -2105,6 +2133,8 @@ function modules_get_agentmodule_data(
             // remote_snmp_string
         case 17:
             // async_string
+        case 36:
+            // remote_cmd_string
         case 23:
             // Free search is a json with value and exact modifier
             $freesearch = json_decode($freesearch, true);
@@ -2308,31 +2338,66 @@ function modules_get_color_status($status)
         return COL_UNKNOWN;
     }
 
-    switch ($status) {
-        case AGENT_MODULE_STATUS_NORMAL:
-        case AGENT_STATUS_NORMAL:
+    switch ((string) $status) {
+        case (string) AGENT_MODULE_STATUS_NORMAL:
+        case (string) AGENT_STATUS_NORMAL:
+        case STATUS_MODULE_OK:
+        case STATUS_AGENT_OK:
+        case STATUS_ALERT_NOT_FIRED:
+        case STATUS_SERVER_OK:
+        case STATUS_MODULE_OK_BALL:
+        case STATUS_AGENT_OK_BALL:
+        case STATUS_ALERT_NOT_FIRED_BALL:
         return COL_NORMAL;
 
         case AGENT_MODULE_STATUS_NOT_INIT:
         case AGENT_STATUS_NOT_INIT:
+        case STATUS_MODULE_NO_DATA:
+        case STATUS_AGENT_NOT_INIT:
+        case STATUS_AGENT_NO_DATA:
+        case STATUS_MODULE_NO_DATA_BALL:
+        case STATUS_AGENT_NO_DATA_BALL:
+        case STATUS_AGENT_NO_MONITORS_BALL:
         return COL_NOTINIT;
 
         case AGENT_MODULE_STATUS_CRITICAL_BAD:
         case AGENT_STATUS_CRITICAL:
+        case STATUS_MODULE_CRITICAL:
+        case STATUS_AGENT_CRITICAL:
+        case STATUS_MODULE_CRITICAL_BALL:
+        case STATUS_AGENT_CRITICAL_BALL:
         return COL_CRITICAL;
 
         case AGENT_MODULE_STATUS_WARNING:
         case AGENT_STATUS_WARNING:
+        case STATUS_MODULE_WARNING:
+        case STATUS_AGENT_WARNING:
+        case STATUS_MODULE_WARNING_BALL:
+        case STATUS_AGENT_WARNING_BALL:
         return COL_WARNING;
 
         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
         case AGENT_MODULE_STATUS_WARNING_ALERT:
         case AGENT_STATUS_ALERT_FIRED:
+        case STATUS_ALERT_FIRED:
+        case STATUS_ALERT_FIRED_BALL:
         return COL_ALERTFIRED;
 
         case AGENT_MODULE_STATUS_UNKNOWN:
         case AGENT_STATUS_UNKNOWN:
+        case STATUS_MODULE_UNKNOWN:
+        case STATUS_AGENT_UNKNOWN:
+        case STATUS_AGENT_DOWN:
+        case STATUS_ALERT_DISABLED:
+        case STATUS_MODULE_UNKNOWN_BALL:
+        case STATUS_AGENT_UNKNOWN_BALL:
+        case STATUS_AGENT_DOWN_BALL:
+        case STATUS_ALERT_DISABLED_BALL:
         return COL_UNKNOWN;
+
+        case STATUS_SERVER_DOWN:
+        case STATUS_SERVER_DOWN_BALL:
+        return '#444';
 
         default:
             // Ignored.
@@ -2591,21 +2656,18 @@ function modules_get_relations($params=[])
     }
 
     $modules_type = '';
+    $modules_type_filter = '';
     if (isset($params['modules_type'])) {
-        $modules_type = $params['modules_type'];
+        $module_type = 'INNER JOIN ttipo_modulo ttm ON tam.id_tipo_modulo = ttm.id_tipo';
+        $modules_type_filter = sprintf(
+            "AND ttm.nombre = '%s'",
+            $params['modules_type']
+        );
     }
 
-    $sql = 'SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b,
-				tmr.disable_update
-			FROM tmodule_relationship tmr,
-				tagente_modulo tam,
-				tagente ta,
-				ttipo_modulo ttm
-			WHERE ';
-
-    $agent_filter = '';
-    if ($id_agent > 0) {
-        $agent_filter = sprintf('AND ta.id_agente = %d', $id_agent);
+    $distinct = '';
+    if (empty($params)) {
+        $distinct = 'DISTINCT';
     }
 
     $module_a_filter = '';
@@ -2613,6 +2675,11 @@ function modules_get_relations($params=[])
     if ($id_module > 0) {
         $module_a_filter = sprintf('AND tmr.module_a = %d', $id_module);
         $module_b_filter = sprintf('AND tmr.module_b = %d', $id_module);
+    }
+
+    $agent_filter = '';
+    if ($id_agent > 0) {
+        $agent_filter = sprintf('AND ta.id_agente = %d', $id_agent);
     }
 
     $disabled_update_filter = '';
@@ -2623,22 +2690,25 @@ function modules_get_relations($params=[])
         );
     }
 
-    $modules_type_filter = '';
-    if ($modules_type != '') {
-        $modules_type_filter = sprintf(
-            "AND (tam.id_tipo_modulo = ttm.id_tipo AND ttm.nombre = '%s')",
-            $modules_type
-        );
-    }
-
-    $sql .= "( (tmr.module_a = tam.id_agente_modulo
-					$module_a_filter)
-				OR (tmr.module_b = tam.id_agente_modulo
-					$module_b_filter) )
-				AND tam.id_agente = ta.id_agente
-					$agent_filter
-				$disabled_update_filter
-				$modules_type_filter";
+    $sql = sprintf(
+        'SELECT %s tmr.id, tmr.module_a, tmr.module_b,
+        tmr.disable_update, tmr.type 
+        FROM tmodule_relationship tmr 
+        INNER JOIN tagente_modulo tam 
+            ON (tmr.module_a = tam.id_agente_modulo %s) 
+            OR (tmr.module_b = tam.id_agente_modulo %s) 
+        INNER JOIN tagente ta 
+            ON tam.id_agente = ta.id_agente
+        %s 
+        WHERE 1=1 %s %s %s',
+        $distinct,
+        $module_a_filter,
+        $module_b_filter,
+        $module_type,
+        $agent_filter,
+        $disabled_update_filter,
+        $modules_type_filter
+    );
 
     return db_get_all_rows_sql($sql);
 }
@@ -2699,11 +2769,13 @@ function modules_relation_exists($id_module, $id_module_other=false)
 /**
  * Change the 'disabled_update' value of a relation row.
  *
- * @param int Relation id.
+ * @param integer $id_module_a Id agent module a.
+ * @param integer $id_module_b Id agent module b.
+ * @param string  $type        Type direct or failover.
  *
  * @return boolean True if the 'disabled_update' changes to 1, false otherwise.
  */
-function modules_add_relation($id_module_a, $id_module_b)
+function modules_add_relation($id_module_a, $id_module_b, $type='direct')
 {
     $result = false;
 
@@ -2711,6 +2783,7 @@ function modules_add_relation($id_module_a, $id_module_b)
         $values = [
             'module_a' => $id_module_a,
             'module_b' => $id_module_b,
+            'type'     => $type,
         ];
         $result = db_process_sql_insert('tmodule_relationship', $values);
     }

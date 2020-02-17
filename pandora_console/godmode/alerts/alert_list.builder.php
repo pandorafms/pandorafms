@@ -37,14 +37,10 @@ $table->head = [];
 $table->data = [];
 $table->size = [];
 $table->size = [];
-$table->size[0] = '5%';
-$table->size[1] = '25%';
-$table->size[2] = '5%';
-$table->size[3] = '20%';
-$table->style[0] = 'font-weight: bold; ';
-$table->style[1] = 'font-weight: bold; ';
-$table->style[2] = 'font-weight: bold; ';
-$table->style[3] = 'font-weight: bold; ';
+$table->style[0] = 'font-weight: bold;';
+$table->style[1] = 'font-weight: bold;display: flex;align-items: baseline;';
+$table->style[2] = 'font-weight: bold;';
+$table->style[3] = 'font-weight: bold;';
 
 // This is because if this view is reused after list alert view then
 // styles in the previous view can affect this table.
@@ -89,7 +85,7 @@ $table->data[0][1] = html_print_select(
     true,
     '',
     ($id_agente == 0),
-    'width: 250px;'
+    'min-width: 250px;margin-right: 0.5em;'
 );
 $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
 $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
@@ -117,7 +113,7 @@ $table->data[1][1] = html_print_select(
     true,
     '',
     false,
-    'width: 250px;'
+    'min-width: 250px;'
 );
 $table->data[1][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
 $table->data[1][1] .= __('Number of alerts match from').' ';
@@ -127,9 +123,9 @@ $table->data[1][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
 
 $table->data[1][1] .= '</span>';
 if (check_acl($config['id_user'], 0, 'LM')) {
-    $table->data[1][1] .= '<a style="margin-left:5px;" href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
+    $table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
     $table->data[1][1] .= html_print_image('images/add.png', true);
-    $table->data[1][1] .= '<span style="margin-left:5px;vertical-align:middle;">'.__('Create Action').'</span>';
+    $table->data[1][1] .= '<span style="margin-left:0.5em;">'.__('Create Action').'</span>';
     $table->data[1][1] .= '</a>';
 }
 
@@ -162,13 +158,28 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     if (check_acl($config['id_user'], 0, 'LM')) {
         $table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
         $table->data[2][1] .= html_print_image('images/add.png', true);
-        $table->data[2][1] .= '<span style="margin-left:5px;vertical-align:middle;">'.__('Create Template').'</span>';
+        $table->data[2][1] .= '<span style="margin-left:0.5em;">'.__('Create Template').'</span>';
         $table->data[2][1] .= '</a>';
     }
 
     $table->data[3][0] = __('Threshold');
-    $table->data[3][1] = html_print_input_text('module_action_threshold', '0', '', 5, 7, true);
-    $table->data[3][1] .= ' '.__('seconds');
+    $table->data[3][1] = html_print_extended_select_for_time(
+        'module_action_threshold',
+        0,
+        '',
+        '',
+        '',
+        false,
+        true,
+        false,
+        true,
+        '',
+        false,
+        false,
+        '',
+        false,
+        true
+    );
 
     if (!isset($step)) {
         echo '<form class="add_alert_form" method="post">';
@@ -188,9 +199,11 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     }
 
     ui_require_css_file('cluetip', 'include/styles/js/');
+    ui_require_jquery_file('validate');
     ui_require_jquery_file('cluetip');
     ui_require_jquery_file('pandora.controls');
     ui_require_jquery_file('bgiframe');
+
     ?>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -205,7 +218,25 @@ $(document).ready (function () {
         }
     });
 <?php endif; ?>
-    
+
+    // Rule.
+    $.validator.addMethod(
+        "valueNotEquals",
+        function(value, element, arg) {
+            return arg != value;
+        },
+        "Value must not equal arg."
+    );
+
+    // configure your validation
+    $("form.add_alert_form").validate({
+        rules: {
+            id_agent_module: { valueNotEquals: "0" }
+        },
+        messages: {
+            id_agent_module: { valueNotEquals: "Please select an item!" }
+        }
+    });
     $("select#template").change (function () {
         id = this.value;
         $a = $(this).siblings ("a.template_details");

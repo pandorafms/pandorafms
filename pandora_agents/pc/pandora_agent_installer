@@ -324,6 +324,11 @@ install () {
 	cp -r collections $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
 	ln -s $PANDORA_BASE$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
+
+	echo "Copying Pandora FMS Agent commands to $PANDORA_BASE$PANDORA_HOME/commands..."
+	cp -r commands $PANDORA_BASE$PANDORA_HOME
+	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/commands
+	ln -s $PANDORA_BASE$PANDORA_HOME/commands $PANDORA_BASE$PANDORA_CFG
 	
 	echo "Copying tentacle server to $PANDORA_BASE$TENTACLE_SERVER"
 	cp tentacle_server $PANDORA_BASE$TENTACLE_SERVER

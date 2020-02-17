@@ -429,6 +429,11 @@ $table->data['form_modules_3'][1] = html_print_select(
 );
 $table->data['form_modules_3'][3] = '';
 
+$table->rowstyle['form_modules_filter'] = 'vertical-align: top;';
+$table->rowclass['form_modules_filter'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_filter'][0] = __('Filter Modules');
+$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
+
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
 $table->data['form_modules_2'][0] = __('Modules');
@@ -495,6 +500,11 @@ $table->data['form_agents_4'][1] = html_print_select(
     true,
     true
 );
+
+$table->rowstyle['form_agents_filter'] = 'vertical-align: top;';
+$table->rowclass['form_agents_filter'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_filter'][0] = __('Filter Agents');
+$table->data['form_agents_filter'][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
 
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
@@ -571,6 +581,7 @@ if ($selection_mode == 'modules') {
 }
 ?>
 
+<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 
@@ -650,6 +661,9 @@ $(document).ready (function () {
                 });
                 $("#module_loading").hide();
                 $("#module_name").removeAttr ("disabled");
+                //Filter modules. Call the function when the select is fully loaded.
+                var textNoData = "<?php echo __('None'); ?>";
+                filterByText($('#module_name'), $("#text-filter_modules"), textNoData);
             },
             "json"
         );
@@ -754,6 +768,9 @@ $(document).ready (function () {
                             .html (value["alias"]);
                         $("#id_agents").append (option);
                     });
+                    //Filter agents. Call the function when the select is fully loaded.
+                    var textNoData = "<?php echo __('None'); ?>";
+                    filterByText($('#id_agents'), $("#text-filter_agents"), textNoData);
                 },
                 "json"
             );

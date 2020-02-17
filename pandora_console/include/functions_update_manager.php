@@ -468,7 +468,7 @@ function registration_wiz_modal(
         __('Cancel'),
         'cancel_registration',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel"',
         true
     );
     $output .= '</div>';
@@ -762,7 +762,7 @@ function newsletter_wiz_modal(
         __('Cancel'),
         'cancel_newsletter',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="width:100px;"',
         true
     );
     $output .= '</div>';
@@ -1166,7 +1166,7 @@ function update_manager_install_package_step2()
     }
 
     update_manager_enterprise_set_version($version);
-    $product_name = get_product_name();
+    $product_name = io_safe_output(get_product_name());
 
     // Generate audit entry.
     db_pandora_audit(

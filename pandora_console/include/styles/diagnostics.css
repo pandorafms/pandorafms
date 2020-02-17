@@ -1,0 +1,70 @@
+.pdf-report {
+  page-break-inside: avoid;
+}
+
+.pdf-report th,
+.title-self-monitoring,
+.caption_table caption {
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bolder;
+  color: #fff;
+  background: #282828;
+  padding: 8px;
+}
+
+.pdf-report tr {
+  text-align: justify;
+}
+
+.dataTables_wrapper {
+  min-height: 150px;
+}
+
+.datatables-td-title {
+  width: 25% !important;
+  font-weight: bolder;
+}
+
+.datatables-td-max {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.datatables-td-max img {
+  margin-right: 10px;
+}
+
+.datatables-td-max span {
+  width: 400px;
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+.pdf-report td {
+  font-size: 1.2em;
+}
+
+.container-self-monitoring {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.element-self-monitoring {
+  flex: 2 1 600px;
+}
+
+.footer-self-monitoring {
+  margin: 30px;
+  font-style: italic;
+}
+
+#modal_form_feedback {
+  margin: 10px;
+}
+
+#div-what-happened label {
+  margin-bottom: 10px;
+}

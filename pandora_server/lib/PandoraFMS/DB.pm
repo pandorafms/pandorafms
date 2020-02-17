@@ -57,6 +57,7 @@ our @EXPORT = qw(
 		get_addr_id
 		get_agent_addr_id
 		get_agent_id
+		get_agent_ids_from_alias
 		get_agent_address
 		get_agent_alias
 		get_agent_group
@@ -230,6 +231,17 @@ sub get_agent_id ($$) {
 
 	my $rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
 	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return agent IDs given an agent alias.
+########################################################################
+sub get_agent_ids_from_alias ($$) {
+	my ($dbh, $agent_alias) = @_;
+
+	my @rc = get_db_rows ($dbh, "SELECT id_agente, nombre FROM tagente WHERE alias = ?", safe_input($agent_alias));
+
+	return @rc;
 }
 
 ########################################################################
@@ -956,7 +968,7 @@ sub db_process_insert($$$$;@) {
 		}
 	}
 	my $columns_string = join(',', @columns_array);
-	
+
 	my $res = db_insert ($dbh,
 		$index,
 		"INSERT INTO $table ($columns_string) VALUES " . $wildcards, @values_array);

@@ -496,7 +496,8 @@ function print_form_filter_monitors(
     $form_text = '';
     $table = new stdClass();
     $table->class = 'info_table';
-    $table->styleTable = 'border: 1px solid #ebebeb;border-radius: 0;padding: 0;margin: 0;margin-top: -1px;';
+    $table->id = 'module_filter_agent_view';
+    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
     $table->width = '100%';
     $table->style[0] = 'font-weight: bold;';
     $table->style[2] = 'font-weight: bold;';

@@ -1214,7 +1214,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						      module_source,
 						      module_eventtype,
 						      module_eventcode,
-						      module_pattern);
+						      module_pattern,
+						      module_application);
 	} else if (module_wmiquery != "") {
 		module = new Pandora_Module_WMIQuery (module_name,
 						      module_wmiquery, module_wmicolumn);

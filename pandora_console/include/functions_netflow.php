@@ -35,8 +35,8 @@ define('NETFLOW_RES_LOWD', 6);
 define('NETFLOW_RES_MEDD', 12);
 define('NETFLOW_RES_HID', 24);
 define('NETFLOW_RES_ULTRAD', 30);
-define('NETFLOW_RES_HOURLY', 'hourly');
-define('NETFLOW_RES_DAILY', 'daily');
+define('NETFLOW_RES_HOURLY', -1);
+define('NETFLOW_RES_DAILY', -2);
 
 define('NETFLOW_MAX_DATA_CIRCULAR_MESH', 10000);
 
@@ -473,7 +473,7 @@ function netflow_get_data(
 
     // Put all points into an array.
     $intervals = [($start_date - $multiplier_time)];
-    while ((end($intervals) < $end_date) === true) {
+    while (($next = (end($intervals) + $multiplier_time) < $end_date) === true) {
         $intervals[] = (end($intervals) + $multiplier_time);
     }
 
@@ -890,7 +890,7 @@ function netflow_get_command($filter)
     }
 
     // Filter options.
-    $command .= netflow_get_filter_arguments($filter);
+    $command .= ' '.netflow_get_filter_arguments($filter);
 
     return $command;
 }
@@ -909,114 +909,113 @@ function netflow_get_filter_arguments($filter)
     $filter_args = '';
     if ($filter['advanced_filter'] != '') {
         $filter_args = preg_replace('/["\r\n]/', '', io_safe_output($filter['advanced_filter']));
-        return ' "('.$filter_args.')"';
-    }
+    } else {
+        if ($filter['router_ip'] != '') {
+            $filter_args .= ' (router ip '.$filter['router_ip'].')';
+        }
 
-    if ($filter['router_ip'] != '') {
-        $filter_args .= ' "(router ip '.$filter['router_ip'].')';
-    }
+        // Normal filter.
+        if ($filter['ip_dst'] != '') {
+            $filter_args .= ' (';
+            $val_ipdst = explode(',', io_safe_output($filter['ip_dst']));
+            for ($i = 0; $i < count($val_ipdst); $i++) {
+                if ($i > 0) {
+                    $filter_args .= ' or ';
+                }
 
-    // Normal filter.
-    if ($filter['ip_dst'] != '') {
-        $filter_args .= ' "(';
-        $val_ipdst = explode(',', io_safe_output($filter['ip_dst']));
-        for ($i = 0; $i < count($val_ipdst); $i++) {
-            if ($i > 0) {
-                $filter_args .= ' or ';
+                if (netflow_is_net($val_ipdst[$i]) == 0) {
+                    $filter_args .= 'dst ip '.$val_ipdst[$i];
+                } else {
+                    $filter_args .= 'dst net '.$val_ipdst[$i];
+                }
             }
 
-            if (netflow_is_net($val_ipdst[$i]) == 0) {
-                $filter_args .= 'dst ip '.$val_ipdst[$i];
+            $filter_args .= ')';
+        }
+
+        if ($filter['ip_src'] != '') {
+            if ($filter_args == '') {
+                $filter_args .= ' (';
             } else {
-                $filter_args .= 'dst net '.$val_ipdst[$i];
-            }
-        }
-
-        $filter_args .= ')';
-    }
-
-    if ($filter['ip_src'] != '') {
-        if ($filter_args == '') {
-            $filter_args .= ' "(';
-        } else {
-            $filter_args .= ' and (';
-        }
-
-        $val_ipsrc = explode(',', io_safe_output($filter['ip_src']));
-        for ($i = 0; $i < count($val_ipsrc); $i++) {
-            if ($i > 0) {
-                $filter_args .= ' or ';
+                $filter_args .= ' and (';
             }
 
-            if (netflow_is_net($val_ipsrc[$i]) == 0) {
-                $filter_args .= 'src ip '.$val_ipsrc[$i];
+            $val_ipsrc = explode(',', io_safe_output($filter['ip_src']));
+            for ($i = 0; $i < count($val_ipsrc); $i++) {
+                if ($i > 0) {
+                    $filter_args .= ' or ';
+                }
+
+                if (netflow_is_net($val_ipsrc[$i]) == 0) {
+                    $filter_args .= 'src ip '.$val_ipsrc[$i];
+                } else {
+                    $filter_args .= 'src net '.$val_ipsrc[$i];
+                }
+            }
+
+            $filter_args .= ')';
+        }
+
+        if ($filter['dst_port'] != '') {
+            if ($filter_args == '') {
+                $filter_args .= ' (';
             } else {
-                $filter_args .= 'src net '.$val_ipsrc[$i];
-            }
-        }
-
-        $filter_args .= ')';
-    }
-
-    if ($filter['dst_port'] != '') {
-        if ($filter_args == '') {
-            $filter_args .= ' "(';
-        } else {
-            $filter_args .= ' and (';
-        }
-
-        $val_dstport = explode(',', io_safe_output($filter['dst_port']));
-        for ($i = 0; $i < count($val_dstport); $i++) {
-            if ($i > 0) {
-                $filter_args .= ' or ';
+                $filter_args .= ' and (';
             }
 
-            $filter_args .= 'dst port '.$val_dstport[$i];
-        }
+            $val_dstport = explode(',', io_safe_output($filter['dst_port']));
+            for ($i = 0; $i < count($val_dstport); $i++) {
+                if ($i > 0) {
+                    $filter_args .= ' or ';
+                }
 
-        $filter_args .= ')';
-    }
-
-    if ($filter['src_port'] != '') {
-        if ($filter_args == '') {
-            $filter_args .= ' "(';
-        } else {
-            $filter_args .= ' and (';
-        }
-
-        $val_srcport = explode(',', io_safe_output($filter['src_port']));
-        for ($i = 0; $i < count($val_srcport); $i++) {
-            if ($i > 0) {
-                $filter_args .= ' or ';
+                $filter_args .= 'dst port '.$val_dstport[$i];
             }
 
-            $filter_args .= 'src port '.$val_srcport[$i];
+            $filter_args .= ')';
         }
 
-        $filter_args .= ')';
-    }
-
-    if (isset($filter['proto']) && $filter['proto'] != '') {
-        if ($filter_args == '') {
-            $filter_args .= ' "(';
-        } else {
-            $filter_args .= ' and (';
-        }
-
-        $val_proto = explode(',', io_safe_output($filter['proto']));
-        for ($i = 0; $i < count($val_proto); $i++) {
-            if ($i > 0) {
-                $filter_args .= ' or ';
+        if ($filter['src_port'] != '') {
+            if ($filter_args == '') {
+                $filter_args .= ' (';
+            } else {
+                $filter_args .= ' and (';
             }
 
-            $filter_args .= 'proto '.$val_proto[$i];
+            $val_srcport = explode(',', io_safe_output($filter['src_port']));
+            for ($i = 0; $i < count($val_srcport); $i++) {
+                if ($i > 0) {
+                    $filter_args .= ' or ';
+                }
+
+                $filter_args .= 'src port '.$val_srcport[$i];
+            }
+
+            $filter_args .= ')';
         }
 
-        $filter_args .= ')';
+        if (isset($filter['proto']) && $filter['proto'] != '') {
+            if ($filter_args == '') {
+                $filter_args .= ' (';
+            } else {
+                $filter_args .= ' and (';
+            }
+
+            $val_proto = explode(',', io_safe_output($filter['proto']));
+            for ($i = 0; $i < count($val_proto); $i++) {
+                if ($i > 0) {
+                    $filter_args .= ' or ';
+                }
+
+                $filter_args .= 'proto '.$val_proto[$i];
+            }
+
+            $filter_args .= ')';
+        }
     }
 
     if ($filter_args != '') {
-        $filter_args .= '"';
+        $filter_args = escapeshellarg($filter_args);
     }
 
     return $filter_args;

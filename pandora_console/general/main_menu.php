@@ -30,12 +30,6 @@ $(document).ready(function(){
     }
 });
 
-
-// Set the height of the menu.
-$(window).on('load', function (){   
-    $("#menu_full").height($("#container").height());
-});
-
 </script>
 <?php
 $autohidden_menu = 0;

@@ -50,6 +50,15 @@ function menu_print_menu(&$menu)
 
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
+    if ($sec2 == 'operation/agentes/ver_agente') {
+        $sec2 = 'godmode/agentes/configurar_agente';
+    } else if ($sec2 == 'godmode/servers/discovery') {
+        $wiz = (string) get_parameter('wiz');
+        $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
+    } else {
+        $sec2 = (string) get_parameter('sec2');
+    }
+
     $menu_selected = false;
 
     $allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
@@ -87,7 +96,7 @@ function menu_print_menu(&$menu)
         // ~ if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
             // ~ continue;
         if (! isset($main['id'])) {
-            $id = 'menu_'.++$idcounter;
+            $id = 'menu_'.(++$idcounter);
         } else {
             $id = $main['id'];
         }
@@ -405,9 +414,9 @@ function menu_print_menu(&$menu)
         $padding_top = ( $length >= 18) ? 6 : 12;
 
         if ($config['menu_type'] == 'classic') {
-            $output .= '<div id="title_menu" class="title_menu_classic" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+            $output .= '<div id="title_menu" class="title_menu_classic">'.$main['text'].'</div>';
         } else {
-            $output .= '<div id="title_menu" class="title_menu_collapsed" style="padding-top:'.$padding_top.'px; display:none;">'.$main['text'].'</div>';
+            $output .= '<div id="title_menu" class="title_menu_collapsed">'.$main['text'].'</div>';
         }
 
         // Add the notification ball if defined
@@ -527,7 +536,7 @@ function menu_add_extras(&$menu)
 
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_action']['text'] = __('Manage alert actions');
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_command']['text'] = __('Manage commands');
-    $menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_events']['text'] = __('Manage event alerts');
+    $menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_correlation']['text'] = __('Manage event alerts');
 
     $menu_extra['gservers']['sub']['enterprise/godmode/servers/manage_export_form']['text'] = __('Manage export targets');
 
@@ -536,7 +545,6 @@ function menu_add_extras(&$menu)
     $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
     $menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');

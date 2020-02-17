@@ -3,9 +3,16 @@ import {
   stringIsEmpty,
   notEmptyStringOr,
   decodeBase64,
-  parseIntOr
+  parseIntOr,
+  t
 } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
+import { FormContainer, InputGroup } from "../Form";
+import fontAwesomeIcon from "../lib/FontAwesomeIcon";
+import {
+  faCircleNotch,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 export type ServiceProps = {
   type: ItemType.SERVICE;
@@ -66,5 +73,20 @@ export default class Service extends Item<ServiceProps> {
     }
 
     return element;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    if (this.props.statusImageSrc !== null) {
+      element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
+      element.style.backgroundSize = "contain";
+      element.style.backgroundPosition = "center";
+      element.innerHTML = "";
+    } else if (this.props.encodedTitle !== null) {
+      element.innerHTML = decodeBase64(this.props.encodedTitle);
+    }
   }
 }

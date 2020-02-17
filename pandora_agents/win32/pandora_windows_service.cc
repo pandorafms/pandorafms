@@ -1849,7 +1849,7 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
 }
 
 void
-Pandora_Windows_Service::pandora_run_broker (string config) {
+Pandora_Windows_Service::pandora_run_broker (string config, long executions) {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr;
 	unsigned char data_flag = 0;
@@ -1876,7 +1876,10 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			Pandora_Module *module;
 		
 			module = this->broker_modules->getCurrentValue ();
-			
+
+			/* Keep executions matching main agent */
+			module->setExecutions(executions);
+
 			/* Check preconditions */
 			if (module->evaluatePreconditions () == 0) {
 				pandoraDebug ("Preconditions not matched for module %s", module->getName ().c_str ());
@@ -1915,16 +1918,19 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			}
 
 			/* Evaluate intensive conditions */
-			intensive_match = module->evaluateIntensiveConditions ();
-			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
-				module->setNoOutput ();
-				this->broker_modules->goNext ();
-				continue;
-			}
-			module->setIntensiveMatch (intensive_match);
-			
-			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
-				module->setTimestamp (this->run_time);
+			if (module->isIntensive()) {
+				intensive_match = module->evaluateIntensiveConditions ();
+				if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+					module->setNoOutput ();
+					this->broker_modules->goNext ();
+					continue;
+				}
+
+				if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+					module->setTimestamp (this->run_time);
+				}
+
+				module->setIntensiveMatch (intensive_match);
 			}
 			
 			/* Evaluate module conditions */
@@ -2035,16 +2041,19 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 			}
 
 			/* Evaluate intensive conditions */
-			intensive_match = module->evaluateIntensiveConditions ();
-			if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
-				module->setNoOutput ();
-				this->modules->goNext ();
-				continue;
-			}
-			module->setIntensiveMatch (intensive_match);
-			
-			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
-				module->setTimestamp (this->run_time);
+			if (module->isIntensive()) {
+				intensive_match = module->evaluateIntensiveConditions ();
+				if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+					module->setNoOutput ();
+					this->modules->goNext ();
+					continue;
+				}
+
+				if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+					module->setTimestamp (this->run_time);
+				}
+
+				module->setIntensiveMatch (intensive_match);
 			}
 			
 			/* Evaluate module conditions */
@@ -2074,7 +2083,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 	check_broker_agents(all_conf);
 	for (i=0;i<num;i++){
 		pandora_init_broker(all_conf[i]);
-		pandora_run_broker(all_conf[i]);
+		pandora_run_broker(all_conf[i], execution_number);
 	}
 	delete []all_conf;
 	

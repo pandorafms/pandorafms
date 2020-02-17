@@ -737,7 +737,7 @@ var TreeController = {
                   }
 
                   $graphImage.addClass("module-graph").click(function(e) {
-                    e.preventDefault();
+                    e.stopPropagation();
                     if (element.statusImageHTML.indexOf("data:image") != -1) {
                       try {
                         winopeng_var(
@@ -776,7 +776,7 @@ var TreeController = {
                       'images/binary.png" /> '
                   );
                   $dataImage.addClass("module-data").click(function(e) {
-                    e.preventDefault();
+                    e.stopPropagation();
 
                     try {
                       var serverName =

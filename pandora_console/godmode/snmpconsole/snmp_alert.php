@@ -1275,7 +1275,7 @@ if ($create_alert || $update_alert) {
     $table->align[7] = 'left';
 
     $table->head[8] = __('Action');
-    $table->size[8] = '90px';
+    $table->size[8] = '120px';
     $table->align[8] = 'left';
 
     $table->head[9] = html_print_checkbox('all_delete_box', '1', false, true);

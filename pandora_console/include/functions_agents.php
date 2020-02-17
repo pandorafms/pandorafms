@@ -69,6 +69,57 @@ function agents_get_agent_id_by_module_id($id_agente_modulo)
 
 
 /**
+ * Search for agent data anywhere.
+ *
+ * Note: This method matches with server (perl) locate_agent.
+ * Do not change order!
+ *
+ * @param string $field Alias, name or IP address of searchable agent.
+ *
+ * @return array Agent of false if not found.
+ */
+function agents_locate_agent(string $field)
+{
+    global $config;
+
+    $table = 'tagente';
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    }
+
+    // Alias.
+    $sql = sprintf(
+        'SELECT *
+         FROM %s
+         WHERE alias = "%s"',
+        $table,
+        $field
+    );
+    $agent = db_get_row_sql($sql);
+
+    if ($agent !== false) {
+        return $agent;
+    }
+
+    // Addr.
+    $agent = agents_get_agent_with_ip($field);
+    if ($agent !== false) {
+        return $agent;
+    }
+
+    // Name.
+    $sql = sprintf(
+        'SELECT *
+         FROM %s
+         WHERE nombre = "%s"',
+        $table,
+        $field
+    );
+    return db_get_row_sql($sql);
+}
+
+
+/**
  * Get agent id from an agent alias.
  *
  * @param string $alias Agent alias.
@@ -78,6 +129,32 @@ function agents_get_agent_id_by_module_id($id_agente_modulo)
 function agents_get_agent_id_by_alias($alias)
 {
     return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+}
+
+
+/**
+ * Return seconds left to contact again with agent.
+ *
+ * @param integer $id_agente Target agent
+ *
+ * @return integer|null Seconds left.
+ */
+function agents_get_next_contact_time_left(int $id_agente)
+{
+    $last_contact = false;
+
+    if ($id_agente > 0) {
+        $last_contact = db_get_value_sql(
+            sprintf(
+                'SELECT CAST(intervalo AS SIGNED) - (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(IF(ultimo_contacto >= ultimo_contacto_remoto, ultimo_contacto, ultimo_contacto_remoto))) as "val"
+                    FROM `tagente`
+                    WHERE id_agente = %d ',
+                $id_agente
+            )
+        );
+    }
+
+    return $last_contact;
 }
 
 
@@ -984,11 +1061,11 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, true)
+                    groups_get_id_recursive($parent, false)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, true);
+            $id_group = groups_get_id_recursive($id_group, false);
         }
 
         // Check available groups for target user only if asking for 'All' group.
@@ -1513,29 +1590,30 @@ function agents_get_name($id_agent, $case='none')
  * Get alias of an agent (cached function).
  *
  * @param integer $id_agent Agent id.
- * @param string  $case     Case (upper, lower, none)
+ * @param string  $case     Case (upper, lower, none).
  *
  * @return string Alias of the given agent.
  */
 function agents_get_alias($id_agent, $case='none')
 {
     global $config;
-    // Prepare cache
+    // Prepare cache.
     static $cache = [];
     if (empty($case)) {
         $case = 'none';
     }
 
-    // Check cache
+    // Check cache.
     if (isset($cache[$case][$id_agent])) {
         return $cache[$case][$id_agent];
     }
 
-    if ($config['dbconnection_cache'] == null && is_metaconsole()) {
-        $alias = (string) db_get_value('alias', 'tmetaconsole_agent', 'id_tagente', (int) $id_agent);
-    } else {
-        $alias = (string) db_get_value('alias', 'tagente', 'id_agente', (int) $id_agent);
-    }
+    $alias = (string) db_get_value(
+        'alias',
+        'tagente',
+        'id_agente',
+        (int) $id_agent
+    );
 
     switch ($case) {
         case 'upper':
@@ -1544,6 +1622,10 @@ function agents_get_alias($id_agent, $case='none')
 
         case 'lower':
             $alias = mb_strtolower($alias, 'UTF-8');
+        break;
+
+        default:
+            // Not posible.
         break;
     }
 
@@ -1554,7 +1636,13 @@ function agents_get_alias($id_agent, $case='none')
 
 function agents_get_alias_by_name($name, $case='none')
 {
-    $alias = (string) db_get_value('alias', 'tagente', 'nombre', $name);
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_agent';
+    } else {
+        $table = 'tagente';
+    }
+
+    $alias = (string) db_get_value('alias', $table, 'nombre', $name);
 
     switch ($case) {
         case 'upper':
@@ -1614,9 +1702,9 @@ function agents_get_interval($id_agent)
  *
  * @param Agent object.
  *
- * @return The interval value and status of last contact
+ * @return The interval value and status of last contact or True /False
  */
-function agents_get_interval_status($agent)
+function agents_get_interval_status($agent, $return_html=true)
 {
     $return = '';
     $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
@@ -1624,9 +1712,18 @@ function agents_get_interval_status($agent)
     $diferencia = ($now - $last_time);
     $time = ui_print_timestamp($last_time, true, ['style' => 'font-size:6.5pt']);
     $min_interval = modules_get_agentmodule_mininterval_no_async($agent['id_agente']);
-    $return = $time;
+    if ($return_html) {
+        $return = $time;
+    } else {
+        $return = true;
+    }
+
     if ($diferencia > ($min_interval['min_interval'] * 2) && $min_interval['num_interval'] > 0) {
-        $return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+        if ($return_html) {
+            $return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+        } else {
+            $return = false;
+        }
     }
 
     return $return;
@@ -3366,4 +3463,141 @@ function agents_get_image_status($status)
     }
 
     return $image_status;
+}
+
+
+/**
+ * Animation GIF to show agent's status.
+ *
+ * @return string HTML code with heartbeat image.
+ */
+function agents_get_status_animation($up=true)
+{
+    global $config;
+
+    // Gif with black background or white background
+    if ($config['style'] === 'pandora_black') {
+        $heartbeat_green = 'images/heartbeat_green_black.gif';
+        $heartbeat_red = 'images/heartbeat_red_black.gif';
+    } else {
+        $heartbeat_green = 'images/heartbeat_green.gif';
+        $heartbeat_red = 'images/heartbeat_red.gif';
+    }
+
+    switch ($up) {
+        case true:
+        default:
+        return html_print_image(
+            $heartbeat_green,
+            true,
+            [
+                'width'  => '170',
+                'height' => '40',
+            ]
+        );
+
+        case false:
+        return html_print_image(
+            $heartbeat_red,
+            true,
+            [
+                'width'  => '170',
+                'height' => '40',
+            ]
+        );
+    }
+}
+
+
+function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
+{
+    $agents_id = [];
+    if (is_metaconsole()) {
+        $all_agents = agents_meta_get_agents('AR', '|');
+    } else {
+        $all_agents = agents_get_group_agents(0, true, 'lower', false, false, true, '|');
+    }
+
+    $agent_match = '/'.$alias_regex.'/'.$flag;
+
+    foreach ($all_agents as $agent_id => $agent_alias) {
+        $result_agent_match = preg_match($agent_match, $agent_alias);
+        if ($result_agent_match) {
+            $agents_id[] = $agent_id;
+            $i++;
+            if ($i === $limit) {
+                break;
+            }
+        }
+    }
+
+    return $agents_id;
+}
+
+
+/**
+ * Return if an agent is SAP or or an a agent SAP list.
+ * If function receive false, you will return all SAP agents,
+ * but if you receive an id agent, check if it is a sap agent
+ * and return true or false.
+ *
+ * @param  integer $id_agent
+ * @return boolean
+ */
+function agents_get_sap_agents($id_agent)
+{
+    // Available modules.
+    // If you add more modules, please update SAP.pm.
+    $sap_modules = [
+        160 => __('SAP Login OK'),
+        109 => __('SAP Dumps'),
+        111 => __('SAP lock entry list'),
+        113 => __('SAP canceled Jobs'),
+        121 => __('SAP Batch inputs erroneous'),
+        104 => __('SAP IDOC erroneous'),
+        105 => __('SAP IDOC OK'),
+        150 => __('SAP WP without active restart'),
+        151 => __('SAP WP stopped'),
+        102 => __('Average time of SAPGUI response '),
+        180 => __('Dialog response time'),
+        103 => __('Dialog Logged users '),
+        192 => __('TRFC in error'),
+        195 => __('QRFC in error SMQ2'),
+        116 => __('Number of Update WPs in error'),
+    ];
+
+    $array_agents = [];
+    foreach ($sap_modules as $module => $key) {
+        $new_ones = db_get_all_rows_sql(
+            'SELECT ta.id_agente,ta.alias
+             FROM tagente ta
+             INNER JOIN tagente_modulo tam 
+             ON tam.id_agente = ta.id_agente 
+             WHERE tam.nombre  
+             LIKE "%SAP%" 
+             GROUP BY ta.id_agente'
+        );
+        if ($new_ones === false) {
+            continue;
+        }
+
+        $array_agents = array_merge(
+            $array_agents,
+            $new_ones
+        );
+    }
+
+    $indexed_agents = index_array($array_agents, 'id_agente', false);
+
+    if ($id_agent === false) {
+        return $indexed_agents;
+    }
+
+    foreach ($indexed_agents as $agent => $key) {
+        if ($agent === $id_agent) {
+            return true;
+        }
+    }
+
+    return false;
 }

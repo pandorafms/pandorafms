@@ -262,6 +262,11 @@ function format_for_graph(
     $divider=1000,
     $sufix=''
 ) {
+    // Exception to exclude modules whose unit is already formatted as KB (satellite modules)
+    if (!empty($sufix) && $sufix == 'KB') {
+        return;
+    }
+
     $shorts = [
         '',
         'K',
@@ -899,6 +904,47 @@ function set_cookie($name, $value)
     } else {
         setcookie($name, $value);
     }
+}
+
+
+/**
+ * Returns database ORDER clause from datatables AJAX call.
+ *
+ * @param boolean $as_array Return as array or as string.
+ *
+ * @return string Order or empty.
+ */
+function get_datatable_order($as_array=false)
+{
+    $order = get_parameter('order');
+
+    if (is_array($order)) {
+        $column = $order[0]['column'];
+        $direction = $order[0]['dir'];
+    }
+
+    if (!isset($column) || !isset($direction)) {
+        return '';
+    }
+
+    $columns = get_parameter('columns');
+
+    if (is_array($columns)) {
+        $column_name = $columns[$column]['data'];
+    }
+
+    if (!isset($column_name)) {
+        return '';
+    }
+
+    if ($as_array) {
+        return [
+            'direction' => $direction,
+            'field'     => $column_name,
+        ];
+    }
+
+    return $column_name.' '.$direction;
 }
 
 
@@ -1796,6 +1842,52 @@ function array_key_to_offset($array, $key)
 
 
 /**
+ * Undocumented function
+ *
+ * @param array $arguments Following format:
+ *  [
+ *   'ip_target'
+ *   'snmp_version'
+ *   'snmp_community'
+ *   'snmp3_auth_user'
+ *   'snmp3_security_level'
+ *   'snmp3_auth_method'
+ *   'snmp3_auth_pass'
+ *   'snmp3_privacy_method'
+ *   'snmp3_privacy_pass'
+ *   'quick_print'
+ *   'base_oid'
+ *   'snmp_port'
+ *   'server_to_exec'
+ *   'extra_arguments'
+ *   'format'
+ *  ]
+ *
+ * @return array SNMP result.
+ */
+function get_h_snmpwalk(array $arguments)
+{
+    return get_snmpwalk(
+        $arguments['ip_target'],
+        $arguments['snmp_version'],
+        isset($arguments['snmp_community']) ? $arguments['snmp_community'] : '',
+        isset($arguments['snmp3_auth_user']) ? $arguments['snmp3_auth_user'] : '',
+        isset($arguments['snmp3_security_level']) ? $arguments['snmp3_security_level'] : '',
+        isset($arguments['snmp3_auth_method']) ? $arguments['snmp3_auth_method'] : '',
+        isset($arguments['snmp3_auth_pass']) ? $arguments['snmp3_auth_pass'] : '',
+        isset($arguments['snmp3_privacy_method']) ? $arguments['snmp3_privacy_method'] : '',
+        isset($arguments['snmp3_privacy_pass']) ? $arguments['snmp3_privacy_pass'] : '',
+        isset($arguments['quick_print']) ? $arguments['quick_print'] : 0,
+        isset($arguments['base_oid']) ? $arguments['base_oid'] : '',
+        isset($arguments['snmp_port']) ? $arguments['snmp_port'] : '',
+        isset($arguments['server_to_exec']) ? $arguments['server_to_exec'] : 0,
+        isset($arguments['extra_arguments']) ? $arguments['extra_arguments'] : '',
+        isset($arguments['format']) ? $arguments['format'] : '-Oa'
+    );
+}
+
+
+/**
  * Make a snmpwalk and return it.
  *
  * @param string  $ip_target            The target address.
@@ -1907,7 +1999,12 @@ function get_snmpwalk(
     if (enterprise_installed()) {
         if ($server_to_exec != 0) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+
+            if (empty($server_data['port'])) {
+                exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            } else {
+                exec('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            }
         } else {
             exec($command_str, $output, $rc);
         }
@@ -1915,11 +2012,16 @@ function get_snmpwalk(
         exec($command_str, $output, $rc);
     }
 
-    // Parse the output of snmpwalk
+    // Parse the output of snmpwalk.
     $snmpwalk = [];
     foreach ($output as $line) {
-        // Separate the OID from the value
-        $full_oid = explode(' = ', $line);
+        // Separate the OID from the value.
+        if (strpos($format, 'q') === false) {
+            $full_oid = explode(' = ', $line, 2);
+        } else {
+            $full_oid = explode(' ', $line, 2);
+        }
+
         if (isset($full_oid[1])) {
             $snmpwalk[$full_oid[0]] = $full_oid[1];
         }
@@ -2411,12 +2513,13 @@ function get_user_dashboards($id_user)
 /**
  * Get all the possible periods in seconds.
  *
- * @param bool Flag to show or not custom fist option
- * @param bool Show the periods by default if it is empty
+ * @param boolean $custom       Flag to show or not custom fist option
+ * @param boolean $show_default Show the periods by default if it is empty
+ * @param boolean $allow_zero   Allow the use of the value zero.
  *
- * @return The possible periods in an associative array.
+ * @return array The possible periods in an associative array.
  */
-function get_periods($custom=true, $show_default=true)
+function get_periods($custom=true, $show_default=true, $allow_zero=false)
 {
     global $config;
 
@@ -2428,6 +2531,10 @@ function get_periods($custom=true, $show_default=true)
 
     if (empty($config['interval_values'])) {
         if ($show_default) {
+            if ($allow_zero === true) {
+                $periods[0] = sprintf(__('%s seconds'), '0');
+            }
+
             $periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
             $periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
             $periods[SECONDS_1HOUR] = __('1 hour');
@@ -2592,7 +2699,7 @@ function can_user_access_node()
 
     $userinfo = get_user_info($config['id_user']);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];
     } else {
         return 1;
@@ -2760,6 +2867,8 @@ function print_audit_csv($data)
     global $config;
     global $graphic_type;
 
+    $divider = html_entity_decode($config['csv_divider']);
+
     if (!$data) {
         echo __('No data found to export');
         return 0;
@@ -2777,9 +2886,9 @@ function print_audit_csv($data)
     // BOM
     print pack('C*', 0xEF, 0xBB, 0xBF);
 
-    echo __('User').';'.__('Action').';'.__('Date').';'.__('Source IP').';'.__('Comments')."\n";
+    echo __('User').$divider.__('Action').$divider.__('Date').$divider.__('Source IP').$divider.__('Comments')."\n";
     foreach ($data as $line) {
-        echo io_safe_output($line['id_usuario']).';'.io_safe_output($line['accion']).';'.date($config['date_format'], $line['utimestamp']).';'.$line['ip_origen'].';'.io_safe_output($line['descripcion'])."\n";
+        echo io_safe_output($line['id_usuario']).$divider.io_safe_output($line['accion']).$divider.io_safe_output(date($config['date_format'], $line['utimestamp'])).$divider.$line['ip_origen'].$divider.io_safe_output($line['descripcion'])."\n";
     }
 
     exit;
@@ -3695,11 +3804,20 @@ function series_type_graph_array($data, $show_elements_graph)
             } else if (strpos($key, 'percentil') !== false) {
                 $data_return['series_type'][$key] = 'percentil';
                 if ($show_elements_graph['percentil']) {
-                    $data_return['legend'][$key] = __('Percentil').' '.$config['percentil'].'º '.__('of module').' ';
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = __('Percentil').' ';
+                        $name_legend .= $config['percentil'].'º ';
+                        $name_legend .= __('of module').' ';
+                        $name_legend .= $value['agent_alias'].' / ';
+                        $name_legend .= $value['module_name'].' / ';
+                        $name_legend .= __('Unit ').' ';
+                        $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                        $name_legend = __('Percentil').' ';
+                        $name_legend .= $config['percentil'].'º ';
+                        $name_legend .= __('of module').' ';
+                        $name_legend .= $value['agent_alias'].' / ';
+                        $name_legend .= $value['module_name'].': ';
                     }
 
                     $data_return['legend'][$key] .= $name_legend;
@@ -3748,14 +3866,30 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $file_js  = $config['homedir'].'/include/web2image.js';
     $url      = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
-    $img_file = 'img_'.uniqid().'.png';
-    $img_path = $config['homedir'].'/attachment/'.$img_file;
-    $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    if (!$params['return_img_base_64']) {
+        $img_file = 'img_'.uniqid().'.png';
+        $img_path = $config['homedir'].'/attachment/'.$img_file;
+        $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    }
 
     $width_img  = 500;
-    $height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
 
-    $params['height'] = $height_img;
+    if ($params['vconsole'] === false) {
+        // Set height image.
+        $height_img = 170;
+        $params['height'] = 170;
+        if ((int) $params['landscape'] === 1) {
+            $height_img = 150;
+            $params['height'] = 150;
+        }
+
+        if ($type_graph_pdf === 'slicebar') {
+            $width_img  = 360;
+            $height_img = 70;
+        }
+    } else {
+        $height_img = $params['height'];
+    }
 
     $params_encode_json = urlencode(json_encode($params));
 
@@ -3778,11 +3912,10 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $img_content = join("\n", $result);
 
     if ($params['return_img_base_64']) {
-        // To be used in alerts
-        $width_img = 500;
+        // To be used in alerts.
         return $img_content;
     } else {
-        // to be used in PDF files
+        // to be used in PDF files.
         $config['temp_images'][] = $img_path;
         return '<img src="'.$img_url.'" />';
     }
@@ -3797,8 +3930,14 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
  */
 function get_product_name()
 {
+    global $config;
+
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+        if ($config['rb_product_name_alt']) {
+            return $config['rb_product_name_alt'];
+        }
+
         return 'Pandora FMS';
     }
 
@@ -3989,10 +4128,22 @@ function mask2cidr($mask)
 }
 
 
+/**
+ * convert the cidr prefix to subnet mask
+ *
+ * @param  int cidr prefix
+ * @return string subnet mask
+ */
+function cidr2mask($int)
+{
+    return long2ip(-1 << (32 - (int) $int));
+}
+
+
 function get_help_info($section_name)
 {
     global $config;
-    // hd($section_name);
+
     $user_language = get_user_language($id_user);
 
     $es = false;
@@ -5301,6 +5452,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'omnishell':
+            if ($es) {
+                $result .= 'Omnishell&printable=yes';
+            } else {
+                $result .= 'Omnishell&printable=yes';
+            }
+        break;
+
         case 'module_type_tab':
             if ($es) {
                 $result .= 'Operacion&printable=yes#Tipos_de_m.C3.B3dulos';
@@ -5316,8 +5475,191 @@ function get_help_info($section_name)
                 $result .= 'GIS&printable=yes#Operation';
             }
         break;
+
+        case 'quickshell_settings':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Websocket_Engine';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Websocket_engine';
+            }
+        break;
+
+        case 'discovery':
+            if ($es) {
+                $result .= 'Discovery&printable=yes';
+            } else {
+                $result .= 'Discovery&printable=yes';
+            }
+
+        case 'alert_configure':
+            if ($es) {
+                $result .= 'Alerts#Correlation_alert_creation';
+            } else {
+                $result .= 'Alerts#Correlation_alert_creation';
+            }
+        break;
+
+        case 'alert_correlation':
+            if ($es) {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            } else {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            }
+        break;
+
+        case 'alert_rules':
+            if ($es) {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            } else {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            }
+        break;
+
+        case 'alert_fields':
+            if ($es) {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            } else {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            }
+        break;
+
+        case 'alert_triggering':
+            if ($es) {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            } else {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            }
+        break;
     }
 
-    // hd($result);
     return $result;
+}
+
+
+if (!function_exists('getallheaders')) {
+
+
+    /**
+     * Fix for php-fpm
+     *
+     * @return array
+     */
+    function getallheaders()
+    {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+
+}
+
+
+/**
+ * Update config token that contains custom module units.
+ *
+ * @param  string Name of new module unit.
+ * @return boolean Success or failure.
+ */
+function add_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_module_units = get_custom_module_units();
+
+    $custom_module_units[$value] = $value;
+
+    $new_conf = json_encode($custom_module_units);
+
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+function get_custom_module_units()
+{
+    global $config;
+
+    if (!isset($config['custom_module_units'])) {
+        $custom_module_units = [];
+    } else {
+        $custom_module_units = json_decode(
+            io_safe_output($config['custom_module_units']),
+            true
+        );
+    }
+
+    return $custom_module_units;
+}
+
+
+function delete_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_units = get_custom_module_units();
+
+    unset($custom_units[io_safe_output($value)]);
+
+    $new_conf = json_encode($custom_units);
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Get multiplier to be applied on module data in order to represent it properly. Based on setup configuration and module's unit, either 1000 or 1024 will be returned.
+ *
+ * @param string Module's unit.
+ *
+ * @return integer Multiplier.
+ */
+function get_data_multiplier($unit)
+{
+    global $config;
+
+    switch ($config['use_data_multiplier']) {
+        case 0:
+            if (strpos(strtolower($unit), 'yte') !== false) {
+                $multiplier = 1024;
+            } else {
+                $multiplier = 1000;
+            }
+        break;
+
+        case 2:
+            $multiplier = 1024;
+        break;
+
+        case 1:
+        default:
+            $multiplier = 1000;
+        break;
+    }
+
+    return $multiplier;
 }

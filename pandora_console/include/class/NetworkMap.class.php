@@ -227,6 +227,13 @@ class NetworkMap
     public $tooltipParams;
 
     /**
+     *  Defines if map is widget or not for JS
+     *
+     * @var boolean;
+     */
+    public $widget;
+
+    /**
      * Shows the map using 100% of height and width if is a widget.
      *
      * @var boolean
@@ -406,8 +413,10 @@ class NetworkMap
             // Initialize as widget?
             if (isset($options['widget'])) {
                 $this->fullSize = (bool) $options['widget'];
+                $this->widget = true;
             } else {
                 $this->fullSize = true;
+                $this->widget = false;
             }
 
             // Use a custom parser.
@@ -1340,7 +1349,14 @@ class NetworkMap
                 if ($rel['parent_type'] == NODE_MODULE
                     && $rel['child_type'] == NODE_MODULE
                 ) {
+                    // Keep std references.
+                    $ref_id_parent = $id_parent;
+                    $ref_id_child = $id_child;
+
                     // Module information available.
+                    $id_parent = $rel['id_parent_source_data'];
+                    $id_child = $rel['id_child_source_data'];
+
                     $priority = 1;
                     $valid = 1;
 
@@ -1368,6 +1384,12 @@ class NetworkMap
 
                     if ($valid == 1) {
                         $rel_map[$id_parent.'_'.$id_child] = [
+                            'index'    => $index,
+                            'priority' => $priority,
+                        ];
+
+                        // Keep node reference mapping - low precedence relationship.
+                        $rel_map[$ref_id_parent.'_'.$ref_id_child] = [
                             'index'    => $index,
                             'priority' => $priority,
                         ];
@@ -1655,7 +1677,6 @@ class NetworkMap
                         $node['style']['label'] = $node['name'];
                     }
 
-                    $node['style']['shape'] = 'circle';
                     if (isset($source_data['color'])) {
                         $item['color'] = $source_data['color'];
                     } else {
@@ -2642,7 +2663,16 @@ class NetworkMap
      */
     public function loadMapData()
     {
+        global $config;
+
         $networkmap = $this->map;
+
+        // ACL.
+        $networkmap_write = check_acl(
+            $config['id_user'],
+            $networkmap['id_group'],
+            'MW'
+        );
 
         $simulate = false;
         if (isset($networkmap['__simulated']) === false) {
@@ -2668,6 +2698,7 @@ class NetworkMap
         $this->cleanGraphRelations();
 
         // Print some params to handle it in js.
+        html_print_input_hidden('widget', $this->widget);
         html_print_input_hidden('product_name', get_product_name());
         html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
 
@@ -2711,6 +2742,7 @@ class NetworkMap
         $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
         $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";
         $output .= 'var enterprise_installed = '.((int) enterprise_installed()).";\n";
+        $output .= 'var networkmap_write = '.$networkmap_write.";\n";
         $output .= 'var node_radius = '.$networkmap['filter']['node_radius'].";\n";
         $output .= 'var networkmap_holding_area_dimensions = '.json_encode($networkmap['filter']['holding_area']).";\n";
         $output .= "var networkmap = {'nodes': [], 'links':  []};\n";
@@ -2845,6 +2877,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node Details'),
             __('Node Details'),
+            '',
             false,
             true
         );
@@ -2897,6 +2930,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node Details'),
             __('Node Details'),
+            '',
             false,
             true
         );
@@ -2922,6 +2956,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Interface Information (SNMP)'),
             __('Interface Information (SNMP)'),
+            '',
             true,
             true
         );
@@ -2944,7 +2979,7 @@ class NetworkMap
             '',
             0,
             true
-        ).'&nbsp;<span id="shape_icon_in_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" style="display: none;">'.html_print_image('images/dot_green.png', true).'</span><span id="shape_icon_fail" style="display: none;">'.html_print_image('images/dot_red.png', true).'</span>';
+        ).'&nbsp;<span id="shape_icon_in_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" style="display: none;">'.html_print_image('images/success.png', true, ['width' => '18px']).'</span><span id="shape_icon_fail" style="display: none;">'.html_print_image('images/icono-bad.png', true, ['width' => '18px']).'</span>';
         $table->data['node_name'][0] = __('Name');
         $table->data['node_name'][1] = html_print_input_text(
             'edit_name_node',
@@ -2996,6 +3031,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Node options'),
             __('Node options'),
+            '',
             true,
             true
         );
@@ -3056,6 +3092,7 @@ class NetworkMap
             html_print_table($table, true),
             __('Relations'),
             __('Relations'),
+            '',
             true,
             true
         );
@@ -3165,6 +3202,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add agent node'),
             __('Add agent node'),
+            '',
             false,
             true
         );
@@ -3216,6 +3254,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add agent node (filter by group)'),
             __('Add agent node'),
+            '',
             true,
             true
         );
@@ -3256,6 +3295,7 @@ class NetworkMap
             $add_agent_node_html,
             __('Add fictional point'),
             __('Add agent node'),
+            '',
             true,
             true
         );

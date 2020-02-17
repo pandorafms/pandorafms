@@ -333,7 +333,7 @@ $id_usr = $config['id_user'];
 
 
 if (!$meta) {
-    $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</p>';
+    $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
     $values = [
         'Default'        => __('Default'),
         'Visual console' => __('Visual console'),
@@ -426,23 +426,24 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ).'</div>';
 }
 
+if (!$config['disabled_newsletter']) {
+    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
+    if ($user_info['middlename'] > 0) {
+        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
+    } else {
+        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
+        $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
+        $newsletter_reminder .= html_print_switch(
+            [
+                'name'     => 'newsletter_reminder',
+                'value'    => $newsletter_reminder_value,
+                'disabled' => false,
+            ]
+        );
+    }
 
-$newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-if ($user_info['middlename'] > 0) {
-    $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
-} else {
-    $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
-    $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-    $newsletter_reminder .= html_print_switch(
-        [
-            'name'     => 'newsletter_reminder',
-            'value'    => $newsletter_reminder_value,
-            'disabled' => false,
-        ]
-    );
+    $newsletter_reminder .= '</div>';
 }
-
-$newsletter_reminder .= '</div>';
 
 
 
@@ -461,11 +462,16 @@ $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
 $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['enterprise/dashboard/main_dashboard'] = 'Dashboard';
 $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+$autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
+
 $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
 $autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'Cluster view';
+if (enterprise_installed()) {
+    $autorefresh_list_out['general/sap_view'] = 'SAP view';
+}
 
 if (!isset($autorefresh_list)) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
@@ -1149,7 +1155,7 @@ function ehorus_connection_test(host, port) {
         var user = $('input#text-ehorus_user_level_user').val();
         var pass = $('input#password-ehorus_user_level_pass').val();
     
-        debugger;
+        
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
         var notFoundMessage = '<?php echo __('User not found'); ?>';
         var invalidPassMessage = '<?php echo __('Invalid password'); ?>';

@@ -94,7 +94,7 @@ $table->data[1] = $data;
 $form = '<form name="query_sel" method="post" action="index.php?sec=glog&sec2=godmode/admin_access_logs">';
 $form .= html_print_table($table, true);
 $form .= '</form>';
-ui_toggle($form, __('Filter'), '', false);
+ui_toggle($form, __('Filter'), '', '', false);
 
 $filter = '1=1';
 

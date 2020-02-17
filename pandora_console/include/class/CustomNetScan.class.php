@@ -65,6 +65,8 @@ class CustomNetScan extends Wizard
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
         );
+
+        $this->access = 'AW';
         $this->page = $page;
         $this->breadcrum = $breadcrum;
     }
@@ -77,6 +79,8 @@ class CustomNetScan extends Wizard
      */
     public function parseNetScan()
     {
+        global $config;
+
         if (isset($this->page) === true && $this->page === 0) {
             // Check if we're updating a task.
             $task_id = get_parameter('task', null);
@@ -145,11 +149,11 @@ class CustomNetScan extends Wizard
             ) {
                 // Default values, no data received.
                 // User is accesing directly to this page.
-                if (users_is_admin() !== true && check_acl(
-                    $config['id_usuario'],
+                if (check_acl(
+                    $config['id_user'],
                     $this->task['id_group'],
-                    'PM'
-                ) !== true
+                    $this->access
+                ) != true
                 ) {
                     $this->msg = __('You have no access to edit this task.');
                     return false;
@@ -275,7 +279,7 @@ class CustomNetScan extends Wizard
     {
         global $config;
 
-        if (!check_acl($config['id_user'], 0, 'PM')) {
+        if (!check_acl($config['id_user'], 0, $this->access)) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Custom Net Scan.'
@@ -317,11 +321,11 @@ class CustomNetScan extends Wizard
 
             // Check ACL. If user is not able to manage target task,
             // redirect him to main page.
-            if (users_is_admin() !== true && check_acl(
-                $config['id_usuario'],
+            if (check_acl(
+                $config['id_user'],
                 $this->task['id_group'],
-                'PM'
-            ) !== true
+                $this->access
+            ) != true
             ) {
                 $form['form']['action'] = $this->url.'&mode=customnetscan&page='.($this->page - 1);
             }
@@ -496,7 +500,7 @@ class CustomNetScan extends Wizard
                     'arguments' => [
                         'name'           => 'id_group',
                         'returnAllGroup' => false,
-                        'privilege'      => 'PM',
+                        'privilege'      => $this->access,
                         'type'           => 'select_groups',
                         'selected'       => $this->task['id_group'],
                         'return'         => true,

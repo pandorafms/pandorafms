@@ -18,6 +18,10 @@ require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 
 $searchUsers = check_acl($config['id_user'], 0, 'UM');
+if (!$searchUsers) {
+    $totalUsers = 0;
+    return;
+}
 
 $selectUserIDUp = '';
 $selectUserIDDown = '';

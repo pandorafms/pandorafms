@@ -1,20 +1,33 @@
-span.progress_text {
-  position: absolute;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
-  font-size: 2em;
-  margin-left: -0.5em;
-}
-
-div.progress_main {
-  display: inline-block;
-  text-align: center;
+.progress_main {
   height: 2.5em;
-  border: 1px solid #80ba27;
+  border: 1px solid #82b92e;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
 }
 
-div.progress {
+.progress_main_noborder {
+  height: 2.5em;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
+}
+
+.progress_main:before {
+  content: attr(data-label);
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  margin-top: 0.2em;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+.progress {
   width: 0%;
-  background: #80ba27;
+  background: #82b92e;
   height: 100%;
   float: left;
 }

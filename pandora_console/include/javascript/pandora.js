@@ -1,3 +1,6 @@
+/* global $ */
+/* exported load_modal */
+
 var ENTERPRISE_DIR = "enterprise";
 
 /* Function to hide/unhide a specific Div id */
@@ -709,7 +712,7 @@ function post_process_select_init_unit(name, selected) {
     });
 
     if (select_or_text) {
-      $("#" + name + "_select option[value=" + selected + "]").attr(
+      $("#" + name + "_select option[value='" + selected + "']").attr(
         "selected",
         true
       );
@@ -725,7 +728,7 @@ function post_process_select_init_unit(name, selected) {
 
   $("#" + name + "_select").change(function() {
     var value = $("#" + name + "_select").val();
-    $("#" + name + "_select option[value=" + value + "]").attr(
+    $("#" + name + "_select option[value='" + value + "']").attr(
       "selected",
       true
     );
@@ -830,8 +833,9 @@ function post_process_select_events(name) {
  * This function initialize the values of the control
  *
  * @param name string with the name of the select for time
+ * @param allow_zero bool Allow the use of the value zero
  */
-function period_select_init(name) {
+function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").hide();
   $("#" + name + "_default").show();
@@ -846,7 +850,7 @@ function period_select_init(name) {
     } else {
       $("#" + name + "_select option:eq(1)").prop("selected", true);
     }
-  } else if ($("#text-" + name + "_text").val() == 0) {
+  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
     $("#" + name + "_manual").show();
     $("#" + name + "_default").hide();
@@ -1599,7 +1603,7 @@ function paint_graph_status(
       .attr("y", height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
-      .style("fill", "#fc4444");
+      .style("fill", "#e63c52");
 
     //styles for number and axes
     svg
@@ -1683,7 +1687,7 @@ function paint_graph_status(
         )
         .attr("width", 300)
         .attr("height", (max_c - min_c) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     } else {
       svg
         .append("g")
@@ -1695,7 +1699,7 @@ function paint_graph_status(
         .attr("y", height_x + 200 - (min_c - range_min) * position)
         .attr("width", 300)
         .attr("height", (min_c - range_min) * position)
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
       svg
         .append("g")
         .append("rect")
@@ -1709,7 +1713,7 @@ function paint_graph_status(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .style("fill", "#fc4444");
+        .style("fill", "#e63c52");
     }
   } else {
     d3.select("#svg_dinamic rect").remove();
@@ -1760,7 +1764,7 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number" || Number.isNaN(value)) {
+  if (typeof value !== "number" || isNaN(value)) {
     return value;
   }
 
@@ -1822,51 +1826,34 @@ function ellipsize(str, max, ellipse) {
   return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
 }
 
+function uniqId() {
+  var randomStr =
+    Math.random()
+      .toString(36)
+      .substring(2, 15) +
+    Math.random()
+      .toString(36)
+      .substring(2, 15);
+
+  return randomStr;
+}
+
 /**
- * Display a dialog with an image
+ * Function for AJAX request.
  *
- * @param {string} icon_name The name of the icon you will display
- * @param {string} icon_path The path to the icon
- * @param {Object} incoming_options All options
- * 		grayed: {bool} True to display the background black
- * 		title {string} 'Logo preview' by default
+ * @param {string} id Id container append data.
+ * @param {json} settings Json with settings.
+ *
+ * @return {void}
  */
-function logo_preview(icon_name, icon_path, incoming_options) {
-  // Get the options
-  options = {
-    grayed: false,
-    title: "Logo preview"
-  };
-  $.extend(options, incoming_options);
-
-  if (icon_name == "") return;
-
-  $dialog = $("<div></div>");
-  $image = $('<img src="' + icon_path + '">');
-  $image.css("max-width", "500px").css("max-height", "500px");
-
-  try {
-    $dialog
-      .hide()
-      .html($image)
-      .dialog({
-        title: options.title,
-        resizable: true,
-        draggable: true,
-        modal: true,
-        dialogClass: options.grayed ? "dialog-grayed" : "",
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        minHeight: 1,
-        width: $image.width,
-        close: function() {
-          $dialog.empty().remove();
-        }
-      })
-      .show();
-  } catch (err) {
-    // console.log(err);
-  }
+function ajaxRequest(id, settings) {
+  $.ajax({
+    type: settings.type,
+    dataType: settings.html,
+    url: settings.url,
+    data: settings.data,
+    success: function(data) {
+      $("#" + id).append(data);
+    }
+  });
 }

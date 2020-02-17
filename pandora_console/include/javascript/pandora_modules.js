@@ -7,6 +7,7 @@
 var id_modules_icmp = Array(6, 7);
 var id_modules_tcp = Array(8, 9, 10, 11);
 var id_modules_snmp = Array(15, 16, 17, 18);
+var id_modules_exec = Array(34, 35, 36, 37);
 
 function configure_modules_form() {
   $("#id_module_type").change(function() {
@@ -23,6 +24,10 @@ function configure_modules_form() {
       $("tr#simple-snmp_1, tr#simple-snmp_2").hide();
       $("tr#simple-tcp_send, tr#simple-tcp_receive").show();
       $("#text-tcp_port").removeAttr("disabled");
+    } else if (id_modules_exec.in_array(this.value)) {
+      $("tr#simple-tcp_send, tr#simple-tcp_receive").hide();
+      $("tr#simple-snmp_1, tr#simple-snmp_2").hide();
+      $("#text-tcp_port").attr("disabled", false);
     }
   });
 
@@ -536,18 +541,18 @@ function configure_modules_form() {
 
           var obj = jQuery.parseJSON(data["macros"]);
           $.each(obj, function(k, macro) {
-            add_macro_field(macro, "simple-macro");
+            add_macro_field(macro, "simple-macro", "td", k);
           });
         }
 
         if (data["type"] >= 15 && data["type"] <= 18) {
-          $("#snmp_version").val(data["tcp_send"]);
-          $("#text-snmp3_auth_user").val(data["plugin_user"]);
-          $("#password-snmp3_auth_pass").val(data["plugin_pass"]);
-          $("#snmp3_auth_method").val(data["plugin_parameter"]);
-          $("#snmp3_privacy_method").val(data["custom_string_1"]);
-          $("#password-snmp3_privacy_pass").val(data["custom_string_2"]);
-          $("#snmp3_security_level").val(data["custom_string_3"]);
+          $("#snmp_version").val(data["snmp_version"]);
+          $("#text-snmp3_auth_user").val(data["snmp3_auth_user"]);
+          $("#password-snmp3_auth_pass").val(data["snmp3_auth_pass"]);
+          $("#snmp3_auth_method").val(data["snmp3_auth_method"]);
+          $("#snmp3_privacy_method").val(data["snmp3_privacy_method"]);
+          $("#password-snmp3_privacy_pass").val(data["snmp3_privacy_pass"]);
+          $("#snmp3_security_level").val(data["snmp3_security_level"]);
 
           if (data["tcp_send"] == "3") {
             $("#simple-field_snmpv3_row1").attr("style", "");
@@ -563,6 +568,18 @@ function configure_modules_form() {
 
         if (data["id_plugin"] != undefined) {
           $("#id_plugin").trigger("change");
+        }
+
+        if (data["type"] >= 34 && data["type"] <= 37) {
+          $("#command_text").val(data["command_text"]);
+          $("#command_credential_identifier").val(
+            data["command_credential_identifier"]
+          );
+
+          if (data["command_os"] == 0 || data["command_os"] == "") {
+            data["command_os"] = "inherited";
+          }
+          $("#command_os").val(data["command_os"]);
         }
       },
       "json"
@@ -791,7 +808,7 @@ function new_macro(prefix, callback) {
   }
 }
 
-function add_macro_field(macro, row_model_id) {
+function add_macro_field(macro, row_model_id, type_copy, k) {
   var macro_desc = macro["desc"];
   // Change the carriage returns by html returns <br> in help
   var macro_help = macro["help"].replace(/&#x0d;/g, "<br>");
@@ -799,7 +816,6 @@ function add_macro_field(macro, row_model_id) {
   var macro_value = $("<div />")
     .html(macro["value"])
     .text();
-  var macro_hide = macro["hide"];
 
   macro_value.type = "password";
 
@@ -809,6 +825,7 @@ function add_macro_field(macro, row_model_id) {
 
   // Change attributes to be unique and with identificable class
   $macro_field.attr("id", row_id);
+
   $macro_field.attr("class", "macro_field");
 
   // Get the number of fields already printed
@@ -825,6 +842,19 @@ function add_macro_field(macro, row_model_id) {
         $(".macro_field")
           .eq(fields - 1)
           .attr("id")
+    );
+  }
+
+  // Only for create module type plugin need rename
+  // td id "simple-macro_field" + k + "-1" is horrible.
+  if (k) {
+    $("#" + row_model_id + "_field" + k + "_ td:eq(0)").attr(
+      "id",
+      "simple-macro_field" + k + "-0"
+    );
+    $("#" + row_model_id + "_field" + k + "_ td:eq(1)").attr(
+      "id",
+      "simple-macro_field" + k + "-1"
     );
   }
 
@@ -850,16 +880,29 @@ function add_macro_field(macro, row_model_id) {
   }
 
   // Change the text box id and value
-  $("#" + row_id)
-    .children()
-    .eq(1)
-    .attr("id", "text-" + macro_macro);
-  $("#" + row_id)
-    .children()
-    .eq(1)
-    .attr("name", macro_macro);
+  if (type_copy == "td") {
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .children()
+      .attr("id", "text-" + macro_macro);
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .children()
+      .attr("name", macro_macro);
+  } else {
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .attr("id", "text-" + macro_macro);
+    $("#" + row_id)
+      .children()
+      .eq(1)
+      .attr("name", macro_macro);
+  }
 
-  macro_field_hide = false;
+  var macro_field_hide = false;
   if (typeof macro["hide"] == "string") {
     if (macro["hide"].length == 0) {
       macro_field_hide = false;
@@ -872,16 +915,33 @@ function add_macro_field(macro, row_model_id) {
     }
   }
 
-  if (macro_field_hide) {
-    $("#" + row_id)
-      .children()
-      .eq(1)
-      .attr("type", "password");
+  if (type_copy == "td") {
+    if (macro_field_hide) {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .children()
+        .attr("type", "password");
+    } else {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .children()
+        .val(macro_value);
+    }
+  } else {
+    if (macro_field_hide) {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .attr("type", "password");
+    } else {
+      $("#" + row_id)
+        .children()
+        .eq(1)
+        .val(macro_value);
+    }
   }
-  $("#" + row_id)
-    .children()
-    .eq(1)
-    .val(macro_value);
 
   $("#" + row_id).show();
 }
@@ -908,7 +968,7 @@ function load_plugin_macros_fields(row_model_id) {
         $("#hidden-macros").val(data["base64"]);
         jQuery.each(data["array"], function(i, macro) {
           if (macro["desc"] != "") {
-            add_macro_field(macro, row_model_id);
+            add_macro_field(macro, row_model_id, "td");
           }
         });
         //Plugin text can be larger
@@ -1222,4 +1282,43 @@ function get_explanation_recon_script(id, id_rt, url) {
   });
 
   taskManager.addTask(xhr);
+}
+
+// Filter modules in a select (bulk operations)
+function filterByText(selectbox, textbox, textNoData) {
+  return selectbox.each(function() {
+    var select = selectbox;
+    var options = [];
+    $(select)
+      .find("option")
+      .each(function() {
+        options.push({ value: $(this).val(), text: $(this).text() });
+      });
+    $(select).data("options", options);
+    $(textbox).bind("change keyup", function() {
+      var options = $(select)
+        .empty()
+        .scrollTop(0)
+        .data("options");
+      var search = $(this).val();
+      var regex = new RegExp(search, "gi");
+      $.each(options, function(i) {
+        var option = options[i];
+        if (option.text.match(regex) !== null) {
+          $(select).append(
+            $("<option>")
+              .text(option.text)
+              .val(option.value)
+          );
+        }
+      });
+      if ($(select)[0].length == 0) {
+        $(select).append(
+          $("<option>")
+            .text(textNoData)
+            .val(textNoData)
+        );
+      }
+    });
+  });
 }

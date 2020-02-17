@@ -93,6 +93,52 @@ final class Container extends Model
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Model::encode.
+     */
+    protected function encode(array $data): array
+    {
+        $result = [];
+        return $result;
+    }
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::save.
+     */
+    public function save(array $data=[]): bool
+    {
+        return true;
+    }
+
+
+    /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        return true;
+    }
+
+
+    /**
      * Extract a group Id value.
      *
      * @param array $data Unknown input data structure.
@@ -223,7 +269,7 @@ final class Container extends Model
         $backgroundImage = static::extractBackgroundImage($row);
 
         if ($backgroundUrl === null && $backgroundImage !== null) {
-            $row['backgroundURL'] = ui_get_full_url(
+            $row['backgroundURL'] = \ui_get_full_url(
                 'images/console/background/'.$backgroundImage,
                 false,
                 false,
@@ -372,6 +418,48 @@ final class Container extends Model
         }
 
         return $items;
+    }
+
+
+    /**
+     * Obtain an item which belong to the Visual Console.
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return Model Item or Line.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    public static function getItemFromDB(int $itemId): Model
+    {
+        // Default filter.
+        $filter = ['id' => $itemId];
+        $fields = [
+            'DISTINCT(id) AS id',
+            'type',
+            'cache_expiration',
+            'id_layout',
+        ];
+
+        $row = \db_get_row_filter(
+            'tlayout_data',
+            $filter,
+            $fields,
+            'OR'
+        );
+
+        if ($rows === false) {
+            return '';
+        }
+
+        $class = static::getItemClass((int) $row['type']);
+
+        try {
+            $item = $class::fromDB($row);
+        } catch (\Throwable $e) {
+            // TODO: Log this?
+        }
+
+        return $item;
     }
 
 

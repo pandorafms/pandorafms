@@ -414,7 +414,7 @@ if ($edit_container) {
     echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
         echo '<tr>';
             echo '<td>';
-                echo ui_toggle($single_table, 'Simple module graph', '', true, true);
+                echo ui_toggle($single_table, 'Simple module graph', '', '', true);
             echo '</td>';
         echo '</tr>';
     echo '</table>';
@@ -466,7 +466,7 @@ if ($edit_container) {
     echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
         echo '<tr>';
             echo '<td>';
-                echo ui_toggle(html_print_table($table, true), 'Custom graph', '', true, true);
+                echo ui_toggle(html_print_table($table, true), 'Custom graph', '', '', true);
             echo '</td>';
         echo '</tr>';
     echo '</table>';
@@ -561,7 +561,7 @@ if ($edit_container) {
     echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
         echo '<tr>';
             echo '<td>';
-                echo ui_toggle(html_print_table($table, true), 'Dynamic rules for simple module graph', '', true, true);
+                echo ui_toggle(html_print_table($table, true), 'Dynamic rules for simple module graph', '', '', true);
             echo '</td>';
         echo '</tr>';
     echo '</table>';

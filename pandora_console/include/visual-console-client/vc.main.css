@@ -23,12 +23,786 @@
      -moz-user-select: text;
       -ms-user-select: text;
           user-select: text;
+  z-index: 1;
+}
+
+.visual-console-item.is-on-top {
+  z-index: 2;
 }
 
 .visual-console-item.is-editing {
-  border: 2px dashed #33ccff;
+  border: 2px dashed #b2b2b2;
   -webkit-transform: translateX(-2px) translateY(-2px);
           transform: translateX(-2px) translateY(-2px);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.visual-console-item.is-editing.is-selected {
+  border: 2px dashed #2b2b2b;
+  cursor: move;
+}
+.visual-console-item.is-editing > .resize-draggable {
+  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
+  background: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIAoJeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiAKCXhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE1cHgiIGhlaWdodD0iMTVweCIgdmlld0JveD0iMCAwIDE1IDE1IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNSAxNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8bGluZSBmaWxsPSJub25lIiBzdHJva2U9IiNCMkIyQjIiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHgxPSIwLjU2MiIgeTE9IjM2LjMxNyIgeDI9IjE0LjIzMSIgeTI9IjIyLjY0OCIvPgoJPGxpbmUgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjQjJCMkIyIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiB4MT0iNC45NzEiIHkxPSIzNi41OTUiIHgyPSIxNC40MDkiIHkyPSIyNy4xNTUiLz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjEwLjAxNyIgeTE9IjM2LjQzMyIgeDI9IjE0LjIzMSIgeTI9IjMyLjIxOCIvPgoJPGcgaWQ9ImpHRWVLbl8xXyI+CgoJCTxpbWFnZSBvdmVyZmxvdz0idmlzaWJsZSIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM3IiBpZD0iakdFZUtuIiB4bGluazpocmVmPSJkYXRhOmltYWdlL2pwZWc7YmFzZTY0LC85ai80QUFRU2taSlJnQUJBZ0VBU0FCSUFBRC83QUFSUkhWamEza0FBUUFFQUFBQUhnQUEvKzRBSVVGa2IySmxBR1RBQUFBQUFRTUEKRUFNQ0F3WUFBQUdSQUFBQnN3QUFBZ0wvMndDRUFCQUxDd3NNQ3hBTURCQVhEdzBQRnhzVUVCQVVHeDhYRnhjWEZ4OGVGeG9hR2hvWApIaDRqSlNjbEl4NHZMek16THk5QVFFQkFRRUJBUUVCQVFFQkFRRUFCRVE4UEVSTVJGUklTRlJRUkZCRVVHaFFXRmhRYUpob2FIQm9hCkpqQWpIaDRlSGlNd0t5NG5KeWN1S3pVMU1EQTFOVUJBUDBCQVFFQkFRRUJBUUVCQVFQL0NBQkVJQUNZQUx3TUJJZ0FDRVFFREVRSC8KeEFCNUFBRUJBUUVCQUFBQUFBQUFBQUFBQUFBQUFRUUNCZ0VCQUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQVFRREFBQUFBQUFBQUFBQQpBQUFBQVFBeEFnTVFNQklSQUFFQkJnVUZBUUFBQUFBQUFBQUFBQUVDQUJFaFFXRURFQ0J4a1JJd01ZRXlFd1FTQVFBQUFBQUFBQUFBCkFBQUFBQUFBQURELzJnQU1Bd0VBQWhFREVRQUFBUGZBUzV6VFpUa0dQclVMWlFBQUQvL2FBQWdCQWdBQkJRRFQvOW9BQ0FFREFBRUYKQU5QLzJnQUlBUUVBQVFVQXpKZzJTUUJDMmQwdzJiWlN2Vk5jNW9NdUF1UXVBdVJwLzlvQUNBRUNBZ1kvQUIvLzJnQUlBUU1DQmo4QQpILy9hQUFnQkFRRUdQd0RFNlpYbUFZcXR3c0pCSEk5MUdsTXFudlQrZTM3UUwxa1MwYjdYQndBRHJWb1FDUlhHZTVhZTVhZTVhZms5CkgvL1oiIHRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIDEgLTQ2Ljg3NSAtOS44OTA2KSI+CgkJPC9pbWFnZT4KCTwvZz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjEzLjQ4MyIgeTE9IjAuNjQ0IiB4Mj0iMC44MjgiIHkyPSIxMy4zMDEiLz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjEzLjczNCIgeTE9IjUuMTQxIiB4Mj0iNS4zMjUiIHkyPSIxMy41NDkiLz4KCTxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0IyQjJCMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjE0LjIzMSIgeTE9IjkuMzg4IiB4Mj0iOS44MDYiIHkyPSIxMy44MTMiLz4KPC9zdmc+Cg==);
+  cursor: se-resize;
+}
+
+.visual-console-item.is-editing :first-child {
+  pointer-events: none;
+}
+
+@-webkit-keyframes spinner-loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(1turn);
+            transform: rotate(1turn);
+  }
+}
+
+@keyframes spinner-loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(1turn);
+            transform: rotate(1turn);
+  }
+}
+
+.visual-console-spinner {
+  background-color: transparent;
+  margin: 0px auto;
+  border-top: 5px solid rgb(82, 85, 87);
+  border-right: 5px solid rgb(82, 85, 87);
+  border-bottom: 5px solid rgb(82, 85, 87);
+  border-left: 5px solid rgba(82, 85, 87, 0.2);
+
+  -webkit-animation-name: spinner-loading;
+
+          animation-name: spinner-loading;
+  -webkit-animation-duration: 0.8s;
+          animation-duration: 0.8s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+}
+
+.visual-console-spinner,
+.visual-console-spinner :after {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.visual-console-spinner.small,
+.visual-console-spinner.small :after {
+  width: 12px;
+  height: 12px;
+}
+
+.div-visual-console-spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  opacity: 0.7;
+  background: rgb(212, 215, 218);
+  z-index: 2;
+}
+
+.show-elements {
+  display: inline-block;
+}
+
+.hide-elements {
+  display: none;
+}
+
+/*Forms*/
+.div-input-group label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 12pt;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: 600;
+  color: #343434;
+  margin-right: 10px;
+}
+.div-input-group label img {
+  margin-left: 4px;
+}
+
+.div-input-group input[type="text"],
+.div-input-group input[type="number"] {
+  height: 25px;
+  font-size: 10pt;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  padding: 0px 0px 2px 0px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin-right: 10px;
+  padding-left: 2px;
+}
+
+.div-input-group input[type="radio"] {
+  margin-right: 10px;
+  width: 17px;
+  height: 17px;
+}
+
+.div-input-group select {
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: lighter;
+  font-size: 10pt;
+}
+
+.input-groups {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.input-group {
+  width: 100%;
+  margin-bottom: 25px;
+  padding-left: 20px;
+}
+
+.div-ranges-input-group {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+
+.div-ranges-input-group > div {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.div-input-group,
+.div-input-group div div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.div-input-group h3 {
+  text-transform: initial;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  text-align: center;
+  font-style: italic;
+  text-decoration: underline;
+  margin: 0 auto;
+}
+
+.div-input-group div div a {
+  margin-left: 10px;
+}
+
+.div-input-group-autocomplete-agent {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  height: 70px;
+}
+
+.div-input-group-inside {
+  padding-left: 20px;
+}
+
+.input-group-link-console {
+  height: 70px;
+}
+
+.show-elements > div.div-input-group-autocomplete-agent {
+  margin-left: 20px;
+}
+
+.img-vc-elements {
+  margin-left: 10px;
+}
+
+input.error-input-validate[type="number"],
+input.error-input-validate[type="text"],
+select.error-input-validate {
+  border: 1px solid #c00;
+}
+
+select.error-input-validate:focus {
+  outline-color: #c00;
+}
+
+p.error-p-validate {
+  width: 100%;
+  color: #c00;
+}
+
+/* Styles for the solid icons */
+
+.fa {
+  display: inline-block;
+  margin: 0;
+}
+
+.fa,
+.fa > svg,
+.fa.medium,
+.fa.medium > svg {
+  width: 28px;
+  height: 28px;
+}
+
+.fa.fa-small,
+.fa.fa-small > svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fa.fa-large,
+.fa.fa-large > svg {
+  width: 44px;
+  height: 44px;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+          animation: fa-spin 2s infinite linear;
+}
+
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+          animation: fa-spin 1s infinite steps(8);
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autocomplete input {
+  /*background: pink;*/
+}
+.autocomplete-items {
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  /*position the autocomplete items to be the same width as the container:*/
+  position: absolute;
+  z-index: 1;
+  overflow: auto;
+  max-height: 150px;
+  max-width: 250px;
+}
+.autocomplete-items div {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+  border-top: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  width: 100%;
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+/*
+@font-face {
+  font-family: Alarm Clock;
+  src: url(alarm-clock.ttf);
+}
+*/
+
+/* Digital clock */
+
+.visual-console-item .digital-clock {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  justify-items: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.visual-console-item .digital-clock > span {
+  /* To improve legibility */
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
+
+.visual-console-item .digital-clock > span.time {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 50px;
+}
+
+.visual-console-item .digital-clock > span.date {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 25px;
+}
+
+.visual-console-item .digital-clock > span.timezone {
+  font-size: 25px;
+}
+
+/* Analog clock */
+
+.visual-console-item .analogic-clock {
+  text-align: center;
+}
+
+.visual-console-item .analogic-clock .hour-hand {
+  -webkit-animation: rotate-hour 43200s infinite linear;
+          animation: rotate-hour 43200s infinite linear;
+}
+
+.visual-console-item .analogic-clock .minute-hand {
+  -webkit-animation: rotate-minute 3600s infinite linear;
+          animation: rotate-minute 3600s infinite linear;
+}
+
+.visual-console-item .analogic-clock .second-hand {
+  -webkit-animation: rotate-second 60s infinite linear;
+          animation: rotate-second 60s infinite linear;
+}
+
+#html-tabs .ui-widget-header {
+  background-color: #ffffff;
+  border: 0px;
+}
+
+#html-tabs .ui-tabs-anchor {
+  float: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+#html-tabs .ui-tabs-anchor img {
+  margin-right: 10px;
+}
+
+#html-tabs .ui-tabs-nav li {
+  border-radius: 5px 5px 0px 0px;
+}
+
+label span.p-slider {
+  width: 30px;
+}
+
+li.interval-color-ranges > label,
+li#li-default-ranges > label {
+  margin-right: 15px;
+}
+
+li.interval-color-ranges > input[type="number"],
+li#li-default-ranges > input[type="number"] {
+  width: 80px;
+}
+
+li.interval-color-ranges > label:not(:first-child),
+li#li-default-ranges > label:not(:first-child),
+li#li-size-item > label:not(:first-child),
+li#li-position-item > label:not(:first-child) {
+  width: initial;
+  margin-left: 15px;
+}
+
+li#li-image-item label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+li#li-image-item label img {
+  -webkit-box-flex: initial;
+      -ms-flex: initial;
+          flex: initial;
+}
+
+.discovery.modal * {
+  font-weight: normal;
+  color: #343434;
+  font-family: "lato", "Open Sans", sans-serif;
+}
+
+.discovery.modal select {
+  width: 100px;
+}
+
+.discovery.modal div#period_manual select,
+.discovery.modal div#period_manual input,
+.discovery.modal div#period_default select,
+.discovery.modal div#cacheExpiration_manual select,
+.discovery.modal div#cacheExpiration_manual input,
+.discovery.modal div#cacheExpiration_default select {
+  font-size: inherit !important;
+}
+.discovery.modal div#period_default select#period_select,
+.discovery.modal div#cacheExpiration_default select#cacheExpiration_select {
+  max-width: 230px;
+  width: inherit;
+}
+
+li#li-timeZone-item > label:not(:first-child),
+.discovery.modal li#div-textarea-label > label {
+  -webkit-box-flex: inherit;
+      -ms-flex: inherit;
+          flex: inherit;
+}
+
+li#li-timeZone-item > select:not(:first-child) {
+  margin-left: 10px;
+}
+
+.discovery.modal li#div-textarea-label table tbody td.mceIframeContainer {
+  background-color: #ededed;
+}
+
+/*style item group show statistic*/
+.group-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+.group-container .group-item-title {
+  width: 100%;
+  height: 30%;
+  background-color: #9d9ea0;
+  color: black;
+  font-weight: bold;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.group-container .group-item-info {
+  width: 100%;
+  height: 70%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  padding: 2%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.group-container .group-item-info .group-item-info-container {
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 80px;
+          flex: 1 1 80px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  border-radius: 2px;
+  height: 100%;
+  max-height: 50px;
+  margin: 5px;
+}
+
+.group-container .group-item-info .group-item-info-container .value-style {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  color: #fff;
+  font-size: 100%;
+  padding: 5px;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.group-container .group-item-info .group-item-info-container .name-style {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  background-color: white;
+  color: black;
+  font-size: 100%;
+  padding: 5px;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+div.label,
+div.simple-value {
+  display: inline-table;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+  min-height: -webkit-fit-content;
+  min-height: -moz-fit-content;
+  min-height: fit-content;
+}
+
+/* Styles for the solid icons */
+
+.fa {
+  display: inline-block;
+  margin: 0;
+}
+
+.fa,
+.fa > svg,
+.fa.medium,
+.fa.medium > svg {
+  width: 28px;
+  height: 28px;
+}
+
+.fa.fa-small,
+.fa.fa-small > svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fa.fa-large,
+.fa.fa-large > svg {
+  width: 44px;
+  height: 44px;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+          animation: fa-spin 2s infinite linear;
+}
+
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+          animation: fa-spin 1s infinite steps(8);
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autocomplete input {
+  /*background: pink;*/
+}
+.autocomplete-items {
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  /*position the autocomplete items to be the same width as the container:*/
+  position: absolute;
+  z-index: 1;
+  overflow: auto;
+  max-height: 150px;
+  max-width: 250px;
+}
+.autocomplete-items div {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+  border-top: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  width: 100%;
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
 }
 
 @font-face {
@@ -58,14 +832,16 @@
 }
 
 .visual-console-item .digital-clock > span {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
-  font-size: 50px;
-
   /* To improve legibility */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
+
+.visual-console-item .digital-clock > span.time {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 50px;
 }
 
 .visual-console-item .digital-clock > span.date {

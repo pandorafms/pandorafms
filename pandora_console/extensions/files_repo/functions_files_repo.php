@@ -193,7 +193,7 @@ function files_repo_add_file($file_input_name='upfile', $description='', $groups
     global $config;
 
     $attachment_path = io_safe_output($config['attachment_store']);
-    $files_repo_path = $attachment_path.'/'.'files_repo';
+    $files_repo_path = $attachment_path.'/files_repo';
 
     $result = [];
     $result['status'] = false;

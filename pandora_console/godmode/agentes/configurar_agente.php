@@ -486,6 +486,7 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
+
     $total_incidents = agents_get_count_incidents($id_agente);
 
     // Incident tab.
@@ -546,6 +547,7 @@ if ($id_agente) {
                 'group'        => $grouptab,
                 'gis'          => $gistab,
                 'agent_wizard' => $agent_wizard,
+
             ];
         }
 
@@ -696,25 +698,28 @@ if ($id_agente) {
         break;
     }
 
-    ui_print_page_header(
-        agents_get_alias($id_agente),
-        'images/setup.png',
-        false,
-        $help_header,
-        true,
-        $onheader,
-        false,
-        '',
-        $config['item_title_size_text'],
-        '',
-        ui_print_breadcrums(
-            [
-                __('Resources'),
-                __('Manage agents'),
-                '<span class="breadcrumb_active">'.$tab_name.'</span>',
-            ]
-        )
-    );
+    $pure = get_parameter('pure', 0);
+    if (!$pure) {
+        ui_print_page_header(
+            agents_get_alias($id_agente),
+            'images/setup.png',
+            false,
+            $help_header,
+            true,
+            $onheader,
+            false,
+            '',
+            $config['item_title_size_text'],
+            '',
+            ui_print_breadcrums(
+                [
+                    __('Resources'),
+                    __('Manage agents'),
+                    '<span class="breadcrumb_active">'.$tab_name.'</span>',
+                ]
+            )
+        );
+    }
 } else {
     // Create agent.
     ui_print_page_header(
@@ -1213,7 +1218,7 @@ if ($update_module || $create_module) {
 
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
-    $min = (int) get_parameter_post('min');
+    $min = (int) get_parameter('min');
     $max = (int) get_parameter('max');
     $interval = (int) get_parameter('module_interval', $intervalo);
     $ff_interval = (int) get_parameter('module_ff_interval');
@@ -1276,18 +1281,10 @@ if ($update_module || $create_module) {
                 $m_hide = $m['hide'];
             }
 
-            if ($update_module) {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
-                } else {
-                    $macros[$k]['value'] = get_parameter($m['macro'], '');
-                }
+            if ($m_hide == '1') {
+                $macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
             } else {
-                if ($m_hide == '1') {
-                    $macros[$k]['value'] = io_input_password($macros_names[$k]);
-                } else {
-                    $macros[$k]['value'] = $macros_names[$k];
-                }
+                $macros[$k]['value'] = get_parameter($m['macro'], '');
             }
         }
 
@@ -1338,7 +1335,7 @@ if ($update_module || $create_module) {
     // Change double quotes by single.
     $snmp_oid = preg_replace('/&quot;/', '&#039;', $snmp_oid);
 
-    if (empty($snmp_oid)) {
+    if (empty($snmp_oid) === true) {
         // The user did not set any OID manually but did a SNMP walk.
         $snmp_oid = (string) get_parameter('select_snmp_oid');
     }
@@ -1347,18 +1344,30 @@ if ($update_module || $create_module) {
         // New support for snmp v3.
         $tcp_send = (string) get_parameter('snmp_version');
         $plugin_user = (string) get_parameter('snmp3_auth_user');
-        $plugin_pass = io_input_password((string) get_parameter('snmp3_auth_pass'));
+        $plugin_pass = io_input_password(
+            (string) get_parameter('snmp3_auth_pass')
+        );
         $plugin_parameter = (string) get_parameter('snmp3_auth_method');
 
         $custom_string_1 = (string) get_parameter('snmp3_privacy_method');
-        $custom_string_2 = io_input_password((string) get_parameter('snmp3_privacy_pass'));
+        $custom_string_2 = io_input_password(
+            (string) get_parameter('snmp3_privacy_pass')
+        );
         $custom_string_3 = (string) get_parameter('snmp3_security_level');
+    } else if ($id_module_type >= 34 && $id_module_type <= 37) {
+        $tcp_send = (string) get_parameter('command_text');
+        $custom_string_1 = (string) get_parameter(
+            'command_credential_identifier'
+        );
+        $custom_string_2 = (string) get_parameter('command_os');
     } else {
         $plugin_user = (string) get_parameter('plugin_user');
         if (get_parameter('id_module_component_type') == 7) {
             $plugin_pass = (int) get_parameter('plugin_pass');
         } else {
-            $plugin_pass = io_input_password((string) get_parameter('plugin_pass'));
+            $plugin_pass = io_input_password(
+                (string) get_parameter('plugin_pass')
+            );
         }
 
         $plugin_parameter = (string) get_parameter('plugin_parameter');
@@ -1366,7 +1375,11 @@ if ($update_module || $create_module) {
 
     $parent_module_id = (int) get_parameter('parent_module_id');
     $ip_target = (string) get_parameter('ip_target');
-    if ($ip_target == '') {
+    // No autofill if the module is a webserver module.
+    if ($ip_target == ''
+        && $id_module_type < MODULE_WEBSERVER_CHECK_LATENCY
+        && $id_module_type > MODULE_WEBSERVER_RETRIEVE_STRING_DATA
+    ) {
         $ip_target = 'auto';
     }
 
@@ -1386,14 +1399,10 @@ if ($update_module || $create_module) {
     $ff_event_normal = (int) get_parameter('ff_event_normal');
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
-    $ff_type = (int) get_parameter('ff_type');
-    $each_ff = (int) get_parameter('each_ff');
+    $ff_type = (int) get_parameter('ff_type', $module['ff_type']);
+    $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
-    $unit = (string) get_parameter('unit_select');
-    if ($unit == 'none') {
-        $unit = (string) get_parameter('unit_text');
-    }
-
+    $unit = (string) get_parameter('unit');
     $id_tag = (array) get_parameter('id_tag_selected');
     $serialize_ops = (string) get_parameter('serialize_ops');
     $critical_instructions = (string) get_parameter('critical_instructions');
@@ -1567,8 +1576,14 @@ if ($update_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -1765,8 +1780,14 @@ if ($create_module) {
 
         foreach ($plugin_parameter_split as $key => $value) {
             if ($key == 1) {
-                $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
                 $values['plugin_parameter'] .= $value.'&#x0a;';
             } else {
                 $values['plugin_parameter'] .= $value.'&#x0a;';
@@ -2103,8 +2124,7 @@ if ($delete_module) {
     }
 }
 
-// MODULE DUPLICATION
-// ==================.
+// MODULE DUPLICATION.
 if (!empty($duplicate_module)) {
     // DUPLICATE agent module !
     $id_duplicate_module = $duplicate_module;
@@ -2150,8 +2170,46 @@ if (!empty($duplicate_module)) {
     }
 }
 
-// UPDATE GIS
-// ==========.
+// MODULE ENABLE/DISABLE.
+if ($enable_module) {
+    $result = modules_change_disabled($enable_module, 0);
+    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
+    $modulo_nombre = $modulo_nombre['nombre'];
+
+    if ($result === NOERR) {
+        enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
+        db_pandora_audit('Module management', 'Enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    } else {
+        db_pandora_audit('Module management', 'Fail to enable #'.$enable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully enabled'),
+        __('Could not be enabled')
+    );
+}
+
+if ($disable_module) {
+    $result = modules_change_disabled($disable_module, 1);
+    $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$disable_module.'');
+    $modulo_nombre = $modulo_nombre['nombre'];
+
+    if ($result === NOERR) {
+        enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
+        db_pandora_audit('Module management', 'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    } else {
+        db_pandora_audit('Module management', 'Fail to disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']);
+    }
+
+    ui_print_result_message(
+        $result,
+        __('Successfully disabled'),
+        __('Could not be disabled')
+    );
+}
+
+// UPDATE GIS.
 $updateGIS = get_parameter('update_gis', 0);
 if ($updateGIS) {
     $updateGisData = get_parameter('update_gis_data');
@@ -2225,6 +2283,10 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
+if ($_SESSION['create_module'] && $config['welcome_state'] == 1) {
+    $edit_module = true;
+}
+
 switch ($tab) {
     case 'main':
         include 'agent_manager.php';
@@ -2239,8 +2301,11 @@ switch ($tab) {
     break;
 
     case 'alert':
-        // Because $id_agente is set, it will show only agent alerts.
-        // This var is for not display create button on alert list.
+        /*
+         * Because $id_agente is set, it will show only agent alerts
+         * This var is for not display create button on alert list
+         */
+
         $dont_display_alert_create_bttn = true;
         include 'godmode/alerts/alert_list.php';
     break;

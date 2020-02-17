@@ -18,7 +18,7 @@ check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Profile Management'
@@ -320,24 +320,29 @@ if ($id_profile || $new_profile) {
     $table->data['IM'] = $row;
     $table->data[] = '<hr>';
 
+    $disable_option = 'javascript: return false;';
+    if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
+        $disable_option = '';
+    }
+
     // Users
     $row = [];
     $row['name'] = __('Manage users');
-    $row['input'] = html_print_checkbox('user_management', 1, $user_management, true);
+    $row['input'] = html_print_checkbox('user_management', 1, $user_management, true, false, $disable_option);
     $table->data['UM'] = $row;
     $table->data[] = '<hr>';
 
     // DB
     $row = [];
     $row['name'] = __('Manage database');
-    $row['input'] = html_print_checkbox('db_management', 1, $db_management, true);
+    $row['input'] = html_print_checkbox('db_management', 1, $db_management, true, false, $disable_option);
     $table->data['DM'] = $row;
     $table->data[] = '<hr>';
 
     // Pandora
     $row = [];
     $row['name'] = __('%s management', get_product_name());
-    $row['input'] = html_print_checkbox('pandora_management', 1, $pandora_management, true);
+    $row['input'] = html_print_checkbox('pandora_management', 1, $pandora_management, true, false, $disable_option);
     $table->data['PM'] = $row;
     $table->data[] = '<hr>';
 
@@ -359,3 +364,18 @@ if ($id_profile || $new_profile) {
 }
 
 enterprise_hook('close_meta_frame');
+
+?>
+
+<script type="text/javascript" language="javascript">   
+    $(document).ready (function () {
+        var disable_option = '<?php echo $disable_option; ?>';
+
+        if (disable_option != '') {  
+            var ids = ['#checkbox-db_management', '#checkbox-user_management', '#checkbox-pandora_management']; 
+            ids.forEach(id => {
+                $(id).css({'cursor':'not-allowed', 'opacity':'0.5'});
+            });
+        } 
+    });
+</script>

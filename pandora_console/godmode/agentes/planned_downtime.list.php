@@ -52,7 +52,7 @@ if ($migrate_malformed) {
 
 // Header.
 ui_print_page_header(
-    __('Planned Downtime'),
+    __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
     'planned_downtime',
@@ -136,9 +136,6 @@ $table_form = new StdClass();
 $table_form->class = 'databox filters';
 $table_form->width = '100%';
 $table_form->rowstyle = [];
-$table_form->rowstyle[0] = 'background-color: #f9faf9;';
-$table_form->rowstyle[1] = 'background-color: #f9faf9;';
-$table_form->rowstyle[2] = 'background-color: #f9faf9;';
 $table_form->data = [];
 
 $row = [];
@@ -355,12 +352,12 @@ if (!empty($groups)) {
 
 // No downtimes cause the user has not anyone.
 if (!$downtimes && !$filter_performed) {
-    include_once $config['homedir'].'/general/firts_task/planned_downtime.php';
+    include_once $config['homedir'].'/general/first_task/planned_downtime.php';
 }
 // No downtimes cause the user performed a search.
 else if (!$downtimes) {
     // Filter form.
-    echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
+    echo "<form method='post' action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'>";
         html_print_table($table_form);
     echo '</form>';
 
@@ -372,7 +369,7 @@ else if (!$downtimes) {
     // Create button.
     if ($write_permisson) {
         echo '&nbsp;';
-        echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
         html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
         echo '</form>';
     }
@@ -381,11 +378,11 @@ else if (!$downtimes) {
 }
 // Has downtimes.
 else {
-    echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
+    echo "<form method='post' action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'>";
         html_print_table($table_form);
     echo '</form>';
 
-    ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
+    ui_pagination($downtimes_number, "index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
 
     // User groups with AR, AD or AW permission.
     $groupsAD = users_get_groups($config['id_user'], $access);
@@ -479,7 +476,7 @@ else {
         if (in_array($downtime['id_group'], $groupsAD)) {
             // Stop button
             if ($downtime['type_execution'] == 'once' && $downtime['executed'] == 1) {
-                $data['stop'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                $data['stop'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
             } else {
                 $data['stop'] = '';
             }
@@ -487,12 +484,12 @@ else {
             // Edit & delete buttons.
             if ($downtime['executed'] == 0) {
                 // Edit.
-                $data['edit'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
+                $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
                 // Delete.
-                $data['delete'] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+                $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]);
             } else if ($downtime['executed'] == 1 && $downtime['type_execution'] == 'once') {
                 // Edit.
-                $data['edit'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
+                $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
                 // Delete.
                 $data['delete'] = __('N/A');
             } else {
@@ -518,7 +515,7 @@ else {
     }
 
     html_print_table($table);
-    ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($downtimes_number, "index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset, 0, false, 'offset', true, 'pagination-bottom');
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
     // CSV export button.
@@ -535,7 +532,7 @@ else {
     // Create button.
     if ($write_permisson) {
         echo '&nbsp;';
-        echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
         html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
         echo '</form>';
     }
@@ -562,7 +559,7 @@ $(document).ready (function () {
 
     if (<?php echo json_encode($malformed_downtimes_exist); ?> && <?php echo json_encode($migrate_malformed == false); ?>) {
         if (confirm("<?php echo __('WARNING: There are malformed planned downtimes').'.\n'.__('Do you want to migrate automatically the malformed items?'); ?>")) {
-            window.location.href = "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
+            window.location.href = "index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
         }
     }
 });

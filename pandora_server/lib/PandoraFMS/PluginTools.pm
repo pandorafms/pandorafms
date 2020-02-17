@@ -22,6 +22,7 @@ use Socket qw(inet_ntoa inet_aton);
 use File::Copy;
 use Scalar::Util qw(looks_like_number);
 use Time::HiRes qw(time);
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime setsid floor);
 use MIME::Base64;
 use JSON qw(decode_json encode_json);
@@ -31,8 +32,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.735";
-my $pandora_build = "190619";
+my $pandora_version = "7.0NG.743";
+my $pandora_build = "200217";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -762,7 +763,7 @@ sub transfer_xml {
 	my $file_path;
 
 	if (! (empty ($name))) {
-		$file_name = $name . "." . sprintf("%d",time()) . ".data";
+		$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
 	}
 	else {
 		# Inherit file name
@@ -2382,7 +2383,7 @@ sub get_unix_time {
 	eval {
 		use Time::Local;
 		my ($mday,$mon,$year,$hour,$min,$sec) = split(/[\s$separator_dates$separator_hours]+/, $str_time);
-		$time = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+		$time = strftime("%s", $sec,$min,$hour,$mday,$mon-1,$year);
 	};
 	if ($@) {
 		return 0;

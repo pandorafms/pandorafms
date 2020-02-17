@@ -373,93 +373,80 @@ if (is_metaconsole()) {
     echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'IW', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
     echo '</tr>';
 
-    echo '<tr id="filter_toggle">';
-    echo '<td colspan="5">';
-    html_print_image(
-        'images/darrowdown.png',
-        false,
-        [
-            'onclick' => 'toggleFilters(event)',
-            'style'   => 'cursor: pointer;',
-            'id'      => 'nf-toggle-button',
-        ]
-    );
-    echo __('Advanced');
-    echo '</td>';
-    echo '</tr>';
+    $advanced_toggle = '<table style="width:100%">';
 
-    echo '<tr class="nf_filter">';
+    $advanced_toggle .= '<tr>';
     if ($netflow_disable_custom_lvfilters) {
-        echo '<td></td>';
-        echo '<td></td>';
+        $advanced_toggle .= '<td></td>';
+        $advanced_toggle .= '<td></td>';
     } else {
-        echo '<td><b>'.__('Filter').'</b></td>';
-        echo '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
+        $advanced_toggle .= '<td><b>'.__('Filter').'</b></td>';
+        $advanced_toggle .= '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
     }
 
 
 
-    echo '<td><b>'.__('Load filter').'</b></td>';
+    $advanced_toggle .= '<td><b>'.__('Load filter').'</b></td>';
     $user_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
     $user_groups[0] = 0;
     // Add all groups.
     $sql = 'SELECT *
 		FROM tnetflow_filter
 		WHERE id_group IN ('.implode(',', array_keys($user_groups)).')';
-    echo "<td colspan='3'>".html_print_select_from_sql($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true);
-    html_print_input_hidden('filter_selected', $filter_selected, false);
-    echo '</td>';
-    echo '</tr>';
+    $advanced_toggle .= "<td colspan='3'>".html_print_select_from_sql($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true);
+    $advanced_toggle .= html_print_input_hidden('filter_selected', $filter_selected, false);
+    $advanced_toggle .= '</td>';
+    $advanced_toggle .= '</tr>';
 
-    echo "<tr class='filter_normal nf_filter'>";
+    $advanced_toggle .= "<tr class='filter_normal'>";
     if ($netflow_disable_custom_lvfilters) {
-        echo '<td></td>';
-        echo '<td></td>';
+        $advanced_toggle .= '<td></td>';
+        $advanced_toggle .= '<td></td>';
     } else {
-        echo "<td style='font-weight:bold;'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
-        echo '<td colspan="2">'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 40, 80, true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
+        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 40, 80, true).'</td>';
     }
 
     if ($netflow_disable_custom_lvfilters) {
-        echo '<td></td>';
-        echo '<td></td>';
+        $advanced_toggle .= '<td></td>';
+        $advanced_toggle .= '<td></td>';
     } else {
-        echo "<td style='font-weight:bold;'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
-        echo '<td colspan="2">'.html_print_input_text('ip_src', $filter['ip_src'], false, 40, 80, true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
+        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_src', $filter['ip_src'], false, 40, 80, true).'</td>';
     }
 
-    echo '</tr>';
+    $advanced_toggle .= '</tr>';
 
-    echo "<tr class='filter_normal nf_filter'>";
+    $advanced_toggle .= "<tr class='filter_normal'>";
     if ($netflow_disable_custom_lvfilters) {
-        echo '<td></td>';
-        echo '<td></td>';
+        $advanced_toggle .= '<td></td>';
+        $advanced_toggle .= '<td></td>';
     } else {
-        echo "<td style='font-weight:bold;'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
-        echo '<td colspan="2">'.html_print_input_text('dst_port', $filter['dst_port'], false, 40, 80, true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
+        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('dst_port', $filter['dst_port'], false, 40, 80, true).'</td>';
     }
 
     if ($netflow_disable_custom_lvfilters) {
-        echo '<td></td>';
-        echo '<td></td>';
+        $advanced_toggle .= '<td></td>';
+        $advanced_toggle .= '<td></td>';
     } else {
-        echo "<td style='font-weight:bold;'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
-        echo '<td colspan="2">'.html_print_input_text('src_port', $filter['src_port'], false, 40, 80, true).'</td>';
+        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
+        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('src_port', $filter['src_port'], false, 40, 80, true).'</td>';
     }
 
-    echo '</tr>';
+    $advanced_toggle .= '</tr>';
 
-    echo "<tr class='filter_advance nf_filter' style='display: none;'>";
+    $advanced_toggle .= "<tr class='filter_advance' style='display: none;'>";
     if ($netflow_disable_custom_lvfilters) {
-        echo '<td></td>';
-        echo '<td></td>';
+        $advanced_toggle .= '<td></td>';
+        $advanced_toggle .= '<td></td>';
     } else {
-        echo '<td>'.ui_print_help_icon('pcap_filter', true).'</td>';
-        echo "<td colspan='5'>".html_print_textarea('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true).'</td>';
+        $advanced_toggle .= '<td>'.ui_print_help_icon('pcap_filter', true).'</td>';
+        $advanced_toggle .= "<td colspan='5'>".html_print_textarea('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true).'</td>';
     }
 
-    echo '</tr>';
-    echo '<tr class="nf_filter">';
+    $advanced_toggle .= '</tr>';
+    $advanced_toggle .= '<tr>';
 
     $onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
     $radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended(
@@ -479,14 +466,28 @@ if (is_metaconsole()) {
         $address_resolution,
         true
     );
-    echo '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
-    echo '<td colspan="2">'.$radio_buttons.'</td>';
+    $advanced_toggle .= '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
+    $advanced_toggle .= '<td colspan="2">'.$radio_buttons.'</td>';
 
-    echo '<td><b>'.__('Source ip').'</b></td>';
-    echo '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
+    $advanced_toggle .= '<td><b>'.__('Source ip').'</b></td>';
+    $advanced_toggle .= '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
 
-    echo '</tr>';
+    $advanced_toggle .= '</tr>';
 
+    $advanced_toggle .= '</table>';
+
+    echo '<tr><td colspan="6">';
+    echo ui_toggle(
+        $advanced_toggle,
+        __('Advanced'),
+        '',
+        '',
+        true,
+        true,
+        'white_box white_box_opened',
+        'no-border flex-row'
+    );
+    echo '</td></tr>';
     echo '</table>';
 
     echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
@@ -600,21 +601,6 @@ if (is_metaconsole()) {
         
         return true;
     };
-
-    function toggleFilters (event) {
-        // Display or show the items.
-        var is_advanced = $("#radiobtn0001").is(':checked');
-        var class_name = is_advanced ? ".filter_advance" : ".filter_normal";
-        $(".nf_filter").not(class_name).toggle();
-
-        // Change the image.
-        $('#' + event.target.id).attr(
-            'src',
-            $(".nf_filter").not(class_name).first().is(':visible')
-                ? 'images/darrowup.png'
-                : 'images/darrowdown.png'
-        );
-    }
 
     // Display the appropriate filter
     var filter_type = <?php echo $filter_type; ?>;
@@ -768,7 +754,7 @@ if (is_metaconsole()) {
     }
 </script>
 <style type="text/css">
-.nf_filter, .nf_hidden {
+.nf_hidden {
   display: none;
 }
 </style>

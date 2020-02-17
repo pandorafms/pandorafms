@@ -1,0 +1,24 @@
+#welcome_panel {
+  display: flex;
+  flex-direction: row;
+}
+
+#overview {
+  width: 30em;
+  min-width: 30em;
+  margin-top: 15px;
+  align-self: start;
+}
+#right {
+  flex: 1;
+}
+
+#news {
+  flex: 1 1 auto;
+  margin: 15px;
+}
+
+#activity {
+  flex: 1 1 auto;
+  margin: 15px;
+}

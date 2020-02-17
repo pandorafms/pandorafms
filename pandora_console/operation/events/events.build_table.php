@@ -29,7 +29,7 @@ $table->id = 'eventtable';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 if (!isset($table->class)) {
-    $table->class = 'databox data';
+    $table->class = 'info_table';
 }
 
 $table->head = [];
@@ -91,11 +91,11 @@ if ($group_rep == 2) {
         if ($res['event_type'] == 'alert_fired') {
             $table->rowstyle[$key] = 'background: #FFA631;';
         } else if ($res['event_type'] == 'going_up_critical' || $res['event_type'] == 'going_down_critical') {
-            $table->rowstyle[$key] = 'background: #FC4444;';
+            $table->rowstyle[$key] = 'background: #e63c52;';
         } else if ($res['event_type'] == 'going_up_warning' || $res['event_type'] == 'going_down_warning') {
-            $table->rowstyle[$key] = 'background: #FAD403;';
+            $table->rowstyle[$key] = 'background: #f3b200;';
         } else if ($res['event_type'] == 'going_up_normal' || $res['event_type'] == 'going_down_normal') {
-            $table->rowstyle[$key] = 'background: #80BA27;';
+            $table->rowstyle[$key] = 'background: #82b92e;';
         } else if ($res['event_type'] == 'going_unknown') {
             $table->rowstyle[$key] = 'background: #B2B2B2;';
         }
@@ -990,12 +990,12 @@ if ($group_rep == 2) {
                 html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
                 echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
                 echo '</form>';
-                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#FC4444; line-height: 200%;">';
+                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
                 echo __(
                     'A maximum of %s event custom responses can be selected',
                     $config['max_execution_event_response']
                 ).'</span>';
-                echo '<span id="max_custom_selected" style="display:none; color:#FC4444; line-height: 200%;">';
+                echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
                 echo __(
                     'Please, select an event'
                 ).'</span>';

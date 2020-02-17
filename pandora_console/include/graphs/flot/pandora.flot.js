@@ -1,5 +1,6 @@
 /* global $ */
 
+// eslint-disable-next-line no-unused-vars
 function pandoraFlotPie(
   graph_id,
   values,
@@ -14,7 +15,7 @@ function pandoraFlotPie(
   colors,
   hide_labels
 ) {
-  var labels = labels.split(separator);
+  labels = labels.split(separator);
   var data = values.split(separator);
 
   if (colors != "") {
@@ -72,8 +73,9 @@ function pandoraFlotPie(
     case "right":
     case "inner":
       conf_pie.legend.container = $("#" + graph_id + "_legend");
+      break;
     default:
-      //TODO FOR TOP OR LEFT OR RIGHT
+      // TODO FOR TOP OR LEFT OR RIGHT.
       break;
   }
 
@@ -84,7 +86,7 @@ function pandoraFlotPie(
 
   // Events
   $("#" + graph_id).bind("plothover", pieHover);
-  $("#" + graph_id).bind("plotclick", pieClick);
+  //$("#" + graph_id).bind("plotclick", pieClick);
   $("#" + graph_id).bind("mouseout", resetInteractivity);
   $("#" + graph_id).css("margin-left", "auto");
   $("#" + graph_id).css("margin-right", "auto");
@@ -92,7 +94,7 @@ function pandoraFlotPie(
   function pieHover(event, pos, obj) {
     if (!obj) return;
 
-    index = obj.seriesIndex;
+    var index = obj.seriesIndex;
     legends.css("color", "#3F3F3D");
     legends.eq(index).css("color", "");
   }
@@ -124,6 +126,7 @@ function pandoraFlotPie(
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function pandoraFlotPieCustom(
   graph_id,
   values,
@@ -144,21 +147,14 @@ function pandoraFlotPieCustom(
     .pop()
     .split(".")
     .shift();
-  var labels = labels.split(separator);
-  var legend = legend.split(separator);
+  labels = labels.split(separator);
+  legend = legend.split(separator);
   var data = values.split(separator);
   var no_data = 0;
   if (colors != "") {
     colors = colors.split(separator);
   }
-  var colors_data = [
-    "#FC4444",
-    "#FFA631",
-    "#FAD403",
-    "#5BB6E5",
-    "#F2919D",
-    "#80BA27"
-  ];
+
   var color = null;
   for (var i = 0; i < data.length; i++) {
     if (colors != "") {
@@ -175,26 +171,28 @@ function pandoraFlotPieCustom(
   if (width <= 450) {
     show_legend = false;
     label_conf = {
-      show: false
-    };
-  } else {
-    label_conf = {
       show: true,
-      radius: 0.75,
+      radius: 5 / 8,
       formatter: function(label, series) {
         return (
           '<div style="font-size:' +
           font_size +
-          "pt;" +
-          'text-align:center;padding:2px;color:white;">' +
-          series.percent.toFixed(2) +
-          "%</div>"
+          "pt; font-weight:bolder;" +
+          "text-align:center;padding:2px;color:rgb(63, 63, 61)" +
+          '">' +
+          label +
+          ":<br>" +
+          series.data[0][1] +
+          "</div>"
         );
       },
       background: {
-        opacity: 0.5,
-        color: ""
+        opacity: 0.5
       }
+    };
+  } else {
+    label_conf = {
+      show: false
     };
   }
 
@@ -203,8 +201,8 @@ function pandoraFlotPieCustom(
       pie: {
         show: true,
         radius: 3 / 4,
-        innerRadius: 0.4
-        //label: label_conf
+        innerRadius: 0.4,
+        label: label_conf
       }
     },
     legend: {
@@ -234,7 +232,7 @@ function pandoraFlotPieCustom(
   var legends = $("#" + graph_id + " .legendLabel");
   var j = 0;
   legends.each(function() {
-    //$(this).css('width', $(this).width());
+    //$(this).css("width", $(this).width());
     $(this).css("font-size", font_size + "pt");
     $(this).removeClass("legendLabel");
     $(this).addClass(font);
@@ -264,19 +262,6 @@ function pandoraFlotPieCustom(
     return false;
   });
 
-  var pielegends = $("#" + graph_id + " .pieLabelBackground");
-  pielegends.each(function() {
-    $(this)
-      .css("transform", "rotate(-35deg)")
-      .css("color", "black");
-  });
-  var labelpielegends = $("#" + graph_id + " .pieLabel");
-  labelpielegends.each(function() {
-    $(this)
-      .css("transform", "rotate(-35deg)")
-      .css("color", "black");
-  });
-
   // Events
   $("#" + graph_id).bind("plothover", pieHover);
   $("#" + graph_id).bind("plotclick", Clickpie);
@@ -287,16 +272,17 @@ function pandoraFlotPieCustom(
   function pieHover(event, pos, obj) {
     if (!obj) return;
 
-    index = obj.seriesIndex;
+    var index = obj.seriesIndex;
     legends.css("color", "#3F3F3D");
     legends.eq(index).css("color", "");
   }
 
   function Clickpie(event, pos, obj) {
     if (!obj) return;
-    percent = parseFloat(obj.series.percent).toFixed(2);
-    valor = parseFloat(obj.series.data[0][1]);
+    var percent = parseFloat(obj.series.percent).toFixed(2);
+    var valor = parseFloat(obj.series.data[0][1]);
 
+    var value = "";
     if (valor > 1000000) {
       value = Math.round((valor / 1000000) * 100) / 100;
       value = value + "M";
@@ -325,49 +311,13 @@ function pandoraFlotPieCustom(
       $("#watermark_image_" + graph_id).attr("src")
     );
   }
-  /*
-	window.onresize = function(event) {
-        $.plot($('#' + graph_id), data, conf_pie);
-        if (no_data == data.length) {
-			$('#'+graph_id+' .overlay').remove();
-			$('#'+graph_id+' .base').remove();
-			$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
-		}
-		var legends = $('#'+graph_id+' .legendLabel');
-		var j = 0;
-		legends.each(function () {
-			//$(this).css('width', $(this).width());
-			$(this).css('font-size', font_size+'pt');
-			$(this).removeClass("legendLabel");
-			$(this).addClass(font);
-			$(this).text(legend[j]);
-			j++;
-		});
-
-		if ($('input[name="custom_graph"]').val()) {
-			$('.legend>div').css('right',($('.legend>div').height()*-1));
-			$('.legend>table').css('right',($('.legend>div').height()*-1));
-		}
-		//$('.legend>table').css('border',"1px solid #E2E2E2");
-		$('.legend>table').css('background-color',"transparent");
-
-		var pielegends = $('#'+graph_id+' .pieLabelBackground');
-		pielegends.each(function () {
-			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
-		});
-		var labelpielegends = $('#'+graph_id+' .pieLabel');
-		labelpielegends.each(function () {
-			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
-		});
-    }
-*/
 }
 
+// eslint-disable-next-line no-unused-vars
 function pandoraFlotHBars(
   graph_id,
   values,
   labels,
-  water_mark,
   maxvalue,
   water_mark,
   separator,
@@ -380,12 +330,12 @@ function pandoraFlotHBars(
   max
 ) {
   var colors_data = [
-    "#FC4444",
+    "#e63c52",
     "#FFA631",
-    "#FAD403",
+    "#f3b200",
     "#5BB6E5",
     "#F2919D",
-    "#80BA27"
+    "#82b92e"
   ];
   values = values.split(separator2);
   font = font
@@ -398,7 +348,7 @@ function pandoraFlotHBars(
     var serie = values[i].split(separator);
 
     var aux = new Array();
-    for (j = 0; j < serie.length; j++) {
+    for (var j = 0; j < serie.length; j++) {
       var aux2 = parseFloat(serie[j]);
       aux.push([aux2, j]);
       datas.push({
@@ -410,16 +360,10 @@ function pandoraFlotHBars(
 
   var labels_total = new Array();
   labels = labels.split(separator);
-  i = 0;
-  for (i = 0; i < labels.length; i++) {
+  for (var i = 0; i < labels.length; i++) {
     labels_total.push([i, labels[i]]);
   }
 
-  var stack = 0,
-    bars = true,
-    lines = false,
-    steps = false;
-  var k = 0;
   var options = {
     series: {
       bars: {
@@ -480,15 +424,14 @@ function pandoraFlotHBars(
   $("#" + graph_id).HUseTooltip();
   $("#" + graph_id).css("margin-left", "auto");
   $("#" + graph_id).css("margin-right", "auto");
-  //~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 
-  function yFormatter(v, axis) {
-    format = new Array();
-    for (i = 0; i < labels_total.length; i++) {
+  // v, axis;
+  function yFormatter() {
+    var format = new Array();
+    for (var i = 0; i < labels_total.length; i++) {
       var label = labels_total[i][1];
       // var shortLabel = reduceText(label, 25);
       var title = label;
-      var margin_top = 0;
       if (label.length > 30) {
         label = reduceText(label, 30);
       }
@@ -512,9 +455,10 @@ function pandoraFlotHBars(
     return format;
   }
 
-  function xFormatter(v, axis) {
-    label = parseFloat(v);
-    text = label.toLocaleString();
+  // v, axis;
+  function xFormatter(v) {
+    var label = parseFloat(v);
+    var text = label.toLocaleString();
     if (label >= 1000000) text = text.substring(0, 4) + "M";
     else if (label >= 100000) text = text.substring(0, 3) + "K";
     else if (label >= 1000) text = text.substring(0, 2) + "K";
@@ -552,7 +496,7 @@ $.fn.HUseTooltip = function() {
         $("#tooltip").remove();
 
         var x = item.datapoint[0];
-        var y = item.datapoint[1];
+        // var y = item.datapoint[1];
 
         var color = item.series.color;
         showTooltip(pos.pageX, pos.pageY, color, "<strong>" + x + "</strong>");
@@ -575,7 +519,7 @@ $.fn.VUseTooltip = function() {
 
         $("#tooltip").remove();
 
-        var x = item.datapoint[0];
+        // var x = item.datapoint[0];
         var y = item.datapoint[1];
 
         var color = item.series.color;
@@ -607,6 +551,7 @@ function showTooltip(x, y, color, contents) {
     .fadeIn(200);
 }
 
+// eslint-disable-next-line no-unused-vars
 function pandoraFlotVBars(
   graph_id,
   values,
@@ -614,7 +559,6 @@ function pandoraFlotVBars(
   labels_long,
   legend,
   colors,
-  water_mark,
   maxvalue,
   water_mark,
   separator,
@@ -639,14 +583,14 @@ function pandoraFlotVBars(
   var colors_data =
     colors.length > 0
       ? colors
-      : ["#FFA631", "#FC4444", "#FAD403", "#5BB6E5", "#F2919D", "#80BA27"];
+      : ["#FFA631", "#e63c52", "#f3b200", "#5BB6E5", "#F2919D", "#82b92e"];
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
-    for (j = 0; j < serie.length; j++) {
+    for (var j = 0; j < serie.length; j++) {
       var aux2 = parseFloat(serie[j]);
       aux.push([aux2, j]);
       if (from_ux) {
@@ -669,11 +613,6 @@ function pandoraFlotVBars(
   for (i = 0; i < labels.length; i++) {
     labels_total.push([i, labels[i]]);
   }
-
-  var stack = 0,
-    bars = true,
-    lines = false,
-    steps = false;
 
   var options = {
     series: {
@@ -702,9 +641,9 @@ function pandoraFlotVBars(
       axisLabelFontFamily: font + "Font",
       axisLabelPadding: 100,
       autoscaleMargin: 0.02,
-      tickFormatter: function(v, axis) {
-        label = parseFloat(v);
-        text = label.toLocaleString();
+      tickFormatter: function(v) {
+        var label = parseFloat(v);
+        var text = label.toLocaleString();
         if (label >= 1000000) text = text.substring(0, 4) + "M";
         else if (label >= 100000) text = text.substring(0, 3) + "K";
         else if (label >= 1000) text = text.substring(0, 2) + "K";
@@ -770,7 +709,7 @@ function pandoraFlotVBars(
       .css("top", "+0px")
       .css("left", "-20px");
   // Format functions
-  function xFormatter(v, axis) {
+  function xFormatter() {
     var format = new Array();
     for (i = 0; i < labels_total.length; i++) {
       var label = labels_total[i][1];
@@ -803,7 +742,8 @@ function pandoraFlotVBars(
     return format;
   }
 
-  function yFormatter(v, axis) {
+  /*
+  function yFormatter(v) {
     return (
       '<div class="' +
       font +
@@ -820,6 +760,7 @@ function pandoraFlotVBars(
       '<div style="font-size:' + font_size + 'pt !important;">' + v + "</div>"
     );
   }
+  */
 
   if (water_mark) {
     set_watermark(
@@ -830,13 +771,12 @@ function pandoraFlotVBars(
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function pandoraFlotSlicebar(
   graph_id,
   values,
   datacolor,
-  labels,
   legend,
-  acumulate_data,
   intervaltick,
   font,
   font_size,
@@ -845,21 +785,20 @@ function pandoraFlotSlicebar(
   id_agent,
   full_legend,
   not_interactive,
-  show_date
+  show_date,
+  datelimit
 ) {
   values = values.split(separator2);
-  labels = labels.split(separator);
   legend = legend.split(separator);
-  acumulate_data = acumulate_data.split(separator);
   datacolor = datacolor.split(separator);
 
   if (full_legend != false) {
     full_legend = full_legend.split(separator);
   }
 
-  var font_size = parseInt(font_size);
+  font_size = parseInt(font_size);
   if (font != undefined)
-    var font = font
+    font = font
       .split("/")
       .pop()
       .split(".")
@@ -869,13 +808,11 @@ function pandoraFlotSlicebar(
 
   var datas = new Array();
 
-  for (i = 0; i < values.length; i++) {
+  for (var i = 0; i < values.length; i++) {
     var serie = values[i].split(separator);
 
     var aux = new Array();
-    $.each(serie, function(i, v) {
-      aux.push([v, i]);
-    });
+    aux.push([parseInt(serie[0]), 0]);
 
     datas.push({
       data: aux,
@@ -909,7 +846,7 @@ function pandoraFlotSlicebar(
     },
     xaxes: [
       {
-        show: show_date,
+        show: true,
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,
@@ -941,7 +878,7 @@ function pandoraFlotSlicebar(
 
   $.plot($("#" + graph_id), datas, options);
 
-  if (match == null) {
+  if (match == null && not_interactive == 0) {
     // Events
     $("#" + graph_id).bind("plothover", function(event, pos, item) {
       if (item) {
@@ -953,18 +890,16 @@ function pandoraFlotSlicebar(
         }
 
         $("#extra_" + graph_id).text(from + "-" + to);
-        var extra_height = parseInt(
-          $("#extra_" + graph_id)
-            .css("height")
-            .split("px")[0]
-        );
         var extra_width = parseInt(
           $("#extra_" + graph_id)
             .css("width")
             .split("px")[0]
         );
-        $("#extra_" + graph_id).css("left", pos.pageX - extra_width / 4 + "px");
-        //$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
+
+        $("#extra_" + graph_id).css(
+          "left",
+          parseInt(pos.pageX - extra_width - 200) + "px"
+        );
         $("#extra_" + graph_id).show();
       }
     });
@@ -978,6 +913,8 @@ function pandoraFlotSlicebar(
         //current date
         var dateObj = new Date();
 
+        var newdate = "";
+        var newdate2 = "";
         if (full_legend != "") {
           newdate = full_legend[item.seriesIndex];
           newdate2 = full_legend[item.seriesIndex + 1];
@@ -992,44 +929,29 @@ function pandoraFlotSlicebar(
           to = "23:59";
         }
 
+        var url_filters = {
+          id_agent: id_agent,
+          date_from: newdate,
+          time_from: from + ":00",
+          status: "-1",
+          group_rep: "1"
+        };
+
         if (full_legend != "") {
-          if (newdate2 == undefined) {
-            window.location =
-              "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-              id_agent +
-              "&date_from=" +
-              newdate +
-              "&time_from=" +
-              from +
-              "&status=-1";
-          } else {
-            window.location =
-              "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-              id_agent +
-              "&date_from=" +
-              newdate +
-              "&time_from=" +
-              from +
-              "&date_to=" +
-              newdate2 +
-              "&time_to=" +
-              to +
-              "&status=-1";
+          if (newdate2 != undefined) {
+            url_filters.date_to = newdate2;
+            url_filters.time_to = to + ":00";
           }
         } else {
-          window.location =
-            "index.php?sec=eventos&sec2=operation/events/events&id_agent=" +
-            id_agent +
-            "&date_from=" +
-            newdate +
-            "&time_from=" +
-            from +
-            "&date_to=" +
-            newdate +
-            "&time_to=" +
-            to +
-            "&status=-1";
+          url_filters.date_to = newdate;
+          url_filters.time_to = to + ":00";
         }
+
+        var url_filters_fb64 = btoa(JSON.stringify(url_filters));
+
+        window.location =
+          "index.php?sec=eventos&sec2=operation/events/events&fb64=" +
+          url_filters_fb64;
       }
     });
 
@@ -1042,18 +964,39 @@ function pandoraFlotSlicebar(
   }
 
   // Format functions
-  function xFormatter(v, axis) {
-    v = new Date(1000 * v);
-    date_format =
-      (v.getHours() < 10 ? "0" : "") +
-      v.getHours() +
+  function xFormatter(v) {
+    var d = new Date(1000 * (v + datelimit));
+    var monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+
+    var date_format =
+      (d.getDate() < 10 ? "0" : "") +
+      d.getDate() +
+      " " +
+      monthNames[d.getMonth()] +
+      "<br>" +
+      (d.getHours() < 10 ? "0" : "") +
+      d.getHours() +
       ":" +
-      (v.getMinutes() < 10 ? "0" : "") +
-      v.getMinutes();
+      (d.getMinutes() < 10 ? "0" : "") +
+      d.getMinutes();
     return date_format;
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function pandoraFlotArea(
   graph_id,
   values,
@@ -1090,7 +1033,12 @@ function pandoraFlotArea(
   var legend_color = params.legend_color;
   var update_legend = {};
   var force_integer = 0;
-  var title = params.title;
+  // var title = params.title;
+  var divisor = params.divisor;
+
+  if (typeof divisor === "undefined") {
+    divisor = 1000;
+  }
 
   if (typeof type === "undefined" || type == "") {
     type = params.type_graph;
@@ -1938,6 +1886,8 @@ function pandoraFlotArea(
   switch (type) {
     case "line":
     case 2:
+      stacked = null;
+      filled_s = false;
       break;
     case 3:
       stacked = "stack";
@@ -2495,11 +2445,6 @@ function pandoraFlotArea(
         }
       }
 
-      var y_array = format_unit_yaxes(y);
-
-      y = y_array["y"];
-      var how_bigger = y_array["unit"];
-
       var data_legend = [];
 
       // The graphs of points type and unknown graphs will dont be updated
@@ -2517,10 +2462,7 @@ function pandoraFlotArea(
             .html(
               label_aux +
                 " value = " +
-                (short_data
-                  ? number_format(y, 0, "", short_data)
-                  : parseFloat(y)) +
-                how_bigger +
+                number_format(y, 0, "", short_data, divisor) +
                 " " +
                 unit
             );
@@ -2568,20 +2510,11 @@ function pandoraFlotArea(
 
             data_legend[index] =
               " Min: " +
-              (short_data
-                ? number_format(min_y, 0, "", short_data)
-                : parseFloat(min_y)) +
-              min_bigger +
+              number_format(value[x].min, 0, unit, short_data, divisor) +
               " Max: " +
-              (short_data
-                ? number_format(max_y, 0, "", short_data)
-                : parseFloat(max_y)) +
-              max_bigger +
+              number_format(value[x].max, 0, unit, short_data, divisor) +
               " Avg: " +
-              (short_data
-                ? number_format(avg_y, 0, "", short_data)
-                : parseFloat(avg_y)) +
-              avg_bigger;
+              number_format(value[x].avg, 0, unit, short_data, divisor);
           });
 
           label_aux =
@@ -2681,13 +2614,13 @@ function pandoraFlotArea(
         if (events_data.event_type.search("alert") >= 0) {
           extra_color = "#FFA631";
         } else if (events_data.event_type.search("critical") >= 0) {
-          extra_color = "#FC4444";
+          extra_color = "#e63c52";
         } else if (events_data.event_type.search("warning") >= 0) {
-          extra_color = "#FAD403";
+          extra_color = "#f3b200";
         } else if (events_data.event_type.search("unknown") >= 0) {
-          extra_color = "#3BA0FF";
+          extra_color = "#4a83f3";
         } else if (events_data.event_type.search("normal") >= 0) {
-          extra_color = "#80BA27";
+          extra_color = "#82b92e";
         } else {
           extra_color = "#ffffff";
         }
@@ -2786,17 +2719,20 @@ function pandoraFlotArea(
 
   function yFormatter(v) {
     var formatted = v;
+
     if (short_data) {
-      formatted = number_format(v, force_integer, "", short_data);
+      formatted = number_format(v, force_integer, unit, short_data, divisor);
     } else {
-      // It is an integer
+      // It is an integer.
       if (v - Math.floor(v) == 0) {
-        formatted = number_format(v, force_integer, "", 2);
+        formatted = number_format(v, force_integer, unit, 2, divisor);
       }
     }
 
-    // Get only two decimals
-    formatted = round_with_decimals(formatted, 100);
+    // Get only two decimals.
+    if (typeof formatted != "string") {
+      formatted = Math.round(formatted * 100) / 100;
+    }
     return formatted;
   }
 
@@ -3117,7 +3053,18 @@ function check_adaptions(graph_id) {
   });
 }
 
-function number_format(number, force_integer, unit, short_data) {
+function number_format(number, force_integer, unit, short_data, divisor) {
+  divisor = typeof divisor !== "undefined" ? divisor : 1000;
+
+  if (unit == "KB") {
+    return number + unit;
+  }
+
+  // Set maximum decimal precision to 99 in case short_data is not set.
+  if (!short_data) {
+    short_data = 99;
+  }
+
   if (force_integer) {
     if (Math.round(number) != number) {
       return "";
@@ -3130,17 +3077,15 @@ function number_format(number, force_integer, unit, short_data) {
 
   var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
   var pos = 0;
-  while (1) {
-    if (number >= 1000) {
-      //as long as the number can be divided by 1000
-      pos++; //Position in array starting with 0
-      number = number / 1000;
-    } else if (number <= -1000) {
-      pos++;
-      number = number / 1000;
-    } else {
-      break;
-    }
+
+  while (number >= divisor) {
+    // As long as the number can be divided by 1000 or 1024.
+    pos++;
+    number = number / divisor;
+  }
+
+  if (divisor) {
+    number = Math.round(number * decimals) / decimals;
   }
 
   return number + " " + shorts[pos] + unit;

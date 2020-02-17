@@ -229,6 +229,9 @@ $selectModuleUp = false;
 $selectModuleDown = false;
 $selectTemplateUp = false;
 $selectTemplateDown = false;
+$selectLastFiredUp = false;
+$selectLastFiredDown = false;
+
 switch ($sortField) {
     case 'agent':
         switch ($sort) {
@@ -290,6 +293,26 @@ switch ($sortField) {
         }
     break;
 
+    case 'last_fired':
+        switch ($sort) {
+            case 'up':
+                $selectLastFiredUp = $selected;
+                $order = [
+                    'field' => 'last_fired',
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $selectLastFiredDown = $selected;
+                $order = [
+                    'field' => 'last_fired',
+                    'order' => 'DESC',
+                ];
+            break;
+        }
+    break;
+
     default:
         if ($print_agent) {
             $selectDisabledUp = '';
@@ -300,6 +323,8 @@ switch ($sortField) {
             $selectModuleDown = false;
             $selectTemplateUp = false;
             $selectTemplateDown = false;
+            $selectLastFiredUp = false;
+            $selectLastFiredDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -313,6 +338,8 @@ switch ($sortField) {
             $selectModuleDown = false;
             $selectTemplateUp = false;
             $selectTemplateDown = false;
+            $selectLastFiredUp = false;
+            $selectLastFiredDown = false;
             $order = [
                 'field' => 'agent_module_name',
                 'order' => 'ASC',
@@ -449,6 +476,8 @@ $url_up_module = $url.'&sort_field=module&sort=up';
 $url_down_module = $url.'&sort_field=module&sort=down';
 $url_up_template = $url.'&sort_field=template&sort=up';
 $url_down_template = $url.'&sort_field=template&sort=down';
+$url_up_lastfired = $url.'&sort_field=last_fired&sort=up';
+$url_down_lastfired = $url.'&sort_field=last_fired&sort=down';
 
 $table = new stdClass();
 $table->width = '100%';
@@ -494,6 +523,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
             $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
             $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[7] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     } else {
         if (!is_metaconsole()) {
@@ -528,6 +558,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if (!is_metaconsole()) {
             $table->head[3] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
             $table->head[4] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[6] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     }
 } else {
@@ -562,6 +593,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $table->head[3] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectAgentUp, $selectAgentDown);
             $table->head[4] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
             $table->head[5] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[6] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     } else {
         if (!is_metaconsole()) {
@@ -592,6 +624,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         if (!is_metaconsole()) {
             $table->head[2] .= ui_get_sorting_arrows($url_up_module, $url_down_module, $selectModuleUp, $selectModuleDown);
             $table->head[3] .= ui_get_sorting_arrows($url_up_template, $url_down_template, $selectTemplateUp, $selectTemplateDown);
+            $table->head[5] .= ui_get_sorting_arrows($url_up_lastfired, $url_down_lastfired, $selectLastFiredUp, $selectLastFiredDown);
         }
     }
 }
@@ -614,7 +647,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 if (!empty($table->data)) {
     $class = '';
     if ($agent_view_page === true) {
-        $class = 'white_table_graph_content w100p no-padding-imp';
+        $class = 'w100p no-padding-imp';
     }
 
     echo '<form class="'.$class.'" method="post" action="'.$url.'">';

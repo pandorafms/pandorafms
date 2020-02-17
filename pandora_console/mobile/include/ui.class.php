@@ -775,6 +775,7 @@ class Ui
         echo "		<script src='include/javascript/jquery.js'></script>\n";
         echo "		<script src='include/javascript/jquery.mobile-1.3.1.js'></script>\n";
         echo "		<script src='../include/javascript/pandora.js'></script>\n";
+        echo "		<script src='../include/javascript/pandora_ui.js'></script>\n";
 
         echo "	</head>\n";
         echo "	<body>\n";

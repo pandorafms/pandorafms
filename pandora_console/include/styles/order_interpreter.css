@@ -1,0 +1,54 @@
+div.show_result_interpreter {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #e2e2e2;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding-left: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-shadow: 0px 0px 15px -4px #dadada;
+  position: absolute;
+  z-index: 1;
+  width: 300px;
+}
+
+.more_results {
+  text-align: right;
+  margin-right: 20px;
+  display: grid;
+}
+
+.results-found {
+  background-image: url("../../images/input_zoom_gray.png");
+  background-position: center right 10px;
+  background-repeat: no-repeat;
+  background-size: 17px;
+  background-color: #f2f6f7;
+  padding: 0px;
+  margin: 0;
+  width: 300px;
+  height: 30px;
+  margin-left: 2px;
+  padding-left: 15px;
+  padding-right: 40px;
+  color: #777;
+  font-family: "Open Sans", sans-serif;
+  font-size: 8.5pt;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-color: transparent;
+}
+
+.list_found {
+  padding-top: 5px;
+}
+
+.active {
+  background: #f2f6f7;
+}
+
+.result_order {
+  margin-left: 2px;
+  display: grid;
+}

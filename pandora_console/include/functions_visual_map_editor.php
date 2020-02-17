@@ -56,7 +56,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'static_graph'    => __('Static Graph'),
                 'percentile_item' => __('Percentile Item'),
                 'module_graph'    => __('Graph'),
-                'auto_sla_graph'  => __('Auto SLA Graph'),
+                'auto_sla_graph'  => __('Event history graph'),
                 'simple_value'    => __('Simple value').ui_print_help_tip(
                     __(
                         "To use 'label'field, you should write
@@ -738,13 +738,13 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             $form_items['color_cloud_def_color_row'] = [];
             $form_items['color_cloud_def_color_row']['items'] = ['color_cloud'];
             $form_items['color_cloud_def_color_row']['html'] = '<td align="left">'.__('Default color').'</td>
-				<td align="left">'.html_print_input_color('default_color', $default_color, false, true).'</td>';
+				<td align="left">'.html_print_input_color('default_color', $default_color, '', false, true).'</td>';
 
             // Color ranges
             $color_range_tip = __('The color of the element will be the one selected in the first range created in which the value of the module is found (with the initial and final values of the range included)').'.';
             $form_items['color_cloud_color_ranges_row'] = [];
             $form_items['color_cloud_color_ranges_row']['items'] = ['color_cloud'];
-            $form_items['color_cloud_color_ranges_row']['html'] = '<td align="left">'.__('Ranges').ui_print_help_tip($color_range_tip, true).'</td>'.'<td align="left">'.'<table id="new-color-range" class="databox color-range color-range-creation">'.'<tr>'.'<td>'.__('From value').'</td>'.'<td>'.html_print_input_text('from_value_new', '', '', 5, 255, true).'</td>'.'<td rowspan="4">'.'<a class="color-range-add" href="#">'.html_print_image('images/add.png', true).'</a>'.'</td>'.'</tr>'.'<td>'.__('To value').'</td>'.'<td>'.html_print_input_text('to_value_new', '', '', 5, 255, true).'</td>'.'<td></td>'.'<tr>'.'</tr>'.'<tr>'.'<td>'.__('Color').'</td>'.'<td>'.html_print_input_color('color_new', $default_color, false, true).'</td>'.'<td></td>'.'</tr>'.'</table>'.'</td>';
+            $form_items['color_cloud_color_ranges_row']['html'] = '<td align="left">'.__('Ranges').ui_print_help_tip($color_range_tip, true).'</td>'.'<td align="left">'.'<table id="new-color-range" class="databox color-range color-range-creation">'.'<tr>'.'<td>'.__('From value').'</td>'.'<td>'.html_print_input_text('from_value_new', '', '', 5, 255, true).'</td>'.'<td rowspan="4">'.'<a class="color-range-add" href="#">'.html_print_image('images/add.png', true).'</a>'.'</td>'.'</tr>'.'<td>'.__('To value').'</td>'.'<td>'.html_print_input_text('to_value_new', '', '', 5, 255, true).'</td>'.'<td></td>'.'<tr>'.'</tr>'.'<tr>'.'<td>'.__('Color').'</td>'.'<td>'.html_print_input_color('color_new', $default_color, '', false, true).'</td>'.'<td></td>'.'</tr>'.'</table>'.'</td>';
 
             // End of Color Cloud rows
             $form_items['show_on_top_row'] = [];
@@ -1294,12 +1294,12 @@ function visual_map_editor_print_toolbox()
     }
 
     echo '<div id="toolbox">';
-        visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
+        visual_map_print_button_editor('static_graph', __('Static Image'), 'left', false, 'camera_min', true);
         visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
         visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
         visual_map_print_button_editor('donut_graph', __('Serialized pie graph'), 'left', false, 'donut_graph_min', true);
         visual_map_print_button_editor('bars_graph', __('Bars Graph'), 'left', false, 'bars_graph_min', true);
-        visual_map_print_button_editor('auto_sla_graph', __('Auto SLA Graph'), 'left', false, 'auto_sla_graph_min', true);
+        visual_map_print_button_editor('auto_sla_graph', __('Event history graph'), 'left', false, 'auto_sla_graph_min', true);
         visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
         visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
         visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
@@ -1447,9 +1447,6 @@ function visual_map_editor_print_hack_translate_strings()
 <script type="text/javascript">
 $(document).ready (function () {
     $("#map_linked").change(function () {
-        $("option[value=" + this.value + "]", this)
-        .attr("selected", true).siblings()
-        .removeAttr("selected")
         $("#text-agent").val("");
         $("input[name=id_agent]").val(0);
         $("#module").empty();

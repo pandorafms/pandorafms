@@ -151,6 +151,10 @@ if (is_ajax()) {
 
         ob_clean();
 
+        echo '<style type="text/css">';
+        include_once __DIR__.'/../styles/progress.css';
+        echo '</style>';
+
         echo '<div class="left_align">';
         if (!empty($id) && !empty($type)) {
             switch ($type) {

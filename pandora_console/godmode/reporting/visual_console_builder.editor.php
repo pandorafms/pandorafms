@@ -25,6 +25,8 @@ if (empty($visualConsole)) {
     exit;
 }
 
+ui_require_css_file('visual_maps');
+
 // ACL for the existing visual console
 // if (!isset($vconsole_read))
 // $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
@@ -170,6 +172,7 @@ echo "<div id='delete_in_progress_dialog' style='display: none; text-align: cent
 // CSS
 ui_require_css_file('color-picker', 'include/styles/js/');
 ui_require_css_file('jquery-ui.min', 'include/styles/js/');
+ui_require_jquery_file('jquery-ui_custom');
 
 // Javascript
 ui_require_jquery_file('colorpicker');

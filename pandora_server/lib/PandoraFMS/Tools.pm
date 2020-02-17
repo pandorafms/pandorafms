@@ -19,9 +19,9 @@ package PandoraFMS::Tools;
  
 use warnings;
 use Time::Local;
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(setsid strftime);
 use POSIX;
-use PandoraFMS::Sendmail;
 use HTML::Entities;
 use Encode;
 use Socket qw(inet_ntoa inet_aton);
@@ -30,6 +30,9 @@ use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
 use threads;
 use threads::shared;
+
+use lib '/usr/lib/perl5';
+use PandoraFMS::Sendmail;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -72,6 +75,16 @@ our @EXPORT = qw(
 	MIGRATIONSERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
+	DISCOVERY_HOSTDEVICES
+	DISCOVERY_HOSTDEVICES_CUSTOM
+	DISCOVERY_CLOUD_AWS
+	DISCOVERY_APP_VMWARE
+	DISCOVERY_APP_MYSQL
+	DISCOVERY_APP_ORACLE
+	DISCOVERY_CLOUD_AWS_EC2
+	DISCOVERY_CLOUD_AWS_RDS
+	DISCOVERY_CLOUD_AZURE_COMPUTE
+	DISCOVERY_DEPLOY_AGENTS
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -100,6 +113,7 @@ our @EXPORT = qw(
 	is_offline
 	to_number
 	clean_blank
+	credential_store_get_key
 	pandora_sendmail
 	pandora_trash_ascii
 	enterprise_hook
@@ -130,6 +144,9 @@ our @EXPORT = qw(
 	generate_agent_name_hash
 	long_to_ip
 	ip_to_long
+	get_enabled_servers
+	dateTimeToTimestamp
+	get_user_agent
 );
 
 # ID of the different servers
@@ -171,6 +188,18 @@ use constant OFFLINE_LICENSE => 0x02;
 # Alert modes
 use constant RECOVERED_ALERT => 0;
 use constant FIRED_ALERT => 1;
+
+# Discovery task types
+use constant DISCOVERY_HOSTDEVICES => 0;
+use constant DISCOVERY_HOSTDEVICES_CUSTOM => 1;
+use constant DISCOVERY_CLOUD_AWS => 2;
+use constant DISCOVERY_APP_VMWARE => 3;
+use constant DISCOVERY_APP_MYSQL => 4;
+use constant DISCOVERY_APP_ORACLE => 5;
+use constant DISCOVERY_CLOUD_AWS_EC2 => 6;
+use constant DISCOVERY_CLOUD_AWS_RDS => 7;
+use constant DISCOVERY_CLOUD_AZURE_COMPUTE => 8;
+use constant DISCOVERY_DEPLOY_AGENTS => 9;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
@@ -463,6 +492,33 @@ sub pandora_daemonize {
 # Pandora other General functions |
 # -------------------------------------------+
 
+########################################################################
+# SUB credential_store_get_key
+# Retrieve all information related to target identifier.
+# param1 - config hash
+# param2 - dbh link
+# param3 - string identifier
+########################################################################
+sub credential_store_get_key($$$) {
+	my ($pa_config, $dbh, $identifier) = @_;
+
+	my $sql = 'SELECT * FROM tcredential_store WHERE identifier = ?';
+	my $key = PandoraFMS::DB::get_db_single_row($dbh, $sql, $identifier);
+
+	return {
+		'username' => PandoraFMS::Core::pandora_output_password(
+			$pa_config,
+			$key->{'username'}
+		),
+		'password' => PandoraFMS::Core::pandora_output_password(
+			$pa_config,
+			$key->{'password'}
+		),
+		'extra_1' => $key->{'extra_1'},
+		'extra_2' => $key->{'extra_2'},
+	};
+
+}
 
 ########################################################################
 # SUB pandora_sendmail
@@ -496,7 +552,14 @@ sub pandora_sendmail {
 		Smtp		=> $pa_config->{"mta_address"},
 		Port		=> $pa_config->{"mta_port"},
 		From		=> $pa_config->{"mta_from"},
+		Encryption	=> $pa_config->{"mta_encryption"},
 	);
+
+	# Set the timeout.
+	$PandoraFMS::Sendmail::mailcfg{'timeout'} = $pa_config->{"tcp_timeout"};
+
+	# Enable debugging.
+	$PandoraFMS::Sendmail::mailcfg{'debug'} = $pa_config->{"verbosity"};
 	
 	if (defined($content_type)) {
 		$mail{'Content-Type'} = $content_type;
@@ -513,15 +576,12 @@ sub pandora_sendmail {
 		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
 	}
 
-	if (sendmail %mail) { 
-		return;
-	}
-	else {
-		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-		if (defined($Mail::Sendmail::error)){
-			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+	eval {
+		if (!sendmail(%mail)) { 
+			logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
+			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5) if (defined($Mail::Sendmail::error));
 		}
-	}
+	};
 }
 
 ##########################################################################
@@ -542,7 +602,8 @@ sub is_numeric {
 	my $SIGN   = qr{ [+-] }xms;
 	my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
 	if ( $val !~ /^${NUMBER}$/ ) {
-		return 0;   #Non-numeric
+		#Non-numeric, or maybe... leave looks_like_number try
+		return looks_like_number($val);
 	}
 	else {
 		return 1;   #Numeric
@@ -597,7 +658,7 @@ sub logger ($$;$) {
 	$message = safe_output ($message);
 
 	$level = 1 unless defined ($level);
-	return if ($level > $pa_config->{'verbosity'});
+	return if (!defined ($pa_config->{'verbosity'}) || $level > $pa_config->{'verbosity'});
 
 	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
@@ -613,19 +674,29 @@ sub logger ($$;$) {
 		# Set the security level
 		my $security_level = 'info';
 		if ($level < 2) {
-			$security = 'crit';
+			$security_level = 'crit';
 		} elsif ($level < 5) {
-			$security = 'warn';
+			$security_level = 'warn';
 		}
 
 		openlog('pandora_server', 'ndelay', 'daemon');
 		syslog($security_level, $message);
 		closelog();
 	} else {
+		# Obtain the script that invoke this log
+		my $parent_caller = "";
+		$parent_caller = ( caller(2) )[1];
+		if (defined $parent_caller) {
+			$parent_caller = (split '/', $parent_caller)[-1];
+			$parent_caller =~ s/\.[^.]+$//;
+			$parent_caller = " " . $parent_caller . ": ";
+		} else {
+			$parent_caller = " ";
+		}
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)
 		flock (FILE, 2);
-		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . $parent_caller . (defined($pa_config->{'servername'}) ? $pa_config->{'servername'} : '') . " [V". $level ."] " . $message . "\n";
 		close (FILE);
 	}
 }
@@ -756,6 +827,11 @@ sub enterprise_hook ($$) {
 
 	# Try to call the function
 	my $output = eval { &$func (@args); };
+
+	# Discomment to debug.
+	if ($@) {
+		print STDERR $@;
+	}
 
 	# Check for errors
 	#return undef if ($@);
@@ -967,7 +1043,8 @@ sub load_average {
 		$load_average = ((split(/\s+/, `/sbin/sysctl -n vm.loadavg`))[1]);
 	} elsif ($OSNAME eq "MSWin32") {
 		# Windows hasn't got load average.
-		$load_average = undef;
+		$load_average = `powershell "(Get-WmiObject win32_processor | Measure-Object -property LoadPercentage -Average).average"`;
+		chop($load_average);
 	}
 	# by default LINUX calls
 	else {
@@ -1658,7 +1735,7 @@ sub cron_valid_date {
 	my $utime;
 	eval {
 		local $SIG{__DIE__} = sub {};
-		$utime = timelocal(0, $min, $hour, $mday, $month, $year);
+		$utime = strftime("%s", 0, $min, $hour, $mday, $month, $year);
 	};
 	if ($@) {
 		return 0;
@@ -2027,8 +2104,86 @@ sub long_to_ip {
 	return inet_ntoa pack("N", ($ip_long));
 }
 
+###############################################################################
+# Returns a list with enabled servers.
+###############################################################################
+sub get_enabled_servers {
+	my $conf = shift;
+
+	if (ref($conf) ne "HASH") {
+		return ();
+	}
+
+	my @server_list = map {
+		if ($_ =~ /server$/i && $conf->{$_} > 0) {
+			$_
+		} else {
+		}
+	} keys %{$conf};
+
+	return @server_list;
+}
 # End of function declaration
 # End of defined Code
+
+
+################################################################################
+# Initialize a LWP::User agent
+################################################################################
+sub get_user_agent {
+	my $pa_config = shift;
+	my $ua;
+
+	eval {
+		if (!(defined($pa_config->{'lwp_timeout'})
+			&& is_numeric($pa_config->{'lwp_timeout'}))
+		) {
+			$pa_config->{'lwp_timeout'} = 3;
+		}
+
+		$ua = LWP::UserAgent->new(
+			'keep_alive' => "10"
+		);
+
+		# Configure LWP timeout.
+		$ua->timeout($pa_config->{'lwp_timeout'});
+
+		# Enable environmental proxy settings
+		$ua->env_proxy;
+
+		# Enable in-memory cookie management
+		$ua->cookie_jar( {} );
+
+		if (!defined($pa_config->{'ssl_verify'})
+			|| (defined($pa_config->{'ssl_verify'})
+				&& $pa_config->{'ssl_verify'} eq "0")
+		) {
+			# Disable verify host certificate (only needed for self-signed cert)
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+			# Disable library extra checks 
+			BEGIN {
+				$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
+				$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+			}
+		}
+	};
+	if($@) {
+		logger($pa_config, 'Failed to initialize LWP::UserAgent', 5);
+		# Failed
+		return;
+	}
+
+	return $ua;
+}
+
+
+
+
+
+
+
 
 1;
 __END__

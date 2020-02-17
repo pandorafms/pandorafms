@@ -362,7 +362,10 @@ foreach ($profiles as $profile) {
     $data['PM'] = ($profile['pandora_management'] ? $img : '');
     $table->cellclass[]['operations'] = 'action_buttons';
     $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
-    $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+    if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
+        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+    }
+
     array_push($table->data, $data);
 }
 

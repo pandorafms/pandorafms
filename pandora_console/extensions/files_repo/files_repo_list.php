@@ -64,9 +64,11 @@ if (!empty($files)) {
         $document_root = str_replace('\\', '/', io_safe_output($_SERVER['DOCUMENT_ROOT']));
         $file['location'] = str_replace('\\', '/', io_safe_output($file['location']));
         $relative_path = str_replace($document_root, '', $file['location']);
-        $file_path = base64_encode($relative_path);
-        $hash = md5($relative_path.$config['dbpass']);
-        $url = ui_get_full_url("include/get_file.php?file=$file_path&hash=$hash");
+        $file_name = explode('/', $file['location']);
+        $file_decoded = $file_name[(count($file_name) - 1)];
+        $file_path = base64_encode($file_decoded);
+        $hash = md5($file_path.$config['dbpass']);
+        $url = ui_get_full_url('include/get_file.php?file='.urlencode($file_path).'&hash='.$hash);
         $date_format = ($config['date_format']) ? io_safe_output($config['date_format']) : 'F j, Y - H:m';
 
         $data[0] = "<a href=\"$url\" target=\"_blank\">".$file['name'].'</a>';

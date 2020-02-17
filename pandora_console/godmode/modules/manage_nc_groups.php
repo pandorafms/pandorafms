@@ -277,7 +277,7 @@ if (isset($data)) {
 }
 
 
-echo '<form method="post">';
+echo '<form method="post" action='.$url.'>';
 echo '<div class="" style="float:right;">';
 html_print_input_hidden('new', 1);
 html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');

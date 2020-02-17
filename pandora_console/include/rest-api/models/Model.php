@@ -48,6 +48,42 @@ abstract class Model
 
 
     /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @abstract
+     */
+    abstract protected function encode(array $data): array;
+
+
+    /**
+     * Insert or update an item in the database
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @abstract
+     */
+    abstract public function save(array $data=[]);
+
+
+    /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @abstract
+     */
+    abstract public function delete(int $itemId): bool;
+
+
+    /**
      * Constructor of the model. It won't be public. The instances
      * will be created through factories which start with from*.
      *
@@ -62,6 +98,12 @@ abstract class Model
     }
 
 
+    public function setData(array $data)
+    {
+        $this->data = $data;
+    }
+
+
     /**
      * Instance the class with the unknown input data.
      *
@@ -69,7 +111,7 @@ abstract class Model
      *
      * @return self Instance of the model.
      */
-    public static function fromArray(array $data)
+    public static function fromArray(array $data): self
     {
         // The reserved word static refers to the invoked class at runtime.
         return new static($data);
@@ -121,7 +163,7 @@ abstract class Model
      */
     public function toJson(): string
     {
-        return \json_encode($this->data);
+        return json_encode($this->data);
     }
 
 

@@ -249,13 +249,13 @@ function groups_combine_acl($acl_group_a, $acl_group_b)
 /**
  * Get all the groups a user has reading privileges.
  *
- * @param string User id
- * @param string The privilege to evaluate, and it is false then no check ACL.
- * @param boolean                                                             $returnAllGroup   Flag the return group, by default true.
- * @param boolean                                                             $returnAllColumns Flag to return all columns of groups.
- * @param array                                                               $id_groups        The list of group to scan to bottom child. By default null.
- * @param string                                                              $keys_field       The field of the group used in the array keys. By default ID
- * @param boolean                                                             $cache            Set it to false to not use cache
+ * @param string  $id_user          User id
+ * @param string  $privilege        The privilege to evaluate, and it is false then no check ACL.
+ * @param boolean $returnAllGroup   Flag the return group, by default true.
+ * @param boolean $returnAllColumns Flag to return all columns of groups.
+ * @param array   $id_groups        The list of group to scan to bottom child. By default null.
+ * @param string  $keys_field       The field of the group used in the array keys. By default ID
+ * @param boolean $cache            Set it to false to not use cache
  *
  * @return array A list of the groups the user has certain privileges.
  */
@@ -293,7 +293,7 @@ function users_get_groups(
         }
         // Per-group permissions.
         else {
-            $query  = 'SELECT * FROM tgrupo ORDER BY parent,id_grupo DESC';
+            $query  = 'SELECT * FROM tgrupo ORDER BY nombre';
             $raw_groups = db_get_all_rows_sql($query);
 
             $query = sprintf(
@@ -617,15 +617,20 @@ function users_save_login()
 
     $user_list = json_decode($user_list_json, true);
     if (empty($user_list)) {
-        $user_list = [];
-    }
-
-    if (isset($user_list[$config['id_user']])) {
-        $user_list[$config['id_user']]['count']++;
-    } else {
         $user_list[$config['id_user']] = [
             'name'  => $user['fullname'],
             'count' => 1,
+        ];
+    } else if (isset($user_list[$config['id_user']])) {
+        $user_list[$config['id_user']] = [
+            'name'  => $user['fullname'],
+            'count' => $user_list[$config['id_user']]['count'],
+        ];
+    } else {
+        $users_count = count($user_list);
+        $user_list[$config['id_user']] = [
+            'name'  => $user['fullname'],
+            'count' => ++$users_count,
         ];
     }
 
@@ -704,17 +709,7 @@ function users_save_logout($user=false, $delete=false)
         $user_list = [];
     }
 
-    if ($delete) {
-        unset($user_list[$user['id_user']]);
-    } else {
-        if (isset($user_list[$config['id_user']])) {
-            $user_list[$config['id_user']]['count']--;
-        }
-
-        if ($user_list[$config['id_user']]['count'] <= 0) {
-            unset($user_list[$user['id_user']]);
-        }
-    }
+    unset($user_list[$user['id_user']]);
 
     // Clean the file
     ftruncate($fp_user_list, 0);
@@ -1052,6 +1047,13 @@ function users_check_users()
         'users'   => '',
     ];
 
+    $users_with_session = db_get_all_rows_sql('SELECT tsessions_php.data FROM pandora.tsessions_php;');
+    $users_logged_now = [];
+    foreach ($users_with_session as $user_with_session) {
+        $tmp_id_user = explode('"', $user_with_session['data']);
+        array_push($users_logged_now, $tmp_id_user[1]);
+    }
+
     $file_global_user_list = $config['attachment_store'].'/pandora_chat.user_list.json.txt';
 
     // First lock the file
@@ -1082,12 +1084,31 @@ function users_check_users()
         $user_list = [];
     }
 
-    fclose($fp_user_list);
-
+    // Compare both user list. Meanwhile the user from chat file have an active
+    // session, his continue in the list of active chat users
     $user_name_list = [];
-    foreach ($user_list as $user) {
-        $user_name_list[] = $user['name'];
+    foreach ($user_list as $key => $user) {
+        if (in_array($key, $users_logged_now)) {
+            array_push($user_name_list, $user['name']);
+        } else {
+            unset($user_list[$key]);
+        }
     }
+
+    // Clean the file
+    ftruncate($fp_user_list, 0);
+
+    // Update the file with the correct list of users
+    $status = fwrite($fp_user_list, json_encode($user_list));
+
+    /*
+        if ($status === false) {
+        fclose($fp_user_list);
+
+        return;
+    } */
+    // Closing the resource
+    fclose($fp_user_list);
 
     $return['correct'] = true;
     $return['users'] = implode('<br />', $user_name_list);
@@ -1214,4 +1235,30 @@ function users_get_explode_tags(&$group)
         $group['tags']['event_management'] = ($group['event_management']) ? $aux : [];
     }
 
+}
+
+
+/**
+ * Get mail admin.
+ *
+ * @return string Return mail admin.
+ */
+function get_mail_admin():string
+{
+    $mail = db_get_value('email', 'tusuario', 'is_admin', 1);
+
+    return $mail;
+}
+
+
+/**
+ * Get name admin.
+ *
+ * @return string Return name admin.
+ */
+function get_name_admin():string
+{
+    $mail = db_get_value('fullname', 'tusuario', 'is_admin', 1);
+
+    return $mail;
 }

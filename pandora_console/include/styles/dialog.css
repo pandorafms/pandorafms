@@ -1,38 +1,38 @@
 /* This file skins dialog */
 
 .ui-dialog {
-  background: none repeat scroll 0 0 #3f3f3f !important;
-  border: 1px solid #3f3f3f !important;
-  color: #333333 !important;
-  padding: 0.2em !important;
-  overflow: hidden !important;
+  background: none repeat scroll 0 0 #3f3f3f;
+  border: 1px solid #3f3f3f;
+  color: #333333;
+  padding: 0.2em;
+  overflow: hidden;
 
-  -moz-border-radius: 6px !important;
-  -webkit-border-radius: 6px !important;
-  border-radius: 6px !important;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
 
-  -moz-box-shadow: 0px 5px 5px #010e1b !important;
-  -webkit-box-shadow: 0px 5px 5px #010e1b !important;
-  box-shadow: 0px 5px 5px #010e1b !important;
+  -moz-box-shadow: 0px 5px 5px #010e1b;
+  -webkit-box-shadow: 0px 5px 5px #010e1b;
+  box-shadow: 0px 5px 5px #010e1b;
 }
 
 .ui-widget-header {
-  background: #3f3f3f !important;
+  background: #3f3f3f;
 }
 
 .ui-dialog .ui-dialog-titlebar {
   background-color: #ececec;
-  height: 24px !important;
-  padding: 0.3em 1em !important;
+  height: 24px;
+  padding: 0.3em 1em;
   position: relative;
-  margin: 0px auto 0 auto !important;
-  font-weight: bold !important;
-  border-bottom: none !important;
-  border-top: none !important;
-  border-left: none !important;
-  border-right: none !important;
-  color: #ffffff !important;
-  #padding: 0.1em 1em !important;
+  margin: 0px auto 0 auto;
+  font-weight: bold;
+  border-bottom: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  color: #ffffff;
+  #padding: 0.1em 1em;
 
   -moz-border-radius: 4px 4px 0 0;
   -webkit-border-radius: 4px 4px 0 0;
@@ -40,114 +40,114 @@
 }
 
 .ui-dialog .ui-dialog-title {
-  margin-left: 5px !important;
-  color: white !important;
-  font-weight: bold !important;
-  position: relative !important;
+  margin-left: 5px;
+  color: white;
+  font-weight: bold;
+  position: relative;
   top: 3px;
   font-size: 10pt;
-  left: 4px !important;
-  float: none !important;
+  left: 4px;
+  float: none;
 }
 
 .ui-dialog.ui-draggable .ui-dialog-titlebar {
-  cursor: move !important;
+  cursor: move;
 }
 
 .ui-dialog .ui-dialog-titlebar-close {
-  width: 23px !important;
-  height: 23px !important;
-  background: url(images/dialog-titlebar-close.png) no-repeat !important;
-  position: absolute !important;
+  width: 23px;
+  height: 23px;
+  background: url(images/dialog-titlebar-close.png) no-repeat;
+  position: absolute;
   top: 6px;
-  right: 3px !important;
-  cursor: pointer !important;
+  right: 3px;
+  cursor: pointer;
 }
 
 .ui-dialog .ui-dialog-titlebar-close span {
-  display: none !important;
+  display: none;
 }
 
 .ui-dialog .ui-dialog-titlebar-close-hover {
-  color: #000000 !important;
+  color: #000000;
 }
 
 .ui-dialog .ui-dialog-titlebar-close:hover span {
-  display: none !important;
+  display: none;
 }
 
 .ui-dialog .ui-dialog-titlebar-close:hover {
-  color: #000000 !important;
+  color: #000000;
 }
 
 .ui-dialog .ui-dialog-content {
-  margin: 12px !important;
-  #padding: 0.5em 1em !important;
-  overflow: auto !important;
+  margin: 12px;
+  #padding: 0.5em 1em;
+  overflow: auto;
 
-  -moz-border-left: 1px solid #a9a9a9 !important;
-  -moz-border-right: 1px solid #a9a9a9 !important;
-  -moz-border-bottom: 1px solid #a9a9a9 !important;
-  -moz-border-radius: 8px 8px 8px 8px !important;
+  -moz-border-left: 1px solid #a9a9a9;
+  -moz-border-right: 1px solid #a9a9a9;
+  -moz-border-bottom: 1px solid #a9a9a9;
+  -moz-border-radius: 8px 8px 8px 8px;
 
-  -webkit-border-left: 1px solid #a9a9a9 !important;
-  -webkit-border-right: 1px solid #a9a9a9 !important;
-  -webkit-border-bottom: 1px solid #a9a9a9 !important;
-  -webkit-border-radius: 8px 8px 8px 8px !important;
+  -webkit-border-left: 1px solid #a9a9a9;
+  -webkit-border-right: 1px solid #a9a9a9;
+  -webkit-border-bottom: 1px solid #a9a9a9;
+  -webkit-border-radius: 8px 8px 8px 8px;
 
-  border-left: 1px solid #a9a9a9 !important;
-  border-right: 1px solid #a9a9a9 !important;
-  border-bottom: 1px solid #a9a9a9 !important;
-  border-radius: 8px 8px 8px 8px !important;
+  border-left: 1px solid #a9a9a9;
+  border-right: 1px solid #a9a9a9;
+  border-bottom: 1px solid #a9a9a9;
+  border-radius: 8px 8px 8px 8px;
 
-  background: #ffffff !important;
-  position: relative !important;
+  background: #ffffff;
+  position: relative;
 }
 
 .ui-tabs .ui-tabs-nav {
-  background-color: white !important;
+  background-color: white;
 }
 
 .ui-tabs-panel {
-  background: #ececec !important;
-  -moz-border-radius: 8px !important;
-  -webkit-border-radius: 8px !important;
-  border-radius: 8px !important;
-  -moz-border-top-left-radius: 0px !important;
-  -webkit-border-top-left-radius: 0px !important;
-  border-top-left-radius: 0px !important;
+  background: #ececec;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  -moz-border-top-left-radius: 0px;
+  -webkit-border-top-left-radius: 0px;
+  border-top-left-radius: 0px;
   -moz-box-shadow: -1px 1px 6px #aaa;
   -webkit-box-shadow: -1px 1px 6px #aaa;
   box-shadow: 1px 1px 6px #aaa;
 }
 
 .ui-widget .ui-widget {
-  border: 0px !important;
+  border: 0px;
 }
 
 .ui-state-default:first-child {
-  margin-left: -3px !important;
+  margin-left: -3px;
 }
 
 .ui-state-default {
-  background: #fff !important;
-  border: 2px solid #ececec !important;
-  -moz-border-top-left-radius: 10px !important;
-  -webkit-top-left-border-radius: 10px !important;
-  border-top-left-radius: 10px !important;
-  -moz-border-top-right-radius: 10px !important;
-  -webkit-top-right-border-radius: 10px !important;
-  border-top-right-radius: 10px !important;
-  margin-left: 2px !important;
+  background: #fff;
+  border: 2px solid #ececec;
+  -moz-border-top-left-radius: 10px;
+  -webkit-top-left-border-radius: 10px;
+  border-top-left-radius: 10px;
+  -moz-border-top-right-radius: 10px;
+  -webkit-top-right-border-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-left: 2px;
 }
 .ui-state-active {
-  background: #ececec !important;
+  background: #ececec;
 }
 
 .ui-dialog-content {
-  overflow: auto !important;
-  width: auto !important;
-  #height: auto !important;
+  overflow: auto;
+  width: auto;
+  #height: auto;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
@@ -185,8 +185,8 @@
   font-weight: bold;
   outline: medium none;
   cursor: pointer;
-  margin: 0.5em 0.4em 0.5em 0 !important;
-  border-radius: 4px 4px 4px 4px !important;
+  margin: 0.5em 0.4em 0.5em 0;
+  border-radius: 4px 4px 4px 4px;
 }
 
 .ui-dialog .ui-button-dialog:hover {
@@ -199,5 +199,5 @@
 
 .ui-dialog-overlay {
   background: url("images/ui-bg_diagonals-thick_20_666666_40x40.png") repeat
-    scroll 50% 50% #666666 !important;
+    scroll 50% 50% #666666;
 }

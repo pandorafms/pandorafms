@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.735 PS190619";
+my $version = "7.0NG.743 PS200217";
 
 # save program name for logging
 my $progname = basename($0);
@@ -104,8 +104,8 @@ sub help_screen{
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval> <alias_as_name>]", 'Create agent');
-	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
-	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
+	help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value> [<use_alias>]', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
+	help_screen_line('--delete_agent', '<agent_name> [<use_alias>]', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
 	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
 	help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon> <description>]', 'Create an agent group');
@@ -118,14 +118,15 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
-	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
-	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
-	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
-	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
-	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
-	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
+	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
+	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
+	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
+	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
+	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
+	help_screen_line('--clean_conf_file', '<agent_name> [<use_alias>]', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
-	help_screen_line('--locate_agent', '<agent_name>', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
+	help_screen_line('--locate_agent', '<agent_name> [<use_alias>]', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
 	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
 	help_screen_line('--migration_agent', '<id_node> ', 'Is migrating the agent only metaconsole');
 	help_screen_line('--apply_module_template', '<id_template> <id_agent>', 'Apply module template to agent');	
@@ -139,29 +140,29 @@ sub help_screen{
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
 	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
 	print "\nMODULES:\n\n" unless $param ne '';
-	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
-	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
-	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>
+	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add data server module to agent');
+	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
+	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias>]", 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries> <use_alias>]
 	\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to agent');
+	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias>]", 'Add plug-in module to agent');
     help_screen_line('--get_module_group', '[<module_group_name>]', 'Dysplay all module groups');
     help_screen_line('--create_module_group', '<module_group_name>');
     help_screen_line('--module_group_synch', "<server_name1|server_name2|server_name3...> [<return_type>]", 'Synchronize metaconsole module groups');
-	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
-    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
-    help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
-    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
-	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
+	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name> [<use_alias>]');
+    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime> <use_alias>]", 'Insert data to module');
+    help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator> <use_alias>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
+    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name> [<use_alias>]', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
+	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value> [<use_alias>]', 'Update a module field');
     help_screen_line('--get_agents_module_current_data', '<module_name>', "Get the agent and current data \n\t  of all the modules with a given name");
-	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', "Create a new network \n\t  module from a network component");
+	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name> [<use_alias>]', "Create a new network \n\t  module from a network component");
 	help_screen_line('--create_network_component', "<network_component_name> <network_component_group> <network_component_type> \n\t [<description> <module_interval> <max_value> <min_value> \n\t <snmp_community> <id_module_group> <max_timeout> \n\t <history_data> <min_warning> <max_warning> \n\t <str_warning> <min_critical> <max_critical> \n\t <str_critical> <min_ff_event> <post_process> \n\t <disabled_types_event> <each_ff> <min_ff_event_normal> \n\t <min_ff_event_warning> <min_ff_event_critical>]", "Create a new network component");	
-	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> ]", "Create a new Synthetic module");
+	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> <use_alias>]", "Create a new Synthetic module");
 	print "\nALERTS:\n\n" unless $param ne '';
-    help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
-    help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
-    help_screen_line('--create_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template");
-    help_screen_line('--delete_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name>", 'Delete alert action from module-template');
+    help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name> [<use_alias>]', 'Add alert template to module');
+    help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name> [<use_alias>]', 'Delete alert template from module');
+    help_screen_line('--create_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<fires_min> <fires_max> <use_alias>]', 'Add alert action to module-template");
+    help_screen_line('--delete_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<use_alias>]", 'Delete alert action from module-template');
 	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups (system wide)');
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
 	help_screen_line('--create_alert_template', "<template_name> <condition_type_serialized>\n\t   <time_from> <time_to> [<description> <group_name> <field1> <field2> \n\t  <field3> <priority>  <default_action> <days> <time_threshold> <min_alerts> \n\t  <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> \n\t  <condition_type_separator>]", 'Create alert template');
@@ -175,7 +176,7 @@ sub help_screen{
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
-	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name>', "Create a new data \n\t  module from a local component");
+	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name> [<use_alias>]', "Create a new data \n\t  module from a local component");
 	help_screen_line('--create_local_component', "<component_name> <data> [<description> <id_os> <os_version> \n\t  <id_network_component_group> <type> <min> <max> <module_interval> <id_module_group> <history_data> <min_warning> \n\t <max_warning> <str_warning> <min_critical> <max_critical>\n\t  <str_critical> <min_ff_event> <post_process> <unit>\n\t  <wizard_level> <critical_instructions>\n\t  <warning_instructions> <unknown_instructions> <critical_inverse>\n\t  <warning_inverse> <id_category> <disabled_types_event>\n\t  <tags> <min_ff_event_normal> <min_ff_event_warning>\n\t  <min_ff_event_critical> <each_ff> <ff_timeout>]", 'Create local component');
 	
 	print "\nUSERS:\n\n" unless $param ne '';
@@ -193,17 +194,17 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent>]", 'Add event');
-  help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
-  help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
-  help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
-  help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
+  	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
+ 	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
+  	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
+  	help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
 	print "\nINCIDENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
 	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
-	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
+	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name> [<use_alias>]', 'Add an agent to a policy');
 	help_screen_line('--remove_agent_from_policy', '<policy_id> <agent_id>', 'Delete an agent to a policy');
 	help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
 	help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
@@ -218,7 +219,7 @@ sub help_screen{
 	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
-	help_screen_line('--get_policies', '[<agent_name>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
+	help_screen_line('--get_policies', '[<agent_name> <use_alias>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
 	help_screen_line('--recreate_collection', '<collection_id>', 'Recreate the files of a collection');
 	
 	print "\nNETFLOW:\n\n" unless $param ne '';
@@ -284,19 +285,94 @@ sub api_call($$$;$$$$) {
 	return $content;
 }
 
+
+###############################################################################
+# Update token conf file agent
+###############################################################################
+sub update_conf_txt ($$$$) {
+	my ($conf, $agent_name, $token, $value) = @_;
+
+	# Read the conf of each agent.
+	my $conf_file_txt = enterprise_hook(
+		'read_agent_conf_file',
+		[
+			$conf,
+			$agent_name
+		]
+	);
+
+	# Check if there is agent conf.
+	if(!$conf_file_txt){
+		return 0;
+	}
+
+	my $updated = 0;
+	my $txt_content = "";
+
+	my @lines = split /\n/, $conf_file_txt;
+
+	foreach my $line (@lines) {
+		if ($line =~ /^\s*$token\s/ || $line =~ /^#$token\s/ || $line =~ /^#\s$token\s/) {
+			$txt_content .= $token.' '.$value."\n";
+			$updated = 1;
+		} else {
+			$txt_content .= $line."\n";
+		}
+	}
+
+	if ($updated == 0) {
+		$txt_content .= "\n$token $value\n";
+	}
+
+	# Write the conf.
+	my $result = enterprise_hook(
+		'write_agent_conf_file',
+		[
+			$conf,
+			$agent_name,
+			$txt_content
+		]
+	);
+
+	return $result;
+}
+
+
 ###############################################################################
 # Disable a entire group
 ###############################################################################
 sub pandora_disable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
+	my @agents_bd = [];
+	my $result = 0;
+
 	if ($group == 0){
+		# Extract all the names of the pandora agents if it is for all = 0.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		# Update bbdd.
 		db_do ($dbh, "UPDATE tagente SET disabled = 1");
 	}
 	else {
+		# Extract all the names of the pandora agents if it is for group.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+		# Update bbdd.
 		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
 	}
-    exit;
+
+	foreach my $name_agent (@agents_bd) {
+		# Check the standby field I put it to 0.
+		my $new_conf = update_conf_txt(
+			$conf,
+			$name_agent->{'nombre'},
+			'standby',
+			'1'
+		);
+	}
+
+    return $result;
 }
 
 ###############################################################################
@@ -305,13 +381,35 @@ sub pandora_disable_group ($$$) {
 sub pandora_enable_group ($$$) {
     my ($conf, $dbh, $group) = @_;
 
+	my @agents_bd = [];
+	my $result = 0;
+
 	if ($group == 0){
-			db_do ($dbh, "UPDATE tagente SET disabled = 0");
+		# Extract all the names of the pandora agents if it is for all = 0.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente');
+
+		# Update bbdd.
+		$result = db_do ($dbh, "UPDATE tagente SET disabled = 0");
 	}
 	else {
-			db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
+		# Extract all the names of the pandora agents if it is for group.
+		@agents_bd = get_db_rows ($dbh, 'SELECT nombre FROM tagente WHERE id_grupo = ?', $group);
+
+		# Update bbdd.
+		$result = db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
 	}
-    exit;
+
+	foreach my $name_agent (@agents_bd) {
+		# Check the standby field I put it to 0.
+		my $new_conf = update_conf_txt(
+			$conf,
+			$name_agent->{'nombre'},
+			'standby',
+			'0'
+		);
+	}
+
+    return $result;
 }
 
 ##############################################################################
@@ -542,9 +640,9 @@ sub pandora_delete_module_data ($$) {
 	my $buffer = 1000;
 	
 	while(1) {
-		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=?', $id_module);
+		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_inc WHERE id_agente_modulo=?', $id_module);
+		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_log4x WHERE id_agente_modulo=?', $id_module);
 		my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		
 		my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
@@ -554,19 +652,19 @@ sub pandora_delete_module_data ($$) {
 		}
 		
 		if($nd > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndinc > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_inc', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	
 		if($ndlog4x > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_log4x', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndstring > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_string', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	}
 		
@@ -1038,19 +1136,26 @@ sub cli_create_agent() {
 ##############################################################################
 
 sub cli_delete_agent() {
-	my $agent_name = @ARGV[2];
+	my ($agent_name,$use_alias) = @ARGV[2..3];
+
+	my @id_agents;
+	my $id_agent;
 	
 	$agent_name = decode_entities($agent_name);
-	
+
 	if (is_metaconsole($conf) == 1) {
-		my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
-		
-		if (scalar(@{$agents_groups}) != 0) {
-			foreach my $agent (@{$agents_groups}) {
-				my $return = enterprise_hook('delete_metaconsole_agent',[$dbh,$agent->{'id_agente'}]);
-				print_log "[INFO] Deleting agent '$agent_name' \n\n";
+		if (not defined $use_alias) {
+			my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
+
+			if (scalar(@{$agents_groups}) != 0) {
+				foreach my $agent (@{$agents_groups}) {
+					my $return = enterprise_hook('delete_metaconsole_agent',[$dbh,$agent->{'id_agente'}]);
+					print_log "[INFO] Deleting agent '$agent_name' \n\n";
+				}
 			}
 		}
+
+
 		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
 		my @servers_id = split(',',$servers);
 		my @list_servers;
@@ -1058,24 +1163,58 @@ sub cli_delete_agent() {
 		foreach my $server (@servers_id) {
 			my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 			
-			my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+			my @id_agents;
+			my $id_agent;
+
+			if (defined $use_alias and $use_alias eq 'use_alias') {
+				@id_agents = get_agent_ids_from_alias($dbh_metaconsole,$agent_name);
+
+				foreach my $id (@id_agents) {
+
+					if ($id->{'id_agente'} == -1) {
+						next;
+					}
+					else {
+						print_log "[INFO] Deleting agent '$id->{'nombre'}' in ID server: '$server'\n\n";
+						pandora_delete_agent($dbh_metaconsole,$id->{'id_agente'},$conf);
+					}
+				}
+			} else {
+				$id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+
+				if ($id_agent == -1) {
+					next;
+				}
+				else {
+					print_log "[INFO] Deleting agent '$agent_name' in ID server: '$server'\n\n";
+					pandora_delete_agent($dbh_metaconsole,$id_agent,$conf);
+				}
+			}
+		
 			
-			if ($id_agent == -1) {
-				next;
-			}
-			else {
-				print_log "[INFO] Deleting agent '$agent_name' in ID server: '$server'\n\n";
-				pandora_delete_agent($dbh_metaconsole,$id_agent,$conf);
-			}
 		}
 	}
 	else {
-	
-		my $id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
-		
-		print_log "[INFO] Deleting agent '$agent_name'\n\n";
-		pandora_delete_agent($dbh,$id_agent,$conf);
+		my @id_agents;
+		my $id_agent;
+
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+		} else {
+			$id_agent = get_agent_id($dbh,$agent_name);
+			exist_check($id_agent,'agent',$agent_name);
+		}
+
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+				print_log "[INFO] Deleting agent '$id->{'nombre'}'\n\n";
+				pandora_delete_agent($dbh,$id->{'id_agente'},$conf);
+			}
+		} else {
+			print_log "[INFO] Deleting agent '$agent_name'\n\n";
+			pandora_delete_agent($dbh,$id_agent,$conf);
+		}
 	}
 }
 
@@ -1193,14 +1332,14 @@ sub cli_create_data_module($) {
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions);
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..30];
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias) = @ARGV[2..31];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
@@ -1214,6 +1353,7 @@ sub cli_create_data_module($) {
 	my $module_type_def;
 	
 	my $agent_id;
+	my @id_agents;
 	my $policy_id;
 	
 	my $disabled_types_event = {};
@@ -1226,13 +1366,22 @@ sub cli_create_data_module($) {
 	my $disabled_types_event_json = encode_json($disabled_types_event);
 	
 	if ($in_policy == 0) {
-		$agent_id = get_agent_id($dbh,$agent_name);
-		exist_check($agent_id,'agent',$agent_name);
-		
-		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name);
-		
-		#~ print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				my $module_exists = get_agent_module_id($dbh, $module_name, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name);
+			}
+		} else {
+			$agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name);
+		}
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1246,44 +1395,91 @@ sub cli_create_data_module($) {
 	
 	$module_name_def = $module_name;
 	$module_type_def = $module_type;
-	# If the module is local and is not to policy, we add it to the conf file
-	if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
-		open (FILE, $definition_file);
-		my @file = <FILE>;
-		my $definition = join("", @file);
-		close (FILE);
-		
-		# If the parameter name or type and the definition file name or type 
-		# dont match will be set the file definitions
-		open (FILE, $definition_file);
-		while (<FILE>) {
-			chomp;
-			my ($key, $val) = split / /,2;
-			if ($key eq 'module_name') {
-				$module_name_def =  $val;
-			}
-			if ($key eq 'module_type') {
-				$module_type_def =  $val;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		foreach my $id (@id_agents) {
+			# If the module is local and is not to policy, we add it to the conf file
+			if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($id->{'nombre'}).'.conf')){
+				open (FILE, $definition_file);
+				my @file = <FILE>;
+				my $definition = join("", @file);
+				close (FILE);
+				
+				# If the parameter name or type and the definition file name or type 
+				# dont match will be set the file definitions
+				open (FILE, $definition_file);
+				while (<FILE>) {
+					chomp;
+					my ($key, $val) = split / /,2;
+					if ($key eq 'module_name') {
+						$module_name_def =  $val;
+					}
+					if ($key eq 'module_type') {
+						$module_type_def =  $val;
+					}
+				}
+				close (FILE);
+				
+				open (FILE, $conf->{incomingdir}.'/conf/'.md5($id->{'nombre'}).'.conf');
+				my @file = <FILE>;
+				my $conf_file = join("", @file);
+				close(FILE);
+				
+				open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($id->{'nombre'}).'.conf';
+				print FILE "$conf_file\n$definition";
+				close(FILE);
+				
+				enterprise_hook('pandora_update_md5_file', [$conf, $id->{'nombre'}]);
 			}
 		}
-		close (FILE);
-		
-		open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		my @file = <FILE>;
-		my $conf_file = join("", @file);
-		close(FILE);
-		
-		open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
-		print FILE "$conf_file\n$definition";
-		close(FILE);
-		
-		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
+	} else {
+		# If the module is local and is not to policy, we add it to the conf file
+		if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+			open (FILE, $definition_file);
+			my @file = <FILE>;
+			my $definition = join("", @file);
+			close (FILE);
+			
+			# If the parameter name or type and the definition file name or type 
+			# dont match will be set the file definitions
+			open (FILE, $definition_file);
+			while (<FILE>) {
+				chomp;
+				my ($key, $val) = split / /,2;
+				if ($key eq 'module_name') {
+					$module_name_def =  $val;
+				}
+				if ($key eq 'module_type') {
+					$module_type_def =  $val;
+				}
+			}
+			close (FILE);
+			
+			open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+			my @file = <FILE>;
+			my $conf_file = join("", @file);
+			close(FILE);
+			
+			open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
+			print FILE "$conf_file\n$definition";
+			close(FILE);
+			
+			enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
+		}
 	}
 	
 	if ($in_policy == 0) {
-		my $module_exists = get_agent_module_id($dbh, $module_name_def, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name_def);
-		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				my $module_exists = get_agent_module_id($dbh, $module_name_def, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name_def);
+				print_log "[INFO] Adding module '$module_name' to agent '$id->{'nombre'}'\n\n";
+			}
+		} else {
+			my $module_exists = get_agent_module_id($dbh, $module_name_def, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name_def);
+			print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		}
 	}
 	else {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name_def]);
@@ -1301,7 +1497,6 @@ sub cli_create_data_module($) {
 		print_log "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
 	
-	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
 	
@@ -1320,10 +1515,13 @@ sub cli_create_data_module($) {
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	
+
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
-		$parameters{'id_agente'} = $agent_id;
+
+		if (not defined $use_alias) {
+			$parameters{'id_agente'} = $agent_id;
+		}
 	}
 	else {
 		$parameters{'name'} = safe_input($module_name);
@@ -1367,7 +1565,14 @@ sub cli_create_data_module($) {
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
 	
 	if ($in_policy == 0) {
-		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				$parameters{'id_agente'} = $id->{'id_agente'};
+				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+			}
+		} else {
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		}
 	}
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
@@ -1386,7 +1591,7 @@ sub cli_create_web_module($) {
 		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
 		$definition_file, $proxy_url, $proxy_auth_login, $proxy_auth_password, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions);
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
@@ -1394,7 +1599,7 @@ sub cli_create_web_module($) {
 		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
 		$definition_file, $proxy_url, $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
 		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..38];
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias) = @ARGV[2..39];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
@@ -1409,6 +1614,7 @@ sub cli_create_web_module($) {
 	my $module_type_def;
 	
 	my $agent_id;
+	my @id_agents;
 	my $policy_id;
 	
 	my $disabled_types_event = {};
@@ -1421,13 +1627,22 @@ sub cli_create_web_module($) {
 	my $disabled_types_event_json = encode_json($disabled_types_event);
 	
 	if ($in_policy == 0) {
-		$agent_id = get_agent_id($dbh,$agent_name);
-		exist_check($agent_id,'agent',$agent_name);
-		
-		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name);
-		
-		#~ print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				my $module_exists = get_agent_module_id($dbh, $module_name, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name);
+			}
+		} else {
+			$agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name);
+		}
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1441,44 +1656,90 @@ sub cli_create_web_module($) {
 	
 	$module_name_def = $module_name;
 	$module_type_def = $module_type;
+
 	# If the module is local and is not to policy, we add it to the conf file
-	if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
-		open (FILE, $definition_file);
-		my @file = <FILE>;
-		my $definition = join("", @file);
-		close (FILE);
-		
-		# If the parameter name or type and the definition file name or type 
-		# dont match will be set the file definitions
-		open (FILE, $definition_file);
-		while (<FILE>) {
-			chomp;
-			my ($key, $val) = split / /;
-			if ($key eq 'module_name') {
-				$module_name_def =  $val;
-			}
-			if ($key eq 'module_type') {
-				$module_type_def =  $val;
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		foreach my $id (@id_agents) {
+			if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+				open (FILE, $definition_file);
+				my @file = <FILE>;
+				my $definition = join("", @file);
+				close (FILE);
+				
+				# If the parameter name or type and the definition file name or type 
+				# dont match will be set the file definitions
+				open (FILE, $definition_file);
+				while (<FILE>) {
+					chomp;
+					my ($key, $val) = split / /;
+					if ($key eq 'module_name') {
+						$module_name_def =  $val;
+					}
+					if ($key eq 'module_type') {
+						$module_type_def =  $val;
+					}
+				}
+				close (FILE);
+				
+				#open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+				#my @file = <FILE>;
+				#my $conf_file = join("", @file);
+				#close(FILE);
+				
+				#open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
+				#print FILE "$conf_file\n$definition";
+				#close(FILE);
+				
+				enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 			}
 		}
-		close (FILE);
-		
-		#open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		#my @file = <FILE>;
-		#my $conf_file = join("", @file);
-		#close(FILE);
-		
-		#open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
-		#print FILE "$conf_file\n$definition";
-		#close(FILE);
-		
-		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
+	} else {
+		if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+			open (FILE, $definition_file);
+			my @file = <FILE>;
+			my $definition = join("", @file);
+			close (FILE);
+			
+			# If the parameter name or type and the definition file name or type 
+			# dont match will be set the file definitions
+			open (FILE, $definition_file);
+			while (<FILE>) {
+				chomp;
+				my ($key, $val) = split / /;
+				if ($key eq 'module_name') {
+					$module_name_def =  $val;
+				}
+				if ($key eq 'module_type') {
+					$module_type_def =  $val;
+				}
+			}
+			close (FILE);
+			
+			#open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+			#my @file = <FILE>;
+			#my $conf_file = join("", @file);
+			#close(FILE);
+			
+			#open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
+			#print FILE "$conf_file\n$definition";
+			#close(FILE);
+			
+			enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
+		}
 	}
-	
+
 	if ($in_policy == 0) {
-		my $module_exists = get_agent_module_id($dbh, $module_name_def, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name_def);
-		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				my $module_exists = get_agent_module_id($dbh, $module_name_def, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name_def);
+				print_log "[INFO] Adding module '$module_name' to agent '$id->{'nombre'}'\n\n";
+			}
+		} else {
+			my $module_exists = get_agent_module_id($dbh, $module_name_def, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name_def);
+			print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		}
 	}
 	else {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name_def]);
@@ -1518,7 +1779,10 @@ sub cli_create_web_module($) {
 	
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
-		$parameters{'id_agente'} = $agent_id;
+
+		if (not defined $use_alias) {
+			$parameters{'id_agente'} = $agent_id;
+		}
 	}
 	else {
 		$parameters{'name'} = safe_input($module_name);
@@ -1575,14 +1839,21 @@ sub cli_create_web_module($) {
 	
 	
 	if ($in_policy == 0) {
-		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				$parameters{'id_agente'} = $id->{'id_agente'};
+				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+			}
+		} else {
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		}
 	}
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
 	}
 	
 	#Begin Insert module definition from file_definition in bd
-	if (defined($definition_file)){	
+	if (defined($definition_file)){
 		
 				open(my $fh, '<', $definition_file) or die($!);
 				my @lines = <$fh>;
@@ -1669,21 +1940,50 @@ sub cli_module_group_synch() {
 ##############################################################################
 
 sub cli_create_network_module_from_component() {
-	my ($agent_name, $component_name) = @ARGV[2..3];
-	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	exist_check($agent_id,'agent',$agent_name);
-		
-	my $nc_id = pandora_get_network_component_id($dbh, $component_name);
-	exist_check($nc_id,'network component',$component_name);
-	
-	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $component_name);
-	
-	# Get network component data
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $nc_id);
-	
-	pandora_create_module_from_network_component ($conf, $component, $agent_id, $dbh);
+	my ($agent_name, $component_name, $use_alias) = @ARGV[2..4];
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+		my $agent_id;
+		my $module_exists;
+		my $component;
+		my $nc_id;
+
+		foreach my $id (@id_agents) {
+			$agent_id = $id->{'id_agente'};
+			exist_check($agent_id,'agent',$agent_name);
+
+			$nc_id = pandora_get_network_component_id($dbh, $component_name);
+			exist_check($nc_id,'network component',$component_name);
+
+			# Get network component data
+			$component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $nc_id);
+
+			my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $component_name);
+
+			print_log "[INFO] Creating module from component '$component_name'\n\n";
+
+			pandora_create_module_from_network_component ($conf, $component, $agent_id, $dbh);
+		}
+	} else {
+			my $nc_id = pandora_get_network_component_id($dbh, $component_name);
+			exist_check($nc_id,'network component',$component_name);
+
+			# Get network component data
+			my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $nc_id);
+
+			my $agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+
+			my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $component_name);
+
+
+			print_log "[INFO] Creating module from component '$component_name'\n\n";
+
+			pandora_create_module_from_network_component ($conf, $component, $agent_id, $dbh);
+	}
 }
 
 ##############################################################################
@@ -1734,7 +2034,7 @@ sub cli_create_network_module($) {
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events, $each_ff,
 	$ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries, $critical_instructions, 
-	$warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse);
+	$warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
@@ -1742,7 +2042,7 @@ sub cli_create_network_module($) {
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
 		$ff_threshold_critical, $timeout, $retries,$critical_instructions, $warning_instructions, $unknown_instructions,
-		$warning_inverse, $critical_inverse) = @ARGV[2..32];
+		$warning_inverse, $critical_inverse, $use_alias) = @ARGV[2..33];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $description, 
@@ -1752,10 +2052,12 @@ sub cli_create_network_module($) {
 		$ff_threshold_critical, $timeout, $retries, $critical_instructions, $warning_instructions, $unknown_instructions,
 		$warning_inverse, $critical_inverse) = @ARGV[2..31];
 	}
-	
+
 	my $module_name_def;
 	my $module_type_def;
+
 	my $agent_id;
+	my @id_agents;
 	my $policy_id;
 	
 	my $disabled_types_event = {};
@@ -1768,13 +2070,26 @@ sub cli_create_network_module($) {
 	my $disabled_types_event_json = encode_json($disabled_types_event);
 	
 	if ($in_policy == 0) {
-		$agent_id = get_agent_id($dbh,$agent_name);
-		exist_check($agent_id,'agent',$agent_name);
-		
-		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name);
-		
-		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				my $module_exists = get_agent_module_id($dbh, $module_name, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name);
+
+				print_log "[INFO] Adding module '$module_name' to agent '$id->{'nombre'}'\n\n";
+			}
+		} else {
+			$agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name);
+
+			print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		}
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1824,7 +2139,11 @@ sub cli_create_network_module($) {
 	
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
-		$parameters{'id_agente'} = $agent_id;
+
+		if (not defined $use_alias) {
+			$parameters{'id_agente'} = $agent_id;
+		}
+
 		$parameters{'ip_target'} = $module_address;
 	}
 	else {
@@ -1869,7 +2188,14 @@ sub cli_create_network_module($) {
 	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
 	
 	if ($in_policy == 0) {
-		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				$parameters{'id_agente'} = $id->{'id_agente'};
+				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+			}
+		} else {
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		}
 	}
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
@@ -1888,7 +2214,7 @@ sub cli_create_snmp_module($) {
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse);
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
@@ -1896,7 +2222,7 @@ sub cli_create_snmp_module($) {
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse) = @ARGV[2..41];
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias) = @ARGV[2..42];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $version, $community, 
@@ -1909,7 +2235,9 @@ sub cli_create_snmp_module($) {
 	
 	my $module_name_def;
 	my $module_type_def;
+
 	my $agent_id;
+	my @id_agents;
 	my $policy_id;
 	
 	my $disabled_types_event = {};
@@ -1922,13 +2250,26 @@ sub cli_create_snmp_module($) {
 	my $disabled_types_event_json = encode_json($disabled_types_event);
 	
 	if ($in_policy == 0) {
-		$agent_id = get_agent_id($dbh,$agent_name);
-		exist_check($agent_id,'agent',$agent_name);
-		
-		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name);
-		
-		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				my $module_exists = get_agent_module_id($dbh, $module_name, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name);
+
+				print_log "[INFO] Adding module '$module_name' to agent '$id->{'nombre'}'\n\n";
+			}
+		} else {
+			$agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name);
+
+			print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		}
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1967,7 +2308,11 @@ sub cli_create_snmp_module($) {
 	
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
-		$parameters{'id_agente'} = $agent_id;
+
+		if (not defined $use_alias) {
+			$parameters{'id_agente'} = $agent_id;
+		}
+
 		$parameters{'ip_target'} = $module_address;
 	}
 	else {
@@ -2028,7 +2373,14 @@ sub cli_create_snmp_module($) {
 	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
 	
 	if ($in_policy == 0) {
-		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				$parameters{'id_agente'} = $id->{'id_agente'};
+				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+			}
+		} else {
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		}
 	}
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
@@ -2047,7 +2399,7 @@ sub cli_create_plugin_module($) {
 		$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 		$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse);
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
@@ -2055,7 +2407,7 @@ sub cli_create_plugin_module($) {
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse) = @ARGV[2..35];
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias) = @ARGV[2..36];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $plugin_name,
@@ -2065,10 +2417,12 @@ sub cli_create_plugin_module($) {
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout,
 		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse) = @ARGV[2..34];
 	}
-	
+
 	my $module_name_def;
 	my $module_type_def;
+
 	my $agent_id;
+	my @id_agents;
 	my $policy_id;
 	
 	my $disabled_types_event = {};
@@ -2081,13 +2435,26 @@ sub cli_create_plugin_module($) {
 	my $disabled_types_event_json = encode_json($disabled_types_event);
 	
 	if ($in_policy == 0) {
-		$agent_id = get_agent_id($dbh,$agent_name);
-		exist_check($agent_id,'agent',$agent_name);
-		
-		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-		non_exist_check($module_exists, 'module name', $module_name);
-		
-		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				my $module_exists = get_agent_module_id($dbh, $module_name, $id->{'id_agente'});
+				non_exist_check($module_exists, 'module name', $module_name);
+
+				print_log "[INFO] Adding module '$module_name' to agent '$id->{'nombre'}'\n\n";
+			}
+		} else {
+			$agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+			non_exist_check($module_exists, 'module name', $module_name);
+
+			print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		}
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -2125,7 +2492,11 @@ sub cli_create_plugin_module($) {
 	
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
-		$parameters{'id_agente'} = $agent_id;
+
+		if (not defined $use_alias) {
+			$parameters{'id_agente'} = $agent_id;
+		}
+
 		$parameters{'ip_target'} = $module_address;
 	}
 	else {
@@ -2202,7 +2573,14 @@ sub cli_create_plugin_module($) {
 	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
 	
 	if ($in_policy == 0) {
-		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				$parameters{'id_agente'} = $id->{'id_agente'};
+				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+			}
+		} else {
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		}
 	}
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
@@ -2215,16 +2593,36 @@ sub cli_create_plugin_module($) {
 ##############################################################################
 
 sub cli_delete_module() {
-	my ($module_name,$agent_name) = @ARGV[2..3];
+	my ($module_name,$agent_name, $use_alias) = @ARGV[2..4];
 	
-	print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
-	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
-	exist_check($id_module,'module',$module_name);
-	
-	pandora_delete_module($dbh,$id_module,$conf);
+	my @id_agents;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+		my $id_agent;
+
+		foreach my $id (@id_agents) {
+			print_log "[INFO] Deleting module '$module_name' from agent '$id->{'nombre'}' \n\n";
+
+			$id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
+			if ($id_module == -1) {
+				next;
+			}
+		
+			pandora_delete_module($dbh,$id_module,$conf);
+		}
+	} else {
+		print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
+
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
+		exist_check($id_module,'module',$module_name);
+		
+		pandora_delete_module($dbh,$id_module,$conf);
+	}
 }
 
 ##############################################################################
@@ -2273,18 +2671,41 @@ sub cli_delete_not_policy_modules() {
 ##############################################################################
 
 sub cli_create_template_module() {
-	my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
+	my ($template_name,$module_name,$agent_name, $use_alias) = @ARGV[2..5];
 	
-	print_log "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
-	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
-	exist_check($module_id,'module',$module_name);
-	my $template_id = get_template_id($dbh,$template_name);
-	exist_check($template_id,'template',$template_name);
-	
-	pandora_create_template_module ($conf, $dbh, $module_id, $template_id);
+	my @id_agents;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			print_log "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
+			
+			my $id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+			if ($module_id == -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
+				next;
+			}
+
+			my $template_id = get_template_id($dbh,$template_name);
+			exist_check($template_id,'template',$template_name);
+			
+			pandora_create_template_module ($conf, $dbh, $module_id, $template_id);
+		}
+	} else {
+			print_log "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
+			
+			my $id_agent = get_agent_id($dbh,$agent_name);
+			exist_check($id_agent,'agent',$agent_name);
+			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+			exist_check($module_id,'module',$module_name);
+			my $template_id = get_template_id($dbh,$template_name);
+			exist_check($template_id,'template',$template_name);
+			
+			pandora_create_template_module ($conf, $dbh, $module_id, $template_id);
+	}
 }
 
 ##############################################################################
@@ -2293,21 +2714,46 @@ sub cli_create_template_module() {
 ##############################################################################
 
 sub cli_delete_template_module() {
-	my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
+	my ($template_name,$module_name,$agent_name, $use_alias) = @ARGV[2..5];
 
-	print_log "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
 
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
-	exist_check($module_id,'module',$module_name);
-	my $template_id = get_template_id($dbh,$template_name);
-	exist_check($template_id,'template',$template_name);
+		my $id_agent;
 
-	my $template_module_id = get_template_module_id($dbh, $module_id, $template_id);
-	exist_check($template_module_id,"template '$template_name' on module",$module_name);
+		foreach my $id (@id_agents) {
+			print_log "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
+
+			$id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+			if ($module_id eq -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
+				next;
+			}
+			my $template_id = get_template_id($dbh,$template_name);
+			exist_check($template_id,'template',$template_name);
+
+			my $template_module_id = get_template_module_id($dbh, $module_id, $template_id);
+			exist_check($template_module_id,"template '$template_name' on module",$module_name);
 		
-	pandora_delete_template_module ($dbh, $template_module_id);
+			pandora_delete_template_module ($dbh, $template_module_id);
+		}
+	} else {
+		print_log "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
+
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+		exist_check($module_id,'module',$module_name);
+		my $template_id = get_template_id($dbh,$template_name);
+		exist_check($template_id,'template',$template_name);
+
+		my $template_module_id = get_template_module_id($dbh, $module_id, $template_id);
+		exist_check($template_module_id,"template '$template_name' on module",$module_name);
+	
+		pandora_delete_template_module ($dbh, $template_module_id);
+	}
 }
 
 ##############################################################################
@@ -2316,32 +2762,68 @@ sub cli_delete_template_module() {
 ##############################################################################
 
 sub cli_create_template_action() {
-	my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max) = @ARGV[2..7];
+	my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max, $use_alias) = @ARGV[2..8];
 	
-	print_log "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
-	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
-	exist_check($module_id,'module',$module_name);
-	my $template_id = get_template_id($dbh,$template_name);
-	exist_check($template_id,'template',$template_name);
-	my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
-	exist_check($template_module_id,'template module',$template_name);
-	my $action_id = get_action_id($dbh,safe_input($action_name));
-	exist_check($action_id,'action',$action_name);
-	
-	$fires_min = 0 unless defined ($fires_min);
-	$fires_max = 0 unless defined ($fires_max);
-	
-	my %parameters;						
-	
-	$parameters{'id_alert_template_module'} = $template_module_id;
-	$parameters{'id_alert_action'} = $action_id;
-	$parameters{'fires_min'} = $fires_min;
-	$parameters{'fires_max'} = $fires_max;
-	
-	pandora_create_template_module_action ($conf, \%parameters, $dbh);
+	my @id_agents;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			print_log "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
+			
+			my $id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+			if ($module_id eq -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
+				next;
+			}
+			my $template_id = get_template_id($dbh,$template_name);
+			exist_check($template_id,'template',$template_name);
+			my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
+			exist_check($template_module_id,'template module',$template_name);
+			my $action_id = get_action_id($dbh,safe_input($action_name));
+			exist_check($action_id,'action',$action_name);
+			
+			$fires_min = 0 unless defined ($fires_min);
+			$fires_max = 0 unless defined ($fires_max);
+			
+			my %parameters;						
+			
+			$parameters{'id_alert_template_module'} = $template_module_id;
+			$parameters{'id_alert_action'} = $action_id;
+			$parameters{'fires_min'} = $fires_min;
+			$parameters{'fires_max'} = $fires_max;
+			
+			pandora_create_template_module_action ($conf, \%parameters, $dbh);
+		}
+	} else {
+		print_log "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
+
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+		exist_check($module_id,'module',$module_name);
+		my $template_id = get_template_id($dbh,$template_name);
+		exist_check($template_id,'template',$template_name);
+		my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
+		exist_check($template_module_id,'template module',$template_name);
+		my $action_id = get_action_id($dbh,safe_input($action_name));
+		exist_check($action_id,'action',$action_name);
+
+		$fires_min = 0 unless defined ($fires_min);
+		$fires_max = 0 unless defined ($fires_max);
+
+		my %parameters;						
+
+		$parameters{'id_alert_template_module'} = $template_module_id;
+		$parameters{'id_alert_action'} = $action_id;
+		$parameters{'fires_min'} = $fires_min;
+		$parameters{'fires_max'} = $fires_max;
+
+		pandora_create_template_module_action ($conf, \%parameters, $dbh);
+	}
 }
 
 ##############################################################################
@@ -2350,22 +2832,46 @@ sub cli_create_template_action() {
 ##############################################################################
 
 sub cli_delete_template_action() {
-	my ($action_name,$template_name,$module_name,$agent_name) = @ARGV[2..5];
+	my ($action_name,$template_name,$module_name,$agent_name, $use_alias) = @ARGV[2..6];
 	
-	print_log "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
 
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
-	exist_check($module_id,'module',$module_name);
-	my $template_id = get_template_id($dbh,$template_name);
-	exist_check($template_id,'template',$template_name);
-	my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
-	exist_check($template_module_id,'template module',$template_name);
-	my $action_id = get_action_id($dbh,safe_input($action_name));
-	exist_check($action_id,'action',$action_name);
+		foreach my $id (@id_agents) {
+			print_log "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
 
-	pandora_delete_template_module_action ($dbh, $template_module_id, $action_id);
+			my $id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+			if ($module_id eq -1) {
+				print_log "[ERROR] Error: The module '$module_name' does not exist. \n\n";
+				next;
+			}
+			my $template_id = get_template_id($dbh,$template_name);
+			exist_check($template_id,'template',$template_name);
+			my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
+			exist_check($template_module_id,'template module',$template_name);
+			my $action_id = get_action_id($dbh,safe_input($action_name));
+			exist_check($action_id,'action',$action_name);
+
+			pandora_delete_template_module_action ($dbh, $template_module_id, $action_id);
+		}
+	} else {
+		print_log "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
+
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
+		exist_check($module_id,'module',$module_name);
+		my $template_id = get_template_id($dbh,$template_name);
+		exist_check($template_id,'template',$template_name);
+		my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
+		exist_check($template_module_id,'template module',$template_name);
+		my $action_id = get_action_id($dbh,safe_input($action_name));
+		exist_check($action_id,'action',$action_name);
+
+		pandora_delete_template_module_action ($dbh, $template_module_id, $action_id);
+	}
 }
 
 ##############################################################################
@@ -2374,9 +2880,11 @@ sub cli_delete_template_action() {
 ##############################################################################
 
 sub cli_data_module() {
-	my ($server_name,$agent_name,$module_name,$module_type,$module_new_data,$datetime) = @ARGV[2..7];
+	my ($server_name,$agent_name,$module_name,$module_type,$module_new_data,$datetime,$use_alias) = @ARGV[2..8];
 	my $utimestamp;
 	
+	my @id_agents;
+
 	if(defined($datetime)) {
 		if ($datetime !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
 			print_log "[ERROR] Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
@@ -2393,29 +2901,58 @@ sub cli_data_module() {
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	
-	my $id_module = get_agent_module_id($dbh, $module_name, $id_agent);
-	exist_check($id_module, 'module name', $module_name);
-		
+
 	# Server_type 0 is dataserver
 	my $server_id = get_server_id($dbh,$server_name,0);
 	exist_check($server_id,'data server',$server_name);
-	
-	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ? AND id_tipo_modulo = ?', $id_module, $id_agent, $module_type_id);
-	
-	if(not defined($module->{'module_interval'})) {
-		print_log "[ERROR] No module found with this type. \n\n";
-		exit;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		my $id_agent;
+
+		foreach my $id (@id_agents) {
+			$id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			
+			my $id_module = get_agent_module_id($dbh, $module_name, $id_agent);
+			if ($id_module == -1) {
+				next;
+			}
+
+			my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ? AND id_tipo_modulo = ?', $id_module, $module_type_id);
+			
+			if(not defined($module->{'module_interval'})) {
+				print_log "[ERROR] No module found with this type. \n\n";
+				exit;
+			}
+			
+			my %data = ('data' => $module_new_data);
+			
+			pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
+			
+			print_log "[INFO] Inserting data to module '$module_name'\n\n";
+		}
+	} else {
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		
+		my $id_module = get_agent_module_id($dbh, $module_name, $id_agent);
+		exist_check($id_module, 'module name', $module_name);
+
+		my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ? AND id_tipo_modulo = ?', $id_module, $module_type_id);
+		
+		if(not defined($module->{'module_interval'})) {
+			print_log "[ERROR] No module found with this type. \n\n";
+			exit;
+		}
+		
+		my %data = ('data' => $module_new_data);
+		
+		pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
+		
+		print_log "[INFO] Inserting data to module '$module_name'\n\n";
 	}
-	
-	my %data = ('data' => $module_new_data);
-	
-	pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
-	
-	print_log "[INFO] Inserting data to module '$module_name'\n\n";
 }
 
 ##############################################################################
@@ -2481,10 +3018,20 @@ sub cli_user_update() {
 ##############################################################################
 
 sub cli_agent_update() {
-	my ($agent_name,$field,$new_value) = @ARGV[2..4];
-	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
+	my ($agent_name,$field,$new_value,$use_alias) = @ARGV[2..5];
+
+	my @id_agents;
+	my $id_agent;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+		foreach my $id (@id_agents) {
+			exist_check($id->{'id_agente'},'agent',$agent_name);
+		}
+	} else {
+		$id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+	}
 	
 	# agent_name, address, description, group_name, interval, os_name, disabled, parent_name, cascade_protection, icon_path, update_gis_data, custom_id
 	
@@ -2532,7 +3079,13 @@ sub cli_agent_update() {
 		}
 		
 		# Add the address to the agent
-		add_new_address_agent ($dbh, $address_id, $id_agent);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			foreach my $id (@id_agents) {
+				add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+			}
+		} else {
+			add_new_address_agent ($dbh, $address_id, $id_agent);
+		}
 		
 		$field = 'direccion';
 	}
@@ -2540,14 +3093,24 @@ sub cli_agent_update() {
 		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
-		
-	print_log "[INFO] Updating field '$field' in agent '$agent_name'\n\n";
+	
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		print_log "[INFO] Updating field '$field' in agents with alias '$agent_name'\n\n";
+	} else {
+		print_log "[INFO] Updating field '$field' in agent '$agent_name'\n\n";
+	}
 	
 	my $update;
 	
 	$update->{$field} = $new_value;
 
-	pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id_agent), 'tagente', $dbh);
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		foreach my $id (@id_agents) {
+			pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id->{'id_agente'}), 'tagente', $dbh);
+		}
+	} else {
+		pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id_agent), 'tagente', $dbh);
+	}
 }
 
 ##############################################################################
@@ -2804,150 +3367,306 @@ sub pandora_check_plugin_module_fields($) {
 ##############################################################################
 
 sub cli_module_update() {
-	my ($module_name,$agent_name,$field,$new_value) = @ARGV[2..5];
-	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $id_agent);
-	exist_check($id_agent_module,'agent module',$module_name);
-	
-	# Check and adjust parameters in common values
-	
-	if($field eq 'min' || $field eq 'max' || $field eq 'post_process' || $field eq 'history_data') {
-		# Fields admited, no changes
-	}
-	elsif($field eq 'interval') {
-		$field = 'module_interval';
-	}
-	elsif($field eq 'warning_min') {
-		$field = 'min_warning';
-	}
-	elsif($field eq 'warning_max') {
-		$field = 'max_warning';
-	}
-	elsif($field eq 'critical_min') {
-		$field = 'min_critical';
-	}
-	elsif($field eq 'critical_max') {
-		$field = 'max_critical';
-	}
-	elsif($field eq 'warning_str') {
-		$field = 'str_warning';
-		$new_value = safe_input($new_value);
-	}
-	elsif($field eq 'critical_str') {
-		$field = 'str_critical';
-		$new_value = safe_input($new_value);
-	}
-	elsif($field eq 'agent_name') {
-		my $id_agent_change = get_agent_id($dbh,$new_value);
-		exist_check($id_agent_change,'agent',$new_value);
-		my $id_agent_module_exist = get_agent_module_id ($dbh, $module_name, $id_agent_change);
-		if($id_agent_module_exist != -1) {
-			print_log "[ERROR] A module called '$module_name' already exist in the agent '$new_value'\n\n";
-			exit;
-		}
-		$field = 'id_agente';
-		$new_value = $id_agent_change;
-	}
-	elsif ($field eq 'module_name') {
-		my $id_agent_module_change = get_agent_module_id ($dbh, $new_value, $id_agent);
-		if ($id_agent_module_change != -1) {
-			print_log "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
-			exit;
-		}
-		$field = 'nombre';
-		$new_value = safe_input($new_value);
-	}
-	elsif ($field eq 'description') {
-		$field = 'descripcion';
-		$new_value = safe_input($new_value);
-	}
-	elsif ($field eq 'module_group') {
-		my $module_group_id = get_module_group_id($dbh,$new_value);
-		
-		if ($module_group_id == -1) {
-			print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
-			exit;
-		}
-		$field = 'id_module_group';
-		$new_value = $module_group_id;
-	}
-	elsif ($field eq 'enable_unknown_events') {
-		my $disabled_types_event = {};
-		if ($new_value) {
-			$disabled_types_event->{'going_unknown'} = 0;
-		}
-		else {
-			$disabled_types_event->{'going_unknown'} = 1;
-		}
-		$field = 'disabled_types_event';
-		$new_value = encode_json($disabled_types_event);
-	}
-	elsif ($field eq 'ff_threshold') {
-		$field = 'min_ff_event';
-	}
-	elsif ($field eq 'each_ff') {
-		$field = 'each_ff';
-	}
-	elsif ($field eq 'ff_threshold_normal') {
-		$field = 'min_ff_event_normal';
-	}
-	elsif ($field eq 'ff_threshold_warning') {
-		$field = 'min_ff_event_warning';
-	}
-	elsif ($field eq 'ff_threshold_critical') {
-		$field = 'min_ff_event_critical';
-	}
-	elsif ($field eq 'critical_instructions') {
-		$field = 'critical_instructions';
-	}
-	elsif ($field eq 'warning_instructions') {
-		$field = 'warning_instructions';
-	}
-	elsif ($field eq 'unknown_instructions') {
-		$field = 'unknown_instructions';
-	}
-	else {
-		# If is not a common value, check type and call type update funtion
-		my $type = pandora_get_module_type($dbh,$id_agent_module);
-		
-		my %field_value;
-		$field_value{'field'} = $field;
-		$field_value{'new_value'} = $new_value;
-		
-		if($type eq 'data') {
-			pandora_check_data_module_fields(\%field_value);
-		}
-		elsif($type eq 'network') {
-			pandora_check_network_module_fields(\%field_value);
-		}
-		elsif($type eq 'snmp') {
-			pandora_check_snmp_module_fields(\%field_value);
-		}
-		elsif($type eq 'plugin') {
-			pandora_check_plugin_module_fields(\%field_value);
-		}
-		else {
-			print_log "[ERROR] The field '$field' is not available for this type of module\n\n";
-		}
-		
-		$field = $field_value{'field'};
-		$new_value = $field_value{'new_value'};
-	}
-	
-	print_log "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
-	
-	my $update;
-	
-	$update->{$field} = $new_value;
+	my ($module_name,$agent_name,$field,$new_value, $use_alias) = @ARGV[2..6];
 
-	my $policy_id = enterprise_hook('get_id_policy_module_agent_module',[$dbh, safe_input($id_agent_module)]);
-	if ( $policy_id > 0) {
-		$update->{policy_linked} = 0;
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		my $save_initial_field = $field;
+		my $save_new_value = $new_value;
+
+		foreach my $id (@id_agents) {
+			$field = $save_initial_field;
+			$new_value = $save_new_value;
+			my $id_agent = $id->{'id_agente'};
+			exist_check($id_agent,'agent',$agent_name);
+			my $id_agent_module = get_agent_module_id ($dbh, $module_name, $id_agent);
+			if ($id_agent_module == -1) {
+				next;
+			}
+			
+			# Check and adjust parameters in common values
+			
+			if($field eq 'min' || $field eq 'max' || $field eq 'post_process' || $field eq 'history_data') {
+				# Fields admited, no changes
+			}
+			elsif($field eq 'interval') {
+				$field = 'module_interval';
+			}
+			elsif($field eq 'warning_min') {
+				$field = 'min_warning';
+			}
+			elsif($field eq 'warning_max') {
+				$field = 'max_warning';
+			}
+			elsif($field eq 'critical_min') {
+				$field = 'min_critical';
+			}
+			elsif($field eq 'critical_max') {
+				$field = 'max_critical';
+			}
+			elsif($field eq 'warning_str') {
+				$field = 'str_warning';
+				$new_value = safe_input($new_value);
+			}
+			elsif($field eq 'critical_str') {
+				$field = 'str_critical';
+				$new_value = safe_input($new_value);
+			}
+			elsif($field eq 'agent_name') {
+				my $id_agent_change = get_agent_id($dbh,$new_value);
+				exist_check($id_agent_change,'agent',$new_value);
+				my $id_agent_module_exist = get_agent_module_id ($dbh, $module_name, $id_agent_change);
+				if($id_agent_module_exist != -1) {
+					print_log "[ERROR] A module called '$module_name' already exist in the agent '$new_value'\n\n";
+					exit;
+				}
+				$field = 'id_agente';
+				$new_value = $id_agent_change;
+			}
+			elsif ($field eq 'module_name') {
+				my $id_agent_module_change = get_agent_module_id ($dbh, $new_value, $id_agent);
+				if ($id_agent_module_change != -1) {
+					print_log "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
+					exit;
+				}
+				$field = 'nombre';
+				$new_value = safe_input($new_value);
+			}
+			elsif ($field eq 'description') {
+				$field = 'descripcion';
+				$new_value = safe_input($new_value);
+			}
+			elsif ($field eq 'module_group') {
+				my $module_group_id = get_module_group_id($dbh,$new_value);
+				
+				if ($module_group_id == -1) {
+					print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
+					exit;
+				}
+				$field = 'id_module_group';
+				$new_value = $module_group_id;
+			}
+			elsif ($field eq 'enable_unknown_events') {
+				my $disabled_types_event = {};
+				if ($new_value) {
+					$disabled_types_event->{'going_unknown'} = 0;
+				}
+				else {
+					$disabled_types_event->{'going_unknown'} = 1;
+				}
+				$field = 'disabled_types_event';
+				$new_value = encode_json($disabled_types_event);
+			}
+			elsif ($field eq 'ff_threshold') {
+				$field = 'min_ff_event';
+			}
+			elsif ($field eq 'each_ff') {
+				$field = 'each_ff';
+			}
+			elsif ($field eq 'ff_threshold_normal') {
+				$field = 'min_ff_event_normal';
+			}
+			elsif ($field eq 'ff_threshold_warning') {
+				$field = 'min_ff_event_warning';
+			}
+			elsif ($field eq 'ff_threshold_critical') {
+				$field = 'min_ff_event_critical';
+			}
+			elsif ($field eq 'critical_instructions') {
+				$field = 'critical_instructions';
+			}
+			elsif ($field eq 'warning_instructions') {
+				$field = 'warning_instructions';
+			}
+			elsif ($field eq 'unknown_instructions') {
+				$field = 'unknown_instructions';
+			}
+			else {
+				# If is not a common value, check type and call type update funtion
+				my $type = pandora_get_module_type($dbh,$id_agent_module);
+				print("TYPE EN ELSE".$type);
+				my %field_value;
+				$field_value{'field'} = $field;
+				$field_value{'new_value'} = $new_value;
+				
+				if($type eq 'data') {
+					pandora_check_data_module_fields(\%field_value);
+				}
+				elsif($type eq 'network') {
+					pandora_check_network_module_fields(\%field_value);
+				}
+				elsif($type eq 'snmp') {
+					pandora_check_snmp_module_fields(\%field_value);
+				}
+				elsif($type eq 'plugin') {
+					pandora_check_plugin_module_fields(\%field_value);
+				}
+				else {
+					print_log "[ERROR] The field '$field' is not available for this type of module\n\n";
+				}
+				
+				$field = $field_value{'field'};
+				$new_value = $field_value{'new_value'};
+			}
+			
+			print_log "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
+			
+			my $update;
+			
+			$update->{$field} = $new_value;
+
+			my $policy_id = enterprise_hook('get_id_policy_module_agent_module',[$dbh, safe_input($id_agent_module)]);
+			if ( $policy_id > 0) {
+				$update->{policy_linked} = 0;
+			}
+			
+			pandora_update_module_from_hash ($conf, $update, 'id_agente_modulo', $id_agent_module, $dbh);
+		}
+	} else {
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		my $id_agent_module = get_agent_module_id ($dbh, $module_name, $id_agent);
+		exist_check($id_agent_module,'agent module',$module_name);
+		
+		# Check and adjust parameters in common values
+		
+		if($field eq 'min' || $field eq 'max' || $field eq 'post_process' || $field eq 'history_data') {
+			# Fields admited, no changes
+		}
+		elsif($field eq 'interval') {
+			$field = 'module_interval';
+		}
+		elsif($field eq 'warning_min') {
+			$field = 'min_warning';
+		}
+		elsif($field eq 'warning_max') {
+			$field = 'max_warning';
+		}
+		elsif($field eq 'critical_min') {
+			$field = 'min_critical';
+		}
+		elsif($field eq 'critical_max') {
+			$field = 'max_critical';
+		}
+		elsif($field eq 'warning_str') {
+			$field = 'str_warning';
+			$new_value = safe_input($new_value);
+		}
+		elsif($field eq 'critical_str') {
+			$field = 'str_critical';
+			$new_value = safe_input($new_value);
+		}
+		elsif($field eq 'agent_name') {
+			my $id_agent_change = get_agent_id($dbh,$new_value);
+			exist_check($id_agent_change,'agent',$new_value);
+			my $id_agent_module_exist = get_agent_module_id ($dbh, $module_name, $id_agent_change);
+			if($id_agent_module_exist != -1) {
+				print_log "[ERROR] A module called '$module_name' already exist in the agent '$new_value'\n\n";
+				exit;
+			}
+			$field = 'id_agente';
+			$new_value = $id_agent_change;
+		}
+		elsif ($field eq 'module_name') {
+			my $id_agent_module_change = get_agent_module_id ($dbh, $new_value, $id_agent);
+			if ($id_agent_module_change != -1) {
+				print_log "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
+				exit;
+			}
+			$field = 'nombre';
+			$new_value = safe_input($new_value);
+		}
+		elsif ($field eq 'description') {
+			$field = 'descripcion';
+			$new_value = safe_input($new_value);
+		}
+		elsif ($field eq 'module_group') {
+			my $module_group_id = get_module_group_id($dbh,$new_value);
+			
+			if ($module_group_id == -1) {
+				print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
+				exit;
+			}
+			$field = 'id_module_group';
+			$new_value = $module_group_id;
+		}
+		elsif ($field eq 'enable_unknown_events') {
+			my $disabled_types_event = {};
+			if ($new_value) {
+				$disabled_types_event->{'going_unknown'} = 0;
+			}
+			else {
+				$disabled_types_event->{'going_unknown'} = 1;
+			}
+			$field = 'disabled_types_event';
+			$new_value = encode_json($disabled_types_event);
+		}
+		elsif ($field eq 'ff_threshold') {
+			$field = 'min_ff_event';
+		}
+		elsif ($field eq 'each_ff') {
+			$field = 'each_ff';
+		}
+		elsif ($field eq 'ff_threshold_normal') {
+			$field = 'min_ff_event_normal';
+		}
+		elsif ($field eq 'ff_threshold_warning') {
+			$field = 'min_ff_event_warning';
+		}
+		elsif ($field eq 'ff_threshold_critical') {
+			$field = 'min_ff_event_critical';
+		}
+		elsif ($field eq 'critical_instructions') {
+			$field = 'critical_instructions';
+		}
+		elsif ($field eq 'warning_instructions') {
+			$field = 'warning_instructions';
+		}
+		elsif ($field eq 'unknown_instructions') {
+			$field = 'unknown_instructions';
+		}
+		else {
+			# If is not a common value, check type and call type update funtion
+			my $type = pandora_get_module_type($dbh,$id_agent_module);
+			
+			my %field_value;
+			$field_value{'field'} = $field;
+			$field_value{'new_value'} = $new_value;
+			
+			if($type eq 'data') {
+				pandora_check_data_module_fields(\%field_value);
+			}
+			elsif($type eq 'network') {
+				pandora_check_network_module_fields(\%field_value);
+			}
+			elsif($type eq 'snmp') {
+				pandora_check_snmp_module_fields(\%field_value);
+			}
+			elsif($type eq 'plugin') {
+				pandora_check_plugin_module_fields(\%field_value);
+			}
+			else {
+				print_log "[ERROR] The field '$field' is not available for this type of module\n\n";
+			}
+			
+			$field = $field_value{'field'};
+			$new_value = $field_value{'new_value'};
+		}
+		
+		print_log "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
+		
+		my $update;
+		
+		$update->{$field} = $new_value;
+
+		my $policy_id = enterprise_hook('get_id_policy_module_agent_module',[$dbh, safe_input($id_agent_module)]);
+		if ( $policy_id > 0) {
+			$update->{policy_linked} = 0;
+		}
+		
+		pandora_update_module_from_hash ($conf, $update, 'id_agente_modulo', $id_agent_module, $dbh);
 	}
-	
-	pandora_update_module_from_hash ($conf, $update, 'id_agente_modulo', $id_agent_module, $dbh);
 }
 
 ##############################################################################
@@ -3304,7 +4023,7 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data,$force_create_agent,$c_instructions,$w_instructions,$u_instructions) = @ARGV[2..19];
+	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data,$force_create_agent,$c_instructions,$w_instructions,$u_instructions, $use_alias) = @ARGV[2..20];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
@@ -3330,58 +4049,102 @@ sub cli_create_event() {
 	}
 	
 	my $id_agent;
-	
-	if (! $agent_name) {
-		$id_agent = 0;
-	}
-	else {
-		$id_agent = get_agent_id($dbh,$agent_name);
-		# exist_check($id_agent,'agent',$agent_name);
-		if($id_agent == -1){
-			if($force_create_agent == 1){
-				pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
-				print_log "[INFO] Adding agent '$agent_name' \n\n";
-				$id_agent = get_agent_id($dbh,$agent_name);
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			if (! $agent_name) {
+				$id_agent = 0;
 			}
-			else{
-				exist_check($id_agent,'agent',$agent_name);
+			else {
+				$id_agent = $id->{'id_agente'};
 			}
+			
+			my $id_agentmodule;
+			
+			if (! $module_name) {
+				$id_agentmodule = 0;
+			}
+			else {
+				$id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
+				if ($id_agentmodule eq -1) {
+					next;
+				}
+			}
+			
+			my $id_alert_agent_module;
+						
+			if(defined($template_name) && $template_name ne '') {
+				my $id_template = get_template_id($dbh,$template_name);
+				exist_check($id_template,'template',$template_name);
+				$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
+				exist_check($id_alert_agent_module,'alert template module',$template_name);
+			}
+			else {
+				$id_alert_agent_module = 0;
+			}
+			
+			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
+
+			# Base64 encode custom data
+			$custom_data = encode_base64 ($custom_data, '');
+
+			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 		}
+	} else {
+		if (! $agent_name) {
+			$id_agent = 0;
+		}
+		else {
+			$id_agent = get_agent_id($dbh,$agent_name);
+			# exist_check($id_agent,'agent',$agent_name);
+			if($id_agent == -1){
+				if($force_create_agent == 1){
+					pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+					print_log "[INFO] Adding agent '$agent_name' \n\n";
+					$id_agent = get_agent_id($dbh,$agent_name);
+				}
+				else{
+					exist_check($id_agent,'agent',$agent_name);
+				}
+			}
+
+		}
+		
+		my $id_agentmodule;
+		
+		if (! $module_name) {
+			$id_agentmodule = 0;
+		}
+		else {
+			$id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
+			exist_check($id_agentmodule,'module',$module_name);
+		}
+		
+		my $id_alert_agent_module;
+					
+		if(defined($template_name) && $template_name ne '') {
+			my $id_template = get_template_id($dbh,$template_name);
+			exist_check($id_template,'template',$template_name);
+			$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
+			exist_check($id_alert_agent_module,'alert template module',$template_name);
+		}
+		else {
+			$id_alert_agent_module = 0;
+		}
+		
+		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
+
+		# Base64 encode custom data
+		$custom_data = encode_base64 ($custom_data, '');
+
+		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 
 	}
-	
-	my $id_agentmodule;
-	
-	if (! $module_name) {
-		$id_agentmodule = 0;
-	}
-	else {
-		$id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
-		exist_check($id_agentmodule,'module',$module_name);
-	}
-	
-	my $id_alert_agent_module;
-				
-	if(defined($template_name) && $template_name ne '') {
-		my $id_template = get_template_id($dbh,$template_name);
-		exist_check($id_template,'template',$template_name);
-		$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
-		exist_check($id_alert_agent_module,'alert template module',$template_name);
-	}
-	else {
-		$id_alert_agent_module = 0;
-	}
-	
-	if (defined($comment) && $comment ne '') {
-		$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
-	}
-	print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
-
-	# Base64 encode custom data
-	$custom_data = encode_base64 ($custom_data);
-
-	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 }
 
 ##############################################################################
@@ -3390,19 +4153,9 @@ sub cli_create_event() {
 ##############################################################################
 
 sub cli_validate_event() {
-	my ($agent_name, $module_name, $datetime_min, $datetime_max, $user_name, $criticity, $template_name) = @ARGV[2..8];
+	my ($agent_name, $module_name, $datetime_min, $datetime_max, $user_name, $criticity, $template_name, $use_alias) = @ARGV[2..9];
 	my $id_agent = '';
 	my $id_agentmodule = '';
-
-	if(defined($agent_name) && $agent_name ne '') {
-		$id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
-		
-		if($module_name ne '') {
-			$id_agentmodule = get_agent_module_id($dbh, $module_name, $id_agent);
-			exist_check($id_agentmodule,'module',$module_name);
-		}
-	}
 
 	if(defined($datetime_min) && $datetime_min ne '') {
 		if ($datetime_min !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
@@ -3422,17 +4175,57 @@ sub cli_validate_event() {
 		$datetime_max .= ":00";
 	}
 
-	my $id_alert_agent_module = '';
-	
-	if(defined($template_name) && $template_name ne '') {
-		my $id_template = get_template_id($dbh,$template_name);
-		exist_check($id_template,'template',$template_name);
-		$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
-		exist_check($id_alert_agent_module,'template module',$template_name);
-	}
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			if(defined($agent_name) && $agent_name ne '') {
+				$id_agent = $id->{'id_agente'};
+				exist_check($id_agent,'agent',$agent_name);
 				
-	pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
-	print_log "[INFO] Validating event for agent '$agent_name'\n\n";
+				if($module_name ne '') {
+					$id_agentmodule = get_agent_module_id($dbh, $module_name, $id_agent);
+					if ($id_agentmodule eq -1) {
+						next;
+					}
+				}
+			}
+
+			my $id_alert_agent_module = '';
+			
+			if(defined($template_name) && $template_name ne '') {
+				my $id_template = get_template_id($dbh,$template_name);
+				exist_check($id_template,'template',$template_name);
+				$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
+				exist_check($id_alert_agent_module,'template module',$template_name);
+			}
+						
+			pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
+			print_log "[INFO] Validating event for agent '$id->{'nombre'}'\n\n";
+		}
+	} else {
+		if(defined($agent_name) && $agent_name ne '') {
+			$id_agent = get_agent_id($dbh,$agent_name);
+			exist_check($id_agent,'agent',$agent_name);
+			
+			if($module_name ne '') {
+				$id_agentmodule = get_agent_module_id($dbh, $module_name, $id_agent);
+				exist_check($id_agentmodule,'module',$module_name);
+			}
+		}
+
+		my $id_alert_agent_module = '';
+		
+		if(defined($template_name) && $template_name ne '') {
+			my $id_template = get_template_id($dbh,$template_name);
+			exist_check($id_template,'template',$template_name);
+			$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
+			exist_check($id_alert_agent_module,'template module',$template_name);
+		}
+					
+		pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
+		print_log "[INFO] Validating event for agent '$agent_name'\n\n";
+	}
 }
 
 ##############################################################################
@@ -3536,7 +4329,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
@@ -3578,38 +4371,84 @@ sub cli_create_incident() {
 
 sub cli_delete_data($) {
 	my $ltotal = shift;
-	my ($opt, $name, $name2) = @ARGV[2..4];
+	my ($opt, $name, $name2, $use_alias) = @ARGV[2..5];
+
 
 	if($opt eq '-m' || $opt eq '--m') {
-		# Delete module data
-		param_check($ltotal, 3) unless ($name2 ne '');
-		my $id_agent = get_agent_id($dbh,$name2);
-		exist_check($id_agent,'agent',$name2);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			my @id_agents = get_agent_ids_from_alias($dbh,$name2);
+
+			foreach my $id (@id_agents) {
+				# Delete module data
+				param_check($ltotal, 3) unless ($name2 ne '');
+				my $id_agent = $id->{'id_agente'};
+				exist_check($id_agent,'agent',$name2);
+				
+				my $id_module = get_agent_module_id($dbh,$name,$id_agent);
+				exist_check($id_module,'module',$name);
+			
+				print_log "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
+				
+				pandora_delete_data($dbh, 'module', $id_module);
+			}
+		} else {
+			# Delete module data
+			param_check($ltotal, 3) unless ($name2 ne '');
+			my $id_agent = get_agent_id($dbh,$name2);
+			exist_check($id_agent,'agent',$name2);
+			
+			my $id_module = get_agent_module_id($dbh,$name,$id_agent);
+			exist_check($id_module,'module',$name);
 		
-		my $id_module = get_agent_module_id($dbh,$name,$id_agent);
-		exist_check($id_module,'module',$name);
-	
-		print_log "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
-		
-		pandora_delete_data($dbh, 'module', $id_module);
+			print_log "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
+			
+			pandora_delete_data($dbh, 'module', $id_module);
+		}
+
 	}
 	elsif($opt eq '-a' || $opt eq '--a') {
-		# Delete agent's modules data
-		my $id_agent = get_agent_id($dbh,$name);
-		exist_check($id_agent,'agent',$name);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			my @id_agents = get_agent_ids_from_alias($dbh,$name);
+			foreach my $id (@id_agents) {
+				# Delete agent's modules data
+				my $id_agent = $id->{'id_agente'};
+				exist_check($id_agent,'agent',$name);
 		
-		print_log "DELETING THE DATA OF THE AGENT $name\n\n";
+				print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-		pandora_delete_data($dbh, 'module', $id_agent);
+				pandora_delete_data($dbh, 'agent', $id_agent);
+			}
+		} else {
+			my $id_agent = get_agent_id($dbh,$name);
+			exist_check($id_agent,'agent',$name);
+		
+			print_log "DELETING THE DATA OF THE AGENT $name\n\n";
+		
+			pandora_delete_data($dbh, 'agent', $id_agent);
+		}
 	}
 	elsif($opt eq '-g' || $opt eq '--g') {
-		# Delete group's modules data
-		my $id_group = get_group_id($dbh,$name);
-		exist_check($id_group,'group',$name);
-		
-		print_log "DELETING THE DATA OF THE GROUP $name\n\n";
-		
-		pandora_delete_data($dbh, 'group', $id_group);
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			my @id_agents = get_agent_ids_from_alias($dbh,$name);
+
+			foreach my $id (@id_agents) {
+				# Delete group's modules data
+				my $id_group = $id->{'id_agente'};
+				exist_check($id_group,'group',$name);
+				
+				print_log "DELETING THE DATA OF THE GROUP $name\n\n";
+				
+				pandora_delete_data($dbh, 'group', $id_group);
+			}
+		} else {
+			# Delete group's modules data
+			my $id_group = get_group_id($dbh,$name);
+			exist_check($id_group,'group',$name);
+				
+			print_log "DELETING THE DATA OF THE GROUP $name\n\n";
+				
+			pandora_delete_data($dbh, 'group', $id_group);
+		}
 	}
 	else {
 		print_log "[ERROR] Invalid parameter '$opt'.\n\n";
@@ -3766,21 +4605,20 @@ sub cli_get_module_id() {
 
 
 ##############################################################################
-# Show the group name where is a given agent
+# Show the group name where a given agent is
 # Related option: --get_agent_group
 ##############################################################################
 
 sub cli_get_agent_group() {
-	my $agent_name = @ARGV[2];
-	
+	my ($agent_name,$use_alias) = @ARGV[2..3];
+
 	if (is_metaconsole($conf) == 1) {
 		
 		my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
 		
-		if (scalar(@{$agents_groups}) != 0) {
+		if (not defined $use_alias and scalar(@{$agents_groups}) != 0) {
 			foreach my $agent (@{$agents_groups}) {
 				my @test =  $agent;
-				print Dumper $test[0];
 				my $group_name = get_group_name ($dbh, $agent->{'id_grupo'});
 				print "Server: $agent->{'server_name'} Agent: $agent->{'nombre'} Name Group: $group_name \n\n";
 			}
@@ -3793,28 +4631,68 @@ sub cli_get_agent_group() {
 			foreach my $server (@servers_id) {
 				my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 				
-				my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
-				
-				if ($id_agent == -1) {
-					next;
-				}
-				else {
-					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
-					my $group_name = get_group_name ($dbh_metaconsole, $id_group);
-					$agent_name = safe_output($agent_name);
-					print "[INFO] Agent: $agent_name Name Group: $group_name\n\n";
+				my @id_agents;
+				my $id_agent;
+
+				if (defined $use_alias and $use_alias eq 'use_alias') {
+					@id_agents = get_agent_ids_from_alias($dbh_metaconsole,$agent_name);
+
+					foreach my $id (@id_agents) {
+
+						if ($id->{'id_agente'} == -1) {
+							next;
+						}
+						else {
+							my $id_group = get_agent_group ($dbh_metaconsole, $id->{'id_agente'});
+							my $group_name = get_group_name ($dbh_metaconsole, $id_group);
+							$agent_name = safe_output($agent_name);
+							print "[INFO] Agent: $id->{'nombre'} Name Group: $group_name\n\n";
+						}
+					}
+				} else {
+					$id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+					
+					if ($id_agent == -1) {
+						next;
+					}
+					else {
+						my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
+						my $group_name = get_group_name ($dbh_metaconsole, $id_group);
+						$agent_name = safe_output($agent_name);
+						print "[INFO] Agent: $agent_name Name Group: $group_name\n\n";
+					}
 				}
 			}
 		}
 	}
 	else {
-		my $id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
+		my @id_agents;
+		my $id_agent;
+		my $id_group;
+		my $group_name;
+
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				$id_group = get_agent_group ($dbh, $id->{'id_agente'});
 		
-		my $id_group = get_agent_group ($dbh, $id_agent);
+				$group_name = get_group_name ($dbh, $id_group);
+				print $group_name."\n";
+			}
+		} else {
+			$id_agent = get_agent_id($dbh,$agent_name);
+			exist_check($id_agent,'agent',$agent_name);
+
+			$id_group = get_agent_group ($dbh, $id_agent);
 		
-		my $group_name = get_group_name ($dbh, $id_group);
-		print $group_name;
+			$group_name = get_group_name ($dbh, $id_group);
+			print $group_name;
+		}
+		
+
 	}
 }
 
@@ -3823,12 +4701,13 @@ sub cli_get_agent_group() {
 # Related option: --get_agent_group_id
 ##############################################################################
 sub cli_get_agent_group_id() {
-	my $agent_name = @ARGV[2];
+	my ($agent_name,$use_alias) = @ARGV[2..3];
 	
 	if (is_metaconsole($conf) == 1) {
+
 		my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
 		
-		if (scalar(@{$agents_groups}) != 0) {
+		if (not defined $use_alias and scalar(@{$agents_groups}) != 0) {
 			
 			foreach my $agent (@{$agents_groups}) {
 				print "Server: $agent->{'server_name'} Agent: $agent->{'nombre'} ID Group: $agent->{'id_grupo'}\n\n";
@@ -3842,26 +4721,62 @@ sub cli_get_agent_group_id() {
 			foreach my $server (@servers_id) {
 				my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 				
-				my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
-				
-				if ($id_agent == -1) {
-					next;
-				}
-				else {
-					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
-					$agent_name = safe_output($agent_name);
-					print "Agent: $agent_name ID Group: $id_group\n\n";
+				my @id_agents;
+				my $id_agent;
+
+				if (defined $use_alias and $use_alias eq 'use_alias') {
+					@id_agents = get_agent_ids_from_alias($dbh_metaconsole,$agent_name);
+
+					foreach my $id (@id_agents) {
+
+						if ($id->{'id_agente'} == -1) {
+							next;
+						}
+						else {
+							my $id_group = get_agent_group ($dbh_metaconsole, $id->{'id_agente'});
+							$agent_name = safe_output($agent_name);
+							print "Agent: $id->{'nombre'} ID Group: $id_group\n\n";
+						}
+					}
+				} else {
+					$id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+					
+					if ($id_agent == -1) {
+						next;
+					}
+					else {
+						my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
+						$agent_name = safe_output($agent_name);
+						print "Agent: $agent_name ID Group: $id_group\n\n";
+					}
 				}
 			}
 		}
 	}
 	else {
-		my $id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
-		
-		my $id_group = get_agent_group ($dbh, $id_agent);
+		my @id_agents;
+		my $id_agent;
+		my $id_group;
+		my $group_name;
 
-		print $id_group;
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				exist_check($id->{'id_agente'},'agent',$agent_name);
+
+				$id_group = get_agent_group ($dbh, $id->{'id_agente'});
+		
+				print $id_group."\n";
+			}
+		} else {
+			$id_agent = get_agent_id($dbh,$agent_name);
+			exist_check($id_agent,'agent',$agent_name);
+
+			$id_group = get_agent_group ($dbh, $id_agent);
+		
+			print $id_group;
+		}
 	}
 }
 
@@ -3889,29 +4804,103 @@ sub cli_get_agents_module_current_data() {
 ##############################################################################
 
 sub cli_get_agent_modules() {
-	my $agent_name = @ARGV[2];
+	my ($agent_name,$use_alias) = @ARGV[2..3];
 	
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
+	my @id_agents;
+	my $id_agent;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			exist_check($id->{'id_agente'},'agent',$agent_name);
+
+			my $modules = pandora_get_agent_modules ($dbh, $id->{'id_agente'});
+
+			if(scalar(@{$modules}) == 0) {
+				print_log "[INFO] The agent '$agent_name' have no modules\n\n";
+			}
+
+			print "\n".$id->{'nombre'}."\n";
+			print "id_module, module_name\n";
+			foreach my $module (@{$modules}) {
+				print $module->{'id_agente_modulo'}.",".safe_output($module->{'nombre'})."\n";
+			}
+		}
+	} else {
+		$id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
 	
-	my $modules = pandora_get_agent_modules ($dbh, $id_agent);
+		my $modules = pandora_get_agent_modules ($dbh, $id_agent);
+
+		if(scalar(@{$modules}) == 0) {
+			print_log "[INFO] The agent '$agent_name' have no modules\n\n";
+		}
 	
-	if(scalar(@{$modules}) == 0) {
-		print_log "[INFO] The agent '$agent_name' have not modules\n\n";
-	}
-	
-	print "id_module, module_name\n";
-	foreach my $module (@{$modules}) {
-		print $module->{'id_agente_modulo'}.",".safe_output($module->{'nombre'})."\n";
+		print "id_module, module_name\n";
+		foreach my $module (@{$modules}) {
+			print $module->{'id_agente_modulo'}.",".safe_output($module->{'nombre'})."\n";
+		}
 	}
 }
+
+##############################################################################
+# Show id, name and id_server of an agent given alias
+# Related option: --get_agents_id_name_by_alias
+##############################################################################
+
+sub cli_get_agents_id_name_by_alias() {
+	my $agent_alias = @ARGV[2];
+	my $strict = @ARGV[3];
+	my @agents;
+	my $where_value;
+
+	if($strict eq 'strict') {
+		$where_value = $agent_alias;
+	} else {
+		$where_value = "%".$agent_alias."%";
+	}
+
+	if(is_metaconsole($conf) == 1) {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente, id_tagente, id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	} else {
+		@agents = get_db_rows($dbh,"SELECT alias, id_agente FROM tagente WHERE UPPER(alias) LIKE UPPER(?)", $where_value);
+	}
+	if(scalar(@agents) == 0) {
+		print "[ERROR] No agents retrieved.\n\n";
+	} else {
+		if(is_metaconsole($conf) == 1) {
+			print "alias, id_agente, id_tagente, id_server, server_name\n";
+
+				foreach my $agent (@agents) {
+			
+				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+			}
+		} else {
+			print "alias, id_agente\n";
+
+			foreach my $agent (@agents) {
+				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";
+			}
+		}
+	}	
+}
+
 
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
 	my $synthetic_type = @ARGV[3];
 	
 	my $agent_name = @ARGV[4];
-	my @module_data = @ARGV[5..$#ARGV];
+
+	my @module_data;
+
+	if (@ARGV[$#ARGV] == "use_alias") {
+		@module_data = @ARGV[5..$#ARGV-1];
+	} else {
+		@module_data = @ARGV[5..$#ARGV];
+	}
+
 	my $module;
 	my (@filterdata,@data_module);
 	
@@ -3933,86 +4922,181 @@ sub cli_create_synthetic() {
 	$module->{'prediction_module'} = 3; # Synthetic code is 3
 	$module->{'flag'} = 1;
 
-	my $id_agent = int(get_agent_id($dbh,$agent_name));
-	
-	if ($id_agent > 0) {
-		foreach my $i (0 .. $#module_data) {
-			my @split_data = split(',',$module_data[$i]);
-			if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
-				if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
-					print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
-					exit 1;
+	my @id_agents;
+	my $id_agent;
+
+	if (@ARGV[$#ARGV] eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			@filterdata = ();
+			$id_agent = $id->{'id_agente'};
+
+			if ($id_agent > 0) {
+
+				foreach my $i (0 .. $#module_data) {
+					my @split_data = split(',',$module_data[$i]);
+					if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
+						if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
+							print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+							exit 1;
+						}
+						if (is_numeric(@split_data[1]) == 0) {
+							next;
+						}
+						@data_module = ("",@split_data[0],@split_data[1]);
+						my $text_data = join(',',@data_module);
+						push (@filterdata,$text_data);
+					}
+					else {
+						if (scalar(@split_data) == 2) {
+							@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[1]));
+							my $text_data = join(',',@data_module);
+							push (@filterdata,$text_data);
+						}
+						else {
+							if (length(@split_data[1]) > 1 ) {
+								print("[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+								exit 1;
+							}
+							if ( @split_data[1] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
+								print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+								exit 1;
+							}
+							if ( $synthetic_type eq 'arithmetic' && $i == 0) {
+								@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[2]));
+							}
+							else {
+								@data_module = (safe_output(@split_data[0]),@split_data[1],safe_output(@split_data[2]));
+							}
+							my $text_data = join(',',@data_module);
+							push (@filterdata,$text_data);
+						}
+					}
 				}
-				if (is_numeric(@split_data[1]) == 0) {
-					next;
+
+				my $module_exists = get_agent_module_id($dbh, $name_module, $id_agent);
+				non_exist_check($module_exists, 'module name', $name_module);
+
+				$module->{'id_agente'} = $id_agent;
+				$module->{'nombre'} = safe_input($name_module);
+				my $id_tipo_modulo = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", "generic_data");
+				$module->{'id_modulo'} = 5;
+				$module->{'id_tipo_modulo'} = $id_tipo_modulo;
+
+				my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
+
+				if ($id_module) {
+					my $result = enterprise_hook('create_synthetic_operations_by_alias',
+						[$dbh,int($id_module), @filterdata]);
+
+					if ($result) {
+
+						db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado,
+						 known_status, last_status, last_known_status, last_try, datos) 
+						 VALUES (?, ?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $id_module, $id_agent, 4, 4, 4, 4);
+						# Update the module status count. When the module is created disabled dont do it
+						pandora_mark_agent_for_module_update ($dbh, $id_agent);
+						print("[OK] Created module ID: $id_module \n\n");
+					}
+					else {
+						#db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
+						print("[ERROR] Problems with creating data module. \n\n");
+					}
 				}
-				@data_module = ("",@split_data[0],@split_data[1]);
-				my $text_data = join(',',@data_module);
-				push (@filterdata,$text_data);
+				else {
+					db_do ($dbh, 'DELETE FROM tagente_modulo WHERE nombre = ? AND id_agente = ?', $name_module, $id_agent);
+					print("[INFO] Problems with creating module \n\n");
+				}
 			}
 			else {
-				if (scalar(@split_data) == 2) {
-					@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[1]));
+				print( "[INFO] The agent '$id->{'nombre'}' doesn't exist\n\n");
+			}
+		}
+	} else {
+		my $id_agent = int(get_agent_id($dbh,$agent_name));
+		
+		if ($id_agent > 0) {
+			foreach my $i (0 .. $#module_data) {
+				my @split_data = split(',',$module_data[$i]);
+				if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
+					if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
+						print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+						exit 1;
+					}
+					if (is_numeric(@split_data[1]) == 0) {
+						next;
+					}
+					@data_module = ("",@split_data[0],@split_data[1]);
 					my $text_data = join(',',@data_module);
 					push (@filterdata,$text_data);
 				}
 				else {
-					if (length(@split_data[1]) > 1 ) {
-						print("[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
-						exit 1;
-					}
-					if ( @split_data[1] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
-						print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
-						exit 1;
-					}
-					if ( $synthetic_type eq 'arithmetic' && $i == 0) {
-						@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[2]));
+					if (scalar(@split_data) == 2) {
+						@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[1]));
+						my $text_data = join(',',@data_module);
+						push (@filterdata,$text_data);
 					}
 					else {
-						@data_module = (safe_output(@split_data[0]),@split_data[1],safe_output(@split_data[2]));
+						if (length(@split_data[1]) > 1 ) {
+							print("[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+							exit 1;
+						}
+						if ( @split_data[1] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
+							print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+							exit 1;
+						}
+						if ( $synthetic_type eq 'arithmetic' && $i == 0) {
+							@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[2]));
+						}
+						else {
+							@data_module = (safe_output(@split_data[0]),@split_data[1],safe_output(@split_data[2]));
+						}
+						
+						my $text_data = join(',',@data_module);
+						push (@filterdata,$text_data);
 					}
-					
-					my $text_data = join(',',@data_module);
-					push (@filterdata,$text_data);
 				}
 			}
-		}
 
-		my $module_exists = get_agent_module_id($dbh, $name_module, $id_agent);
-		non_exist_check($module_exists, 'module name', $name_module);
-		
-		$module->{'id_agente'} = $id_agent;
-		$module->{'nombre'} = safe_input($name_module);
-		my $id_tipo_modulo = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", "generic_data");
-		$module->{'id_modulo'} = 5;
-		$module->{'id_tipo_modulo'} = $id_tipo_modulo;
-		
-		my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
-		
-		if ($id_module) {
-			my $result = enterprise_hook('create_synthetic_operations',
-				[$dbh,int($id_module), @filterdata]);
-			if ($result) {
-				db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado,
-				 known_status, last_status, last_known_status, last_try, datos) 
-				 VALUES (?, ?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $id_module, $id_agent, 4, 4, 4, 4);
-				# Update the module status count. When the module is created disabled dont do it
-				pandora_mark_agent_for_module_update ($dbh, $id_agent);
-				print("[OK] The modules are creating ID: $id_module \n\n");
+			my $module_exists = get_agent_module_id($dbh, $name_module, $id_agent);
+			non_exist_check($module_exists, 'module name', $name_module);
+			
+			$module->{'id_agente'} = $id_agent;
+			$module->{'nombre'} = safe_input($name_module);
+			my $id_tipo_modulo = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", "generic_data");
+			$module->{'id_modulo'} = 5;
+			$module->{'id_tipo_modulo'} = $id_tipo_modulo;
+			
+			my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
+			
+			if ($id_module) {
+				my $result = enterprise_hook('create_synthetic_operations',
+					[$dbh,int($id_module), @filterdata]);
+				if ($result) {
+					db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado,
+					 known_status, last_status, last_known_status, last_try, datos) 
+					 VALUES (?, ?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $id_module, $id_agent, 4, 4, 4, 4);
+					# Update the module status count. When the module is created disabled dont do it
+					pandora_mark_agent_for_module_update ($dbh, $id_agent);
+					print("[OK] Created module ID: $id_module \n\n");
+				}
+				else {
+					db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
+					print("[ERROR] Problems with creating data module. \n\n");
+				}
 			}
 			else {
-				db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
-				print("[ERROR] Problems with creating data module. \n\n");
+				db_do ($dbh, 'DELETE FROM tagente_modulo WHERE nombre = ? AND id_agente = ?', $name_module, $id_agent);
+				print("[INFO] Problems with creating module \n\n");
 			}
 		}
-		else {
-			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE nombre = ? AND id_agente = ?', $name_module, $id_agent);
-			print("[INFO] Problems with creating module \n\n");
+		else { 
+			print( "[INFO] The agent '$agent_name' doesn't exist\n\n");
 		}
 	}
-	else { 
-		print( "[INFO] The agent '$agent_name' doesn't exists\n\n");
-	}
+
+
 }
 
 
@@ -4049,32 +5133,63 @@ sub cli_get_policy_modules() {
 ########################################################################
 
 sub cli_get_policies() {
-	my $agent_name = @ARGV[2];
+	my ($agent_name, $use_alias) = @ARGV[2..3];
 	my $policies;
 	
-	if (defined($agent_name)) {
-		my $id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			if (defined($agent_name)) {
+				my $id_agent = $id->{'id_agente'};
+				exist_check($id_agent,'agent',$agent_name);
+				
+				$policies = enterprise_hook('get_agent_policies', [$dbh,$id_agent]);
+				
+				if (scalar(@{$policies}) == 0) {
+					print_log "[INFO] No policies found on agent $id->{'nombre'}\n\n";
+					exit;
+				}
+			}
+			else {
+				$policies = enterprise_hook('get_policies', [$dbh]);
+				if (scalar(@{$policies}) == 0) {
+					print_log "[INFO] No policies found\n\n";
+					exit;
+				}
+			}
+			
+			print "agent_name, id_policy, policy_name\n";
+			foreach my $module (@{$policies}) {
+				print $id->{'nombre'}.",".$module->{'id'}.",".safe_output($module->{'name'})."\n";
+			}	
+		}
+	} else {
+		if (defined($agent_name)) {
+			my $id_agent = get_agent_id($dbh,$agent_name);
+			exist_check($id_agent,'agent',$agent_name);
+			
+			$policies = enterprise_hook('get_agent_policies', [$dbh,$id_agent]);
+			
+			if (scalar(@{$policies}) == 0) {
+				print_log "[INFO] No policies found on agent '$agent_name'\n\n";
+				exit;
+			}
+		}
+		else {
+			$policies = enterprise_hook('get_policies', [$dbh]);
+			if (scalar(@{$policies}) == 0) {
+				print_log "[INFO] No policies found\n\n";
+				exit;
+			}
+		}
 		
-		$policies = enterprise_hook('get_agent_policies', [$dbh,$id_agent]);
-		
-		if (scalar(@{$policies}) == 0) {
-			print_log "[INFO] No policies found on agent '$agent_name'\n\n";
-			exit;
+		print "id_policy, policy_name\n";
+		foreach my $module (@{$policies}) {
+			print $module->{'id'}.",".safe_output($module->{'name'})."\n";
 		}
 	}
-	else {
-		$policies = enterprise_hook('get_policies', [$dbh]);
-		if (scalar(@{$policies}) == 0) {
-			print_log "[INFO] No policies found\n\n";
-			exit;
-		}
-	}
-	
-	print "id_policy, policy_name\n";
-	foreach my $module (@{$policies}) {
-		print $module->{'id'}.",".safe_output($module->{'name'})."\n";
-	}
+
 }
 
 ##############################################################################
@@ -4083,7 +5198,7 @@ sub cli_get_policies() {
 ##############################################################################
 
 sub cli_get_agents() {
-	my ($group_name, $os_name, $status, $max_modules, $filter_substring, $policy_name) = @ARGV[2..7];
+	my ($group_name, $os_name, $status, $max_modules, $filter_substring, $policy_name, $use_alias) = @ARGV[2..8];
 
 	my $condition = ' disabled=0';
 
@@ -4094,7 +5209,7 @@ sub cli_get_agents() {
 	if($group_name ne '') {
 		$id_group = get_group_id($dbh, $group_name);
 		exist_check($id_group,'group',$group_name);
-		
+
 		$condition .= " AND id_grupo = $id_group ";
 	}
 	
@@ -4119,7 +5234,11 @@ sub cli_get_agents() {
 	}
 	
 	if($filter_substring ne '') {
-		$condition .= " AND nombre LIKE '%".safe_input($filter_substring)."%'";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			$condition .= " AND alias LIKE '%".safe_input($filter_substring)."%'";
+		} else {
+			$condition .= " AND nombre LIKE '%".safe_input($filter_substring)."%'";
+		}
 	}
 		
 	my @agents = get_db_rows ($dbh, "SELECT * FROM tagente WHERE $condition");	
@@ -4132,6 +5251,10 @@ sub cli_get_agents() {
 	my $agent_status;
 	
 	my $head_print = 0;
+
+	use Data::Dumper;
+
+
 	foreach my $agent (@agents) {
 		if($status ne '') {
 			$agent_status = pandora_get_agent_status($dbh,$agent->{'id_agente'});
@@ -4143,6 +5266,7 @@ sub cli_get_agents() {
 			$head_print = 1;
 			print "id_agent, agent_name\n";
 		}
+
 		print $agent->{'id_agente'}.",".safe_output($agent->{'nombre'})."\n";
 	}
 	
@@ -4157,26 +5281,51 @@ sub cli_get_agents() {
 ##############################################################################
 
 sub cli_delete_conf_file() {
-	my $agent_name = @ARGV[2];
-	
+	my ($agent_name,$use_alias) = @ARGV[2..3];
+
 	my $conf_deleted = 0;
 	my $md5_deleted = 0;
-	
-	if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-		unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		$conf_deleted = 1;
-	}
-	if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-		unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-		$md5_deleted = 1;
-	}
-	
-	if($conf_deleted == 1 || $md5_deleted == 1) {
-		print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
-	}
-	else {
-		print_log "[ERROR] Local conf file of the agent '$agent_name' didn't found\n\n";
-		exit;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			$agent_name = $id->{'nombre'};
+
+			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+				unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+				$conf_deleted = 1;
+			}
+			if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
+				unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
+				$md5_deleted = 1;
+			}
+			
+			if($conf_deleted == 1 || $md5_deleted == 1) {
+				print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
+			}
+			else {
+				print_log "[ERROR] Local conf file of the agent '$agent_name' was not found\n\n";
+				exit;
+			}
+		}
+	} else {
+		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+			$conf_deleted = 1;
+		}
+		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
+			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
+			$md5_deleted = 1;
+		}
+		
+		if($conf_deleted == 1 || $md5_deleted == 1) {
+			print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
+		}
+		else {
+			print_log "[ERROR] Local conf file of the agent '$agent_name' was not found\n\n";
+			exit;
+		}
 	}
 }
 
@@ -4186,14 +5335,29 @@ sub cli_delete_conf_file() {
 ##############################################################################
 
 sub cli_clean_conf_file() {
-	my $agent_name = @ARGV[2];
+	my ($agent_name,$use_alias) = @ARGV[2..3];
 	my $result;
 	
 	if(defined($agent_name)) {
-		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-			$result = enterprise_hook('pandora_clean_conf_file',[$conf, md5($agent_name)]);
-			if($result != -1) {
-				print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.md5($agent_name).".conf has been cleaned'\n\n";
+		if (defined $use_alias and $use_alias eq 'use_alias') {
+			my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+			foreach my $id (@id_agents) {
+				$agent_name = $id->{'nombre'};
+
+				if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+					$result = enterprise_hook('pandora_clean_conf_file',[$conf, md5($agent_name)]);
+					if($result != -1) {
+						print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.md5($agent_name).".conf has been cleaned'\n\n";
+					}
+				}
+			}
+		} else {
+			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+				$result = enterprise_hook('pandora_clean_conf_file',[$conf, md5($agent_name)]);
+				if($result != -1) {
+					print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.md5($agent_name).".conf has been cleaned'\n\n";
+				}
 			}
 		}
 	}
@@ -4270,23 +5434,46 @@ sub cli_disable_policy_alerts() {
 ##############################################################################
 
 sub cli_policy_add_agent() {
-	my ($agent_name, $policy_name) = @ARGV[2..3];
+	my ($agent_name, $policy_name, $use_alias) = @ARGV[2..4];
 	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	exist_check($agent_id,'agent',$agent_name);
-	
-	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
-	exist_check($policy_id,'policy',$policy_name);
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			my $agent_id = $id->{'id_agente'};
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+			exist_check($policy_id,'policy',$policy_name);
+				
+			# Add the agent to policy
+			my $policy_agent_id = enterprise_hook('pandora_policy_add_agent',[$policy_id, $agent_id, $dbh]);
+			
+			if($policy_agent_id == -1) {
+				print_log "[ERROR] A problem has been ocurred adding agent $id->{'nombre'} to policy '$policy_name'\n\n";
+			}
+			else {
+				print_log "[INFO] Added agent $id->{'nombre'} to policy $policy_name. Is necessary to apply the policy in order to changes take effect.\n\n";
+			}
+		}
+	} else {
+		my $agent_id = get_agent_id($dbh,$agent_name);
+		exist_check($agent_id,'agent',$agent_name);
 		
-	# Add the agent to policy
-	my $policy_agent_id = enterprise_hook('pandora_policy_add_agent',[$policy_id, $agent_id, $dbh]);
-	
-	if($policy_agent_id == -1) {
-		print_log "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
+		my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+		exist_check($policy_id,'policy',$policy_name);
+			
+		# Add the agent to policy
+		my $policy_agent_id = enterprise_hook('pandora_policy_add_agent',[$policy_id, $agent_id, $dbh]);
+		
+		if($policy_agent_id == -1) {
+			print_log "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
+		}
+		else {
+			print_log "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary to apply the policy in order to changes take effect.\n\n";
+		}
 	}
-	else {
-		print_log "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary to apply the policy in order to changes take effect.\n\n";
-	}
+
 }
 
 ##############################################################################
@@ -4512,11 +5699,6 @@ sub cli_update_group() {
 			print_log "[INFO] Updated group '$group_id'\n\n";
 		}
 	}
-
-
-
-
-
 }
 
 
@@ -4525,47 +5707,79 @@ sub cli_update_group() {
 # Related option: --locate_agent
 ###############################################################################
 sub cli_locate_agent () {
-	my ($agent_name) = @ARGV[2];
+	my ($agent_name, $use_alias) = @ARGV[2..3];
 
 	if (is_metaconsole($conf) == 1) {
 
-		my $agents_server = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
-
-		if (scalar(@{$agents_server}) != 0) {
-			foreach my $agent (@{$agents_server}) {
-				#my $server = enterprise_hook('get_metaconsole_setup_server_id',[$dbh, $agent->{'server_name'}]);
-				print $agent->{'id_tmetaconsole_setup'} . "\n";
-			}
-		}
-		else {
+		if (defined $use_alias and $use_alias eq 'use_alias') {
 			my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
 			my @servers_id = split(',',$servers);
 			my @list_servers;
 			my $list_names_servers;
+			my @id_agents;
 			foreach my $server (@servers_id) {
 				my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
 				
-				my $agent_id = get_agent_id($dbh_metaconsole,$agent_name);
+				@id_agents = get_agent_ids_from_alias($dbh_metaconsole,$agent_name);
 				
-				if ($agent_id == -1) {
-					next;
-				}
-				else {
-					push @list_servers,$server;
+				foreach my $id (@id_agents) {
+					if ($id->{'id_agente'} == -1) {
+						next;
+					}
+					else {
+						push @list_servers,$server;
+						last;
+					}
 				}
 			}
 			
 			if (scalar(@list_servers) > 0) {
 				$list_names_servers = join(',',@list_servers);
-				print_log "[INFO] The agent: $agent_name find in server with IDS: $list_names_servers\n\n";
+				print_log "[INFO] One or more agents with the alias '$agent_name' were found in server with IDS: $list_names_servers\n\n";
 			}
 			else {
-				print_log "[ERROR] This agent: $agent_name not  find in any node\n\n";
+				print_log "[ERROR] No agent with alias '$agent_name' found in any node\n\n";
+			}
+		} else {
+			my $agents_server = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
+
+			if (scalar(@{$agents_server}) != 0) {
+				foreach my $agent (@{$agents_server}) {
+					#my $server = enterprise_hook('get_metaconsole_setup_server_id',[$dbh, $agent->{'server_name'}]);
+					print $agent->{'id_tmetaconsole_setup'} . "\n";
+				}
+			}
+			else {
+				my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+				my @servers_id = split(',',$servers);
+				my @list_servers;
+				my $list_names_servers;
+				foreach my $server (@servers_id) {
+					my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+					
+					my $agent_id = get_agent_id($dbh_metaconsole,$agent_name);
+					
+					if ($agent_id == -1) {
+						next;
+					}
+					else {
+						push @list_servers,$server;
+					}
+				}
+				
+				if (scalar(@list_servers) > 0) {
+					$list_names_servers = join(',',@list_servers);
+					print_log "[INFO] Agent '$agent_name' found in server with IDS: $list_names_servers\n\n";
+				}
+				else {
+					print_log "[ERROR] Agent '$agent_name' not found in any node\n\n";
+				}
 			}
 		}
+
 	}
 	else {
-		print_log "[ERROR] This functions only working in metaconsole system\n\n";
+		print_log "[ERROR] This function can only be used in metaconsole\n\n";
 	}
 }
 
@@ -4719,9 +5933,16 @@ sub cli_stop_downtime () {
 	exist_check($downtime_id,'planned downtime',$downtime_id);
 	
 	my $current_time = time;
-	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
-	if($current_time >= $downtime_date_to) {
+	my $data = get_db_single_row ($dbh, 'SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=?', $downtime_id);
+
+	if( $data->{'type_execution'} eq 'periodically' && $data->{'executed'} == 1){
+		print_log "[ERROR] Planned_downtime '$downtime_name' cannot be stopped.\n";
+		print_log "[INFO] Periodical and running planned downtime cannot be stopped.\n\n";
+		exit;
+	}
+	
+	if($current_time >= $data->{'date_to'}) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}
@@ -4738,7 +5959,7 @@ sub cli_stop_downtime () {
 # Related option: --get_module_data
 ###############################################################################
 sub cli_module_get_data () {
-	my ($agent_name, $module_name, $interval, $csv_separator) = @ARGV[2..5];
+	my ($agent_name, $module_name, $interval, $csv_separator, $use_alias) = @ARGV[2..6];
 	
 	$csv_separator = '|' unless defined($csv_separator);
 	
@@ -4746,57 +5967,112 @@ sub cli_module_get_data () {
 		print_log "[ERROR] Interval must be a possitive value\n\n";
 		exit;
 	}
+
+	my @id_agents;
 	
-	
-	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	exist_check($agent_id, 'agent name', $agent_name);
-	
-	my $module_id = get_agent_module_id($dbh, $module_name, $agent_id);
-	exist_check($module_id, 'module name', $module_name);
-	
-	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id);
-	
-	my $module_type_id = get_db_value($dbh,
-		"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?",
-		$id_agent_module);
-	
-	my $module_type = get_db_value($dbh,
-		"SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?",
-		$module_type_id);
-	
-	my @data = NULL;
-	if ($module_type eq "log4x") {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_log4x 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
-			ORDER BY utimestamp DESC");
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		my $agent_id;
+
+		foreach my $id (@id_agents) {
+			$agent_id = $id->{'id_agente'}; # se hace para cada agente
+			exist_check($agent_id, 'agent name', $agent_name);
+			
+			my $module_id = get_agent_module_id($dbh, $module_name, $agent_id); # se hace para ada agente
+			if ($module_id == -1) {
+				next;
+			}
+			
+			my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id); # 6
+			
+			my $module_type_id = get_db_value($dbh,
+				"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?",
+				$id_agent_module); # se hace para cada agente
+			
+			my $module_type = get_db_value($dbh,
+				"SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?",
+				$module_type_id); # se hace para cada agente
+			
+			my @data = NULL;
+			if ($module_type eq "log4x") {
+				@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+					FROM tagente_datos_log4x 
+					WHERE id_agente_modulo = $id_agent_module 
+					AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+					ORDER BY utimestamp DESC");
+			}
+			elsif ($module_type =~ m/_string/) {
+				@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+					FROM tagente_datos_string 
+					WHERE id_agente_modulo = $id_agent_module 
+					AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+					ORDER BY utimestamp DESC");
+			}
+			else {
+				@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+					FROM tagente_datos 
+					WHERE id_agente_modulo = $id_agent_module 
+					AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+					ORDER BY utimestamp DESC");
+			}
+			
+			foreach my $data_timestamp (@data) {
+				print $data_timestamp->{'utimestamp'};
+				print $csv_separator;
+				print $data_timestamp->{'datos'};
+				print "\n";
+			}
+		}
+
+	} else {
+		my $agent_id = get_agent_id($dbh,$agent_name); # se hace para cada agente
+		exist_check($agent_id, 'agent name', $agent_name);
+		
+		my $module_id = get_agent_module_id($dbh, $module_name, $agent_id); # se hace para ada agente
+		exist_check($module_id, 'module name', $module_name);
+		
+		my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id); # 6
+		
+		my $module_type_id = get_db_value($dbh,
+			"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?",
+			$id_agent_module); # se hace para cada agente
+		
+		my $module_type = get_db_value($dbh,
+			"SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?",
+			$module_type_id); # se hace para cada agente
+		
+		my @data = NULL;
+		if ($module_type eq "log4x") {
+			@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+				FROM tagente_datos_log4x 
+				WHERE id_agente_modulo = $id_agent_module 
+				AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+				ORDER BY utimestamp DESC");
+		}
+		elsif ($module_type =~ m/_string/) {
+			@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+				FROM tagente_datos_string 
+				WHERE id_agente_modulo = $id_agent_module 
+				AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+				ORDER BY utimestamp DESC");
+		}
+		else {
+			@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+				FROM tagente_datos 
+				WHERE id_agente_modulo = $id_agent_module 
+				AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+				ORDER BY utimestamp DESC");
+		}
+		
+		foreach my $data_timestamp (@data) {
+			print $data_timestamp->{'utimestamp'};
+			print $csv_separator;
+			print $data_timestamp->{'datos'};
+			print "\n";
+		}
 	}
-	elsif ($module_type =~ m/_string/) {
-		print("aaaa\n");
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_string 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
-			ORDER BY utimestamp DESC");
-	}
-	else {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
-			ORDER BY utimestamp DESC");
-	}
-	
-	
-	
-	foreach my $data_timestamp (@data) {
-		print $data_timestamp->{'utimestamp'};
-		print $csv_separator;
-		print $data_timestamp->{'datos'};
-		print "\n";
-	}
+
 	
 	exit;
 }
@@ -5926,7 +7202,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_agent();
 		}
 		elsif ($param eq '--delete_agent') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_delete_agent();
 		}
 		elsif ($param eq '--create_data_module') {
@@ -5934,7 +7210,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_web_module') {
-			param_check($ltotal, 38, 35);
+			param_check($ltotal, 39, 36);
 			cli_create_web_module(0);
 		}
 
@@ -5951,19 +7227,19 @@ sub pandora_manage_main ($$$) {
 			cli_module_group_synch();
 		}
 		elsif ($param eq '--create_network_module') {
-			param_check($ltotal, 32, 20);
+			param_check($ltotal, 33, 21);
 			cli_create_network_module(0);
 		}
 		elsif ($param eq '--create_snmp_module') {
-			param_check($ltotal, 40, 28);
+			param_check($ltotal, 41, 29);
 			cli_create_snmp_module(0);
 		}
 		elsif ($param eq '--create_plugin_module') {
-			param_check($ltotal, 34, 19);
+			param_check($ltotal, 35, 20);
 			cli_create_plugin_module(0);
 		}
 		elsif ($param eq '--delete_module') {
-			param_check($ltotal, 2);
+			param_check($ltotal, 3, 1);
 			cli_delete_module();
 		}
 		elsif ($param eq '--delete_not_policy_modules') {
@@ -5971,23 +7247,23 @@ sub pandora_manage_main ($$$) {
 			cli_delete_not_policy_modules();
 		}
 		elsif ($param eq '--create_template_module') {
-			param_check($ltotal, 3);
+			param_check($ltotal, 4, 1);
 			cli_create_template_module();
 		}
 		elsif ($param eq '--delete_template_module') {
-			param_check($ltotal, 3);
+			param_check($ltotal, 4, 1);
 			cli_delete_template_module();
 		}
 		elsif ($param eq '--create_template_action') {
-			param_check($ltotal, 6, 2);
+			param_check($ltotal, 7, 3);
 			cli_create_template_action();
 		}
 		elsif ($param eq '--delete_template_action') {
-			param_check($ltotal, 4);
+			param_check($ltotal,5, 1);
 			cli_delete_template_action();
 		}
 		elsif ($param eq '--data_module') {
-			param_check($ltotal, 6, 1);
+			param_check($ltotal, 7, 2);
 			cli_data_module();
 		}
 		elsif ($param eq '--create_user') {
@@ -6011,11 +7287,11 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 18, 15);
+			param_check($ltotal, 19, 16);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {
-			param_check($ltotal, 7, 6);
+			param_check($ltotal, 8, 7);
 			cli_validate_event();
 		}
 		elsif ($param eq '--validate_event_id') {
@@ -6035,7 +7311,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_incident();
 		}
 		elsif ($param eq '--delete_data') {
-			param_check($ltotal, 3, 1);
+			param_check($ltotal, 4, 2);
 			cli_delete_data($ltotal);
 		}
 		elsif ($param eq '--apply_policy') {
@@ -6059,7 +7335,7 @@ sub pandora_manage_main ($$$) {
 			cli_update_group();
 		}
 		elsif ($param eq '--add_agent_to_policy') {
-			param_check($ltotal, 2);
+			param_check($ltotal, 3, 1);
 			cli_policy_add_agent();
 		}
 		elsif ($param eq '--remove_agent_from_policy') {
@@ -6083,7 +7359,7 @@ sub pandora_manage_main ($$$) {
 			cli_user_add_profile();
 		}
 		elsif ($param eq '--get_module_data') {
-			param_check($ltotal, 4, 1);
+			param_check($ltotal, 5, 2);
 			cli_module_get_data();
 		}
 		elsif ($param eq '--add_collection_to_policy') {
@@ -6099,7 +7375,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_policy();
 		}
 		elsif ($param eq '--create_policy_data_module') {
-			param_check($ltotal, 28, 20);
+			param_check($ltotal, 29, 21);
 			cli_create_data_module(1);
 		}
 		elsif ($param eq '--create_policy_web_module') {
@@ -6147,7 +7423,7 @@ sub pandora_manage_main ($$$) {
 			cli_alert_template_update();
 		}
 		elsif ($param eq '--update_module') {
-			param_check($ltotal, 4);
+			param_check($ltotal, 6, 2);
 			cli_module_update();
 		}
 		elsif ($param eq '--exec_from_file') {
@@ -6173,11 +7449,11 @@ sub pandora_manage_main ($$$) {
 			cli_get_module_id();
 		}
 		elsif ($param eq '--get_agent_group') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_get_agent_group();
 		}
 		elsif ($param eq '--get_agent_group_id') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_get_agent_group_id();
 		}
 		elsif ($param eq '--get_agents_module_current_data') {
@@ -6185,31 +7461,35 @@ sub pandora_manage_main ($$$) {
 			cli_get_agents_module_current_data();
 		}
 		elsif ($param eq '--get_agent_modules') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agents_id_name_by_alias') {
+			param_check($ltotal, 2,1);
+			cli_get_agents_id_name_by_alias();
 		}
 		elsif ($param eq '--get_policy_modules') {
 			param_check($ltotal, 1);
 			cli_get_policy_modules();
 		}
 		elsif ($param eq '--get_policies') {
-			param_check($ltotal, 1, 1);
+			param_check($ltotal, 2, 2);
 			cli_get_policies();
 		}
 		elsif ($param eq '--get_agents') {
-			param_check($ltotal, 6, 6);
+			param_check($ltotal, 7, 7);
 			cli_get_agents();
 		}
 		elsif ($param eq '--delete_conf_file') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_delete_conf_file();
 		}
 		elsif ($param eq '--clean_conf_file') {
-			param_check($ltotal, 1, 1);
+			param_check($ltotal, 2, 1);
 			cli_clean_conf_file();
 		}
 		elsif ($param eq '--update_agent') {
-			param_check($ltotal, 3);
+			param_check($ltotal, 4, 1);
 			cli_agent_update();
 		}
 		elsif ($param eq '--get_bad_conf_files') {
@@ -6217,7 +7497,7 @@ sub pandora_manage_main ($$$) {
 			cli_get_bad_conf_files();
 		}
 		elsif ($param eq '--create_network_module_from_component') {
-			param_check($ltotal, 2);
+			param_check($ltotal, 3, 1);
 			cli_create_network_module_from_component();
 		}
 		elsif ($param eq '--create_network_component') {
@@ -6269,7 +7549,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_special_day();
 		}
 		elsif ($param eq '--create_data_module_from_local_component') {
-			param_check($ltotal, 2);
+			param_check($ltotal, 3, 1);
 			cli_create_data_module_from_local_component();
 		}
 		elsif ($param eq '--create_local_component') {
@@ -6317,7 +7597,7 @@ sub pandora_manage_main ($$$) {
 			cli_set_delete_planned_downtime();
 		}
 		elsif ($param eq '--locate_agent') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_locate_agent();
 		}
 		elsif ($param eq '--create_visual_console') {
@@ -6541,22 +7821,53 @@ sub cli_add_collection_to_policy () {
 ##############################################################################
 
 sub cli_create_data_module_from_local_component() {
-	my ($agent_name, $component_name) = @ARGV[2..3];
-	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	exist_check($agent_id,'agent',$agent_name);
+	my ($agent_name, $component_name, $use_alias) = @ARGV[2..4];
+
+	my @id_agents;	
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		my $agent_id;
+
+		foreach my $id (@id_agents) {
+			$agent_id = $id->{'id_agente'};
+			exist_check($agent_id,'agent',$agent_name);
+				
+			my $lc_id = pandora_get_local_component_id($dbh, $component_name);
+			exist_check($lc_id,'local component',$component_name);
+			
+			my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
+			if ($module_exists ne -1) {
+				next;
+			}
+			
+			# Get local component data
+			my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
+			
+			print_log "[INFO] Creating module from local component '$component_name'\n\n";
+
+			#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
+			enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
+		}
+	} else {
+		my $agent_id = get_agent_id($dbh,$agent_name);
+		exist_check($agent_id,'agent',$agent_name);
+			
+		my $lc_id = pandora_get_local_component_id($dbh, $component_name);
+		exist_check($lc_id,'local component',$component_name);
 		
-	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
-	exist_check($lc_id,'local component',$component_name);
-	
-	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $component_name);
-	
-	# Get local component data
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
-	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
-	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
+		my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
+		non_exist_check($module_exists, 'module name', $component_name);
+		
+		# Get local component data
+		my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
+		
+		print_log "[INFO] Creating module from local component '$component_name'\n\n";
+
+		#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
+		enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
+	}
 }
 ##############################################################################
 # Create policy data module from local component.

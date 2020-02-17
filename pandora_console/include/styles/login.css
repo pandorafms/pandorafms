@@ -6,7 +6,7 @@
 h1#log_title {
   font-size: 18px;
   margin-bottom: 0px;
-  color: #fff !important;
+  color: #fff;
   width: 300px;
 }
 
@@ -27,15 +27,18 @@ div#error_buttons a {
   min-height: 100%;
   min-width: 1200px;
   width: 100%;
-  z-index: -9999;
   position: absolute;
   background: linear-gradient(74deg, #02020255 36%, transparent 36%),
     url("../../images/backgrounds/background_pandora_console_keys.jpg");
   background-repeat: repeat;
 }
 
+.login_body_trident {
+  background: url("../../images/backgrounds/background_pandora_console_keys.jpg") !important;
+}
+
 p.log_in {
-  color: #fff !important;
+  color: #fff;
   padding: 0px 10px;
   width: 300px;
 }
@@ -167,13 +170,13 @@ div.login_pass input {
 
 div.login_nick input,
 div.login_pass input {
-  border: 0px !important;
+  border: 0px;
   color: #343434;
   border-radius: 3px;
   width: 100%;
   height: 40px;
   font-size: 10pt;
-  padding: 0px 0px 0px 35px !important;
+  padding: 0px 0px 0px 35px;
   background-repeat: no-repeat;
   background-size: 27px;
   background-position: left center;
@@ -195,8 +198,8 @@ div.login_pass input:-webkit-autofill:hover,
 div.login_pass input:-webkit-autofill:focus,
 div.login_pass input:-webkit-autofill:active {
   transition: background-color 10000s ease-in-out 0s;
-  -webkit-box-shadow: 0 0 0px 0px transparent inset !important;
-  -webkit-text-fill-color: #343434 !important;
+  -webkit-box-shadow: 0 0 0px 0px transparent inset;
+  -webkit-text-fill-color: #343434;
   border: 0px;
   width: 89%;
 }
@@ -217,55 +220,56 @@ div.login_button_saml {
 
 div.login_button input {
   width: 100%;
-  background-color: #82b92e !important;
+  background-color: #82b92e;
   text-align: center;
   height: 40px;
   padding: 0px;
   font-size: 11pt;
-  color: #fff !important;
+  color: #fff;
   border: 1px solid #82b92e;
   border-radius: 3px;
 }
 
 div.login_button_saml input {
   border: 1px solid #fff;
-  background-color: #fff !important;
-  color: #000 !important;
+  background-color: #fff;
+  color: #000;
   background-image: url("../../images/saml_login.png");
   background-repeat: no-repeat;
   background-position: right 5% center;
 }
 
 div.login_button input:hover {
-  background-color: #fff !important;
-  color: #000 !important;
-  border: 1px solid #fff !important;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #fff;
 }
 
 div.login_button_saml input:hover {
   background-image: url("../../images/saml_login_hover.png");
-  background-color: transparent !important;
-  color: #fff !important;
-  border: 1px solid #fff !important;
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
 }
 
 #remove_button input {
-  background-image: url("../../images/user_login.png") !important;
+  background-image: url("../../images/user_login.png");
   background-repeat: no-repeat;
   background-position: right 5% center;
 }
 
 #remove_button input:hover {
-  background-image: url("../../images/user_login_hover.png") !important;
+  background-image: url("../../images/user_login_hover.png");
 }
 
 .login_back input {
-  background-image: url("../../images/back_login.png") !important;
-  background-position: left 5% center !important;
+  background-image: url("../../images/back_login.png");
+  background-position: left 5% center;
+  background-repeat: no-repeat;
 }
 
 .login_back input:hover {
-  background-image: url("../../images/back_login_hover.png") !important;
+  background-image: url("../../images/back_login_hover.png");
 }
 
 div.login_data {
@@ -319,7 +323,7 @@ div.img_banner_login img {
 }
 
 .reset_password a {
-  color: #ddd !important;
+  color: #ddd;
   font-family: "Open Sans", sans-serif;
   font-size: 8.5pt;
 }
@@ -399,7 +403,7 @@ div.form_message_alert ul li {
 
 div.form_message_alert ul li input {
   border: none;
-  background-color: #dadada !important;
+  background-color: #dadada;
   border-radius: 0px;
   height: 17px;
   width: 145px;
@@ -407,6 +411,8 @@ div.form_message_alert ul li input {
 }
 
 div.form_message_alert ul li label {
+  display: inline-block;
+  width: 145px;
   font-size: 10pt;
   padding-right: 20px;
 }

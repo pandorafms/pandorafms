@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.735"
-PI_BUILD="190619"
+PI_VERSION="7.0NG.743"
+PI_BUILD="200217"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -315,6 +315,8 @@ install () {
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/trans 2> /dev/null
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/trans
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/commands 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/commands
 	mkdir -p $DESTDIR$PANDORA_LOG 2> /dev/null	
 	chown -R pandora $DESTDIR$PANDORA_LOG 2> /dev/null
 	chmod 2774 $DESTDIR$PANDORA_LOG 2> /dev/null

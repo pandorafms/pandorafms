@@ -1,30 +1,30 @@
 {
-    "name": "__MSG_name__",
-    "version": "2.1",
-    "manifest_version": 2,
-    "description": "Pandora FMS Event viewer Chrome extension",
-    "homepage_url": "http://pandorafms.com",
-    "browser_action": {
-        "default_title": "__MSG_default_title__",
-        "default_icon": "images/icon.png",
-        "default_popup": "popup.html"
-    },
-    "background": {
-        "page": "background.html"
-    },
-    "icons": {
-        "128": "images/icon128.png",
-        "16": "images/icon16.png",
-        "32": "images/icon32.png",
-        "48": "images/icon48.png"
-    },
-    "options_page": "options.html",
-    "permissions": [
-        "tabs",
-        "notifications",
-        "http://*/*",
-        "https://*/*",
-        "background"
-    ],
-    "default_locale": "en"
- }
+  "name": "__MSG_name__",
+  "version": "2.2",
+  "manifest_version": 2,
+  "description": "Pandora FMS Event viewer Chrome extension",
+  "homepage_url": "http://pandorafms.com",
+  "browser_action": {
+    "default_title": "__MSG_default_title__",
+    "default_icon": "images/icon.png",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "page": "background.html"
+  },
+  "icons": {
+    "128": "images/icon128.png",
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "48": "images/icon48.png"
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "tabs",
+    "notifications",
+    "http://*/*",
+    "https://*/*",
+    "background"
+  ],
+  "default_locale": "en"
+}

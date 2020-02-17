@@ -65,6 +65,8 @@ class ManageNetScanScripts extends Wizard
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
         );
+
+        $this->access = 'PM';
         $this->page = $page;
         $this->breadcrum = $breadcrum;
     }
@@ -81,7 +83,7 @@ class ManageNetScanScripts extends Wizard
     {
         global $config;
 
-        if (check_acl($config['id_user'], 0, 'AW') === 0) {
+        if (check_acl($config['id_user'], 0, $this->access) === 0) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Net Scan Script.'

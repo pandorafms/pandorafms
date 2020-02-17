@@ -32,19 +32,6 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
     exit;
 }
 
-if (is_ajax()) {
-    $get_alert_action = (bool) get_parameter('get_alert_action');
-    if ($get_alert_action) {
-        $id = (int) get_parameter('id');
-        $action = alerts_get_alert_action($id);
-        $action['command'] = alerts_get_alert_action_alert_command($action['id']);
-
-        echo json_encode($action);
-    }
-
-    return;
-}
-
 $update_action = (bool) get_parameter('update_action');
 $create_action = (bool) get_parameter('create_action');
 $delete_action = (bool) get_parameter('delete_action');
@@ -57,15 +44,22 @@ if (defined('METACONSOLE')) {
     $sec = 'galertas';
 }
 
-if ((!$copy_action) && (!$delete_action)) {
-    // Header
-    if (defined('METACONSOLE')) {
-        alerts_meta_print_header();
-    } else {
-        ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alerts_action', true);
-    }
-}
+// Header.
+if (defined('METACONSOLE')) {
+    alerts_meta_print_header();
+} else {
+    $header_help = 'alerts_action';
 
+    if ($copy_action) {
+        $header_help = 'alerts_config';
+    }
+
+    if ($delete_action) {
+        $header_help = 'alerts_action';
+    }
+
+    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, $header_help, true);
+}
 
 if ($copy_action) {
     $id = get_parameter('id');
@@ -83,13 +77,6 @@ if ($copy_action) {
                 );
                 include 'general/noaccess.php';
                 exit;
-            } else {
-                // Header
-                if (defined('METACONSOLE')) {
-                    alerts_meta_print_header();
-                } else {
-                    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alerts_config', true);
-                }
             }
         } //end if
         else {
@@ -102,14 +89,7 @@ if ($copy_action) {
 
             $is_in_group = in_array($al_action['id_group'], $own_groups);
             // Then action group have to be in his own groups
-            if ($is_in_group) {
-                // Header
-                if (defined('METACONSOLE')) {
-                    alerts_meta_print_header();
-                } else {
-                    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alerts_config', true);
-                }
-            } else {
+            if (!$is_in_group) {
                 db_pandora_audit(
                     'ACL Violation',
                     'Trying to access Alert Management'
@@ -117,13 +97,6 @@ if ($copy_action) {
                 include 'general/noaccess.php';
                 exit;
             }
-        }
-    } else {
-        // Header
-        if (defined('METACONSOLE')) {
-            alerts_meta_print_header();
-        } else {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alerts_config', true);
         }
     }
 
@@ -162,13 +135,6 @@ if ($delete_action) {
                 );
                 include 'general/noaccess.php';
                 exit;
-            } else {
-                // Header
-                if (defined('METACONSOLE')) {
-                    alerts_meta_print_header();
-                } else {
-                    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alert_action', true);
-                }
             }
 
             // If user tries to delete an action of others groups
@@ -182,14 +148,7 @@ if ($delete_action) {
 
             $is_in_group = in_array($al_action['id_group'], $own_groups);
             // Then action group have to be in his own groups
-            if ($is_in_group) {
-                // Header
-                if (defined('METACONSOLE')) {
-                    alerts_meta_print_header();
-                } else {
-                    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, 'alert_action', true);
-                }
-            } else {
+            if (!$is_in_group) {
                 db_pandora_audit(
                     'ACL Violation',
                     'Trying to access Alert Management'
@@ -198,9 +157,6 @@ if ($delete_action) {
                 exit;
             }
         }
-    } else {
-        // Header
-        ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, '', true);
     }
 
 
@@ -285,10 +241,14 @@ foreach ($actions as $action) {
             2 => 'action_buttons',
             3 => 'action_buttons',
         ];
-        $data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true).'</a>';
-        $data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'&pure='.$pure.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+
+        $id_action = $action['id'];
+        $text_confirm = __('Are you sure?');
+
+        $data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions" 
+        onClick="copy_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/copy.png', true).'</a>';
+        $data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions"
+        onClick="delete_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/cross.png', true).'</a>';
     }
 
     array_push($table->data, $data);
@@ -308,3 +268,45 @@ echo '</form>';
 echo '</div>';
 
 enterprise_hook('close_meta_frame');
+?>
+
+<script type="text/javascript">
+
+function copy_action(id_action, text_confirm) {
+    if (!confirm(text_confirm)) {
+        return false;
+    } else {
+        jQuery.post ("ajax.php", 
+            {
+            "page" : "godmode/alerts/alert_actions",
+            "copy_action" : 1,
+            "id" : id_action
+            },
+            function (data, status) {
+                // No data.
+            },
+            "json"
+        );
+    }
+}
+
+function delete_action(id_action, text_confirm) {
+    if (!confirm(text_confirm)) {
+        return false;
+    } else {
+        jQuery.post ("ajax.php",
+            {
+            "page" : "godmode/alerts/alert_actions",
+            "delete_action" : 1,
+            "id" : id_action
+            },
+            function (data, status) {
+                // No data.
+            },
+            "json"
+        );
+    }
+}
+
+</script>
+

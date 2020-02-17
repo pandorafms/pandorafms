@@ -1593,6 +1593,7 @@ function visual_map_print_item(
 
         case CLOCK:
             if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+                $image_prefix = (is_metaconsole()) ? '../../' : '';
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
@@ -1606,17 +1607,16 @@ function visual_map_print_item(
                         }
                     } else {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
-                            $img = '<img src="images/console/signes/clock.png" style="width:200px;height:240px;">';
+                            $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:200px;height:240px;">';
                         } else {
                             if ($layoutData['time_format'] == 'time') {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:71px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:71px">';
                             } else {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:91px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:91px">';
                             }
                         }
                     }
                 } else {
-                    $image_prefix = ($layoutData['id_metaconsole'] != 0) ? '../../' : '';
                     if ($layoutData['clock_animation'] == 'analogic_1') {
                         $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:'.$width.'px;height:'.($width + 40).'px;">';
                     } else {
@@ -1900,6 +1900,8 @@ function visual_map_print_item(
                             echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                         }
                     } else {
+                        $is_meta = is_metaconsole();
+
                         $agents_critical = agents_get_agents(
                             [
                                 'disabled' => 0,
@@ -1908,7 +1910,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_warning = agents_get_agents(
                             [
@@ -1918,7 +1923,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_unknown = agents_get_agents(
                             [
@@ -1928,7 +1936,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_ok = agents_get_agents(
                             [
@@ -1938,7 +1949,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $total_agents = ($agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total']);
                         $stat_agent_ok = ($agents_ok[0]['total'] / $total_agents * 100);
@@ -1966,7 +1980,7 @@ function visual_map_print_item(
                             echo '</tr>';
                             echo "<tr style='background-color:whitesmoke;height:90%;'>";
                                 echo '<td>';
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#e63c52;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
                                     echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
                                     echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
                                     echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
@@ -3272,7 +3286,8 @@ function visual_map_get_color_line_status($layoutData)
 /**
  * Get image of element in the visual console with status.
  *
- * @param array $layoutData The row of element in DB.
+ * @param array   $layoutData The row of element in DB.
+ * @param boolean $status     Status.
  *
  * @return string The image with the relative path to pandora console directory.
  */
@@ -3280,8 +3295,12 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 {
     $img = 'images/console/icons/'.$layoutData['image'];
 
+    if (empty($layoutData['image'])) {
+        return false;
+    }
+
     if ($layoutData['type'] == 5) {
-        // ICON ELEMENT
+        // ICON ELEMENT.
         $img .= '.png';
     } else {
         if ($status === false) {
@@ -3290,35 +3309,36 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
         switch ($status) {
             case 1:
-                // Critical (BAD)
+                // Critical (BAD).
                 $img .= '_bad.png';
             break;
 
             case 4:
-                // Critical (ALERT)
+                // Critical (ALERT).
                 $img = '4'.$img.'_bad.png';
             break;
 
             case 0:
-                // Normal (OK)
+                // Normal (OK).
                 $img .= '_ok.png';
             break;
 
             case 2:
-                // Warning
+                // Warning.
                 $img .= '_warning.png';
             break;
 
             case 10:
-                // Warning (ALERT)
+                // Warning (ALERT).
                 $img = '4'.$img.'_warning.png';
             break;
 
             case 3:
-                // Unknown
+                // Unknown.
             default:
                 $img .= '.png';
-                // Default is Grey (Other)
+                // Default is Grey (Other).
+            break;
         }
     }
 
@@ -3611,11 +3631,6 @@ function visual_map_print_visual_map(
 
     global $config;
 
-    $metaconsole_hack = '/';
-    if (defined('METACONSOLE')) {
-        $metaconsole_hack = '../../';
-    }
-
     enterprise_include_once('meta/include/functions_ui_meta.php');
 
     include_once $config['homedir'].'/include/functions_custom_graphs.php';
@@ -3681,11 +3696,11 @@ function visual_map_print_visual_map(
         $mapHeight = $layout['height'];
         $backgroundImage = '';
         if ($layout['background'] != 'None.png') {
-            $backgroundImage = $metaconsole_hack.'images/console/background/'.$layout['background'];
+            $backgroundImage = 'images/console/background/'.$layout['background'];
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
     }
 
@@ -3698,7 +3713,7 @@ function visual_map_print_visual_map(
                 background-color:'.$layout['background_color'].';">';
 
     if ($layout['background'] != 'None.png') {
-        echo "<img src='".ui_get_full_url($backgroundImage)."' width='100%' height='100%' />";
+        echo "<img src='".ui_get_full_url($backgroundImage, false, false, false)."' width='100%' height='100%' />";
     }
 
     $layout_datas = db_get_all_rows_field_filter(
@@ -3776,7 +3791,7 @@ function visual_map_print_visual_map(
     // End main div
     echo '</div></div>';
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         echo '</div>';
     }
 }
@@ -4251,7 +4266,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'auto_sla_graph':
             case AUTO_SLA_GRAPH:
-                $text = __('Auto SLA Graph');
+                $text = __('Event history graph');
             break;
 
             case 'percentile_bar':
@@ -4271,7 +4286,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'static_graph':
             case STATIC_GRAPH:
-                $text = __('Static graph').' - '.$image;
+                $text = __('Static Image').' - '.$image;
             break;
 
             case 'simple_value':

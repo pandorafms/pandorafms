@@ -107,7 +107,7 @@ $table->data = [];
 $table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
 $table->data[0][1] = html_print_textarea('keys[customer_key]', 10, 255, $settings->customer_key, 'style="height:50px; width:450px;"', true);
 
-$table->data[1][0] = '<strong>'.__('Expires').'</strong>';
+$table->data[1][0] = '<strong>'.__($license['expiry_caption']).'</strong>';
 $table->data[1][1] = html_print_input_text('expires', $license['expiry_date'], '', 10, 255, true, true);
 
 $table->data[2][0] = '<strong>'.__('Platform Limit').'</strong>';

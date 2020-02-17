@@ -20,6 +20,8 @@ if (isset($_SERVER['REQUEST_TIME'])) {
     $time = get_system_time();
 }
 
+ui_require_css_file('footer');
+
 $license_file = 'general/license/pandora_info_'.$config['language'].'.html';
 if (! file_exists($config['homedir'].$license_file)) {
     $license_file = 'general/license/pandora_info_en.html';
@@ -41,9 +43,17 @@ if ($current_package == 0) {
     $build_package_version = $current_package;
 }
 
-echo sprintf(__('%s %s - Build %s - MR %s', get_product_name(), $pandora_version, $build_package_version, $config['MR']));
+echo __(
+    '%s %s - Build %s - MR %s',
+    get_product_name(),
+    $pandora_version,
+    $build_package_version,
+    $config['MR']
+);
+echo '</a><br />';
+echo '<small><span>'.__('Page generated on %s', date('Y-m-d H:i:s')).'</span></small>';
 
-echo '</a> ';
+
 
 if (isset($config['debug'])) {
     $cache_info = [];

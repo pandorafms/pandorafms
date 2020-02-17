@@ -3041,7 +3041,7 @@ function reporting_database_serialized($report, $content)
 
     $return['title'] = $content['name'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = io_safe_output(reporting_get_date_text($report, $content));
 
     $keys = [];
@@ -3180,10 +3180,10 @@ function reporting_group_configuration($report, $content)
 
     $group_name = groups_get_name($content['id_group'], true);
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = $group_name;
-    $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = io_safe_output(reporting_get_date_text($report, $content));
     $return['id_group'] = $content['id_group'];
 
     if ($content['id_group'] == 0) {
@@ -3253,10 +3253,10 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
 
     $group_name = groups_get_name($content['id_group']);
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = $group_name;
-    $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = io_safe_output(reporting_get_date_text($report, $content));
 
     include_once $config['homedir'].'/include/functions_custom_graphs.php';
 

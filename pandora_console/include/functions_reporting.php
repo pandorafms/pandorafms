@@ -813,8 +813,8 @@ function reporting_SLA(
         $content['name'] = __('S.L.A.');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     // Get chart.
@@ -1313,7 +1313,7 @@ function reporting_event_top_n(
         $content['name'] = __('Top N');
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $top_n = $content['top_n'];
 
     switch ($top_n) {
@@ -1333,8 +1333,8 @@ function reporting_event_top_n(
     }
 
     $return['subtitle'] = __('Top %d', $content['top_n_value']).' - '.$type_top_n;
-    $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = io_safe_output(reporting_get_date_text($report, $content));
 
     $order_uptodown = $content['order_uptodown'];
 
@@ -1691,13 +1691,13 @@ function reporting_event_report_group(
         $history = true;
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = groups_get_name($content['id_group'], true);
     if (!empty($content['style']['event_filter_search'])) {
         $return['subtitle'] .= ' ('.$content['style']['event_filter_search'].')';
     }
 
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -1911,7 +1911,7 @@ function reporting_event_report_module(
         metaconsole_connect(null, $id_server);
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = agents_get_alias($content['id_agent']).' - '.io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
 
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -1923,7 +1923,7 @@ function reporting_event_report_module(
         metaconsole_restore_db();
     }
 
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -2005,9 +2005,9 @@ function reporting_inventory_changes($report, $content, $type)
         metaconsole_connect($server);
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = agents_get_alias($content['id_agent']);
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $es = json_decode($content['external_source'], true);
@@ -2072,8 +2072,8 @@ function reporting_inventory($report, $content, $type)
         metaconsole_connect($server);
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $es = json_decode($content['external_source'], true);
@@ -2155,7 +2155,7 @@ function reporting_agent_module($report, $content)
     }
 
     $return['subtitle'] = $group_name.' - '.$module_group_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -2300,7 +2300,7 @@ function reporting_exception(
         break;
     }
 
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['data'] = [];
@@ -2708,9 +2708,9 @@ function reporting_group_report($report, $content)
         metaconsole_connect($server);
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = groups_get_name($content['id_group'], true);
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['data'] = [];
@@ -2776,9 +2776,9 @@ function reporting_event_report_agent(
         $history = true;
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = agents_get_alias($content['id_agent']);
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['show_summary_group'] = $content['style']['show_summary_group'];
@@ -3254,7 +3254,7 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     $group_name = groups_get_name($content['id_group']);
 
     $return['title'] = io_safe_output($content['name']);
-    $return['subtitle'] = $group_name;
+    $return['subtitle'] = io_safe_output($group_name);
     $return['description'] = io_safe_output($content['description']);
     $return['date'] = io_safe_output(reporting_get_date_text($report, $content));
 
@@ -3452,9 +3452,9 @@ function reporting_alert_report_group($report, $content)
 
     $group_name = groups_get_name($content['id_group'], true);
 
-    $return['title'] = $content['name'];
-    $return['subtitle'] = $group_name;
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['subtitle'] = io_safe_output($group_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     if ($content['id_group'] == 0) {
@@ -3615,9 +3615,9 @@ function reporting_alert_report_agent($report, $content)
 
     $agent_name = agents_get_alias($content['id_agent']);
 
-    $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name;
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['subtitle'] = io_safe_output($agent_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -3751,9 +3751,9 @@ function reporting_alert_report_module($report, $content)
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
 
-    $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['subtitle'] = io_safe_output($agent_name.' - '.$module_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($return['label'] != '') {
@@ -3913,8 +3913,8 @@ function reporting_sql_graph(
         $height = $force_height_chart;
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text();
 
     switch ($type) {
@@ -3957,9 +3957,9 @@ function reporting_monitor_report($report, $content)
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
 
-    $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['subtitle'] = io_safe_output($agent_name.' - '.$module_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     if ($config['metaconsole']) {
@@ -4072,8 +4072,8 @@ function reporting_netflow(
         }
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     // Get chart.
@@ -4151,9 +4151,9 @@ function reporting_prediction_date($report, $content)
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
 
-    $return['title'] = $content['name'];
-    $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['subtitle'] = io_safe_output($agent_name.' - '.$module_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -4202,9 +4202,9 @@ function reporting_projection_graph(
     $module_name = io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
     $agent_name = io_safe_output(modules_get_agentmodule_agent_alias($content['id_agent_module']));
 
-    $return['title']       = $content['name'];
-    $return['subtitle']    = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['title']       = io_safe_output($content['name']);
+    $return['subtitle']    = io_safe_output($agent_name.' - '.$module_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date']        = reporting_get_date_text($report, $content);
     $return['label']       = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     $return['agent_name']  = $agent_name;
@@ -4269,8 +4269,8 @@ function reporting_agent_configuration($report, $content)
         $content['name'] = __('Agent configuration');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -4476,9 +4476,9 @@ function reporting_value($report, $content, $type, $pdf=false)
         $content['id_agent_module']
     );
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     $return['agents'] = [$content['id_agent']];
@@ -4914,8 +4914,8 @@ function reporting_url($report, $content, $type='dinamic')
         $content['name'] = __('Url');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text();
 
     $return['url'] = $content['external_source'];
@@ -4951,8 +4951,8 @@ function reporting_text($report, $content)
         $content['name'] = __('Text');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text();
 
     $return['data'] = html_entity_decode($content['text']);
@@ -6116,8 +6116,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
         $datetime_to = strtotime($date.' '.$time);
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -6377,8 +6377,8 @@ function reporting_availability_graph($report, $content, $pdf=false)
         $content['name'] = __('Availability');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     // Get chart
@@ -6794,8 +6794,8 @@ function reporting_increment($report, $content)
         $content['name'] = __('Increment');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['id_agent_module'] = $content['id_agent_module'];
     $return['id_agent'] = $content['id_agent'];
 
@@ -6893,8 +6893,8 @@ function reporting_general($report, $content)
         $content['name'] = __('General');
     }
 
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -7280,9 +7280,9 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = io_safe_output($graph['name']);
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -7367,11 +7367,11 @@ function reporting_simple_graph(
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['agent_name'] = $agent_name;
-    $return['module_name'] = $module_name;
-    $return['description'] = $content['description'];
+    $return['agent_name'] = io_safe_output($agent_name);
+    $return['module_name'] = io_safe_output($module_name);
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -11785,8 +11785,8 @@ function reporting_nt_top_n_report($period, $content, $pdf)
 {
     $return = [];
     $return['type'] = 'nt_top_n';
-    $return['title'] = $content['name'];
-    $return['description'] = $content['description'];
+    $return['title'] = io_safe_output($content['name']);
+    $return['description'] = io_safe_output($content['description']);
 
     // Get the data sent and received
     $return['data'] = [];

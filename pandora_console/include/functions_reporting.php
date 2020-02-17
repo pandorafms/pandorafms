@@ -2959,9 +2959,9 @@ function reporting_historical_data($report, $content)
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -3039,7 +3039,7 @@ function reporting_database_serialized($report, $content)
         modules_get_agentmodule_agent_alias($content['id_agent_module'])
     );
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = io_safe_output($content['description']);
     $return['date'] = io_safe_output(reporting_get_date_text($report, $content));

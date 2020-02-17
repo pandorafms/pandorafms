@@ -462,7 +462,8 @@ function d3_donut_graph($id, $width, $height, $module_data, $resume_color)
     $recipient_name = 'donut_graph_'.$id;
     $recipient_name_to_js = '#donut_graph_'.$id;
 
-    $output = '<div id='.$recipient_name." style='overflow: hidden;'></div>";
+    $output = '';
+    $output .= '<div id='.$recipient_name." style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= '<style type="text/css">
 					path {
@@ -472,6 +473,7 @@ function d3_donut_graph($id, $width, $height, $module_data, $resume_color)
 				</style>';
 
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
+					$('".$recipient_name_to_js."').empty();
 					print_donut_graph('".$recipient_name_to_js."', ".$width.', '.$height.', '.$module_data.", '".$resume_color."');
 				</script>";
 

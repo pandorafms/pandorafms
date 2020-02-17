@@ -2840,7 +2840,8 @@ function graph_sla_slicebar(
         true,
         $ttl,
         false,
-        false
+        false,
+        $date
     );
 }
 
@@ -3904,7 +3905,7 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false)
+function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false, $ttl=1)
 {
     global $config;
     global $graphic_type;
@@ -3980,7 +3981,7 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
     $out = flot_slicesbar_graph(
         $data,
         $period,
-        100,
+        $width,
         $height,
         $full_legend,
         $colors,
@@ -3993,7 +3994,8 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
         $id_agent,
         [],
         true,
-        1
+        $ttl,
+        true
     );
 
     if ($return) {
@@ -4861,7 +4863,7 @@ function graph_nodata_image($width=300, $height=110, $type='area', $text='')
     // if ($text == '') {
     // $text = __('No data to show');
     // }
-    $text_div = '<div class="nodata_text" style="text-align:center;     padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
+    $text_div = '<div class="nodata_text" style="text-align:center; padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
 
     $image_div = $text_div.'<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\''.$image.'\');"><div></div></div>';
 

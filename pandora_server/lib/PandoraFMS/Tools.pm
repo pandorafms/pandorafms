@@ -19,6 +19,7 @@ package PandoraFMS::Tools;
  
 use warnings;
 use Time::Local;
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(setsid strftime);
 use POSIX;
 use HTML::Entities;

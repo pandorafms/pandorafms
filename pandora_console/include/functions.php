@@ -3874,17 +3874,21 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
 
     $width_img  = 500;
 
-    // Set height image.
-    $height_img = 170;
-    $params['height'] = 170;
-    if ((int) $params['landscape'] === 1) {
-        $height_img = 150;
-        $params['height'] = 150;
-    }
+    if ($params['vconsole'] === false) {
+        // Set height image.
+        $height_img = 170;
+        $params['height'] = 170;
+        if ((int) $params['landscape'] === 1) {
+            $height_img = 150;
+            $params['height'] = 150;
+        }
 
-    if ($type_graph_pdf === 'slicebar') {
-        $width_img  = 360;
-        $height_img = 70;
+        if ($type_graph_pdf === 'slicebar') {
+            $width_img  = 360;
+            $height_img = 70;
+        }
+    } else {
+        $height_img = $params['height'];
     }
 
     $params_encode_json = urlencode(json_encode($params));
@@ -3926,8 +3930,14 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
  */
 function get_product_name()
 {
+    global $config;
+
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+        if ($config['rb_product_name_alt']) {
+            return $config['rb_product_name_alt'];
+        }
+
         return 'Pandora FMS';
     }
 

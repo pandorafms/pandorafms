@@ -504,8 +504,8 @@ foreach ($info as $user_id => $user_info) {
             foreach ($result as $row) {
                 $data[4] .= "<div style='float:left;'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= '</div>';
-                $data[4] .= "<div style='float:right; padding-right:10px;'>";
+                $data[4] .= ' / </div>';
+                $data[4] .= "<div style='float:left; padding-left:5px;'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
                 $data[4] .= '<br />';

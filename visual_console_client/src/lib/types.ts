@@ -45,9 +45,8 @@ export type LinkedVisualConsolePropsStatus =
       linkedLayoutStatusTypeCriticalThreshold: number;
     };
 export type LinkedVisualConsoleProps = {
-  metaconsoleId?: number | null;
   linkedLayoutId: number | null;
-  linkedLayoutAgentId: number | null;
+  linkedLayoutNodeId: number | null;
 } & LinkedVisualConsolePropsStatus;
 
 export interface ItemMeta {
@@ -56,5 +55,9 @@ export interface ItemMeta {
   isFromCache: boolean;
   isFetching: boolean;
   isUpdating: boolean;
+  isSelected: boolean;
+  isBeingMoved: boolean;
+  isBeingResized: boolean;
   editMode: boolean;
+  lineMode: boolean;
 }

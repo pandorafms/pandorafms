@@ -143,7 +143,7 @@ function flot_area_graph(
     // Parent layer.
     $return = "<div class='parent_graph' style='width: ".($params['width']).';'.$background_style.$padding_vconsole."'>";
 
-    if (empty($params['title']) === false) {
+    if ($params['title'] === true && empty($params['title']) === false) {
         $return .= '<p style="text-align:center;">'.$params['title'].'</p>';
     }
 
@@ -279,12 +279,6 @@ function flot_area_graph(
     // Trick to get translated string from javascript.
     $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
-    // To use the js document ready event or not. Default true.
-    $document_ready = true;
-    if (isset($params['document_ready']) === true) {
-        $document_ready = $params['document_ready'];
-    }
-
     $values = json_encode($array_data);
 
     $legend              = json_encode($legend);
@@ -302,10 +296,6 @@ function flot_area_graph(
 
     $return .= "<script type='text/javascript'>";
 
-    if ($document_ready === true) {
-        $return .= '$(document).ready( function () {';
-    }
-
     $return .= "pandoraFlotArea(\n";
     $return .= "'".$graph_id."', \n";
     $return .= $values.", \n";
@@ -318,10 +308,6 @@ function flot_area_graph(
     $return .= $params.", \n";
     $return .= $array_events_alerts."\n";
     $return .= ');';
-
-    if ($document_ready === true) {
-        $return .= '});';
-    }
 
     $return .= '</script>';
 
@@ -629,8 +615,7 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 
     // Javascript code
     $return .= "<script type='text/javascript'>";
-    $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
-		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
+    $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels', $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
     $return .= '</script>';
 
     return $return;
@@ -722,12 +707,12 @@ function flot_vcolumn_chart($graph_data, $width, $height, $color, $legend, $long
     $return .= "<script type='text/javascript'>";
     if ($from_ux) {
         if ($from_wux) {
-            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
+            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
         } else {
-            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false, '$background_color', '$tick_color')";
+            $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false, '$background_color', '$tick_color')";
         }
     } else {
-        $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
+        $return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
     }
 
     $return .= '</script>';
@@ -754,7 +739,8 @@ function flot_slicesbar_graph(
     $not_interactive=0,
     $ttl=1,
     $widgets=false,
-    $show=true
+    $show=true,
+    $date_to=false
 ) {
     global $config;
 
@@ -779,6 +765,7 @@ function flot_slicesbar_graph(
             'widgets'            => $widgets,
             'show'               => $show,
             'return_img_base_64' => true,
+            'date_to'            => $date_to,
         ];
 
         $graph = '<img src="data:image/jpg;base64,';
@@ -791,15 +778,17 @@ function flot_slicesbar_graph(
     // Get a unique identifier to graph
     $graph_id = uniqid('graph_');
 
-    $height = ((int) $height + 15);
-
     // Set some containers to legend, graph, timestamp tooltip, etc.
     if ($stat_win) {
+        $height = ((int) $height + 15);
         $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px; display: inline-block;'></div>";
     } else {
         if ($widgets) {
+            $width  = ((int) $width - 10);
+            $height = ((int) $height - 10);
             $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'px; height: '.$height."px;'></div>";
         } else {
+            $height = ((int) $height + 15);
             $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px;'></div>";
         }
     }
@@ -873,8 +862,11 @@ function flot_slicesbar_graph(
         $full_legend_date = false;
     }
 
-    $date = get_system_time();
-    $datelimit = (($date - $period));
+    if (!$date_to) {
+        $date_to = get_system_time();
+    }
+
+    $datelimit = (($date_to - $period));
 
     $i = 0;
     $values2 = [];

@@ -2231,7 +2231,7 @@ function events_create_event(
     }
 
     $table_events = 'tevento';
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $table_events = 'tmetaconsole_event';
 
         $sql = sprintf(
@@ -3647,7 +3647,7 @@ function events_get_response_target(
 
         $ip = db_get_value_filter('direccion', $agente_table_name, $filter);
         // If agent has not an IP, display N/A.
-        if ($ip === false) {
+        if ($ip === false || $ip === '') {
             $ip = __('N/A');
         }
 
@@ -4719,7 +4719,7 @@ function events_page_comments($event, $ajax=false)
                     foreach ($comm as $c) {
                         $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
                         $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                        $data[1] = '<p style="word-break: break-word;">'.$c['comment'].'</p>';
+                        $data[1] = '<p style="word-break: break-word;">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
                         $table_comments->data[] = $data;
                     }
                 break;

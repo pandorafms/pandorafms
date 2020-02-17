@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.742";
-my $pandora_build = "200128";
+my $pandora_version = "7.0NG.743";
+my $pandora_build = "200217";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -452,12 +452,6 @@ sub pandora_load_config {
 	
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
-
-	# Console API connection
-	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 6.0
-	$pa_config->{"console_api_pass"} = ''; # 6.0
-	$pa_config->{"console_user"} = 'admin'; # 6.0
-	$pa_config->{"console_pass"} = 'pandora'; # 6.0
 
 	# Database password encryption passphrase
 	$pa_config->{"encryption_passphrase"} = ''; # 6.0

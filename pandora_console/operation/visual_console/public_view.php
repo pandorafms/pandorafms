@@ -28,6 +28,8 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
+ui_require_css_file('visual_maps');
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
@@ -221,6 +223,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
+
+    var controls = document.getElementById('vc-controls');
+    autoHideElement(controls, 1000);
 
     // Update the data fetch interval.
     $('select#vc-refr').change(function(event) {

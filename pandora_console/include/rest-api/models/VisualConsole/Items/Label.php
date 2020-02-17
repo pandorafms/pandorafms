@@ -21,30 +21,6 @@ final class Label extends Item
 
 
     /**
-     * Validate the received data structure to ensure if we can extract the
-     * values required to build the model.
-     *
-     * @param array $data Input data.
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException If any input value is considered
-     * invalid.
-     *
-     * @overrides Item->validateData.
-     */
-    protected function validateData(array $data): void
-    {
-        parent::validateData($data);
-        if (static::notEmptyStringOr(static::issetInArray($data, ['label']), null) === null) {
-            throw new \InvalidArgumentException(
-                'the label property is required and should be a not empty string'
-            );
-        }
-    }
-
-
-    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -58,6 +34,64 @@ final class Label extends Item
         $return = parent::decode($data);
         $return['type'] = LABEL;
         return $return;
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Label]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = false;
+        }
+
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 10;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 10;
+        }
+
+        return $values;
     }
 
 

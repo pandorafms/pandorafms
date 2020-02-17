@@ -191,12 +191,8 @@ switch ($action) {
             case 'top_n':
             case 'exception':
             case 'general':
-            case 'network_interfaces_report':
             case 'availability':
-            case 'event_report_log':
-            case 'increment':
             case 'availability_graph':
-            case 'agent_module':
                 $get_data_editor = true;
             break;
 
@@ -3857,6 +3853,7 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
+            case 'event_report_log':
             case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');

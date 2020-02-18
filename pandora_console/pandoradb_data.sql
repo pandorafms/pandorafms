@@ -141,7 +141,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('cr_incident_content', ''),
 ('sample_agent', '0'),
 ('gotty', '/usr/bin/gotty'),
-('custom_module_units', '{"bytes":"bytes","entries":"entries","files":"files","hits":"hits","sessions":"sessions","users":"users","ºC":"ºC","ºF":"ºF"}');
+('custom_module_units', '{"bytes":"bytes","entries":"entries","files":"files","hits":"hits","sessions":"sessions","users":"users","ºC":"ºC","ºF":"ºF"}'),
+('server_unique_identifier', replace(uuid(),'-',''));
 UNLOCK TABLES;
 
 --

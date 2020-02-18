@@ -1015,7 +1015,7 @@ function netflow_get_filter_arguments($filter)
     }
 
     if ($filter_args != '') {
-        $filter_args = escapeshellarg($filter_args);
+        $filter_args = io_safe_input(escapeshellarg($filter_args));
     }
 
     return $filter_args;

@@ -55,7 +55,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.743';
-use constant AGENT_BUILD => '200217';
+use constant AGENT_BUILD => '200218';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -183,6 +183,7 @@ my %DefaultConf = (
 	'secondary_server_pwd' => '',
 	'secondary_server_ssl' => '0',
 	'secondary_server_opts' => '',
+	'secondary_temporal' => '/var/spool/pandora',
 	'autotime' => 0,
 	'temporal_min_size' => 1,
 	'timezone_offset' => 0,
@@ -1058,6 +1059,16 @@ sub read_config (;$) {
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq '1');
 	}
 
+	# Set up the primary and secondary temporary directories.
+	if ($Conf{'secondary_mode'} eq 'always') {
+		$Conf{'secondary_temporal'} = $Conf{'temporal'} . '/pandorafms.secondary';
+		if (! -d $Conf{'secondary_temporal'}) {
+			mkdir($Conf{'secondary_temporal'}) || die("Error creating the secondary temporary directory $!");
+		}
+	} elsif ($Conf{'secondary_mode'} eq "on_error") {
+		$Conf{'secondary_temporal'} = $Conf{'temporal'};
+	}
+
 }
 
 #################################################################################
@@ -1077,7 +1088,7 @@ sub fix_directory ($) {
 # Sends a file to the server.
 ################################################################################
 sub send_file {
-	my ($file, $secondary, $rc_primary, $flag_always, $relative) = @_;
+	my ($file, $relative) = @_;
 
 	my $output;
 	my $pid = fork();
@@ -1131,108 +1142,82 @@ sub send_file {
 	waitpid ($pid, 0);
 	my $rc = $? >> 8;
 
-	if( ($Conf{'secondary_mode'} eq 'always') && ( !defined($flag_always) ) ){
-		# Send the file to the secondary server
-		return $rc unless ($Conf{'secondary_mode'} eq 'always');
-		
-		if(defined ($secondary)){
-			if( ($rc != 0 && ($file =~ /\.data/))  ){
-				$rc_primary = 1;
-			}
-			swap_servers ();
-			$rc = send_file ($file, undef, $rc_primary, undef, $relative);
-			swap_servers ();
+	return $rc
+}
 
-			return $rc;
-		}
-		else{
-			my $rc_secondary = 0;
-			if( ($rc != 0) && ($file =~ /\.data/)){				
-				$rc_secondary = 1;
-			}
+################################################################################
+# Send buffered XML files.
+################################################################################
+sub send_xml_file ($) {
+	my ($file) = @_;
 
-			if (  $rc_secondary == 1 && defined($rc_primary) ){
-				return 1;
-			}
-			
-			if ( $rc_secondary == 1 ){
-				if (! -d "$Conf{'temporal'}/secondary"){
-					mkdir "$Conf{'temporal'}/secondary";
-				}
-				eval {
-					copy("$file", "$Conf{'temporal'}/secondary/");
-				};
-				if ($@) {
-					# We shouldn't reach this point...
-					die ("Cannot write on $Conf{'temporal'}/secondary/");
-				}
-				return 0;
-			}
-			
-			if ( defined($rc_primary) ){
-				if (! -d "$Conf{'temporal'}/primary"){
-					mkdir "$Conf{'temporal'}/primary";
-				}
-				eval {
-					copy("$file", "$Conf{'temporal'}/primary/");
-				};
-				if ($@) {
-					# We shouldn't reach this point...
-					die ("Cannot write on $Conf{'temporal'}/primary/");
-				}
-				return 0;
-			}
+	my $rc = send_file($file);
+	if ($rc != 0 && $Conf{'secondary_mode'} eq "on_error") {
+		swap_servers();
+		$rc = send_file($file);
+		swap_servers();
+	}
+	elsif ($Conf{'secondary_mode'} eq "always") {
+		swap_servers();
+		my $rc_sec = send_file($file);
+		swap_servers();
 
-			if ( $rc_secondary == 0 && !defined($rc_primary) ){
-				return 0;
-			}
+		# Secondary buffer.
+		if ($rc_sec != 0 && $Conf{'xml_buffer'} == 1 && temporal_freedisk () > $Conf{'temporal_min_size'}) {
+			copy($file, $Conf{'secondary_temporal'}) || die("Error copying file $file to " . $Conf{'secondary_temporal'} . ": $!");
 		}
 	}
-	elsif ( ($Conf{'secondary_mode'} eq 'always') && defined($flag_always) ){
-		return $rc;
-	}
-	else{
-		return $rc unless (defined ($secondary));
 
-		# Send the file to the secondary server
-		return $rc unless ($Conf{'secondary_mode'} eq 'always' || ($Conf{'secondary_mode'} eq 'on_error' && $rc != 0));
-		
-		swap_servers ();
-		$rc = send_file ($file, undef, undef, undef, $relative);
-		swap_servers ();
-		return $rc;
+	# Primary buffer.
+	if ($rc == 0 || $Conf{'xml_buffer'} == 0 || temporal_freedisk () <= $Conf{'temporal_min_size'}) {
+		if ($Conf{'debug'} eq '1') {
+			rename($file, $file . "sent");
+		} else {
+			unlink ($file);
+		}
 	}
 }
 
 ################################################################################
 # Send buffered XML files.
 ################################################################################
-sub send_buffered_xml_files ($;$) {
-	my ($temporal_file, $flag_always) = @_;
+sub send_buffered_xml_files () {
+	my $temp_fh;
+
 	# Read XML files from the temporal directory
-	opendir(TEMPORAL, $temporal_file) or return;
-	if (defined($flag_always) && ($flag_always == 2)){
-		swap_servers ();
-	}
-	while (my $xml_file = readdir(TEMPORAL)) {
+	opendir($temp_fh, $Conf{'temporal'}) or return;
+	while (my $xml_file = readdir($temp_fh)) {
 		# Skip non data files and symlinks
-		next if ($xml_file !~ m/^$Conf{'agent_name'}\.[0-9]+\.data$/ || -l "$temporal_file/$xml_file");
-		my $rc = send_file ("$temporal_file/$xml_file", 1, undef, $flag_always); 
+		next if ($xml_file !~ m/^$Conf{'agent_name'}\.[0-9]+\.data$/ || -l "$Conf{'temporal'}/$xml_file");
+		my $rc = send_file ("$Conf{'temporal'}/$xml_file"); 
 		if ($rc == 0) {	
 			if ($Conf{'debug'} eq '1') {
-				rename "$temporal_file/$xml_file", "$temporal_file/$xml_file". "sent";
+				rename("$Conf{'temporal'}/$xml_file", "$Conf{'temporal'}/$xml_file". "sent");
 			} else {
-				unlink ("$temporal_file/$xml_file");	
+				unlink ("$Conf{'temporal'}/$xml_file");	
 			}
-		}
-		# Do not get stuck trying to send buffered XML files to a secondary server.
-		elsif ($flag_always == 2) {
+		} else {
 			last;
 		}
 	}
-	if (defined($flag_always) && ($flag_always == 2)){
-		swap_servers ();
+	closedir($temp_fh);
+
+	# Read XML files from the secondary temporal directory
+	return unless ($Conf{'secondary_mode'} ne "never");
+	opendir($temp_fh, $Conf{'secondary_temporal'}) or return;
+	swap_servers ();
+	while (my $xml_file = readdir($temp_fh)) {
+		# Skip non data files and symlinks
+		next if ($xml_file !~ m/^$Conf{'agent_name'}\.[0-9]+\.data$/ || -l "$Conf{'secondary_temporal'}/$xml_file");
+		my $rc = send_file ("$Conf{'secondary_temporal'}/$xml_file"); 
+		if ($rc == 0) {
+			unlink ("$Conf{'secondary_temporal'}/$xml_file") ;
+		} else {
+			last;
+		}
 	}
+	swap_servers ();
+	closedir($temp_fh);
 }
 
 ################################################################################
@@ -1341,8 +1326,8 @@ sub check_remote_config () {
 			chown ($uid, $gid, "$Conf{'temporal'}/$RemoteMD5File");
 			chown ($uid, $gid, "$Conf{'temporal'}/$RemoteConfFile");
 		}
-		send_file ("$Conf{'temporal'}/$RemoteConfFile", undef, undef, undef, $Conf{'server_path_conf'});
-		send_file ("$Conf{'temporal'}/$RemoteMD5File", undef, undef, undef, $Conf{'server_path_md5'});
+		send_file ("$Conf{'temporal'}/$RemoteConfFile", $Conf{'server_path_conf'});
+		send_file ("$Conf{'temporal'}/$RemoteMD5File", $Conf{'server_path_md5'});
 		unlink ("$Conf{'temporal'}/$RemoteConfFile");
 		unlink ("$Conf{'temporal'}/$RemoteMD5File");
 		return;
@@ -3710,31 +3695,11 @@ while (1) {
 		}
 
 		# Send the XML data file
-		my $rc = send_file ($temp_file, 1);
-		if ($rc == 0 || $Conf{'xml_buffer'} == 0 || temporal_freedisk () < $Conf{'temporal_min_size'}) {
-			if ($Conf{'debug'} eq '1') {
-				rename $temp_file, $temp_file . "sent";
-			} else {
-				unlink ($temp_file);
-			}
-		}
+		send_xml_file ($temp_file);
 		
 		# Send buffered XML data files
 		if ($Conf{'xml_buffer'} == 1) {
-			if($Conf{'secondary_mode'} eq 'always'){
-				$Conf{'__temporal_primary'}   = "$Conf{'temporal'}/primary";
-				$Conf{'__temporal_secondary'} = "$Conf{'temporal'}/secondary";
-				if (-d "$Conf{'__temporal_primary'}"){				
-					send_buffered_xml_files ($Conf{'__temporal_primary'}, 1);
-				}				
-				if (-d "$Conf{'__temporal_secondary'}"){
-					send_buffered_xml_files ($Conf{'__temporal_secondary'}, 2);
-				}
-				send_buffered_xml_files ($Conf{'temporal'});
-			}
-			else{
-				send_buffered_xml_files ($Conf{'temporal'});	
-			}
+			send_buffered_xml_files ();
 		}
 	}
 	

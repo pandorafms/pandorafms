@@ -51,6 +51,7 @@ namespace Pandora_File {
 	class Delete_Error : Pandora_File::File_Exception {
 	};
 
+	bool   dirExists (const string dirpath);
 	bool   fileExists (const string filename);
 	int    readFile   (const string filepath, string &result);
 	int    readBinFile (const string filepath, char **buffer);

@@ -140,6 +140,9 @@ discoveryserver 1
 # Discovery SAP utils (PANDORA FMS ENTERPRISE ONLY)
 # sap_utils /usr/share/pandora_server/util/recon_scripts/SAP
 
+# Discovery Microsoft SQL ODBC driver (PANDORA FMS ENTERPRISE ONLY)
+# mssql_driver ODBC Driver 17 for SQL Server
+
 # pluginserver : 1 or 0. Set to 1 to activate plugin server with this setup
 
 pluginserver 1

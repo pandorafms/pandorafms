@@ -35,6 +35,7 @@ use constant {
 	DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
 	DISCOVERY_DEPLOY_AGENTS => 9,
 	DISCOVERY_APP_SAP => 10,
+	DISCOVERY_APP_MICROSOFT_SQL_SERVER => 11,
 };
 
 # $DEVNULL
@@ -1577,6 +1578,8 @@ sub app_scan($) {
 		$type = 'MySQL';
 	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
 		$type = 'Oracle';
+	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER) {
+		$type = 'MSSQL';
 	} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
 		$type = 'SAP';
 	} else {
@@ -1659,13 +1662,13 @@ sub app_scan($) {
 
 				# Scan connected obj.
 				if (   $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
-					|| $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
-
+					|| $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
+					|| $self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER
+				) {
 					# Database.
 					$results = $self->database_scan($type, $obj, $global_percent, \@targets);
 
 				} elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
-
 					# SAP scan
 					$results = $obj->scan();
 
@@ -1766,7 +1769,9 @@ sub scan($) {
 	if (defined($self->{'task_data'})) {
 		if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
 			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
-			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
+			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP
+			||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER
+		) {
 			# Application scan.
 			$self->call('message', "Scanning application ...", 6);
 			return $self->app_scan();

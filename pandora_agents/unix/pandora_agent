@@ -1065,7 +1065,7 @@ sub read_config (;$) {
 		if (! -d $Conf{'secondary_temporal'}) {
 			mkdir($Conf{'secondary_temporal'}) || die("Error creating the secondary temporary directory $!");
 		}
-	} elsif ($Conf{'secondary_temporal'} eq "on_error") {
+	} elsif ($Conf{'secondary_mode'} eq "on_error") {
 		$Conf{'secondary_temporal'} = $Conf{'temporal'};
 	}
 
@@ -1203,7 +1203,7 @@ sub send_buffered_xml_files () {
 	closedir($temp_fh);
 
 	# Read XML files from the secondary temporal directory
-	return unless ($Conf{'secondary_temporal'} ne "never");
+	return unless ($Conf{'secondary_mode'} ne "never");
 	opendir($temp_fh, $Conf{'secondary_temporal'}) or return;
 	swap_servers ();
 	while (my $xml_file = readdir($temp_fh)) {

@@ -107,12 +107,12 @@ final class EventsHistory extends Item
             $data['height'] = 80;
         }
 
-        if ((int) $data['width'] < 10) {
-            $data['width'] = 10;
+        if ((int) $data['width'] < 11) {
+            $data['width'] = 11;
         }
 
-        if ((int) $data['height'] < 5) {
-            $data['height'] = 5;
+        if ((int) $data['height'] < 11) {
+            $data['height'] = 11;
         }
 
         // Use the same HTML output as the old VC.

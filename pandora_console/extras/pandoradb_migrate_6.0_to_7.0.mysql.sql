@@ -392,6 +392,8 @@ ALTER TABLE `tmetaconsole_setup` MODIFY COLUMN `meta_dbuser` text NULL,
 	MODIFY COLUMN `meta_dbport` text NULL,
 	MODIFY COLUMN `meta_dbname` text NULL;
 
+ALTER TABLE `tmetaconsole_setup` ADD COLUMN `server_uid` TEXT NOT NULL default '';
+
 -- ---------------------------------------------------------------------
 -- Table `tprofile_view`
 -- ---------------------------------------------------------------------

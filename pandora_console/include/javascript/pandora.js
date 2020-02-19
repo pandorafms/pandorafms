@@ -1521,8 +1521,10 @@ function paint_graph_status(
     //delete elements
     svg.selectAll("g").remove();
 
-    width_x = 101;
-    height_x = 50;
+    var width_x = 101;
+    var height_x = 50;
+    var legend_width_x = 135;
+    var legend_height_x = 80;
 
     svg
       .append("g")
@@ -1535,8 +1537,8 @@ function paint_graph_status(
       .attr("width", 300)
       .attr("height", 300)
       .append("text")
-      .attr("x", width_x)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x - 20)
       .attr("fill", "black")
       .style("font-family", "arial")
       .style("font-weight", "bold")
@@ -1551,8 +1553,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_normal")
-      .attr("x", width_x + 80)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#82B92E");
@@ -1561,8 +1563,8 @@ function paint_graph_status(
     svg
       .append("g")
       .append("text")
-      .attr("x", width_x + 100)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x + 5)
       .attr("fill", "black")
       .style("font-family", "arial")
       .style("font-weight", "bold")
@@ -1575,8 +1577,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_warning")
-      .attr("x", width_x + 185)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x - 5)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#ffd731");
@@ -1585,8 +1587,8 @@ function paint_graph_status(
     svg
       .append("g")
       .append("text")
-      .attr("x", width_x + 205)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x + 30)
       .attr("fill", "black")
       .style("font-family", "arial")
       .style("font-weight", "bold")
@@ -1599,8 +1601,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_critical")
-      .attr("x", width_x + 285)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x + 20)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#e63c52");
@@ -1624,7 +1626,7 @@ function paint_graph_status(
       .attr("id", "status_rect")
       .attr("x", width_x)
       .attr("y", height_x)
-      .attr("width", 300)
+      .attr("width", 20)
       .attr("height", 200)
       .style("fill", "#82B92E");
 
@@ -1641,7 +1643,7 @@ function paint_graph_status(
           "y",
           height_x + (range_max - min_w) * position - (max_w - min_w) * position
         )
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (max_w - min_w) * position)
         .style("fill", "#ffd731");
     } else {
@@ -1653,7 +1655,7 @@ function paint_graph_status(
         .attr("id", "warning_rect")
         .attr("x", width_x)
         .attr("y", height_x + 200 - (min_w - range_min) * position)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (min_w - range_min) * position)
         .style("fill", "#ffd731");
 
@@ -1665,7 +1667,7 @@ function paint_graph_status(
         .attr("id", "warning_inverse_rect")
         .attr("x", width_x)
         .attr("y", height_x)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr(
           "height",
           (range_max - min_w) * position - (max_w - min_w) * position
@@ -1685,7 +1687,7 @@ function paint_graph_status(
           "y",
           height_x + (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (max_c - min_c) * position)
         .style("fill", "#e63c52");
     } else {
@@ -1697,7 +1699,7 @@ function paint_graph_status(
         .attr("id", "critical_rect")
         .attr("x", width_x)
         .attr("y", height_x + 200 - (min_c - range_min) * position)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (min_c - range_min) * position)
         .style("fill", "#e63c52");
       svg
@@ -1708,7 +1710,7 @@ function paint_graph_status(
         .attr("id", "critical_inverse_rect")
         .attr("x", width_x)
         .attr("y", height_x)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position

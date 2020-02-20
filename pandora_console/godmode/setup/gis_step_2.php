@@ -26,6 +26,10 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 
 require_once 'include/functions_gis.php';
 
+$buttons['gis'] = [
+    'text' => '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=gis').'">'.html_print_image('images/list.png', true, ['title' => __('GIS Maps connections')]).'</a>',
+];
+
 $action = get_parameter('action', 'create_connection_map');
 
 if (is_ajax()) {
@@ -41,7 +45,8 @@ switch ($action) {
             '',
             false,
             '',
-            true
+            true,
+            $buttons
         );
 
         $mapConnection_name = '';
@@ -67,7 +72,8 @@ switch ($action) {
             '',
             false,
             '',
-            true
+            true,
+            $buttons
         );
 
         $idConnectionMap = get_parameter('id_connection_map');

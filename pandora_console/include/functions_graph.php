@@ -2840,7 +2840,8 @@ function graph_sla_slicebar(
         true,
         $ttl,
         false,
-        false
+        false,
+        $date
     );
 }
 

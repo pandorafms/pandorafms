@@ -739,7 +739,8 @@ function flot_slicesbar_graph(
     $not_interactive=0,
     $ttl=1,
     $widgets=false,
-    $show=true
+    $show=true,
+    $date_to=false
 ) {
     global $config;
 
@@ -764,6 +765,7 @@ function flot_slicesbar_graph(
             'widgets'            => $widgets,
             'show'               => $show,
             'return_img_base_64' => true,
+            'date_to'            => $date_to,
         ];
 
         $graph = '<img src="data:image/jpg;base64,';
@@ -860,8 +862,11 @@ function flot_slicesbar_graph(
         $full_legend_date = false;
     }
 
-    $date = get_system_time();
-    $datelimit = (($date - $period));
+    if (!$date_to) {
+        $date_to = get_system_time();
+    }
+
+    $datelimit = (($date_to - $period));
 
     $i = 0;
     $values2 = [];

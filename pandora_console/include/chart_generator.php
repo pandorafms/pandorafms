@@ -293,7 +293,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['not_interactive'],
                 $params['ttl'],
                 $params['widgets'],
-                $params['show']
+                $params['show'],
+                $params['date_to']
             );
         break;
 

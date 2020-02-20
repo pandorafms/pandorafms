@@ -214,6 +214,9 @@ sub pandora_get_sharedconfig ($$) {
 			$pa_config->{"mta_encryption"} = 'none';
 		}
 	}
+
+	# Server identifier
+	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
 }
 
 ##########################################################################

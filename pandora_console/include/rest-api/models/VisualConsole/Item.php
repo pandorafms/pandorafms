@@ -41,6 +41,13 @@ class Item extends CachedModel
      */
     protected static $useHtmlOutput = false;
 
+    /**
+     * Enable the cache index by user id.
+     *
+     * @var boolean
+     */
+    protected static $indexCacheByUser = true;
+
 
     /**
      * Validate the received data structure to ensure if we can extract the
@@ -815,6 +822,14 @@ class Item extends CachedModel
         );
 
         if ($data === false) {
+            // Invalid entry, clean it.
+            self::clearCachedData(
+                [
+                    'vc_id'      => $filter['vc_id'],
+                    'vc_item_id' => $filter['vc_item_id'],
+                    'user_id'    => $filter['user_id'],
+                ]
+            );
             return null;
         }
 
@@ -835,14 +850,19 @@ class Item extends CachedModel
      */
     protected static function saveCachedData(array $filter, array $data): bool
     {
+        global $config;
+        if (static::$indexCacheByUser === true) {
+            $filter['user_id'] = $config['id_user'];
+        }
+
         return \db_process_sql_insert(
             'tvisual_console_elements_cache',
             [
-                'vc_id'      => $filter['vc_id'],
-                'vc_item_id' => $filter['vc_item_id'],
+                'vc_id'      => $data['id_layout'],
+                'vc_item_id' => $data['id'],
                 'user_id'    => $filter['user_id'],
                 'data'       => base64_encode(json_encode($data)),
-                'expiration' => $filter['expiration'],
+                'expiration' => $data['cache_expiration'],
             ]
         ) > 0;
     }

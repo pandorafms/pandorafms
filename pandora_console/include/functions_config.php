@@ -148,7 +148,8 @@ function config_update_config()
 
     $error_update = [];
 
-    $sec2 = get_parameter_get('sec2');
+    $sec2 = get_parameter('sec2');
+
     switch ($sec2) {
         case 'godmode/setup/setup':
             $section_setup = get_parameter('section');
@@ -350,7 +351,7 @@ function config_update_config()
                         $error_update[] = __('Email user');
                     }
 
-                    if (!config_update_value('email_password', get_parameter('email_password'))) {
+                    if (!config_update_value('email_password', io_input_password(get_parameter('email_password')))) {
                         $error_update[] = __('Email password');
                     }
 
@@ -608,7 +609,7 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (!config_update_value('ldap_admin_pass', get_parameter('ldap_admin_pass'))) {
+                    if (!config_update_value('ldap_admin_pass', io_input_password(get_parameter('ldap_admin_pass')))) {
                         $error_update[] = __('Admin LDAP password');
                     }
 
@@ -1315,10 +1316,6 @@ function config_update_config()
                         $error_update[] = __('PDF font size (px)');
                     }
 
-                    if (!config_update_value('interval_description', (string) get_parameter('interval_description', 'large'))) {
-                        $error_update[] = __('Interval description');
-                    }
-
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
                         $error_update[] = __('Custom report front');
                     }
@@ -1961,6 +1958,14 @@ function config_process_config()
       * Parse the ACL IP list for access API
       */
 
+    $temp_list_ACL_IPs_for_API = [];
+    if (isset($config['list_ACL_IPs_for_API'])) {
+        if (!empty($config['list_ACL_IPs_for_API'])) {
+            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+        }
+    }
+
+    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
     /*
@@ -2867,14 +2872,6 @@ function config_process_config()
         config_update_value('font_size_item_report', 2);
     }
 
-    if (!isset($config['global_font_size_report'])) {
-        config_update_value('global_font_size_report', 14);
-    }
-
-    if (!isset($config['interval_description'])) {
-        config_update_value('interval_description', 'large');
-    }
-
     if (!isset($config['custom_report_front_font'])) {
         config_update_value('custom_report_front_font', 'FreeSans.ttf');
     }
@@ -3030,15 +3027,6 @@ function config_process_config()
 
     // Finally, check if any value was overwritten in a form.
     config_update_config();
-
-    $temp_list_ACL_IPs_for_API = [];
-    if (isset($config['list_ACL_IPs_for_API'])) {
-        if (!empty($config['list_ACL_IPs_for_API'])) {
-            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
-        }
-    }
-
-    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
 }
 
 

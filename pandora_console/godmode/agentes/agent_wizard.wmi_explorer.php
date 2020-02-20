@@ -429,8 +429,7 @@ if ($create_modules) {
 
 echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
 echo "<form method='post' id='wmi_form'
-     action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&
-     tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
+     action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
 
 $table->width = '100%';
 $table->cellpadding = 0;
@@ -533,8 +532,7 @@ echo '</form>';
 if ($wmiexplore && !$fail) {
     echo '<br><span id ="none_text" style="display: none;">'.__('None').'</span>';
     echo "<form method='post'
-         action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente
-         &tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
+         action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$id_agent'>";
     echo '<span id="form_interfaces">';
 
     html_print_input_hidden('create_modules', 1);

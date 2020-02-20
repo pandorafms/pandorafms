@@ -41,6 +41,13 @@ class Item extends CachedModel
      */
     protected static $useHtmlOutput = false;
 
+    /**
+     * Enable the cache index by user id.
+     *
+     * @var boolean
+     */
+    protected static $indexCacheByUser = true;
+
 
     /**
      * Validate the received data structure to ensure if we can extract the
@@ -815,6 +822,14 @@ class Item extends CachedModel
         );
 
         if ($data === false) {
+            // Invalid entry, clean it.
+            self::clearCachedData(
+                [
+                    'vc_id'      => $filter['vc_id'],
+                    'vc_item_id' => $filter['vc_item_id'],
+                    'user_id'    => $filter['user_id'],
+                ]
+            );
             return null;
         }
 
@@ -835,14 +850,19 @@ class Item extends CachedModel
      */
     protected static function saveCachedData(array $filter, array $data): bool
     {
+        global $config;
+        if (static::$indexCacheByUser === true) {
+            $filter['user_id'] = $config['id_user'];
+        }
+
         return \db_process_sql_insert(
             'tvisual_console_elements_cache',
             [
-                'vc_id'      => $filter['vc_id'],
-                'vc_item_id' => $filter['vc_item_id'],
+                'vc_id'      => $data['id_layout'],
+                'vc_item_id' => $data['id'],
                 'user_id'    => $filter['user_id'],
                 'data'       => base64_encode(json_encode($data)),
-                'expiration' => $filter['expiration'],
+                'expiration' => $data['cache_expiration'],
             ]
         ) > 0;
     }
@@ -1051,6 +1071,19 @@ class Item extends CachedModel
             $vcId = $linkedVisualConsole['linkedLayoutId'];
             // The layout can be from another node.
             $linkedLayoutNodeId = $linkedVisualConsole['linkedLayoutNodeId'];
+
+            // Check ACL.
+            $visualConsole = VC::fromDB(['id' => $vcId]);
+            $visualConsoleData = $visualConsole->toArray();
+            $vcGroupId = $visualConsoleData['groupId'];
+
+            $aclRead = \check_acl($config['id_user'], $vcGroupId, 'VR');
+            // To build the link to another visual console
+            // you must have read permissions of the visual console
+            // with which it is linked.
+            if ($aclRead === 0) {
+                return null;
+            }
 
             if (empty($linkedLayoutNodeId) === true && \is_metaconsole()) {
                 /*
@@ -1885,16 +1918,18 @@ class Item extends CachedModel
                     ],
                 ];
 
-                // Link enabled.
-                $inputs[] = [
-                    'label'     => __('Link enabled'),
-                    'arguments' => [
-                        'name'  => 'isLinkEnabled',
-                        'id'    => 'isLinkEnabled',
-                        'type'  => 'switch',
-                        'value' => $values['isLinkEnabled'],
-                    ],
-                ];
+                if ($values['type'] !== LABEL) {
+                    // Link enabled.
+                    $inputs[] = [
+                        'label'     => __('Link enabled'),
+                        'arguments' => [
+                            'name'  => 'isLinkEnabled',
+                            'id'    => 'isLinkEnabled',
+                            'type'  => 'switch',
+                            'value' => $values['isLinkEnabled'],
+                        ],
+                    ];
+                }
 
                 // Show on top.
                 $inputs[] = [
@@ -2232,7 +2267,19 @@ class Item extends CachedModel
     {
         // LinkConsoleInputGroup.
         $fields = self::getAllVisualConsole($values['vCId']);
-        \array_unshift($fields, ['id' => 0, 'name' => __('None')]);
+
+        if ($fields === false) {
+            $fields = [];
+        } else {
+            $fields = \array_reduce(
+                $fields,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+        }
 
         $getAllVisualConsoleValue = $values['linkedLayoutId'];
         if (\is_metaconsole() === true) {
@@ -2246,12 +2293,14 @@ class Item extends CachedModel
         $inputs[] = [
             'label'     => __('Linked visual console'),
             'arguments' => [
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'getAllVisualConsole',
-                'selected' => $getAllVisualConsoleValue,
-                'script'   => 'linkedVisualConsoleChange()',
-                'return'   => true,
+                'type'          => 'select',
+                'fields'        => $fields,
+                'name'          => 'getAllVisualConsole',
+                'selected'      => $getAllVisualConsoleValue,
+                'script'        => 'linkedVisualConsoleChange()',
+                'return'        => true,
+                'nothing'       => __('None'),
+                'nothing_value' => 0,
             ],
         ];
 

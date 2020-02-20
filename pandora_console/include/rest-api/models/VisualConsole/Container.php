@@ -413,7 +413,7 @@ final class Container extends Model
             try {
                 array_push($items, $class::fromDB($data));
             } catch (\Throwable $e) {
-                // TODO: Log this?
+                error_log('VC[Container]: '.$e->getMessage());
             }
         }
 

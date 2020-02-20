@@ -3714,6 +3714,12 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $params['value'] = $agent_name;
             $params['javascript_is_function_select'] = true;
 
+            if (isset($data['get_only_string_modules']) === true
+                && $data['get_only_string_modules'] === true
+            ) {
+                $params['get_only_string_modules'] = $data['get_only_string_modules'];
+            }
+
             if (isset($data['module_input']) === true
                 && $data['module_input'] === true
             ) {
@@ -3755,12 +3761,18 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0 => __('Select an Agent first'),
                 ];
             } else {
+                $string_filter .= '';
+                if ($data['get_only_string_modules'] === true) {
+                    $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
+                }
+
                 $sql = sprintf(
                     'SELECT id_agente_modulo, nombre
                     FROM tagente_modulo
                     WHERE id_agente = %d
-                    AND delete_pending = 0',
-                    $data['agent_id']
+                    AND delete_pending = 0 %s',
+                    $data['agent_id'],
+                    $string_filter
                 );
 
                 if (is_metaconsole() === true) {

@@ -200,10 +200,16 @@ if (!is_metaconsole()) {
     html_print_input_hidden('metaconsole', 1);
 }
 
+$edit_capable = (bool) (
+    check_acl($config['id_user'], 0, 'VM')
+    || check_acl($config['id_user'], 0, 'VW')
+);
+
 if ($pure === false) {
-    echo '<div id ="edit-vc">';
-    echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
-    echo '<div>';
+    if ($edit_capable === true) {
+        echo '<div id ="edit-vc">';
+        echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
+        echo '<div>';
         visual_map_print_button_editor_refactor(
             'STATIC_GRAPH',
             __('Static Image'),
@@ -278,24 +284,25 @@ if ($pure === false) {
         enterprise_hook(
             'enterprise_visual_map_editor_print_toolbox_refactor'
         );
-    echo '</div>';
-    echo '<div class="visual-console-copy-delete">';
-        visual_map_print_button_editor_refactor(
-            'button_delete',
-            __('Delete Item'),
-            'delete_item delete_min',
-            true
-        );
-        visual_map_print_button_editor_refactor(
-            'button_copy',
-            __('Copy Item'),
-            'copy_item',
-            true
-        );
-    echo '</div>';
-    echo '</div>';
-    echo html_print_checkbox_switch('edit-mode', 1, false, true);
-    echo '</div>';
+        echo '</div>';
+        echo '<div class="visual-console-copy-delete">';
+            visual_map_print_button_editor_refactor(
+                'button_delete',
+                __('Delete Item'),
+                'delete_item delete_min',
+                true
+            );
+            visual_map_print_button_editor_refactor(
+                'button_copy',
+                __('Copy Item'),
+                'copy_item',
+                true
+            );
+        echo '</div>';
+        echo '</div>';
+        echo html_print_checkbox_switch('edit-mode', 1, false, true);
+        echo '</div>';
+    }
 }
 
 echo '<div id="visual-console-container"></div>';
@@ -502,6 +509,9 @@ ui_require_css_file('form');
         handleUpdate
     );
 
+<?php
+if ($edit_capable === true) {
+    ?>
     // Enable/disable the edition mode.
     $('input[name=edit-mode]').change(function(event) {
         if ($(this).prop('checked')) {
@@ -510,10 +520,14 @@ ui_require_css_file('form');
             $('#edit-controls').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
+            visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
             $('#edit-controls').css('visibility', 'hidden');
         }
     });
+    <?php
+}
+?>
 
     // Update the data fetch interval.
     $('select#vc-refr').change(function(event) {

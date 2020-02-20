@@ -3752,7 +3752,7 @@ function reporting_alert_report_module($report, $content)
     );
 
     $return['title'] = io_safe_output($content['name']);
-    $return['subtitle'] = io_safe_output($agent_name.' - '.$module_name);
+    $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -3958,7 +3958,7 @@ function reporting_monitor_report($report, $content)
     );
 
     $return['title'] = io_safe_output($content['name']);
-    $return['subtitle'] = io_safe_output($agent_name.' - '.$module_name);
+    $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
@@ -4152,7 +4152,7 @@ function reporting_prediction_date($report, $content)
     );
 
     $return['title'] = io_safe_output($content['name']);
-    $return['subtitle'] = io_safe_output($agent_name.' - '.$module_name);
+    $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -4203,7 +4203,7 @@ function reporting_projection_graph(
     $agent_name = io_safe_output(modules_get_agentmodule_agent_alias($content['id_agent_module']));
 
     $return['title']       = io_safe_output($content['name']);
-    $return['subtitle']    = io_safe_output($agent_name.' - '.$module_name);
+    $return['subtitle']    = $agent_name.' - '.$module_name;
     $return['description'] = io_safe_output($content['description']);
     $return['date']        = reporting_get_date_text($report, $content);
     $return['label']       = (isset($content['style']['label'])) ? $content['style']['label'] : '';

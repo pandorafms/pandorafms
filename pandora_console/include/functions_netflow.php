@@ -1673,7 +1673,7 @@ function netflow_get_top_data(
     // Get the command to call nfdump.
     $agg_command = sprintf(
         '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
-        netflow_get_command($filter),
+        io_safe_output(netflow_get_command($filter)),
         $max,
         $aggregate,
         date($nfdump_date_format, $start_date),

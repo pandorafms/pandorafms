@@ -903,7 +903,7 @@ function netflow_get_command($filter)
  *
  * @return string Command line argument string.
  */
-function netflow_get_filter_arguments($filter)
+function netflow_get_filter_arguments($filter, $safe_input=false)
 {
     // Advanced filter.
     $filter_args = '';
@@ -1015,7 +1015,7 @@ function netflow_get_filter_arguments($filter)
     }
 
     if ($filter_args != '') {
-        $filter_args = io_safe_input(escapeshellarg($filter_args));
+        $filter_args = ($safe_input === true) ? io_safe_input(escapeshellarg($filter_args)) : escapeshellarg($filter_args);
     }
 
     return $filter_args;

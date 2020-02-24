@@ -302,7 +302,6 @@ if (defined('METACONSOLE')) {
         __('Users control filter'),
         __('Toggle filter(s)'),
         '',
-        '',
         !$search
     );
 }

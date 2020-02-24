@@ -276,7 +276,7 @@ final class ModuleGraph extends Item
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
-        $imageOnly = true;
+        $imageOnly = false;
 
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
@@ -344,7 +344,10 @@ final class ModuleGraph extends Item
                 'modules_series' => $customGraph['modules_series'],
             ];
 
-            $imgbase64 = 'data:image/jpg;base64,';
+            if ($imageOnly !== false) {
+                $imgbase64 = 'data:image/jpg;base64,';
+            }
+
             $imgbase64 .= \graphic_combined_module(
                 false,
                 $params,
@@ -376,7 +379,10 @@ final class ModuleGraph extends Item
                 'show_title'         => false,
             ];
 
-            $imgbase64 = 'data:image/jpg;base64,';
+            if ($imageOnly !== false) {
+                $imgbase64 = 'data:image/jpg;base64,';
+            }
+
             $imgbase64 .= \grafico_modulo_sparse($params);
         }
 
@@ -411,9 +417,16 @@ final class ModuleGraph extends Item
             );
         }
 
-        $data[0] = __('None');
+        $data = array_reduce(
+            $data,
+            function ($carry, $item) {
+                $carry[$item['id_graph']] = $item['name'];
+                return $carry;
+            },
+            []
+        );
 
-        return array_reverse($data);
+        return $data;
     }
 
 
@@ -444,6 +457,10 @@ final class ModuleGraph extends Item
             // Default values.
             if (isset($values['period']) === false) {
                 $values['period'] = 3600;
+            }
+
+            if (isset($values['showLegend']) === false) {
+                $values['showLegend'] = true;
             }
 
             // Background color.
@@ -554,11 +571,13 @@ final class ModuleGraph extends Item
                 'hidden'    => $hiddenCustom,
                 'label'     => __('Custom graph'),
                 'arguments' => [
-                    'type'     => 'select',
-                    'fields'   => $fields,
-                    'name'     => 'customGraphId',
-                    'selected' => $values['customGraphId'],
-                    'return'   => true,
+                    'type'          => 'select',
+                    'fields'        => $fields,
+                    'name'          => 'customGraphId',
+                    'selected'      => $values['customGraphId'],
+                    'return'        => true,
+                    'nothing'       => __('None'),
+                    'nothing_value' => 0,
                 ],
             ];
 

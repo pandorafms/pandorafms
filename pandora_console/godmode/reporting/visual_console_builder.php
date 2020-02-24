@@ -783,10 +783,13 @@ $buttons['wizard'] = [
     'active' => false,
     'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand.png', true, ['title' => __('Wizard')]).'</a>',
 ];
-$buttons['editor'] = [
-    'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder')]).'</a>',
-];
+if ($config['legacy_vc']) {
+    $buttons['editor'] = [
+        'active' => false,
+        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder')]).'</a>',
+    ];
+}
+
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="'.$url_view.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>',

@@ -175,12 +175,15 @@ function d3_bullet_chart(
     $output = '';
     $output .= include_javascript_d3(true);
 
+    $output .= '<script language="javascript" type="text/javascript">';
+    $output .= file_get_contents($homeurl.'include/graphs/bullet.js');
+    $output .= '</script>';
+
     $id_bullet = uniqid();
     $font = array_shift(explode('.', array_pop(explode('/', $font))));
 
     $output .= '<div id="bullet_graph_'.$id_bullet.'" class="bullet" style="overflow: hidden; width: '.$width.'px; margin-left: auto; margin-right: auto;"></div>
 		<style>
-			
 			.bullet_graph {
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 				margin: auto;
@@ -188,7 +191,7 @@ function d3_bullet_chart(
 				position: relative;
 				width: 100%;
 			}
-			
+
 			.bullet { font: 7px sans-serif; }
 			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
 			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
@@ -204,14 +207,13 @@ function d3_bullet_chart(
 			.bullet g text { font-size:'.$font_size.'pt;}
 
 		</style>
-		<script src="'.$homeurl.'include/graphs/bullet.js"></script>
 		<script language="javascript" type="text/javascript">
-		
+
 		var margin = {top: 5, right: 40, bottom: 20, left: 120};
-		
-		width = ('.$width.'+10);
-		height = '.$height.'- margin.top - margin.bottom;
-		
+
+		var width = ('.$width.'+10);
+		var height = '.$height.'- margin.top - margin.bottom;
+
 		var chart = d3.bullet()
 			.width(width)
 			.height(height)
@@ -240,7 +242,6 @@ function d3_bullet_chart(
     $output .= 'var data = ['.implode(',', $temp).'];
 	';
     $output .= '
-		
 		var svg = d3.select("#bullet_graph_'.$id_bullet.'").selectAll("svg")
 			.data(data)
 			.enter().append("svg")
@@ -250,33 +251,30 @@ function d3_bullet_chart(
 			.append("g")
 				.attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
 				.call(chart);
-			 
-		
+
 		var title = svg.append("g")
 			.style("text-anchor", "end")
 			.attr("transform", "translate(-10, 15)");
-		
+
 		title.append("text")
 			.attr("class", "'.$font.'")
 			.text(function(d) { return d.title; });
-		
+
 		title.append("text")
-				.attr("class", "subtitle")
-				.attr("dy", "1em")
-				.text(function(d) { return d.subtitle; });
-			
+			.attr("class", "subtitle")
+			.attr("dy", "1em")
+			.text(function(d) { return d.subtitle; });
+
 		$(".tick>text").each(function() {
-			
-			label = $(this).text().replace(/,/g,"");
+			var label = $(this).text().replace(/,/g,"");
 			label = parseFloat(label);
-			text = label.toLocaleString();
+			var text = label.toLocaleString();
 			if ( label >= 1000000)
 				text = text.substring(0,3) + "M";
 			else if (label >= 100000)
 				text = text.substring(0,3) + "K";
 			else if (label >= 1000)
 				text = text.substring(0,2) + "K";
-			
 			$(this).text(text);
 		});
 		</script>';

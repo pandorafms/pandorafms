@@ -102,6 +102,19 @@ final class EventsHistory extends Item
             throw new \InvalidArgumentException('missing agent Id');
         }
 
+        if ((int) $data['width'] === 0 && (int) $data['height'] === 0) {
+            $data['width'] = 420;
+            $data['height'] = 80;
+        }
+
+        if ((int) $data['width'] < 11) {
+            $data['width'] = 11;
+        }
+
+        if ((int) $data['height'] < 11) {
+            $data['height'] = 11;
+        }
+
         // Use the same HTML output as the old VC.
         $html = \graph_graphic_moduleevents(
             $agentId,
@@ -111,7 +124,7 @@ final class EventsHistory extends Item
             static::extractMaxTime($data),
             '',
             true,
-            2
+            1
         );
 
         $data['html'] = $html;

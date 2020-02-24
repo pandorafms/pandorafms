@@ -4,6 +4,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
+  margin-top: 5px;
 }
 
 .visual-console-item {
@@ -699,7 +700,8 @@ li#li-timeZone-item > select:not(:first-child) {
 }
 
 div.label,
-div.simple-value {
+div.simple-value,
+div.module-graph {
   display: inline-table;
   min-width: -webkit-fit-content;
   min-width: -moz-fit-content;
@@ -707,6 +709,10 @@ div.simple-value {
   min-height: -webkit-fit-content;
   min-height: -moz-fit-content;
   min-height: fit-content;
+}
+
+.textDecorationNone:hover {
+  text-decoration: none;
 }
 
 /* Styles for the solid icons */

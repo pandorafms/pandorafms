@@ -45,6 +45,21 @@ function createVisualConsole(
           visualConsoleId,
           function(error, data) {
             if (error) {
+              //Remove spinner change VC.
+              document
+                .getElementById("visual-console-container")
+                .classList.remove("is-updating");
+
+              var div = document
+                .getElementById("visual-console-container")
+                .querySelector(".div-visual-console-spinner");
+
+              if (div !== null) {
+                var parent = div.parentElement;
+                if (parent !== null) {
+                  parent.removeChild(div);
+                }
+              }
               console.log(
                 "[ERROR]",
                 "[VISUAL-CONSOLE-CLIENT]",

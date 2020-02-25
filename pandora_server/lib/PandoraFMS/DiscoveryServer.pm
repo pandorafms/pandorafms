@@ -598,6 +598,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
         # Add modules.
         if (ref($modules) eq "ARRAY") {
             foreach my $module (@{$modules}) {
+                next unless ref($module) eq 'HASH';
                 # Translate data structure to simulate XML parser return.
                 my %data_translated = map { $_ => [ $module->{$_} ] } keys %{$module};
 

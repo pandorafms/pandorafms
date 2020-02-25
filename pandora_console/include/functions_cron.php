@@ -458,6 +458,7 @@ function cron_list_table()
         $table->head[5] = __('Last run');
         $table->head[6] = __('Group');
         $table->head[7] = __('Actions');
+        $table->cellstyle[0][2] = 'word-break: break-word;';
         $table->align[7] = 'left';
 
         foreach ($defined_tasks as $task) {

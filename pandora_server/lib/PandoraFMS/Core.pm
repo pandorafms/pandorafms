@@ -4182,7 +4182,9 @@ sub process_data ($$$$$$$) {
 
 	# Not a number
 	if (! is_numeric ($data)) {
-		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
+		my $d = $data_object->{'data'};
+		$d = '' unless defined ($data_object->{'data'});
+		logger($pa_config, "Received invalid data '" . $d . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		return undef;
 	}
 

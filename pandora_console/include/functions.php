@@ -3081,8 +3081,6 @@ function array2XML($data, $root=null, $xml=null)
             $node = $xml->addChild($key);
             array2XML($value, $root, $node);
         } else {
-            $value = htmlentities($value);
-
             if (!is_numeric($value) && !is_bool($value)) {
                 if (!empty($value)) {
                     $xml->addChild($key, $value);

@@ -1201,12 +1201,16 @@ INSERT INTO `tskin` VALUES (2,'Legacy', 'legacy', 'Skin&#x20;of&#x20;the&#x20;vi
 --
 INSERT INTO `tcollection` VALUES (1,'Apache&#x20;Enterprise&#x20;Plugin','apache_plugin',0,'Apache&#x20;Enterprise&#x20;Plugin&#x20;to&#x20;monitor&#x20;Apache&#x20;web&#x20;server&#x20;using&#x20;a&#x20;Perl&#x20;script.',0);
 
-INSERT INTO `tpolicies` VALUES (1,'Basic&#x20;Windows&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitor&#x20;Windows&#x20;Systems.&#x0d;&#x0a;Requires&#x20;Powershell&#x20;3+.',2,0);
-INSERT INTO `tpolicies` VALUES (2,'Basic&#x20;Linux&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitor:&#x20;&#x0d;&#x0a;-&#x20;CentOS&#x0d;&#x0a;-&#x20;RedHat&#x0d;&#x0a;-&#x20;Debian&#x0d;&#x0a;-&#x20;SUSE',2,0);
-INSERT INTO `tpolicies` VALUES (3,'Basic&#x20;Solaris&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitor&#x20;Solaris&#x20;systems.',2,0);
-INSERT INTO `tpolicies` VALUES (4,'Basic&#x20;AIX&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;AIX&#x20;systems.',2,0);
-INSERT INTO `tpolicies` VALUES (5,'Basic&#x20;HP-UX&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;HP/UX&#x20;systems.',2,0);
-INSERT INTO `tpolicies` VALUES (6,'Basic&#x20;Remote&#x20;Checks','Basic&#x20;Remote&#x20;Checks&#x20;&#40;ping,&#x20;latency,&#x20;ports&#41;.',9,0);
+
+INSERT INTO `tpolicies` VALUES (1,'Basic&#x20;Web&#x20;Checks','Basic&#x20;checks&#x20;to&#x20;monitoring&#x20;webs',13,0,0);
+INSERT INTO `tpolicies` VALUES (2,'Basic&#x20;Windows&#x20;Local&#x20;Monitoring','Basic&#x20;checks&#x20;to&#x20;monitoring&#x20;Windows&#x20;Systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (3,'Basic&#x20;Centos/RedHat&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;Centos/RedHat&#x20;systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (4,'Basic&#x20;SuSe&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;SuSe&#x20;systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (5,'Basic&#x20;Debian/Ubuntu&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;Debian/Ubuntu&#x20;systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (6,'Basic&#x20;AIX&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;AIX&#x20;systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (7,'Basic&#x20;HP-UX&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;HP/UX&#x20;systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (8,'Basic&#x20;Solaris&#x20;Local&#x20;Monitoring','Basic&#x20;local&#x20;checks&#x20;to&#x20;monitoring&#x20;Solaris&#x20;systems',2,0,0);
+INSERT INTO `tpolicies` VALUES (9,'Basic&#x20;Remote&#x20;Checks','Basic&#x20;Remote&#x20;Checks&#x20;&#40;ping,&#x20;latency,&#x20;ports..&#41;',2,0,0);
 
 INSERT INTO `tpolicy_modules` VALUES (1,1,'module_begin&#x0a;module_name&#x20;Bytes&#x20;per&#x20;second&#x20;&#40;Received&#41;&#x0a;module_type&#x20;generic_data_inc&#x0a;module_exec&#x20;powershell&#x20;-c&#x20;&quot;Get-NetAdapterStatistics&#x20;|Measure-Object&#x20;-Sum&#x20;ReceivedBytes&#x20;|Select&#x20;-ExpandProperty&#x20;Sum&quot;&#x0a;module_end&#x0a;&#x0a;&#x0a;&#x0a;',4,'','Bytes&#x20;per&#x20;second&#x20;&#40;Received&#41;','',0,0,1,'',0,'','','','',1,1,1,0,0,NULL,NULL,NULL,0,0.000000000000000,0,0,0,'',1,0.00,0.00,'',0.00,0.00,'',0,NULL,NULL,NULL,0,0,0,'','','',0,0,0,0,0,'* * * * *',NULL,'{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 INSERT INTO `tpolicy_modules` VALUES (2,1,'module_begin&#x0a;module_name&#x20;Bytes&#x20;per&#x20;second&#x20;&#40;Sent&#41;&#x0a;module_type&#x20;generic_data_inc&#x0a;module_exec&#x20;powershell&#x20;-c&#x20;&quot;Get-NetAdapterStatistics&#x20;|Measure-Object&#x20;-Sum&#x20;SentBytes&#x20;|Select&#x20;-ExpandProperty&#x20;Sum&quot;&#x0a;module_end&#x0a;&#x0a;&#x0a;&#x0a;&#x0a;',4,'','Bytes&#x20;per&#x20;second&#x20;&#40;Sent&#41;','',0,0,1,'',0,'','','','',1,1,1,0,0,NULL,NULL,NULL,0,0.000000000000000,0,0,0,'',1,0.00,0.00,'',0.00,0.00,'',0,NULL,NULL,NULL,0,0,0,'','','',0,0,0,0,0,'* * * * *',NULL,'{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);

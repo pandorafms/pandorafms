@@ -160,6 +160,8 @@ CREATE TABLE IF NOT EXISTS `tpolicies` (
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+ALTER TABLE `tpolicies` ADD COLUMN `force_apply` tinyint(1) default 0;
+
 -- -----------------------------------------------------
 -- Table `tpolicy_alerts`
 -- -----------------------------------------------------

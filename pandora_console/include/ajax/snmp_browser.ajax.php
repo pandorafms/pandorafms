@@ -15,10 +15,13 @@ require_once $config['homedir'].'/include/functions_config.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 require_once $config['homedir'].'/include/functions_network_components.php';
 
+
 global $config;
 
 if (is_ajax()) {
     ob_clean();
+
+    $method = (string) get_parameter('method', '');
     $action = (string) get_parameter('action', '');
     $target_ip = (string) get_parameter('target_ip', '');
     $community = (string) get_parameter('community', '');
@@ -29,110 +32,200 @@ if (is_ajax()) {
     $snmp3_auth_pass = io_safe_output(get_parameter('snmp3_browser_auth_pass'));
     $snmp3_privacy_method = get_parameter('snmp3_browser_privacy_method');
     $snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_browser_privacy_pass'));
-
+    $module_target = get_parameter('module_target', '');
     $targets_oids = get_parameter('oids', '');
-
+    $return_id = get_parameter('return_id', false);
     $custom_action = get_parameter('custom_action', '');
+
+    if (!is_array($targets_oids)) {
+        $targets_oids = explode(',', $targets_oids);
+    }
+
     if ($custom_action != '') {
         $custom_action = urldecode(base64_decode($custom_action));
     }
 
-    if ($action == 'create_modules_snmp') {
-        $fail_modules = [];
-        foreach ($targets_oids as $key => $target_oid) {
-            $oid = snmp_browser_get_oid(
+    // SNMP browser.
+    if ($action == 'snmptree') {
+        $starting_oid = (string) get_parameter('starting_oid', '.');
+
+
+            $snmp_tree = snmp_browser_get_tree(
                 $target_ip,
                 $community,
-                htmlspecialchars_decode($target_oid),
+                $starting_oid,
                 $snmp_version,
                 $snmp3_auth_user,
                 $snmp3_security_level,
                 $snmp3_auth_method,
                 $snmp3_auth_pass,
                 $snmp3_privacy_method,
-                $snmp3_privacy_pass
+                $snmp3_privacy_pass,
+                $server_to_exec
+            );
+        if (! is_array($snmp_tree)) {
+            echo $snmp_tree;
+        } else {
+            snmp_browser_print_tree(
+                $snmp_tree,
+                // Id.
+                0,
+                // Depth.
+                0,
+                // Last.
+                0,
+                // Last_array.
+                [],
+                // Sufix.
+                false,
+                // Checked.
+                [],
+                // Return.
+                false,
+                // Descriptive_ids.
+                false,
+                // Previous_id.
+                ''
             );
 
+            // Div for error/succes dialog.
+            $output .= '<div id="snmp_result_msg" style="display:none"></div>';
 
-            $name_check = db_get_value(
-                'name',
-                'tnetwork_component',
-                'name',
-                $oid['oid']
-            );
+            // Dialog error.
+            $output .= '<div id="dialog_error" style="display:none" title="'.__('SNMP modules').'">';
+            $output .= '<div>';
+            $output .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+            $output .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+            $output .= "<p style='font-family:Verdana; font-size:12pt;margin-bottom: 0px'>".__('Error creating the following modules:').'</p>';
+            $output .= "<p id='error_text' style='font-family:Verdana; font-size:12pt;'></p>";
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
 
-            if (empty($oid['description'])) {
-                $description = '';
-            } else {
-                $description = io_safe_input($oid['description']);
-            }
+            // Dialog success.
+            $output .= '<div id="dialog_success" style="display: none" title="'.__('SNMP modules').'">';
+            $output .= '<div>';
+            $output .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+            $output .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+            $output .= "<p style='font-family:Verdana; font-size:12pt;'>".__('Modules successfully created').'</p>';
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
 
-            if (!$name_check) {
-                $id = network_components_create_network_component(
-                    $oid['oid'],
-                    17,
-                    1,
-                    [
-                        'description'           => $description,
-                        'module_interval'       => 300,
-                        'max'                   => 0,
-                        'min'                   => 0,
-                        'tcp_send'              => $snmp_version,
-                        'tcp_rcv'               => '',
-                        'tcp_port'              => 0,
-                        'snmp_oid'              => $oid['numeric_oid'],
-                        'snmp_community'        => $community,
-                        'id_module_group'       => 3,
-                        'id_modulo'             => 2,
-                        'id_plugin'             => 0,
-                        'plugin_user'           => '',
-                        'plugin_pass'           => '',
-                        'plugin_parameter'      => '',
-                        'macros'                => '',
-                        'max_timeout'           => 0,
-                        'max_retries'           => 0,
-                        'history_data'          => '',
-                        'dynamic_interval'      => 0,
-                        'dynamic_max'           => 0,
-                        'dynamic_min'           => 0,
-                        'dynamic_two_tailed'    => 0,
-                        'min_warning'           => 0,
-                        'max_warning'           => 0,
-                        'str_warning'           => '',
-                        'min_critical'          => 0,
-                        'max_critical'          => 0,
-                        'str_critical'          => '',
-                        'min_ff_event'          => 0,
-                        'custom_string_1'       => '',
-                        'custom_string_2'       => '',
-                        'custom_string_3'       => '',
-                        'post_process'          => 0,
-                        'unit'                  => '',
-                        'wizard_level'          => 'nowizard',
-                        'macros'                => '',
-                        'critical_instructions' => '',
-                        'warning_instructions'  => '',
-                        'unknown_instructions'  => '',
-                        'critical_inverse'      => 0,
-                        'warning_inverse'       => 0,
-                        'id_category'           => 0,
-                        'tags'                  => '',
-                        'disabled_types_event'  => '{"going_unknown":1}',
-                        'min_ff_event_normal'   => 0,
-                        'min_ff_event_warning'  => 0,
-                        'min_ff_event_critical' => 0,
-                        'ff_type'               => 0,
-                        'each_ff'               => 0,
-                    ]
-                );
-            }
-
-            if (empty($id)) {
-                array_push($fail_modules, $name_check);
-            }
+            echo $output;
         }
+
+
+        return;
     }
 
-    echo json_encode($fail_modules);
-    return;
+    if ($action == 'snmpget') {
+        // SNMP get.
+        $target_oid = htmlspecialchars_decode(get_parameter('oid', ''));
+        $custom_action = get_parameter('custom_action', '');
+        if ($custom_action != '') {
+            $custom_action = urldecode(base64_decode($custom_action));
+        }
+
+        $oid = snmp_browser_get_oid(
+            $target_ip,
+            $community,
+            $target_oid,
+            $snmp_version,
+            $snmp3_auth_user,
+            $snmp3_security_level,
+            $snmp3_auth_method,
+            $snmp3_auth_pass,
+            $snmp3_privacy_method,
+            $snmp3_privacy_pass,
+            $server_to_exec
+        );
+
+        snmp_browser_print_oid(
+            $oid,
+            $custom_action,
+            false,
+            $community,
+            $snmp_version
+        );
+        return;
+    }
+
+    if ($method == 'snmp_browser_create_modules') {
+        // Get target ids from form.
+        $id_items = get_parameter('id_item2', null);
+        if (!is_null($id_items)) {
+            $id_target = explode(',', $id_items[0]);
+        }
+
+        $snmp_extradata = get_parameter('snmp_extradata', '');
+
+        if (!is_array($snmp_extradata)) {
+            // Decode SNMP values.
+            $snmp_extradata = json_decode(io_safe_output($snmp_extradata), true);
+        }
+
+
+        foreach ($snmp_extradata as $snmp_conf) {
+            $snmp_conf_values[$snmp_conf['name']] = $snmp_conf['value'];
+        }
+
+        $fail_modules = snmp_browser_create_modules_snmp($module_target, $snmp_conf_values, $id_target);
+
+        // Return fail modules for error/success message.
+        echo json_encode($fail_modules);
+        exit;
+    }
+
+    if ($method == 'snmp_browser_print_create_module_massive') {
+        // Get SNMP conf vaues from modal onshow extradata.
+        $snmp_extradata = get_parameter('extradata', '');
+
+        $return = snmp_browser_print_create_module_massive($module_target, $snmp_extradata, true);
+        echo $return;
+        exit;
+    }
+
+    if ($method == 'snmp_browser_print_create_policy') {
+        $return = snmp_browser_print_create_policy();
+        echo $return;
+        exit;
+    }
+
+    if ($method == 'snmp_browser_create_policy') {
+        enterprise_include_once('include/functions_policies.php');
+
+        $policy_name = get_parameter('name', '');
+        $policy_id_group = get_parameter('id_group', 0);
+        $policy_description = get_parameter('description', '');
+        $values = [
+            'id_group'    => $policy_id_group,
+            'description' => $policy_description,
+
+        ];
+
+        // Check if policy exist.
+        $policy_exists = policies_get_id($policy_name);
+        if ($policy_exists != false) {
+             $id_policy = 0;
+        } else {
+            $id_policy = (boolean) policies_create_policy($policy_name, $values);
+        }
+
+
+        $return = [
+            'error' => (int) $id_policy,
+            'title' => [
+                __('Failed'),
+                __('Success'),
+            ],
+            'text'  => [
+                ui_print_error_message(__('Failed to create policy'), '', true),
+                ui_print_success_message(__('Policy created succesfully'), '', true),
+            ],
+        ];
+
+        echo json_encode($return);
+        exit;
+    }
 }

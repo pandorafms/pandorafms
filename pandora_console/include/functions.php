@@ -4999,6 +4999,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'setup_module_library_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Librer.C3.ADa_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Module_library';
+            }
+        break;
+
         case 'diagnostic_tool_tab':
             if ($es) {
                 $result .= 'Gestion_y_Administracion&printable=yes#Diagnostic_tool';
@@ -5124,6 +5132,14 @@ function get_help_info($section_name)
                 $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
             } else {
                 $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
+            }
+        break;
+
+        case 'module_library':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Librer.C3.ADa_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Module_library';
             }
         break;
 

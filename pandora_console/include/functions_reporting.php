@@ -5140,7 +5140,7 @@ function reporting_sql($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
-    if ($config['metaconsole']) {
+    if ($config['metaconsole'] && !empty($content['server_name'])) {
         $id_meta = metaconsole_get_id_server(
             $content['server_name']
         );
@@ -5212,7 +5212,7 @@ function reporting_sql($report, $content)
         $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
-    if ($config['metaconsole']) {
+    if ($config['metaconsole'] && !empty($content['server_name'])) {
         metaconsole_restore_db();
     }
 

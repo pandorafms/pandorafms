@@ -11112,7 +11112,7 @@ function reporting_get_stats_servers()
             $output .= 'parameters["page"] = "include/ajax/events";';
             $output .= 'parameters["total_events"] = 1;';
 
-            $output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
+            $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                 $output .= 'success: function(data) {';
                     $output .= '$("#total_events").text(data);';
                 $output .= '}';

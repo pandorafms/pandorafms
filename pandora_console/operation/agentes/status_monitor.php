@@ -282,7 +282,6 @@ if ($tag_filter !== 0) {
 $sql_conditions_tags = '';
 
 if (!users_is_admin()) {
-    if ($ag_group !== 0) {
         $sql_conditions_tags = tags_get_acl_tags(
             $config['id_user'],
             $ag_group,
@@ -294,21 +293,6 @@ if (!users_is_admin()) {
             [],
             false
         );
-    } else {
-        // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
-        $groups = users_get_groups($config['id_user']);
-        $sql_conditions_tags = tags_get_acl_tags(
-            $config['id_user'],
-            array_keys($groups),
-            'AR',
-            'module_condition',
-            'AND',
-            'tagente_modulo',
-            true,
-            [],
-            false
-        );
-    }
 
     if (is_numeric($sql_conditions_tags)) {
         $sql_conditions_tags = ' AND 1 = 0';

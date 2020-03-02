@@ -789,6 +789,10 @@ function tags_get_acl_tags(
 
     $acltags = [];
     foreach ($raw_acltags as $group => $taglist) {
+        if (!empty($id_group) && !in_array($group, $id_group)) {
+            continue;
+        }
+
         if (!empty($taglist)) {
             $acltags[$group] = explode(',', $taglist);
         } else {
@@ -861,7 +865,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table='', $force_
     // after the changes done into the 'tags_get_user_groups_and_tags' function.
     foreach ($acltags as $group_id => $group_tags) {
         if (empty($group_tags)) {
-            $group_tags = [];
+            // $group_tags = [];
             if (!empty($force_tags)) {
                 $group_tags = $force_tags;
             }
@@ -881,7 +885,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table='', $force_
             }
 
             $group_conditions[] = $agent_condition;
-        } else if (!empty($force_tags)) {
+        } else if (!empty($force_tags) || !empty($group_id)) {
             $without_tags[] = $group_id;
         }
     }

@@ -280,6 +280,7 @@ define('STATUS_MODULE_CRITICAL', 'module_critical.png');
 define('STATUS_MODULE_WARNING', 'module_warning.png');
 define('STATUS_MODULE_NO_DATA', 'module_no_data.png');
 define('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
+define('STATUS_MODULE_ALERT_TRIGGERED', 'module_alertsfired.png');
 // For agents.
 define('STATUS_AGENT_CRITICAL', 'agent_critical.png');
 define('STATUS_AGENT_WARNING', 'agent_warning.png');

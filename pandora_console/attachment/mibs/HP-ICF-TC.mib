@@ -1,0 +1,148 @@
+HP-ICF-TC DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY
+            FROM SNMPv2-SMI
+        TEXTUAL-CONVENTION
+            FROM SNMPv2-TC
+        hpicfAdmin
+            FROM HP-ICF-OID;
+
+    hpicfTextualConventions MODULE-IDENTITY
+        LAST-UPDATED "201010120800Z"  -- October 12, 2010
+        ORGANIZATION "HP Networking"
+        CONTACT-INFO "Hewlett-Packard Company
+                      8000 Foothills Blvd.
+                      Roseville, CA 95747"
+        DESCRIPTION  "This module contains common textual convention
+                     definitions used by various HP ICF MIB modules."
+
+        REVISION     "201010120800Z"  -- October 12, 2010
+        DESCRIPTION  "Added VidList type"
+
+        REVISION     "200902101800Z"  -- February 10, 2009
+        DESCRIPTION  "Added 10GbE-K for 802.3ap (clauses 69-74)"
+
+        REVISION     "200808190905Z"  -- August 19, 2008
+        DESCRIPTION  "Added XFP-SFP+ DAC types for HpSwitchPortType."
+
+        REVISION     "200802041536Z"  -- February 04, 2008
+        DESCRIPTION  "Added multiple transceiver types."
+
+        REVISION     "200402182305Z"  -- February 18, 2004
+        DESCRIPTION  "Added gigabitEthernetESP and tenGigabitEthernetCX 
+                      type for HpSwitchPortType."
+
+        REVISION     "200011030717Z"  -- November 3, 2000
+        DESCRIPTION  "Initial revision."
+        ::= { hpicfAdmin 4 }
+
+    ConfigStatus ::= TEXTUAL-CONVENTION
+        STATUS      current
+        DESCRIPTION "Used to indicate the configuration status for
+                    a group of objects.  'active' means that the
+                    values of the related objects are currently in
+                    use by the device.  'notInService' indicates that
+                    the objects have been reconfigured in such a way
+                    that the values cannot take effect until after the
+                    next reboot of the device.  'notReady' indicates
+                    that the objects are not consistent with each other."
+        SYNTAX      INTEGER {
+                        active(1),
+                        notInService(2),
+                        notReady(3)
+                    }
+
+    HpSwitchPortType ::= TEXTUAL-CONVENTION
+        STATUS      current
+        DESCRIPTION "Used to indicate the type of port."
+        SYNTAX      INTEGER {
+                        other(1),
+                        none(2),
+                        unknown(3),
+                        ethernetCsmacd(6),
+                        iso88023Csmacd(7),
+                        fddi(15),
+                        atm(37),
+                        propMultiplexor(54),
+                        ieee80212(55),
+                        fastEther(62),
+                        fastEtherFX(69),
+                        fastEtherFX-sfp(70),
+                        tenGSFP-SR (112),
+                        tenGSFP-LR (113),
+                        tenGSFP-ER (114),
+                        tenGSFP-LRM (115),
+                        tenGSFP-LX4 (116),
+                        gigabitEthernetSX (117),
+                        gigabitEthernetLX (118),
+                        gigabitEthernetT (119),
+                        gigabitEthernetStk (120),
+                        gigabitEthernetLH (121),
+                        tenGbE-CX4 (122),
+                        gigabitEthernetESP (123),
+                        tenGbE-SR (124),
+                        tenGbE-ER (125),
+                        tenGbE-LR (126),
+                        gigabitEthernetT-sfp (127),
+                        fastEtherGEN (128),
+                        gigabitEthernetGEN (129),
+                        tenGbE-GEN (130),
+                        fastEtherBX-D (131),
+                        fastEtherBX-U (132),
+                        gigabitEthernetBX-D (133),
+                        gigabitEthernetBX-U (134),
+                        tenGbE-LRM (135),
+                        sFP-PLUS-SR (136),
+                        sFP-PLUS-LR (137),
+                        sFP-PLUS-LRM (138),
+                        sFP-PLUS-DAC (139),
+                        sFP-PLUS-DA1 (140),
+                        sFP-PLUS-DA2 (141),
+                        sFP-PLUS-DA3 (142),
+                        sFP-PLUS-DA5 (143),
+                        sFP-PLUS-DA7 (144),
+                        sFP-PLUS-DA10 (145),
+                        sFP-PLUS-DA15 (146),
+                        sFP-PLUS-DA20 (147),
+                        tenGbE-T (148),
+                        tenGbE-TSH (149),
+                        tenGbE-TLH (150),
+                        tenGbE-STK (151),
+                        xFP-SFP-PLUS-DAC  (152),
+                        xFP-SFP-PLUS-DA1  (153),
+                        xFP-SFP-PLUS-DA3  (154),
+                        xFP-SFP-PLUS-DA5  (155),
+                        xFP-SFP-PLUS-DA7  (156),
+                        xFP-SFP-PLUS-DA10 (157),
+                        tenGbE-K (158), 
+                        sFP-PLUS-ER (160),
+                        sFP-CWDM1470 (161),
+                        sFP-CWDM1490 (162),
+                        sFP-CWDM1510 (163),
+                        sFP-CWDM1530 (164),
+                        sFP-CWDM1550 (165),
+                        sFP-CWDM1570 (166),
+                        sFP-CWDM1590 (167),
+                        sFP-CWDM1610 (168)
+                    }
+
+    VidList ::= TEXTUAL-CONVENTION
+        DISPLAY-HINT "512x"
+        STATUS      current
+        DESCRIPTION
+           "Each octet within this value specifies a set of eight
+           VlanIndex (VID), with the first octet specifying VIDs 1
+           through 8, the second octet specifying VIDs 9 through 16,
+           etc.  Within each octet, the most significant bit represents
+           the lowest numbered VID, and the least significant bit
+           represents the highest numbered VID.  Thus, each VID
+           is represented by a single bit within the value of this
+           object.  If that bit has a value of 1 then that VID is
+           included in the set of VIDs; the VID is not included if its
+           bit has a value of 0.  This list represents the entire
+           range of VlanIndex values defined in the scope of IEEE
+           802.1Q."
+        SYNTAX       OCTET STRING (SIZE (512))
+
+END

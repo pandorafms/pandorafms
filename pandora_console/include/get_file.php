@@ -51,6 +51,10 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/files_repo/'.$file;
             break;
 
+            case 'enterprise/godmode/agentes/collections':
+                $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/collection/'.$file;
+            break;
+
             default:
                 $downloadable_file = '';
                 // Do nothing

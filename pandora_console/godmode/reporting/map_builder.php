@@ -473,7 +473,7 @@ if (!$maps && !is_metaconsole()) {
 
 if ($maps) {
     if (!is_metaconsole()) {
-        echo '<div class="action-buttons" style="width: 0px;">';
+        echo '<div class="action-buttons" style="width: 100%; text-align: right;">';
     } else {
         echo '<div class="" style="width: 100%; text-align: right;">';
     }

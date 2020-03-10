@@ -1366,9 +1366,9 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $children
         $tag_conds = '';
 
         if (!empty($tags_str)) {
-            $tag_conds = " AND (tags IN ('$tags_str') OR tags = '') ";
+            $tag_conds = " AND (tags IN ($tags_str) OR tags = '') ";
         } else if (!empty($tags_user)) {
-            $tag_conds = " AND (tags IN ('$tags_user') OR tags = '') ";
+            $tag_conds = " AND (tags IN ($tags_user) OR tags = '') ";
         } else {
             $tag_conds = " AND tags = '' ";
         }

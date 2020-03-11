@@ -160,27 +160,29 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.axislabels.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/pandora.flot.js"></script>
     </head>
-    <body bgcolor="#ffffff" style='background:#ffffff;'>
+    <body style='background-color: <?php echo $params['backgroundColor']; ?>;'>
     <?php
     $params['only_image'] = false;
-    $params['width'] = (int) $_REQUEST['viewport_width'];
     $params['menu'] = false;
 
     $params_combined = json_decode($_REQUEST['data_combined'], true);
     $module_list = json_decode($_REQUEST['data_module_list'], true);
     $type_graph_pdf = $_REQUEST['type_graph_pdf'];
 
-    if ((isset($params['width']) === false
-        || ($params['width'] <= 0))
-    ) {
-        $params['width'] = 650;
-        if ((int) $params['landscape'] === 1) {
-            $params['width'] = 850;
-        }
+    if (isset($params['vconsole']) === false || $params['vconsole'] === false) {
+        $params['width'] = (int) $_REQUEST['viewport_width'];
+        if ((isset($params['width']) === false
+            || ($params['width'] <= 0))
+        ) {
+            $params['width'] = 650;
+            if ((int) $params['landscape'] === 1) {
+                $params['width'] = 850;
+            }
 
-        if ($type_graph_pdf === 'slicebar') {
-            $params['width'] = 150;
-            $params['height'] = 70;
+            if ($type_graph_pdf === 'slicebar') {
+                $params['width'] = 100;
+                $params['height'] = 70;
+            }
         }
     }
 
@@ -291,7 +293,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['not_interactive'],
                 $params['ttl'],
                 $params['widgets'],
-                $params['show']
+                $params['show'],
+                $params['date_to']
             );
         break;
 

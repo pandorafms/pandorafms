@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.742
-%define release     200127
+%define version     7.0NG.744
+%define release     200311
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -86,3 +86,4 @@ fi
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console
+%attr(0644, root, root) %{_sysconfdir}/logrotate.d/pandora_console

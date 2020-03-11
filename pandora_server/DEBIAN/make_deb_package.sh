@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.742-200127"
+pandora_version="7.0NG.744-200311"
 
 package_cpan=0
 package_pandora=1
@@ -64,6 +64,22 @@ mkdir temp_package
 
 if [ $package_pandora -eq 1 ]
 then
+	whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
+	if [ $? = 1 ]
+	then
+		if [ "$DPKG_DEB" == "" ]; then
+			echo "No found \"dpkg-deb\" aplication, please install."
+			exit 1
+		fi
+
+		echo ">> Using dockerized version of dpkg-deb: "
+		echo "  $DPKG_DEB"
+		# Use dockerized app.
+		USE_DOCKER_APP=1
+	else
+		echo "Found \"dpkg-debs\"."
+	fi
+
 	mkdir -p temp_package/usr/bin/
 	mkdir -p temp_package/usr/sbin/
 	mkdir -p temp_package/etc/init.d/
@@ -164,8 +180,15 @@ then
 	echo "END"
 
 	echo "Make the package \"Pandorafms server\"."
-	dpkg-deb --build temp_package
+	if [ "$USE_DOCKER_APP" == "1" ]; then 
+		eval $DPKG_DEB --build temp_package
+	else
+		dpkg-deb --build temp_package
+	fi
 	mv temp_package.deb pandorafms.server_$pandora_version.deb
+	echo "generated: pandorafms.server_$pandora_version.deb"
+	pwd
+	ls -lah pandorafms.server_$pandora_version.deb
 	chmod 777 pandorafms.server_$pandora_version.deb
 fi
 

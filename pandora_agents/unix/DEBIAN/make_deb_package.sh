@@ -14,14 +14,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.742-200127"
+pandora_version="7.0NG.744-200311"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
 if [ $? = 1 ]
 then
-	echo "No found \"dpkg-deb\" aplication, please install."
-	exit 1
+	if [ "$DPKG_DEB" == "" ]; then
+		echo "No found \"dpkg-deb\" aplication, please install."
+		exit 1
+	fi
+
+	echo ">> Using dockerized version of dpkg-deb: "
+	echo "  $DPKG_DEB"
+	USE_DOCKER_APP=1
 else
 	echo "Found \"dpkg-debs\"."
 fi
@@ -122,8 +128,12 @@ do
 done
 echo "END"
 
-echo "Make the package \"Pandorafms console\"."
-dpkg-deb --build temp_package
+echo "Make the package \"Pandorafms agent\"."
+if [ "$USE_DOCKER_APP" == "1" ]; then 
+	eval $DPKG_DEB --build temp_package
+else
+	dpkg-deb --build temp_package
+fi
 mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb
 
 echo "Delete the \"temp_package\" temp dir for job."

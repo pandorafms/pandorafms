@@ -28,6 +28,73 @@ final class BarsGraph extends Item
 
 
     /**
+     * Extract a type graph value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
+     */
+    private static function getTypeGraph(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                [
+                    'typeGraph',
+                    'type_graph',
+                    'graphType',
+                ]
+            ),
+            null
+        );
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $type_graph = static::getTypeGraph($data);
+        if ($type_graph !== null) {
+            $return['type_graph'] = $type_graph;
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Extract a graph type value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return string 'line' or 'area'. 'line' by default.
+     */
+    private static function extractGraphType(array $data): string
+    {
+        $value = static::issetInArray($data, ['graphType', 'type_graph']);
+
+        switch ($value) {
+            case 'line':
+            case 'area':
+            return $value;
+
+            default:
+            return 'line';
+        }
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -156,14 +223,6 @@ final class BarsGraph extends Item
         $moduleId = $linkedModule['moduleId'];
         $metaconsoleId = $linkedModule['metaconsoleId'];
 
-        if ($agentId === null) {
-            throw new \InvalidArgumentException('missing agent Id');
-        }
-
-        if ($moduleId === null) {
-            throw new \InvalidArgumentException('missing module Id');
-        }
-
         // Add colors that will use the graphics.
         $color = [];
 
@@ -246,9 +305,9 @@ final class BarsGraph extends Item
         // Maybe connect to node.
         $nodeConnected = false;
         if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $server = \metaconsole_get_connection_by_id($metaconsoleId);
             $nodeConnected = \metaconsole_connect(
-                null,
-                $metaconsoleId
+                $server
             ) === NOERR;
 
             if ($nodeConnected === false) {
@@ -259,6 +318,9 @@ final class BarsGraph extends Item
         }
 
         $moduleData = \get_bars_module_data($moduleId);
+        if ($moduleData !== false && is_array($moduleData) === true) {
+            array_pop($moduleData);
+        }
 
         $waterMark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
@@ -278,58 +340,67 @@ final class BarsGraph extends Item
             $height = (int) $data['height'];
         }
 
-        if ($typeGraph === 'horizontal') {
-            $graph = \hbar_graph(
-                $moduleData,
-                $width,
-                $height,
-                $color,
-                [],
-                [],
-                \ui_get_full_url(
-                    'images/image_problem_area.png',
-                    false,
-                    false,
-                    false
-                ),
-                '',
-                '',
-                $waterMark,
-                $config['fontpath'],
-                6,
-                '',
-                0,
-                $config['homeurl'],
-                $backGroundColor,
-                $gridColor
-            );
-        } else {
-            $graph = \vbar_graph(
-                $moduleData,
-                $width,
-                $height,
-                $color,
-                [],
-                [],
-                \ui_get_full_url(
-                    'images/image_problem_area.png',
-                    false,
-                    false,
-                    false
-                ),
-                '',
-                '',
-                $waterMark,
-                $config['fontpath'],
-                6,
-                '',
-                0,
-                $config['homeurl'],
-                $backGroundColor,
-                true,
+        if (empty($moduleData) === true) {
+            $image = ui_get_full_url(
+                'images/image_problem_area.png',
                 false,
-                $gridColor
+                false,
+                false
             );
+            $graph = base64_encode(file_get_contents($image));
+        } else {
+            if ($typeGraph === 'horizontal') {
+                $graph = \hbar_graph(
+                    $moduleData,
+                    $width,
+                    $height,
+                    $color,
+                    [],
+                    [],
+                    'images/image_problem_area.png',
+                    '',
+                    '',
+                    $waterMark,
+                    $config['fontpath'],
+                    $config['fontsize'],
+                    '',
+                    2,
+                    $config['homeurl'],
+                    $backGroundColor,
+                    $gridColor,
+                    null,
+                    null,
+                    true
+                );
+            } else {
+                $graph = \vbar_graph(
+                    $moduleData,
+                    $width,
+                    $height,
+                    $color,
+                    [],
+                    [],
+                    \ui_get_full_url(
+                        'images/image_problem_area.png',
+                        false,
+                        false,
+                        false
+                    ),
+                    '',
+                    '',
+                    $waterMark,
+                    $config['fontpath'],
+                    $config['fontsize'],
+                    '',
+                    2,
+                    $config['homeurl'],
+                    $backGroundColor,
+                    true,
+                    false,
+                    $gridColor,
+                    true
+                );
+            }
         }
 
         // Restore connection.
@@ -337,9 +408,150 @@ final class BarsGraph extends Item
             \metaconsole_restore_db();
         }
 
-        $data['html'] = $graph;
+        $imgbase64 = 'data:image/jpg;base64,';
+        $imgbase64 .= $graph;
+
+        $data['html'] = $imgbase64;
 
         return $data;
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[BarsGraph]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Background color.
+            $fields = [
+                'white'       => __('White'),
+                'black'       => __('Black'),
+                'transparent' => __('Transparent'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Background color'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'backgroundColor',
+                    'selected' => $values['backgroundColor'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Graph Type.
+            $fields = [
+                'horizontal' => __('Horizontal'),
+                'vertical'   => __('Vertical'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Graph Type'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'typeGraph',
+                    'selected' => $values['typeGraph'],
+                    'return'   => true,
+                ],
+            ];
+
+            // Grid color.
+            $inputs[] = [
+                'label'     => __('Grid color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'gridColor',
+                    'type'    => 'color',
+                    'value'   => $values['gridColor'],
+                    'return'  => true,
+                ],
+            ];
+
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'                    => 'autocomplete_agent',
+                    'name'                    => 'agentAlias',
+                    'id_agent_hidden'         => $values['agentId'],
+                    'name_agent_hidden'       => 'agentId',
+                    'server_id_hidden'        => $values['metaconsoleId'],
+                    'name_server_hidden'      => 'metaconsoleId',
+                    'return'                  => true,
+                    'module_input'            => true,
+                    'module_name'             => 'moduleId',
+                    'module_none'             => false,
+                    'get_only_string_modules' => true,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'                    => 'autocomplete_module',
+                    'fields'                  => $fields,
+                    'name'                    => 'moduleId',
+                    'selected'                => $values['moduleId'],
+                    'return'                  => true,
+                    'sort'                    => false,
+                    'agent_id'                => $values['agentId'],
+                    'metaconsole_id'          => $values['metaconsoleId'],
+                    'get_only_string_modules' => true,
+                ],
+            ];
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 300;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 180;
+        }
+
+        return $values;
     }
 
 

@@ -685,7 +685,7 @@ if (is_ajax()) {
         );
 
         if ($get_only_string_modules) {
-            $filter['tagente_modulo.id_tipo_modulo IN'] = '(17,23,3,10,33)';
+            $filter['tagente_modulo.id_tipo_modulo IN'] = '(17,23,3,10,33,36)';
         }
 
         // Status selector.

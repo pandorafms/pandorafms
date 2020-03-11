@@ -2381,6 +2381,7 @@ function modules_get_color_status($status)
         case AGENT_STATUS_ALERT_FIRED:
         case STATUS_ALERT_FIRED:
         case STATUS_ALERT_FIRED_BALL:
+        case STATUS_MODULE_ALERT_TRIGGERED:
         return COL_ALERTFIRED;
 
         case AGENT_MODULE_STATUS_UNKNOWN:

@@ -127,6 +127,13 @@ $buttons['ehorus'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image('images/ehorus/ehorus.png', true, ['title' => __('eHorus')]).'</a>',
 ];
 
+if (check_acl($config['id_user'], 0, 'PM') && enterprise_installed()) {
+    $buttons['module_library'] = [
+        'active' => false,
+        'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=module_library').'">'.html_print_image('images/library.png', true, ['title' => __('Module Library')]).'</a>',
+    ];
+}
+
 // FIXME: Not definitive icon
 $buttons['notifications'] = [
     'active' => false,
@@ -137,6 +144,13 @@ $buttons['websocket_engine'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=websocket_engine').'">'.html_print_image('images/websocket_small.png', true, ['title' => __('Websocket engine')]).'</a>',
 ];
+
+if ($config['activate_gis']) {
+    $buttons['gis'] = [
+        'active' => false,
+        'text'   => '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=gis').'">'.html_print_image('images/gis_tab.png', true, ['title' => __('GIS Map connection')]).'</a>',
+    ];
+}
 
 $help_header = '';
 if (enterprise_installed()) {
@@ -181,6 +195,17 @@ switch ($section) {
         $buttons['integria']['active'] = true;
         $subpage = ' &raquo '.__('Integria IMS');
         $help_header = 'setup_integria_tab';
+    break;
+
+    case 'module_library':
+        $buttons['module_library']['active'] = true;
+        $subpage = ' &raquo '.__('Module Library');
+        $help_header = 'setup_module_library_tab';
+    break;
+
+    case 'gis':
+        $buttons['gis']['active'] = true;
+        $subpage = ' &raquo '.__('Map conections GIS');
     break;
 
     case 'notifications':
@@ -252,6 +277,10 @@ switch ($section) {
 
     case 'integria':
         include_once $config['homedir'].'/godmode/setup/setup_integria.php';
+    break;
+
+    case 'gis':
+        include_once $config['homedir'].'/godmode/setup/gis.php';
     break;
 
     case 'notifications':

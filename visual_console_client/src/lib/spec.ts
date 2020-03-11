@@ -132,7 +132,11 @@ describe("itemMetaDecoder function", () => {
       isFromCache: false,
       isFetching: false,
       isUpdating: false,
-      editMode: false
+      editMode: false,
+      isBeingMoved: false,
+      isBeingResized: false,
+      isSelected: false,
+      lineMode: false
     });
   });
 
@@ -149,7 +153,11 @@ describe("itemMetaDecoder function", () => {
       isFromCache: false,
       isFetching: false,
       isUpdating: false,
-      editMode: true
+      editMode: true,
+      isBeingMoved: false,
+      isBeingResized: false,
+      isSelected: false,
+      lineMode: false
     });
   });
 

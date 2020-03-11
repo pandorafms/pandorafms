@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.742
-%define release     200127
+%define version     7.0NG.744
+%define release     200311
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -18,7 +18,8 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
-PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+#PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+Requires(pre,preun):/usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
 AutoReq:            0
 Provides:           %{name}-%{version}

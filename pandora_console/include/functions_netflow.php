@@ -903,7 +903,7 @@ function netflow_get_command($filter)
  *
  * @return string Command line argument string.
  */
-function netflow_get_filter_arguments($filter)
+function netflow_get_filter_arguments($filter, $safe_input=false)
 {
     // Advanced filter.
     $filter_args = '';
@@ -1015,7 +1015,7 @@ function netflow_get_filter_arguments($filter)
     }
 
     if ($filter_args != '') {
-        $filter_args = escapeshellarg($filter_args);
+        $filter_args = ($safe_input === true) ? io_safe_input(escapeshellarg($filter_args)) : escapeshellarg($filter_args);
     }
 
     return $filter_args;
@@ -1673,7 +1673,7 @@ function netflow_get_top_data(
     // Get the command to call nfdump.
     $agg_command = sprintf(
         '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
-        netflow_get_command($filter),
+        io_safe_output(netflow_get_command($filter)),
         $max,
         $aggregate,
         date($nfdump_date_format, $start_date),

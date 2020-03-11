@@ -2375,8 +2375,9 @@ CREATE TABLE IF NOT EXISTS `tpolicies` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` text NOT NULL default '',
 	`description` varchar(255) NOT NULL default '',
-	`id_group` int(10) unsigned default '0',  
-	`status` int(10) unsigned NOT NULL default 0,  
+	`id_group` int(10) unsigned default '0',
+	`status` int(10) unsigned NOT NULL default 0,
+	`force_apply` tinyint(1) default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -2579,7 +2580,7 @@ CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
 -- Table `tmetaconsole_setup`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
-	`id` int(10) NOT NULL auto_increment primary key,
+	`id` int(10) NOT NULL auto_increment,
 	`server_name` text,
 	`server_url` text,
 	`dbuser` text,
@@ -2596,7 +2597,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
 	`disabled` tinyint(1) unsigned NOT NULL default '0',
-	`last_event_replication` bigint(20) default '0'
+	`last_event_replication` bigint(20) default '0',
+	`server_uid` text NOT NULL default '',
+	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to store metaconsole sources' 
 DEFAULT CHARSET=utf8;

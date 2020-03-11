@@ -2298,7 +2298,7 @@ function reporting_agent_module($report, $content)
         $content['name'] = __('Agent/Modules');
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $group_name = groups_get_name($content['id_group'], true);
@@ -2314,7 +2314,7 @@ function reporting_agent_module($report, $content)
     }
 
     $return['subtitle'] = $group_name.' - '.$module_group_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -2871,11 +2871,11 @@ function reporting_group_report($report, $content)
     }
 
     $return['server_name'] = $server[0];
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = groups_get_name($content['id_group'], true);
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['data'] = [];
@@ -2975,7 +2975,7 @@ function reporting_event_report_agent(
     }
 
     $return['label'] = $label;
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = io_safe_output($agent_alias);
@@ -3679,7 +3679,7 @@ function agents_get_network_interfaces_array(
 /**
  * reporting alert get fired
  */
-function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime)
+function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime, $return_empty=true)
 {
     $fired = [];
     $firedTimes = get_module_alert_fired(
@@ -3709,7 +3709,11 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
         if ($fireTime['utimestamp'] > $datelimit && $fireTime['utimestamp'] <= $datetime) {
             $fired[] = $fireTime['timestamp'];
         } else {
-            $fired[] = $empty;
+            if ($return_empty === true) {
+                $fired[] = $empty;
+            } else {
+                continue;
+            }
         }
     }
 
@@ -3821,10 +3825,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['custom'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
-                        $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+
+                    if ($fired == 0) {
+                        $data_action[$naction]['fired'] = __('Not triggered');
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3833,10 +3842,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['default'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
-                        $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+
+                    if ($fired == 0) {
+                        $data_action[$naction]['fired'] = __('Not triggered');
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3845,10 +3859,15 @@ function reporting_alert_report_group($report, $content)
                 foreach ($actions['unavailable'] as $action) {
                     $data_action[$naction]['name'] = $action['name'];
                     $fired = $action['fired'];
-                    if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)) {
-                        $data_action[$naction]['fired'] = '----------------------------';
-                    } else {
-                        $data_action[$naction]['fired'] = $fired;
+
+                    if ($fired == 0) {
+                        $data_action[$naction]['fired'] = __('Not triggered');
+                    } else if ($fired > 0) {
+                        if ($fired > $datelimit && $fired < $datetime) {
+                            $data_action[$naction]['fired'] = $fired;
+                        } else {
+                            continue 2;
+                        }
                     }
 
                     $naction++;
@@ -3862,7 +3881,8 @@ function reporting_alert_report_group($report, $content)
                 $agent_module['id_agent_module'],
                 $actions['id'],
                 (int) $content['period'],
-                (int) $report['datetime']
+                (int) $report['datetime'],
+                false
             );
             $module_actions['actions']        = $data_action;
 
@@ -7338,7 +7358,7 @@ function reporting_general($report, $content)
             continue;
         }
 
-        $mod_name = modules_get_agentmodule_name($row['id_agent_module']);
+        $mod_name = io_safe_output(modules_get_agentmodule_name($row['id_agent_module']));
         $ag_name = modules_get_agentmodule_agent_alias($row['id_agent_module']);
         $name_agent = modules_get_agentmodule_agent_name($row['id_agent_module']);
         $type_mod = modules_get_last_value($row['id_agent_module']);
@@ -7852,14 +7872,14 @@ function reporting_simple_graph(
         );
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -7919,6 +7939,7 @@ function reporting_simple_graph(
                 'server_id'          => $id_meta,
                 'height'             => $config['graph_image_height'],
                 'landscape'          => $content['landscape'],
+                'backgroundColor'    => 'transparent',
                 'return_img_base_64' => true,
             ];
 

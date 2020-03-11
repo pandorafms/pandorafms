@@ -102,10 +102,17 @@ final class EventsHistory extends Item
             throw new \InvalidArgumentException('missing agent Id');
         }
 
-        // Default size.
-        if ($data['width'] == 0 || $data['height'] == 0) {
-            $data['width'] = 500;
-            $data['height'] = 50;
+        if ((int) $data['width'] === 0 && (int) $data['height'] === 0) {
+            $data['width'] = 420;
+            $data['height'] = 80;
+        }
+
+        if ((int) $data['width'] < 11) {
+            $data['width'] = 11;
+        }
+
+        if ((int) $data['height'] < 11) {
+            $data['height'] = 11;
         }
 
         // Use the same HTML output as the old VC.
@@ -116,7 +123,8 @@ final class EventsHistory extends Item
             (int) $data['height'],
             static::extractMaxTime($data),
             '',
-            true
+            true,
+            1
         );
 
         $data['html'] = $html;
@@ -153,6 +161,123 @@ final class EventsHistory extends Item
                 'status'               => -1,
             ]
         );
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[EventHistory]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'               => 'autocomplete_agent',
+                    'name'               => 'agentAlias',
+                    'id_agent_hidden'    => $values['agentId'],
+                    'name_agent_hidden'  => 'agentId',
+                    'server_id_hidden'   => $values['metaconsoleId'],
+                    'name_server_hidden' => 'metaconsoleId',
+                    'return'             => true,
+                    'module_input'       => true,
+                    'module_name'        => 'moduleId',
+                    'module_none'        => false,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'           => 'autocomplete_module',
+                    'fields'         => $fields,
+                    'name'           => 'moduleId',
+                    'selected'       => $values['moduleId'],
+                    'return'         => true,
+                    'sort'           => false,
+                    'agent_id'       => $values['agentId'],
+                    'metaconsole_id' => $values['metaconsoleId'],
+                ],
+            ];
+
+            // Type percentile.
+            $fields = [
+                '86400' => __('24h'),
+                '43200' => __('12h'),
+                '28800' => __('8h'),
+                '7200'  => __('2h'),
+                '3600'  => __('1h'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Max. Time'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'maxTime',
+                    'selected' => $values['maxTime'],
+                    'return'   => true,
+                    'sort'     => false,
+                ],
+            ];
+
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 500;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 70;
+        }
+
+        return $values;
     }
 
 

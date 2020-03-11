@@ -72,6 +72,18 @@ abstract class Model
 
 
     /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @abstract
+     */
+    abstract public function delete(int $itemId): bool;
+
+
+    /**
      * Constructor of the model. It won't be public. The instances
      * will be created through factories which start with from*.
      *
@@ -151,7 +163,7 @@ abstract class Model
      */
     public function toJson(): string
     {
-        return \json_encode($this->data);
+        return json_encode($this->data);
     }
 
 

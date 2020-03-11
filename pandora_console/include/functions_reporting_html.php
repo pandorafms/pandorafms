@@ -3473,7 +3473,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
             }
 
             // Check failover availability report.
-            if ($item['data'][$k_chart]['failover'] === '') {
+            if (empty($item['data'][$k_chart]['failover']) === true) {
                 $table1 = new stdClass();
                 $table1->width = '100%';
                 $table1->data = [];
@@ -3482,12 +3482,6 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 $table1->size[1] = '80%';
                 $table1->size[2] = '5%';
                 $table1->size[3] = '5%';
-                if ($pdf !== 0) {
-                    $table1->size[0] = '20%';
-                    $table1->size[1] = '60%';
-                    $table1->size[2] = '10%';
-                    $table1->size[3] = '10%';
-                }
 
                 $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
                 $table1->data[0][1] = $chart['chart'];

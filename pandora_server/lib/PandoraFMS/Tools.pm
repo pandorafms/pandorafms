@@ -19,6 +19,7 @@ package PandoraFMS::Tools;
  
 use warnings;
 use Time::Local;
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(setsid strftime);
 use POSIX;
 use HTML::Entities;
@@ -1479,7 +1480,7 @@ sub cron_next_execution {
 		$nex_time = cron_next_execution_date ($cron, $nex_time, 0);
 	}
 
-	return $nex_time - time();
+	return $nex_time - $cur_time;
 }
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
@@ -1509,7 +1510,7 @@ sub cron_check_interval {
 	if ($down < $up) {
 		return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
 	} else {
-		return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
+		return 0 if ($elem_curr_time < $down && $elem_curr_time > $up);
 	}
 
 	return 1;
@@ -1674,7 +1675,7 @@ sub cron_is_in_cron {
 #     * should returns floor data.
 #     5 should returns 5.
 #     10-55 should returns 10.
-#     55-10 should retunrs floor data.
+#     55-10 should retunrs elem_down.
 ################################################################################
 sub cron_get_next_time_element {
 	# Default floor data is 0
@@ -1682,7 +1683,7 @@ sub cron_get_next_time_element {
 	$floor_data = 0 unless defined($floor_data);
 
 	my ($elem_down, $elem_up) = cron_get_interval ($curr_element);
-	return ($elem_down eq '*' || (defined($elem_up) && $elem_down > $elem_up))
+	return ($elem_down eq '*')
 		? $floor_data
 		: $elem_down;
 }

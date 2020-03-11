@@ -313,6 +313,8 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=integria']['text'] = __('Integria IMS');
     $sub2['godmode/setup/setup&amp;section=integria']['refr'] = 0;
 
+    enterprise_hook('module_library_submenu');
+
     $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
@@ -320,7 +322,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
 
     if ($config['activate_gis']) {
-        $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');
+        $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
 
     $sub['general']['sub2'] = $sub2;
@@ -498,6 +500,21 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $menu_godmode['messages']['sub'] = $sub;
 }
 
+// Module library.
+if (check_acl($config['id_user'], 0, 'AR')) {
+    $menu_godmode['gmodule_library']['text'] = __('Module library');
+    $menu_godmode['gmodule_library']['sec2'] = 'godmode/module_library/module_library_view';
+    $menu_godmode['gmodule_library']['id'] = 'god-module_library';
+
+    $sub = [];
+    $sub['godmode/module_library/module_library_view']['text'] = __('View');
+    $sub['godmode/module_library/module_library_view']['id'] = 'View';
+
+    $sub['godmode/module_library/module_library_view&tab=categories']['text'] = __('Categories');
+    $sub['godmode/module_library/module_library_view&tab=categories']['id'] = 'categories';
+
+    $menu_godmode['gmodule_library']['sub'] = $sub;
+}
 
 if (!$config['pure']) {
     menu_print_menu($menu_godmode);

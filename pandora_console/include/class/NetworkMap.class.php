@@ -227,6 +227,13 @@ class NetworkMap
     public $tooltipParams;
 
     /**
+     *  Defines if map is widget or not for JS
+     *
+     * @var boolean;
+     */
+    public $widget;
+
+    /**
      * Shows the map using 100% of height and width if is a widget.
      *
      * @var boolean
@@ -406,8 +413,10 @@ class NetworkMap
             // Initialize as widget?
             if (isset($options['widget'])) {
                 $this->fullSize = (bool) $options['widget'];
+                $this->widget = true;
             } else {
                 $this->fullSize = true;
+                $this->widget = false;
             }
 
             // Use a custom parser.
@@ -2689,6 +2698,7 @@ class NetworkMap
         $this->cleanGraphRelations();
 
         // Print some params to handle it in js.
+        html_print_input_hidden('widget', $this->widget);
         html_print_input_hidden('product_name', get_product_name());
         html_print_input_hidden('center_logo', ui_get_full_url(ui_get_logo_to_center_networkmap()));
 

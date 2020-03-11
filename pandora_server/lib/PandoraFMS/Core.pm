@@ -118,6 +118,7 @@ use XML::Simple;
 use HTML::Entities;
 use Time::Local;
 use Time::HiRes qw(time);
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
@@ -1562,7 +1563,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	# Update action last execution date
 	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
- 			WHERE id = ?', time (), $action->{'id_alert_templ_module_actions'});
+ 			WHERE id = ?', int(time ()), $action->{'id_alert_templ_module_actions'});
 	}
 }
 

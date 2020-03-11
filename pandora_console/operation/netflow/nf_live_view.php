@@ -154,7 +154,7 @@ if (!is_metaconsole()) {
 // Save user defined filter.
 if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
     // Save filter args.
-    $filter['filter_args'] = netflow_get_filter_arguments($filter);
+    $filter['filter_args'] = netflow_get_filter_arguments($filter, true);
 
     $filter_id = db_process_sql_insert('tnetflow_filter', $filter);
     if ($filter_id === false) {
@@ -171,7 +171,7 @@ if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
     unset($filter_copy['id_group']);
 
     // Save filter args.
-    $filter_copy['filter_args'] = netflow_get_filter_arguments($filter_copy);
+    $filter_copy['filter_args'] = netflow_get_filter_arguments($filter_copy, true);
 
     $result = db_process_sql_update(
         'tnetflow_filter',

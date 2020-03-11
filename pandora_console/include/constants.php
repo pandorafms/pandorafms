@@ -102,9 +102,9 @@ define('SECONDS_1MONTH', 2592000);
 define('SECONDS_2MONTHS', 5184000);
 define('SECONDS_3MONTHS', 7776000);
 define('SECONDS_6MONTHS', 15552000);
-define('SECONDS_1YEAR', 31104000);
-define('SECONDS_2YEARS', 62208000);
-define('SECONDS_3YEARS', 93312000);
+define('SECONDS_1YEAR', 31536000);
+define('SECONDS_2YEARS', 63072000);
+define('SECONDS_3YEARS', 94608000);
 
 
 
@@ -280,6 +280,7 @@ define('STATUS_MODULE_CRITICAL', 'module_critical.png');
 define('STATUS_MODULE_WARNING', 'module_warning.png');
 define('STATUS_MODULE_NO_DATA', 'module_no_data.png');
 define('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
+define('STATUS_MODULE_ALERT_TRIGGERED', 'module_alertsfired.png');
 // For agents.
 define('STATUS_AGENT_CRITICAL', 'agent_critical.png');
 define('STATUS_AGENT_WARNING', 'agent_warning.png');

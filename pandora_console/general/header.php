@@ -213,84 +213,108 @@ if ($config['menu_type'] == 'classic') {
             $select[0]['autorefresh_white_list']
         );
 
-        if ($autorefresh_list !== null
-            && array_search($_GET['sec2'], $autorefresh_list) !== false
+        if ($config['legacy_vc']
+            || ($_GET['sec2'] !== 'operation/visual_console/render_view')
+            || (($_GET['sec2'] !== 'operation/visual_console/render_view')
+            && $config['legacy_vc'])
         ) {
-            $do_refresh = true;
-            if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                    $do_refresh = false;
+            if ($autorefresh_list !== null
+                && array_search($_GET['sec2'], $autorefresh_list) !== false
+            ) {
+                $do_refresh = true;
+                if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
+                    if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
+                        $do_refresh = false;
+                    }
                 }
-            }
 
-            if ($do_refresh) {
+                if ($do_refresh) {
+                    $autorefresh_img = html_print_image(
+                        'images/header_refresh_gray.png',
+                        true,
+                        [
+                            'class' => 'bot',
+                            'alt'   => 'lightning',
+                            'title' => __('Configure autorefresh'),
+                        ]
+                    );
+
+                    if ((isset($select[0]['time_autorefresh']) === true)
+                        && $select[0]['time_autorefresh'] !== 0
+                        && $config['refr'] === null
+                    ) {
+                        $config['refr'] = $select[0]['time_autorefresh'];
+                        $autorefresh_txt .= ' (<span id="refrcounter">';
+                        $autorefresh_txt .= date(
+                            'i:s',
+                            $config['refr']
+                        );
+                        $autorefresh_txt .= '</span>)';
+                    } else if ($_GET['refr']) {
+                        $autorefresh_txt .= ' (<span id="refrcounter">';
+                        $autorefresh_txt .= date('i:s', $config['refr']);
+                        $autorefresh_txt .= '</span>)';
+                    }
+
+                    $ignored_params['refr'] = '';
+                    $values = get_refresh_time_array();
+
+                    $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
+                    $autorefresh_additional .= html_print_select(
+                        $values,
+                        'ref',
+                        '',
+                        '',
+                        __('Select'),
+                        '0',
+                        true,
+                        false,
+                        false
+                    );
+                    $autorefresh_additional .= '</span>';
+                    unset($values);
+                    if ($home_page != '') {
+                        $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
+                    } else {
+                        $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
+                    }
+
+                    if ($_GET['refr']
+                        || ((isset($select[0]['time_autorefresh']) === true)
+                        && $select[0]['time_autorefresh'] !== 0)
+                    ) {
+                        if ($home_page != '') {
+                            $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
+                        } else {
+                            $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
+                        }
+                    } else {
+                        $autorefresh_link_open_txt = '<a>';
+                    }
+
+                    $autorefresh_link_close = '</a>';
+                    $display_counter = 'display:block';
+                } else {
+                    $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+
+                    $ignored_params['refr'] = false;
+
+                    $autorefresh_link_open_img = '';
+                    $autorefresh_link_open_txt = '';
+                    $autorefresh_link_close = '';
+
+                    $display_counter = 'display:none';
+                }
+            } else {
                 $autorefresh_img = html_print_image(
-                    'images/header_refresh_gray.png',
+                    'images/header_refresh_disabled_gray.png',
                     true,
                     [
-                        'class' => 'bot',
+                        'class' => 'bot autorefresh_disabled',
                         'alt'   => 'lightning',
-                        'title' => __('Configure autorefresh'),
+                        'title' => __('Disabled autorefresh'),
                     ]
                 );
-
-                if ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0
-                    && $config['refr'] === null
-                ) {
-                    $config['refr'] = $select[0]['time_autorefresh'];
-                    $autorefresh_txt .= ' (<span id="refrcounter">';
-                    $autorefresh_txt .= date(
-                        'i:s',
-                        $config['refr']
-                    );
-                    $autorefresh_txt .= '</span>)';
-                } else if ($_GET['refr']) {
-                    $autorefresh_txt .= ' (<span id="refrcounter">';
-                    $autorefresh_txt .= date('i:s', $config['refr']);
-                    $autorefresh_txt .= '</span>)';
-                }
-
-                $ignored_params['refr'] = '';
-                $values = get_refresh_time_array();
-
-                $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-                $autorefresh_additional .= html_print_select(
-                    $values,
-                    'ref',
-                    '',
-                    '',
-                    __('Select'),
-                    '0',
-                    true,
-                    false,
-                    false
-                );
-                $autorefresh_additional .= '</span>';
-                unset($values);
-                if ($home_page != '') {
-                    $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
-                } else {
-                    $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
-                }
-
-                if ($_GET['refr']
-                    || ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0)
-                ) {
-                    if ($home_page != '') {
-                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
-                    } else {
-                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
-                    }
-                } else {
-                    $autorefresh_link_open_txt = '<a>';
-                }
-
-                $autorefresh_link_close = '</a>';
-                $display_counter = 'display:block';
-            } else {
-                $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
 
                 $ignored_params['refr'] = false;
 
@@ -300,38 +324,20 @@ if ($config['menu_type'] == 'classic') {
 
                 $display_counter = 'display:none';
             }
-        } else {
-            $autorefresh_img = html_print_image(
-                'images/header_refresh_disabled_gray.png',
-                true,
-                [
-                    'class' => 'bot autorefresh_disabled',
-                    'alt'   => 'lightning',
-                    'title' => __('Disabled autorefresh'),
-                ]
-            );
 
-            $ignored_params['refr'] = false;
+            $header_autorefresh = '<div id="header_autorefresh">';
+            $header_autorefresh .= $autorefresh_link_open_img;
+            $header_autorefresh .= $autorefresh_img;
+            $header_autorefresh .= $autorefresh_link_close;
+            $header_autorefresh .= '</div>';
 
-            $autorefresh_link_open_img = '';
-            $autorefresh_link_open_txt = '';
-            $autorefresh_link_close = '';
-
-            $display_counter = 'display:none';
+            $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
+            $header_autorefresh_counter .= $autorefresh_link_open_txt;
+            $header_autorefresh_counter .= $autorefresh_txt;
+            $header_autorefresh_counter .= $autorefresh_link_close;
+            $header_autorefresh_counter .= $autorefresh_additional;
+            $header_autorefresh_counter .= '</div>';
         }
-
-        $header_autorefresh = '<div id="header_autorefresh">';
-        $header_autorefresh .= $autorefresh_link_open_img;
-        $header_autorefresh .= $autorefresh_img;
-        $header_autorefresh .= $autorefresh_link_close;
-        $header_autorefresh .= '</div>';
-
-        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
-        $header_autorefresh_counter .= $autorefresh_link_open_txt;
-        $header_autorefresh_counter .= $autorefresh_txt;
-        $header_autorefresh_counter .= $autorefresh_link_close;
-        $header_autorefresh_counter .= $autorefresh_additional;
-        $header_autorefresh_counter .= '</div>';
 
         // Button for feedback pandora.
         if (enterprise_installed()) {

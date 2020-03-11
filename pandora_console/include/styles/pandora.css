@@ -730,6 +730,7 @@ input.sub {
   padding-bottom: 10px;
   padding-top: 10px;
   padding-left: 15px;
+  margin-left: 10px;
   border: 1px solid #888;
   font-family: "lato", "Open Sans", sans-serif;
   cursor: pointer;
@@ -1761,9 +1762,20 @@ button.deploy,
 input.deploy {
   background-image: url(../../images/input_deploy.png);
 }
-/*#table-add-item select, #table-add-sla select {
-	width: 180px;
-}*/
+
+button.add-item-img,
+input.add-item-img {
+  background-image: url(../../images/add.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+button.remove-item-img,
+input.remove-item-img {
+  background-image: url(../../images/delete.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
 
 /* end of classes for event priorities */
 div#main_pure {
@@ -2493,6 +2505,11 @@ span#plugin_description {
   text-align: left;
   padding-top: 20px;
 }
+
+#tinymce.mceContentBody.tinyMCEBody {
+  background-color: #ededed;
+}
+
 .visual_font_size_4pt,
 .visual_font_size_4pt > em,
 .visual_font_size_4pt > strong,
@@ -4282,6 +4299,33 @@ form ul.form_flex li ul li {
 /* snmp */
 #snmp_data .databox {
   border: 0px;
+}
+
+#snmp_browser {
+  text-align: left;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 8pt;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100px;
+  max-height: 500px;
+  overflow: auto;
+  background-color: #f4f5f4;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  padding: 5px;
+}
+#snmp_create_buttons {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+#snmp_create_buttons > .sub {
+  display: flex;
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 /* library for graphs */

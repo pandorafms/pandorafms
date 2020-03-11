@@ -22,6 +22,7 @@ use Socket qw(inet_ntoa inet_aton);
 use File::Copy;
 use Scalar::Util qw(looks_like_number);
 use Time::HiRes qw(time);
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime setsid floor);
 use MIME::Base64;
 use JSON qw(decode_json encode_json);
@@ -31,8 +32,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.742";
-my $pandora_build = "200127";
+my $pandora_version = "7.0NG.744";
+my $pandora_build = "200311";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );

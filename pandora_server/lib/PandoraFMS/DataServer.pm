@@ -27,6 +27,7 @@ use Thread::Semaphore;
 use Time::Local;
 use XML::Parser::Expat;
 use XML::Simple;
+eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(setsid strftime);
 use IO::Uncompress::Unzip;
 use JSON qw(decode_json);
@@ -81,8 +82,11 @@ sub new ($$;$) {
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
 
 	# Load external .enc files for XML::Parser.
-	if ($config->{'enc_dir'} ne '' && !grep {$_ eq $config->{'enc_dir'}} @XML::Parser::Expat::Encoding_Path) {
+	if ($config->{'enc_dir'} ne '') {
 		push(@XML::Parser::Expat::Encoding_Path, $config->{'enc_dir'});
+		if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+			push(@XML::SAX::ExpatXS::Encoding::Encoding_Path, $config->{'enc_dir'});
+		}
 	}
 
 	if ($config->{'autocreate_group'} > 0 && !defined(get_group_name ($dbh, $config->{'autocreate_group'}))) {

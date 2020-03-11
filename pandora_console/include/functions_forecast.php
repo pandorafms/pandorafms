@@ -195,7 +195,7 @@ function forecast_projection_graph(
         $now = time();
 
         // Check that exec time is not greater than half max exec server time
-        if ($max_exec_time !== false) {
+        if ($max_exec_time != false) {
             if (($begin_time + ($max_exec_time / 2)) < $now) {
                 return false;
             }
@@ -214,15 +214,17 @@ function forecast_projection_graph(
         // Using this function for prediction_date
         if ($prediction_period == false) {
             // These statements stop the prediction when interval is greater than 2 years
-            if (($current_ts - $last_timestamp) >= 94608000) {
+            if (($current_ts - $last_timestamp) >= 94608000
+                || $max_value == $min_value
+            ) {
                 return false;
             }
 
             // Found it
-            if (($max_value >= $output_data[$idx][0])
+            if (($max_value >= $output_data[$idx][1])
                 && ($min_value <= $output_data[$idx][0])
             ) {
-                return $current_ts;
+                return ($current_ts + ($sum_diff_dates * $agent_interval));
             }
         } else if ($current_ts > $limit_timestamp) {
             $in_range = false;

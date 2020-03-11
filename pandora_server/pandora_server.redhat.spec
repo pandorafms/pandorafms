@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.742
-%define release     200127
+%define version     7.0NG.744
+%define release     200311
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -159,7 +159,7 @@ fi
 exit 0
 
 %files
-%defattr(-,root,root)
+%defattr(750,root,root)
 %doc AUTHORS COPYING README
 %{_sysconfdir}/rc.d/init.d/pandora_server
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
@@ -174,10 +174,11 @@ exit 0
 %{_mandir}/man1/pandora_server.1.gz
 %{_mandir}/man1/tentacle_server.1.gz
 
-%defattr(-,pandora,root)
+%defattr(750,pandora,root)
 %{_bindir}/pandora_exec
 %{_bindir}/pandora_server
 %{_bindir}/tentacle_server
+
 %dir %{_sysconfdir}/pandora
 %dir %{_localstatedir}/spool/pandora
 

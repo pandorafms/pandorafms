@@ -14,7 +14,7 @@
 global $config;
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Agent Management'

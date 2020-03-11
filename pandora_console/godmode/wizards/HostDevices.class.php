@@ -58,7 +58,6 @@ class HostDevices extends Wizard
     public $pageLabelsNetScan = [
         'NetScan definition',
         'NetScan features',
-
     ];
 
     /**
@@ -269,6 +268,8 @@ class HostDevices extends Wizard
      */
     public function parseNetScan()
     {
+        global $config;
+
         if ($this->page == 0) {
             // Check if we're updating a task.
             $task_id = get_parameter('task', null);
@@ -333,18 +334,14 @@ class HostDevices extends Wizard
             if ($task_id !== null
                 && $taskname == null
                 && $server_id == null
-                && $id_group == null
-                && $server == null
-                && $datacenter == ''
-                && $user == ''
-                && $pass == ''
-                && $encrypt == null
-                && $interval == 0
+                && empty($id_group) === true
+                && empty($network) === true
+                && $interval === 0
             ) {
                 // Default values, no data received.
                 // User is accesing directly to this page.
                 if (check_acl(
-                    $config['id_usuario'],
+                    $config['id_user'],
                     $this->task['id_group'],
                     $this->access
                 ) != true
@@ -562,7 +559,7 @@ class HostDevices extends Wizard
             // Check ACL. If user is not able to manage target task,
             // redirect him to main page.
             if (check_acl(
-                $config['id_usuario'],
+                $config['id_user'],
                 $this->task['id_group'],
                 $this->access
             ) != true
@@ -878,7 +875,9 @@ class HostDevices extends Wizard
             ];
 
             $form['inputs'][] = [
-                'extra' => '<p><h3>Please, configure task <b>'.io_safe_output($this->task['name']).'</b></h3></p>',
+                'extra' => '<p><h3>Please, configure task <b>'.io_safe_output(
+                    $this->task['name']
+                ).'</b></h3></p>',
             ];
 
             $form['inputs'][] = [
@@ -893,6 +892,7 @@ class HostDevices extends Wizard
                     'selected'      => $this->task['id_network_profile'],
                     'nothing_value' => 0,
                     'nothing'       => __('None'),
+                    'multiple'      => true,
                 ],
             ];
 

@@ -41,7 +41,7 @@ class Wizard
     /**
      * Breadcrum
      *
-     * @var array.
+     * @var array
      */
     public $breadcrum;
 

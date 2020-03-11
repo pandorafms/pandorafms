@@ -2716,6 +2716,7 @@ function get_shape_status_set($type)
         case STATUS_MODULE_NO_DATA:
         case STATUS_AGENT_NO_DATA:
         case STATUS_MODULE_CRITICAL:
+        case STATUS_MODULE_ALERT_TRIGGERED:
         case STATUS_AGENT_CRITICAL:
         case STATUS_MODULE_WARNING:
         case STATUS_AGENT_WARNING:

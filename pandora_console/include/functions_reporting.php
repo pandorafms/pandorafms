@@ -5664,22 +5664,32 @@ function reporting_advanced_sla(
         // Infer availability range based on the critical thresholds.
         $agentmodule_info = modules_get_agentmodule($id_agent_module);
 
+        // // Check if module type is string.
+        $is_string_module = modules_is_string($agentmodule_info['id_agente_modulo']);
+
         // Take in mind: the "inverse" critical threshold.
-        $min_value        = $agentmodule_info['min_critical'];
-        $max_value        = $agentmodule_info['max_critical'];
         $inverse_interval = ($agentmodule_info['critical_inverse'] == 0) ? 1 : 0;
 
-        if ((!isset($min_value)) || ($min_value == 0)) {
-            $min_value = null;
+        if (!$is_string_module) {
+            $min_value        = $agentmodule_info['min_critical'];
+            $max_value        = $agentmodule_info['max_critical'];
+        } else {
+            $max_value = io_safe_output($agentmodule_info['str_critical']);
         }
 
-        if ((!isset($max_value)) || ($max_value == 0)) {
-            $max_value = null;
-        }
+        if (!$is_string_module) {
+            if ((!isset($min_value)) || ($min_value == 0)) {
+                $min_value = null;
+            }
 
-        if ((!(isset($max_value))) && (!(isset($min_value)))) {
-            $max_value = null;
-            $min_value = null;
+            if ((!isset($max_value)) || ($max_value == 0)) {
+                $max_value = null;
+            }
+
+            if ((!(isset($max_value))) && (!(isset($min_value)))) {
+                $max_value = null;
+                $min_value = null;
+            }
         }
 
         if ((!isset($min_value)) && (!isset($max_value))) {
@@ -6141,14 +6151,31 @@ function reporting_advanced_sla(
                                 if ((isset($current_data['datos']))
                                     && ($current_data['datos'] !== false)
                                 ) {
+                                    // Check values if module is sring type.
+                                    if ($is_string_module) {
+                                        if (empty($max_value)) {
+                                            $match = preg_match('/^'.$max_value.'$/', $current_data['datos']);
+                                        } else {
+                                            $match = preg_match('/'.$max_value.'/', $current_data['datos']);
+                                        }
+
+                                        // Take notice of $inverse_interval value,
+                                        if ($inverse_interval == 0) {
+                                            $sla_check_value = $match;
+                                        } else {
+                                            $sla_check_value = !$match;
+                                        }
+                                    } else {
+                                        $sla_check_value = sla_check_value(
+                                            $current_data['datos'],
+                                            $min_value,
+                                            $max_value,
+                                            $inverse_interval
+                                        );
+                                    }
+
                                     // Not unknown nor not init values.
-                                    if (sla_check_value(
-                                        $current_data['datos'],
-                                        $min_value,
-                                        $max_value,
-                                        $inverse_interval
-                                    )
-                                    ) {
+                                    if ($sla_check_value) {
                                         $ok_checks++;
                                         $time_in_ok += $time_interval;
                                     } else {

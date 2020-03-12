@@ -169,7 +169,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     $module_list = json_decode($_REQUEST['data_module_list'], true);
     $type_graph_pdf = $_REQUEST['type_graph_pdf'];
 
-    if ($params['vconsole'] === false) {
+    if (isset($params['vconsole']) === false || $params['vconsole'] === false) {
         $params['width'] = (int) $_REQUEST['viewport_width'];
         if ((isset($params['width']) === false
             || ($params['width'] <= 0))
@@ -180,7 +180,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
             }
 
             if ($type_graph_pdf === 'slicebar') {
-                $params['width'] = 150;
+                $params['width'] = 100;
                 $params['height'] = 70;
             }
         }

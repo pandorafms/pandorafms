@@ -54,8 +54,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.743';
-use constant AGENT_BUILD => '200225';
+use constant AGENT_VERSION => '7.0NG.744';
+use constant AGENT_BUILD => '200312';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -2606,7 +2606,7 @@ sub cron_next_execution {
 		$nex_time = cron_next_execution_date ($cron, $nex_time, 0);
 	}
 
-	return $nex_time - time();
+	return $nex_time - $cur_time;
 }
 
 ###############################################################################
@@ -2637,7 +2637,7 @@ sub cron_check_interval {
 	if ($down < $up) {
 		return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
 	} else {
-		return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
+		return 0 if ($elem_curr_time < $down && $elem_curr_time > $up);
 	}
 
 	return 1;
@@ -2661,15 +2661,11 @@ sub cron_next_execution_date {
 		}
 	}
 
-	# Get current time
-	if (! defined ($cur_time)) {
-		$cur_time = time();
-	}
 	# Check if current time + interval is on cron too
 	my $nex_time = $cur_time + $interval;
 	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) 
 		= (localtime ($nex_time))[1, 2, 3, 4, 5];
-	
+
 	my @cron_array = ($min, $hour, $mday, $mon);
 	my @curr_time_array = ($cur_min, $cur_hour, $cur_mday, $cur_mon);
 	return ($nex_time) if cron_is_in_cron(\@cron_array, \@curr_time_array) == 1;
@@ -2806,7 +2802,7 @@ sub cron_is_in_cron {
 #     * should returns floor data.
 #     5 should returns 5.
 #     10-55 should returns 10.
-#     55-10 should retunrs floor data.
+#     55-10 should returns elem_down.
 ################################################################################
 sub cron_get_next_time_element {
 	# Default floor data is 0
@@ -2814,7 +2810,7 @@ sub cron_get_next_time_element {
 	$floor_data = 0 unless defined($floor_data);
 
 	my ($elem_down, $elem_up) = cron_get_interval ($curr_element);
-	return ($elem_down eq '*' || (defined($elem_up) && $elem_down > $elem_up))
+	return ($elem_down eq '*')
 		? $floor_data
 		: $elem_down;
 }

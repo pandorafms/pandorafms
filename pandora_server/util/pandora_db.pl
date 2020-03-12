@@ -34,7 +34,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.743 PS200225";
+my $version = "7.0NG.744 PS200312";
 
 # Pandora server configuration
 my %conf;
@@ -686,6 +686,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_purge_old_information'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'Days_purge_old_information'");
 	$conf->{'_elasticsearch_ip'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_ip'");
 	$conf->{'_elasticsearch_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_port'");
+	$conf->{'_server_unique_identifier'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'server_unique_identifier'");
 
 	$BIG_OPERATION_STEP = $conf->{'_big_operation_step_datos_purge'}
 					if ( $conf->{'_big_operation_step_datos_purge'} );

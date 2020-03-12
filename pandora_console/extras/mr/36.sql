@@ -11,4 +11,6 @@ PREPARE pr_oum744 FROM @st_oum744;
 EXECUTE pr_oum744;
 DEALLOCATE PREPARE pr_oum744;
 
+ALTER TABLE `tpolicies` ADD COLUMN `force_apply` tinyint(1) default 0;
+
 COMMIT;

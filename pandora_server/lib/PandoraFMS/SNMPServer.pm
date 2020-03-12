@@ -157,6 +157,10 @@ sub data_producer ($) {
 	
 			# Storm protection.
 			my ($ver, $date, $time, $source, $null) = split(/\[\*\*\]/, $line, 5);
+			if ($ver eq "SNMPv2" || $pa_config->{'snmp_pdu_address'} eq '1' ) {
+				$source =~ s/(?:(?:TCP|UDP):\s*)?\[?([^] ]+)\]?(?::-?\d+)?(?:\s*->.*)?$/$1/;
+			}
+
 			next unless defined ($source);
 			if (! defined ($AGENTS{$source})) {
 				$AGENTS{$source}{'count'} = 1;

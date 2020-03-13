@@ -1920,11 +1920,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
             <td colspan='3' class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts_fired']."</td>
         </tr>
         <tr>
-            <td></td>
-            <td colspan='6' class='cellBold cellCenter'>".__('Last %s', human_time_description_raw($item['date']['period']))."</td>
-        </tr>
-        <tr>
-            <td class='cellBold cellCenter'>".__('Events')."</td>
+            <td class='cellBold cellCenter'>".__('Events (not validated)')."</td>
             <td colspan='6' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</td>
         </tr></tbody>
     </table>';

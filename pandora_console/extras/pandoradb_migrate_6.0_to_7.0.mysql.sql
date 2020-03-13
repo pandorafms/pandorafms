@@ -1656,7 +1656,23 @@ ALTER TABLE `trecon_task` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `wmi_enabled` tinyint(1) unsigned NULL DEFAULT '0',
 	MODIFY COLUMN `auth_strings` text NULL,
 	MODIFY COLUMN `autoconfiguration_enabled` tinyint(1) unsigned NULL DEFAULT '0',
-	MODIFY COLUMN `summary` text NULL;
+	MODIFY COLUMN `summary` text NULL,
+	MODIFY COLUMN `id_network_profile` text;
+
+-- ----------------------------------------------------------------------
+-- Table `tdiscovery_tmp`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tdiscovery_tmp` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_rt` int(10) unsigned NOT NULL,
+	`label` varchar(600) BINARY NOT NULL default '',
+	`data` text,
+	`review_date` datetime,
+	`created` int(1) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_rt`) REFERENCES `trecon_task`(`id_rt`)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`

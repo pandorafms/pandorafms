@@ -23,6 +23,37 @@ ul.wizard li > textarea {
   font-family: monospace;
 }
 
-.hidden {
+.wizard .hidden {
   display: none;
+}
+
+.wizard .indented {
+  margin-left: 2em;
+}
+
+/* override tag-editor styles */
+.wizard .tag-editor.ui-sortable {
+  width: 450px;
+  display: inline-block;
+}
+
+.wizard .tag-editor .tag-editor-tag {
+  padding: 5px;
+  color: #fff;
+  background: #82b92e;
+}
+
+.wizard .tag-editor .tag-editor-delete i {
+  line-height: inherit;
+}
+.wizard .tag-editor .tag-editor-delete i:before {
+  color: #ccc;
+}
+.wizard .tag-editor .tag-editor-delete:hover i:before {
+  color: #fff;
+}
+
+.wizard .tag-editor .tag-editor-delete {
+  padding: 5px;
+  background: #e63c52;
 }

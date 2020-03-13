@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension to schedule tasks on Pandora FMS Console
+ * Defines wizard to configure discovery tasks (Host&devices)
  *
  * @category   Wizard
  * @package    Pandora FMS
@@ -420,7 +420,7 @@ class HostDevices extends Wizard
                 return false;
             }
 
-            $id_network_profile = get_parameter('id_network_profile', null);
+            $id_network_profile = get_parameter('id_network_profile', []);
             $autoconf_enabled = get_parameter_switch(
                 'autoconfiguration_enabled'
             );
@@ -440,7 +440,7 @@ class HostDevices extends Wizard
             $snmp_privacy_pass = get_parameter('snmp_privacy_pass', null);
             $snmp_auth_method = get_parameter('snmp_auth_method', null);
             $snmp_security_level = get_parameter('snmp_security_level', null);
-            $auth_strings = get_parameter('auth_strings', null);
+            $auth_strings = get_parameter('auth_strings', []);
 
             if ($snmp_version == 3) {
                 $this->task['snmp_community'] = $snmp_context;
@@ -449,7 +449,14 @@ class HostDevices extends Wizard
             }
 
             $this->task['autoconfiguration_enabled'] = $autoconf_enabled;
-            $this->task['id_network_profile'] = $id_network_profile;
+            $this->task['id_network_profile'] = '';
+            if (is_array($id_network_profile) === true) {
+                $this->task['id_network_profile'] = join(
+                    ',',
+                    $id_network_profile
+                );
+            }
+
             $this->task['snmp_enabled'] = $snmp_enabled;
             $this->task['os_detect'] = $os_detect;
             $this->task['parent_detection'] = $parent_detection;
@@ -464,7 +471,13 @@ class HostDevices extends Wizard
             $this->task['snmp_privacy_pass'] = $snmp_privacy_pass;
             $this->task['snmp_auth_method'] = $snmp_auth_method;
             $this->task['snmp_security_level'] = $snmp_security_level;
-            $this->task['auth_strings'] = $auth_strings;
+            $this->task['auth_strings'] = '';
+            if (is_array($auth_strings) === true) {
+                $this->task['auth_strings'] = join(
+                    ',',
+                    $auth_strings
+                );
+            }
 
             if ($this->task['disabled'] == 2) {
                 // Wizard finished.
@@ -875,21 +888,29 @@ class HostDevices extends Wizard
             ];
 
             $form['inputs'][] = [
-                'extra' => '<p><h3>Please, configure task <b>'.io_safe_output(
+                'extra' => '<p><h3>Please, customize task <b>'.io_safe_output(
                     $this->task['name']
                 ).'</b></h3></p>',
             ];
 
             $form['inputs'][] = [
-                'label'     => __('Module template'),
+                'label'     => __('Module templates').ui_print_help_tip(
+                    __(
+                        'Module <i>Host Alive</i> will be added to discovered agents by default.'
+                    ),
+                    true
+                ),
                 'arguments' => [
-                    'name'          => 'id_network_profile',
+                    'name'          => 'id_network_profile[]',
                     'type'          => 'select_from_sql',
                     'sql'           => 'SELECT id_np, name
                             FROM tnetwork_profile
                             ORDER BY name',
                     'return'        => true,
-                    'selected'      => $this->task['id_network_profile'],
+                    'selected'      => explode(
+                        ',',
+                        $this->task['id_network_profile']
+                    ),
                     'nothing_value' => 0,
                     'nothing'       => __('None'),
                     'multiple'      => true,

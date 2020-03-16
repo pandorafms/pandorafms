@@ -1000,4 +1000,36 @@ class HTML
     }
 
 
+    /**
+     * Returns a n-dimensional array (data) into a html tree structure.
+     *
+     * @param string $target   Target DOM id.
+     * @param array  $data     N-dimensional array.
+     * @param string $callback Callback function.
+     *
+     * @return string
+     */
+    public static function printTree($target, $data, $callback='')
+    {
+        ui_require_css_file('simTree');
+        ui_require_javascript_file('simTree');
+
+        $output = '
+<script type="text/javascript">
+    $(document).ready(function() {
+        simTree({
+            el: $('.$target.'),
+            data: '.json_encode($data).',
+            onClick: function (item) {'.$callback.';},
+            check: true,
+            linkParent: true
+        });
+
+    });
+</script>';
+
+        return $output;
+    }
+
+
 }

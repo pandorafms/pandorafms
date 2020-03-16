@@ -7,13 +7,14 @@ use strict;
 use warnings;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
-
 use NetAddr::IP;
 use POSIX qw/ceil/;
+use Socket qw/inet_aton/;
+
+use lib '/usr/lib/perl5';
+use PandoraFMS::Tools;
 use PandoraFMS::Recon::NmapParser;
 use PandoraFMS::Recon::Util;
-use Socket qw/inet_aton/;
 
 # Constants.
 use constant {
@@ -67,6 +68,7 @@ our $SYSDESCR = ".1.3.6.1.2.1.1.1";
 our $SYSSERVICES = ".1.3.6.1.2.1.1.7";
 our $SYSUPTIME = ".1.3.6.1.2.1.1.3";
 our $VTPVLANIFINDEX = ".1.3.6.1.4.1.9.9.46.1.3.1.1.18.1";
+our $PEN_OID = ".1.3.6.1.2.1.1.2.0";
 
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [qw( )] );
@@ -390,6 +392,27 @@ sub are_connected($$$$$) {
 }
 
 ################################################################################
+# Initialize tmp pool for device.
+# Already discovered by scan_subnet.
+################################################################################
+sub icmp_discovery($$) {
+	my ($self, $addr) = @_;
+
+	$self->prepare_agent($addr);
+
+	$self->add_module($addr, 'icmp',
+		{
+			'ip_target' => $addr,
+			'name' => "Host Alive",
+			'description' => '',
+			'type' => 'generic_data',
+			'id_modulo' => 2,
+		}
+	);
+
+}
+
+################################################################################
 # Discover as much information as possible from the given device using SNMP.
 ################################################################################
 sub snmp_discovery($$) {
@@ -425,13 +448,15 @@ sub snmp_discovery($$) {
 
 			# Check remote ARP caches.
 			$self->remote_arp($device);
+
+			# Get PEN.
+			$self->snmp_pen($device);
 		}
 	}
 
 	# Create an agent for the device and add it to the list of known hosts.
-	push(@{$self->{'hosts'}}, $device);
+	$self->add_agent($device);
 
-	$self->call('create_agent', $device);
 }
 
 ################################################################################
@@ -816,11 +841,13 @@ sub get_mac_from_ip($$) {
 	my $mac = undef;
 
 	eval {
-		$mac = `arping -c 1 -r $host 2>$DEVNULL`;
+		$mac = `arping -c 1 $host 2>$DEVNULL`;
 		$mac = undef unless ($? == 0);
 	};
 
 	return unless defined($mac);
+
+	($mac) = $mac =~ /\[(.*?)\]/ if defined($mac);
 
 	# Clean-up the MAC address.
 	chomp($mac);
@@ -1104,11 +1131,11 @@ sub mark_connected($$;$$$) {
 	$child = $self->{'aliases'}->{$child} if defined($self->{'aliases'}->{$child});
 
 	# Use ping modules when interfaces are unknown.
-	$parent_if = "ping" if $parent_if eq '';
-	$child_if = "ping" if $child_if eq '';
+	$parent_if = "Host Alive" if $parent_if eq '';
+	$child_if = "Host Alive" if $child_if eq '';
 
 	# Do not connect devices using ping modules. A parent-child relationship is enough.
-	if ($parent_if ne "ping" || $child_if ne "ping") {
+	if ($parent_if ne "Host Alive" || $child_if ne "Host Alive") {
 		$self->{'connections'}->{"${parent}\t${parent_if}\t${child}\t${child_if}"} = 1;
 		$self->call('connect_agents', $parent, $parent_if, $child, $child_if);
 	}
@@ -1264,72 +1291,65 @@ sub remote_arp($$) {
 }
 
 ################################################################################
-# Ping the given host. Returns 1 if the host is alive, 0 otherwise.
+# Add agent to pool (will be registered at the end of the scan).
 ################################################################################
-sub ping ($$$) {
-	my ($self, $host) = @_;
-	my ($timeout, $retries, $packets) = ($self->{'icmp_timeout'},$self->{'icmp_checks'},1,);
+sub prepare_agent($$) {
+	my ($self, $addr) = @_;
+	$self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
-	# Windows
-	if (($^O eq "MSWin32") || ($^O eq "MSWin32-x64") || ($^O eq "cygwin")){
-		$timeout *= 1000; # Convert the timeout to milliseconds.
-		for (my $i = 0; $i < $retries; $i++) {
-			my $output = `ping -n $packets -w $timeout $host`;
-			return 1 if ($output =~ /TTL/);
-		}
+	# Already initialized.
+	return if ref($self->{'agents_found'}->{$addr}) eq 'HASH';
 
-		return 0;
+	$self->{'agents_found'}->{$addr} = {
+		'agent' => {
+			'nombre' => $addr,
+			'direccion' => $addr,
+			'alias' => $addr,
+		},
+		'pen' => $self->{'pen'}{$addr},
+		'modules' => [],
+	};
+}
+
+################################################################################
+# Add agent to pool (will be registered at the end of the scan).
+################################################################################
+sub add_agent($$) {
+	my ($self, $addr) = @_;
+	
+	$self->prepare_agent($addr);
+}
+
+################################################################################
+# Add module to agent (tmp pool) (will be registered at the end of the scan).
+################################################################################
+sub add_module($$$$) {
+	my ($self, $agent, $type, $data) = @_;
+
+	$self->prepare_agent($agent);
+
+	push @{$self->{'agents_found'}->{$agent}->{'modules'}}, $data;
+	
+}
+
+################################################################################
+# Test target address (methods).
+################################################################################
+sub test_capabilities($$) {
+	my ($self, $addr) = @_;
+
+	$self->icmp_discovery($addr);
+
+	if (is_enabled($self->{'snmp_enabled'})) {
+		# SNMP discovery.
+		$self->snmp_discovery($addr);
 	}
 
-	# Solaris
-	if ($^O eq "solaris"){
-		my $ping_command = $host =~ /\d+:|:\d+/ ? "ping -A inet6" : "ping";
-		for (my $i = 0; $i < $retries; $i++) {
-
-			# Note: There is no timeout option.
-			`$ping_command -s -n $host 56 $packets >$DEVNULL 2>&1`;
-			return 1 if ($? == 0);
-		}
-
-		return 0;
+	# WMI discovery.
+	if (is_enabled($self->{'wmi_enabled'})) {
+		# Add wmi scan if enabled.
+		$self->wmi_scan($addr);
 	}
-
-	# FreeBSD
-	if ($^O eq "freebsd"){
-		my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping -t $timeout";
-		for (my $i = 0; $i < $retries; $i++) {
-
-			# Note: There is no timeout option for ping6.
-			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
-			return 1 if ($? == 0);
-		}
-
-		return 0;
-	}
-
-	# NetBSD
-	if ($^O eq "netbsd"){
-		my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping -w $timeout";
-		for (my $i = 0; $i < $retries; $i++) {
-
-			# Note: There is no timeout option for ping6.
-			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
-			if ($? == 0) {
-				return 1;
-			}
-		}
-
-		return 0;
-	}
-
-	# Assume Linux by default.
-	my $ping_command = $host =~ /\d+:|:\d+/ ? "ping6" : "ping";
-	for (my $i = 0; $i < $retries; $i++) {
-		`$ping_command -q -W $timeout -n -c $packets $host >$DEVNULL 2>&1`;
-		return 1 if ($? == 0);
-	}
-
-	return 0;
 }
 
 ################################################################################
@@ -1343,6 +1363,7 @@ sub scan_subnet($) {
 	foreach my $subnet (@subnets) {
 		$self->{'c_network_percent'} = 0;
 		$self->{'c_network_name'} = $subnet;
+		$self->call('update_progress', ceil($progress));
 
 		# Clean blanks.
 		$subnet =~ s/\s+//g;
@@ -1357,80 +1378,81 @@ sub scan_subnet($) {
 		my $network = $net_addr->network();
 		my $broadcast = $net_addr->broadcast();
 
-		# fping scan.
-		if (-x $self->{'fping'} && $net_addr->num() > 1) {
-			$self->call('message', "Calling fping...", 5);
+		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
+		my $total_hosts = scalar(@hosts);
+		my %hosts_alive = ();
 
-			my @hosts = `"$self->{'fping'}" -ga "$subnet" 2>DEVNULL`;
-			next if (scalar(@hosts) == 0);
+		# By default 200, (20 * 10)
+		my $host_block_size = $self->{'block_size'};
 
-			$self->{'summary'}->{'discovered'} += scalar(@hosts);
+		# The first 50% of the recon task approx.
+		my $step = 40.0 / scalar(@subnets) / (($total_hosts / $host_block_size)+1);
+		my $subnet_step = 50.0 / (($total_hosts / $host_block_size)+1);
 
-			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
-			my $subnet_step = 100.0 / scalar(@hosts);
-			foreach my $line (@hosts) {
-				chomp($line);
+		for (my $block_index=0;
+			$block_index < $total_hosts;
+			$block_index += $host_block_size
+		) {
+			# Update the recon task
+			# Increase self summary.alive hosts.
+			$self->call('message', "Searching for hosts (".$block_index." / ".$total_hosts.")", 5);
+			my $to = $host_block_size + $block_index;
+			$to = $total_hosts if $to >= $total_hosts;
 
-				my @temp = split(/ /, $line);
-				if (scalar(@temp) != 1) {
+			my $c_block_size = $to - $block_index;
+			my @block = pandora_block_ping(
+				{
+					'fping' => $self->{'fping'},
+					# XXX CAMBIAR POR 0.5
+					'networktimeout' => 0.01 # use fping defaults
+				},
+				@hosts[$block_index .. $to - 1]
+			);
 
-					# Junk is shown for broadcast addresses.
-					# Increase summary.not_alive hosts.
-					$self->{'summary'}->{'not_alive'} += 1;
-					next;
-				}
-				my $host = $temp[0];
+			# check alive hosts in current block
+			%hosts_alive = (
+				%hosts_alive,
+				map {chomp; $_ => 1} @block
+			);
 
-				# Skip network and broadcast addresses.
-				next if ($host eq $network->addr() || $host eq $broadcast->addr());
+			$self->{'summary'}->{'not_alive'} += $c_block_size - (scalar @block);
+			$self->{'summary'}->{'alive'} += scalar @block;
 
-				# Increase self summary.alive hosts.
-				$self->{'summary'}->{'alive'} += 1;
-				$self->call('message', "Scanning host: $host", 5);
-				$self->call('update_progress', ceil($progress));
-				$progress += $step;
-				$self->{'c_network_percent'} += $subnet_step;
+			# Update progress.
+			$progress += $step;
+			$self->{'c_network_percent'} += $subnet_step;
 
-				$self->snmp_discovery($host);
-
-				# Add wmi scan if enabled.
-				$self->wmi_scan($host) if ($self->{'wmi_enabled'} == 1);
-			}
+			# Populate.
+			$self->call('update_progress', ceil($progress));
 		}
 
-		# ping scan.
-		else {
-			my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
-			next if (scalar(@hosts) == 0);
+		# Update progress.
+		$self->call('message', "Searching for hosts (".$total_hosts." / ".$total_hosts.")", 5);
+		$progress = ceil($progress);
+		$self->{'c_network_percent'} = 50;
 
-			$self->{'summary'}->{'discovered'} += scalar(@hosts);
+		# Populate.
+		$self->call('update_progress', ceil($progress));
 
-			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
-			my $subnet_step = 100.0 / scalar(@hosts);
-			foreach my $host (@hosts) {
+		$total_hosts = scalar keys %hosts_alive;
+		$step = 40.0 / scalar(@subnets) / $total_hosts;
+		$subnet_step = 50.0 / $total_hosts;
+		foreach my $addr (keys %hosts_alive) {
+			# Increase self summary.alive hosts.
+			$self->call('message', "Scanning host: $addr", 5);
 
-				$self->call('message', "Scanning host: $host", 5);
-				$self->call('update_progress', ceil($progress));
-				$progress += $step;
+			# Update progress.
+			$progress += $step;
+			$self->{'c_network_percent'} += $subnet_step;
 
-				# Check if the host is up.
-				if ($self->ping($host) == 0) {
-					$self->{'summary'}->{'not_alive'} += 1;
-					next;
-				}
+			# Populate.
+			$self->call('update_progress', ceil($progress));
 
-				$self->{'summary'}->{'alive'} += 1;
-				$self->{'c_network_percent'} += $subnet_step;
-
-				$self->snmp_discovery($host);
-
-				# Add wmi scan if enabled.
-				$self->wmi_scan($host) if ($self->{'wmi_enabled'} == 1);
-			}
+			# Enable/ disable capabilities.
+			$self->test_capabilities($addr);
 		}
 	}
 }
-
 
 ################################################################################
 # Perform a Cloud scan
@@ -1441,7 +1463,7 @@ sub cloud_scan($) {
 
 	my $type = '';
 
-	if (   $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
+	if ( $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_EC2
 		|| $self->{'task_data'}->{'type'} == DISCOVERY_CLOUD_AWS_RDS) {
 		$type = 'Aws';
 	} else {
@@ -1783,12 +1805,19 @@ sub scan($) {
 		}
 	}
 
+	if(defined($self->{'task_data'}{'direct_report'})
+	  && $self->{'task_data'}{'direct_report'} eq "2"
+	) {
+		# Use Cached results.
+		return $self->call('report_scanned_agents');
+	}
+
 	# Find devices.
 	$self->call('message', "[1/4] Scanning the network...", 3);
 	$self->{'step'} = STEP_SCANNING;
 	$self->call('update_progress', $progress);
-	$self->scan_subnet();
 
+	$self->scan_subnet();
 	# Read the local ARP cache.
 	$self->local_arp();
 
@@ -1802,7 +1831,7 @@ sub scan($) {
 		# Connectivity from address forwarding tables.
 		$self->call('message', "[2/4] Finding address forwarding table connectivity...", 3);
 		$self->{'step'} = STEP_AFT;
-		($progress, $step) = (50, 20.0 / scalar(@hosts)); # From 50% to 70%.
+		($progress, $step) = (80, 8.0 / scalar(@hosts)); # From 50% to 70%.
 		for (my $i = 0; defined($hosts[$i]); $i++) {
 			$self->call('update_progress', $progress);
 			$progress += $step;
@@ -1812,7 +1841,7 @@ sub scan($) {
 		# Connect hosts that are still unconnected using traceroute.
 		$self->call('message', "[3/4] Finding traceroute connectivity.", 3);
 		$self->{'step'} = STEP_TRACEROUTE;
-		($progress, $step) = (70, 20.0 / scalar(@hosts)); # From 70% to 90%.
+		($progress, $step) = (88, 8.0 / scalar(@hosts)); # From 70% to 90%.
 		foreach my $host (@hosts) {
 			$self->call('update_progress', $progress);
 			$progress += $step;
@@ -1823,7 +1852,7 @@ sub scan($) {
 		# Connect hosts that are still unconnected using known gateways.
 		$self->call('message', "[4/4] Finding host to gateway connectivity.", 3);
 		$self->{'step'} = STEP_GATEWAY;
-		($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 70% to 90%.
+		($progress, $step) = (94, 6.0 / scalar(@hosts)); # From 70% to 90%.
 		$self->get_routes(); # Update the route cache.
 		foreach my $host (@hosts) {
 			$self->call('update_progress', $progress);
@@ -1852,6 +1881,10 @@ sub scan($) {
 		$dev_info .= ')';
 		$self->call('message', $dev_info, 3);
 	}
+
+	# Send agent information to Database (Discovery) or XML (satellite.).
+	$self->call('report_scanned_agents', $self->{'agents_found'});
+
 }
 
 ################################################################################
@@ -1870,6 +1903,22 @@ sub set_device_type($$$) {
 	my ($self, $device, $type) = @_;
 
 	$self->{'visited_devices'}->{$device}->{'type'} = $type;
+}
+
+################################################################################
+# Calculate 
+################################################################################
+sub snmp_pen($$) {
+	my ($self, $addr) = @_;
+
+	$self->{'pen'} = {} if ref($self->{'pen'}) ne 'HASH';
+
+	$self->{'pen'}{$addr} = $self->snmp_get($addr, $PEN_OID);
+
+	if(defined($self->{'pen'}{$addr})) {
+		($self->{'pen'}{$addr}) = $self->{'pen'}{$addr} =~ /\.\d+\.\d+\.\d+\.\d+\.\d+\.\d+\.(\d+?)\./
+	}
+
 }
 
 ################################################################################
@@ -2015,7 +2064,7 @@ sub traceroute_connectivity($$) {
 		my $parent = $hops[$i]->ipaddr();
 
 		# Create an agent for the parent.
-		$self->call('create_agent', $parent);
+		$self->add_agent($parent);
 
 		$self->call('message', "Host $device is one hop away from host $parent.", 5);
 		$self->mark_connected($parent, '', $device, '');
@@ -2064,27 +2113,61 @@ sub wmi_scan {
 
 	$self->call('message', "[".$target."] WMI available.", 10);
 
-	# Create the agent if it does not exist.
-	my $agent_id = $self->call('create_agent', $target);
-	next unless defined($agent_id);
+	# Register agent.
+	$self->add_agent($target);
 
+	# Add modules.
 	# CPU.
 	my @cpus = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceId FROM Win32_Processor', 0);
 	foreach my $cpu (@cpus) {
-		$self->call('wmi_module',($agent_id,$target,"SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",$auth,1,"CPU Load $cpu","Load for $cpu (%)",'generic_data'));
+		$self->add_module($target, 'wmi',
+			{
+				'target' => $target,
+				'query' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",
+				'auth' => $auth,
+				'column' => 1,
+				'name' => "CPU Load $cpu",
+				'description' => "Load for $cpu (%)",
+				'type' => 'generic_data',
+				'unit' => '%',
+			}
+		);
 	}
 
 	# Memory.
 	my $mem = $self->wmi_get_value($target, $auth, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
 	if (defined($mem)) {
-		$self->call('wmi_module',($agent_id,$target,"SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",$auth,0,'FreeMemory','Free memory','generic_data','KB'));
+		$self->add_module($target, 'wmi',
+			{
+				'target' => $target,
+				'query' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
+				'auth' => $auth,
+				'column' => 0,
+				'name' => 'FreeMemory',
+				'description' => 'Free memory',
+				'type' => 'generic_data',
+				'unit' => 'KB',
+			}
+		);
 	}
 
 	# Disk.
 	my @units = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
 	foreach my $unit (@units) {
-		$self->call('wmi_module',($agent_id,$target,"SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",$auth,1,"FreeDisk $unit",'Available disk space in kilobytes','generic_data','KB'));
+			$self->add_module($target, 'wmi',
+			{
+				'target' => $target,
+				'query' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
+				'auth' => $auth,
+				'column' => 1,
+				'name' => "FreeDisk $unit",
+				'description' => 'Available disk space in kilobytes',
+				'type' => 'generic_data',
+				'unit' => 'KB',
+			}
+		);
 	}
+
 }
 
 ################################################################################

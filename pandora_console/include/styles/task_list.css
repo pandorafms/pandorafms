@@ -40,3 +40,15 @@ ul.progress_task_discovery li span {
   font-size: 9pt;
   margin-left: 20px;
 }
+
+.ui-dialog.ui-widget-content {
+  cursor: initial;
+}
+
+span.link {
+  cursor: pointer;
+}
+
+span.link.review {
+  font-weight: bold;
+}

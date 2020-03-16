@@ -20,6 +20,7 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
+use Carp qw/croak/;
 
 use lib '/usr/lib/perl5';
 use PandoraFMS::Tools;
@@ -894,7 +895,7 @@ sub db_insert ($$$;@) {
 			$insert_id = $dbh->{'mysql_insertid'};
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 	
@@ -917,7 +918,7 @@ sub db_update ($$;@) {
 			$rows = $dbh->do($query, undef, @values);
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 	
@@ -1163,7 +1164,7 @@ sub db_do ($$;@) {
 			$dbh->do($query, undef, @values);
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 }

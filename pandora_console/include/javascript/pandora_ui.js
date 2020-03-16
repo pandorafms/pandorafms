@@ -383,6 +383,7 @@ function confirmDialog(settings) {
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
           click: function() {
             $(this).dialog("close");
+            $(this).remove();
             if (typeof settings.onDeny == "function") settings.onDeny();
           }
         },
@@ -392,6 +393,7 @@ function confirmDialog(settings) {
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
           click: function() {
             $(this).dialog("close");
+            $(this).remove();
             if (typeof settings.onAccept == "function") settings.onAccept();
           }
         }

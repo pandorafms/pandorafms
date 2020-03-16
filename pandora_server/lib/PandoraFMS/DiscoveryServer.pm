@@ -1,8 +1,8 @@
 package PandoraFMS::DiscoveryServer;
-##########################################################################
+################################################################################
 # Pandora FMS Discovery Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
-##########################################################################
+################################################################################
 # Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
@@ -15,7 +15,7 @@ package PandoraFMS::DiscoveryServer;
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##########################################################################
+################################################################################
 
 use strict;
 use warnings;
@@ -77,9 +77,9 @@ use constant {
 	DISCOVERY_APP_SAP => 10,
 };
 
-########################################################################################
+################################################################################
 # Discovery Server class constructor.
-########################################################################################
+################################################################################
 sub new ($$$$$$) {
     my ($class, $config, $dbh) = @_;
     
@@ -113,9 +113,9 @@ sub new ($$$$$$) {
     return $self;
 }
 
-###############################################################################
+################################################################################
 # Run.
-###############################################################################
+################################################################################
 sub run ($) {
     my $self = shift;
     my $pa_config = $self->getConfig ();
@@ -132,9 +132,9 @@ sub run ($) {
     $self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
 
-###############################################################################
+################################################################################
 # Data producer.
-###############################################################################
+################################################################################
 sub data_producer ($) {
     my $self = shift;
     my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
@@ -174,9 +174,9 @@ sub data_producer ($) {
     return @tasks;
 }
 
-###############################################################################
+################################################################################
 # Data consumer.
-###############################################################################
+################################################################################
 sub data_consumer ($$) {
     my ($self, $task_id) = @_;
     my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
@@ -300,18 +300,18 @@ sub data_consumer ($$) {
     }
 }
 
-##########################################################################
+################################################################################
 # Update recon task status.
-##########################################################################
+################################################################################
 sub update_recon_task ($$$) {
     my ($dbh, $id_task, $status) = @_;
     
     db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $status, $id_task);
 } 
 
-##########################################################################
+################################################################################
 # Executes recon scripts
-##########################################################################	
+################################################################################
 sub exec_recon_script ($$$) {
     my ($pa_config, $dbh, $task) = @_;
     
@@ -380,9 +380,9 @@ sub exec_recon_script ($$$) {
     return 0;
 }
 
-##########################################################################
+################################################################################
 # Guess the OS using xprobe2 or nmap.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::guess_os($$) {
     my ($self, $device) = @_;
 
@@ -422,9 +422,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     return OS_OTHER;
 }
 
-##############################################################################
+################################################################################
 # Returns the number of open ports from the given list.
-##############################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::tcp_scan ($$) {
     my ($self, $host) = @_;
 
@@ -436,14 +436,23 @@ sub PandoraFMS::Recon::Base::tcp_scan ($$) {
     return $open_ports;
 }
 
-##########################################################################
+################################################################################
 # Create network profile modules for the given agent.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
     my ($self, $agent_id, $device) = @_;
-    
-    return unless ($self->{'id_network_profile'} > 0);
-    
+
+    #
+    # Plugin
+    # SNMP
+    # WMI
+    # ICMP
+    #
+
+    return if empty($self->{'id_network_profile'});
+
+    my @templates = split /,/, $self->{'id_network_profile'};
+
     # Get network components associated to the network profile.
     my @np_components = get_db_rows($self->{'dbh'}, 'SELECT * FROM tnetwork_profile_component WHERE id_np = ?', $self->{'id_network_profile'});
     foreach my $np_component (@np_components) {
@@ -454,6 +463,10 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
             $self->call('message', "Network component ID " . $np_component->{'id_nc'} . " not found.", 5);
             next;
         }
+
+        ## XXX Puede tener varios penes.
+        #next if (defined($template->{'pen'})
+        #    && get_enterprise_oid($device) != $template->{'pen'} );
 
         # Use snmp_community from network task instead the component snmp_community
         $component->{'snmp_community'} = safe_output($self->get_community($device));
@@ -469,9 +482,84 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
     }
 }
 
-##########################################################################
+################################################################################
+# Create agents and modules reported by Recon::Base.
+################################################################################
+sub PandoraFMS::Recon::Base::report_scanned_agents($) {
+	my ($self) = @_;
+
+    if(defined($self->{'task_data'}{'direct_report'})
+	  && $self->{'task_data'}{'direct_report'} eq "2"
+	) {
+        # Load cache.
+        my @rows = get_db_rows(
+            $self->{'dbh'},
+            'SELECT * FROM tdiscovery_tmp_agents WHERE `id_rt`=?',
+            $self->{'task_data'}{'id_rt'}
+        );
+
+        foreach my $row (@rows) {
+            my $name = safe_output($row->{'label'});
+            my $data;
+            eval {
+                $data = decode_json(decode_base64($row->{'data'}));
+            };
+
+            # Store.
+            $self->{'agents_found'}{$name} = $data;
+        }
+    }
+
+    foreach my $label (keys %{$self->{'agents_found'}}) {
+        if (!is_enabled($self->{'direct_report'})) {
+        # Store temporally. Wait user approval.
+            my $encoded;
+            eval {
+                local $SIG{__DIE__};
+                $encoded = encode_base64(encode_json($self->{'agents_found'}));
+            };
+
+            my $id = get_db_value(
+                $self->{'dbh'},
+                'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
+                $self->{'task_data'}{'id_rt'},
+                safe_input($label)
+            );
+            
+            if (defined($id)) {
+                # Already defined.
+                $self->{'agents_found'}{$label}{'id'} = $id;
+
+                db_do(
+                    $self->{'dbh'},
+                    'UPDATE tdiscovery_tmp_agents SET `data` = ? '
+                    .'WHERE `id_rt` = ? AND `label` = ?',
+                    $encoded,
+                    $self->{'task_data'}{'id_rt'},
+                    safe_input($label)
+                );
+                next;    
+            }
+
+            # Insert.
+            $self->{'agents_found'}{$label}{'id'} = db_insert(
+                $self->{'dbh'},
+                'id',
+                'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
+                .'VALUES (?, ?, ?, now())',
+                $self->{'task_data'}{'id_rt'},
+                safe_input($label),
+                $encoded
+            );
+        } else {
+            # Create agents.
+        }
+    }
+}
+
+################################################################################
 # Connect the given devices in the Pandora FMS database.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
     my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
 
@@ -490,12 +578,12 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
     return unless defined($agent_2);
 
     # Use ping modules by default.
-    $if_1 = 'ping' if ($if_1 eq '');
-    $if_2 = 'ping' if ($if_2 eq '');
+    $if_1 = 'Host Alive' if ($if_1 eq '');
+    $if_2 = 'Host Alive' if ($if_2 eq '');
 
     # Check whether the modules exists.
-    my $module_name_1 = $if_1 eq 'ping' ? 'ping' : "${if_1}_ifOperStatus";
-    my $module_name_2 = $if_2 eq 'ping' ? 'ping' : "${if_2}_ifOperStatus";
+    my $module_name_1 = $if_1 eq 'Host Alive' ? 'Host Alive' : "${if_1}_ifOperStatus";
+    my $module_name_2 = $if_2 eq 'Host Alive' ? 'Host Alive' : "${if_2}_ifOperStatus";
     my $module_id_1 = get_agent_module_id($self->{'dbh'}, $module_name_1, $agent_1->{'id_agente'});
     if ($module_id_1 <= 0) {
         $self->call('message', "ERROR: Module " . safe_output($module_name_1) . " does not exist for agent $dev_1.", 5);
@@ -515,13 +603,13 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 }
 
 
-##########################################################################
+################################################################################
 # Create agents from db_scan. Uses DataServer methods.
 # data = [
 #	'agent_data' => {},
 #	'module_data' => []
 # ]
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::create_agents($$) {
     my ($self, $data) = @_;
 
@@ -618,10 +706,10 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 }
 
 
-##########################################################################
+################################################################################
 # Create an agent for the given device. Returns the ID of the new (or
 # existing) agent, undef on error.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::create_agent($$) {
     my ($self, $device) = @_;
 
@@ -930,9 +1018,9 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
     return $agent_id;
 }
 
-##########################################################################
+################################################################################
 # Delete already existing connections.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::delete_connections($) {
     my ($self) = @_;
 
@@ -940,18 +1028,18 @@ sub PandoraFMS::Recon::Base::delete_connections($) {
     db_do($self->{'dbh'}, 'DELETE FROM tmodule_relationship WHERE id_rt=?', $self->{'task_id'});
 }
 
-#######################################################################
+################################################################################
 # Print log messages.
-#######################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::message($$$) {
     my ($self, $message, $verbosity) = @_;
 
     logger($self->{'pa_config'}, "[Recon task " . $self->{'task_id'} . "] $message", $verbosity);
 }
 
-##########################################################################
+################################################################################
 # Connect the given hosts to its parent.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::set_parent($$$) {
     my ($self, $host, $parent) = @_;
 
@@ -978,9 +1066,9 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
     db_do($self->{'dbh'}, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_parent->{'id_agente'}, $agent->{'id_agente'});
 }
 
-##########################################################################
+################################################################################
 # Create a WMI module for the given agent.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::wmi_module {
     my ($self, $agent_id, $target, $wmi_query, $wmi_auth, $column,
         $module_name, $module_description, $module_type, $unit) = @_;
@@ -1007,9 +1095,9 @@ sub PandoraFMS::Recon::Base::wmi_module {
     pandora_create_module_from_hash($self->{'pa_config'}, \%module, $self->{'dbh'});
 }
 
-##########################################################################
+################################################################################
 # Update recon task status.
-##########################################################################
+################################################################################
 sub PandoraFMS::Recon::Base::update_progress ($$) {
     my ($self, $progress) = @_;
 

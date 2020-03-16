@@ -26,7 +26,9 @@
  * ============================================================================
  */
 
-require_once __DIR__.'/Wizard.main.php';
+global $config;
+
+require_once $config['homedir'].'/include/class/HTML.class.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_reports.php';
 require_once $config['homedir'].'/include/functions_cron.php';
@@ -34,11 +36,13 @@ enterprise_include_once('include/functions_tasklist.php');
 enterprise_include_once('include/functions_cron.php');
 
 ui_require_css_file('task_list');
+ui_require_css_file('simTree');
+ui_require_javascript_file('simTree');
 
 /**
  * Defined as wizard to guide user to explore running tasks.
  */
-class DiscoveryTaskList extends Wizard
+class DiscoveryTaskList extends HTML
 {
 
 
@@ -454,11 +458,20 @@ class DiscoveryTaskList extends Wizard
 
                 if ($task['disabled'] == 0 && $server_name !== '') {
                     if (check_acl($config['id_user'], 0, 'AW')) {
-                        $data[0] = '<a href="'.ui_get_full_url(
+                        $data[0] = '<span class="link" onclick="force_task(\'';
+                        $data[0] .= ui_get_full_url(
                             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
-                        ).'">';
+                        );
+                        $data[0] .= '\'';
+                        if ($task['type'] == DISCOVERY_HOSTDEVICES) {
+                            $title = __('Are you sure?');
+                            $message = 'This action will rescan the target networks.';
+                            $data[0] .= ', {title: \''.$title.'\', message: \''.$message.'\'}';
+                        }
+
+                        $data[0] .= ');" >';
                         $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
-                        $data[0] .= '</a>';
+                        $data[0] .= '</span>';
                     }
                 } else if ($task['disabled'] == 2) {
                     $data[0] = ui_print_help_tip(
@@ -472,12 +485,12 @@ class DiscoveryTaskList extends Wizard
                 // Name task.
                 $data[1] = '';
                 if ($task['disabled'] != 2) {
-                    $data[1] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                    $data[1] .= '<span class="link" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                 }
 
                 $data[1] .= '<b>'.$task['name'].'</b>';
                 if ($task['disabled'] != 2) {
-                    $data[1] .= '</a>';
+                    $data[1] .= '</span>';
                 }
 
                 $data[2] = $server_name;
@@ -496,10 +509,20 @@ class DiscoveryTaskList extends Wizard
                     $data[4] = '-';
                 }
 
-                if ($task['status'] <= 0) {
-                    $data[5] = __('Done');
+                if ($task['direct_report'] == 1) {
+                    if ($task['status'] <= 0) {
+                        $data[5] = __('Done');
+                    } else {
+                        $data[5] = __('Pending');
+                    }
                 } else {
-                    $data[5] = __('Pending');
+                    if ($task['status'] <= 0) {
+                        $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[5] .= __('Review');
+                        $data[5] .= '</span>';
+                    } else {
+                        $data[5] = __('Searching');
+                    }
                 }
 
                 switch ($task['type']) {
@@ -595,7 +618,28 @@ class DiscoveryTaskList extends Wizard
                 if ($task['status'] <= 0 || $task['status'] > 100) {
                     $data[7] = '-';
                 } else {
-                    $data[7] = ui_progress($task['status'], '100%', 1.5);
+                    $data[7] = ui_progress(
+                        $task['status'],
+                        '100%',
+                        1.9,
+                        // Color.
+                        '#82b92e',
+                        // Return.
+                        true,
+                        // Text.
+                        '',
+                        // Ajax.
+                        [
+                            'page'     => 'godmode/servers/discovery',
+                            'interval' => 10,
+                            'simple'   => 1,
+                            'data'     => [
+                                'wiz'    => 'tasklist',
+                                'id'     => $task['id_rt'],
+                                'method' => 'task_progress',
+                            ],
+                        ]
+                    );
                 }
 
                 if ($task['utimestamp'] > 0) {
@@ -700,9 +744,15 @@ class DiscoveryTaskList extends Wizard
 
             // Div neccesary for modal map task.
             echo '<div id="map_task" style="display:none"></div>';
+            echo '<div id="task_review" style="display:none"></div>';
+            echo '<div id="msg" style="display:none"></div>';
+            echo '<input type="hidden" id="ajax-url" value="'.ui_get_full_url('ajax.php').'"/>';
+            echo '<input type="hidden" id="success-str" value="'.__('Success').'"/>';
+            echo '<input type="hidden" id="failed-str" value="'.__('Failed').'"/>';
 
             unset($table);
 
+            ui_require_javascript_file('pandora_ui');
             ui_require_javascript_file('pandora_taskList');
 
             return $return;
@@ -784,6 +834,335 @@ class DiscoveryTaskList extends Wizard
                 }
             break;
         }
+    }
+
+
+    /**
+     * Returns percent of completion of target task.
+     *
+     * @return void
+     */
+    public function task_progress()
+    {
+        if (!is_ajax()) {
+            return '';
+        }
+
+        $id_task = get_parameter('id', 0);
+
+        if ($id_task <= 0) {
+            echo json_encode(['error' => true]);
+            return;
+        }
+
+        $status = db_get_value('status', 'trecon_task', 'id_rt', $id_task);
+        if ($status < 0) {
+            $status = 100;
+        }
+
+        echo json_encode($status);
+    }
+
+
+    /**
+     * Generates charts for progress popup.
+     *
+     * @param array $task Task.
+     *
+     * @return string Charts in HTML.
+     */
+    private function progress_task_graph($task)
+    {
+        $result .= '<div style="display: flex;">';
+        $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
+        $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'._('Overall Progress').'</span>';
+
+        $result .= '<div style="margin-top: 25px;">';
+        $result .= progress_circular_bar(
+            $task['id_rt'],
+            ($task['status'] < 0) ? 100 : $task['status'],
+            200,
+            200,
+            '#7eb641',
+            '%',
+            '',
+            '#3A3A3A',
+            0
+        );
+
+        $result .= '</div>';
+
+        if ($task['status'] > 0) {
+            switch ($task['stats']['step']) {
+                case STEP_SCANNING:
+                    $str = __('Scanning network');
+                break;
+
+                case STEP_AFT:
+                    $str = __('Finding AFT connectivity');
+                break;
+
+                case STEP_TRACEROUTE:
+                    $str = __('Finding traceroute connectivity');
+                break;
+
+                case STEP_GATEWAY:
+                    $str = __('Finding gateway connectivity');
+                break;
+
+                case STEP_STATISTICS:
+                    $str = __('Searching for devices...');
+                break;
+
+                case STEP_APP_SCAN:
+                    $str = __('Analyzing application...');
+                break;
+
+                case STEP_CUSTOM_QUERIES:
+                    $str = __('Executing custom queries...');
+                break;
+
+                default:
+                    $str = '';
+                break;
+            }
+
+            $result .= '</div>';
+            $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
+            $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.$str.' ';
+            if (!empty($str)) {
+                $result .= $task['stats']['c_network_name'];
+            }
+
+            $result .= '</span>';
+
+            $result .= '<div style="margin-top: 25px;">';
+            $result .= progress_circular_bar(
+                $task['id_rt'].'_detail',
+                $task['stats']['c_network_percent'],
+                200,
+                200,
+                '#7eb641',
+                '%',
+                '',
+                '#3A3A3A',
+                0
+            );
+            $result .= '</div></div>';
+        }
+
+        $result .= '</div></div>';
+
+        return $result;
+    }
+
+
+    /**
+     * Generates a summary table for given task.
+     *
+     * @param array $task Task.
+     *
+     * @return html code with summary.
+     */
+    private function progress_task_summary($task)
+    {
+        global $config;
+        include_once $config['homedir'].'/include/graphs/functions_d3.php';
+
+        if (is_array($task) === false) {
+            return '';
+        }
+
+        $output = '';
+
+        if (is_array($task['stats'])) {
+            $i = 0;
+            $table = new StdClasS();
+            $table->class = 'databox data';
+            $table->width = '75%';
+            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $table->rowid = [];
+            $table->data = [];
+
+            // Content.
+            $table->data[$i][0] = '<b>'.__('Hosts discovered').'</b>';
+            $table->data[$i][1] = '<span id="discovered">';
+            $table->data[$i][1] .= $task['stats']['summary']['discovered'];
+            $table->data[$i++][1] .= '</span>';
+
+            $table->data[$i][0] = '<b>'.__('Alive').'</b>';
+            $table->data[$i][1] = '<span id="alive">';
+            $table->data[$i][1] .= $task['stats']['summary']['alive'];
+            $table->data[$i++][1] .= '</span>';
+
+            $table->data[$i][0] = '<b>'.__('Not alive').'</b>';
+            $table->data[$i][1] = '<span id="not_alive">';
+            $table->data[$i][1] .= $task['stats']['summary']['not_alive'];
+            $table->data[$i++][1] .= '</span>';
+
+            $table->data[$i][0] = '<b>'.__('Responding SNMP').'</b>';
+            $table->data[$i][1] = '<span id="SNMP">';
+            $table->data[$i][1] .= $task['stats']['summary']['SNMP'];
+            $table->data[$i++][1] .= '</span>';
+
+            $table->data[$i][0] = '<b>'.__('Responding WMI').'</b>';
+            $table->data[$i][1] = '<span id="WMI">';
+            $table->data[$i][1] .= $task['stats']['summary']['WMI'];
+            $table->data[$i++][1] .= '</span>';
+
+            $output = '<div style="margin-top: 40px; text-align: center;"><span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.__('Summary').'</span></div>';
+            $output .= html_print_table($table, true).'</div>';
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Content of modal 'task progress', ajax only.
+     *
+     * @return void
+     */
+    public function progress_task_discovery()
+    {
+        if (!is_ajax()) {
+            return;
+        }
+
+        $id_task = get_parameter('id', 0);
+
+        if ($id_task <= 0) {
+            echo json_encode(['error' => true]);
+            return;
+        }
+
+        $task = db_get_row('trecon_task', 'id_rt', $id_task);
+        $task['stats'] = json_decode($task['summary'], true);
+        $global_progress = $task['status'];
+        $summary = $this->progress_task_summary($task);
+
+        $output = '';
+
+        // Header information.
+        if ((int) $task['status'] <= 0 && empty($summary)) {
+            $output .= ui_print_info_message(
+                __('This task has never executed'),
+                '',
+                true
+            );
+        } else if ($task['status'] == 1
+            || ($task['utimestamp'] == 0 && $task['interval_sweep'])
+        ) {
+            $output .= ui_print_info_message(
+                __('Task queued, please wait.'),
+                '',
+                true
+            ).'</div>';
+        } else {
+            $output .= $this->progress_task_graph($task);
+        }
+
+        $output .= $summary;
+
+        echo json_encode(['html' => $output]);
+    }
+
+
+    /**
+     * Get a map of target task.
+     *
+     * @return void
+     */
+    public function task_showmap()
+    {
+        global $config;
+        include_once $config['homedir'].'/include/class/NetworkMap.class.php';
+        $id_task = get_parameter('id', 0);
+
+        $map = new NetworkMap(
+            [
+                'id_task' => $id_task,
+                'pure'    => 1,
+                'widget'  => true,
+            ]
+        );
+        $map->printMap();
+    }
+
+
+    /**
+     * Shows a modal to review results found by discovery task.
+     *
+     * @return void
+     */
+    public function show_task_review()
+    {
+        $id_task = get_parameter('id', 0);
+        if ($id_task <= 0) {
+            ui_print_error_message(__('Invalid task'));
+            return;
+        }
+
+        $task = db_get_row('tdiscovery_tmp_agents', 'id_rt', $id_task);
+
+        if (is_array($task)) {
+            $data = json_decode(base64_decode($task['data']), true);
+            $simple_data = array_reduce(
+                $data,
+                function ($carry, $item) {
+                    $id = $item['agent']['nombre'];
+                    $carry[] = [
+                        'id'   => $id,
+                        'name' => $item['agent']['nombre'],
+                    ];
+
+                    $childs = array_reduce(
+                        $item['modules'],
+                        function ($c, $i) use ($id) {
+                                $c[] = [
+                                    'name' => $i['name'],
+                                    'id'   => $id.'-'.$i['name'],
+                                    'pid'  => $id,
+                                ];
+                                return $c;
+                        },
+                        []
+                    );
+                    $carry = array_merge(
+                        $carry,
+                        $childs
+                    );
+
+                    return $carry;
+                },
+                []
+            );
+
+            echo '<div id="tree"></div>';
+            echo parent::printTree('tree', $simple_data);
+        }
+
+    }
+
+
+    /**
+     * Processes a review over temporary results found by discovery task.
+     *
+     * @return void
+     */
+    public function parse_task_review()
+    {
+        $id_task = get_parameter('id', 0);
+        if ($id_task <= 0) {
+            echo $this->error(__('Invalid task'));
+            return;
+        }
+
+        $out = obhd($_REQUEST);
+
+        echo json_encode(
+            ['result' => $out]
+        );
     }
 
 

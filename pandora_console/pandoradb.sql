@@ -770,14 +770,14 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) NOT NULL default '',
 	`subnet` text NOT NULL,
-	`id_network_profile` int(10) unsigned NOT NULL default '0',
-	`create_incident` tinyint(3) unsigned NOT NULL default '0',
-	`id_group` int(10) unsigned NOT NULL default '1',
-	`utimestamp` bigint(20) unsigned NOT NULL default '0',
-	`status` tinyint(4) NOT NULL default '0',
-	`interval_sweep` int(10) unsigned NOT NULL default '0',
-	`id_recon_server` int(10) unsigned NOT NULL default '0',
-	`id_os` tinyint(4) NOT NULL default '0',
+	`id_network_profile` text,
+	`direct_report` tinyint(1) unsigned NOT NULL default 0,
+	`id_group` int(10) unsigned NOT NULL default 1,
+	`utimestamp` bigint(20) unsigned NOT NULL default 0,
+	`status` tinyint(4) NOT NULL default 0,
+	`interval_sweep` int(10) unsigned NOT NULL default 0,
+	`id_recon_server` int(10) unsigned NOT NULL default 0,
+	`id_os` tinyint(4) NOT NULL default 0,
 	`recon_ports` varchar(250) NOT NULL default '',
 	`snmp_community` varchar(64) NOT NULL default 'public',
 	`id_recon_script` int(10),
@@ -785,30 +785,61 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`field2` varchar(250) NOT NULL default '',
 	`field3` varchar(250) NOT NULL default '',
 	`field4` varchar(250) NOT NULL default '',
-	`os_detect` tinyint(1) unsigned default '0',
-	`resolve_names` tinyint(1) unsigned default '0',
-	`parent_detection` tinyint(1) unsigned default '0',
-	`parent_recursion` tinyint(1) unsigned default '0',
-	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	`os_detect` tinyint(1) unsigned default 0,
+	`resolve_names` tinyint(1) unsigned default 0,
+	`parent_detection` tinyint(1) unsigned default 0,
+	`parent_recursion` tinyint(1) unsigned default 0,
+	`disabled` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	`macros` TEXT,
-	`alias_as_name` tinyint(2) NOT NULL default '0',
-	`snmp_enabled` tinyint(1) unsigned default '0',
-	`vlan_enabled` tinyint(1) unsigned default '0',
-	`snmp_version` varchar(5) NOT NULL default '1',
+	`alias_as_name` tinyint(2) NOT NULL default 0,
+	`snmp_enabled` tinyint(1) unsigned default 0,
+	`vlan_enabled` tinyint(1) unsigned default 0,
+	`snmp_version` varchar(5) NOT NULL default 1,
 	`snmp_auth_user` varchar(255) NOT NULL default '',
 	`snmp_auth_pass` varchar(255) NOT NULL default '',
 	`snmp_auth_method` varchar(25) NOT NULL default '',
 	`snmp_privacy_method` varchar(25) NOT NULL default '',
 	`snmp_privacy_pass` varchar(255) NOT NULL default '',
 	`snmp_security_level` varchar(25) NOT NULL default '',
-	`wmi_enabled` tinyint(1) unsigned DEFAULT '0',
+	`wmi_enabled` tinyint(1) unsigned DEFAULT 0,
 	`auth_strings` text,
-	`autoconfiguration_enabled` tinyint(1) unsigned default '0',
+	`autoconfiguration_enabled` tinyint(1) unsigned default 0,
 	`summary` text,
 	`type` int NOT NULL default 0,
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tdiscovery_tmp`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdiscovery_tmp_agents` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`id_rt` int(10) unsigned NOT NULL,
+	`label` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+	`data` text,
+	`review_date` datetime DEFAULT NULL,
+	`created` int(1) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`),
+	KEY `id_rt` (`id_rt`),
+	INDEX `label` (`label`),
+	CONSTRAINT `tdta_trt` FOREIGN KEY (`id_rt`) REFERENCES `trecon_task` (`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tdiscovery_tmp_connections` (
+	`id_rt` int(10) unsigned NOT NULL,
+	`id1` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`id2` int(10) unsigned NOT NULL,
+	`if1` text,
+	`if2` text,
+	PRIMARY KEY (`id1`,`id2`),
+	CONSTRAINT `tdtc_trt` FOREIGN KEY (`id_rt`)
+		REFERENCES `trecon_task` (`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT `tdtc_tdta1` FOREIGN KEY (`id1`)
+		REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT `tdtc_tdta2` FOREIGN KEY (`id2`)
+		REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`

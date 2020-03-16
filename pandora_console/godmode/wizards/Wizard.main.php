@@ -234,6 +234,27 @@ class Wizard
 
 
     /**
+     * Return formatted html for error handler.
+     *
+     * @param string $message Error mesage.
+     *
+     * @return string
+     */
+    public function error($message)
+    {
+        if (is_ajax()) {
+            echo json_encode(
+                [
+                    'error' => ui_print_error_message($message, '', true),
+                ]
+            );
+        } else {
+            return ui_print_error_message($message, '', true);
+        }
+    }
+
+
+    /**
      * To be overwritten.
      *
      * @return void

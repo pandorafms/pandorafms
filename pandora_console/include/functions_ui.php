@@ -2839,6 +2839,7 @@ function ui_print_status_sets(
  *   [
  *       'page'     => 'operation/agentes/ver_agente', Target page.
  *       'interval' => 100 / $agent["intervalo"], Ask every interval seconds.
+ *       'simple'   => 0,
  *       'data'     => [ Data to be sent to target page.
  *           'id_agente'       => $id_agente,
  *           'refresh_contact' => 1,
@@ -2879,7 +2880,38 @@ function ui_progress(
     $output .= '</span>';
 
     if ($ajax !== false && is_array($ajax)) {
-        $output .= '<script type="text/javascript">
+        if ($ajax['simple']) {
+            $output .= '<script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(() => {
+                $.post({
+                    url: "'.ui_get_full_url('ajax.php', false, false, false).'",
+                    data: {';
+            if (is_array($ajax['data'])) {
+                foreach ($ajax['data'] as $token => $value) {
+                    $output .= '
+                            '.$token.':"'.$value.'",';
+                }
+            }
+
+            $output .= '
+                        page: "'.$ajax['page'].'"
+                    },
+                    success: function(data) {
+                        try {
+                            val = JSON.parse(data);
+                            $(".progress_main").attr("data-label", val + " %");
+                            $(".progress").width(val+"%");
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                });
+            }, '.($ajax['interval'] > 0 ? $ajax['interval'] * 1000 : 30000 ).');
+    });
+    </script>';
+        } else {
+            $output .= '<script type="text/javascript">
     $(document).ready(function() {
         setInterval(() => {
                 last = $(".progress_main").attr("data-label").split(" ")[0]*1;
@@ -2889,14 +2921,14 @@ function ui_progress(
                     $.post({
                         url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                         data: {';
-        if (is_array($ajax['data'])) {
-            foreach ($ajax['data'] as $token => $value) {
-                $output .= '
-                            '.$token.':"'.$value.'",';
+            if (is_array($ajax['data'])) {
+                foreach ($ajax['data'] as $token => $value) {
+                    $output .= '
+                                '.$token.':"'.$value.'",';
+                }
             }
-        }
 
-        $output .= '
+            $output .= '
                             page: "'.$ajax['page'].'"
                         },
                         success: function(data) {
@@ -2922,6 +2954,7 @@ function ui_progress(
             }, 1000);
     });
     </script>';
+        }
     }
 
     if (!$return) {

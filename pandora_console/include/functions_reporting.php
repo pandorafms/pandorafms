@@ -2880,19 +2880,19 @@ function reporting_group_report($report, $content)
 
     $return['data'] = [];
 
-    $events = events_get_agent(
-        false,
-        $content['period'],
-        $report['datetime'],
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        $content['id_group'],
-        true
-    );
+    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+
+    if (empty($id_group)) {
+        $events = [];
+    } else {
+        $sql_where = sprintf(' AND id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $events = events_get_events_grouped(
+            $sql_where,
+            0,
+            1000,
+            is_metaconsole()
+        );
+    }
 
     if (empty($events)) {
         $events = [];

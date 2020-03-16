@@ -175,6 +175,52 @@ if ($delete_action) {
     );
 }
 
+
+$search_string = (string) get_parameter('search_string', '');
+$group = (int) get_parameter('group', 0);
+$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions';
+
+// Filter table.
+$table_filter = new stdClass();
+$table_filter->width = '100%';
+$table_filter->class = 'databox filters';
+$table_filter->style = [];
+$table_filter->style[0] = 'font-weight: bold';
+$table_filter->style[2] = 'font-weight: bold';
+$table_filter->data = [];
+
+$table_filter->data[0][0] = __('Search');
+$table_filter->data[0][1] = html_print_input_text(
+    'search_string',
+    $search_string,
+    '',
+    25,
+    255,
+    true
+);
+$table_filter->data[0][2] = __('Group');
+$table_filter->data[0][3] = html_print_select_groups($config['id_user'], 'LM', true, 'group', $group, '', '', 0, true);
+$table_filter->data[0][4] = '<div class="action-buttons">';
+$table_filter->data[0][4] .= html_print_submit_button(
+    __('Search'),
+    '',
+    false,
+    'class="sub search"',
+    true
+);
+$table_filter->data[0][4] .= '</div>';
+
+
+$show_table_filter = '<form method="post" action="'.$url.'">';
+$show_table_filter .= html_print_table($table_filter, true);
+$show_table_filter .= '</form>';
+if (is_metaconsole()) {
+    ui_toggle($show_table_filter, __('Show Options'));
+} else {
+    echo $show_table_filter;
+}
+
+
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'info_table';
@@ -196,8 +242,16 @@ $table->align[2] = 'left';
 $table->align[3] = 'left';
 
 $filter = [];
-if (!is_user_admin($config['id_user'])) {
+if (!is_user_admin($config['id_user']) && $group === 0) {
     $filter['talert_actions.id_group'] = array_keys(users_get_groups(false, 'LM'));
+}
+
+if ($group !== 0) {
+    $filter['talert_actions.id_group'] = $group;
+}
+
+if ($search_string !== '') {
+    $filter['talert_actions.name'] = '%'.$search_string.'%';
 }
 
 $actions = db_get_all_rows_filter(
@@ -208,6 +262,12 @@ $actions = db_get_all_rows_filter(
 if ($actions === false) {
     $actions = [];
 }
+
+// Pagination.
+$total_actions = count($actions);
+$offset = (int) get_parameter('offset');
+$limit = (int) $config['block_size'];
+$actions = array_slice($actions, $offset, $limit);
 
 $rowPair = true;
 $iterator = 0;
@@ -254,8 +314,10 @@ foreach ($actions as $action) {
     array_push($table->data, $data);
 }
 
+ui_pagination($total_actions, $url);
 if (isset($data)) {
     html_print_table($table);
+    ui_pagination($total_actions, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert actions configured') ]);
 }

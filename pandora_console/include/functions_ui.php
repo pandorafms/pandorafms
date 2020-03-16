@@ -4815,6 +4815,12 @@ function ui_print_agent_autocomplete_input($parameters)
 				url: action="'.$javascript_ajax_page.'",
 				dataType: "json",
 				success: function (data) {
+                    data.sort(function(a, b) {
+                        var textA = a.nombre.toUpperCase();
+                        var textB = b.nombre.toUpperCase();
+                        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                    });
+
 					if ('.((int) $add_none_module).') {
 						$("#'.$selectbox_id.'")
 							.append($("<option></option>")

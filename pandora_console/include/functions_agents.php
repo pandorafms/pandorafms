@@ -295,10 +295,17 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
 
     if (($id_agent !== false) && ($idGroup !== false)) {
         if ($idGroup != 0) {
+            $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
             // All group
             $subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
-				WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = '.$idGroup.')';
+                WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = '.$idGroup;
+
+            if ($has_secondary) {
+                $subQuery .= ' OR tasg.id_group = '.$idGroup;
+            }
+
+            $subQuery .= ')';
         } else {
             $subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
@@ -337,17 +344,31 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         $selectText = 'COUNT(talert_template_modules.id) AS count';
     }
 
+    $secondary_join = '';
+    if ($idGroup) {
+        if (isset($has_secondary) && $has_secondary) {
+            $secondary_join = sprintf(
+                'LEFT JOIN tagent_secondary_group tasg
+                ON t3.id_agente = tasg.id_agent
+                AND tasg.id_group = %d',
+                $idGroup
+            );
+        }
+    }
+
     $sql = sprintf(
         'SELECT %s
 		FROM talert_template_modules
-			INNER JOIN tagente_modulo t2
-				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-			INNER JOIN tagente t3
-				ON t2.id_agente = t3.id_agente
-			INNER JOIN talert_templates t4
-				ON talert_template_modules.id_alert_template = t4.id
+        INNER JOIN tagente_modulo t2
+            ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+        INNER JOIN tagente t3
+            ON t2.id_agente = t3.id_agente
+        %s
+        INNER JOIN talert_templates t4
+            ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s',
         $selectText,
+        $secondary_join,
         $subQuery,
         $where,
         $filter,

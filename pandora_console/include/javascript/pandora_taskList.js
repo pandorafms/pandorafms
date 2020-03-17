@@ -50,7 +50,7 @@ function progress_task_list(id, title) {
   if (!$elem.dialog("isOpen"))
     timeoutRef = setInterval(function() {
       xhr = fetchTaskList(id, handleFetchTaskList);
-    }, 3000);
+    }, 300000);
 
   xhr = fetchTaskList(id, handleFetchTaskList);
 }
@@ -66,7 +66,7 @@ function fetchTaskList(id, callback) {
     data: {
       page: "godmode/servers/discovery",
       wiz: "tasklist",
-      method: "progress_task_discovery",
+      method: "progressTaskDiscovery",
       id: id
     },
     type: "POST",
@@ -100,7 +100,7 @@ function show_map(id, name) {
     data: {
       page: "godmode/servers/discovery",
       wiz: "tasklist",
-      method: "task_showmap",
+      method: "taskShowmap",
       id: id
     },
     type: "POST",
@@ -157,6 +157,7 @@ function show_review(id, name) {
           of: window,
           collision: "fit"
         },
+        maxHeight: 400,
         title: title,
         buttons: [
           {
@@ -166,9 +167,8 @@ function show_review(id, name) {
             click: function(e) {
               if (!failed) {
                 $(".ui-dialog-content").dialog("close");
-                $(".info").hide();
-                cleanupDOM();
-                dt_keystore.draw(false);
+                $("#task_review").empty();
+                location.reload();
               } else {
                 $(this).dialog("close");
               }
@@ -189,11 +189,12 @@ function show_review(id, name) {
     ],
     onshow: {
       page: "godmode/servers/discovery",
-      method: "show_task_review"
+      method: "showTaskReview",
+      maxHeight: 800
     },
     onsubmit: {
       page: "godmode/servers/discovery",
-      method: "parse_task_review"
+      method: "parseTaskReview"
     }
   });
 }

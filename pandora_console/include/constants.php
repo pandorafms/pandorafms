@@ -597,6 +597,11 @@ define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
 
 
+// Force task build tmp results.
+define('DISCOVERY_SEARCH', 0);
+define('DISCOVERY_STANDARD', 1);
+define('DISCOVERY_RESULTS', 2);
+
 // Discovery types matching definition.
 define('DISCOVERY_SCRIPT_HOSTDEVICES_CUSTOM', 0);
 // Standard applications.

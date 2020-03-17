@@ -38,7 +38,7 @@ class HTML
     /**
      * Breadcrum
      *
-     * @var array.
+     * @var array
      */
     public $breadcrum;
 
@@ -119,7 +119,7 @@ class HTML
     /**
      * Add an element to breadcrum array.
      *
-     * @param string $breads Elements to add to breadcrum.
+     * @param array $breads Elements to add to breadcrum.
      *
      * @return void
      */
@@ -332,6 +332,27 @@ class HTML
         }
 
         return $output;
+    }
+
+
+    /**
+     * Return formatted html for error handler.
+     *
+     * @param string $message Error mesage.
+     *
+     * @return string
+     */
+    public function error($message)
+    {
+        if (is_ajax()) {
+            echo json_encode(
+                [
+                    'error' => ui_print_error_message($message, '', true),
+                ]
+            );
+        } else {
+            return ui_print_error_message($message, '', true);
+        }
     }
 
 
@@ -1003,27 +1024,62 @@ class HTML
     /**
      * Returns a n-dimensional array (data) into a html tree structure.
      *
+     * Advanced documentation:
+     *   https://www.jqueryscript.net/other/Checkable-Hierarchical-Tree.html
+     *
      * @param string $target   Target DOM id.
      * @param array  $data     N-dimensional array.
-     * @param string $callback Callback function.
+     * @param string $onclick  Onclick function.
+     * @param string $onchange Onchange function.
      *
      * @return string
      */
-    public static function printTree($target, $data, $callback='')
-    {
+    public static function printTree(
+        $target,
+        $data,
+        $onclick='',
+        $onchange=''
+    ) {
         ui_require_css_file('simTree');
         ui_require_javascript_file('simTree');
 
+        /*
+         * SAMPLE SELECT ALL.
+         *
+         * echo '<div class="subtitle">';
+         * echo '<span>';
+         * echo __('Please select devices to be monitored');
+         * echo '</span><div class="manage">';
+         * echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
+         * echo __('select all');
+         * echo '</button>';
+         * echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
+         * echo __('deselect all');
+         * echo '</button>';
+         * echo '</div>';
+         * echo '</div>';
+         *
+         * END SAMPLE SELECT ALL.
+         */
+
         $output = '
 <script type="text/javascript">
+var simTree_'.$target.';
     $(document).ready(function() {
-        simTree({
+        simTree_'.$target.' = simTree({
             el: $('.$target.'),
             data: '.json_encode($data).',
-            onClick: function (item) {'.$callback.';},
+            onClick: function (item) {'.$onclick.';},
+            onChange: function (item) {
+                '.$onchange.';
+                $("#tree-data-'.$target.'").val(JSON.stringify(this.sels));
+            },
             check: true,
             linkParent: true
         });
+        $("#'.$target.'").append(
+            \'<input type="hidden" id="tree-data-'.$target.'" name="tree-data-'.$target.'">\'
+        );
 
     });
 </script>';

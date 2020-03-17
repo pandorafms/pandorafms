@@ -142,7 +142,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     enterprise_hook('components_submenu');
     $sub['godmode/modules/manage_block_templates']['text'] = __('Module blocks');
     $sub['godmode/modules/manage_block_templates']['id'] = 'Module blocks';
-    $sub['godmode/modules/manage_network_templates']['text'] = __('Module templates (legacy)');
+    $sub['godmode/modules/manage_network_templates']['text'] = __('Module templates <i>(legacy)</i>');
     $sub['godmode/modules/manage_network_templates']['id'] = 'Module templates';
     enterprise_hook('inventory_submenu');
     enterprise_hook('autoconfiguration_menu');

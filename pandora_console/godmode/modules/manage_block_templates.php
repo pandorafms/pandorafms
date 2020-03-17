@@ -12,6 +12,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // Load global vars
+// TESTING
+/*
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+error_reporting(E_ALL); */
+$cipotes = false;
+// END
 global $config;
 
 check_login();
@@ -25,12 +32,8 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once $config['homedir'].'/include/class/ManageBlock.class.php';
-// $ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ManageBlock';
+$ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ManageBlock';
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
@@ -66,6 +69,18 @@ if (is_ajax()) {
     // Stop any execution.
     exit;
 } else {
+    // Get all parameters
+    $id_np = get_parameter('id_np', '');
     // Run.
     $manageBlock->run();
+
+    // List all Module Block
+    // Show the id_np selected
+    // Create new id_np
+    if ($id_np == 0) {
+        $manageBlock->moduleTemplateForm();
+        echo 'hola';
+    } else {
+        $manageBlock->moduleBlockList();
+    }
 }

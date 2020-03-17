@@ -1,16 +1,31 @@
 <?php
+/**
+ * Module Block feature.
+ *
+ * @category   Class
+ * @package    Pandora FMS
+ * @subpackage SNMP
+ * @version    0.0.1
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
 require_once $config['homedir'].'/include/class/HTML.class.php';
@@ -140,8 +155,7 @@ class ManageBlock extends HTML
 
         ui_pagination($this->countNetworkTemplates, false, $this->offset);
 
-        echo $this->moduleBlockList();
-
+        // echo $this->moduleBlockList();
         // $this->printForm(
         // [
         // 'form'   => $form,
@@ -154,7 +168,7 @@ class ManageBlock extends HTML
 
 
     /**
-     * Undocumented function
+     * Create
      *
      * @return html Formed table
      */
@@ -189,14 +203,11 @@ class ManageBlock extends HTML
 
         $table->data = [];
 
-        hd($this->resultModuleBlocksTable);
-
         foreach ($this->resultModuleBlocksTable as $row) {
             $data = [];
-            $data[0] = $row['id_np'];
-            $data[1] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
-            $data[2] = 'description';
-            // $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
+            $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
+            $data[1] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_block_templates&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
+            $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
             $table->cellclass[][3] = 'action_buttons';
             $data[3] = html_print_input_image(
                 'delete_profile',
@@ -214,16 +225,38 @@ class ManageBlock extends HTML
                 true,
                 ['title' => 'Export to CSV']
             );
-            $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-            $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+            $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
             array_push($table->data, $data);
         }
 
-        $output = '<div style="margin-top: 40px; text-align: center;"><span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.__('Summary').'</span></div>';
-        $output .= html_print_table($table, true).'</div>';
+        echo html_print_table($table, true);
 
-        return $output;
+        echo '<div style="float:right;" class="">';
+
+        $this->printForm(
+            [
+                'form'   => [
+                    'method' => 'POST',
+                    'action' => 'index.php?sec=gmodules&amp;sec2=godmode/modules/manage_block_templates',
+                ],
+                'inputs' => [
+                    [
+                        'class'     => 'w100p',
+                        'arguments' => [
+                            'name'       => 'crt',
+                            'label'      => __('Create'),
+                            'type'       => 'submit',
+                            'attributes' => 'class="sub next"',
+                            'return'     => true,
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        echo '</div>';
     }
 
 

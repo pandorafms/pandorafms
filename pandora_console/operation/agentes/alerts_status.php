@@ -371,11 +371,15 @@ if (empty($id_groups)) {
 
 
 $alerts = [];
-$options_simple = [
-    'offset' => $offset_simple,
-    'limit'  => $config['block_size'],
-    'order'  => $order,
-];
+if ($agent_view_page === true) {
+    $options_simple = ['order' => $order];
+} else {
+    $options_simple = [
+        'offset' => $offset_simple,
+        'limit'  => $config['block_size'],
+        'order'  => $order,
+    ];
+}
 
 $filter_alert = [];
 if ($filter_standby == 'standby_on') {
@@ -648,29 +652,38 @@ if (!empty($table->data)) {
     $class = '';
     if ($agent_view_page === true) {
         $class = 'w100p no-padding-imp';
+        printFormFilterAlertAgent($agent_view_page, $free_search, $idAgent);
     }
 
     echo '<form class="'.$class.'" method="post" action="'.$url.'">';
 
-    ui_pagination(
-        $countAlertsSimple,
-        $url,
-        $offset_simple,
-        0,
-        false,
-        'offset_simple'
-    );
+    if ($agent_view_page !== true) {
+        ui_pagination(
+            $countAlertsSimple,
+            $url,
+            $offset_simple,
+            0,
+            false,
+            'offset_simple'
+        );
+    }
+
+    echo '<div id="alerts_list" style="width:100%;">';
     html_print_table($table);
-    ui_pagination(
-        $countAlertsSimple,
-        $url,
-        $offset_simple,
-        0,
-        false,
-        'offset_simple',
-        true,
-        'pagination-bottom'
-    );
+    echo '</div>';
+
+    if ($agent_view_page !== true) {
+        ui_pagination(
+            $countAlertsSimple,
+            $url,
+            $offset_simple,
+            0,
+            false,
+            'offset_simple',
+            true,
+            'pagination-bottom'
+        );
+    }
 
     if (!is_metaconsole()) {
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -703,6 +716,10 @@ if ($agent_view_page === true) {
         'white_table_graph_content no-padding-imp'
     );
 } else {
+    if (!$print_agent) {
+        printFormFilterAlertAgent($agent_view_page, $free_search, $idAgent);
+    }
+
     // Dump entire content.
     echo $html_content;
 }
@@ -777,4 +794,27 @@ ui_require_jquery_file('cluetip');
         }
     }).change();
     
+    function filter_agent_alerts(){
+        var free_search_alert = $("input[name='free_search_alert']").val();
+        $("#alerts_list").empty();    
+        
+        jQuery.ajax ({
+            data: {
+                get_agent_alerts_agent_view: 1,
+                id_agent: '<?php echo $idAgent; ?>',
+                free_search_alert: free_search_alert,
+                all_groups: '<?php echo json_encode($all_groups); ?>',
+                sort_field: '<?php echo $sortField; ?>',
+                sort: '<?php echo $sort; ?>',
+                page: 'include/ajax/alert_list.ajax'
+            },
+            type: 'POST',
+            url: "ajax.php",
+            dataType: 'html',
+            success: function (data) {
+                $("#alerts_list").empty();
+                $("#alerts_list").html(data);
+            }
+        });
+    }
 </script>

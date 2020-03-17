@@ -16,7 +16,7 @@ global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access SNMO Groups Management'

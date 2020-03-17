@@ -60,7 +60,10 @@ if (users_is_admin()) {
 }
 
 if (!$action_update_url_update_manager) {
-    $url_update_manager = get_parameter('url_update_manager', $config['url_update_manager']);
+    $url_update_manager = get_parameter(
+        'url_update_manager',
+        $config['url_update_manager']
+    );
     $update_manager_proxy_server = get_parameter(
         'update_manager_proxy_server',
         $config['update_manager_proxy_server']
@@ -162,7 +165,7 @@ if (!$action_update_url_update_manager) {
         if ($result) {
             $result = config_update_value(
                 'update_manager_proxy_password',
-                $update_manager_proxy_password
+                io_input_password($update_manager_proxy_password)
             );
         }
 
@@ -179,6 +182,7 @@ if (!$action_update_url_update_manager) {
 }
 
 echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
+html_print_input_hidden('update_config', 1);
 
 $table = new stdClass();
 $table->width = '100%';
@@ -259,6 +263,7 @@ if (license_free()) {
 }
 
 html_print_input_hidden('action_update_url_update_manager', 1);
+html_print_input_hidden('update_config', 1);
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

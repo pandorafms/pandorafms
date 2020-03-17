@@ -1920,11 +1920,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
             <td colspan='3' class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$item['data']['group_stats']['monitor_alerts_fired']."</td>
         </tr>
         <tr>
-            <td></td>
-            <td colspan='6' class='cellBold cellCenter'>".__('Last %s', human_time_description_raw($item['date']['period']))."</td>
-        </tr>
-        <tr>
-            <td class='cellBold cellCenter'>".__('Events')."</td>
+            <td class='cellBold cellCenter'>".__('Events (not validated)')."</td>
             <td colspan='6' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</td>
         </tr></tbody>
     </table>';
@@ -3473,7 +3469,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
             }
 
             // Check failover availability report.
-            if ($item['data'][$k_chart]['failover'] === '') {
+            if (empty($item['data'][$k_chart]['failover']) === true) {
                 $table1 = new stdClass();
                 $table1->width = '100%';
                 $table1->data = [];
@@ -3482,12 +3478,6 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 $table1->size[1] = '80%';
                 $table1->size[2] = '5%';
                 $table1->size[3] = '5%';
-                if ($pdf !== 0) {
-                    $table1->size[0] = '20%';
-                    $table1->size[1] = '60%';
-                    $table1->size[2] = '10%';
-                    $table1->size[3] = '10%';
-                }
 
                 $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
                 $table1->data[0][1] = $chart['chart'];

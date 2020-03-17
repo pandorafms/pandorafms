@@ -210,16 +210,17 @@ final class DonutGraph extends Item
             $inputs[] = [
                 'label'     => __('Agent'),
                 'arguments' => [
-                    'type'               => 'autocomplete_agent',
-                    'name'               => 'agentAlias',
-                    'id_agent_hidden'    => $values['agentId'],
-                    'name_agent_hidden'  => 'agentId',
-                    'server_id_hidden'   => $values['metaconsoleId'],
-                    'name_server_hidden' => 'metaconsoleId',
-                    'return'             => true,
-                    'module_input'       => true,
-                    'module_name'        => 'moduleId',
-                    'module_none'        => false,
+                    'type'                    => 'autocomplete_agent',
+                    'name'                    => 'agentAlias',
+                    'id_agent_hidden'         => $values['agentId'],
+                    'name_agent_hidden'       => 'agentId',
+                    'server_id_hidden'        => $values['metaconsoleId'],
+                    'name_server_hidden'      => 'metaconsoleId',
+                    'return'                  => true,
+                    'module_input'            => true,
+                    'module_name'             => 'moduleId',
+                    'module_none'             => false,
+                    'get_only_string_modules' => true,
                 ],
             ];
 
@@ -227,14 +228,15 @@ final class DonutGraph extends Item
             $inputs[] = [
                 'label'     => __('Module'),
                 'arguments' => [
-                    'type'           => 'autocomplete_module',
-                    'fields'         => $fields,
-                    'name'           => 'moduleId',
-                    'selected'       => $values['moduleId'],
-                    'return'         => true,
-                    'sort'           => false,
-                    'agent_id'       => $values['agentId'],
-                    'metaconsole_id' => $values['metaconsoleId'],
+                    'type'                    => 'autocomplete_module',
+                    'fields'                  => $fields,
+                    'name'                    => 'moduleId',
+                    'selected'                => $values['moduleId'],
+                    'return'                  => true,
+                    'sort'                    => false,
+                    'agent_id'                => $values['agentId'],
+                    'metaconsole_id'          => $values['metaconsoleId'],
+                    'get_only_string_modules' => true,
                 ],
             ];
 

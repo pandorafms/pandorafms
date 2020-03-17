@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.743";
-my $pandora_build = "200211";
+my $pandora_version = "7.0NG.744";
+my $pandora_build = "200317";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -214,6 +214,9 @@ sub pandora_get_sharedconfig ($$) {
 			$pa_config->{"mta_encryption"} = 'none';
 		}
 	}
+
+	# Server identifier
+	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
 }
 
 ##########################################################################

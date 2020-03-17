@@ -3081,8 +3081,6 @@ function array2XML($data, $root=null, $xml=null)
             $node = $xml->addChild($key);
             array2XML($value, $root, $node);
         } else {
-            $value = htmlentities($value);
-
             if (!is_numeric($value) && !is_bool($value)) {
                 if (!empty($value)) {
                     $xml->addChild($key, $value);
@@ -3872,23 +3870,12 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
         $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
     }
 
-    $width_img  = 500;
+    $width_img  = 550;
+    $height_img = $params['height'];
 
-    if ($params['vconsole'] === false) {
-        // Set height image.
-        $height_img = 170;
-        $params['height'] = 170;
-        if ((int) $params['landscape'] === 1) {
-            $height_img = 150;
-            $params['height'] = 150;
-        }
-
-        if ($type_graph_pdf === 'slicebar') {
-            $width_img  = 360;
-            $height_img = 70;
-        }
-    } else {
-        $height_img = $params['height'];
+    if ((int) $params['landscape'] === 1) {
+        $height_img = 150;
+        $params['height'] = 150;
     }
 
     $params_encode_json = urlencode(json_encode($params));
@@ -5012,6 +4999,14 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'setup_module_library_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola&printable=yes#Librer.C3.ADa_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Console_Setup&printable=yes#Module_library';
+            }
+        break;
+
         case 'diagnostic_tool_tab':
             if ($es) {
                 $result .= 'Gestion_y_Administracion&printable=yes#Diagnostic_tool';
@@ -5137,6 +5132,14 @@ function get_help_info($section_name)
                 $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
             } else {
                 $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
+            }
+        break;
+
+        case 'module_library':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Librer.C3.ADa_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Module_library';
             }
         break;
 

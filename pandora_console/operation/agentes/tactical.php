@@ -235,7 +235,7 @@ echo '</tr></table>';
         parameters["page"] = "include/ajax/events";
         parameters["total_event_graph"] = 1;
 
-        $.ajax({type: "GET",url: "ajax.php",data: parameters,
+        $.ajax({type: "GET",url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",data: parameters,
             success: function(data) {
                 $("#spinner_total_event_graph").hide();
                 $("#total_event_graph").append(data);
@@ -245,7 +245,7 @@ echo '</tr></table>';
         delete parameters["total_event_graph"];
         parameters["graphic_event_group"] = 1;
 
-        $.ajax({type: "GET",url: "ajax.php",data: parameters,
+        $.ajax({type: "GET",url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",data: parameters,
             success: function(data) {
                 $("#spinner_graphic_event_group").hide();
                 $("#graphic_event_group").append(data);

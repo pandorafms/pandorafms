@@ -138,3 +138,75 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
         echo $data;
     }
 }
+
+
+function printFormFilterAlertAgent($agent_view_page, $free_search, $id_agent)
+{
+    $table_filter = new stdClass();
+    $table_filter->width = '100%';
+
+    if ($agent_view_page === true) {
+        $table_filter->class = 'info_table';
+        $table_filter->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
+        $free_search_name = 'free_search_alert';
+    } else {
+        $table_filter->class = 'databox filters';
+        $free_search_name = 'free_search';
+    }
+
+    $table_filter->style = [];
+    $table_filter->style[0] = 'font-weight: bold';
+    $table_filter->data = [];
+
+    $table_filter->data[0][0] = __('Free text for search (*):').ui_print_help_tip(
+        __('Filter by module name, template name or action name'),
+        true
+    );
+
+    $table_filter->data[0][0] .= '<span style="margin-left:10px;">'.html_print_input_text(
+        $free_search_name,
+        $free_search,
+        '',
+        20,
+        100,
+        true
+    ).'</span>';
+
+    $table_filter->data[0][1] = '<div class="action-buttons">';
+    if ($agent_view_page === true) {
+        $table_filter->data[0][1] .= html_print_button(
+            __('Search'),
+            '',
+            false,
+            'filter_agent_alerts('.$id_agent.');',
+            'class="sub search"',
+            true
+        );
+    } else {
+        $table_filter->data[0][1] .= html_print_submit_button(
+            __('Search'),
+            '',
+            false,
+            'class="sub search"',
+            true
+        );
+    }
+
+    $table_filter->data[0][1] .= '</div>';
+
+    if ($agent_view_page === true) {
+        echo html_print_table($table_filter);
+    } else {
+        $sortField = get_parameter('sort_field');
+        $sort = get_parameter('sort', 'none');
+        $order = '';
+
+        if ($sortField != '' && $sort != '') {
+            $order = '&sort_field='.$sortField.'&sort='.$sort;
+        }
+
+        echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'&tab=alert'.$order.'">';
+        echo html_print_table($table_filter);
+        echo '</form>';
+    }
+}

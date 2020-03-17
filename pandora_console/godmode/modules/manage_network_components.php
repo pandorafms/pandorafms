@@ -33,7 +33,7 @@ check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Agent Management'

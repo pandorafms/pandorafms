@@ -2298,7 +2298,7 @@ function reporting_agent_module($report, $content)
         $content['name'] = __('Agent/Modules');
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $group_name = groups_get_name($content['id_group'], true);
@@ -2314,7 +2314,7 @@ function reporting_agent_module($report, $content)
     }
 
     $return['subtitle'] = $group_name.' - '.$module_group_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -2871,28 +2871,28 @@ function reporting_group_report($report, $content)
     }
 
     $return['server_name'] = $server[0];
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = groups_get_name($content['id_group'], true);
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text($report, $content);
 
     $return['data'] = [];
 
-    $events = events_get_agent(
-        false,
-        $content['period'],
-        $report['datetime'],
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        $content['id_group'],
-        true
-    );
+    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+
+    if (empty($id_group)) {
+        $events = [];
+    } else {
+        $sql_where = sprintf(' AND id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $events = events_get_events_grouped(
+            $sql_where,
+            0,
+            1000,
+            is_metaconsole()
+        );
+    }
 
     if (empty($events)) {
         $events = [];
@@ -2975,7 +2975,7 @@ function reporting_event_report_agent(
     }
 
     $return['label'] = $label;
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = io_safe_output($agent_alias);
@@ -5140,7 +5140,7 @@ function reporting_sql($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
-    if ($config['metaconsole']) {
+    if ($config['metaconsole'] && !empty($content['server_name'])) {
         $id_meta = metaconsole_get_id_server(
             $content['server_name']
         );
@@ -5212,7 +5212,7 @@ function reporting_sql($report, $content)
         $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
-    if ($config['metaconsole']) {
+    if ($config['metaconsole'] && !empty($content['server_name'])) {
         metaconsole_restore_db();
     }
 
@@ -5664,22 +5664,32 @@ function reporting_advanced_sla(
         // Infer availability range based on the critical thresholds.
         $agentmodule_info = modules_get_agentmodule($id_agent_module);
 
+        // // Check if module type is string.
+        $is_string_module = modules_is_string($agentmodule_info['id_agente_modulo']);
+
         // Take in mind: the "inverse" critical threshold.
-        $min_value        = $agentmodule_info['min_critical'];
-        $max_value        = $agentmodule_info['max_critical'];
         $inverse_interval = ($agentmodule_info['critical_inverse'] == 0) ? 1 : 0;
 
-        if ((!isset($min_value)) || ($min_value == 0)) {
-            $min_value = null;
+        if (!$is_string_module) {
+            $min_value        = $agentmodule_info['min_critical'];
+            $max_value        = $agentmodule_info['max_critical'];
+        } else {
+            $max_value = io_safe_output($agentmodule_info['str_critical']);
         }
 
-        if ((!isset($max_value)) || ($max_value == 0)) {
-            $max_value = null;
-        }
+        if (!$is_string_module) {
+            if ((!isset($min_value)) || ($min_value == 0)) {
+                $min_value = null;
+            }
 
-        if ((!(isset($max_value))) && (!(isset($min_value)))) {
-            $max_value = null;
-            $min_value = null;
+            if ((!isset($max_value)) || ($max_value == 0)) {
+                $max_value = null;
+            }
+
+            if ((!(isset($max_value))) && (!(isset($min_value)))) {
+                $max_value = null;
+                $min_value = null;
+            }
         }
 
         if ((!isset($min_value)) && (!isset($max_value))) {
@@ -6141,14 +6151,31 @@ function reporting_advanced_sla(
                                 if ((isset($current_data['datos']))
                                     && ($current_data['datos'] !== false)
                                 ) {
+                                    // Check values if module is sring type.
+                                    if ($is_string_module) {
+                                        if (empty($max_value)) {
+                                            $match = preg_match('/^'.$max_value.'$/', $current_data['datos']);
+                                        } else {
+                                            $match = preg_match('/'.$max_value.'/', $current_data['datos']);
+                                        }
+
+                                        // Take notice of $inverse_interval value,
+                                        if ($inverse_interval == 0) {
+                                            $sla_check_value = $match;
+                                        } else {
+                                            $sla_check_value = !$match;
+                                        }
+                                    } else {
+                                        $sla_check_value = sla_check_value(
+                                            $current_data['datos'],
+                                            $min_value,
+                                            $max_value,
+                                            $inverse_interval
+                                        );
+                                    }
+
                                     // Not unknown nor not init values.
-                                    if (sla_check_value(
-                                        $current_data['datos'],
-                                        $min_value,
-                                        $max_value,
-                                        $inverse_interval
-                                    )
-                                    ) {
+                                    if ($sla_check_value) {
                                         $ok_checks++;
                                         $time_in_ok += $time_interval;
                                     } else {
@@ -7358,7 +7385,7 @@ function reporting_general($report, $content)
             continue;
         }
 
-        $mod_name = modules_get_agentmodule_name($row['id_agent_module']);
+        $mod_name = io_safe_output(modules_get_agentmodule_name($row['id_agent_module']));
         $ag_name = modules_get_agentmodule_agent_alias($row['id_agent_module']);
         $name_agent = modules_get_agentmodule_agent_name($row['id_agent_module']);
         $type_mod = modules_get_last_value($row['id_agent_module']);
@@ -7872,14 +7899,14 @@ function reporting_simple_graph(
         );
     }
 
-    $return['title'] = $content['name'];
+    $return['title'] = io_safe_output($content['name']);
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = io_safe_output($content['description']);
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -11629,7 +11656,7 @@ function reporting_get_stats_servers()
                 $output .= 'parameters["page"] = "include/ajax/events";';
                 $output .= 'parameters["total_events"] = 1;';
 
-                $output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
+                $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                     $output .= 'success: function(data) {';
                         $output .= '$("#total_events").text(data);';
                     $output .= '}';

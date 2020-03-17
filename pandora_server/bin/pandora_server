@@ -703,7 +703,7 @@ sub main() {
 
 	# Testing API url
 	my $curl_execution = "'".$Config{'console_api_url'}."?op=get&op2=test&apipass=".$Config{"console_api_pass"}."&user=".$Config{"console_user"}."&pass=".$Config{"console_pass"}."'";
-	my $exe_testing_api = `curl $curl_execution`;
+	my $exe_testing_api = `curl $curl_execution 2>/dev/null`;
 	my @res_testing_api = split(',', $exe_testing_api);
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);

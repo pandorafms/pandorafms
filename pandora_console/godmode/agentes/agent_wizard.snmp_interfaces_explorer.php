@@ -259,6 +259,11 @@ if ($create_modules) {
             $name_array = explode('::', $oid_array[0]);
             $name = $ifname.'_'.$name_array[1];
 
+            // If you select "show all modules" and the module is not from the interface.
+            if (!array_key_exists($name_array[1], $interfaces[$id])) {
+                continue;
+            }
+
             // Clean the name.
             $name = str_replace('"', '', $name);
 

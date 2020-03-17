@@ -18,7 +18,7 @@ check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access SNMP Group Management'
@@ -283,7 +283,7 @@ html_print_input_hidden('new', 1);
 html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
-
+hd('entra o que ase');
 enterprise_hook('close_meta_frame');
 
 ?>

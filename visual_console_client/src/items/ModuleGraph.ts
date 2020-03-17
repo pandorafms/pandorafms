@@ -88,21 +88,72 @@ export function moduleGraphPropsDecoder(
 export default class ModuleGraph extends Item<ModuleGraphProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
+    //element.className = "module-graph";
+    //element.style.backgroundImage = `url(${this.props.html})`;
+    //element.style.backgroundRepeat = "no-repeat";
+    //element.style.backgroundSize = `${this.props.width}px ${
+    //  this.props.height
+    //}px`;
+
+    element.innerHTML = this.props.html;
     element.className = "module-graph";
-    element.style.backgroundImage = `url(${this.props.html})`;
-    element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundSize = `${this.props.width}px ${
-      this.props.height
-    }px`;
+
+    // Remove the overview graph.
+    const legendP = element.getElementsByTagName("p");
+    for (let i = 0; i < legendP.length; i++) {
+      legendP[i].style.margin = "0px";
+    }
+
+    // Remove the overview graph.
+    const overviewGraphs = element.getElementsByClassName("overview_graph");
+    for (let i = 0; i < overviewGraphs.length; i++) {
+      overviewGraphs[i].remove();
+    }
+
+    // Hack to execute the JS after the HTML is added to the DOM.
+    const scripts = element.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.length === 0) {
+        setTimeout(() => {
+          try {
+            eval(scripts[i].innerHTML.trim());
+          } catch (ignored) {} // eslint-disable-line no-empty
+        }, 0);
+      }
+    }
+
+    // element.innerHTML = this.props.html;
 
     return element;
   }
 
   protected updateDomElement(element: HTMLElement): void {
-    element.style.backgroundImage = `url(${this.props.html})`;
-    element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundSize = `${this.props.width}px ${
-      this.props.height
-    }px`;
+    //element.style.backgroundImage = `url(${this.props.html})`;
+    //element.style.backgroundRepeat = "no-repeat";
+    //element.style.backgroundSize = `${this.props.width}px ${
+    //  this.props.height
+    //}px`;
+
+    element.innerHTML = this.props.html;
+
+    // Remove the overview graph.
+    const legendP = element.getElementsByTagName("p");
+    for (let i = 0; i < legendP.length; i++) {
+      legendP[i].style.margin = "0px";
+    }
+
+    // Remove the overview graph.
+    const overviewGraphs = element.getElementsByClassName("overview_graph");
+    for (let i = 0; i < overviewGraphs.length; i++) {
+      overviewGraphs[i].remove();
+    }
+
+    // Hack to execute the JS after the HTML is added to the DOM.
+    const scripts = element.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src.length === 0) {
+        eval(scripts[i].innerHTML.trim());
+      }
+    }
   }
 }

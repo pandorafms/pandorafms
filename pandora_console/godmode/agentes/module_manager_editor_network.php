@@ -183,7 +183,7 @@ if ($id_module_type >= 15 && $id_module_type <= 18) {
     $data[3] = html_print_select(
         $snmp_versions,
         'snmp_version',
-        $tcp_send,
+        $snmp_version,
         '',
         '',
         '',
@@ -496,7 +496,7 @@ if ($id_module_type !== 34
     $table_simple->rowstyle['row-cmd-row-2'] = 'display: none;';
 }
 
-snmp_browser_print_container(false, '100%', '60%', 'none');
+snmp_browser_print_container(false, '100%', '60%', 'display:none');
 
 ?>
 <script type="text/javascript">

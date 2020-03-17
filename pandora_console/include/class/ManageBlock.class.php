@@ -63,6 +63,13 @@ class ManageBlock extends HTML
      */
     private $resultModuleBlocksTable;
 
+    /**
+     * Base URL for internal purposes
+     *
+     * @var string
+     */
+    private $baseUrl;
+
 
     /**
      * Constructor
@@ -107,6 +114,9 @@ class ManageBlock extends HTML
         );
 
         $this->ajaxController = $ajax_controller;
+
+        // Set baseUrl for use it in several locations in this class
+        $this->baseUrl = 'index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates';
 
         return $this;
     }
@@ -206,7 +216,7 @@ class ManageBlock extends HTML
         foreach ($this->resultModuleBlocksTable as $row) {
             $data = [];
             $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
-            $data[1] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_block_templates&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
+            $data[1] = '<a href="'.$this->baseUrl.'&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
             $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
             $table->cellclass[][3] = 'action_buttons';
             $data[3] = html_print_input_image(
@@ -225,12 +235,14 @@ class ManageBlock extends HTML
                 true,
                 ['title' => 'Export to CSV']
             );
-            $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-            $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
             array_push($table->data, $data);
         }
 
+        // Sé que los echo son basurientos, pero de momento, me valen para ir montando
+        // LOS QUITARÉ, PROMESA DE CORONAVIRUS
         echo html_print_table($table, true);
 
         echo '<div style="float:right;" class="">';
@@ -239,7 +251,7 @@ class ManageBlock extends HTML
             [
                 'form'   => [
                     'method' => 'POST',
-                    'action' => 'index.php?sec=gmodules&amp;sec2=godmode/modules/manage_block_templates',
+                    'action' => $this->baseUrl,
                 ],
                 'inputs' => [
                     [
@@ -257,6 +269,45 @@ class ManageBlock extends HTML
         );
 
         echo '</div>';
+    }
+
+
+    /**
+     * Prints Form for template
+     *
+     * @param  integer $id_np If not carried
+     * @return void
+     */
+    public function moduleTemplateForm(int $id_np=0)
+    {
+        if ($id_np == 0) {
+            $formButtonName = 'crt';
+            $formButtonLabel = __('Create');
+        } else {
+            $formButtonName = 'upd';
+            $formButtonLabel = __('Update');
+        }
+
+        $this->printForm(
+            [
+                'form'   => [
+                    'method' => 'POST',
+                    'action' => $this->baseUrl,
+                ],
+                'inputs' => [
+                    [
+                        'class'     => 'w100p',
+                        'arguments' => [
+                            'name'       => $formButtonName,
+                            'label'      => $formButtonLabel,
+                            'type'       => 'submit',
+                            'attributes' => 'class="sub next"',
+                            'return'     => true,
+                        ],
+                    ],
+                ],
+            ]
+        );
     }
 
 

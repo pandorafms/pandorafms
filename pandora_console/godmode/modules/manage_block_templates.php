@@ -13,10 +13,9 @@
 // GNU General Public License for more details.
 // Load global vars
 // TESTING
-/*
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
-error_reporting(E_ALL); */
+error_reporting(E_ALL);
 $cipotes = false;
 // END
 global $config;
@@ -74,13 +73,13 @@ if (is_ajax()) {
     // Run.
     $manageBlock->run();
 
-    // List all Module Block
-    // Show the id_np selected
-    // Create new id_np
     if ($id_np == 0) {
+        // Create new id_np
         $manageBlock->moduleTemplateForm();
-        echo 'hola';
+    } else if ($id_np > 0) {
+        // Show the id_np selected
     } else {
+        // List all Module Block
         $manageBlock->moduleBlockList();
     }
 }

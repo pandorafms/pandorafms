@@ -56,7 +56,19 @@ if (is_ajax()) {
 
         // If is setted a description, we change the carriage return by <br> tags
         if (isset($command['description'])) {
-            $command['description'] = io_safe_input(str_replace("\r\n", '<br>', io_safe_output($command['description'])));
+            $command['description'] = str_replace(
+                [
+                    '<',
+                    '>',
+                    "\r\n",
+                ],
+                [
+                    '',
+                    '',
+                    '<br>',
+                ],
+                io_safe_output($command['description'])
+            );
         }
 
         // Descriptions are stored in json.
@@ -431,8 +443,16 @@ foreach ($commands as $command) {
     $data['id'] = $command['id'];
     $data['group'] = ui_print_group_icon($command['id_group'], true);
     $data['description'] = str_replace(
-        "\r\n",
-        '<br>',
+        [
+            '<',
+            '>',
+            "\r\n",
+        ],
+        [
+            '',
+            '',
+            '<br>',
+        ],
         io_safe_output($command['description'])
     );
     $data['action'] = '';

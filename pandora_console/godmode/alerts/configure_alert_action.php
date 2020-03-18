@@ -305,7 +305,7 @@ $(document).ready (function () {
     var origicommand_descriptionnal_command;
 
     if (<?php echo (int) $id_command; ?>) {
-        original_command = "<?php echo addslashes(io_safe_output(alerts_get_alert_command_command($id_command))); ?>";
+        original_command = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_command($id_command)))); ?>";
         render_command_preview(original_command);
         command_description = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_description($id_command)))); ?>";
         

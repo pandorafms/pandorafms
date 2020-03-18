@@ -50,7 +50,7 @@ function progress_task_list(id, title) {
   if (!$elem.dialog("isOpen"))
     timeoutRef = setInterval(function() {
       xhr = fetchTaskList(id, handleFetchTaskList);
-    }, 300000);
+    }, 3000);
 
   xhr = fetchTaskList(id, handleFetchTaskList);
 }

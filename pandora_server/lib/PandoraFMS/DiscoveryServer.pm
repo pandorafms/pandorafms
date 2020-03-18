@@ -61,6 +61,8 @@ use constant {
   STEP_AFT => 2,
   STEP_TRACEROUTE => 3,
   STEP_GATEWAY => 4,
+	STEP_MONITORING => 5,
+	STEP_APPLY => 6,
   STEP_STATISTICS => 1,
   STEP_APP_SCAN => 2,
   STEP_CUSTOM_QUERIES => 3,
@@ -452,6 +454,14 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
   # ICMP
   #
 
+  use Data::Dumper;
+  $Data::Dumper::Sortkeys = 1;
+
+  print Dumper($device);
+  print Dumper($self->{'task_data'});
+
+  die();
+
   return if empty($self->{'id_network_profile'});
 
   my @templates = split /,/, $self->{'id_network_profile'};
@@ -481,7 +491,12 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
     $component->{'plugin_user'} = $self->{'snmp_auth_user'};
     $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
 
-    pandora_create_module_from_network_component($self->{'pa_config'}, $component, $agent_id, $self->{'dbh'});
+    pandora_create_module_from_network_component(
+      $self->{'pa_config'},
+      $component,
+      $agent_id,
+      $self->{'dbh'}
+    );
   }
 }
 
@@ -491,8 +506,19 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
 sub PandoraFMS::Recon::Base::report_scanned_agents($) {
   my ($self) = @_;
 
+  my $force_creation = 0;
+
+  if (defined($self->{'task_data'}{'direct_report'})
+    && $self->{'task_data'}{'direct_report'} == DISCOVERY_STANDARD
+  ) {
+    $force_creation = 1;
+  }
+
+  #
+  # Creation
+  #
   if(defined($self->{'task_data'}{'direct_report'})
-  && $self->{'task_data'}{'direct_report'} == DISCOVERY_RESULTS
+    && $self->{'task_data'}{'direct_report'} == DISCOVERY_RESULTS
   ) {
     # Load cache.
     my @rows = get_db_rows(
@@ -501,63 +527,214 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
       $self->{'task_data'}{'id_rt'}
     );
 
+    my @agents;
+
+    my $progress = 0;
+    my $step = 100.00 / scalar @rows;
     foreach my $row (@rows) {
+      $progress += $step;
+      $self->call('update_progress', $progress);
+
       my $name = safe_output($row->{'label'});
       my $data;
       eval {
+        local $SIG{__DIE__};
         $data = decode_json(decode_base64($row->{'data'}));
       };
+      if ($@) {
+        $self->call('message', "ERROR JSON: $@", 3);
+      }
 
-      # Store.
-      $self->{'agents_found'}{$name} = $data;
-    }
-  }
+      # Register target agent if enabled.
+      if (is_enabled($data->{'agent'}{'checked'})
+        || $force_creation
+      ) {
+        my $parent_id;
+        my $os_id = $self->guess_os($data->{'agent'}{'direccion'});
 
-  foreach my $label (keys %{$self->{'agents_found'}}) {
-    if (!is_enabled($self->{'direct_report'})) {
-    # Store temporally. Wait user approval.
-      my $encoded;
-      eval {
-        local $SIG{__DIE__};
-        $encoded = encode_base64(encode_json($self->{'agents_found'}));
-      };
+    		$self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
-      my $id = get_db_value(
-        $self->{'dbh'},
-        'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
-        $self->{'task_data'}{'id_rt'},
-        safe_input($label)
-      );
-      
-      if (defined($id)) {
-        # Already defined.
-        $self->{'agents_found'}{$label}{'id'} = $id;
+        # Agent creation.
+        my $agent_id = $data->{'agent'}{'agent_id'};
+        my $agent_learning = 1;
 
+        if (!defined($agent_id) || $agent_id == 0) {
+          $agent_id = pandora_create_agent(
+            $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
+            $data->{'agent'}{'direccion'}, $self->{'task_data'}{'group_id'}, $parent_id,
+            $os_id, $data->{'agent'}->{'description'},
+            $data->{'agent'}{'interval'}, $self->{'dbh'},
+            $data->{'agent'}{'timezone_offset'}
+          );
+
+          $data->{'agent'}{'agent_id'} = $agent_id;
+          $agent_learning = 1;
+        } else {
+          $agent_learning = get_db_value(
+            $self->{'dbh'},
+            'SELECT modo FROM tagente WHERE id_agente = ?',
+            $agent_id
+          );
+
+        }
+        $self->call('message', "Agent id: ".$data->{'agent'}{'agent_id'}, 5);
+
+        # Create selected modules.
+        if(ref($data->{'modules'}) eq "ARRAY") {
+          for (my $i=0; $i < scalar @{$data->{'modules'}}; $i++) {
+            my $module = $data->{'modules'}[$i];
+
+            # Do not create any modules if the agent is not in learning mode.
+            next unless ($agent_learning == 1);
+
+            # Host alive is always being created.
+            if ($module->{'name'} ne 'Host Alive') {
+              next unless (is_enabled($module->{'checked'}) || $force_creation);
+            }
+
+            $self->call('message', "[$agent_id] Module: ".$module->{'name'}, 5);
+
+            my $agentmodule_id = $module->{'agentmodule_id'};
+            if (!defined($agentmodule_id) || $agentmodule_id == 0) {
+              # Create module.
+              $agentmodule_id = pandora_create_module_from_hash(
+                $self->{'pa_config'},
+                {
+                  'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module->{'type'}),
+                  'id_modulo' => $module->{'id_modulo'},
+                  'nombre' => safe_input($module->{'name'}),
+                  'descripcion' => '',
+                  'id_agente' => $agent_id,
+                  'ip_target' => $data->{'agent'}{'direccion'}
+                },
+                $self->{'dbh'}
+              );
+
+              # Store.
+              $data->{'modules'}[$i]{'agentmodule_id'} = $agentmodule_id;
+
+              $self->call(
+                'message',
+                "[$agent_id] Module: ".$module->{'name'}." ID: $agentmodule_id",
+                5
+              );
+            }
+          }
+        }
+
+        my $encoded;
+        eval {
+          local $SIG{__DIE__};
+          $encoded = encode_base64(
+            encode_json($data)
+          );
+        };
+
+        # Update.
         db_do(
           $self->{'dbh'},
           'UPDATE tdiscovery_tmp_agents SET `data` = ? '
           .'WHERE `id_rt` = ? AND `label` = ?',
           $encoded,
           $self->{'task_data'}{'id_rt'},
-          safe_input($label)
+          $name
         );
-        next;  
+
       }
 
-      # Insert.
-      $self->{'agents_found'}{$label}{'id'} = db_insert(
-        $self->{'dbh'},
-        'id',
-        'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
-        .'VALUES (?, ?, ?, now())',
-        $self->{'task_data'}{'id_rt'},
-        safe_input($label),
-        $encoded
-      );
-    } else {
-      # Create agents.
     }
+
+    # Data creation finished.
+    return;
   }
+
+
+  #
+  # Cleanup previous results.
+  #
+  db_do(
+    $self->{'dbh'},
+    'DELETE FROM tdiscovery_tmp_agents '
+    .'WHERE `id_rt` = ?',
+    $self->{'task_data'}{'id_rt'}
+  );
+
+  #
+  # Store and review.
+  #
+
+  my @hosts = keys %{$self->{'agents_found'}};
+	$self->{'step'} = STEP_APPLY;
+	my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
+  foreach my $label (keys %{$self->{'agents_found'}}) {
+    $self->call('update_progress', $progress);
+    $progress += $step;
+    # Store temporally. Wait user approval.
+    my $encoded;
+    eval {
+      local $SIG{__DIE__};
+      $encoded = encode_base64(
+        encode_json($self->{'agents_found'}->{$label})
+      );
+    };
+
+    my $id = get_db_value(
+      $self->{'dbh'},
+      'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
+      $self->{'task_data'}{'id_rt'},
+      safe_input($label)
+    );
+    
+    if (defined($id)) {
+      # Already defined.
+      $self->{'agents_found'}{$label}{'id'} = $id;
+
+      db_do(
+        $self->{'dbh'},
+        'UPDATE tdiscovery_tmp_agents SET `data` = ? '
+        .'WHERE `id_rt` = ? AND `label` = ?',
+        $encoded,
+        $self->{'task_data'}{'id_rt'},
+        safe_input($label)
+      );
+      next;
+    }
+
+    # Insert.
+    $self->{'agents_found'}{$label}{'id'} = db_insert(
+      $self->{'dbh'},
+      'id',
+      'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
+      .'VALUES (?, ?, ?, now())',
+      $self->{'task_data'}{'id_rt'},
+      safe_input($label),
+      $encoded
+    );
+  }
+}
+
+################################################################################
+# Apply monitoring templates selected to detected agents.
+################################################################################
+sub PandoraFMS::Recon::Base::apply_monitoring($) {
+  my ($self) = @_;
+
+  my @hosts = keys %{$self->{'agents_found'}};
+
+	$self->{'step'} = STEP_MONITORING;
+  # From 80% to 90%.
+	my ($progress, $step) = (80, 10.0 / scalar(@hosts));
+
+  use Data::Dumper;
+  print Dumper($self->{'task_data'});
+
+  foreach my $label (keys %{$self->{'agents_found'}}) {
+    $self->call('update_progress', $progress);
+    $progress += $step;
+    print ">> $label\n";
+
+  }
+
 }
 
 ################################################################################

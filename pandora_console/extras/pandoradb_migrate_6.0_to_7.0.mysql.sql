@@ -1672,7 +1672,7 @@ CREATE TABLE `tdiscovery_tmp_agents` (
   `label` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   `data` text,
   `review_date` datetime DEFAULT NULL,
-  `created` int(1) unsigned NOT NULL DEFAULT '0',
+  `created` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_rt` (`id_rt`),
   INDEX `label` (`label`),

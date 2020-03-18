@@ -1081,6 +1081,7 @@ var simTree_'.$target.';
             \'<input type="hidden" id="tree-data-'.$target.'" name="tree-data-'.$target.'">\'
         );
 
+        $("#tree-data-'.$target.'").val(JSON.stringify(simTree_'.$target.'.sels));
     });
 </script>';
 

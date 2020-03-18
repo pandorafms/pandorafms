@@ -22,6 +22,8 @@ use constant {
   STEP_AFT => 2,
   STEP_TRACEROUTE => 3,
   STEP_GATEWAY => 4,
+  STEP_MONITORING => 5,
+  STEP_APPLY => 6,
   STEP_STATISTICS => 1,
   STEP_APP_SCAN => 2,
   STEP_CUSTOM_QUERIES => 3,
@@ -408,7 +410,7 @@ sub icmp_discovery($$) {
       'ip_target' => $addr,
       'name' => "Host Alive",
       'description' => '',
-      'type' => 'generic_data',
+      'type' => 'remote_icmp_proc',
       'id_modulo' => 2,
     }
   );
@@ -1389,7 +1391,7 @@ sub scan_subnet($) {
     my $host_block_size = $self->{'block_size'};
 
     # The first 50% of the recon task approx.
-    my $step = 40.0 / scalar(@subnets) / (($total_hosts / $host_block_size)+1);
+    my $step = 25.0 / scalar(@subnets) / (($total_hosts / $host_block_size)+1);
     my $subnet_step = 50.0 / (($total_hosts / $host_block_size)+1);
 
     for (my $block_index=0;
@@ -1438,7 +1440,7 @@ sub scan_subnet($) {
     $self->call('update_progress', ceil($progress));
 
     $total_hosts = scalar keys %hosts_alive;
-    $step = 40.0 / scalar(@subnets) / $total_hosts;
+    $step = 25.0 / scalar(@subnets) / $total_hosts;
     $subnet_step = 50.0 / $total_hosts;
     foreach my $addr (keys %hosts_alive) {
       # Increase self summary.alive hosts.
@@ -1807,18 +1809,21 @@ sub scan($) {
       return $self->deploy_scan();
     }
   }
-  # XXX
-  print "Metodo: ".$self->{'task_data'}{'direct_report'}."\n";
-  
+
   if(defined($self->{'task_data'}{'direct_report'})
     && $self->{'task_data'}{'direct_report'} == DISCOVERY_RESULTS
   ) {
     # Use Cached results.
-    return $self->call('report_scanned_agents');
+    $self->call('report_scanned_agents');
+
+    # Done!
+    $self->{'step'} = '';
+    $self->call('update_progress', -1);
+    return;
   }
 
   # Find devices.
-  $self->call('message', "[1/4] Scanning the network...", 3);
+  $self->call('message', "[1/6] Scanning the network...", 3);
   $self->{'step'} = STEP_SCANNING;
   $self->call('update_progress', $progress);
 
@@ -1834,9 +1839,9 @@ sub scan($) {
     $self->call('delete_connections');
 
     # Connectivity from address forwarding tables.
-    $self->call('message', "[2/4] Finding address forwarding table connectivity...", 3);
+    $self->call('message', "[2/6] Finding address forwarding table connectivity...", 3);
     $self->{'step'} = STEP_AFT;
-    ($progress, $step) = (80, 8.0 / scalar(@hosts)); # From 50% to 70%.
+    ($progress, $step) = (50, 10.0 / scalar(@hosts)); # From 50% to 60%.
     for (my $i = 0; defined($hosts[$i]); $i++) {
       $self->call('update_progress', $progress);
       $progress += $step;
@@ -1844,9 +1849,9 @@ sub scan($) {
     }
 
     # Connect hosts that are still unconnected using traceroute.
-    $self->call('message', "[3/4] Finding traceroute connectivity.", 3);
+    $self->call('message', "[3/6] Finding traceroute connectivity.", 3);
     $self->{'step'} = STEP_TRACEROUTE;
-    ($progress, $step) = (88, 8.0 / scalar(@hosts)); # From 70% to 90%.
+    ($progress, $step) = (60, 10.0 / scalar(@hosts)); # From 60% to 70%.
     foreach my $host (@hosts) {
       $self->call('update_progress', $progress);
       $progress += $step;
@@ -1855,9 +1860,9 @@ sub scan($) {
     }
 
     # Connect hosts that are still unconnected using known gateways.
-    $self->call('message', "[4/4] Finding host to gateway connectivity.", 3);
+    $self->call('message', "[4/6] Finding host to gateway connectivity.", 3);
     $self->{'step'} = STEP_GATEWAY;
-    ($progress, $step) = (94, 6.0 / scalar(@hosts)); # From 70% to 90%.
+    ($progress, $step) = (70, 10.0 / scalar(@hosts)); # From 70% to 80%.
     $self->get_routes(); # Update the route cache.
     foreach my $host (@hosts) {
       $self->call('update_progress', $progress);
@@ -1867,9 +1872,9 @@ sub scan($) {
     }
   }
 
-  # Done!
-  $self->{'step'} = '';
-  $self->call('update_progress', -1);
+	# Apply monitoring templates
+	$self->call('message', "[5/6] Applying monitoring.", 3);
+	$self->call('apply_monitoring', $self);
 
   # Print debug information on found devices.
   $self->call('message', "[Summary]", 3);
@@ -1887,8 +1892,14 @@ sub scan($) {
     $self->call('message', $dev_info, 3);
   }
 
+	# Apply monitoring templates
+	$self->call('message', "[6/6] Process results.", 3);
   # Send agent information to Database (Discovery) or XML (satellite.).
   $self->call('report_scanned_agents', $self->{'agents_found'});
+
+  # Done!
+  $self->{'step'} = '';
+  $self->call('update_progress', -1);
 
 }
 

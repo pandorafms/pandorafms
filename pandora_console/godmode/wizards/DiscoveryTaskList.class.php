@@ -289,7 +289,7 @@ class DiscoveryTaskList extends HTML
                         [
                             'utimestamp'    => 0,
                             'status'        => 1,
-                            'direct_report' => DISCOVERY_RESULTS,
+                            'direct_report' => $direct_report,
                         ],
                         ['id_rt' => $id]
                     );
@@ -526,14 +526,22 @@ class DiscoveryTaskList extends HTML
                 if ($task['direct_report'] == 1) {
                     if ($task['status'] <= 0) {
                         $data[5] = __('Done');
+                    } else if ($task['utimestamp'] == 0
+                        && empty($task['summary'])
+                    ) {
+                        $data[5] = __('Not started');
                     } else {
                         $data[5] = __('Pending');
                     }
                 } else {
-                    if ($task['status'] <= 0) {
+                    if ($task['status'] <= 0 && $task['utimestamp'] > 0) {
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[5] .= __('Review');
                         $data[5] .= '</span>';
+                    } else if ($task['utimestamp'] == 0
+                        && empty($task['summary'])
+                    ) {
+                        $data[5] = __('Not started');
                     } else {
                         $data[5] = __('Searching');
                     }
@@ -1121,68 +1129,83 @@ class DiscoveryTaskList extends HTML
             return;
         }
 
-        $task_data = db_get_row('tdiscovery_tmp_agents', 'id_rt', $id_task);
+        $task_data = db_get_all_rows_filter(
+            'tdiscovery_tmp_agents',
+            ['id_rt' => $id_task]
+        );
         $task = db_get_row('trecon_task', 'id_rt', $id_task);
 
+        $simple_data = [];
         if (is_array($task_data)) {
-            $data = json_decode(base64_decode($task_data['data']), true);
-            $simple_data = array_reduce(
-                $data,
-                function ($carry, $item) {
-                    $id = $item['agent']['nombre'];
+            foreach ($task_data as $agent) {
+                $data = json_decode(base64_decode($agent['data']), true);
 
-                    $tmp = [
-                        'id'      => $id,
-                        'name'    => $item['agent']['nombre'],
-                        'checked' => $item['checked'],
-                    ];
+                if (is_array($data) === false) {
+                    continue;
+                }
 
-                    if (empty($item['agent']['agent_id'])) {
-                        $agent_id = agents_get_agent_id($id, true);
-                        if ($agent_id > 0) {
-                            $tmp['disabled'] = 1;
-                            $tmp['checked'] = 1;
-                            $tmp['agent_id'] = $agent_id;
-                        }
-                    }
+                $id = $data['agent']['nombre'];
 
-                    $carry[] = $tmp;
-                    $childs = array_reduce(
-                        $item['modules'],
-                        function ($c, $i) use ($id, $agent_id) {
-                            $tmp = [
-                                'name'    => $i['name'],
-                                'id'      => $id.'-'.$i['name'],
-                                'pid'     => $id,
-                                'checked' => $i['checked'],
-                            ];
+                // Partial.
+                $tmp = [
+                    'id'      => $id,
+                    'name'    => $id,
+                    'checked' => $data['agent']['checked'],
+                ];
 
-                            if (empty($i['agentmodule_id'])) {
-                                $agentmodule_id = modules_get_agentmodule_id(
-                                    io_safe_input($i['name']),
-                                    $agent_id
-                                );
+                $agent_id = $data['agent']['agent_id'];
+                if (empty($agent_id)) {
+                    $agent_id = agents_get_agent_id($id, true);
+                }
+
+                if ($agent_id > 0) {
+                    $tmp['disabled'] = 1;
+                    $tmp['checked'] = 1;
+                    $tmp['agent_id'] = $agent_id;
+                }
+
+                // Store.
+                $simple_data[] = $tmp;
+
+                if (is_array($data['modules'])) {
+                    $simple_data = array_merge(
+                        $simple_data,
+                        array_reduce(
+                            $data['modules'],
+                            function ($carry, $item) use ($id, $agent_id) {
+                                if ($item['name'] == 'Host Alive') {
+                                    return $carry;
+                                }
+
+                                $tmp = [
+                                    'name'    => $item['name'],
+                                    'id'      => $id.'-'.$item['name'],
+                                    'pid'     => $id,
+                                    'checked' => $item['checked'],
+                                ];
+
+                                $agentmodule_id = $item['agentmodule_id'];
+                                if (empty($agentmodule_id)) {
+                                    $agentmodule_id = modules_get_agentmodule_id(
+                                        io_safe_input($item['name']),
+                                        $agent_id
+                                    );
+                                }
+
                                 if ($agentmodule_id > 0) {
                                     $tmp['disabled'] = 1;
                                     $tmp['checked'] = 1;
                                     $tmp['module_id'] = $agentmodule_id;
                                 }
-                            }
 
-                            $c[] = $tmp;
-                            return $c;
-                        },
-                        []
+                                $carry[] = $tmp;
+                                return $carry;
+                            },
+                            []
+                        )
                     );
-                    $carry = array_merge(
-                        $carry,
-                        $childs
-                    );
-
-                    return $carry;
-                },
-                []
-            );
+                }
+            }
 
             echo '<div>';
             echo $this->progressTaskSummary($task);
@@ -1225,10 +1248,9 @@ class DiscoveryTaskList extends HTML
             return;
         }
 
+        $ids = [];
         $selection = io_safe_output(get_parameter('tree-data-tree', ''));
-        if (empty($selection)) {
-            $ids = [];
-        } else {
+        if (empty($selection) === false) {
             $selection = json_decode($selection, true);
             $ids = array_reduce(
                 $selection,
@@ -1239,57 +1261,73 @@ class DiscoveryTaskList extends HTML
             );
         }
 
-        $task_data = db_get_row('tdiscovery_tmp_agents', 'id', $id_task);
-
-        if (is_array($task_data)) {
-            $data = json_decode(base64_decode($task_data['data']), true);
-        }
+        $task_data = db_get_all_rows_filter(
+            'tdiscovery_tmp_agents',
+            ['id_rt' => $id_task]
+        );
 
         $summary = [];
-        if (is_array($data)) {
-            foreach ($data as $agent_name => $row) {
-                if (in_array($agent_name, $ids)) {
-                    $data[$agent_name]['checked'] = 1;
-                    if ($data[$agent_name]['checked'] != 1) {
-                        $summary[] = '<li class="added">'.$agent_name.'</li>';
+        if (is_array($ids)) {
+            foreach ($task_data as $row) {
+                $data = json_decode(base64_decode($row['data']), true);
+
+                if (is_array($data)) {
+                    // Analize each agent.
+                    $agent_name = $data['agent']['nombre'];
+                    if (in_array($agent_name, $ids)) {
+                        if ($data['agent']['checked'] != 1) {
+                            $summary[] = '<li class="added">'.$agent_name.'</li>';
+                        }
+
+                        $data['agent']['checked'] = 1;
+                    } else {
+                        if ($data['agent']['checked'] == 1) {
+                            $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.'</li>';
+                        }
+
+                        $data['agent']['checked'] = 0;
                     }
-                } else {
-                    if ($data[$agent_name]['checked'] == 1) {
-                        $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.'</li>';
-                    }
 
-                    $data[$agent_name]['checked'] = 0;
-                }
+                    // Modules.
+                    if (is_array($data['modules'])) {
+                        $n_modules = count($data['modules']);
+                        for ($i = 0; $i < $n_modules; $i++) {
+                            $module_name = $data['modules'][$i]['name'];
+                            if (in_array($agent_name.'-'.$module_name, $ids)) {
+                                if ($data['modules'][$i]['checked'] != 1) {
+                                    $summary[] = '<li class="added">'.$agent_name.' - '.$module_name.'</li>';
+                                }
 
-                if (is_array($row['modules'])) {
-                    $n_modules = count($row['modules']);
-                    for ($i = 0; $i < $n_modules; $i++) {
-                        $module_name = $row['modules'][$i]['name'];
-                        if (in_array($agent_name.'-'.$module_name, $ids)) {
-                            $data[$agent_name]['modules'][$i]['checked'] = 1;
-                            if ($row['modules'][$i]['checked'] != 1) {
-                                $summary[] = '<li class="added">'.$agent_name.' - '.$module_name.'</li>';
+                                $data['modules'][$i]['checked'] = 1;
+                            } else {
+                                if ($data['modules'][$i]['checked'] == 1) {
+                                    $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
+                                }
+
+                                $data['modules'][$i]['checked'] = 0;
                             }
-                        } else {
-                            if ($row['modules'][$i]['checked'] == 1) {
-                                $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
-                            }
-
-                            $data[$agent_name]['modules'][$i]['checked'] = 0;
                         }
                     }
+
+                    // Update data.
+                    db_process_sql_update(
+                        'tdiscovery_tmp_agents',
+                        [
+                            'data'        => base64_encode(json_encode($data)),
+                            'review_date' => date('Y-m-d H:i:s'),
+                        ],
+                        [
+                            'id_rt' => $id_task,
+                            'label' => $agent_name,
+                        ]
+                    );
                 }
             }
+        }
 
-            // Update targets.
-            db_process_sql_update(
-                'tdiscovery_tmp_agents',
-                [
-                    'data' => base64_encode(json_encode($data)),
-                ],
-                ['id_rt' => $id_task]
-            );
-
+        if (empty($summary)) {
+            $out .= __('No changes');
+        } else {
             // Schedule execution.
             db_process_sql_update(
                 'trecon_task',
@@ -1300,11 +1338,7 @@ class DiscoveryTaskList extends HTML
                 ],
                 ['id_rt' => $id_task]
             );
-        }
 
-        if (empty($summary)) {
-            $out .= __('No changes');
-        } else {
             $out .= __('Summary');
             $out .= '<ul>';
             $out .= join('', $summary);

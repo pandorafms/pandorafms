@@ -2663,7 +2663,8 @@ function ui_print_status_image(
     $return=false,
     $options=false,
     $path=false,
-    $image_with_css=false
+    $image_with_css=false,
+    $module_last_status_change=''
 ) {
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
@@ -2678,9 +2679,15 @@ function ui_print_status_image(
 
     $imagepath .= '/'.$type;
 
+    $title_extra_line = '';
+
+    if (!empty($module_last_status_change)) {
+        $title_extra_line = 'Time elapsed since last status change: '.date('h', $module_last_status_change).' '.__('hour').' '.date('i', $module_last_status_change).' '.__('min').' '.date('s', $module_last_status_change).' '.__('sec');
+    }
+
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
-        return ui_print_status_sets($type, $title, $return, $shape_status);
+        return ui_print_status_sets($type, $title, $return, $shape_status, $title_extra_line);
     } else {
         if ($options === false) {
             $options = [];
@@ -2779,7 +2786,8 @@ function ui_print_status_sets(
     $status,
     $title='',
     $return=false,
-    $options=false
+    $options=false,
+    $extra_line_title=''
 ) {
     global $config;
 
@@ -2798,8 +2806,8 @@ function ui_print_status_sets(
     }
 
     if ($title != '') {
-        $options['title'] = $title;
-        $options['data-title'] = $title;
+        $options['title'] = empty($extra_line_title) ? $title : $title.'&#10'.$extra_line_title;
+        $options['data-title'] = empty($extra_line_title) ? $title : $title.'<br>'.$extra_line_title;
         $options['data-use_title_for_force_title'] = 1;
         if (isset($options['class'])) {
             $options['class'] .= ' forced_title';

@@ -1284,6 +1284,7 @@ ALTER TABLE `tagente_estado` MODIFY COLUMN `datos` mediumtext NOT NULL,
 	MODIFY COLUMN `last_known_status` tinyint(4) NULL DEFAULT '0',
 	MODIFY COLUMN `last_dynamic_update` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `last_unknown_update` bigint(20) NOT NULL DEFAULT '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `last_status_change` bigint(20) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`

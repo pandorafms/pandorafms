@@ -442,10 +442,132 @@ sub PandoraFMS::Recon::Base::tcp_scan ($$) {
 }
 
 ################################################################################
+# Verifies if a module will be normal.
+################################################################################
+sub PandoraFMS::Recon::Base::test_module($$) {
+  my ($self, $addr, $module) = @_;
+
+  # Default values.
+  my $test = {
+    %{$module},
+    'ip_target' => $addr,
+  };
+
+  if (is_enabled($module->{'__module_component'})) {
+    # Component. Translate some fields.
+    $test->{'id_tipo_modulo'} = $module->{'type'};
+  } else {
+    # Module.
+    $test->{'id_tipo_modulo'} = $module->{'id_modulo'};
+  }
+
+  my $value;
+
+  # 1. Try to retrieve value.
+  if ($test->{'id_tipo_modulo'} >= 15 && $test->{'id_tipo_modulo'} <= 18) {
+    # SNMP
+    $value = $self->call(
+      'snmp_get',
+      $test->{'ip_target'},
+      $test->{'snmp_oid'}
+    );
+  } elsif ($test->{'id_tipo_modulo'} == 6) {
+    # ICMP - alive - already tested.
+    $value = 1;
+
+  } elsif ($test->{'id_tipo_modulo'} == 7) {
+    # ICMP - latency
+    $value = pandora_ping_latency(
+      $self->{'pa_config'},
+      $test->{'ip_target'},
+      $test->{'max_timeout'},
+      $test->{'max_retries'},
+    );
+
+  } elsif (($test->{'id_tipo_modulo'} >= 1 && $test->{'id_tipo_modulo'} <= 5)
+    || ($test->{'id_tipo_modulo'} >= 21 && $test->{'id_tipo_modulo'} <= 23)
+    && is_enabled($test->{'id_plugin'})
+  ) {
+    # Generic, plugins. (21-23 ASYNC)
+    # XXX TODO: Test plugins.
+    return 1;
+
+  } elsif ($test->{'id_tipo_modulo'} >= 34 && $test->{'id_tipo_modulo'} <= 37) {
+    # Remote command.
+    # XXX TODO: Test remote commands.
+    return 1;
+  } elsif ($test->{'id_tipo_modulo'} >= 8 && $test->{'id_tipo_modulo'} <= 11) {
+    # TCP
+
+    return 0 unless is_numeric($test->{'tcp_port'})
+      && $test->{'tcp_port'} > 0
+      && $test->{'tcp_port'} <= 65535;
+
+    my $result;
+
+    PandoraFMS::NetworkServer::pandora_query_tcp(
+      $self->{'pa_config'},
+      $test->{'tcp_port'},
+      $test->{'ip_target'},
+      \$result,
+      \$value,
+      $test->{'tcp_send'},
+      $test->{'tcp_rcv'},
+      $test->{'id_tipo_modulo'},
+      $test->{'max_timeout'},
+      $test->{'max_retries'},
+      '<Discovery testing>',
+    );
+
+    # Result 0 is OK, 1 failed
+    return 0 unless defined($result) && $result == 0;
+    return 0 unless defined($value);
+
+  }
+
+  # Invalid data (empty or not defined)
+  return 0 if is_empty($value);
+
+  # 2. Check if value matches type definition and fits thresholds.
+  if (is_in_array([1,2,4,5,6,7,8,9,11,15,16,18,21,22,25,30,31,32,34,35,37],$test->{'id_tipo_modulo'})) {
+    # Numeric.
+    return 0 unless is_numeric($value);
+
+    if (!is_enabled($test->{'critical_inverse'})) {
+      return 0 if $value >= $test->{'min_critical'} && $value <= $test->{'max_critical'};
+    } else {
+      return 0 if $value < $test->{'min_critical'} && $value > $test->{'max_critical'};
+    }
+
+    if (is_in_array([2,6,9,18,21,31,35], $test->{'id_tipo_modulo'})) {
+      # Boolean.
+      if (!is_enabled($test->{'critical_inverse'})) {
+        return 0 if $value == 0;
+      } else {
+        return 0 if $value != 0;
+      }
+    }
+
+  } else {
+    # String.
+    if (!is_enabled($test->{'critical_inverse'})) {
+      return 0 if !is_empty($test->{'str_critical'}) && $value =~ /$test->{'str_critical'}/;
+    } else {
+      return 0 if !is_empty($test->{'str_critical'}) && $value !~ /$test->{'str_critical'}/;
+    }
+
+  }
+
+  # Success.
+  return 1;
+
+}
+
+################################################################################
 # Create network profile modules for the given agent.
 ################################################################################
-sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
-  my ($self, $agent_id, $device) = @_;
+sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
+  my ($self, $device) = @_;
 
   #
   # Plugin
@@ -454,50 +576,61 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
   # ICMP
   #
 
-  use Data::Dumper;
-  $Data::Dumper::Sortkeys = 1;
-
-  print Dumper($device);
-  print Dumper($self->{'task_data'});
-
-  die();
-
-  return if empty($self->{'id_network_profile'});
+  return if is_empty($self->{'id_network_profile'});
 
   my @templates = split /,/, $self->{'id_network_profile'};
 
-  # Get network components associated to the network profile.
-  my @np_components = get_db_rows($self->{'dbh'}, 'SELECT * FROM tnetwork_profile_component WHERE id_np = ?', $self->{'id_network_profile'});
-  foreach my $np_component (@np_components) {
+  my $data = $self->{'agents_found'}{$device};
 
-    # Get network component data
-    my $component = get_db_single_row($self->{'dbh'}, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $np_component->{'id_nc'});
-    if (!defined ($component)) {
-      $self->call('message', "Network component ID " . $np_component->{'id_nc'} . " not found.", 5);
-      next;
+  foreach my $t_id (@templates) {
+    # 1. Retrieve template info.
+    my $template = get_db_single_row(
+      $self->{'dbh'},
+      'SELECT * FROM `tnetwork_profile` WHERE `id_np` = ?',
+      $t_id
+    );
+
+    # 2. Verify Private Enterprise Number matches (PEN)
+    if (defined($template->{'pen'})) {
+      my @penes = split(',', $template->{'pen'});
+
+      next unless (is_in_array(\@penes, $data->{'pen'}));
     }
 
-    ## XXX Puede tener varios penes.
-    #next if (defined($template->{'pen'})
-    #  && get_enterprise_oid($device) != $template->{'pen'} );
-
-    # Use snmp_community from network task instead the component snmp_community
-    $component->{'snmp_community'} = safe_output($self->get_community($device));
-    $component->{'tcp_send'} = $self->{'snmp_version'};
-    $component->{'custom_string_1'} = $self->{'snmp_privacy_method'};
-    $component->{'custom_string_2'} = $self->{'snmp_privacy_pass'};
-    $component->{'custom_string_3'} = $self->{'snmp_security_level'};
-    $component->{'plugin_parameter'} = $self->{'snmp_auth_method'};
-    $component->{'plugin_user'} = $self->{'snmp_auth_user'};
-    $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
-
-    pandora_create_module_from_network_component(
-      $self->{'pa_config'},
-      $component,
-      $agent_id,
-      $self->{'dbh'}
+    # 2. retrieve module list from target template.
+    my @np_components = get_db_rows(
+      $self->{'dbh'},
+      'SELECT * FROM tnetwork_profile_component WHERE id_np = ?',
+      $t_id
     );
+
+    foreach my $np_component (@np_components) {
+      # 2. Test each possible module.
+      my $component = get_db_single_row(
+        $self->{'dbh'},
+        'SELECT * FROM tnetwork_component WHERE id_nc = ?',
+        $np_component->{'id_nc'}
+      );
+
+      $component->{'name'} = safe_output($component->{'name'});
+      if ($component->{'type'} >= 15 && $component->{'type'} <= 18) {
+        $component->{'snmp_community'} = safe_output($self->get_community($device));
+        $component->{'tcp_send'} = $self->{'snmp_version'};
+        $component->{'custom_string_1'} = $self->{'snmp_privacy_method'};
+        $component->{'custom_string_2'} = $self->{'snmp_privacy_pass'};
+        $component->{'custom_string_3'} = $self->{'snmp_security_level'};
+        $component->{'plugin_parameter'} = $self->{'snmp_auth_method'};
+        $component->{'plugin_user'} = $self->{'snmp_auth_user'};
+        $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
+      }
+
+      $component->{'__module_component'} = 1;
+
+      # 3. Try to register module into monitoring list.
+      $self->call('add_module', $device, $component);
+    }
   }
+
 }
 
 ################################################################################
@@ -580,9 +713,9 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
         $self->call('message', "Agent id: ".$data->{'agent'}{'agent_id'}, 5);
 
         # Create selected modules.
-        if(ref($data->{'modules'}) eq "ARRAY") {
-          for (my $i=0; $i < scalar @{$data->{'modules'}}; $i++) {
-            my $module = $data->{'modules'}[$i];
+        if(ref($data->{'modules'}) eq "HASH") {
+          foreach my $i (keys %{$data->{'modules'}}) {
+            my $module = $data->{'modules'}{$i};
 
             # Do not create any modules if the agent is not in learning mode.
             next unless ($agent_learning == 1);
@@ -596,22 +729,33 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
             my $agentmodule_id = $module->{'agentmodule_id'};
             if (!defined($agentmodule_id) || $agentmodule_id == 0) {
-              # Create module.
-              $agentmodule_id = pandora_create_module_from_hash(
-                $self->{'pa_config'},
-                {
-                  'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module->{'type'}),
-                  'id_modulo' => $module->{'id_modulo'},
-                  'nombre' => safe_input($module->{'name'}),
-                  'descripcion' => '',
-                  'id_agente' => $agent_id,
-                  'ip_target' => $data->{'agent'}{'direccion'}
-                },
-                $self->{'dbh'}
-              );
+
+              if (is_enabled($module->{'__module_component'})) {
+                # Module from network component.
+                $agentmodule_id = pandora_create_module_from_network_component(
+                  $self->{'pa_config'},
+                  $module,
+                  $agent_id,
+                  $self->{'dbh'}
+                );
+              } else {
+                # Create module - Direct.
+                $agentmodule_id = pandora_create_module_from_hash(
+                  $self->{'pa_config'},
+                  {
+                    'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module->{'type'}),
+                    'id_modulo' => $module->{'id_modulo'},
+                    'nombre' => safe_input($module->{'name'}),
+                    'descripcion' => '',
+                    'id_agente' => $agent_id,
+                    'ip_target' => $data->{'agent'}{'direccion'}
+                  },
+                  $self->{'dbh'}
+                );
+              }
 
               # Store.
-              $data->{'modules'}[$i]{'agentmodule_id'} = $agentmodule_id;
+              $data->{'modules'}{$i}{'agentmodule_id'} = $agentmodule_id;
 
               $self->call(
                 'message',
@@ -725,13 +869,11 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
   # From 80% to 90%.
 	my ($progress, $step) = (80, 10.0 / scalar(@hosts));
 
-  use Data::Dumper;
-  print Dumper($self->{'task_data'});
-
   foreach my $label (keys %{$self->{'agents_found'}}) {
     $self->call('update_progress', $progress);
     $progress += $step;
-    print ">> $label\n";
+    $self->call('message', "Checking modules for $label", 5);
+    $self->call('create_network_profile_modules', $label);
 
   }
 

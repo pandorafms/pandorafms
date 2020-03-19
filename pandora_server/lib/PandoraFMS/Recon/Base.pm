@@ -384,9 +384,9 @@ sub are_connected($$$$$) {
   $dev_1 = $self->{'aliases'}->{$dev_1} if defined($self->{'aliases'}->{$dev_1});
   $dev_2 = $self->{'aliases'}->{$dev_2} if defined($self->{'aliases'}->{$dev_2});
 
-  # Use ping modules when interfaces are unknown.
-  $if_1 = "ping" if $if_1 eq '';
-  $if_2 = "ping" if $if_2 eq '';
+  # Use Host Alive modules when interfaces are unknown.
+  $if_1 = "Host Alive" if $if_1 eq '';
+  $if_2 = "Host Alive" if $if_2 eq '';
 
   if (  defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t${if_2}"})
     ||defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t${if_1}"})) {
@@ -405,7 +405,7 @@ sub icmp_discovery($$) {
 
   $self->prepare_agent($addr);
 
-  $self->add_module($addr, 'icmp',
+  $self->add_module($addr,
     {
       'ip_target' => $addr,
       'name' => "Host Alive",
@@ -1328,12 +1328,22 @@ sub add_agent($$) {
 ################################################################################
 # Add module to agent (tmp pool) (will be registered at the end of the scan).
 ################################################################################
-sub add_module($$$$) {
-  my ($self, $agent, $type, $data) = @_;
+sub add_module($$$) {
+  my ($self, $agent, $data) = @_;
 
   $self->prepare_agent($agent);
 
-  push @{$self->{'agents_found'}->{$agent}->{'modules'}}, $data;
+  $self->{'agents_found'}->{$agent}->{'modules'} = {}
+    unless ref($self->{'agents_found'}->{$agent}->{'modules'}) eq 'HASH';
+
+  # Test module. Is it well defined?
+  return unless ref($data) eq 'HASH' && defined($data->{'name'})
+    && $data->{'name'} ne '';
+
+  # Test module. Is it success?
+  return unless $self->call('test_module', $agent, $data);
+
+  $self->{'agents_found'}->{$agent}->{'modules'}{$data->{'name'}} = $data;
   
 }
 
@@ -1409,7 +1419,7 @@ sub scan_subnet($) {
         {
           'fping' => $self->{'fping'},
           # XXX CAMBIAR POR 0.5
-          'networktimeout' => 0.01 # use fping defaults
+          'networktimeout' => 0.5 # use fping defaults
         },
         @hosts[$block_index .. $to - 1]
       );
@@ -2136,7 +2146,7 @@ sub wmi_scan {
   # CPU.
   my @cpus = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceId FROM Win32_Processor', 0);
   foreach my $cpu (@cpus) {
-    $self->add_module($target, 'wmi',
+    $self->add_module($target,
       {
         'target' => $target,
         'query' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",
@@ -2153,7 +2163,7 @@ sub wmi_scan {
   # Memory.
   my $mem = $self->wmi_get_value($target, $auth, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
   if (defined($mem)) {
-    $self->add_module($target, 'wmi',
+    $self->add_module($target,
       {
         'target' => $target,
         'query' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
@@ -2170,7 +2180,7 @@ sub wmi_scan {
   # Disk.
   my @units = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
   foreach my $unit (@units) {
-      $self->add_module($target, 'wmi',
+      $self->add_module($target,
       {
         'target' => $target,
         'query' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",

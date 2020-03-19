@@ -3067,6 +3067,8 @@ sub pandora_create_module_from_network_component ($$$$) {
 	pandora_create_module_tags ($pa_config, $dbh, $module_id, $component_tags);
 	
 	logger($pa_config, 'Creating module ' . safe_output ($component->{'nombre'}) . " (ID $module_id) for agent $addr from network component.", 10);
+
+	return $module_id;
 }
 
 ##########################################################################

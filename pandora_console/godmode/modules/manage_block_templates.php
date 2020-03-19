@@ -13,10 +13,10 @@
 // GNU General Public License for more details.
 // Load global vars
 // TESTING
+/*
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-$cipotes = false;
+    error_reporting(E_ALL); */
 // END
 global $config;
 
@@ -30,6 +30,7 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     include 'general/noaccess.php';
     return;
 }
+
 
 require_once $config['homedir'].'/include/class/ManageBlock.class.php';
 $ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ManageBlock';
@@ -68,18 +69,17 @@ if (is_ajax()) {
     // Stop any execution.
     exit;
 } else {
-    // Get all parameters
-    $id_np = get_parameter('id_np', '');
     // Run.
     $manageBlock->run();
+    // Get the id_np.
+    $id_np = $manageBlock->getIdNp();
 
-    if ($id_np == 0) {
-        // Create new id_np
-        $manageBlock->moduleTemplateForm();
-    } else if ($id_np > 0) {
-        // Show the id_np selected
-    } else {
-        // List all Module Block
+    // Show the proper window.
+    if ($id_np === -1) {
+        // List all Module Block.
         $manageBlock->moduleBlockList();
+    } else {
+        // Create new o update Template.
+        $manageBlock->moduleTemplateForm($id_np);
     }
 }

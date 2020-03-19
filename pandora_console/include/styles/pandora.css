@@ -5735,6 +5735,11 @@ div#status_pie {
 .white_table_graph_header b {
   font-size: 10pt;
   font-weight: 600;
+  width: 100%;
+}
+
+.white_table_graph_header div.white_table_header_checkbox {
+  float: right;
 }
 
 .white_table_graph_header div#bullets_modules {

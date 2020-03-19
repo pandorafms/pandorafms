@@ -29,6 +29,7 @@ use Time::HiRes qw(usleep);
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
+use PandoraFMS::Core;
 use PandoraFMS::Tools;
 use PandoraFMS::Config;
 use PandoraFMS::DB;
@@ -1079,7 +1080,8 @@ my $history_dbh = undef;
 is_metaconsole(\%conf);
 if ($conf{'_history_db_enabled'} eq '1') {
 	eval {
-		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'});
+		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
+		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));
 	};
 	if ($@) {
 		if (is_offline(\%conf)) {

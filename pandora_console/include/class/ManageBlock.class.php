@@ -56,6 +56,13 @@ class ManageBlock extends HTML
      */
     private $baseUrl;
 
+    /**
+     * Id of the Thing ???
+     *
+     * @var integer
+     */
+    private $id_np;
+
 
     /**
      * Constructor
@@ -83,7 +90,9 @@ class ManageBlock extends HTML
             exit;
         }
 
-        $this->offset = (int) get_parameter('offset', 0);
+        $this->id_np = get_parameter('id_np', -1);
+
+        $this->offset = get_parameter('offset', 0);
 
         $this->ajaxController = $ajax_controller;
 
@@ -117,7 +126,7 @@ class ManageBlock extends HTML
                     'selected' => false,
                 ],
                 [
-                    'link'     => $this->url,
+                    'link'     => $this->baseUrl,
                     'label'    => __('Module Blocks'),
                     'selected' => true,
                 ],
@@ -139,6 +148,17 @@ class ManageBlock extends HTML
             $this->printHeader(true)
         );
 
+    }
+
+
+    /**
+     * Get the value of this current thing ???
+     *
+     * @return integer Id of this thing ???
+     */
+    public function getIdNp()
+    {
+        return $this->id_np;
     }
 
 
@@ -224,11 +244,9 @@ class ManageBlock extends HTML
             array_push($table->data, $data);
         }
 
-        // Sé que los echo son basurientos, pero de momento, me valen para ir montando.
-        // LOS QUITARÉ, PROMESA DE CORONAVIRUS.
         html_print_table($table);
 
-        echo '<div style="float:right;" class="">';
+        $output = '<div style="float:right;" class="">';
 
         $form = [
             'method' => 'POST',
@@ -254,46 +272,24 @@ class ManageBlock extends HTML
             ],
         ];
 
-        $this->printForm(
+        $output .= $this->printForm(
             [
                 'form'   => $form,
                 'inputs' => $inputs,
-            ]
+            ],
+            true
         );
 
-        echo '</div>';
+        $output .= '</div>';
+
+        echo $output;
     }
 
 
     /**
-     * Get the data from DB
+     * Prints Form for template management
      *
-     * @return void
-     */
-    private function getData()
-    {
-        return null;
-    }
-
-
-    /**
-     * Undocumented function
-     *
-     * @param array $data Data to create the table
-     *
-     * @return void
-     */
-    public function printModuleTemplateForm($data)
-    {
-
-    }
-
-
-    /**
-     * Prints Form for template
-     *
-     * @param  integer $id_np
-     * @return void
+     * @param integer $id_np
      */
     public function moduleTemplateForm(int $id_np=0)
     {
@@ -306,20 +302,17 @@ class ManageBlock extends HTML
             $formButtonName = 'crtbutton';
             $formButtonLabel = __('Create');
             // Set of empty values.
-            $values = [
-                'name'        => '',
-                'description' => '',
-                'pen'         => '',
-            ];
+            $description = '';
+            $name = '';
+            $pen = '';
         } else {
             // Assignation for submit button.
-            $formButtonClass = 'sub udp';
+            $formButtonClass = 'sub upd';
             $formButtonName = 'updbutton';
             $formButtonLabel = __('Update');
-
-            // Profile exists
+            // Profile exists.
             $row = db_get_row('tnetwork_profile', 'id_np', $id_np);
-
+            // Fill the inputs with the obtained data.
             $description = $row['description'];
             $name = $row['name'];
             $pen = '';
@@ -378,7 +371,7 @@ class ManageBlock extends HTML
             'arguments' => [
                 'name'       => $formButtonName,
                 'label'      => $formButtonLabel,
-                'type'       => 'submit',
+                'type'       => 'button',
                 'attributes' => 'class="'.$formButtonClass.'"',
                 'return'     => true,
             ],
@@ -411,8 +404,8 @@ class ManageBlock extends HTML
                 WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d',
                 $id_np
             );
-
             $moduleBlocks = db_get_all_rows_sql($sql);
+
             $blockTables = [];
             // Build the information of the blocks
             foreach ($moduleBlocks as $block) {
@@ -431,51 +424,58 @@ class ManageBlock extends HTML
                 }
             }
 
-            foreach ($blockTables as $blockTable) {
-                $blockTitle = $blockTable['name'];
-                $blockData = $blockTable['data'];
+            if (count($blockTables) === 0) {
+                ui_print_info_message(__('No module blocks for this profile'));
+            } else {
+                foreach ($blockTables as $id_group => $blockTable) {
+                    $blockData = $blockTable['data'];
+                    $blockTitle = $blockTable['name'];
+                    $blockTitle .= '<div class="white_table_header_checkbox">'.html_print_checkbox_switch_extended('block_id_'.$id_group, 1, 0, false, '', '', true).'</div>';
 
-                $table = new StdClasS();
-                $table->class = 'databox data';
-                $table->width = '75%';
-                $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
-                $table->rowid = [];
-                $table->data = [];
+                    $table = new StdClasS();
+                    $table->class = 'databox data';
+                    $table->width = '75%';
+                    $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+                    $table->rowid = [];
+                    $table->data = [];
 
-                $table->cellpadding = 0;
-                $table->cellspacing = 0;
-                $table->width = '100%';
-                $table->class = 'info_table';
+                    $table->cellpadding = 0;
+                    $table->cellspacing = 0;
+                    $table->width = '100%';
+                    $table->class = 'info_table';
 
-                $table->head = [];
-                // $table->head[0] = html_print_checkbox('all_delete', 0, false, true, false);
-                $table->head[0] = __('Module Name');
-                $table->head[1] = __('Type');
-                $table->head[2] = __('Description');
-                $table->head[3] = '<span style="float:right;margin-right:2em;">'.__('Add').'</span>';
-                $table->size = [];
-                $table->size[0] = '20%';
-                $table->size[2] = '65%';
-                $table->size[3] = '15%';
+                    $table->head = [];
+                    $table->head[0] = __('Module Name');
+                    $table->head[1] = __('Type');
+                    $table->head[2] = __('Description');
+                    $table->head[3] = '<span style="float:right;margin-right:2em;">'.__('Add').'</span>';
 
-                $table->align = [];
-                $table->align[3] = 'left';
+                    $table->size = [];
+                    $table->size[0] = '20%';
+                    $table->size[2] = '65%';
+                    $table->size[3] = '15%';
 
-                $table->data = [];
+                    $table->align = [];
+                    $table->align[3] = 'right';
 
-                foreach ($blockData as $module) {
-                    hd($module);
-                    $data[0] = $module['name'];
-                    $data[1] = ui_print_moduletype_icon($module['type'], true);
-                    $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
-                    $data[3] = html_print_checkbox_switch_extended('active_'.$module['component_id'], 1, 0, false, '', '', true);
+                    $table->style = [];
+                    $table->style[3] = 'padding-right:2em';
 
-                    array_push($table->data, $data);
+                    $table->data = [];
+
+                    foreach ($blockData as $module) {
+                        $data[0] = $module['name'];
+                        $data[1] = ui_print_moduletype_icon($module['type'], true);
+                        $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
+                        $data[3] = html_print_checkbox_switch_extended('active_'.$module['component_id'], 1, 0, false, '', '', true);
+
+                        array_push($table->data, $data);
+                    }
+
+                    $content = html_print_table($table, true);
+
+                    $output[] = ui_toggle($content, $blockTitle, '', '', false);
                 }
-
-                $content = html_print_table($table, true);
-
-                $output[] = ui_toggle($content, $blockTitle, '', '', false);
             }
         }
 

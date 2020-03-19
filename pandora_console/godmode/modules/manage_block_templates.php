@@ -17,7 +17,6 @@
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL); */
-$cipotes = false;
 // END
 global $config;
 
@@ -32,7 +31,7 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
-// hd($_POST);
+
 require_once $config['homedir'].'/include/class/ManageBlock.class.php';
 $ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ManageBlock';
 // Control call flow.
@@ -70,17 +69,17 @@ if (is_ajax()) {
     // Stop any execution.
     exit;
 } else {
-    // Get all parameters
-    $id_np = get_parameter('id_np', '');
     // Run.
     $manageBlock->run();
+    // Get the id_np.
+    $id_np = $manageBlock->getIdNp();
 
-    if (empty($id_np)) {
-        // List all Module Block
+    // Show the proper window.
+    if ($id_np === -1) {
+        // List all Module Block.
         $manageBlock->moduleBlockList();
     } else {
-        // Create new o update Template
-        hd($id_np);
+        // Create new o update Template.
         $manageBlock->moduleTemplateForm($id_np);
     }
 }

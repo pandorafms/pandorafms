@@ -1472,6 +1472,11 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsign
 ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0';
 
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_profile`
+-- ----------------------------------------------------------------------
+ALTER TABLE `tnetwork_profile` ADD COLUMN `pen` TEXT;
+
 -- ---------------------------------------------------------------------
 -- Table `tagente`
 -- ---------------------------------------------------------------------

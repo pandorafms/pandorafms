@@ -942,6 +942,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile` (
 	`id_np`  int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
+	`pen` text default '',
 	PRIMARY KEY  (`id_np`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,3 +1,7 @@
+/**
+ * IMPORTANT. Official plugin does not allow string ids
+ * This modificated one yes.
+ */
 !(function(e) {
   var t = {};
   function i(s) {
@@ -373,7 +377,7 @@
             }
           },
           expandNode: function(e) {
-            var t = e.addClass ? e : this.$el.find("[data-id=" + e + "]"),
+            var t = e.addClass ? e : this.$el.find("[data-id='" + e + "']"),
               i = t.data("data"),
               s = i[this.options.response.pid],
               n = t.children(".sim-tree-spread"),
@@ -392,7 +396,7 @@
               $.isArray(i) &&
                 (this.options.check || (i = [i[0]]),
                 $.each(i, function(e, i) {
-                  var a = t.$el.find("[data-id=" + i + "]"),
+                  var a = t.$el.find("[data-id='" + i + "']"),
                     r = a.children("a"),
                     d = r.children(".sim-tree-checkbox"),
                     o = a.data("data");
@@ -415,7 +419,7 @@
             ("string" != typeof i && "number" != typeof i) || (i = [i]),
               $.isArray(i) &&
                 $.each(i, function(e, i) {
-                  var s = t.$el.find("[data-id=" + i + "]");
+                  var s = t.$el.find("[data-id='" + i + "']");
                   s.addClass("disabled");
                 });
           },

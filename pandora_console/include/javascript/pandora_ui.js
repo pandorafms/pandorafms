@@ -335,6 +335,12 @@ function load_modal(settings) {
             ? settings.onshow.maxHeight
             : "auto",
         overlay: settings.modal.overlay,
+        position: {
+          my: "top+20%",
+          at: "top",
+          of: window,
+          collision: "fit"
+        },
         buttons: required_buttons,
         closeOnEscape: true,
         open: function() {

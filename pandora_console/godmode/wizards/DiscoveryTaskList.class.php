@@ -123,8 +123,9 @@ class DiscoveryTaskList extends HTML
         }
 
         $force_run = (bool) get_parameter('force_run');
-        if ($force_run === true) {
-            return $this->forceConsoleTask();
+        $force = (bool) get_parameter('force');
+        if ($force_run === true || $force === true) {
+            return $this->forceTask();
         }
 
         $delete_console_task = (bool) get_parameter('delete_console_task');
@@ -241,7 +242,7 @@ class DiscoveryTaskList extends HTML
      *
      * @return void
      */
-    public function forceConsoleTask()
+    public function forceTask()
     {
         global $config;
 
@@ -256,12 +257,46 @@ class DiscoveryTaskList extends HTML
 
         $id_console_task = (int) get_parameter('id_console_task');
 
-        if ($id_console_task !== null) {
+        if ($id_console_task != null) {
+            // --------------------------------
+            // FORCE A CONSOLE TASK
+            // --------------------------------
             enterprise_hook('cron_task_run', [$id_console_task, true]);
             // Trick to avoid double execution.
             header('Location: '.$this->url);
-        }
+        } else {
+            // --------------------------------
+            // FORCE A RECON TASK
+            // --------------------------------
+            if (check_acl($config['id_user'], 0, 'AW')) {
+                if (isset($_GET['force'])) {
+                    $id = (int) get_parameter_get('force', 0);
+                    // Schedule execution.
+                    $direct_report = db_get_value(
+                        'direct_report',
+                        'trecon_task',
+                        'id_rt',
+                        $id
+                    );
 
+                    if ($direct_report != DISCOVERY_STANDARD) {
+                        // Force re-scan for supervised tasks.
+                        $direct_report = DISCOVERY_SEARCH;
+                    }
+
+                    db_process_sql_update(
+                        'trecon_task',
+                        [
+                            'utimestamp'    => 0,
+                            'status'        => 1,
+                            'direct_report' => $direct_report,
+                        ],
+                        ['id_rt' => $id]
+                    );
+                    header('Location: '.$this->url);
+                }
+            }
+        }
     }
 
 
@@ -334,28 +369,7 @@ class DiscoveryTaskList extends HTML
             include_once $config['homedir'].'/include/functions_servers.php';
             include_once $config['homedir'].'/include/functions_network_profiles.php';
 
-            $modules_server = 0;
-            $total_modules = 0;
-            $total_modules_data = 0;
-
-            // --------------------------------
-            // FORCE A RECON TASK
-            // --------------------------------
-            if (check_acl($config['id_user'], 0, 'AW')) {
-                if (isset($_GET['force'])) {
-                    $id = (int) get_parameter_get('force', 0);
-                    servers_force_recon_task($id);
-                    header(
-                        'Location: '.ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist'
-                        )
-                    );
-                }
-            }
-
             $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
-            $user_groups = implode(',', array_keys(users_get_groups()));
-
             // Show network tasks for Recon Server.
             if ($recon_tasks === false) {
                 $recon_tasks = [];
@@ -512,14 +526,22 @@ class DiscoveryTaskList extends HTML
                 if ($task['direct_report'] == 1) {
                     if ($task['status'] <= 0) {
                         $data[5] = __('Done');
+                    } else if ($task['utimestamp'] == 0
+                        && empty($task['summary'])
+                    ) {
+                        $data[5] = __('Not started');
                     } else {
                         $data[5] = __('Pending');
                     }
                 } else {
-                    if ($task['status'] <= 0) {
+                    if ($task['status'] <= 0 && $task['utimestamp'] > 0) {
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[5] .= __('Review');
                         $data[5] .= '</span>';
+                    } else if ($task['utimestamp'] == 0
+                        && empty($task['summary'])
+                    ) {
+                        $data[5] = __('Not started');
                     } else {
                         $data[5] = __('Searching');
                     }
@@ -636,7 +658,7 @@ class DiscoveryTaskList extends HTML
                             'data'     => [
                                 'wiz'    => 'tasklist',
                                 'id'     => $task['id_rt'],
-                                'method' => 'task_progress',
+                                'method' => 'taskProgress',
                             ],
                         ]
                     );
@@ -842,10 +864,11 @@ class DiscoveryTaskList extends HTML
      *
      * @return void
      */
-    public function task_progress()
+    public function taskProgress()
     {
         if (!is_ajax()) {
-            return '';
+            echo json_encode(['error' => true]);
+            return;
         }
 
         $id_task = get_parameter('id', 0);
@@ -871,11 +894,11 @@ class DiscoveryTaskList extends HTML
      *
      * @return string Charts in HTML.
      */
-    private function progress_task_graph($task)
+    private function progressTaskGraph($task)
     {
         $result .= '<div style="display: flex;">';
-        $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
-        $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'._('Overall Progress').'</span>';
+        $result .= '<div class="subtitle">';
+        $result .= '<span>'._('Overall Progress').'</span>';
 
         $result .= '<div style="margin-top: 25px;">';
         $result .= progress_circular_bar(
@@ -928,8 +951,8 @@ class DiscoveryTaskList extends HTML
             }
 
             $result .= '</div>';
-            $result .= '<div style="width: 100%; text-align: center; margin-top: 40px;">';
-            $result .= '<span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.$str.' ';
+            $result .= '<div class="subtitle">';
+            $result .= '<span>'.$str.' ';
             if (!empty($str)) {
                 $result .= $task['stats']['c_network_name'];
             }
@@ -964,7 +987,7 @@ class DiscoveryTaskList extends HTML
      *
      * @return html code with summary.
      */
-    private function progress_task_summary($task)
+    private function progressTaskSummary($task)
     {
         global $config;
         include_once $config['homedir'].'/include/graphs/functions_d3.php';
@@ -974,6 +997,10 @@ class DiscoveryTaskList extends HTML
         }
 
         $output = '';
+
+        if (is_array($task['stats']) === false) {
+            $task['stats'] = json_decode($task['summary'], true);
+        }
 
         if (is_array($task['stats'])) {
             $i = 0;
@@ -1010,7 +1037,7 @@ class DiscoveryTaskList extends HTML
             $table->data[$i][1] .= $task['stats']['summary']['WMI'];
             $table->data[$i++][1] .= '</span>';
 
-            $output = '<div style="margin-top: 40px; text-align: center;"><span style="font-size: 1.9em; font-family: "lato-bolder", "Open Sans", sans-serif !important;">'.__('Summary').'</span></div>';
+            $output = '<div class="subtitle"><span>'.__('Summary').'</span></div>';
             $output .= html_print_table($table, true).'</div>';
         }
 
@@ -1023,7 +1050,7 @@ class DiscoveryTaskList extends HTML
      *
      * @return void
      */
-    public function progress_task_discovery()
+    public function progressTaskDiscovery()
     {
         if (!is_ajax()) {
             return;
@@ -1038,8 +1065,7 @@ class DiscoveryTaskList extends HTML
 
         $task = db_get_row('trecon_task', 'id_rt', $id_task);
         $task['stats'] = json_decode($task['summary'], true);
-        $global_progress = $task['status'];
-        $summary = $this->progress_task_summary($task);
+        $summary = $this->progressTaskSummary($task);
 
         $output = '';
 
@@ -1059,7 +1085,7 @@ class DiscoveryTaskList extends HTML
                 true
             ).'</div>';
         } else {
-            $output .= $this->progress_task_graph($task);
+            $output .= $this->progressTaskGraph($task);
         }
 
         $output .= $summary;
@@ -1073,7 +1099,7 @@ class DiscoveryTaskList extends HTML
      *
      * @return void
      */
-    public function task_showmap()
+    public function taskShowmap()
     {
         global $config;
         include_once $config['homedir'].'/include/class/NetworkMap.class.php';
@@ -1095,7 +1121,7 @@ class DiscoveryTaskList extends HTML
      *
      * @return void
      */
-    public function show_task_review()
+    public function showTaskReview()
     {
         $id_task = get_parameter('id', 0);
         if ($id_task <= 0) {
@@ -1103,43 +1129,107 @@ class DiscoveryTaskList extends HTML
             return;
         }
 
-        $task = db_get_row('tdiscovery_tmp_agents', 'id_rt', $id_task);
+        $task_data = db_get_all_rows_filter(
+            'tdiscovery_tmp_agents',
+            ['id_rt' => $id_task]
+        );
+        $task = db_get_row('trecon_task', 'id_rt', $id_task);
 
-        if (is_array($task)) {
-            $data = json_decode(base64_decode($task['data']), true);
-            $simple_data = array_reduce(
-                $data,
-                function ($carry, $item) {
-                    $id = $item['agent']['nombre'];
-                    $carry[] = [
-                        'id'   => $id,
-                        'name' => $item['agent']['nombre'],
-                    ];
+        $simple_data = [];
+        if (is_array($task_data)) {
+            foreach ($task_data as $agent) {
+                $data = json_decode(base64_decode($agent['data']), true);
 
-                    $childs = array_reduce(
-                        $item['modules'],
-                        function ($c, $i) use ($id) {
-                                $c[] = [
-                                    'name' => $i['name'],
-                                    'id'   => $id.'-'.$i['name'],
-                                    'pid'  => $id,
+                if (is_array($data) === false) {
+                    continue;
+                }
+
+                $id = $data['agent']['nombre'];
+
+                // Partial.
+                $tmp = [
+                    'id'      => $id,
+                    'name'    => $id,
+                    'checked' => $data['agent']['checked'],
+                ];
+
+                $agent_id = $data['agent']['agent_id'];
+                if (empty($agent_id)) {
+                    $agent_id = agents_get_agent_id($id, true);
+                }
+
+                if ($agent_id > 0) {
+                    $tmp['disabled'] = 1;
+                    $tmp['checked'] = 1;
+                    $tmp['agent_id'] = $agent_id;
+                }
+
+                // Store.
+                $simple_data[] = $tmp;
+
+                if (is_array($data['modules'])) {
+                    $simple_data = array_merge(
+                        $simple_data,
+                        array_reduce(
+                            $data['modules'],
+                            function ($carry, $item) use ($id, $agent_id) {
+                                if ($item['name'] == 'Host Alive') {
+                                    return $carry;
+                                }
+
+                                $tmp = [
+                                    'name'    => $item['name'],
+                                    'id'      => $id.'-'.$item['name'],
+                                    'pid'     => $id,
+                                    'checked' => $item['checked'],
                                 ];
-                                return $c;
-                        },
-                        []
-                    );
-                    $carry = array_merge(
-                        $carry,
-                        $childs
-                    );
 
-                    return $carry;
-                },
-                []
-            );
+                                $agentmodule_id = $item['agentmodule_id'];
+                                if (empty($agentmodule_id)) {
+                                    $agentmodule_id = modules_get_agentmodule_id(
+                                        io_safe_input($item['name']),
+                                        $agent_id
+                                    );
+                                }
 
+                                if ($agentmodule_id > 0) {
+                                    $tmp['disabled'] = 1;
+                                    $tmp['checked'] = 1;
+                                    $tmp['module_id'] = $agentmodule_id;
+                                }
+
+                                $carry[] = $tmp;
+                                return $carry;
+                            },
+                            []
+                        )
+                    );
+                }
+            }
+
+            echo '<div>';
+            echo $this->progressTaskSummary($task);
+            echo '</div>';
+            echo '<div class="subtitle">';
+            echo '<span>';
+            echo __('Please select devices to be monitored');
+            echo '</span><div class="manage">';
+            echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
+            echo __('select all');
+            echo '</button>';
+            echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
+            echo __('deselect all');
+            echo '</button>';
+            echo '</div>';
+            echo '</div>';
+
+            echo '<form id="review">';
             echo '<div id="tree"></div>';
-            echo parent::printTree('tree', $simple_data);
+            echo parent::printTree(
+                'tree',
+                $simple_data
+            );
+            echo '</form>';
         }
 
     }
@@ -1150,7 +1240,7 @@ class DiscoveryTaskList extends HTML
      *
      * @return void
      */
-    public function parse_task_review()
+    public function parseTaskReview()
     {
         $id_task = get_parameter('id', 0);
         if ($id_task <= 0) {
@@ -1158,7 +1248,102 @@ class DiscoveryTaskList extends HTML
             return;
         }
 
-        $out = obhd($_REQUEST);
+        $ids = [];
+        $selection = io_safe_output(get_parameter('tree-data-tree', ''));
+        if (empty($selection) === false) {
+            $selection = json_decode($selection, true);
+            $ids = array_reduce(
+                $selection,
+                function ($carry, $item) {
+                    $carry[] = $item['id'];
+                    return $carry;
+                }
+            );
+        }
+
+        $task_data = db_get_all_rows_filter(
+            'tdiscovery_tmp_agents',
+            ['id_rt' => $id_task]
+        );
+
+        $summary = [];
+        if (is_array($ids)) {
+            foreach ($task_data as $row) {
+                $data = json_decode(base64_decode($row['data']), true);
+
+                if (is_array($data)) {
+                    // Analize each agent.
+                    $agent_name = $data['agent']['nombre'];
+                    if (in_array($agent_name, $ids)) {
+                        if ($data['agent']['checked'] != 1) {
+                            $summary[] = '<li class="added">'.$agent_name.'</li>';
+                        }
+
+                        $data['agent']['checked'] = 1;
+                    } else {
+                        if ($data['agent']['checked'] == 1) {
+                            $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.'</li>';
+                        }
+
+                        $data['agent']['checked'] = 0;
+                    }
+
+                    // Modules.
+                    if (is_array($data['modules'])) {
+                        $n_modules = count($data['modules']);
+                        for ($i = 0; $i < $n_modules; $i++) {
+                            $module_name = $data['modules'][$i]['name'];
+                            if (in_array($agent_name.'-'.$module_name, $ids)) {
+                                if ($data['modules'][$i]['checked'] != 1) {
+                                    $summary[] = '<li class="added">'.$agent_name.' - '.$module_name.'</li>';
+                                }
+
+                                $data['modules'][$i]['checked'] = 1;
+                            } else {
+                                if ($data['modules'][$i]['checked'] == 1) {
+                                    $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
+                                }
+
+                                $data['modules'][$i]['checked'] = 0;
+                            }
+                        }
+                    }
+
+                    // Update data.
+                    db_process_sql_update(
+                        'tdiscovery_tmp_agents',
+                        [
+                            'data'        => base64_encode(json_encode($data)),
+                            'review_date' => date('Y-m-d H:i:s'),
+                        ],
+                        [
+                            'id_rt' => $id_task,
+                            'label' => $agent_name,
+                        ]
+                    );
+                }
+            }
+        }
+
+        if (empty($summary)) {
+            $out .= __('No changes');
+        } else {
+            // Schedule execution.
+            db_process_sql_update(
+                'trecon_task',
+                [
+                    'utimestamp'    => 0,
+                    'status'        => 1,
+                    'direct_report' => DISCOVERY_RESULTS,
+                ],
+                ['id_rt' => $id_task]
+            );
+
+            $out .= __('Summary');
+            $out .= '<ul>';
+            $out .= join('', $summary);
+            $out .= '</ul>';
+        }
 
         echo json_encode(
             ['result' => $out]

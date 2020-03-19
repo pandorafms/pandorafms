@@ -13,9 +13,10 @@
 // GNU General Public License for more details.
 // Load global vars
 // TESTING
+/*
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+    error_reporting(E_ALL); */
 $cipotes = false;
 // END
 global $config;
@@ -31,6 +32,7 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
+// hd($_POST);
 require_once $config['homedir'].'/include/class/ManageBlock.class.php';
 $ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ManageBlock';
 // Control call flow.
@@ -73,13 +75,12 @@ if (is_ajax()) {
     // Run.
     $manageBlock->run();
 
-    if ($id_np == 0) {
-        // Create new id_np
-        $manageBlock->moduleTemplateForm();
-    } else if ($id_np > 0) {
-        // Show the id_np selected
-    } else {
+    if (empty($id_np)) {
         // List all Module Block
         $manageBlock->moduleBlockList();
+    } else {
+        // Create new o update Template
+        hd($id_np);
+        $manageBlock->moduleTemplateForm($id_np);
     }
 }

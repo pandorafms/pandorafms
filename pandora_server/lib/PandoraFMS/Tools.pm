@@ -113,6 +113,7 @@ our @EXPORT = qw(
 	is_metaconsole
 	is_offline
 	is_empty
+	is_in_array
 	to_number
 	clean_blank
 	credential_store_get_key
@@ -654,6 +655,23 @@ sub is_empty {
 	}
 
 	if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+		return 1;
+	}
+	return 0;
+}
+
+################################################################################
+# Check if a value is in an array
+################################################################################
+sub is_in_array {
+	my ($array, $value) = @_;
+
+	if (is_empty($value)) {
+		return 0;
+	}
+
+	my %params = map { $_ => 1 } @{$array};
+	if (exists($params{$value})) {
 		return 1;
 	}
 	return 0;

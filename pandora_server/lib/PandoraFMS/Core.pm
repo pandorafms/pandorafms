@@ -1680,6 +1680,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
+	my $last_status_change = $agent_status->{'last_status_change'};
 	
 	# Calculate the current interval
 	my $current_interval;
@@ -1747,6 +1748,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 			$status = $new_status;
 
+			# Update the change of status timestamp.
+			$last_status_change = $utimestamp;
+
 			# Update module status count.
 			$mark_for_update = 1;
 
@@ -1783,6 +1787,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 			$status = $new_status;
 
+			# Update the change of status timestamp.
+			$last_status_change = $utimestamp;
+
 			# Update module status count.
 			$mark_for_update = 1;
 
@@ -1809,6 +1816,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $known_status, $dbh);
 		$status = 0;
 
+		# Update the change of status timestamp.
+		$last_status_change = $utimestamp;
+
 		# Update module status count.
 		$mark_for_update = 1;
 	}
@@ -1816,6 +1826,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	elsif ($status == 3) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $known_status, $status, $known_status, $dbh);
 		$status = $known_status;
+
+		# Update the change of status timestamp.
+		$last_status_change = $utimestamp;
 
 		# reset counters because change status.
 		$ff_normal = 0;
@@ -1834,11 +1847,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				status_changes = ?, utimestamp = ?, timestamp = ?,
 				id_agente = ?, current_interval = ?, running_by = ?,
 				last_execution_try = ?, last_try = ?, last_error = ?,
-				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?
+				ff_start_utimestamp = ?, ff_normal = ?, ff_warning = ?, ff_critical = ?,
+				last_status_change = ?
 			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp,
-			$ff_normal, $ff_warning, $ff_critical, $module->{'id_agente_modulo'});
+			$ff_normal, $ff_warning, $ff_critical, $last_status_change, $module->{'id_agente_modulo'});
 	}
 
 	# Save module data. Async and log4x modules are not compressed.
@@ -5429,7 +5443,7 @@ sub pandora_module_unknown ($$) {
 			
 			# Set the module state to normal
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);
-			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 0, estado = 0, known_status = 0, last_known_status = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 0, estado = 0, known_status = 0, last_known_status = 0, last_status_change = ? WHERE id_agente_estado = ?', time(), $module->{'id_agente_estado'});
 			
 			# Get agent information
 			my $agent = get_db_single_row ($dbh, 'SELECT *
@@ -5475,7 +5489,8 @@ sub pandora_module_unknown ($$) {
 			# Set the module status to unknown (the module can already be unknown if unknown_updates is enabled).
 			if ($module->{'estado'} != 3) {
 				logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
-				db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3, last_unknown_update = ? WHERE id_agente_estado = ?', time(), $module->{'id_agente_estado'});
+				my $utimestamp = time();
+				db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3, last_unknown_update = ?, last_status_change = ? WHERE id_agente_estado = ?', $utimestamp, $utimestamp, , $module->{'id_agente_estado'});
 			}
 			
 			# Get agent information

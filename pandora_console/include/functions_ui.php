@@ -2873,10 +2873,12 @@ function ui_progress(
         $text = $progress.'%';
     }
 
+    $id = uniqid();
+
     ui_require_css_file('progress');
-    $output .= '<span class="progress_main" data-label="'.$text;
+    $output .= '<span id="'.$id.'" class="progress_main" data-label="'.$text;
     $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
-    $output .= '<span class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
+    $output .= '<span id="'.$id.'_progress" class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
     $output .= '</span>';
 
     if ($ajax !== false && is_array($ajax)) {
@@ -2900,8 +2902,8 @@ function ui_progress(
                     success: function(data) {
                         try {
                             val = JSON.parse(data);
-                            $(".progress_main").attr("data-label", val + " %");
-                            $(".progress").width(val+"%");
+                            $("#'.$id.'").attr("data-label", val + " %");
+                            $("#'.$id.'_progress").width(val+"%");
                         } catch (e) {
                             console.error(e);
                         }
@@ -2914,8 +2916,8 @@ function ui_progress(
             $output .= '<script type="text/javascript">
     $(document).ready(function() {
         setInterval(() => {
-                last = $(".progress_main").attr("data-label").split(" ")[0]*1;
-                width = $(".progress").width() / $(".progress").parent().width() * 100;
+                last = $("#'.$id.'").attr("data-label").split(" ")[0]*1;
+                width = $("#'.$id.'_progress").width() / $("#'.$id.'_progress").parent().width() * 100;
                 width_interval = '.$ajax['interval'].';
                 if (last % 10 == 0) {
                     $.post({
@@ -2934,21 +2936,21 @@ function ui_progress(
                         success: function(data) {
                             try {
                                 val = JSON.parse(data);
-                                $(".progress_main").attr("data-label", val["last_contact"]+" s");
-                                $(".progress").width(val["progress"]+"%");
+                                $("#'.$id.'").attr("data-label", val["last_contact"]+" s");
+                                $("#'.$id.'_progress").width(val["progress"]+"%");
                             } catch (e) {
                                 console.error(e);
                                 $(".progress_text").attr("data-label", (last -1) + " s");
                                 if (width < 100) {
-                                    $(".progress").width((width+width_interval) + "%");
+                                    $("#'.$id.'_progress").width((width+width_interval) + "%");
                                 }
                             }
                         }
                     });
                 } else {
-                    $(".progress_main").attr("data-label", (last -1) + " s");
+                    $("#'.$id.'").attr("data-label", (last -1) + " s");
                     if (width < 100) {
-                        $(".progress").width((width+width_interval) + "%");
+                        $("#'.$id.'_progress").width((width+width_interval) + "%");
                     }
                 }
             }, 1000);

@@ -732,6 +732,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
               if (is_enabled($module->{'__module_component'})) {
                 # Module from network component.
+                delete $module->{'__module_component'};
                 $agentmodule_id = pandora_create_module_from_network_component(
                   $self->{'pa_config'},
                   $module,

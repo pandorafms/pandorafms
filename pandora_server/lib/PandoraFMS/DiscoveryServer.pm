@@ -40,9 +40,6 @@ use PandoraFMS::ProducerConsumerServer;
 use PandoraFMS::GIS;
 use PandoraFMS::Recon::Base;
 
-# Patched Nmap::Parser. See http://search.cpan.org/dist/Nmap-Parser/.
-use PandoraFMS::NmapParser;
-
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 
@@ -62,7 +59,7 @@ use constant {
   STEP_TRACEROUTE => 3,
   STEP_GATEWAY => 4,
 	STEP_MONITORING => 5,
-	STEP_APPLY => 6,
+	STEP_PROCESSING => 6,
   STEP_STATISTICS => 1,
   STEP_APP_SCAN => 2,
   STEP_CUSTOM_QUERIES => 3,
@@ -360,9 +357,14 @@ sub exec_recon_script ($$$) {
   }
 
   my $ent_script = 0;
-  my $args = enterprise_hook('discovery_custom_recon_scripts',[$pa_config, $dbh, $task, $script]);
+  my $args = enterprise_hook(
+    'discovery_custom_recon_scripts',
+    [$pa_config, $dbh, $task, $script]
+  );
   if (!$args) {
-    $args = "$task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters";
+    $args = '"'.$task->{'id_rt'}.'" ';
+    $args .= '"'.$task->{'id_group'}.'" ';
+    $args .= $macros_parameters;
   } else {
     $ent_script = 1;
   }
@@ -691,7 +693,16 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
         my $agent_id = $data->{'agent'}{'agent_id'};
         my $agent_learning = 1;
 
-        if (!defined($agent_id) || $agent_id == 0) {
+        if (defined($agent_id) || $agent_id > 0) {
+          $agent_learning = get_db_value(
+            $self->{'dbh'},
+            'SELECT modo FROM tagente WHERE id_agente = ?',
+            $agent_id
+          );
+        }
+
+        if (!defined($agent_learning)) {
+          # Agent id does not exists or is invalid.
           $agent_id = pandora_create_agent(
             $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
             $data->{'agent'}{'direccion'}, $self->{'task_data'}{'group_id'}, $parent_id,
@@ -702,14 +713,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
           $data->{'agent'}{'agent_id'} = $agent_id;
           $agent_learning = 1;
-        } else {
-          $agent_learning = get_db_value(
-            $self->{'dbh'},
-            'SELECT modo FROM tagente WHERE id_agente = ?',
-            $agent_id
-          );
-
-        }
+        } 
         $self->call('message', "Agent id: ".$data->{'agent'}{'agent_id'}, 5);
 
         # Create selected modules.
@@ -725,10 +729,24 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
               next unless (is_enabled($module->{'checked'}) || $force_creation);
             }
 
+            delete $module->{'checked'};
+
             $self->call('message', "[$agent_id] Module: ".$module->{'name'}, 5);
 
             my $agentmodule_id = $module->{'agentmodule_id'};
-            if (!defined($agentmodule_id) || $agentmodule_id == 0) {
+
+            if (defined($agentmodule_id) && $agentmodule_id > 0) {
+              $agentmodule_id = get_db_value(
+                $self->{'dbh'},
+                'SELECT id_agente_modulo FROM tagente_modulo
+                 WHERE id_agente_modulo = ? AND nombre = ?',
+                $agentmodule_id,
+                safe_input($module->{'name'})
+              );
+            }
+
+            if (!is_enabled($agentmodule_id)) {
+              # Create.
 
               if (is_enabled($module->{'__module_component'})) {
                 # Module from network component.
@@ -809,7 +827,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
   #
 
   my @hosts = keys %{$self->{'agents_found'}};
-	$self->{'step'} = STEP_APPLY;
+	$self->{'step'} = STEP_PROCESSING;
 	my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
   foreach my $label (keys %{$self->{'agents_found'}}) {
     $self->call('update_progress', $progress);

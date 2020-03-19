@@ -527,6 +527,8 @@ define('STEP_SCANNING', 1);
 define('STEP_AFT', 2);
 define('STEP_TRACEROUTE', 3);
 define('STEP_GATEWAY', 4);
+define('STEP_MONITORING', 5);
+define('STEP_PROCESSING', 6);
 define('STEP_STATISTICS', 1);
 define('STEP_APP_SCAN', 2);
 define('STEP_CUSTOM_QUERIES', 3);

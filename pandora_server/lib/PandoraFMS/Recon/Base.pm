@@ -23,7 +23,7 @@ use constant {
   STEP_TRACEROUTE => 3,
   STEP_GATEWAY => 4,
   STEP_MONITORING => 5,
-  STEP_APPLY => 6,
+  STEP_PROCESSING => 6,
   STEP_STATISTICS => 1,
   STEP_APP_SCAN => 2,
   STEP_CUSTOM_QUERIES => 3,
@@ -1884,6 +1884,7 @@ sub scan($) {
 
 	# Apply monitoring templates
 	$self->call('message', "[5/6] Applying monitoring.", 3);
+  $self->{'step'} = STEP_MONITORING;
 	$self->call('apply_monitoring', $self);
 
   # Print debug information on found devices.
@@ -1903,7 +1904,8 @@ sub scan($) {
   }
 
 	# Apply monitoring templates
-	$self->call('message', "[6/6] Process results.", 3);
+	$self->call('message', "[6/6] Processing results.", 3);
+  $self->{'step'} = STEP_PROCESSING;
   # Send agent information to Database (Discovery) or XML (satellite.).
   $self->call('report_scanned_agents', $self->{'agents_found'});
 

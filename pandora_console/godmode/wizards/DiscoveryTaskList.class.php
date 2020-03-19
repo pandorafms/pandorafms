@@ -945,6 +945,14 @@ class DiscoveryTaskList extends HTML
                     $str = __('Executing custom queries...');
                 break;
 
+                case STEP_MONITORING:
+                    $str = __('Testing modules...');
+                break;
+
+                case STEP_PROCESSING:
+                    $str = __('Processing results...');
+                break;
+
                 default:
                     $str = '';
                 break;
@@ -1173,6 +1181,10 @@ class DiscoveryTaskList extends HTML
                         array_reduce(
                             $data['modules'],
                             function ($carry, $item) use ($id, $agent_id) {
+                                if (empty($item['name'])) {
+                                    $item['name'] = $item['nombre'];
+                                }
+
                                 if ($item['name'] == 'Host Alive') {
                                     return $carry;
                                 }
@@ -1291,20 +1303,19 @@ class DiscoveryTaskList extends HTML
                     // Modules.
                     if (is_array($data['modules'])) {
                         $n_modules = count($data['modules']);
-                        for ($i = 0; $i < $n_modules; $i++) {
-                            $module_name = $data['modules'][$i]['name'];
+                        foreach ($data['modules'] as $module_name => $module) {
                             if (in_array($agent_name.'-'.$module_name, $ids)) {
-                                if ($data['modules'][$i]['checked'] != 1) {
+                                if ($data['modules'][$module_name]['checked'] != 1) {
                                     $summary[] = '<li class="added">'.$agent_name.' - '.$module_name.'</li>';
                                 }
 
-                                $data['modules'][$i]['checked'] = 1;
+                                $data['modules'][$module_name]['checked'] = 1;
                             } else {
-                                if ($data['modules'][$i]['checked'] == 1) {
+                                if ($data['modules'][$module_name]['checked'] == 1) {
                                     $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
                                 }
 
-                                $data['modules'][$i]['checked'] = 0;
+                                $data['modules'][$module_name]['checked'] = 0;
                             }
                         }
                     }
@@ -1338,7 +1349,6 @@ class DiscoveryTaskList extends HTML
                 ],
                 ['id_rt' => $id_task]
             );
-
             $out .= __('Summary');
             $out .= '<ul>';
             $out .= join('', $summary);

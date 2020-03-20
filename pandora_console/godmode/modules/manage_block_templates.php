@@ -13,9 +13,9 @@
 // GNU General Public License for more details.
 // Load global vars
 // TESTING
-/*
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
+    /*
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
     error_reporting(E_ALL); */
 // END
 global $config;
@@ -80,6 +80,16 @@ if (is_ajax()) {
         $manageBlock->moduleBlockList();
     } else {
         // Create new o update Template.
-        $manageBlock->moduleTemplateForm($id_np);
+        $manageBlock->moduleTemplateForm();
     }
 }
+
+?>
+<script>
+    $(document).ready (function () {
+        //Close button
+        $("[id*=checkbox-active]").click (function () {
+            $("[id*=checkbox-block_id]").toggleClass('alpha50');
+        });
+    });
+</script>

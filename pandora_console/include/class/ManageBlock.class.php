@@ -63,6 +63,27 @@ class ManageBlock extends HTML
      */
     private $id_np;
 
+    /**
+     * Name of Block Template
+     *
+     * @var [type]
+     */
+    private $name;
+
+    /**
+     * Description of Block Template
+     *
+     * @var [type]
+     */
+    private $description;
+
+    /**
+     * Private Enterprise Numbers of Block Templates
+     *
+     * @var [type]
+     */
+    private $pen;
+
 
     /**
      * Constructor
@@ -90,14 +111,15 @@ class ManageBlock extends HTML
             exit;
         }
 
-        $this->id_np = get_parameter('id_np', -1);
-
-        $this->offset = get_parameter('offset', 0);
-
-        $this->ajaxController = $ajax_controller;
-
-        // Set baseUrl for use it in several locations in this class
-        $this->baseUrl = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates');
+        // Set baseUrl for use it in several locations in this class.
+        $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates');
+        // Capture all parameters before start.
+        $this->id_np            = get_parameter('id_np', -1);
+        $this->name             = get_parameter('name', '');
+        $this->description      = get_parameter('description', '');
+        $this->pen              = get_parameter('pen', '');
+        $this->offset           = get_parameter('offset', 0);
+        $this->ajaxController   = $ajax_controller;
 
         return $this;
     }
@@ -159,6 +181,34 @@ class ManageBlock extends HTML
     public function getIdNp()
     {
         return $this->id_np;
+    }
+
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    private function manageData()
+    {
+        // if ($)
+        $name        = get_parameter('name', '');
+        $description = get_parameter('description', '');
+        $pen         = get_parameter('pen', '');
+        hd($name);
+        hd($description);
+        hd($pen);
+    }
+
+
+    private function setNetworkProfile()
+    {
+        if ($this->id_np !== 0) {
+            $output = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
+            $this->name = $output['name'];
+            $this->description = $output['description'];
+            $this->pen = $output['pen'];
+        }
     }
 
 
@@ -288,44 +338,32 @@ class ManageBlock extends HTML
 
     /**
      * Prints Form for template management
-     *
-     * @param integer $id_np
      */
-    public function moduleTemplateForm(int $id_np=0)
+    public function moduleTemplateForm()
     {
-        $output = [];
-        $createNewBlock = ($id_np === 0) ? true : false;
+        $createNewBlock = ($this->id_np === 0) ? true : false;
 
         if ($createNewBlock) {
             // Assignation for submit button.
             $formButtonClass = 'sub wand';
             $formButtonName = 'crtbutton';
             $formButtonLabel = __('Create');
-            // Set of empty values.
-            $description = '';
-            $name = '';
-            $pen = '';
         } else {
             // Assignation for submit button.
             $formButtonClass = 'sub upd';
             $formButtonName = 'updbutton';
             $formButtonLabel = __('Update');
-            // Profile exists.
-            $row = db_get_row('tnetwork_profile', 'id_np', $id_np);
-            // Fill the inputs with the obtained data.
-            $description = $row['description'];
-            $name = $row['name'];
-            $pen = '';
+            // Profile exists. Set the attributes with the info.
+            $this->setNetworkProfile();
         }
 
         // Main form.
         $form = [
-            'action'   => $this->baseUrl,
-            'id'       => 'module_block_form',
-            'onsubmit' => 'return false;',
-            'method'   => 'POST',
-            'class'    => 'databox filters',
-            'extra'    => '',
+            'action' => $this->baseUrl,
+            'id'     => 'module_block_form',
+            'method' => 'POST',
+            'class'  => 'databox filters',
+            'extra'  => '',
         ];
 
         // Inputs.
@@ -338,7 +376,7 @@ class ManageBlock extends HTML
                 'name'        => 'name',
                 'input_class' => 'flex-row',
                 'type'        => 'text',
-                'value'       => $name,
+                'value'       => $this->name,
                 'return'      => true,
             ],
         ];
@@ -350,7 +388,7 @@ class ManageBlock extends HTML
                 'name'        => 'description',
                 'input_class' => 'flex-row',
                 'type'        => 'textarea',
-                'value'       => $description,
+                'value'       => $this->description,
                 'return'      => true,
             ],
         ];
@@ -362,7 +400,7 @@ class ManageBlock extends HTML
                 'name'        => 'pen',
                 'input_class' => 'flex-row',
                 'type'        => 'text',
-                'value'       => $pen,
+                'value'       => $this->pen,
                 'return'      => true,
             ],
         ];
@@ -371,26 +409,22 @@ class ManageBlock extends HTML
             'arguments' => [
                 'name'       => $formButtonName,
                 'label'      => $formButtonLabel,
-                'type'       => 'button',
+                'type'       => 'submit',
                 'attributes' => 'class="'.$formButtonClass.'"',
                 'return'     => true,
             ],
         ];
 
-        $inputs[] = [
-            'arguments' => [
-                'name'       => 'buttonGoBack',
-                'label'      => __('Go back'),
-                'type'       => 'button',
-                'attributes' => 'class="sub cancel"',
-                'return'     => true,
-            ],
-        ];
+        ui_require_jquery_file('tag-editor');
+        ui_require_css_file('jquery.tag-editor');
+
+        $js = '$(\'#text-pen\').tagEditor();';
 
         $this->printFormAsList(
             [
                 'form'   => $form,
                 'inputs' => $inputs,
+                'js'     => $js,
                 true
             ]
         );
@@ -402,83 +436,108 @@ class ManageBlock extends HTML
 				FROM tnetwork_profile_component AS npc, tnetwork_component AS nc 
 				INNER JOIN tnetwork_component_group AS ncg ON ncg.id_sg = nc.id_group
                 WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d',
-                $id_np
+                $this->id_np
             );
             $moduleBlocks = db_get_all_rows_sql($sql);
 
-            $blockTables = [];
-            // Build the information of the blocks
-            foreach ($moduleBlocks as $block) {
-                if (key_exists($block['group'], $blockTables) === false) {
-                    $blockTables[$block['group']] = [
-                        'name' => $block['group_name'],
-                        'data' => [],
-                    ];
-                } else {
-                    $blockTables[$block['group']]['data'][] = [
-                        'component_id' => $block['component_id'],
-                        'name'         => $block['name'],
-                        'type'         => $block['type'],
-                        'description'  => $block['description'],
-                    ];
-                }
-            }
-
-            if (count($blockTables) === 0) {
-                ui_print_info_message(__('No module blocks for this profile'));
-            } else {
-                foreach ($blockTables as $id_group => $blockTable) {
-                    $blockData = $blockTable['data'];
-                    $blockTitle = $blockTable['name'];
-                    $blockTitle .= '<div class="white_table_header_checkbox">'.html_print_checkbox_switch_extended('block_id_'.$id_group, 1, 0, false, '', '', true).'</div>';
-
-                    $table = new StdClasS();
-                    $table->class = 'databox data';
-                    $table->width = '75%';
-                    $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
-                    $table->rowid = [];
-                    $table->data = [];
-
-                    $table->cellpadding = 0;
-                    $table->cellspacing = 0;
-                    $table->width = '100%';
-                    $table->class = 'info_table';
-
-                    $table->head = [];
-                    $table->head[0] = __('Module Name');
-                    $table->head[1] = __('Type');
-                    $table->head[2] = __('Description');
-                    $table->head[3] = '<span style="float:right;margin-right:2em;">'.__('Add').'</span>';
-
-                    $table->size = [];
-                    $table->size[0] = '20%';
-                    $table->size[2] = '65%';
-                    $table->size[3] = '15%';
-
-                    $table->align = [];
-                    $table->align[3] = 'right';
-
-                    $table->style = [];
-                    $table->style[3] = 'padding-right:2em';
-
-                    $table->data = [];
-
-                    foreach ($blockData as $module) {
-                        $data[0] = $module['name'];
-                        $data[1] = ui_print_moduletype_icon($module['type'], true);
-                        $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
-                        $data[3] = html_print_checkbox_switch_extended('active_'.$module['component_id'], 1, 0, false, '', '', true);
-
-                        array_push($table->data, $data);
+            if ($moduleBlocks) {
+                $blockTables = [];
+                // Build the information of the blocks
+                foreach ($moduleBlocks as $block) {
+                    if (key_exists($block['group'], $blockTables) === false) {
+                        $blockTables[$block['group']] = [
+                            'name' => $block['group_name'],
+                            'data' => [],
+                        ];
+                    } else {
+                        $blockTables[$block['group']]['data'][] = [
+                            'component_id' => $block['component_id'],
+                            'name'         => $block['name'],
+                            'type'         => $block['type'],
+                            'description'  => $block['description'],
+                        ];
                     }
-
-                    $content = html_print_table($table, true);
-
-                    $output[] = ui_toggle($content, $blockTitle, '', '', false);
                 }
+
+                if (count($blockTables) === 0) {
+                    ui_print_info_message(__('No module blocks for this profile'));
+                } else {
+                    foreach ($blockTables as $id_group => $blockTable) {
+                        $blockData = $blockTable['data'];
+                        $blockTitle = $blockTable['name'];
+                        $blockTitle .= '<div class="white_table_header_checkbox">'.html_print_checkbox_switch_extended('block_id_'.$id_group, 1, 0, false, '', '', true).'</div>';
+
+                        $table = new StdClasS();
+                        $table->class = 'databox data';
+                        $table->width = '75%';
+                        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+                        $table->rowid = [];
+                        $table->data = [];
+
+                        $table->cellpadding = 0;
+                        $table->cellspacing = 0;
+                        $table->width = '100%';
+                        $table->class = 'info_table';
+
+                        $table->head = [];
+                        $table->head[0] = __('Module Name');
+                        $table->head[1] = __('Type');
+                        $table->head[2] = __('Description');
+                        $table->head[3] = '<span style="float:right;margin-right:2em;">'.__('Add').'</span>';
+
+                        $table->size = [];
+                        $table->size[0] = '20%';
+                        $table->size[2] = '65%';
+                        $table->size[3] = '15%';
+
+                        $table->align = [];
+                        $table->align[3] = 'right';
+
+                        $table->style = [];
+                        $table->style[3] = 'padding-right:2em';
+
+                        $table->data = [];
+
+                        foreach ($blockData as $module) {
+                            $data[0] = $module['name'];
+                            $data[1] = ui_print_moduletype_icon($module['type'], true);
+                            $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
+                            $data[3] = html_print_checkbox_switch_extended('switch_'.$id_group.'_'.$module['component_id'], 1, 0, false, 'switchBlockControl(event)', '', true);
+                            // $data[3] .= html_print_input_hidden();
+                            array_push($table->data, $data);
+                        }
+
+                        $content = html_print_table($table, true);
+
+                        ui_toggle($content, $blockTitle, '', '', false);
+                    }
+                }
+            } else {
+                ui_print_info_message(__('No module blocks for this profile'));
             }
         }
 
+        $javascript = "
+            <script>
+            function switchBlockControl(e){
+                var switchId = e.target.id.split('_');
+                var blockNumber = switchId[1];
+                var switchNumber = switchId[2];
+            
+                $('[id*=checkbox-switch_'+blockNumber+']').each(function(){
+                    console.log($(this).val());
+                })
+            
+                console.log(blockNumber);
+                console.log(switchNumber);
+                
+            }
+            </script>
+        ";
+
+        echo $javascript;
+
+        $this->printGoBackButton($this->baseUrl);
     }
 
 

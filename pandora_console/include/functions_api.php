@@ -1868,6 +1868,12 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
             }
         }
     } else {
+        // Delete only if the centralised mode is disabled.
+        if (is_central_policies_on_node()) {
+            returnError('centralized');
+            exit;
+        }
+
         if ($agent_by_alias) {
             $idsAgents = agents_get_agent_id_by_alias(io_safe_input($id));
         } else {

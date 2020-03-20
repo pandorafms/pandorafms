@@ -1143,6 +1143,11 @@ sub cli_delete_agent() {
 	
 	$agent_name = decode_entities($agent_name);
 
+	if(is_metaconsole($conf) != 1 and pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete an agent go to metaconsole. \n\n";
+		exit;
+	}
+
 	if (is_metaconsole($conf) == 1) {
 		if (not defined $use_alias) {
 			my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);

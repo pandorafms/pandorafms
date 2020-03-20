@@ -1444,6 +1444,7 @@ ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
+ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`

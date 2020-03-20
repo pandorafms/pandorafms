@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
+
+COMMIT;

@@ -926,6 +926,7 @@ class HTML
     {
         $form = $data['form'];
         $inputs = $data['inputs'];
+        $rawInputs = $data['rawInputs'];
         $js = $data['js'];
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
@@ -962,6 +963,11 @@ class HTML
 
         $output .= '</ul>';
         $output .= '</div>';
+        // There is possible add raw inputs for this form.
+        if (empty($rawInputs) === false) {
+            $output .= $rawInputs;
+        }
+
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';

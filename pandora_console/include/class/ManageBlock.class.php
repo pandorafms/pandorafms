@@ -120,7 +120,7 @@ class ManageBlock extends HTML
         $this->pen              = get_parameter('pen', '');
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
-
+        $this->saveData         = (bool) get_parameter('save', 0);
         return $this;
     }
 
@@ -185,11 +185,22 @@ class ManageBlock extends HTML
 
 
     /**
+     * Get the value of if we want save the changes
+     *
+     * @return boolean True if must save the changes
+     */
+    public function getSaveData()
+    {
+        return $this->saveData;
+    }
+
+
+    /**
      * Undocumented function
      *
      * @return void
      */
-    private function manageData()
+    private function saveData()
     {
         // if ($)
         $name        = get_parameter('name', '');
@@ -368,6 +379,8 @@ class ManageBlock extends HTML
 
         // Inputs.
         $inputs = [];
+        // Inputs.
+        $rawInputs = '';
 
         $inputs[] = [
             'label'     => __('Name'),
@@ -419,15 +432,6 @@ class ManageBlock extends HTML
         ui_require_css_file('jquery.tag-editor');
 
         $js = '$(\'#text-pen\').tagEditor();';
-
-        $this->printFormAsList(
-            [
-                'form'   => $form,
-                'inputs' => $inputs,
-                'js'     => $js,
-                true
-            ]
-        );
 
         if ($createNewBlock === false) {
             // Get the data.
@@ -503,19 +507,29 @@ class ManageBlock extends HTML
                             $data[1] = ui_print_moduletype_icon($module['type'], true);
                             $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
                             $data[3] = html_print_checkbox_switch_extended('switch_'.$id_group.'_'.$module['component_id'], 1, 0, false, 'switchBlockControl(event)', '', true);
-                            // $data[3] .= html_print_input_hidden();
+
                             array_push($table->data, $data);
                         }
 
                         $content = html_print_table($table, true);
 
-                        ui_toggle($content, $blockTitle, '', '', false);
+                        $rawInputs .= ui_toggle($content, $blockTitle, '', '', false, true);
                     }
                 }
             } else {
                 ui_print_info_message(__('No module blocks for this profile'));
             }
         }
+
+        $this->printFormAsList(
+            [
+                'form'      => $form,
+                'inputs'    => $inputs,
+                'rawInputs' => $rawInputs,
+                'js'        => $js,
+                true
+            ]
+        );
 
         $javascript = "
             <script>

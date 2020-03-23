@@ -73,10 +73,13 @@ if (is_ajax()) {
     $manageBlock->run();
     // Get the id_np.
     $id_np = $manageBlock->getIdNp();
+    $saveData = $manageBlock->getSaveData();
 
-    // Show the proper window.
-    if ($id_np === -1) {
-        // List all Module Block.
+    if ($saveData === true) {
+        // Save the data sent
+        $manageBlock->saveData();
+    } else if ($id_np === -1) {
+        // List all Module Blocks.
         $manageBlock->moduleBlockList();
     } else {
         // Create new o update Template.
@@ -88,7 +91,7 @@ if (is_ajax()) {
 <script>
     $(document).ready (function () {
         //Close button
-        $("[id*=checkbox-active]").click (function () {
+        $("[id*=checkbox-switch]").click (function () {
             $("[id*=checkbox-block_id]").toggleClass('alpha50');
         });
     });

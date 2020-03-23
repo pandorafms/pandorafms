@@ -342,6 +342,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`trap_type` int(11) NOT NULL default '-1',
 	`single_value` varchar(255) default '', 
 	`position` int(10) unsigned NOT NULL default '0',
+	`disable_event` tinyint(1) default 0,
 	`id_group` int(10) unsigned NOT NULL default '0',
 	`order_1` int(10) unsigned NOT NULL default 1,
 	`order_2` int(10) unsigned NOT NULL default 2,
@@ -487,6 +488,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`special_day` tinyint(1) default 0,
 	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`min_alerts_reset_counter` tinyint(1) default 0,
+	`disable_event` tinyint(1) default 0,
 	PRIMARY KEY  (`id`),
 	KEY `idx_template_action` (`id_alert_action`),
 	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -2857,6 +2859,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`force_execution` tinyint(1) default '0',
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	`special_days` tinyint(1) default 0,
+	`disable_event` tinyint(1) default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

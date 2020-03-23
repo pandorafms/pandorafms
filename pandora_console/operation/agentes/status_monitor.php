@@ -81,6 +81,7 @@ $offset             = (int) get_parameter('offset', 0);
 $status             = (int) get_parameter('status', 4);
 $modulegroup         = (int) get_parameter('modulegroup', -1);
 $tag_filter         = (int) get_parameter('tag_filter', 0);
+$min_hours_status         = (string) get_parameter('min_hours_status', '');
 // Sort functionality
 $sortField             = get_parameter('sort_field');
 $sort                 = get_parameter('sort', 'none');
@@ -95,6 +96,7 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
     || $ag_modulename !== '' || $refr !== 0 || $offset !== 0 || $status !== 4
     || $modulegroup !== -1 || $tag_filter !== 0 || $sortField !== ''
     || $sort !== 'none' || $id_module !== 0 || $module_option !== 1
+    || $min_hours_status !== ''
 ) {
     $autosearch = true;
 }
@@ -241,6 +243,13 @@ if ($status == AGENT_MODULE_STATUS_NORMAL) {
     // Not init
     $sql_conditions .= ' AND tagente_estado.utimestamp = 0
 		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)';
+}
+
+if (!empty($min_hours_status)) {
+    $date = new DateTime(null, new DateTimeZone($config['timezone']));
+    $current_timestamp = $date->getTimestamp();
+    $max_time = ($current_timestamp - ((int) $min_hours_status * 3600));
+    $sql_conditions .= sprintf(' AND tagente_estado.last_status_change < %d', $max_time);
 }
 
 // Filter by agent custom fields
@@ -531,16 +540,21 @@ $table->data[2][2] = '<span>'.__('Show monitors...').'</span>';
 
 $table->data[2][3] = html_print_select($monitor_options, 'module_option', $module_option, '', '', '', true, false, true, '', false, 'width: 150px;');
 
-$table->data[2][4] = '<span id="datatypetittle" ';
+$min_hours_val = empty($min_hours_status) ? '' : (int) $min_hours_status;
+
+$table->data[2][4] = '<span>'.__('Min. hours in current status').'</span>';
+$table->data[2][5] = html_print_input_text('min_hours_status', $min_hours_val, '', 12, 20, true);
+
+$table->data[3][0] = '<span id="datatypetittle" ';
 
 if (!$_GET['sort']) {
-    $table->data[2][4] .= 'style="display:none"';
+    $table->data[3][0] .= 'style="display:none"';
 }
 
-$table->data[2][4] .= '>'.__('Data type').'</span>';
+$table->data[3][0] .= '>'.__('Data type').'</span>';
 
 
-$table->data[2][5] .= '<div id="datatypebox">';
+$table->data[3][1] .= '<div id="datatypebox">';
 
 
 switch ($moduletype) {
@@ -609,33 +623,33 @@ switch ($moduletype) {
 }
 
 $a = db_get_all_rows_sql($sql);
-$table->data[2][5] .= '<select id="datatype" name="datatype" ';
+$table->data[3][1] .= '<select id="datatype" name="datatype" ';
 
 if (!$_GET['sort']) {
-    $table->data[2][5] .= 'style="display:none"';
+    $table->data[3][1] .= 'style="display:none"';
 }
 
-$table->data[2][5] .= '>';
+$table->data[3][1] .= '>';
 
-$table->data[2][5] .= '<option name="datatype" value="">'.__('All').'</option>';
+$table->data[3][1] .= '<option name="datatype" value="">'.__('All').'</option>';
 
 
 foreach ($a as $valor) {
-    $table->data[2][5] .= '<option name="datatype" value="'.$valor['id_tipo'].'" ';
+    $table->data[3][1] .= '<option name="datatype" value="'.$valor['id_tipo'].'" ';
 
     if ($valor['id_tipo'] == $datatype) {
-        $table->data[2][5] .= 'selected';
+        $table->data[3][1] .= 'selected';
     }
 
-    $table->data[2][5] .= '>'.$valor['descripcion'].'</option>';
+    $table->data[3][1] .= '>'.$valor['descripcion'].'</option>';
 }
 
-            $table->data[2][5] .= '</select>';
+            $table->data[3][1] .= '</select>';
 
 
 
 
-        $table->data[2][5] .= '</div>';
+        $table->data[3][1] .= '</div>';
 
 
         $table_custom_fields = new stdClass();
@@ -683,9 +697,9 @@ foreach ($custom_fields as $custom_field) {
 
 $filters = '<form method="post" action="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;module_option='.$module_option.'&amp;ag_modulename='.$ag_modulename.'&amp;moduletype='.$moduletype.'&amp;datatype='.$datatype.'&amp;status='.$status.'&amp;sort_field='.$sortField.'&amp;sort='.$sort.'&amp;pure='.$config['pure'].$ag_custom_fields_params.'">';
 if (is_metaconsole()) {
-    $table->colspan[3][0] = 7;
-    $table->cellstyle[3][0] = 'padding: 10px;';
-    $table->data[3][0] = ui_toggle(
+    $table->colspan[4][0] = 7;
+    $table->cellstyle[4][0] = 'padding: 10px;';
+    $table->data[4][0] = ui_toggle(
         html_print_table($table_custom_fields, true),
         __('Advanced Options'),
         '',
@@ -698,9 +712,9 @@ if (is_metaconsole()) {
     $filters .= '</form>';
     ui_toggle($filters, __('Show Options'), '', '', false);
 } else {
-    $table->colspan[3][0] = 7;
-    $table->cellstyle[3][0] = 'padding-left: 10px;';
-    $table->data[3][0] = ui_toggle(
+    $table->colspan[4][0] = 7;
+    $table->cellstyle[4][0] = 'padding-left: 10px;';
+    $table->data[4][0] = ui_toggle(
         html_print_table(
             $table_custom_fields,
             true
@@ -954,6 +968,7 @@ $sql = 'SELECT
 	tagente_modulo.snmp_oid,
 	tagente_estado.datos,
 	tagente_estado.estado,
+    tagente_estado.last_status_change,
 	tagente_modulo.min_warning,
 	tagente_modulo.max_warning,
 	tagente_modulo.str_warning,
@@ -1066,6 +1081,7 @@ $url_module_name = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor
 $url_server_type = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=moduletype&amp;sort=';
 $url_interval = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=interval&amp;sort=';
 $url_status = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=status&amp;sort=';
+$url_status = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=last_status_change&amp;sort=';
 $url_data = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=data&amp;sort=';
 $url_timestamp_up = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=up';
 $url_timestamp_down = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=down';
@@ -1125,32 +1141,34 @@ if (!empty($result)) {
         $table->align[6] = 'left';
     }
 
-    if (in_array('graph', $show_fields) || is_metaconsole()) {
-        $table->head[7] = __('Graph');
+    if (in_array('last_status_change', $show_fields)) {
+        $table->head[7] = __('Last status change');
+        $table->head[7] .= ui_get_sorting_arrows($url_status.'up', $url_status.'down', $selectStatusUp, $selectStatusDown);
         $table->align[7] = 'left';
     }
 
-    if (in_array('warn', $show_fields) || is_metaconsole()) {
-        $table->head[8] = __('Warn');
+    if (in_array('graph', $show_fields) || is_metaconsole()) {
+        $table->head[8] = __('Graph');
         $table->align[8] = 'left';
     }
 
-    if (in_array('data', $show_fields) || is_metaconsole()) {
-        $table->head[9] = __('Data');
+    if (in_array('warn', $show_fields) || is_metaconsole()) {
+        $table->head[9] = __('Warn');
         $table->align[9] = 'left';
+    }
+
+    if (in_array('data', $show_fields) || is_metaconsole()) {
+        $table->head[10] = __('Data');
+        $table->align[10] = 'left';
         if (is_metaconsole()) {
-            $table->head[9] .= ui_get_sorting_arrows($url_data.'up', $url_data.'down', $selectDataUp, $selectDataDown);
+            $table->head[10] .= ui_get_sorting_arrows($url_data.'up', $url_data.'down', $selectDataUp, $selectDataDown);
         }
     }
 
     if (in_array('timestamp', $show_fields) || is_metaconsole()) {
-        $table->head[10] = __('Timestamp');
-        $table->head[10] .= ui_get_sorting_arrows($url_timestamp_up, $url_timestamp_down, $selectTimestampUp, $selectTimestampDown);
-        $table->align[10] = 'left';
-    }
-
-    if (in_array('to_critical', $show_fields)) {
-        $table->head[11] = __('Last status change');
+        $table->head[11] = __('Timestamp');
+        $table->head[11] .= ui_get_sorting_arrows($url_timestamp_up, $url_timestamp_down, $selectTimestampUp, $selectTimestampDown);
+        $table->align[11] = 'left';
     }
 
     $id_type_web_content_string = db_get_value(
@@ -1462,8 +1480,12 @@ if (!empty($result)) {
             }
         }
 
+        if (in_array('last_status_change', $show_fields) || is_metaconsole()) {
+            $data[7] = human_time_comparation($row['last_status_change']);
+        }
+
         if (in_array('graph', $show_fields) || is_metaconsole()) {
-            $data[7] = '';
+            $data[8] = '';
 
             $acl_graphs = false;
 
@@ -1498,13 +1520,13 @@ if (!empty($result)) {
 
                 $link = 'winopeng(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\')';
 
-                $data[7] = get_module_realtime_link_graph($row);
+                $data[8] = get_module_realtime_link_graph($row);
 
                 if (!is_snapshot_data($row['datos'])) {
-                    $data[7] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a>';
+                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a>';
                 }
 
-                $data[7] .= '<a href="javascript: '.'show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
+                $data[8] .= '<a href="javascript: '.'show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
                     'images/binary.png',
                     true,
                     [
@@ -1513,13 +1535,13 @@ if (!empty($result)) {
                     ]
                 ).'</a>';
 
-                $data[7] .= '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
+                $data[8] .= '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
 								style=\'display: none;\'>'.$row['module_name'].'</span>';
             }
         }
 
         if (in_array('warn', $show_fields) || is_metaconsole()) {
-            $data[8] = ui_print_module_warn_value(
+            $data[9] = ui_print_module_warn_value(
                 $row['max_warning'],
                 $row['min_warning'],
                 $row['str_warning'],
@@ -1661,7 +1683,7 @@ if (!empty($result)) {
         }
 
         if (in_array('data', $show_fields) || is_metaconsole()) {
-            $data[9] = $salida;
+            $data[10] = $salida;
         }
 
         if (in_array('timestamp', $show_fields) || is_metaconsole()) {
@@ -1680,12 +1702,7 @@ if (!empty($result)) {
                 $option = ['style' => 'font-size:7pt;'];
             }
 
-            $data[10] = ui_print_timestamp($row['utimestamp'], true, $option);
-        }
-
-        if (in_array('to_critical', $show_fields)) {
-                $change_status_timestamp = db_get_sql('SELECT utimestamp FROM tevento WHERE id_agentmodule='.$row['id_agente_modulo'].' ORDER BY utimestamp DESC');
-                $data[11] = ui_print_timestamp($change_status_timestamp, true, $option);
+            $data[11] = ui_print_timestamp($row['utimestamp'], true, $option);
         }
 
         array_push($table->data, $data);

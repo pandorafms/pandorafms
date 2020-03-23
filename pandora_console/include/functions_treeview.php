@@ -325,6 +325,13 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['data'] = $last_data_str;
     $table->data['last_data'] = $row;
 
+    // Last status change.
+    $last_status_change = db_get_value('last_status_change', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+    $row = [];
+    $row['title'] = __('Last status change');
+    $row['data'] = human_time_comparation($last_status_change);
+    $table->data['tags'] = $row;
+
     // End of table
     html_print_table($table);
 

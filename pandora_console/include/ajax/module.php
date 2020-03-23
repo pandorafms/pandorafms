@@ -1028,7 +1028,10 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $module['last_status_change']);
+            $last_status_change_text = 'Time elapsed since last status change: ';
+            $last_status_change_text .= !empty($module['last_status_change']) ? human_time_comparation($module['last_status_change']) : '';
+
+            $data[5] = ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $last_status_change_text);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 

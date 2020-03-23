@@ -3472,17 +3472,30 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
             if (empty($item['data'][$k_chart]['failover']) === true) {
                 $table1 = new stdClass();
                 $table1->width = '100%';
+                $table1->autosize = 1;
+                $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
                 $table1->data = [];
                 $table1->size = [];
                 $table1->size[0] = '10%';
                 $table1->size[1] = '80%';
-                $table1->size[2] = '5%';
-                $table1->size[3] = '5%';
+                $table1->size[2] = '10%';
 
+                $table1->style[0] = 'overflow-wrap: break-word';
+
+                // Align percentage and checks resume.
+                $table1->align[2] = 'center';
                 $table1->data[0][0] = $chart['agent'].'<br />'.$chart['module'];
                 $table1->data[0][1] = $chart['chart'];
-                $table1->data[0][2] = "<span style = 'font-weight: bold; font-size: ".$font_size.'; color: '.$color."'>".$sla_value.'</span>';
-                $table1->data[0][3] = "<span style = 'font-size: ".$font_mini.";'>".$checks_resume.'</span>';
+                $table1->data[0][2] = "<span style = 'font-weight: bold; font-size: ".$font_size.'; color: '.$color."'>".$sla_value.'</span><br/>';
+
+                // Pdf sizes to avoid excesive overflow.
+                if ($pdf !== 0) {
+                    $table1->size[0] = '15%';
+                    $table1->size[1] = '70%';
+                    $table1->size[2] = '15%';
+                }
+
+                $table1->data[0][2] .= "<span style = 'font-size: ".$font_mini.";'>".$checks_resume.'</span>';
 
                 $tables_chart .= html_print_table(
                     $table1,

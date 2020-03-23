@@ -283,7 +283,6 @@ html_print_input_hidden('new', 1);
 html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
-hd('entra o que ase');
 enterprise_hook('close_meta_frame');
 
 ?>

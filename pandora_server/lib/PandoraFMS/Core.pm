@@ -1681,6 +1681,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
 	my $last_status_change = $agent_status->{'last_status_change'};
+
+	# Set the last status change macro. Even if its value changes later, whe want the original value.
+	$extra_macros->{'_modulelaststatuschange_'} = $last_status_change;
 	
 	# Calculate the current interval
 	my $current_interval;
@@ -5416,7 +5419,7 @@ sub pandora_module_unknown ($$) {
 	}
 
 	my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.*,
-			tagente_estado.id_agente_estado, tagente_estado.estado
+			tagente_estado.id_agente_estado, tagente_estado.estado, tagente_estado.last_status_change
 		FROM tagente_modulo, tagente_estado, tagente 
 		WHERE tagente.id_agente = tagente_estado.id_agente 
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
@@ -5460,7 +5463,8 @@ sub pandora_module_unknown ($$) {
 			
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
+				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $extra_macros, undef, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
@@ -5473,6 +5477,7 @@ sub pandora_module_unknown ($$) {
 			# Replace macros
 			my %macros = (
 				_module_ => safe_output($module->{'nombre'}),
+				_modulelaststatuschange_ => $module->{'last_status_change'},
 				_data_ => 'N/A',
 			);
 		        load_module_macros ($module->{'module_macros'}, \%macros);
@@ -5505,7 +5510,8 @@ sub pandora_module_unknown ($$) {
 			
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
+				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $extra_macros, undef, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
@@ -5543,6 +5549,7 @@ sub pandora_module_unknown ($$) {
 		        # Replace macros
 		        my %macros = (
 		                _module_ => safe_output($module->{'nombre'}),
+						_modulelaststatuschange_ => $module->{'last_status_change'},
 		        );
 		        load_module_macros ($module->{'module_macros'}, \%macros);
 		        $description = subst_alert_macros ($description, \%macros, $pa_config, $dbh, $agent, $module);

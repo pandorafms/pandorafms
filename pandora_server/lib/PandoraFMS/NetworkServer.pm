@@ -470,7 +470,9 @@ sub exec_network_module ($$$$) {
 	my $retries = $module->{'max_retries'};
 	my $target_os = pandora_get_os($dbh, $module->{'custom_string_2'});
 
-	if ($module->{'custom_string_2'} eq "inherited" ) {
+	if (defined($module->{'custom_string_2'})
+		&& $module->{'custom_string_2'} eq "inherited"
+	) {
 		$target_os = $agent_row->{'id_os'};
 	} elsif (!defined($target_os) || "$target_os" eq '0') {
 		$target_os = $agent_row->{'id_os'};

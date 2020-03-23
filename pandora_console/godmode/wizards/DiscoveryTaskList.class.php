@@ -524,7 +524,9 @@ class DiscoveryTaskList extends HTML
                 }
 
                 if ($task['direct_report'] == 1) {
-                    if ($task['status'] <= 0) {
+                    if ($task['status'] <= 0
+                        && empty($task['summary']) === false
+                    ) {
                         $data[5] = __('Done');
                     } else if ($task['utimestamp'] == 0
                         && empty($task['summary'])
@@ -534,7 +536,9 @@ class DiscoveryTaskList extends HTML
                         $data[5] = __('Pending');
                     }
                 } else {
-                    if ($task['status'] <= 0 && $task['utimestamp'] > 0) {
+                    if ($task['status'] <= 0
+                        && empty($task['summary']) === false
+                    ) {
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[5] .= __('Review');
                         $data[5] .= '</span>';
@@ -1161,14 +1165,11 @@ class DiscoveryTaskList extends HTML
                     'checked' => $data['agent']['checked'],
                 ];
 
-                $agent_id = $data['agent']['agent_id'];
-                if (empty($agent_id)) {
-                    $agent_id = agents_get_agent_id($id, true);
-                }
+                // Ensure agent_id really exists.
+                $agent_id = agents_get_agent_id($data['agent']['nombre'], true);
 
                 if ($agent_id > 0) {
                     $tmp['disabled'] = 1;
-                    $tmp['checked'] = 1;
                     $tmp['agent_id'] = $agent_id;
                 }
 
@@ -1189,6 +1190,10 @@ class DiscoveryTaskList extends HTML
                                     return $carry;
                                 }
 
+                                if (empty($item['name'])) {
+                                    $item['name'] = $item['nombre'];
+                                }
+
                                 $tmp = [
                                     'name'    => $item['name'],
                                     'id'      => $id.'-'.$item['name'],
@@ -1196,13 +1201,10 @@ class DiscoveryTaskList extends HTML
                                     'checked' => $item['checked'],
                                 ];
 
-                                $agentmodule_id = $item['agentmodule_id'];
-                                if (empty($agentmodule_id)) {
-                                    $agentmodule_id = modules_get_agentmodule_id(
-                                        io_safe_input($item['name']),
-                                        $agent_id
-                                    );
-                                }
+                                $agentmodule_id = $agentmodule_id = modules_get_agentmodule_id(
+                                    io_safe_input($item['name']),
+                                    $agent_id
+                                );
 
                                 if ($agentmodule_id > 0) {
                                     $tmp['disabled'] = 1;
@@ -1336,20 +1338,21 @@ class DiscoveryTaskList extends HTML
             }
         }
 
+        // Schedule execution.
+        db_process_sql_update(
+            'trecon_task',
+            [
+                'utimestamp'    => 0,
+                'status'        => 1,
+                'direct_report' => DISCOVERY_RESULTS,
+            ],
+            ['id_rt' => $id_task]
+        );
+
         if (empty($summary)) {
-            $out .= __('No changes');
+            $out .= __('No changes. Re-Scheduled');
         } else {
-            // Schedule execution.
-            db_process_sql_update(
-                'trecon_task',
-                [
-                    'utimestamp'    => 0,
-                    'status'        => 1,
-                    'direct_report' => DISCOVERY_RESULTS,
-                ],
-                ['id_rt' => $id_task]
-            );
-            $out .= __('Summary');
+            $out .= __('Scheduled for creation');
             $out .= '<ul>';
             $out .= join('', $summary);
             $out .= '</ul>';

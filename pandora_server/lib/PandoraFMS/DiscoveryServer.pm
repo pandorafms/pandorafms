@@ -671,6 +671,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
       $self->call('update_progress', $progress);
 
       my $name = safe_output($row->{'label'});
+      my $checked = 0;
       my $data;
       eval {
         local $SIG{__DIE__};
@@ -680,8 +681,28 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
         $self->call('message', "ERROR JSON: $@", 3);
       }
 
+      # Agent could be 'not checked' unless  all modules are selected.
+      if (ref($data->{'modules'}) eq 'HASH') {
+        my @map = map {
+          my $name = $_->{'name'};
+          $name = $_->{'nombre'} if is_empty($name);
+
+          if (is_enabled($_->{'checked'})
+            && $name ne 'Host Alive'
+          ) {
+            $name;
+          } else {}
+
+        } values %{$data->{'modules'}};
+
+        $checked = scalar  @map;
+      }
+
+      $checked = $data->{'agent'}{'checked'}
+        if $checked < $data->{'agent'}{'checked'};
+
       # Register target agent if enabled.
-      if (is_enabled($data->{'agent'}{'checked'})
+      if (is_enabled($checked)
         || $force_creation
       ) {
         my $parent_id;
@@ -691,9 +712,9 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
         # Agent creation.
         my $agent_id = $data->{'agent'}{'agent_id'};
-        my $agent_learning = 1;
+        my $agent_learning;
 
-        if (defined($agent_id) || $agent_id > 0) {
+        if (defined($agent_id) && $agent_id > 0) {
           $agent_learning = get_db_value(
             $self->{'dbh'},
             'SELECT modo FROM tagente WHERE id_agente = ?',
@@ -703,23 +724,44 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
         if (!defined($agent_learning)) {
           # Agent id does not exists or is invalid.
-          $agent_id = pandora_create_agent(
-            $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
-            $data->{'agent'}{'direccion'}, $self->{'task_data'}{'group_id'}, $parent_id,
-            $os_id, $data->{'agent'}->{'description'},
-            $data->{'agent'}{'interval'}, $self->{'dbh'},
-            $data->{'agent'}{'timezone_offset'}
+
+          # Check if has been created by another process.
+          $agent_id = get_db_value(
+            $self->{'dbh'},
+            'SELECT id_agente FROM tagente WHERE nombre = ?',
+            safe_input($data->{'agent'}->{'name'})
           );
 
+          if (!defined($agent_id) || $agent_id <= 0) {
+            $agent_id = pandora_create_agent(
+              $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
+              $data->{'agent'}{'direccion'}, $self->{'task_data'}{'group_id'}, $parent_id,
+              $os_id, $data->{'agent'}->{'description'},
+              $data->{'agent'}{'interval'}, $self->{'dbh'},
+              $data->{'agent'}{'timezone_offset'}
+            );
+
+            $agent_learning = 1;
+          } else {
+            # Read from effective agent_id.
+            $agent_learning = get_db_value(
+              $self->{'dbh'},
+              'SELECT modo FROM tagente WHERE id_agente = ?',
+              $agent_id
+            );
+          }
+
           $data->{'agent'}{'agent_id'} = $agent_id;
-          $agent_learning = 1;
-        } 
+        }
+
         $self->call('message', "Agent id: ".$data->{'agent'}{'agent_id'}, 5);
 
         # Create selected modules.
         if(ref($data->{'modules'}) eq "HASH") {
           foreach my $i (keys %{$data->{'modules'}}) {
             my $module = $data->{'modules'}{$i};
+
+            $module->{'name'} = $module->{'nombre'} if is_empty($module->{'name'});
 
             # Do not create any modules if the agent is not in learning mode.
             next unless ($agent_learning == 1);
@@ -728,8 +770,6 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
             if ($module->{'name'} ne 'Host Alive') {
               next unless (is_enabled($module->{'checked'}) || $force_creation);
             }
-
-            delete $module->{'checked'};
 
             $self->call('message', "[$agent_id] Module: ".$module->{'name'}, 5);
 
@@ -748,30 +788,51 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
             if (!is_enabled($agentmodule_id)) {
               # Create.
 
+              # Delete unwanted fields.
+              delete $module->{'agentmodule_id'};
+        			delete $module->{'checked'};
+
+              my $id_tipo_modulo = $module->{'id_tipo_modulo'};
+              $id_tipo_modulo = get_module_id($self->{'dbh'}, $module->{'type'})
+                if is_empty($id_tipo_modulo);
+
+              my $description = safe_output($module->{'description'});
+              $description = '' if is_empty($description);
+
               if (is_enabled($module->{'__module_component'})) {
                 # Module from network component.
                 delete $module->{'__module_component'};
                 $agentmodule_id = pandora_create_module_from_network_component(
                   $self->{'pa_config'},
-                  $module,
+                  # Send a copy, not original, because of 'deletes'
+                  {
+                    %{$module},
+                    'name' => safe_input($module->{'name'}),
+                  },
                   $agent_id,
                   $self->{'dbh'}
                 );
+
+                # Restore.
+                $module->{'__module_component'} = 1;
               } else {
                 # Create module - Direct.
                 $agentmodule_id = pandora_create_module_from_hash(
                   $self->{'pa_config'},
                   {
-                    'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module->{'type'}),
+                    'id_tipo_modulo' => $id_tipo_modulo,
                     'id_modulo' => $module->{'id_modulo'},
                     'nombre' => safe_input($module->{'name'}),
-                    'descripcion' => '',
+                    'descripcion' => safe_input($description),
                     'id_agente' => $agent_id,
                     'ip_target' => $data->{'agent'}{'direccion'}
                   },
                   $self->{'dbh'}
                 );
               }
+
+              # Restore.
+              $module->{'checked'} = 1;
 
               # Store.
               $data->{'modules'}{$i}{'agentmodule_id'} = $agentmodule_id;

@@ -878,6 +878,26 @@ switch ($sortField) {
         }
     break;
 
+    case 'last_status_change':
+        switch ($sort) {
+            case 'up':
+                $selectStatusUp = $selected;
+                $order = [
+                    'field' => 'tagente_estado.last_status_change',
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $selectStatusDown = $selected;
+                $order = [
+                    'field' => 'tagente_estado.last_status_change',
+                    'order' => 'DESC',
+                ];
+            break;
+        }
+    break;
+
     case 'timestamp':
         switch ($sort) {
             case 'up':

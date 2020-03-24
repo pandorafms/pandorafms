@@ -140,6 +140,18 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/modules/manage_network_components']['text'] = __('Remote components');
     $sub['godmode/modules/manage_network_components']['id'] = 'Network components';
     enterprise_hook('components_submenu');
+    $sub['godmode/modules/configuration_wizard_setup']['text'] = __('Wizard Setup');
+    $sub['godmode/modules/configuration_wizard_setup']['id'] = 'Wizard Setup';
+    $sub['godmode/modules/configuration_wizard_setup']['type'] = 'direct';
+    $sub['godmode/modules/configuration_wizard_setup']['subtype'] = 'nolink';
+    $sub2 = [];
+    $sub2['godmode/modules/PrivateEnterpriseNumbers']['text'] = __('Private Enterprise Numbers');
+    $sub2['godmode/modules/PrivateEnterpriseNumbers']['id'] = 'Private Enterprise Numbers';
+    $sub2['godmode/modules/SNMPModules']['text'] = __('SNMP Modules');
+    $sub2['godmode/modules/SNMPModules']['id'] = 'SNMP Modules';
+    $sub2['godmode/modules/WMIModules']['text'] = __('WMI Modules');
+    $sub2['godmode/modules/WMIModules']['id'] = 'WMI Modules';
+    $sub['godmode/modules/configuration_wizard_setup']['sub2'] = $sub2;
     $sub['godmode/modules/manage_block_templates']['text'] = __('Module blocks');
     $sub['godmode/modules/manage_block_templates']['id'] = 'Module blocks';
     $sub['godmode/modules/manage_network_templates']['text'] = __('Module templates <i>(legacy)</i>');

@@ -554,7 +554,7 @@ function cron_list_table()
                     $data[2] .= '<br>- '.__('Template').': ';
                     $data[2] .= '<a href="'.ui_get_full_url('index.php?sec=reporting&sec2=enterprise/godmode/reporting/reporting_builder.template&action=edit&id_template='.$args[0]).'">';
                     $data[2] .= $template['name'].'</a>';
-                    $data[2] .= '<br>- '.__('Agents').': '.$agents_id.'</a>';
+                    $data[2] .= '<br>- '.__('Agents').': '.ui_print_truncate_text($agents_id, 120).'</a>';
                     $data[2] .= '<br>- '.__('Report per agent').': '.$report_per_agent.'</a>';
                     $data[2] .= '<br>- '.__('Report name').': '.$report_name.'</a>';
                     $data[2] .= '<br>- '.__('Email').": <a href='mailto:".$email."'>".$email.'</a>';

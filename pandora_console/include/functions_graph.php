@@ -3809,7 +3809,7 @@ function graph_custom_sql_graph(
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeurl, $return=false, $from_agent_view=false, $widgets=false)
+function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeurl, $return=false, $from_agent_view=false, $widgets=false, $server_id='')
 {
     global $config;
     global $graphic_type;
@@ -3885,8 +3885,8 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
     ];
 
     // Draw slicebar graph
-    $out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date, 0, 1, $widgets);
-
+    $out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date, 0, 1, $widgets, true, false, $server_id);
+    // id_server
     if ($return) {
         return $out;
     } else {

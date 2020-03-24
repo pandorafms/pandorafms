@@ -170,6 +170,7 @@ if ($save_alert || $modify_alert) {
     $trap_type = (int) get_parameter('trap_type', -1);
     $single_value = (string) get_parameter('single_value');
     $position = (int) get_parameter('position');
+    $disable_event = (int) get_parameter('disable_event');
     $group = (int) get_parameter('group');
 
     if ($time_threshold == -1) {
@@ -245,6 +246,7 @@ if ($save_alert || $modify_alert) {
             'trap_type'                            => $trap_type,
             'single_value'                         => $single_value,
             'position'                             => $position,
+            'disable_event'                        => $disable_event,
             'id_group'                             => $group,
         ];
 
@@ -296,8 +298,8 @@ if ($save_alert || $modify_alert) {
 			order_11 = '%d', order_12 = '%d', order_13 = '%d',
 			order_14 = '%d', order_15 = '%d', order_16 = '%d',
 			order_17 = '%d', order_18 = '%d', order_19 = '%d',
-			order_20 = '%d', trap_type = %d, 
-			single_value = '%s', position = '%s', id_group ='%s'
+            order_20 = '%d', trap_type = %d, single_value = '%s',
+            position = '%s', disable_event = %d, id_group ='%s'
 			WHERE id_as = %d",
             $priority,
             $alert_type,
@@ -366,6 +368,7 @@ if ($save_alert || $modify_alert) {
             $trap_type,
             $single_value,
             $position,
+            $disable_event,
             $group,
             $id_as
         );
@@ -460,6 +463,7 @@ if ($update_alert || $duplicate_alert) {
     $trap_type = $alert['trap_type'];
     $single_value = $alert['single_value'];
     $position = $alert['position'];
+    $disable_event = $alert['disable_event'];
     $group = $alert['id_group'];
 } else if ($create_alert) {
     // Variable init
@@ -532,6 +536,7 @@ if ($update_alert || $duplicate_alert) {
     $trap_type = -1;
     $single_value = '';
     $position = 0;
+    $disable_event = 0;
     $group = 0;
 }
 
@@ -566,7 +571,7 @@ if ($duplicate_alert) {
 		'.db_escape_key_identifier('_snmp_f18_').',
 		'.db_escape_key_identifier('_snmp_f19_').',
 		'.db_escape_key_identifier('_snmp_f20_').",
-		trap_type, single_value, position, id_group,
+		trap_type, single_value, position, disable_event, id_group,
 		order_1, order_2, order_3, order_4, order_5, order_6, order_7, order_8, 
 		order_9, order_10, order_11, order_12, order_13, order_14, order_15, 
 		order_16, order_17, order_18, order_19, order_20)
@@ -574,7 +579,7 @@ if ($duplicate_alert) {
 		(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
 		'%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s', '%s', '%s', 
 		'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 
-		'%s', '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, 
+		'%s', '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, 
 		%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
         $id_alert,
         $al_field1,
@@ -627,6 +632,7 @@ if ($duplicate_alert) {
         $trap_type,
         $single_value,
         $position,
+        $disable_event,
         $group,
         $order_1,
         $order_2,
@@ -1079,6 +1085,10 @@ if ($create_alert || $update_alert) {
     echo '<tr><td class="datos">'.__('Position').'</td><td class="datos">';
 
     html_print_input_text('position', $position, '', 3);
+    echo '</td></tr>';
+    echo '<tr><td class="datos">'.__('Disable event').'</td><td class="datos">';
+
+    html_print_checkbox('disable_event', 1, $disable_event, false);
     echo '</td></tr>';
     echo '</table>';
 

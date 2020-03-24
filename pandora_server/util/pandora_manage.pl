@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.744 PS200319";
+my $version = "7.0NG.744 PS200324";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1142,6 +1142,11 @@ sub cli_delete_agent() {
 	my $id_agent;
 	
 	$agent_name = decode_entities($agent_name);
+
+	if(is_metaconsole($conf) != 1 and pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete an agent go to metaconsole. \n\n";
+		exit;
+	}
 
 	if (is_metaconsole($conf) == 1) {
 		if (not defined $use_alias) {

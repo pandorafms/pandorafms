@@ -186,11 +186,13 @@ $table->data[2][1] = html_print_select(
 
 echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents">';
 html_print_table($table);
+if (!is_central_policies_on_node()) {
+    echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+    html_print_input_hidden('delete', 1);
+    html_print_submit_button(__('Delete'), 'go', false, 'class="sub delete"');
+    echo '</div>';
+}
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('delete', 1);
-html_print_submit_button(__('Delete'), 'go', false, 'class="sub delete"');
-echo '</div>';
 echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';

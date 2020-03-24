@@ -666,6 +666,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 
 ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
 ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
+ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
@@ -1239,6 +1240,7 @@ ALTER TABLE talert_templates ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT
 ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
@@ -1248,6 +1250,7 @@ ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
 	MODIFY COLUMN `al_field12` text NOT NULL,
 	MODIFY COLUMN `al_field13` text NOT NULL,

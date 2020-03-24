@@ -786,7 +786,8 @@ function pandoraFlotSlicebar(
   full_legend,
   not_interactive,
   show_date,
-  datelimit
+  datelimit,
+  server_id
 ) {
   values = values.split(separator2);
   legend = legend.split(separator);
@@ -934,7 +935,9 @@ function pandoraFlotSlicebar(
           date_from: newdate,
           time_from: from + ":00",
           status: "-1",
-          group_rep: "1"
+          group_rep: "1",
+          from_event_graph: 1,
+          id_server_meta: server_id
         };
 
         if (full_legend != "") {

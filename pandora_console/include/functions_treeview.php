@@ -329,7 +329,8 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $last_status_change = db_get_value('last_status_change', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
     $row = [];
     $row['title'] = __('Last status change');
-    $row['data'] = human_time_comparation($last_status_change);
+    $time_elapsed = ($last_status_change > 0) ? human_time_comparation($last_status_change) : __('N/A');
+    $row['data'] = $time_elapsed;
     $table->data['tags'] = $row;
 
     // End of table

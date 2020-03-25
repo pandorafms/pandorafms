@@ -860,8 +860,9 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
         $checked = scalar  @map;
       }
 
-      $checked = $data->{'agent'}{'checked'}
-        if $checked < $data->{'agent'}{'checked'};
+      $checked = $data->{'agent'}{'checked'} if
+        is_enabled($data->{'agent'}{'checked'})
+        && $checked < $data->{'agent'}{'checked'};
 
       # Register target agent if enabled.
       if (is_enabled($checked)

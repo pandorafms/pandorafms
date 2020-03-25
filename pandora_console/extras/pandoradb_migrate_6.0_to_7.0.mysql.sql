@@ -1473,9 +1473,17 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned defaul
 ALTER TABLE `tnetwork_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0';
 
 -- ----------------------------------------------------------------------
--- Table `tnetwork_profile`
+-- Table `tpen`
 -- ----------------------------------------------------------------------
-ALTER TABLE `tnetwork_profile` ADD COLUMN `pen` TEXT;
+CREATE TABLE IF NOT EXISTS `tpen` (
+  `id_np` int(10) unsigned NOT NULL,
+  `pen` int(10) unsigned NOT NULL,
+  `manufacturer` TEXT NOT NULL,
+  `description` TEXT NULL,
+  PRIMARY KEY (`id_np`,`pen`),
+  CONSTRAINT `fk_np_id` FOREIGN KEY (`id_np`)
+    REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`

@@ -3,7 +3,6 @@ START TRANSACTION;
 ALTER TABLE trecon_task MODIFY COLUMN `id_network_profile` TEXT;
 ALTER TABLE `trecon_task` CHANGE COLUMN `create_incident` `direct_report` TINYINT(1) UNSIGNED DEFAULT 0;
 UPDATE `trecon_task` SET `direct_report` = 1;
-ALTER TABLE `tnetwork_profile` ADD COLUMN `pen` TEXT;
 
 CREATE TABLE `tdiscovery_tmp_agents` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -33,6 +32,14 @@ CREATE TABLE `tdiscovery_tmp_connections` (
     REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTE
+CREATE TABLE `tpen` (
+  `id_np` int(10) unsigned NOT NULL,
+  `pen` int(10) unsigned NOT NULL,
+  `manufacturer` TEXT NOT NULL,
+  `description` TEXT NULL,
+  PRIMARY KEY (`id_np`,`pen`),
+  CONSTRAINT `fk_np_id` FOREIGN KEY (`id_np`)
+    REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 COMMIT;

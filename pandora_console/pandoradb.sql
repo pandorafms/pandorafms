@@ -942,7 +942,6 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile` (
 	`id_np`  int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
-	`pen` text default '',
 	PRIMARY KEY  (`id_np`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -953,6 +952,19 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile_component` (
 	`id_nc` mediumint(8) unsigned NOT NULL default '0',
 	`id_np` mediumint(8) unsigned NOT NULL default '0',
 	KEY `id_np` (`id_np`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tpen`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpen` (
+  `id_np` int(10) unsigned NOT NULL,
+  `pen` int(10) unsigned NOT NULL,
+  `manufacturer` TEXT NOT NULL,
+  `description` TEXT NULL,
+  PRIMARY KEY (`id_np`,`pen`),
+  CONSTRAINT `fk_np_id` FOREIGN KEY (`id_np`)
+    REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

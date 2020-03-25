@@ -368,6 +368,14 @@ if (enterprise_installed()) {
     $table_contact->data[] = $data;
 }
 
+$data = [];
+$data[0] = '<b>'.__('Last status change').'</b>';
+$last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+$time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
+$data[1] = $time_elapsed;
+
+$table_contact->data[] = $data;
+
 /*
  * END: TABLE CONTACT BUILD
  */

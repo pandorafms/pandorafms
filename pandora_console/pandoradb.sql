@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`ff_critical` int(4) unsigned default '0',
 	`last_dynamic_update` bigint(20) NOT NULL default '0',
 	`last_unknown_update` bigint(20) NOT NULL default '0',
+	`last_status_change` bigint(20) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente_estado`),
 	KEY `status_index_1` (`id_agente_modulo`),
 	KEY `idx_agente` (`id_agente`),

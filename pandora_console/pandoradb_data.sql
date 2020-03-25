@@ -84,7 +84,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('netflow_nfdump', '/usr/bin/nfdump'),
 ('netflow_max_resolution', '50'),
 ('event_fields', 'mini_severity,evento,id_agente,estado,timestamp'),
-('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp'),
+('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,last_status_change,graph,warn,data,timestamp'),
 ('list_ACL_IPs_for_API', '127.0.0.1'),
 ('enable_pass_policy', 0),
 ('pass_size', 4),

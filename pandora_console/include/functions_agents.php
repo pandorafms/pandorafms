@@ -3622,3 +3622,25 @@ function agents_get_sap_agents($id_agent)
 
     return false;
 }
+
+
+/**
+ * Return time at which last status change of a module occured.
+ *
+ * @param  integer $id_agent.
+ * @return string timestamp.
+ */
+function agents_get_last_status_change($id_agent)
+{
+    $sql = sprintf(
+        'SELECT *
+        FROM tagente_estado
+        WHERE id_agente = %d
+        ORDER BY last_status_change DESC',
+        $id_agent
+    );
+
+    $row = db_get_row_sql($sql);
+
+    return $row['last_status_change'];
+}

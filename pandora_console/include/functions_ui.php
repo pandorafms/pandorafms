@@ -2654,6 +2654,7 @@ function ui_get_status_images_path()
  * @param array   $options        Options to set image attributes: I.E.: style.
  * @param string  $path           Path of the image, if not provided use the status path.
  * @param boolean $image_with_css Don't use an image. Draw an image with css styles.
+ * @param string  $extra_text     Text that is displayed after title (i.e. time elapsed since last status change of module).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2663,7 +2664,8 @@ function ui_print_status_image(
     $return=false,
     $options=false,
     $path=false,
-    $image_with_css=false
+    $image_with_css=false,
+    $extra_info=''
 ) {
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
@@ -2680,7 +2682,7 @@ function ui_print_status_image(
 
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
-        return ui_print_status_sets($type, $title, $return, $shape_status);
+        return ui_print_status_sets($type, $title, $return, $shape_status, $extra_info);
     } else {
         if ($options === false) {
             $options = [];
@@ -2768,10 +2770,11 @@ function get_shape_status_set($type)
 /**
  * Prints an image representing a status.
  *
- * @param string  $status  Module status.
- * @param string  $title   Title.
- * @param boolean $return  Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options Options to set image attributes: I.E.: style.
+ * @param string  $status     Module status.
+ * @param string  $title      Title.
+ * @param boolean $return     Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options    Options to set image attributes: I.E.: style.
+ * @param string  $extra_info Text that is displayed after title (i.e. time elapsed since last status change of module).
  *
  * @return string HTML.
  */
@@ -2779,7 +2782,8 @@ function ui_print_status_sets(
     $status,
     $title='',
     $return=false,
-    $options=false
+    $options=false,
+    $extra_info=''
 ) {
     global $config;
 
@@ -2798,8 +2802,8 @@ function ui_print_status_sets(
     }
 
     if ($title != '') {
-        $options['title'] = $title;
-        $options['data-title'] = $title;
+        $options['title'] = empty($extra_info) ? $title : $title.'&#10'.$extra_info;
+        $options['data-title'] = empty($extra_info) ? $title : $title.'<br>'.$extra_info;
         $options['data-use_title_for_force_title'] = 1;
         if (isset($options['class'])) {
             $options['class'] .= ' forced_title';

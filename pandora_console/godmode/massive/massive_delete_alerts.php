@@ -101,10 +101,17 @@ function process_manage_delete($id_alert_template, $id_agents, $module_names)
 
     $module_selection_mode = get_parameter('modules_selection_mode');
 
+    $alert_list = db_get_all_rows_filter('talert_template_modules', ['id_alert_template' => $id_alert_template], 'id_agent_module');
+
     foreach ($module_names as $module) {
         foreach ($id_agents as $id_agent) {
             $module_id = modules_get_agentmodule_id($module, $id_agent);
-            $modules_id[] = $module_id['id_agente_modulo'];
+            // The module can exist in several of the selected agents, but we have to check if it has an alert.
+            foreach ($alert_list as $alert) {
+                if ($alert['id_agent_module'] == $module_id['id_agente_modulo']) {
+                    $modules_id[] = $module_id['id_agente_modulo'];
+                }
+            }
         }
     }
 

@@ -4782,9 +4782,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				inputs.push ("force_local_modules=1");
 			}
 
-			if ('.((int) $get_order_json).') {
-				inputs.push ("get_order_json=1");
-			}
+			inputs.push ("get_order_json=1");
 
 			if ('.((int) $get_only_string_modules).') {
 				inputs.push ("get_only_string_modules=1");
@@ -4819,6 +4817,14 @@ function ui_print_agent_autocomplete_input($parameters)
 				url: action="'.$javascript_ajax_page.'",
 				dataType: "json",
 				success: function (data) {
+                    if (Array.isArray(data) === true) {
+                        data.sort(function(a, b) {
+                            var textA = a.nombre.toUpperCase();
+                            var textB = b.nombre.toUpperCase();
+                            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                        });
+                    }
+
 					if ('.((int) $add_none_module).') {
 						$("#'.$selectbox_id.'")
 							.append($("<option></option>")

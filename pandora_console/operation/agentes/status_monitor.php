@@ -1501,7 +1501,7 @@ if (!empty($result)) {
         }
 
         if (in_array('last_status_change', $show_fields) || is_metaconsole()) {
-            $data[7] = human_time_comparation($row['last_status_change']);
+            $data[7] = ($row['last_status_change'] > 0) ? human_time_comparation($row['last_status_change']) : __('N/A');
         }
 
         if (in_array('graph', $show_fields) || is_metaconsole()) {

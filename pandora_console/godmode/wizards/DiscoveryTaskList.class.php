@@ -272,24 +272,24 @@ class DiscoveryTaskList extends HTML
                 if (isset($_GET['force'])) {
                     $id = (int) get_parameter_get('force', 0);
                     // Schedule execution.
-                    $direct_report = db_get_value(
-                        'direct_report',
+                    $review_mode = db_get_value(
+                        'review_mode',
                         'trecon_task',
                         'id_rt',
                         $id
                     );
 
-                    if ($direct_report != DISCOVERY_STANDARD) {
+                    if ($review_mode != DISCOVERY_STANDARD) {
                         // Force re-scan for supervised tasks.
-                        $direct_report = DISCOVERY_SEARCH;
+                        $review_mode = DISCOVERY_REVIEW;
                     }
 
                     db_process_sql_update(
                         'trecon_task',
                         [
-                            'utimestamp'    => 0,
-                            'status'        => 1,
-                            'direct_report' => $direct_report,
+                            'utimestamp'  => 0,
+                            'status'      => 1,
+                            'review_mode' => $review_mode,
                         ],
                         ['id_rt' => $id]
                     );
@@ -523,7 +523,7 @@ class DiscoveryTaskList extends HTML
                     $data[4] = '-';
                 }
 
-                if ($task['direct_report'] == 1) {
+                if ($task['review_mode'] == DISCOVERY_STANDARD) {
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
                     ) {
@@ -547,7 +547,11 @@ class DiscoveryTaskList extends HTML
                     ) {
                         $data[5] = __('Not started');
                     } else {
-                        $data[5] = __('Searching');
+                        if ($task['review_mode'] == DISCOVERY_RESULTS) {
+                            $data[5] = __('Processing');
+                        } else {
+                            $data[5] = __('Searching');
+                        }
                     }
                 }
 
@@ -622,14 +626,7 @@ class DiscoveryTaskList extends HTML
                                 true,
                                 ['title' => __('Discovery NetScan')]
                             ).'&nbsp;&nbsp;';
-                            $str = network_profiles_get_name(
-                                $task['id_network_profile']
-                            );
-                            if (!empty($str)) {
-                                $data[6] .= $str;
-                            } else {
-                                $data[6] .= __('Discovery.NetScan');
-                            }
+                            $data[6] .= __('Discovery.NetScan');
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
@@ -918,11 +915,14 @@ class DiscoveryTaskList extends HTML
         );
 
         $result .= '</div>';
-
         if ($task['status'] > 0) {
             switch ($task['stats']['step']) {
                 case STEP_SCANNING:
                     $str = __('Scanning network');
+                break;
+
+                case STEP_CAPABILITIES:
+                    $str = __('Checking');
                 break;
 
                 case STEP_AFT:
@@ -958,14 +958,14 @@ class DiscoveryTaskList extends HTML
                 break;
 
                 default:
-                    $str = '';
+                    $str = __('Processing...');
                 break;
             }
 
             $result .= '</div>';
             $result .= '<div class="subtitle">';
             $result .= '<span>'.$str.' ';
-            if (!empty($str)) {
+            if (empty($str) === false) {
                 $result .= $task['stats']['c_network_name'];
             }
 
@@ -984,6 +984,16 @@ class DiscoveryTaskList extends HTML
                 0
             );
             $result .= '</div></div>';
+        }
+
+        if ($task['review_mode'] == DISCOVERY_REVIEW) {
+            if ($task['status'] <= 0
+                && empty($task['summary']) === false
+            ) {
+                $result .= '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
+                $result .= '&raquo;'.__('Review');
+                $result .= '</span>';
+            }
         }
 
         $result .= '</div></div>';
@@ -1039,15 +1049,17 @@ class DiscoveryTaskList extends HTML
             $table->data[$i][1] .= $task['stats']['summary']['not_alive'];
             $table->data[$i++][1] .= '</span>';
 
-            $table->data[$i][0] = '<b>'.__('Responding SNMP').'</b>';
-            $table->data[$i][1] = '<span id="SNMP">';
-            $table->data[$i][1] .= $task['stats']['summary']['SNMP'];
-            $table->data[$i++][1] .= '</span>';
+            if ($task['type'] == DISCOVERY_HOSTDEVICES) {
+                $table->data[$i][0] = '<b>'.__('Responding SNMP').'</b>';
+                $table->data[$i][1] = '<span id="SNMP">';
+                $table->data[$i][1] .= $task['stats']['summary']['SNMP'];
+                $table->data[$i++][1] .= '</span>';
 
-            $table->data[$i][0] = '<b>'.__('Responding WMI').'</b>';
-            $table->data[$i][1] = '<span id="WMI">';
-            $table->data[$i][1] .= $task['stats']['summary']['WMI'];
-            $table->data[$i++][1] .= '</span>';
+                $table->data[$i][0] = '<b>'.__('Responding WMI').'</b>';
+                $table->data[$i][1] = '<span id="WMI">';
+                $table->data[$i][1] .= $task['stats']['summary']['WMI'];
+                $table->data[$i++][1] .= '</span>';
+            }
 
             $output = '<div class="subtitle"><span>'.__('Summary').'</span></div>';
             $output .= html_print_table($table, true).'</div>';
@@ -1156,6 +1168,10 @@ class DiscoveryTaskList extends HTML
                     continue;
                 }
 
+                if (is_array($data['agent']) === false) {
+                    continue;
+                }
+
                 $id = $data['agent']['nombre'];
 
                 // Partial.
@@ -1201,7 +1217,7 @@ class DiscoveryTaskList extends HTML
                                     'checked' => $item['checked'],
                                 ];
 
-                                $agentmodule_id = $agentmodule_id = modules_get_agentmodule_id(
+                                $agentmodule_id = modules_get_agentmodule_id(
                                     io_safe_input($item['name']),
                                     $agent_id
                                 );
@@ -1342,9 +1358,9 @@ class DiscoveryTaskList extends HTML
         db_process_sql_update(
             'trecon_task',
             [
-                'utimestamp'    => 0,
-                'status'        => 1,
-                'direct_report' => DISCOVERY_RESULTS,
+                'utimestamp'  => 0,
+                'status'      => 1,
+                'review_mode' => DISCOVERY_RESULTS,
             ],
             ['id_rt' => $id_task]
         );

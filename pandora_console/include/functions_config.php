@@ -3087,10 +3087,10 @@ function get_um_url()
         $url = $config['url_update_manager'];
         $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
     } else {
-        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        $url = 'https://taldarim.artica.lan/pandoraupdate7/';
         config_update_value(
             'url_update_manager',
-            'https://licensing.artica.es/pandoraupdate7/server.php'
+            'https://taldarim.artica.lan/pandoraupdate7/server.php'
         );
     }
 

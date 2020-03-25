@@ -19,6 +19,7 @@ use PandoraFMS::Recon::Util;
 # Constants.
 use constant {
   STEP_SCANNING => 1,
+  STEP_CAPABILITIES => 7,
   STEP_AFT => 2,
   STEP_TRACEROUTE => 3,
   STEP_GATEWAY => 4,
@@ -38,7 +39,7 @@ use constant {
   DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
   DISCOVERY_DEPLOY_AGENTS => 9,
   DISCOVERY_APP_SAP => 10,
-  DISCOVERY_SEARCH => 0,
+  DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,
 };
@@ -351,7 +352,7 @@ sub aft_connectivity($$) {
 
     # Get the name of the host interface if available.
     my $host_if_name = $self->get_iface($aft_mac);
-    $host_if_name = defined($host_if_name) ? $host_if_name : 'ping';
+    $host_if_name = defined($host_if_name) ? $host_if_name : 'Host Alive';
 
     # Get the interface associated to the port were we found the MAC address.
     my $switch_if_name = $self->get_if_from_aft($switch, $aft_mac);
@@ -458,6 +459,9 @@ sub snmp_discovery($$) {
       $self->snmp_pen($device);
     }
   }
+
+	# Create an agent for the device and add it to the list of known hosts.
+	push(@{$self->{'hosts'}}, $device);
 
   # Create an agent for the device and add it to the list of known hosts.
   $self->add_agent($device);
@@ -649,6 +653,17 @@ sub get_connections($) {
   my ($self) = @_;
 
   return $self->{'connections'};
+}
+
+################################################################################
+# Return the PEN associated to target host.
+################################################################################
+sub get_pen($$) {
+  my ($self, $host) = @_;
+
+  return undef unless ref($self->{'pen'}) eq 'HASH';
+
+  return $self->{'pen'}->{$host};
 }
 
 ################################################################################
@@ -1341,7 +1356,8 @@ sub add_module($$$) {
     && $data->{'name'} ne '';
 
   # Test module. Is it success?
-  return unless $self->call('test_module', $agent, $data);
+  my $rs = $self->call('test_module', $agent, $data);
+  return unless is_enabled($rs);
 
   $self->{'agents_found'}->{$agent}->{'modules'}{$data->{'name'}} = $data;
   
@@ -1418,7 +1434,6 @@ sub scan_subnet($) {
       my @block = pandora_block_ping(
         {
           'fping' => $self->{'fping'},
-          # XXX CAMBIAR POR 0.5
           'networktimeout' => 0.5 # use fping defaults
         },
         @hosts[$block_index .. $to - 1]
@@ -1452,9 +1467,12 @@ sub scan_subnet($) {
     $total_hosts = scalar keys %hosts_alive;
     $step = 25.0 / scalar(@subnets) / $total_hosts;
     $subnet_step = 50.0 / $total_hosts;
+
+    $self->{'step'} = STEP_CAPABILITIES;
     foreach my $addr (keys %hosts_alive) {
       # Increase self summary.alive hosts.
       $self->call('message', "Scanning host: $addr", 5);
+      $self->{'c_network_name'} = $addr;
 
       # Update progress.
       $progress += $step;
@@ -1820,10 +1838,11 @@ sub scan($) {
     }
   }
 
-  if(defined($self->{'task_data'}{'direct_report'})
-    && $self->{'task_data'}{'direct_report'} == DISCOVERY_RESULTS
+  if(defined($self->{'task_data'}{'review_mode'})
+    && $self->{'task_data'}{'review_mode'} == DISCOVERY_RESULTS
   ) {
     # Use Cached results.
+    $self->{'step'} = STEP_PROCESSING;
     $self->call('report_scanned_agents');
 
     # Done!
@@ -1834,6 +1853,7 @@ sub scan($) {
 
   # Find devices.
   $self->call('message', "[1/6] Scanning the network...", 3);
+  $self->{'c_network_name'} = '';
   $self->{'step'} = STEP_SCANNING;
   $self->call('update_progress', $progress);
 
@@ -1850,6 +1870,7 @@ sub scan($) {
 
     # Connectivity from address forwarding tables.
     $self->call('message', "[2/6] Finding address forwarding table connectivity...", 3);
+    $self->{'c_network_name'} = '';
     $self->{'step'} = STEP_AFT;
     ($progress, $step) = (50, 10.0 / scalar(@hosts)); # From 50% to 60%.
     for (my $i = 0; defined($hosts[$i]); $i++) {
@@ -1860,6 +1881,7 @@ sub scan($) {
 
     # Connect hosts that are still unconnected using traceroute.
     $self->call('message', "[3/6] Finding traceroute connectivity.", 3);
+    $self->{'c_network_name'} = '';
     $self->{'step'} = STEP_TRACEROUTE;
     ($progress, $step) = (60, 10.0 / scalar(@hosts)); # From 60% to 70%.
     foreach my $host (@hosts) {
@@ -1871,6 +1893,7 @@ sub scan($) {
 
     # Connect hosts that are still unconnected using known gateways.
     $self->call('message', "[4/6] Finding host to gateway connectivity.", 3);
+    $self->{'c_network_name'} = '';
     $self->{'step'} = STEP_GATEWAY;
     ($progress, $step) = (70, 10.0 / scalar(@hosts)); # From 70% to 80%.
     $self->get_routes(); # Update the route cache.
@@ -1941,7 +1964,7 @@ sub snmp_pen($$) {
 
   $self->{'pen'} = {} if ref($self->{'pen'}) ne 'HASH';
 
-  $self->{'pen'}{$addr} = $self->snmp_get($addr, $PEN_OID);
+  $self->{'pen'}{$addr} = $self->snmp_get_value($addr, $PEN_OID);
 
   if(defined($self->{'pen'}{$addr})) {
     ($self->{'pen'}{$addr}) = $self->{'pen'}{$addr} =~ /\.\d+\.\d+\.\d+\.\d+\.\d+\.\d+\.(\d+?)\./

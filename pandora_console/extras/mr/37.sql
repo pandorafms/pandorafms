@@ -1,8 +1,10 @@
 START TRANSACTION;
 
 ALTER TABLE trecon_task MODIFY COLUMN `id_network_profile` TEXT;
-ALTER TABLE `trecon_task` CHANGE COLUMN `create_incident` `direct_report` TINYINT(1) UNSIGNED DEFAULT 0;
-UPDATE `trecon_task` SET `direct_report` = 1;
+ALTER TABLE `trecon_task` CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 0;
+UPDATE `trecon_task` SET `review_mode` = 1;
+ALTER TABLE trecon_task add column `auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1 AFTER `auth_strings`;
+UPDATE `trecon_task` SET `auto_monitor` = 0;
 
 CREATE TABLE `tdiscovery_tmp_agents` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -18,6 +20,7 @@ CREATE TABLE `tdiscovery_tmp_agents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tdiscovery_tmp_connections` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_rt` int(10) unsigned NOT NULL,
   `id1` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id2` int(10) unsigned NOT NULL,

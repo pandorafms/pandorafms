@@ -1671,10 +1671,10 @@ ALTER TABLE `trecon_task` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `autoconfiguration_enabled` tinyint(1) unsigned NULL DEFAULT '0',
 	MODIFY COLUMN `summary` text NULL,
 	MODIFY COLUMN `id_network_profile` text,
-	CHANGE COLUMN `create_incident` `direct_report` TINYINT(1) UNSIGNED DEFAULT 0;
+	CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 0;
 
 -- Old recon always report.
-UPDATE `trecon_task` SET `direct_report` = 1;
+UPDATE `trecon_task` SET `review_mode` = 1;
 
 -- ----------------------------------------------------------------------
 -- Table `tdiscovery_tmp`
@@ -1693,18 +1693,13 @@ CREATE TABLE `tdiscovery_tmp_agents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tdiscovery_tmp_connections` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_rt` int(10) unsigned NOT NULL,
-  `id1` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `id2` int(10) unsigned NOT NULL,
-  `if1` text,
-  `if2` text,
-  PRIMARY KEY (`id1`,`id2`),
-  CONSTRAINT `tdtc_trt` FOREIGN KEY (`id_rt`)
-    REFERENCES `trecon_task` (`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `tdtc_tdta1` FOREIGN KEY (`id1`)
-    REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `tdtc_tdta2` FOREIGN KEY (`id2`)
-    REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `dev_1` text,
+  `dev_2` text,
+  `if_1` text,
+  `if_2` text,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -2172,6 +2167,8 @@ ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_method` varchar(25) NOT NULL def
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_method` varchar(25) NOT NULL default '';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_pass` varchar(255) NOT NULL default '';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_security_level` varchar(25) NOT NULL default '';
+ALTER TABLE trecon_task add column `auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1 AFTER `auth_strings`;
+UPDATE `trecon_task` SET `auto_monitor` = 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields_filter`

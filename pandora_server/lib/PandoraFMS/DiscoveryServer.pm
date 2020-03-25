@@ -74,7 +74,7 @@ use constant {
   DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
   DISCOVERY_DEPLOY_AGENTS => 9,
   DISCOVERY_APP_SAP => 10,
-  DISCOVERY_SEARCH => 0,
+  DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,
 };
@@ -469,7 +469,7 @@ sub PandoraFMS::Recon::Base::test_module($$) {
   if ($test->{'id_tipo_modulo'} >= 15 && $test->{'id_tipo_modulo'} <= 18) {
     # SNMP
     $value = $self->call(
-      'snmp_get',
+      'snmp_get_value',
       $test->{'ip_target'},
       $test->{'snmp_oid'}
     );
@@ -566,31 +566,193 @@ sub PandoraFMS::Recon::Base::test_module($$) {
 }
 
 ################################################################################
+# Create interface modules for the given agent (if needed).
+################################################################################
+sub PandoraFMS::Recon::Base::create_interface_modules($$) {
+  my ($self, $device) = @_;
+
+  # Add interfaces to the agent if it responds to SNMP.
+  return unless ($self->is_snmp_discovered($device));
+  my $community = $self->get_community($device);
+
+  my @output = $self->snmp_get_value_array($device, $PandoraFMS::Recon::Base::IFINDEX);
+  foreach my $if_index (@output) {
+    next unless ($if_index =~ /^[0-9]+$/);
+
+    # Check the status of the interface.
+    my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
+    next unless $if_status == 1;
+
+    # Fill the module description with the IP and MAC addresses.
+    my $mac = $self->get_if_mac($device, $if_index);
+    my $ip = $self->get_if_ip($device, $if_index);
+    my $if_desc = ($mac ne '' ? "MAC $mac " : '') . ($ip ne '' ? "IP $ip" : '');
+
+    # Get the name of the network interface.
+    my $if_name = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFNAME.$if_index");
+    $if_name = "if$if_index" unless defined ($if_name);
+    $if_name =~ s/"//g;
+    $if_name = clean_blank($if_name);
+
+    # Interface status module.
+    $self->call(
+      'add_module',
+      $device,
+      {
+        'id_tipo_modulo' => 18,
+        'id_modulo' => 2,
+        'name' => $if_name."_ifOperStatus",
+        'descripcion' => safe_input(
+          $if_desc
+        ),
+        'ip_target' => $device,
+        'tcp_send' => $self->{'task_data'}{'snmp_version'},
+        'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
+        'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
+        'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
+        'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
+        'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
+        'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+        'snmp_community' => $community,
+        'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index"
+      }
+    );
+
+    # Incoming traffic module.
+    my $if_hc_in_octets = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index");
+    if (defined($if_hc_in_octets)) {
+      # Use HC counters.
+      # ifHCInOctets
+      $self->call(
+        'add_module',
+        $device,
+        {
+          'id_tipo_modulo' => 16,
+          'id_modulo' => 2,
+          'name' => $if_name."_ifHCInOctets",
+          'descripcion' => safe_input(
+            'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifInOctets.'
+          ),
+          'ip_target' => $device,
+          'tcp_send' => $self->{'task_data'}{'snmp_version'},
+          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
+          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
+          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
+          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
+          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
+          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'snmp_community' => $community,
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index"
+        }
+      );
+    } else {
+      # Use 32b counters.
+      # ifInOctets
+      $self->call(
+        'add_module',
+        $device,
+        {
+          'id_tipo_modulo' => 16,
+          'id_modulo' => 2,
+          'name' => $if_name."_ifInOctets",
+          'descripcion' => safe_input(
+            'The total number of octets received on the interface, including framing characters.'
+          ),
+          'ip_target' => $device,
+          'tcp_send' => $self->{'task_data'}{'snmp_version'},
+          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
+          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
+          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
+          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
+          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
+          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'snmp_community' => $community,
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index"
+        }
+      );
+    }
+
+    # Outgoing traffic module.
+    my $if_hc_out_octets = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index");
+    if (defined($if_hc_out_octets)) {
+      # Use HC counters.
+      # ifHCOutOctets
+      $self->call(
+        'add_module',
+        $device,
+        {
+          'id_tipo_modulo' => 16,
+          'id_modulo' => 2,
+          'name' => $if_name."_ifHCOutOctets",
+          'descripcion' => safe_input(
+            'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifOutOctets.'
+          ),
+          'ip_target' => $device,
+          'tcp_send' => $self->{'task_data'}{'snmp_version'},
+          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
+          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
+          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
+          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
+          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
+          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'snmp_community' => $community,
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index"
+        }
+      );
+    } else { 
+      # Use 32b counters.
+      # ifOutOctets
+      $self->call(
+        'add_module',
+        $device,
+        {
+          'id_tipo_modulo' => 16,
+          'id_modulo' => 2,
+          'name' => $if_name."_ifOutOctets",
+          'descripcion' => safe_input(
+            'The total number of octets received on the interface, including framing characters.'
+          ),
+          'ip_target' => $device,
+          'tcp_send' => $self->{'task_data'}{'snmp_version'},
+          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
+          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
+          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
+          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
+          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
+          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'snmp_community' => $community,
+          'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index"
+        }
+      );
+    }
+  }
+
+}
+
+################################################################################
 # Create network profile modules for the given agent.
 ################################################################################
 sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
   my ($self, $device) = @_;
 
-  #
-  # Plugin
-  # SNMP
-  # WMI
-  # ICMP
-  #
+  my @template_ids = ();
 
-  return if is_empty($self->{'id_network_profile'});
+  if (is_enabled($self->{'task_data'}{'auto_monitor'})) {
+    # Apply PEN monitoring template (HW).
+    push @template_ids, get_pen_templates($self->{'dbh'}, $self->get_pen($device));
+  } else {
+    # Return if no specific templates are selected.
+    return if is_empty($self->{'id_network_profile'});
+  }
 
-  my @templates = split /,/, $self->{'id_network_profile'};
+  push @template_ids, split /,/, $self->{'id_network_profile'}
+    unless is_empty($self->{'id_network_profile'});
 
   my $data = $self->{'agents_found'}{$device};
 
-  foreach my $t_id (@templates) {
+  foreach my $t_id (@template_ids) {
     # 1. Retrieve template info.
-    my $template = get_db_single_row(
-      $self->{'dbh'},
-      'SELECT * FROM `tnetwork_profile` WHERE `id_np` = ?',
-      $t_id
-    );
+    my $template = get_nc_profile_advanced($self->{'dbh'}, $t_id);
 
     # 2. Verify Private Enterprise Number matches (PEN)
     if (defined($template->{'pen'})) {
@@ -599,7 +761,7 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
       next unless (is_in_array(\@penes, $data->{'pen'}));
     }
 
-    # 2. retrieve module list from target template.
+    # 3. Retrieve module list from target template.
     my @np_components = get_db_rows(
       $self->{'dbh'},
       'SELECT * FROM tnetwork_profile_component WHERE id_np = ?',
@@ -607,7 +769,7 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
     );
 
     foreach my $np_component (@np_components) {
-      # 2. Test each possible module.
+      # 4. Register each module (candidate). 'add_module' will test them.
       my $component = get_db_single_row(
         $self->{'dbh'},
         'SELECT * FROM tnetwork_component WHERE id_nc = ?',
@@ -643,8 +805,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
   my $force_creation = 0;
 
-  if (defined($self->{'task_data'}{'direct_report'})
-    && $self->{'task_data'}{'direct_report'} == DISCOVERY_STANDARD
+  if (defined($self->{'task_data'}{'review_mode'})
+    && $self->{'task_data'}{'review_mode'} == DISCOVERY_STANDARD
   ) {
     $force_creation = 1;
   }
@@ -652,8 +814,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
   #
   # Creation
   #
-  if(defined($self->{'task_data'}{'direct_report'})
-    && $self->{'task_data'}{'direct_report'} == DISCOVERY_RESULTS
+  if(defined($self->{'task_data'}{'review_mode'})
+    && $self->{'task_data'}{'review_mode'} == DISCOVERY_RESULTS
   ) {
     # Load cache.
     my @rows = get_db_rows(
@@ -754,6 +916,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
           $data->{'agent'}{'agent_id'} = $agent_id;
         }
 
+        $data->{'agent'}{'modo'} = $agent_learning;
         $self->call('message', "Agent id: ".$data->{'agent'}{'agent_id'}, 5);
 
         # Create selected modules.
@@ -817,18 +980,24 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
                 $module->{'__module_component'} = 1;
               } else {
                 # Create module - Direct.
+                my $name = $module->{'name'};
+                delete $module->{'name'};
                 $agentmodule_id = pandora_create_module_from_hash(
                   $self->{'pa_config'},
                   {
+                    %{$module},
                     'id_tipo_modulo' => $id_tipo_modulo,
                     'id_modulo' => $module->{'id_modulo'},
-                    'nombre' => safe_input($module->{'name'}),
+                    'nombre' => safe_input($name),
                     'descripcion' => safe_input($description),
                     'id_agente' => $agent_id,
                     'ip_target' => $data->{'agent'}{'direccion'}
                   },
                   $self->{'dbh'}
                 );
+
+  							$module->{'name'} = $name;
+
               }
 
               # Restore.
@@ -854,6 +1023,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
           );
         };
 
+        push @agents, $data->{'agent'};
+
         # Update.
         db_do(
           $self->{'dbh'},
@@ -868,6 +1039,49 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
     }
 
+    # Update parent relationships.
+    foreach my $agent (@agents) {
+      # Avoid processing if does not exist.
+      next unless (defined($agent->{'agent_id'}));
+
+      # Avoid processing undefined parents.
+      next unless defined($agent->{'parent'});
+
+      # Get parent id.
+      my $parent = get_agent_from_addr($self->{'dbh'}, $agent->{'parent'});
+      if (!defined($parent)) {
+        $parent = get_agent_from_name($self->{'dbh'}, $agent->{'parent'});
+      }
+      next unless defined($parent);
+
+      # Is the agent in learning mode?
+      next unless ($agent->{'modo'} == 1);
+
+      # Connect the host to its parent.
+      db_do($self->{'dbh'},
+        'UPDATE tagente SET id_parent=? WHERE id_agente=?',
+        $parent->{'id_agente'}, $agent->{'agent_id'}
+      );
+    }
+
+    # Connect agents.
+    my @connections = get_db_rows(
+      $self->{'dbh'},
+      'SELECT * FROM tdiscovery_tmp_connections WHERE id_rt = ?',
+      $self->{'task_data'}{'id_rt'}
+    );
+
+    foreach my $cn (@connections) {
+      $self->call('connect_agents',
+        $cn->{'dev_1'},
+        $cn->{'if_1'},
+        $cn->{'dev_2'},
+        $cn->{'if_2'},
+        # Force creation if direct.
+        $force_creation
+      );
+    }
+
     # Data creation finished.
     return;
   }
@@ -876,6 +1090,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
   #
   # Cleanup previous results.
   #
+  $self->call('message', "Cleanup previous results", 6);
   db_do(
     $self->{'dbh'},
     'DELETE FROM tdiscovery_tmp_agents '
@@ -887,6 +1102,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
   # Store and review.
   #
 
+  $self->call('message', "Storing results", 6);
   my @hosts = keys %{$self->{'agents_found'}};
 	$self->{'step'} = STEP_PROCESSING;
 	my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
@@ -935,6 +1151,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
       $encoded
     );
   }
+
+  $self->call('message', "Completed", 5);
 }
 
 ################################################################################
@@ -948,22 +1166,54 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
 	$self->{'step'} = STEP_MONITORING;
   # From 80% to 90%.
 	my ($progress, $step) = (80, 10.0 / scalar(@hosts));
+  my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
 
   foreach my $label (keys %{$self->{'agents_found'}}) {
+    $self->{'c_network_percent'} = $partial;
+    $self->{'c_network_name'} = $label;
     $self->call('update_progress', $progress);
     $progress += $step;
+    $partial += $sub_step;
     $self->call('message', "Checking modules for $label", 5);
+
+    # Monitorization selected.
     $self->call('create_network_profile_modules', $label);
+
+    # Monitorization - interfaces
+    $self->call('create_interface_modules', $label);
 
   }
 
+  $self->{'c_network_percent'} = 100;
+  $self->call('update_progress', $progress);
 }
 
 ################################################################################
 # Connect the given devices in the Pandora FMS database.
 ################################################################################
-sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
-  my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
+sub PandoraFMS::Recon::Base::connect_agents($$$$$;$) {
+  my ($self, $dev_1, $if_1, $dev_2, $if_2, $force) = @_;
+
+  if($self->{'task_data'}{'review_mode'} == DISCOVERY_REVIEW
+    || is_enabled($force)
+  ) {
+    # Store in tdiscovery_tmp_connections;
+
+    db_process_insert(
+      $self->{'dbh'},
+      'id',
+      'tdiscovery_tmp_connections',
+      {
+        'id_rt' => $self->{'task_data'}{'id_rt'},
+        'dev_1' => $dev_1,
+        'if_1'  => $if_1,
+        'dev_2' => $dev_2,
+        'if_2'  => $if_2,
+      }
+    );
+
+    return;
+  }
 
   # Get the agent for the first device.
   my $agent_1 = get_agent_from_addr($self->{'dbh'}, $dev_1);
@@ -1209,7 +1459,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
     next unless ($if_index =~ /^[0-9]+$/);
 
     # Check the status of the interface.
-    if ($self->{'all_ifaces'} == 0) {
+    if (!is_enabled($self->{'all_ifaces'})) {
       my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
       next unless $if_status == 1;
     }
@@ -1447,25 +1697,11 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 
   return unless ($self->{'parent_detection'} == 1);
 
-  # Get the agent for the host.
-  my $agent = get_agent_from_addr($self->{'dbh'}, $host);
-  if (!defined($agent)) {
-    $agent = get_agent_from_name($self->{'dbh'}, $host);
-  }
-  return unless defined($agent);
+  # Do not edit 'not scaned' agents.
+  return if is_empty($self->{'agents_found'}{$host}{'agent'});
 
-  # Check if the parent agent exists.
-  my $agent_parent = get_agent_from_addr($self->{'dbh'}, $parent);
-  if (!defined($agent_parent)) {
-    $agent_parent = get_agent_from_name($self->{'dbh'}, $parent);
-  }
-  return unless (defined ($agent_parent));
+  $self->{'agents_found'}{$host}{'parent'} = $parent;
 
-  # Is the agent in learning mode?
-  return unless ($agent_parent->{'modo'} == 1);
-
-  # Connect the host to its parent.
-  db_do($self->{'dbh'}, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_parent->{'id_agente'}, $agent->{'id_agente'});
 }
 
 ################################################################################

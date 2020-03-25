@@ -771,7 +771,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`description` varchar(250) NOT NULL default '',
 	`subnet` text NOT NULL,
 	`id_network_profile` text,
-	`direct_report` tinyint(1) unsigned NOT NULL default 0,
+	`review_mode` tinyint(1) unsigned NOT NULL default 0,
 	`id_group` int(10) unsigned NOT NULL default 1,
 	`utimestamp` bigint(20) unsigned NOT NULL default 0,
 	`status` tinyint(4) NOT NULL default 0,
@@ -803,6 +803,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`snmp_security_level` varchar(25) NOT NULL default '',
 	`wmi_enabled` tinyint(1) unsigned DEFAULT 0,
 	`auth_strings` text,
+	`auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1,
 	`autoconfiguration_enabled` tinyint(1) unsigned default 0,
 	`summary` text,
 	`type` int NOT NULL default 0,
@@ -827,18 +828,13 @@ CREATE TABLE `tdiscovery_tmp_agents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tdiscovery_tmp_connections` (
-	`id_rt` int(10) unsigned NOT NULL,
-	`id1` int(10) unsigned NOT NULL AUTO_INCREMENT,
-	`id2` int(10) unsigned NOT NULL,
-	`if1` text,
-	`if2` text,
-	PRIMARY KEY (`id1`,`id2`),
-	CONSTRAINT `tdtc_trt` FOREIGN KEY (`id_rt`)
-		REFERENCES `trecon_task` (`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT `tdtc_tdta1` FOREIGN KEY (`id1`)
-		REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT `tdtc_tdta2` FOREIGN KEY (`id2`)
-		REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_rt` int(10) unsigned NOT NULL,
+  `dev_1` text,
+  `dev_2` text,
+  `if_1` text,
+  `if_2` text,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -943,6 +939,16 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile` (
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
 	PRIMARY KEY  (`id_np`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tpen`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tpen` (
+  `id_np` int(10) unsigned NOT NULL,
+  `pen` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id_np`,`pen`),
+  CONSTRAINT `fk_np_id` FOREIGN KEY (`id_np`) REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

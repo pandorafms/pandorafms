@@ -138,6 +138,8 @@ class HostDevices extends Wizard
         // Load styles.
         parent::run();
 
+        ui_require_css_file('hostdevices');
+
         $mode = get_parameter('mode', null);
 
         if ($mode === null) {
@@ -421,6 +423,8 @@ class HostDevices extends Wizard
             }
 
             $id_network_profile = get_parameter('id_network_profile', []);
+            $review_results = get_parameter_switch('review_results');
+            $auto_monitor = get_parameter_switch('auto_monitor');
             $autoconf_enabled = get_parameter_switch(
                 'autoconfiguration_enabled'
             );
@@ -457,6 +461,15 @@ class HostDevices extends Wizard
                 );
             }
 
+            if ($review_results) {
+                if ($this->task['review_mode'] != DISCOVERY_RESULTS) {
+                    $this->task['review_mode'] = DISCOVERY_REVIEW;
+                }
+            } else {
+                $this->task['review_mode'] = DISCOVERY_STANDARD;
+            }
+
+            $this->task['auto_monitor'] = $auto_monitor;
             $this->task['snmp_enabled'] = $snmp_enabled;
             $this->task['os_detect'] = $os_detect;
             $this->task['parent_detection'] = $parent_detection;
@@ -894,6 +907,22 @@ class HostDevices extends Wizard
             ];
 
             $form['inputs'][] = [
+                'label'     => __('Auto discover known hardware').ui_print_help_tip(
+                    __(
+                        'Targets will be monitorized based on its <i>Private Enterprise Number</i>. Requires SNMP.'
+                    ),
+                    true
+                ),
+                'arguments' => [
+                    'name'    => 'auto_monitor',
+                    'type'    => 'switch',
+                    'return'  => true,
+                    'value'   => (isset($this->task['auto_monitor'])) ? $this->task['auto_monitor'] : 1,
+                    'onclick' => 'toggleTemplatesSelection();',
+                ],
+            ];
+
+            $form['inputs'][] = [
                 'label'     => __('Module templates').ui_print_help_tip(
                     __(
                         'Module <i>Host Alive</i> will be added to discovered agents by default.'
@@ -914,6 +943,21 @@ class HostDevices extends Wizard
                     'nothing_value' => 0,
                     'nothing'       => __('None'),
                     'multiple'      => true,
+                ],
+            ];
+
+            $form['inputs'][] = [
+                'label'     => __('Review results').ui_print_help_tip(
+                    __(
+                        'Targets must be validated by user before create agents.'
+                    ),
+                    true
+                ),
+                'arguments' => [
+                    'name'   => 'review_results',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? 0 : 1,
                 ],
             ];
 
@@ -947,6 +991,32 @@ class HostDevices extends Wizard
                     $form['js'] = $extra['js'];
                 }
             }
+
+            $form['js'] .= '
+
+    function toggleTemplatesSelection() {
+        if (document.getElementsByName("auto_monitor")[0].checked) {
+            document.getElementById("templates_selection").style["display"] = "none";
+            var snmp = document.getElementsByName("snmp_enabled");
+            if (snmp[0] != undefined) {
+                if(snmp[0].checked != 1) {
+                    snmp[0].click();
+                }
+            } else {
+                // Not found.
+                document.getElementById("templates_selection").style["display"] = "block";
+                document.getElementsByName("auto_monitor")[0].checked = false;
+            }
+        } else {
+            document.getElementById("templates_selection").style["display"] = "block";
+        }
+    }
+
+    $(document).ready(function () {
+        toggleTemplatesSelection();
+    });
+
+';
 
             // Submit button.
             $form['inputs'][] = [

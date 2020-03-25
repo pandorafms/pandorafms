@@ -524,6 +524,7 @@ define('ARROW_TYPE', 1);
 
 // Discovery task steps.
 define('STEP_SCANNING', 1);
+define('STEP_CAPABILITIES', 7);
 define('STEP_AFT', 2);
 define('STEP_TRACEROUTE', 3);
 define('STEP_GATEWAY', 4);
@@ -600,7 +601,7 @@ define('DISCOVERY_APP_SAP', 10);
 
 
 // Force task build tmp results.
-define('DISCOVERY_SEARCH', 0);
+define('DISCOVERY_REVIEW', 0);
 define('DISCOVERY_STANDARD', 1);
 define('DISCOVERY_RESULTS', 2);
 

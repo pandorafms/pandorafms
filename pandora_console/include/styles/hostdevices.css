@@ -1,3 +1,7 @@
 /*
  * TODO: This may be at hostdevices.css
  */
+
+#id_network_profile {
+  width: 300px;
+}

@@ -63,6 +63,12 @@ div.subtitle div.manage button {
   text-align: left;
 }
 
+div.subtitle .link.review {
+  margin: 15px 0 -30px;
+  display: block;
+  font-weight: bold;
+}
+
 #msg ul li {
   margin-left: 3em;
 }

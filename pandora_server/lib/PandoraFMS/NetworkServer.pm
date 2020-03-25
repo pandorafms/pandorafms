@@ -384,6 +384,7 @@ sub pandora_query_snmp ($$$$) {
 	my $output; # Command output
 
 	# If not defined, always snmp v1 (standard)
+	$snmp_version = '1' unless defined($snmp_version);
 	if ($snmp_version ne '1' && $snmp_version ne '2' 
 		&& $snmp_version ne '2c' && $snmp_version ne '3') {
 		$snmp_version = '1';
@@ -591,7 +592,7 @@ sub exec_network_module ($$$$) {
 		my %data = ("data" => $module_data);
 		pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
 
-		if ($agent_os_version eq ''){
+		if (!defined($agent_os_version) || $agent_os_version eq ''){
 			$agent_os_version = $pa_config->{'servername'}.'_Net';
 		}
 

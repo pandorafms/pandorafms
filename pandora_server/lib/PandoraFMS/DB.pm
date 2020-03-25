@@ -81,6 +81,8 @@ our @EXPORT = qw(
 		get_module_id
 		get_module_name
 		get_nc_profile_name
+		get_pen_templates
+		get_nc_profile_advanced
 		get_os_id
 		get_os_name
 		get_plugin_id
@@ -655,6 +657,39 @@ sub get_nc_profile_name ($$) {
 	my ($dbh, $nc_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT * FROM tnetwork_profile WHERE id_np = ?", $nc_id);
+}
+
+##########################################################################
+## Return all network component's profile ids matching given PEN.
+##########################################################################
+sub get_pen_templates($$) {
+	my ($dbh, $pen) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT t.`id_np`
+		 FROM `tnetwork_profile` t
+		  INNER JOIN `tpen` p ON p.`id_np` = t.`id_np`
+		 WHERE p.`pen` = ?',
+		$pen
+	);
+
+  return @results;
+}
+
+##########################################################################
+## Return a network component's profile data and pen list, given its ID.
+##########################################################################
+sub get_nc_profile_advanced($$) {
+	my ($dbh, $id_nc) = @_;
+	return get_db_single_row(
+		$dbh,
+		'SELECT t.*,GROUP_CONCAT(p.pen) AS "pen"
+		 FROM `tnetwork_profile` t LEFT JOIN `tpen` p ON t.id_np = p.id_np
+		 WHERE t.`id_np` = ?
+		 GROUP BY t.`id_np`',
+		$id_nc
+	);
 }
 
 ##########################################################################

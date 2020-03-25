@@ -3076,7 +3076,7 @@ sub pandora_create_module_from_network_component ($$$$) {
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
-	
+
 	logger($pa_config,
 		"Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 	
@@ -3107,8 +3107,12 @@ sub pandora_create_module_from_hash ($$$) {
 	}
 
 	# Encrypt SNMP v3 passwords.
-	if ($parameters->{'id_tipo_modulo'} >= 15 && $parameters->{'id_tipo_modulo'} <= 18 &&
-		$parameters->{'tcp_send'} eq '3') {
+	if (defined($parameters->{'tcp_send'})
+		&& $parameters->{'tcp_send'} eq '3'
+		&& defined($parameters->{'id_tipo_modulo'})
+		&& $parameters->{'id_tipo_modulo'} >= 15
+		&& $parameters->{'id_tipo_modulo'} <= 18
+	) {
 		$parameters->{'custom_string_2'} = pandora_input_password($pa_config, $parameters->{'custom_string_2'});
 	}
 
@@ -3116,7 +3120,11 @@ sub pandora_create_module_from_hash ($$$) {
 		'tagente_modulo', $parameters);
 	
 	my $status = 4;
-	if (defined ($parameters->{'id_tipo_modulo'}) && ($parameters->{'id_tipo_modulo'} == 21 || $parameters->{'id_tipo_modulo'} == 22 || $parameters->{'id_tipo_modulo'} == 23)) {
+	if (defined ($parameters->{'id_tipo_modulo'})
+		&& ($parameters->{'id_tipo_modulo'} == 21
+			|| $parameters->{'id_tipo_modulo'} == 22
+			|| $parameters->{'id_tipo_modulo'} == 23)
+	) {
 		$status = 0;
 	}
 	

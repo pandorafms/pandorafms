@@ -192,14 +192,23 @@ final class Line extends Model
      *
      * @override Model::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
         $row = \db_get_row_filter('tlayout_data', $filter);
 
         if ($row === false) {
             throw new \Exception('error fetching the data from the DB');
+        }
+
+        if ($ratio != 0) {
+            $row['width'] = ($row['width'] * $ratio);
+            $row['height'] = ($row['height'] * $ratio);
+            $row['pos_x'] = ($row['pos_x'] * $ratio);
+            $row['pos_y'] = ($row['pos_y'] * $ratio);
         }
 
         return $row;

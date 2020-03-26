@@ -489,22 +489,20 @@ li#li-timeZone-item > select:not(:first-child) {
 }
 
 .group-container .group-item-info .group-item-info-container {
-  flex: 1 1 80px;
+  flex: 1 1 20%;
   display: flex;
   flex-direction: row;
   border-radius: 2px;
-  height: 100%;
   max-height: 50px;
-  margin: 5px;
+  margin: 1%;
 }
 
 .group-container .group-item-info .group-item-info-container .value-style {
   flex: 1;
   color: #fff;
   font-size: 100%;
-  padding: 5px;
+  padding: 5%;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -516,7 +514,7 @@ li#li-timeZone-item > select:not(:first-child) {
   background-color: white;
   color: black;
   font-size: 100%;
-  padding: 5px;
+  padding: 5%;
   width: 100%;
   height: 100%;
   display: flex;
@@ -526,11 +524,31 @@ li#li-timeZone-item > select:not(:first-child) {
 }
 
 div.label,
-div.simple-value,
-div.module-graph {
+div.simple-value {
   display: inline-table;
   min-width: fit-content;
   min-height: fit-content;
+}
+
+div.module-graph .parent_graph p table tr {
+  height: 25px;
+}
+
+div.module-graph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+div.module-graph .gauge_d3_class {
+  flex: 1 1 100px;
+  float: none !important;
+  overflow: inherit !important;
+  text-align: center;
 }
 
 .textDecorationNone:hover {

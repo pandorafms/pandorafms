@@ -541,9 +541,8 @@ if (! isset($config['id_user'])) {
 
                             case 'Dashboard':
                                 $_GET['sec'] = 'reporting';
-                                $_GET['sec2'] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
-                                $id_dashboard_select = db_get_value('id', 'tdashboard', 'name', $home_url);
-                                $_GET['id_dashboard_select'] = $id_dashboard_select;
+                                $_GET['sec2'] = 'operation/dashboard/dashboard';
+                                $_GET['id_dashboard_select'] = $home_url;
                                 $_GET['d_from_main_page'] = 1;
                             break;
 
@@ -1200,8 +1199,7 @@ if ($searchPage) {
                 break;
 
                 case 'Dashboard':
-                    $id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
-                    $str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard.'&d_from_main_page=1';
+                    $str = 'sec=reporting&sec2=operation/dashboard/dashboard&dashboardId='.$home_url.'&d_from_main_page=1';
                     parse_str($str, $res);
                     foreach ($res as $key => $param) {
                         $_GET[$key] = $param;
@@ -1333,9 +1331,13 @@ require 'include/php_to_js_values.php';
 
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            document.getElementById("top_btn").style.display = "block";
+            if(document.getElementById("top_btn")){
+                document.getElementById("top_btn").style.display = "block";
+            }
         } else {
-            document.getElementById("top_btn").style.display = "none";
+            if(document.getElementById("top_btn")){
+                document.getElementById("top_btn").style.display = "none";
+            }
         }
     }
 

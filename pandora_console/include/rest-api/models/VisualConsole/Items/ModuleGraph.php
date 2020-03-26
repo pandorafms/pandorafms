@@ -258,11 +258,13 @@ final class ModuleGraph extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -281,6 +283,7 @@ final class ModuleGraph extends Item
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
         $showLegend = static::extractShowLegend($data);
+
         $customGraphId = static::extractCustomGraphId($data);
         $graphType = static::extractGraphType($data);
         $linkedModule = static::extractLinkedModule($data);
@@ -321,6 +324,31 @@ final class ModuleGraph extends Item
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
 
+            $sources = db_get_all_rows_field_filter(
+                'tgraph_source',
+                'id_graph',
+                $customGraphId,
+                'field_order'
+            );
+
+            $hackLegendHight = (28 * count($sources));
+
+            // Trick for legend monstruosity.
+            if ((int) $customGraph['stacked'] === CUSTOM_GRAPH_STACKED_LINE
+                || (int) $customGraph['stacked'] === CUSTOM_GRAPH_STACKED_AREA
+                || (int) $customGraph['stacked'] === CUSTOM_GRAPH_AREA
+                || (int) $customGraph['stacked'] === CUSTOM_GRAPH_LINE
+            ) {
+                if ($width < 200 || $height < 200) {
+                    $showLegend = false;
+                } else {
+                    $height = ($height - 10 - $hackLegendHight);
+                    $showLegend = true;
+                }
+            } else if ((int) $customGraph['stacked'] === CUSTOM_GRAPH_VBARS) {
+                $height = ($height - 40);
+            }
+
             $params = [
                 'period'             => $period,
                 'width'              => $width,
@@ -331,8 +359,8 @@ final class ModuleGraph extends Item
                 'only_image'         => $imageOnly,
                 'vconsole'           => true,
                 'backgroundColor'    => $backgroundType,
+                'show_legend'        => $showLegend,
                 'return_img_base_64' => true,
-                'show_legend'        => true,
                 'show_title'         => false,
             ];
 
@@ -359,6 +387,14 @@ final class ModuleGraph extends Item
                 throw new \InvalidArgumentException('missing module Id');
             }
 
+            // Trick for legend monstruosity.
+            if ($width < 200 || $height < 200) {
+                $showLegend = false;
+            } else {
+                $height = ($height - 30);
+                $showLegend = true;
+            }
+
             $params = [
                 'agent_module_id'    => $moduleId,
                 'period'             => $period,
@@ -377,6 +413,7 @@ final class ModuleGraph extends Item
                 'return_img_base_64' => true,
                 'show_legend'        => $showLegend,
                 'show_title'         => false,
+                'dashboard'          => true,
             ];
 
             if ($imageOnly !== false) {

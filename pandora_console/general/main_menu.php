@@ -181,7 +181,7 @@ function open_submenus () {
         if (value)
             $('div.menu>ul>li#' + index + '>ul').show();
     });
-    $('div.menu>ul>li.selected>ul').removeClass('invisible');
+    //$('div.menu>ul>li.selected>ul').removeClass('invisible');
 }
 
 function close_submenus () {
@@ -189,7 +189,7 @@ function close_submenus () {
         if (value)
             $('div.menu>ul>li#' + index + '>ul').hide();
     });
-    $('div.menu>ul>li.selected>ul').addClass('invisible');
+    //$('div.menu>ul>li.selected>ul').addClass('invisible');
 }
 
 

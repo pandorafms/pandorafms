@@ -5763,12 +5763,22 @@ div#status_pie {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding: 1em;
+  padding: 10px;
   min-width: 100%;
 }
 .white-box-content-clean {
   padding-left: 2em;
   padding-top: 1em;
+}
+
+.white-table-graph-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 96px;
 }
 
 .white_table_graph_content {
@@ -5778,8 +5788,6 @@ div#status_pie {
   padding: 5px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
-  align-items: center;
-  flex-wrap: wrap;
 }
 
 .white_table_graph_content.no-padding-imp .info_box {
@@ -5981,6 +5989,10 @@ table.table_modal_alternate tr td:first-child {
   font-family: arial, sans-serif, verdana;
   padding: 3px;
   border: 1px solid black;
+}
+
+.bars-graph-rotate .flot-text .flot-x-axis div {
+  word-break: break-word;
 }
 
 .flot-text {

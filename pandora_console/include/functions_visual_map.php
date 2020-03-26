@@ -1025,11 +1025,13 @@ function visual_map_print_item(
                             $params_combined
                         ).'</div>';
                     } else {
-                        $img = graphic_combined_module(
+                        $img = '<div style="width:'.$width.'px; height:'.$height.'px;">';
+                        $img .= graphic_combined_module(
                             false,
                             $params,
                             $params_combined
                         );
+                        $img .= '</div>';
                     }
                 }
             } else {
@@ -1223,7 +1225,16 @@ function visual_map_print_item(
                     'alpha'  => CHART_DEFAULT_ALPHA,
                 ];
 
-                $module_data = get_bars_module_data($id_module);
+                $module_data = get_bars_module_data(
+                    $id_module,
+                    ($layoutData['type_graph'] !== 'horizontal')
+                );
+                $options = [];
+                $options['generals']['rotate'] = true;
+                $options['generals']['forceTicks'] = true;
+                $options['generals']['arrayColors'] = $color;
+                $options['x']['labelWidth'] = 60;
+
                 $water_mark = [
                     'file' => '/var/www/html/pandora_console/images/logo_vertical_water.png',
                     'url'  => 'http://localhost/pandora_console/images/logo_vertical_water.png',
@@ -1252,27 +1263,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:right;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                400,
-                                400,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:right;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else if ($layoutData['label_position'] == 'right') {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1296,27 +1289,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:left;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                400,
-                                400,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:left;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1340,27 +1315,7 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             );
                         } else {
-                            $img = vbar_graph(
-                                $module_data,
-                                400,
-                                400,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            );
+                            $img = vbar_graph($module_data, $options, 1);
                         }
                     }
                 } else {
@@ -1386,27 +1341,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:right;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                $width,
-                                $height,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:right;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else if ($layoutData['label_position'] == 'right') {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1430,27 +1367,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:left;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                $width,
-                                $height,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:left;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1474,27 +1393,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             );
                         } else {
-                            $img = vbar_graph(
-                                $module_data,
-                                $width,
-                                $height,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            );
+                            $img = '<div style="width:'.$width.'px; height:'.$height.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     }
                 }
@@ -2443,7 +2344,7 @@ function get_if_module_is_image($id_module)
 }
 
 
-function get_bars_module_data($id_module)
+function get_bars_module_data($id_module, $vBars=false)
 {
     // This charts is only serialize graphs.
     // In other string show image no data to show.
@@ -2472,9 +2373,19 @@ function get_bars_module_data($id_module)
         return false;
     }
 
-    foreach ($values as $val) {
-        $data = explode(',', $val);
-        $values_to_return[$data[0]] = ['g' => $data[1]];
+    if ($vBars === false) {
+        foreach ($values as $val) {
+            $data = explode(',', $val);
+            $values_to_return[$data[0]] = ['g' => $data[1]];
+        }
+    } else {
+        foreach ($values as $val) {
+            $data = explode(',', $val);
+            $values_to_return[] = [
+                'tick' => $data[0],
+                'data' => $data[1],
+            ];
+        }
     }
 
     return $values_to_return;

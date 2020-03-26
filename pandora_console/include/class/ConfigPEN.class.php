@@ -36,9 +36,9 @@ class ConfigPEN extends HTML
 {
 
     /**
-     * Undocumented variable
+     * URL Base
      *
-     * @var [type]
+     * @var string
      */
     private $baseUrl;
 
@@ -58,15 +58,16 @@ class ConfigPEN extends HTML
                 'ACL Violation',
                 'Trying to access event viewer'
             );
-
-            if (is_ajax()) {
+            /*
+                if (is_ajax()) {
                 echo json_encode(['error' => 'noaccess']);
-            }
-
+                }
+            */
             include 'general/noaccess.php';
             exit;
         }
 
+        $this->offset = '';
         $this->baseUrl = 'index.php?sec=configuration_wizard_setup&sec2=godmode/modules/private_enterprise_numbers';
 
     }
@@ -117,35 +118,46 @@ class ConfigPEN extends HTML
             $this->printHeader(true)
         );
 
-        $this->createMainTable();
+        // Definition for AJAX.
+        html_print_input_hidden(
+            'ajax_file',
+            ui_get_full_url('ajax.php', false, false, false)
+        );
 
+        // Allow message area.
+        html_print_div(['id' => 'message_show_area']);
+        // Prints the main table.
+        html_print_div(
+            [
+                'id'      => 'main_table_area',
+                'content' => $this->createMainTable(),
+            ]
+        );
     }
 
 
     /**
-     * Undocumented function
+     * Create the main table with the PENs info
      *
-     * @return void
+     * @return string Return entire the table
      */
-    private function createMainTable()
+    public function createMainTable()
     {
         global $config;
         // Get the count of PENs.
         $countPENs = db_get_value(
             'count(*)',
-            'tnetwork_profile'
+            'tpen'
         );
 
         // Get all the data.
         $resultPENs = db_get_all_rows_filter(
-            'tnetwork_profile',
+            'tpen',
             [
                 'order' => 'id_np',
                 'limit' => $config['block_size'],
             ]
         );
-
-        hd($resultPENs);
 
         ui_pagination($countPENs, false, $this->offset);
         // Create the table with Module Block list.
@@ -181,15 +193,15 @@ class ConfigPEN extends HTML
 
         foreach ($resultPENs as $row) {
             $data = [];
-            $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
-            $data[1] = '<span id="pen_id_'.$row['id_np'].'" style="padding: 5px;" contenteditable="false">'.$row['id_np'].'</span>';
-            $data[2] = '<span id="pen_name_'.$row['id_np'].'" style="padding: 5px;" contenteditable="false">'.$row['name'].'</span>';
-            $data[3] = '<span id="pen_desc_'.$row['id_np'].'" style="padding: 5px;" contenteditable="false">'.ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]').'</span>';
-            $table->cellclass[][3] = 'action_buttons';
+            $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['pen'], false, false, '', 'class="check_delete"', true);
+            $data[1] = '<span id="pen_number_'.$row['pen'].'" style="padding: 5px;" contenteditable="false">'.$row['pen'].'</span>';
+            $data[2] = '<span id="pen_manufacturer_'.$row['pen'].'" style="padding: 5px;" contenteditable="false">'.$row['manufacturer'].'</span>';
+            $data[3] = '<span id="pen_description_'.$row['pen'].'" style="padding: 5px;" contenteditable="false">'.ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]').'</span>';
+            $table->cellclass[][4] = 'action_buttons';
             $data[4] = html_print_input_image(
-                'edit_pen_'.$row['id_np'].'_',
+                'edit_pen_',
                 'images/edit.png',
-                $row['id_np'],
+                $row['pen'],
                 'max-width: 27px;',
                 true,
                 [
@@ -198,22 +210,43 @@ class ConfigPEN extends HTML
                 ]
             );
             $data[4] .= html_print_input_image(
-                'delete_pen_'.$row['id_np'].'_',
+                'delete_pen_',
                 'images/cross.png',
-                $row['id_np'],
+                $row['pen'],
                 '',
                 true,
                 [
                     'title'   => 'Delete PEN',
-                    'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                    'onclick' => 'if (confirm(\''.__('Are you sure?').'\')) deletePEN(event);',
                 ]
             );
 
             array_push($table->data, $data);
         }
 
-        html_print_table($table);
+        // Last line for adding new PENs.
+        $data = [];
+        $data[0] = '';
+        $data[1] = html_print_input_text('pen_number', '', '', 10, 255, true);
+        $data[2] = html_print_input_text('pen_manufacturer', '', '', 30, 255, true);
+        $data[3] = html_print_input_text('pen_description', '', '', 80, 255, true);
+        $table->cellclass[][4] = 'action_buttons';
+        $data[4] = html_print_input_image(
+            'add_new_pen',
+            'images/add_mc.png',
+            '',
+            'margin: 0 auto; display: block;',
+            true,
+            [
+                'title'   => 'Add new PEN',
+                'onclick' => 'javascript:addNewPEN()',
+            ]
+        );
 
+        // Add last line.
+        array_push($table->data, $data);
+        // Return the entire table.
+        return html_print_table($table, true);
     }
 
 

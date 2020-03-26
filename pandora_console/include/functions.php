@@ -2482,12 +2482,12 @@ function get_os_name($id_os)
 function get_user_dashboards($id_user)
 {
     if (users_is_admin($id_user)) {
-        $sql = "SELECT name
+        $sql = "SELECT id, name
 			FROM tdashboard WHERE id_user = '".$id_user."' OR id_user = ''";
     } else {
         $user_can_manage_all = users_can_manage_group_all('RR');
         if ($user_can_manage_all) {
-            $sql = "SELECT name
+            $sql = "SELECT id, name
 				FROM tdashboard WHERE id_user = '".$id_user."' OR id_user = ''";
         } else {
             $user_groups = users_get_groups($id_user, 'RR', false);
@@ -2500,7 +2500,7 @@ function get_user_dashboards($id_user)
                 $u_groups[] = $id;
             }
 
-            $sql = 'SELECT name
+            $sql = 'SELECT id, name
 				FROM tdashboard
 				WHERE id_group IN ('.implode(',', $u_groups).") AND (id_user = '".$id_user."' OR id_user = '')";
         }
@@ -3870,12 +3870,17 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
         $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
     }
 
-    $width_img  = 550;
-    $height_img = $params['height'];
+    if ($type_graph_pdf === 'vbar') {
+        $width_img  = $params['generals']['pdf']['width'];
+        $height_img = $params['generals']['pdf']['height'];
+    } else {
+        $width_img  = 550;
+        $height_img = $params['height'];
 
-    if ((int) $params['landscape'] === 1) {
-        $height_img = 150;
-        $params['height'] = 150;
+        if ((int) $params['landscape'] === 1) {
+            $height_img = 150;
+            $params['height'] = 150;
+        }
     }
 
     $params_encode_json = urlencode(json_encode($params));

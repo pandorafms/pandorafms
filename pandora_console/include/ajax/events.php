@@ -923,7 +923,7 @@ if ($perform_event_response) {
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
-    $command_timeout = $event_response['command_timeout'];
+    $command_timeout = $event_response !== false ? $event_response['command_timeout'] : 90;
 
     if (enterprise_installed()) {
         if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {

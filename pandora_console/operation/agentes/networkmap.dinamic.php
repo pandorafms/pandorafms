@@ -25,7 +25,6 @@ if (defined('_id_') && _id_ != '_id_') {
 $activeTab = get_parameter('activeTab', true);
 
 if (enterprise_installed()) {
-    include_once 'enterprise/dashboard/widgets/network_map.php';
     if ($id_networkmap) {
         $id = $id_networkmap;
     }
@@ -458,7 +457,7 @@ function zoom(translate_param, scale_param) {
     else {
         translate = translate_param;
         scale = scale_param;
-        
+        var zoom_obj = d3.behavior.zoom();
         zoom_obj.setScale(scale);
         zoom_obj.setTranslate(translate);
     }

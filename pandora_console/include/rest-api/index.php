@@ -51,7 +51,7 @@ ob_clean();
 
 if ($visualConsoleId) {
     // Retrieve the visual console.
-    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId], $ratio);
     $visualConsoleData = $visualConsole->toArray();
     $vcGroupId = $visualConsoleData['groupId'];
 
@@ -80,7 +80,35 @@ if ($getVisualConsole === true) {
         $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
     }
 
-    $vcItems = VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups);
+    $size = get_parameter('size', []);
+
+    $ratio = 0;
+    if (isset($size) === true
+        && is_array($size) === true
+        && empty($size) === false
+    ) {
+        $visualConsoleData = $visualConsole->toArray();
+        $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
+        $ratio = ($size['width'] / $visualConsoleData['width']);
+        $radio_h = ($size['height'] / $visualConsoleData['height']);
+
+        $visualConsoleData['width'] = $size['width'];
+        $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
+
+        if ($visualConsoleData['height'] > $size['height']) {
+            $ratio = $radio_h;
+
+            $visualConsoleData['height'] = $size['height'];
+            $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);
+        }
+    }
+
+    $vcItems = VisualConsole::getItemsFromDB(
+        $visualConsoleId,
+        $aclUserGroups,
+        $ratio
+    );
+
     echo '['.implode($vcItems, ',').']';
     return;
 } else if ($getVisualConsoleItem === true

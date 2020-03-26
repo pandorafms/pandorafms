@@ -829,7 +829,7 @@ function reporting_make_reporting_data(
             break;
 
             case 'module_histogram_graph':
-                $report['contents'][] = reporting_enterprise_module_histogram_graph(
+                $report['contents'][] = reporting_module_histogram_graph(
                     $report,
                     $content,
                     $pdf
@@ -2880,19 +2880,19 @@ function reporting_group_report($report, $content)
 
     $return['data'] = [];
 
-    $events = events_get_agent(
-        false,
-        $content['period'],
-        $report['datetime'],
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        $content['id_group'],
-        true
-    );
+    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+
+    if (empty($id_group)) {
+        $events = [];
+    } else {
+        $sql_where = sprintf(' AND id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $events = events_get_events_grouped(
+            $sql_where,
+            0,
+            1000,
+            is_metaconsole()
+        );
+    }
 
     if (empty($events)) {
         $events = [];
@@ -5140,7 +5140,7 @@ function reporting_sql($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
-    if ($config['metaconsole']) {
+    if ($config['metaconsole'] && !empty($content['server_name'])) {
         $id_meta = metaconsole_get_id_server(
             $content['server_name']
         );
@@ -5212,7 +5212,7 @@ function reporting_sql($report, $content)
         $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
-    if ($config['metaconsole']) {
+    if ($config['metaconsole'] && !empty($content['server_name'])) {
         metaconsole_restore_db();
     }
 
@@ -5664,22 +5664,32 @@ function reporting_advanced_sla(
         // Infer availability range based on the critical thresholds.
         $agentmodule_info = modules_get_agentmodule($id_agent_module);
 
+        // // Check if module type is string.
+        $is_string_module = modules_is_string($agentmodule_info['id_agente_modulo']);
+
         // Take in mind: the "inverse" critical threshold.
-        $min_value        = $agentmodule_info['min_critical'];
-        $max_value        = $agentmodule_info['max_critical'];
         $inverse_interval = ($agentmodule_info['critical_inverse'] == 0) ? 1 : 0;
 
-        if ((!isset($min_value)) || ($min_value == 0)) {
-            $min_value = null;
+        if (!$is_string_module) {
+            $min_value        = $agentmodule_info['min_critical'];
+            $max_value        = $agentmodule_info['max_critical'];
+        } else {
+            $max_value = io_safe_output($agentmodule_info['str_critical']);
         }
 
-        if ((!isset($max_value)) || ($max_value == 0)) {
-            $max_value = null;
-        }
+        if (!$is_string_module) {
+            if ((!isset($min_value)) || ($min_value == 0)) {
+                $min_value = null;
+            }
 
-        if ((!(isset($max_value))) && (!(isset($min_value)))) {
-            $max_value = null;
-            $min_value = null;
+            if ((!isset($max_value)) || ($max_value == 0)) {
+                $max_value = null;
+            }
+
+            if ((!(isset($max_value))) && (!(isset($min_value)))) {
+                $max_value = null;
+                $min_value = null;
+            }
         }
 
         if ((!isset($min_value)) && (!isset($max_value))) {
@@ -6141,14 +6151,31 @@ function reporting_advanced_sla(
                                 if ((isset($current_data['datos']))
                                     && ($current_data['datos'] !== false)
                                 ) {
+                                    // Check values if module is sring type.
+                                    if ($is_string_module) {
+                                        if (empty($max_value)) {
+                                            $match = preg_match('/^'.$max_value.'$/', $current_data['datos']);
+                                        } else {
+                                            $match = preg_match('/'.$max_value.'/', $current_data['datos']);
+                                        }
+
+                                        // Take notice of $inverse_interval value,
+                                        if ($inverse_interval == 0) {
+                                            $sla_check_value = $match;
+                                        } else {
+                                            $sla_check_value = !$match;
+                                        }
+                                    } else {
+                                        $sla_check_value = sla_check_value(
+                                            $current_data['datos'],
+                                            $min_value,
+                                            $max_value,
+                                            $inverse_interval
+                                        );
+                                    }
+
                                     // Not unknown nor not init values.
-                                    if (sla_check_value(
-                                        $current_data['datos'],
-                                        $min_value,
-                                        $max_value,
-                                        $inverse_interval
-                                    )
-                                    ) {
+                                    if ($sla_check_value) {
                                         $ok_checks++;
                                         $time_in_ok += $time_interval;
                                     } else {
@@ -11629,7 +11656,7 @@ function reporting_get_stats_servers()
                 $output .= 'parameters["page"] = "include/ajax/events";';
                 $output .= 'parameters["total_events"] = 1;';
 
-                $output .= '$.ajax({type: "GET",url: "/pandora_console/ajax.php",data: parameters,';
+                $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                     $output .= 'success: function(data) {';
                         $output .= '$("#total_events").text(data);';
                     $output .= '}';
@@ -12318,4 +12345,328 @@ function reporting_nt_top_n_report($period, $content, $pdf)
         $period['datetime']
     );
     return $return;
+}
+
+
+/**
+ * Will display an hourly analysis of the selected period.
+ *
+ * @param array   $report  Info report.
+ * @param array   $content Info contents.
+ * @param boolean $pdf     If pdf.
+ *
+ * @return html
+ */
+function reporting_module_histogram_graph($report, $content, $pdf=0)
+{
+    global $config;
+
+    $metaconsole_on = is_metaconsole();
+
+    $return = [];
+
+    $urlImage = ui_get_full_url(false, true, false, false);
+
+    $return['type'] = 'module_histogram_graph';
+
+    $ttl = 1;
+    if ($pdf) {
+        $ttl = 2;
+    }
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Module Histogram Graph');
+    }
+
+    $server_name = $content['server_name'];
+    // Metaconsole connection.
+    if ($metaconsole_on && $server_name != '') {
+        $connection = metaconsole_get_connection($server_name);
+        if (!metaconsole_load_external_db($connection)) {
+            ui_print_error_message('Error connecting to '.$server_name);
+        }
+    }
+
+    $module_name = io_safe_output(
+        modules_get_agentmodule_name(
+            $content['id_agent_module']
+        )
+    );
+    $agent_name = io_safe_output(
+        modules_get_agentmodule_agent_alias(
+            $content['id_agent_module']
+        )
+    );
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = $agent_name.' - '.$module_name;
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text(
+        $report,
+        $content
+    );
+
+    if (modules_is_disable_agent($content['id_agent_module'])
+        || modules_is_not_init($content['id_agent_module'])
+    ) {
+        if ($metaconsole_on) {
+            // Restore db connection.
+            metaconsole_restore_db();
+        }
+
+        return false;
+    }
+
+    $uncompress_module = db_uncompress_module_data(
+        $content['id_agent_module'],
+        ($report['datetime'] - $content['period']),
+        $report['datetime']
+    );
+
+    // Select Warning and critical values.
+    $agentmodule_info = modules_get_agentmodule($content['id_agent_module']);
+    $min_value_critical = ($agentmodule_info['min_critical'] == 0) ? null : $agentmodule_info['min_critical'];
+
+    // Check if module type is string.
+    $modules_is_string = modules_is_string($agentmodule_info['id_agente_modulo']);
+
+    if ($modules_is_string === false) {
+        if ($agentmodule_info['max_critical'] == 0) {
+            $max_value_critical = null;
+        } else {
+            $max_value_critical = $agentmodule_info['max_critical'];
+        }
+    } else {
+        if ($agentmodule_info['str_critical'] == '') {
+            $max_value_critical = null;
+        } else {
+            $max_value_critical = $agentmodule_info['str_critical'];
+        }
+    }
+
+    $inverse_critical = $agentmodule_info['critical_inverse'];
+
+    $min_value_warning = ($agentmodule_info['min_warning'] == 0) ? null : $agentmodule_info['min_warning'];
+
+    if ($modules_is_string === false) {
+        if ($agentmodule_info['max_warning'] == 0) {
+            $max_value_warning = null;
+        } else {
+            $max_value_warning = $agentmodule_info['max_warning'];
+        }
+    } else {
+        if ($agentmodule_info['str_warning'] == '') {
+            $max_value_warning = null;
+        } else {
+            $max_value_warning = $agentmodule_info['str_warning'];
+        }
+    }
+
+    $inverse_warning = $agentmodule_info['warning_inverse'];
+
+    // Initialize vars.
+    $tstart     = 0;
+    $tend       = 0;
+    $tacum      = 0;
+    $tacum_data = 0;
+
+    $array_graph = [];
+
+    $data_not_init = 0;
+    $data_unknown  = 0;
+    $data_critical = 0;
+    $data_warning  = 0;
+    $data_ok       = 0;
+    $data_total    = 0;
+
+    $time_not_init = 0;
+    $time_unknown  = 0;
+    $time_critical = 0;
+    $time_warning  = 0;
+    $time_ok       = 0;
+
+    $legend = [];
+    foreach ($uncompress_module as $data) {
+        foreach ($data['data'] as $key => $value) {
+            if ($tacum == 0) {
+                // Initialize the accumulators.
+                $tacum      = $value['utimestamp'];
+                $tacum_data = $value['datos'];
+            } else {
+                // Utimestand end and final.
+                $tstart     = $tacum;
+                $tend       = $value['utimestamp'];
+
+                // Module type isn't string.
+                $sla_check_value_critical = sla_check_value(
+                    $tacum_data,
+                    $min_value_critical,
+                    $max_value_critical,
+                    $inverse_critical
+                );
+                $sla_check_value_warning = sla_check_value(
+                    $tacum_data,
+                    $min_value_warning,
+                    $max_value_warning,
+                    $inverse_warning
+                );
+
+                // Module type is string.
+                $string_check_value_critical = preg_match('/'.$max_value_critical.'/', $tacum_data);
+                $string_check_value_warning = preg_match('/'.$max_value_warning.'/', $tacum_data);
+
+                if ($inverse_critical) {
+                    $string_check_value_critical = !preg_match('/'.$max_value_critical.'/', $tacum_data);
+                }
+
+                if ($string_check_value_warning) {
+                    $string_check_value_warning = !preg_match('/'.$max_value_warning.'/', $tacum_data);
+                }
+
+                // Contruct array period and data.
+                if ($tacum_data === false) {
+                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NOT_INIT;
+                    // NOT INIT.
+                    $time_not_init = ($time_not_init + ($tend - $tstart));
+                    $data_not_init ++;
+                } else if ($tacum_data === null) {
+                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_UNKNOWN;
+                    // UNKNOWN.
+                    $time_unknown = ($time_unknown + ($tend - $tstart));
+                    $data_unknown ++;
+                } else if (( (isset($min_value_critical) || isset($max_value_critical)) && ($modules_is_string === false) && ($sla_check_value_critical == true) )
+                    || ( isset($max_value_critical) && ($modules_is_string === true) && $string_check_value_critical )
+                ) {
+                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+                    // CRITICAL.
+                    $time_critical = ($time_critical + ($tend - $tstart));
+                    $data_critical ++;
+                } else if (( (isset($min_value_warning) || isset($max_value_warning)) && ($modules_is_string === false) && ($sla_check_value_warning == true) )
+                    || ( isset($max_value_warning) && ($modules_is_string === true) && $sla_check_value_warning )
+                ) {
+                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_WARNING;
+                    // WARNING.
+                    $time_warning = ($time_warning + ($tend - $tstart));
+                    $data_warning ++;
+                } else {
+                    $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NORMAL;
+                    // OK.
+                    $time_ok = ($time_ok + ($tend - $tstart));
+                    $data_ok ++;
+                }
+
+                $array_graph[$data_total]['utimestamp'] = ($tend - $tstart);
+                $array_graph[$data_total]['real_data']  = $tacum_data;
+
+                // Reassign accumulators.
+                $tacum        = $value['utimestamp'];
+                $tacum_data = $value['datos'];
+                $data_total++;
+            }
+        }
+    }
+
+    $data_init = -1;
+    $acum = 0;
+    $sum = 0;
+    $array_result = [];
+    $i = 0;
+    foreach ($array_graph as $key => $value) {
+        if ($data_init == -1) {
+            $data_init = $value['data'];
+            $acum      = $value['utimestamp'];
+        } else {
+            if ($data_init == $value['data']) {
+                $acum = ($acum + $value['utimestamp']);
+                if ($modules_is_string === false) {
+                    $sum = ($sum + $value['real_data']);
+                } else {
+                    $sum = $value['real_data'];
+                }
+            } else {
+                $array_result[$i]['data'] = $data_init;
+                $array_result[$i]['utimestamp'] = $acum;
+                $array_result[$i]['real_data'] = $sum;
+                $i++;
+                $data_init = $value['data'];
+                $acum = $value['utimestamp'];
+                $sum = $value['real_data'];
+            }
+        }
+    }
+
+    if (count($array_result) == 0) {
+        $array_result = $array_graph;
+    } else {
+        $array_result[$i]['data'] = $data_init;
+        $array_result[$i]['utimestamp'] = $acum;
+        $array_result[$i]['real_data'] = $sum;
+    }
+
+    $time_total = ($time_not_init + $time_unknown + $time_critical + $time_warning + $time_ok);
+    // Slice graphs calculation.
+    $return['agent']            = modules_get_agentmodule_agent_alias(
+        $content['id_agent_module']
+    );
+    $return['module']           = modules_get_agentmodule_name(
+        $content['id_agent_module']
+    );
+    $return['max_critical']     = $max_value_critical;
+    $return['min_critical']     = $min_value_critical;
+    $return['critical_inverse'] = $inverse_critical;
+    $return['max_warning']      = $max_value_warning;
+    $return['min_warning']      = $min_value_warning;
+    $return['warning_inverse']  = $inverse_warning;
+    $return['data_not_init']    = $data_not_init;
+    $return['data_unknown']     = $data_unknown;
+    $return['data_critical']    = $data_critical;
+    $return['data_warning']     = $data_warning;
+    $return['data_ok']          = $data_ok;
+    $return['data_total']       = $data_total;
+    $return['time_not_init']    = $time_not_init;
+    $return['time_unknown']     = $time_unknown;
+    $return['time_critical']    = $time_critical;
+    $return['time_warning']     = $time_warning;
+    $return['time_ok']          = $time_ok;
+    $return['percent_ok']       = (($data_ok * 100) / $data_total);
+
+    $colors = [
+        AGENT_MODULE_STATUS_NORMAL       => COL_NORMAL,
+        AGENT_MODULE_STATUS_WARNING      => COL_WARNING,
+        AGENT_MODULE_STATUS_CRITICAL_BAD => COL_CRITICAL,
+        AGENT_MODULE_STATUS_UNKNOWN      => COL_UNKNOWN,
+        AGENT_MODULE_STATUS_NOT_INIT     => COL_NOTINIT,
+    ];
+
+    $width_graph  = 100;
+    $height_graph = 80;
+    $return['chart'] = flot_slicesbar_graph(
+        $array_result,
+        $time_total,
+        $width_graph,
+        $height_graph,
+        $legend,
+        $colors,
+        $config['fontpath'],
+        $config['round_corner'],
+        $homeurl,
+        '',
+        '',
+        false,
+        0,
+        [],
+        true,
+        $ttl,
+        $content['sizeForTicks'],
+        true
+    );
+
+    if ($metaconsole_on) {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
+
+    return reporting_check_structure_content($return);
 }

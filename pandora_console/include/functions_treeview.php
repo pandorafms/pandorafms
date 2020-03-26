@@ -325,6 +325,14 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['data'] = $last_data_str;
     $table->data['last_data'] = $row;
 
+    // Last status change.
+    $last_status_change = db_get_value('last_status_change', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+    $row = [];
+    $row['title'] = __('Last status change');
+    $time_elapsed = ($last_status_change > 0) ? human_time_comparation($last_status_change) : __('N/A');
+    $row['data'] = $time_elapsed;
+    $table->data['tags'] = $row;
+
     // End of table
     html_print_table($table);
 
@@ -761,13 +769,28 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     if ($config['agentaccess']) {
         $access_graph = '<div style="width:100%; height:130px;">';
-        $access_graph .= graphic_agentaccess($id_agente, 380, 120, SECONDS_1DAY, true, true);
+        $access_graph .= graphic_agentaccess(
+            $id_agente,
+            SECONDS_1DAY,
+            true
+        );
         $access_graph .= '</div>';
         ui_toggle($access_graph, __('Agent access rate (24h)'));
     }
 
-    $events_graph = '<div style="margin-left:10px; width:100%;">';
-    $events_graph .= graph_graphic_agentevents($id_agente, 375, 45, SECONDS_1DAY, '', true, false, true);
+    $events_graph = '<div style="width: 100%; height: 90px; display: flex; flex-direction: row; justify-content: center;">';
+    $events_graph .= graph_graphic_agentevents(
+        $id_agente,
+        '385px;',
+        45,
+        SECONDS_1DAY,
+        '',
+        true,
+        false,
+        550,
+        1,
+        $server_id
+    );
     $events_graph .= '</div><br>';
 
     ui_toggle($events_graph, __('Events (24h)'));

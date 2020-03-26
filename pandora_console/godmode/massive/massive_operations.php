@@ -305,6 +305,10 @@ echo '</div>';
 </script>
 
 <?php
+if (is_central_policies_on_node() && $option == 'delete_agents') {
+    ui_print_warning_message(__('This node is configured with centralized mode. To delete an agent go to metaconsole.'));
+}
+
 echo '<br />';
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';
 echo '<table border="0"><tr><td>';

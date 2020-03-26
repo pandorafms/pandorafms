@@ -130,7 +130,7 @@ if ($update) {
         ];
 
         // Save filter args
-        $values['filter_args'] = netflow_get_filter_arguments($values);
+        $values['filter_args'] = netflow_get_filter_arguments($values, true);
 
         $result = db_process_sql_update('tnetflow_filter', $values, ['id_sg' => $id]);
 
@@ -164,7 +164,7 @@ if ($create) {
     ];
 
     // Save filter args
-    $values['filter_args'] = netflow_get_filter_arguments($values);
+    $values['filter_args'] = netflow_get_filter_arguments($values, true);
 
     $id = db_process_sql_insert('tnetflow_filter', $values);
     if ($id === false) {

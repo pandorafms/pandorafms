@@ -754,8 +754,10 @@ class Item extends CachedModel
      *
      * @override Model::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_io.php';
@@ -785,6 +787,13 @@ class Item extends CachedModel
         // Build the item link if needed.
         if (static::extractIsLinkEnabled($row) === true) {
             $row['link'] = static::buildLink($row);
+        }
+
+        if ($ratio != 0) {
+            $row['width'] = ($row['width'] * $ratio);
+            $row['height'] = ($row['height'] * $ratio);
+            $row['pos_x'] = ($row['pos_x'] * $ratio);
+            $row['pos_y'] = ($row['pos_y'] * $ratio);
         }
 
         return $row;

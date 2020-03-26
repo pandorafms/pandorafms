@@ -1720,6 +1720,10 @@ function graphic_combined_module(
                 $params['threshold_data'] = $threshold_data;
             }
 
+            if ($params['vconsole'] === true) {
+                $water_mark = false;
+            }
+
             $output = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -1861,6 +1865,7 @@ function graphic_combined_module(
                 $height = 50;
             } else {
                 $height = ($height / $number_elements);
+                $water_mark = false;
             }
 
             $color = color_graph_array();
@@ -1983,18 +1988,25 @@ function graphic_combined_module(
 
             $color = color_graph_array();
 
-            if (!$params['vconsole']) {
+            if ($params['vconsole'] === false) {
                 $width = 200;
                 $height = 200;
             } else {
-                $width  = ($width / $number_elements);
-                $height = ($height / $number_elements);
+                $ratio = ((200 * ( $height / (200 * $number_elements) )) / (200 * ( $width / (200 * $number_elements))));
+
+                $new_width = ( 200 * ( $width / (200 * $number_elements) ) );
+                $new_height = ( 200 * ( $height / (200 * $number_elements) / $ratio ) );
+
+                if ($height > $width) {
+                    $new_height = (200 * ($height / (200 * $number_elements)));
+                    $new_width = (200 * ($width / (200 * $number_elements)) / $ratio);
+                }
             }
 
             $output = stacked_gauge(
                 $graph_values,
-                $width,
-                $height,
+                $new_width,
+                $new_height,
                 $color,
                 $module_name_list,
                 ui_get_full_url(
@@ -2015,10 +2027,10 @@ function graphic_combined_module(
             $label = '';
             foreach ($module_list as $module_item) {
                 $automatic_custom_graph_meta = false;
-                if ($config['metaconsole']) {
+                if (is_metaconsole() === true) {
                     // Automatic custom graph from the report
                     // template in metaconsole.
-                    if (is_array($module_list[$i])) {
+                    if (is_array($module_list[$i]) === true) {
                         $server = metaconsole_get_connection_by_id(
                             $module_item['server']
                         );
@@ -2027,7 +2039,7 @@ function graphic_combined_module(
                     }
                 }
 
-                if ($automatic_custom_graph_meta) {
+                if ($automatic_custom_graph_meta === true) {
                     $module = $module_item['module'];
                 } else {
                     $module = $module_item;
@@ -2035,8 +2047,7 @@ function graphic_combined_module(
 
                 $module_data = modules_get_agentmodule($module);
                 $query_last_value = sprintf(
-                    '
-                    SELECT datos
+                    'SELECT datos
                     FROM tagente_datos
                     WHERE id_agente_modulo = %d
                         AND utimestamp < %d
@@ -2050,8 +2061,8 @@ function graphic_combined_module(
                     modules_get_agentmodule_agent_name($module)
                 );
 
-                if (!empty($params_combined['labels'])
-                    && isset($params_combined['labels'][$module])
+                if (empty($params_combined['labels']) === false
+                    && isset($params_combined['labels'][$module]) === true
                 ) {
                     $label = $params_combined['labels'][$module];
                 } else {
@@ -2061,15 +2072,30 @@ function graphic_combined_module(
                         'id_agente',
                         $module_data['id_agente']
                     );
-                    $label = $alias.' - '.$module_data['nombre'];
+                    if ($params['vconsole'] === true) {
+                        if ($width < 250 || $height < 250) {
+                            $label = \ui_print_truncate_text($module_data['nombre'], 3, false);
+                        } else {
+                            $label = $module_data['nombre'];
+                        }
+                    } else {
+                        $label = $alias.' - '.$module_data['nombre'];
+                    }
                 }
 
-                $temp[$label]['g'] = round($temp_data, 4);
+                if ($params_combined['stacked'] == CUSTOM_GRAPH_VBARS) {
+                    $temp[] = [
+                        'tick' => $label,
+                        'data' => (int) round($temp_data, 4),
+                    ];
+                } else {
+                    $temp[$label]['g'] = round($temp_data, 4);
+                }
 
-                if ($config['metaconsole']) {
+                if (is_metaconsole() === true) {
                     // Automatic custom graph from the report
                     // template in metaconsole.
-                    if (is_array($module_list[0])) {
+                    if (is_array($module_list[0]) === true) {
                         metaconsole_restore_db();
                     }
                 }
@@ -2079,12 +2105,14 @@ function graphic_combined_module(
 
             $graph_values = $temp;
 
-            if (!$params['vconsole']) {
-                $width = 1024;
-                $height = 500;
-            }
-
             if ($params_combined['stacked'] == CUSTOM_GRAPH_HBARS) {
+                if ($params['vconsole'] === false) {
+                    $width = 1024;
+                    $height = 500;
+                } else {
+                    $water_mark = false;
+                }
+
                 $output = hbar_graph(
                     $graph_values,
                     $width,
@@ -2112,32 +2140,27 @@ function graphic_combined_module(
             }
 
             if ($params_combined['stacked'] == CUSTOM_GRAPH_VBARS) {
-                $output = vbar_graph(
-                    $graph_values,
-                    $width,
-                    $height,
-                    $color,
-                    $module_name_list,
-                    $long_index,
-                    ui_get_full_url(
-                        'images/image_problem_area_small.png',
-                        false,
-                        false,
-                        false
-                    ),
-                    '',
-                    '',
-                    $water_mark,
-                    $config['fontpath'],
-                    $fixed_font_size,
-                    '',
-                    $ttl,
-                    $homeurl,
-                    $background_color,
-                    true,
-                    false,
-                    '#c1c1c1'
-                );
+                $options = [];
+                $sizeLabelTickWidth = 85;
+                if ($params['vconsole'] === true) {
+                    $water_mark = false;
+                    if (isset($width) === true) {
+                        $sizeLabelTickWidth = 30;
+                    }
+                } else {
+                    $options['grid']['hoverable'] = true;
+                }
+
+                $options['generals']['rotate'] = true;
+                $options['generals']['forceTicks'] = true;
+                $options['x']['labelWidth'] = $sizeLabelTickWidth;
+                $options['generals']['arrayColors'] = $color;
+                $options['grid']['backgroundColor'] = 'transparent';
+                $options['grid']['backgroundColor'] = $background_color;
+                $options['y']['color'] = $background_color;
+                $options['x']['color'] = $background_color;
+
+                $output = vbar_graph($graph_values, $options, $ttl);
             }
         break;
 
@@ -2176,6 +2199,7 @@ function graphic_combined_module(
                     $datelimit,
                     $params['date']
                 );
+
                 $temp_data = db_get_value_sql($query_last_value);
 
                 if ($temp_data) {
@@ -2223,9 +2247,11 @@ function graphic_combined_module(
 
             $graph_values = $temp;
 
-            if (!$params['vconsole']) {
+            if ($params['vconsole'] === false) {
                 $width  = $width;
                 $height = 500;
+            } else {
+                $water_mark = false;
             }
 
             $color = color_graph_array();
@@ -2358,100 +2384,62 @@ function combined_graph_summatory_average(
 
 
 /**
- * Print a graph with access data of agents
+ * Print a graph with access data of agents.
  *
- * @param integer $id_agent Agent ID.
- * @param integer $width    Pie graph width.
- * @param integer $height   Pie graph height.
- * @param integer $period   Time period.
- * @param boolean $return   Return.
- * @param boolean $tree     View tree.
+ * @param integer      $id_agent Agent Id.
+ * @param integer      $period   Timestamp period graph.
+ * @param boolean|null $return   Type return.
  *
- * @return string Return or echo the result flag.
+ * @return string
  */
 function graphic_agentaccess(
-    $id_agent,
-    $width,
-    $height,
-    $period=0,
-    $return=false,
-    $tree=false
+    int $id_agent,
+    int $period=0,
+    ?bool $return=false
 ) {
     global $config;
-    global $graphic_type;
 
+    // Dates.
     $date = get_system_time();
     $datelimit = ($date - $period);
-    $data_array = [];
-    $interval = agents_get_interval($id_agent);
+    $interval = 3600;
 
-    $data = db_get_all_rows_sql(
-        sprintf(
-            'SELECT utimestamp, count(*) as data
-             FROM tagent_access
-             WHERE id_agent = %d
-             AND utimestamp > %d
-             AND utimestamp < %d
-             GROUP BY ROUND(utimestamp/%d)',
-            $id_agent,
-            $datelimit,
-            $date,
-            $interval
-        )
+    // Query.
+    $sql = sprintf(
+        'SELECT utimestamp, count(*) as data
+         FROM tagent_access
+         WHERE id_agent = %d
+         AND utimestamp >= %d
+         AND utimestamp <= %d
+         GROUP BY TRUNCATE(utimestamp/%d,0)',
+        $id_agent,
+        $datelimit,
+        $date,
+        $interval
     );
 
-    if (isset($data) && is_array($data)) {
+    $data = db_get_all_rows_sql($sql);
+
+    // Array data.
+    $data_array = [];
+    if (isset($data) === true && is_array($data) === true) {
         foreach ($data as $key => $value) {
-            $data_array['Agent access']['data'][$key][0] = ($value['utimestamp'] * 1000);
-            $data_array['Agent access']['data'][$key][1] = $value['data'];
-        }
-
-        $data_array['Agent access']['color'] = 'green';
-    } else {
-        if ($return) {
-            return graph_nodata_image($width, $height);
-        } else {
-            echo graph_nodata_image($width, $height);
+            $time = (date('H:m', $value['utimestamp']));
+            $data_array[] = [
+                'tick'  => $time,
+                'data'  => (int) $value['data'],
+                'color' => '#82b92f',
+            ];
         }
     }
 
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url(
-                'images/logo_vertical_water.png',
-                false,
-                false,
-                false
-            ),
-        ];
-    }
+    $options = [];
+    $options['grid']['hoverable'] = true;
 
-    $params = [
-        'agent_module_id'   => false,
-        'period'            => $period,
-        'width'             => $width,
-        'height'            => $height,
-        'unit'              => $unit,
-        'only_image'        => $only_image,
-        'homeurl'           => $homeurl,
-        'menu'              => true,
-        'backgroundColor'   => 'transparent',
-        'type_graph'        => 'area',
-        'font'              => $config['fontpath'],
-        'font_size'         => $config['font_size'],
-        'array_data_create' => $data_array,
-        'show_overview'     => false,
-        'show_export_csv'   => false,
-        'vconsole'          => true,
-        'show_legend'       => false,
-        'grid_color'        => 'grey',
-    ];
-
-    if ($return) {
-        return grafico_modulo_sparse($params);
+    if ($return === true) {
+        return vbar_graph($data_array, $options, 1);
     } else {
-        echo grafico_modulo_sparse($params);
+        echo vbar_graph($data_array, $options, 1);
     }
 }
 
@@ -3667,6 +3655,7 @@ function graph_custom_sql_graph(
     $data = [];
 
     $count = 0;
+    $flagOther = false;
     foreach ($data_result as $data_item) {
         $count++;
         $value = 0;
@@ -3688,7 +3677,13 @@ function graph_custom_sql_graph(
 
             switch ($type) {
                 case 'sql_graph_vbar':
-                    // vertical bar
+                    // Vertical bar.
+                    $data[] = [
+                        'tick' => $label.'_'.$count,
+                        'data' => $value,
+                    ];
+                break;
+
                 case 'sql_graph_hbar':
                     // horizontal bar
                     $data[$label.'_'.$count]['g'] = $value;
@@ -3702,7 +3697,19 @@ function graph_custom_sql_graph(
         } else {
             switch ($type) {
                 case 'sql_graph_vbar':
-                    // vertical bar
+                    // Vertical bar.
+                    if ($flagOther === false) {
+                        $data[] = [
+                            'tick' => __('Other'),
+                            'data' => $value,
+                        ];
+
+                        $flagOther = true;
+                    }
+
+                    $data[(count($data) - 1)]['data'] += $value;
+                break;
+
                 case 'sql_graph_hbar':
                     // horizontal bar
                     if (!isset($data[__('Other')]['g'])) {
@@ -3733,28 +3740,32 @@ function graph_custom_sql_graph(
 
     switch ($type) {
         case 'sql_graph_vbar':
-            // vertical bar
-        return vbar_graph(
-            $data,
-            $width,
-            $height,
-            [],
-            [],
-            '',
-            '',
-            '',
-            '',
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            '',
-            $ttl,
-            $homeurl,
-            'white',
-            true,
-            false,
-            '#c1c1c1'
-        );
+            // Vertical bar.
+            $color = color_graph_array();
+
+            $options = [];
+            $options['generals']['rotate'] = true;
+            $options['generals']['forceTicks'] = true;
+            $options['generals']['arrayColors'] = $color;
+            $options['x']['labelWidth'] = 75;
+            if ($ttl === 2) {
+                $options['backgroundColor'] = 'transparent';
+                $options['grid']['backgroundColor'] = 'transparent';
+                $options['y']['color'] = 'transparent';
+                $options['x']['color'] = 'transparent';
+                $options['generals']['pdf']['width'] = $width;
+                $options['generals']['pdf']['height'] = $height;
+
+                $output .= '<img style="margin-left:20px;" src="data:image/jpg;base64,';
+                $output .= vbar_graph($data, $options, $ttl);
+                $output .= '" />';
+            } else {
+                $options['grid']['hoverable'] = true;
+                $output = '<div style="width:100%; height:'.$height.'px">';
+                $output .= vbar_graph($data, $options, $ttl);
+                $output .= '</div>';
+            }
+        return $output;
 
             break;
         case 'sql_graph_hbar':
@@ -3809,8 +3820,18 @@ function graph_custom_sql_graph(
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeurl, $return=false, $from_agent_view=false, $widgets=false)
-{
+function graph_graphic_agentevents(
+    $id_agent,
+    $width,
+    $height,
+    $period=0,
+    $homeurl,
+    $return=false,
+    $from_agent_view=false,
+    $widgets=false,
+    $not_interactive=0,
+    $server_id=''
+) {
     global $config;
     global $graphic_type;
 
@@ -3885,7 +3906,26 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
     ];
 
     // Draw slicebar graph
-    $out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date, 0, 1, $widgets);
+    $out = flot_slicesbar_graph(
+        $data,
+        $period,
+        $width,
+        $height,
+        $full_legend,
+        $colors,
+        $config['fontpath'],
+        $config['round_corner'],
+        $homeurl,
+        '',
+        '',
+        false,
+        $id_agent,
+        $full_legend_date,
+        $not_interactive,
+        1,
+        $widgets,
+        $server_id
+    );
 
     if ($return) {
         return $out;
@@ -3905,8 +3945,17 @@ function graph_graphic_agentevents($id_agent, $width, $height, $period=0, $homeu
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $period=0, $homeurl, $return=false, $ttl=1)
-{
+function graph_graphic_moduleevents(
+    $id_agent,
+    $id_module,
+    $width,
+    $height,
+    $period=0,
+    $homeurl='',
+    $return=false,
+    $ttl=1,
+    $widthForTicks=false
+) {
     global $config;
     global $graphic_type;
 
@@ -3995,7 +4044,7 @@ function graph_graphic_moduleevents($id_agent, $id_module, $width, $height, $per
         [],
         true,
         $ttl,
-        true
+        $widthForTicks
     );
 
     if ($return) {
@@ -4851,8 +4900,13 @@ function graphic_module_events($id_module, $width, $height, $period=0, $homeurl=
 }
 
 
-function graph_nodata_image($width=300, $height=110, $type='area', $text='')
-{
+function graph_nodata_image(
+    $width=300,
+    $height=110,
+    $type='area',
+    $text='',
+    $percent=false
+) {
     $image = ui_get_full_url(
         'images/image_problem_area.png',
         false,
@@ -4860,14 +4914,20 @@ function graph_nodata_image($width=300, $height=110, $type='area', $text='')
         false
     );
 
-    // if ($text == '') {
-    // $text = __('No data to show');
-    // }
-    $text_div = '<div class="nodata_text" style="text-align:center; padding: 30px 0; display:block; font-size:9.5pt;">'.$text.'</div>';
+    $style = 'text-align:center; padding: 30px 0; display:block; font-size:9.5pt;';
+    $text_div = '<div class="nodata_text" style="'.$style.'">';
+    $text_div .= $text;
+    $text_div .= '</div>';
 
-    $image_div = $text_div.'<div class="nodata_container" style="background-position: top; width:40%;height:40%;background-size: contain;background-image: url(\''.$image.'\');"><div></div></div>';
+    $style = 'background-size: contain;background-image: url(\''.$image.'\');';
+    $image_div = '<div class="nodata_container" style="'.$style.'"></div>';
 
-    $div = '<div style="width:'.$width.'px; height:'.$height.'px; background-color: white; margin: 0 auto;">'.$image_div.'</div>';
+    if ($percent === true) {
+        $div = $image_div;
+    } else {
+        $style = 'width:'.$width.'px; height:'.$height.'px; background-color: white; margin: 0 auto;';
+        $div = '<div style="'.$style.'">'.$image_div.'</div>';
+    }
 
     return $div;
 }

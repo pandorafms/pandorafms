@@ -122,6 +122,8 @@ class TreeService extends Tree
     {
         $fields = $this->getFirstLevelFields();
 
+        $is_favourite = $this->getServiceFavouriteFilter();
+
         if (users_can_manage_group_all('AR')) {
             $groups_acl = '';
         } else {
@@ -144,12 +146,14 @@ class TreeService extends Tree
                     WHERE
                         1=1
                         %s
+                        %s
 					    GROUP BY id
 					) as t1  
 					ON tss.id_service_child = t1.id
 					WHERE tss.id_service_child IS NULL
 					",
-            $groups_acl
+            $groups_acl,
+            $is_favourite
         );
 
         $stats = db_get_all_rows_sql($sql);
@@ -360,6 +364,16 @@ class TreeService extends Tree
 
     protected function getAgentStatusFilter($status=self::TV_DEFAULT_AGENT_STATUS)
     {
+        return '';
+    }
+
+
+    protected function getServiceFavouriteFilter()
+    {
+        if (isset($this->filter['is_favourite']) && !empty($this->filter['is_favourite'])) {
+            return ' AND is_favourite = 1';
+        }
+
         return '';
     }
 

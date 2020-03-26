@@ -422,7 +422,10 @@ $user_filter = db_get_row_sql(
         $config['id_user']
     )
 );
-if ($user_filter !== false) {
+
+// Do not load the user filter if we come from the 24h event graph
+$from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
+if ($user_filter !== false && $from_event_graph != 1) {
     $filter = events_get_event_filter($user_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];

@@ -133,6 +133,16 @@ $sb_list = [];
 $sb_list[1] = __('Standby on');
 $sb_list[0] = __('Standby off');
 $form_filter .= html_print_select($sb_list, 'standby', $standby, '', __('All'), -1, true);
+$form_filter .= '</td>';
+$form_filter .= "</td><td style='font-weight: bold;'>".__('Group').'</td><td>';
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
+    $return_all_group = false;
+} else {
+    $return_all_group = true;
+}
+
+$form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false);
 $form_filter .= '</td></tr>';
 if (defined('METACONSOLE')) {
     $form_filter .= '<tr>';
@@ -214,7 +224,7 @@ $total = agents_get_alerts_simple(
     $where,
     false,
     false,
-    false,
+    $ag_group,
     true
 );
 
@@ -375,7 +385,7 @@ switch ($sortField) {
     break;
 }
 
-$form_params = '&template_name='.$templateName.'&agent_name='.$agentName.'&module_name='.$moduleName.'&action_id='.$actionID.'&field_content='.$fieldContent.'&priority='.$priority.'&enabledisable='.$enabledisable.'&standby='.$standby;
+$form_params = '&template_name='.$templateName.'&agent_name='.$agentName.'&module_name='.$moduleName.'&action_id='.$actionID.'&field_content='.$fieldContent.'&priority='.$priority.'&enabledisable='.$enabledisable.'&standby='.$standby.'&ag_group='.$ag_group;
 $sort_params = '&sort_field='.$sortField.'&sort='.$sort;
 
 if ($id_agente) {
@@ -394,7 +404,9 @@ $simple_alerts = agents_get_alerts_simple(
         'order'  => $order,
     ],
     $where,
-    false
+    false,
+    false,
+    $ag_group
 );
 
 if (!$id_agente) {

@@ -437,7 +437,8 @@ function menu_print_menu(&$menu)
                 $visible = false;
             }
 
-            $output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'">';
+            // $output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'">';
+            $output .= '<ul id="subicon_'.$id.'" class="submenu">';
             $output .= $submenu_output;
             $output .= '</ul>';
         }
@@ -520,8 +521,6 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_editor']['text'] = __('Manage graph templates');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_item_editor']['text'] = __('Graph template items');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
-
-    $menu_extra['reporting']['sub']['enterprise/dashboard/dashboard_replicate']['text'] = __('Copy dashboard');
 
     if ($config['activate_gis']) {
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');

@@ -295,10 +295,17 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
 
     if (($id_agent !== false) && ($idGroup !== false)) {
         if ($idGroup != 0) {
+            $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
             // All group
             $subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
-				WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = '.$idGroup.')';
+                WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = '.$idGroup;
+
+            if ($has_secondary) {
+                $subQuery .= ' OR tasg.id_group = '.$idGroup;
+            }
+
+            $subQuery .= ')';
         } else {
             $subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
@@ -337,17 +344,31 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
         $selectText = 'COUNT(talert_template_modules.id) AS count';
     }
 
+    $secondary_join = '';
+    if ($idGroup) {
+        if (isset($has_secondary) && $has_secondary) {
+            $secondary_join = sprintf(
+                'LEFT JOIN tagent_secondary_group tasg
+                ON t3.id_agente = tasg.id_agent
+                AND tasg.id_group = %d',
+                $idGroup
+            );
+        }
+    }
+
     $sql = sprintf(
         'SELECT %s
 		FROM talert_template_modules
-			INNER JOIN tagente_modulo t2
-				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-			INNER JOIN tagente t3
-				ON t2.id_agente = t3.id_agente
-			INNER JOIN talert_templates t4
-				ON talert_template_modules.id_alert_template = t4.id
+        INNER JOIN tagente_modulo t2
+            ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+        INNER JOIN tagente t3
+            ON t2.id_agente = t3.id_agente
+        %s
+        INNER JOIN talert_templates t4
+            ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s',
         $selectText,
+        $secondary_join,
         $subQuery,
         $where,
         $filter,
@@ -1057,7 +1078,7 @@ function agents_get_group_agents(
     }
 
     if ($childGroups) {
-        if (is_array($id_group)) {
+        if (is_array($id_group) === true) {
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
@@ -1077,7 +1098,7 @@ function agents_get_group_agents(
     }
 
     // Search for primary and secondary groups.
-    if (!empty($id_group)) {
+    if (empty($id_group) === false) {
         $filter[] = '('.db_format_array_where_clause_sql(
             [
                 'id_group' => $id_group,
@@ -1087,83 +1108,59 @@ function agents_get_group_agents(
         ).')';
     }
 
-    if ($search === true) {
-        // No added search. Show both disabled and non-disabled.
-    } else if (is_array($search)) {
+    if (is_array($search) === true) {
         if (!$search['all_agents']) {
             $filter['disabled'] = 0;
-            if (isset($search['disabled'])) {
+            if (isset($search['disabled']) === true) {
                 $filter['disabled'] = (int) $search['disabled'];
-
                 unset($search['disabled']);
             }
         }
 
-        if (isset($search['string'])) {
+        if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
-            switch ($config['dbtype']) {
-                case 'mysql':
-                case 'postgresql':
-                    $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
-                break;
-
-                case 'oracle':
-                    $filter[] = "(UPPER(nombre) LIKE UPPER('%$string%') OR direccion LIKE upper('%$string%'))";
-                break;
-            }
-
+            $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
             unset($search['string']);
         }
 
-        if (isset($search['name'])) {
+        if (isset($search['name']) === true) {
             $name = io_safe_input($search['name']);
-            switch ($config['dbtype']) {
-                case 'mysql':
-                case 'postgresql':
-                    $filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
-                break;
-
-                case 'oracle':
-                    $filter[] = "UPPER(nombre) LIKE UPPER('$name')";
-                break;
-            }
-
+            $filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
             unset($search['name']);
         }
 
-        if (isset($search['alias'])) {
+        if (isset($search['alias']) === true) {
             $name = io_safe_input($search['alias']);
-            switch ($config['dbtype']) {
-                case 'mysql':
-                case 'postgresql':
-                    $filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
-                break;
-
-                case 'oracle':
-                    $filter[] = "UPPER(alias) LIKE UPPER('$name')";
-                break;
-            }
-
+            $filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
             unset($search['alias']);
         }
 
-        if (isset($search['id_os'])) {
+        if (isset($search['aliasRegex']) === true) {
+            $name = io_safe_input($search['aliasRegex']);
+            $filter[] = sprintf(
+                'alias COLLATE utf8_general_ci REGEXP "%s"',
+                $name
+            );
+            unset($search['aliasRegex']);
+        }
+
+        if (isset($search['id_os']) === true) {
             $filter['id_os'] = $search['id_os'];
         }
 
-        if (isset($search['status'])) {
+        if (isset($search['status']) === true) {
             switch ($search['status']) {
                 case AGENT_STATUS_NORMAL:
                     $filter[] = '(
 						critical_count = 0
 						AND warning_count = 0
-						AND unknown_count = 0 
+						AND unknown_count = 0
 						AND normal_count > 0)';
                 break;
 
                 case AGENT_STATUS_WARNING:
                     $filter[] = '(
-						critical_count = 0 
+						critical_count = 0
 						AND warning_count > 0
 						AND total_count > 0)';
                 break;
@@ -1174,8 +1171,8 @@ function agents_get_group_agents(
 
                 case AGENT_STATUS_UNKNOWN:
                     $filter[] = '(
-						critical_count = 0 
-						AND warning_count = 0 
+						critical_count = 0
+						AND warning_count = 0
 						AND unknown_count > 0)';
                 break;
 
@@ -1193,6 +1190,10 @@ function agents_get_group_agents(
 						total_count = 0
 						OR total_count = notinit_count)';
                 break;
+
+                default:
+                    // Not posible.
+                break;
             }
 
             unset($search['status']);
@@ -1208,7 +1209,7 @@ function agents_get_group_agents(
             $filter['id_tmetaconsole_setup'] = $search['id_server'];
 
             if ($filter['id_tmetaconsole_setup'] == 0) {
-                // All nodes
+                // All nodes.
                 unset($filter['id_tmetaconsole_setup']);
             }
 
@@ -1216,12 +1217,12 @@ function agents_get_group_agents(
         }
 
         if (!$add_alert_bulk_op) {
-            // Add the rest of the filter from the search array
+            // Add the rest of the filter from the search array.
             foreach ($search as $key => $value) {
                 $filter[] = $value;
             }
         }
-    } else {
+    } else if ($filter !== true) {
         $filter['disabled'] = 0;
     }
 
@@ -3600,4 +3601,26 @@ function agents_get_sap_agents($id_agent)
     }
 
     return false;
+}
+
+
+/**
+ * Return time at which last status change of a module occured.
+ *
+ * @param  integer $id_agent.
+ * @return string timestamp.
+ */
+function agents_get_last_status_change($id_agent)
+{
+    $sql = sprintf(
+        'SELECT *
+        FROM tagente_estado
+        WHERE id_agente = %d
+        ORDER BY last_status_change DESC',
+        $id_agent
+    );
+
+    $row = db_get_row_sql($sql);
+
+    return $row['last_status_change'];
 }

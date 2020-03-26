@@ -42,6 +42,10 @@ use constant {
   DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,
+  WMI_UNREACHABLE => 1,
+  WMI_BAD_PASSWORD => 2,
+  WMI_GENERIC_ERROR => 3,
+  WMI_OK => 0,
 };
 
 # $DEVNULL
@@ -398,13 +402,17 @@ sub are_connected($$$$$) {
 }
 
 ################################################################################
-# Initialize tmp pool for device.
-# Already discovered by scan_subnet.
+# Initialize tmp pool for addr.
+# Already discovered by scan_subnet. Registration only.
 ################################################################################
 sub icmp_discovery($$) {
   my ($self, $addr) = @_;
 
-  $self->prepare_agent($addr);
+	# Create an agent for the device and add it to the list of known hosts.
+	push(@{$self->{'hosts'}}, $addr);
+
+	# Create an agent for the device and add it to the list of known hosts.
+	$self->add_agent($addr);
 
   $self->add_module($addr,
     {
@@ -459,13 +467,6 @@ sub snmp_discovery($$) {
       $self->snmp_pen($device);
     }
   }
-
-	# Create an agent for the device and add it to the list of known hosts.
-	push(@{$self->{'hosts'}}, $device);
-
-  # Create an agent for the device and add it to the list of known hosts.
-  $self->add_agent($device);
-
 }
 
 ################################################################################
@@ -1379,7 +1380,7 @@ sub test_capabilities($$) {
   # WMI discovery.
   if (is_enabled($self->{'wmi_enabled'})) {
     # Add wmi scan if enabled.
-    $self->wmi_scan($addr);
+    $self->wmi_discovery($addr);
   }
 }
 
@@ -2129,20 +2130,58 @@ sub traceroute_connectivity($$) {
 # Returns the credentials with which the host responds to WMI queries or
 # undef if it does not respond to WMI.
 ################################################################################
-sub responds_to_wmi {
+sub wmi_credentials {
+  my ($self, $target) = @_;
+  return $self->{'wmi_auth'}{$target};
+}
+
+################################################################################
+# Calculate WMI credentials for target, 1 if calculated, undef if cannot
+# connect to target. Credentials could be empty (-N)
+################################################################################
+sub wmi_credentials_calculation {
   my ($self, $target) = @_;
 
-  foreach my $auth (@{$self->{'auth_strings_array'}}) {
-    my @output;
-    if ($auth ne '') {
-      @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -U $auth //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
-    } else {
-      @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -N //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+  # Test empty credentials.
+  my @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -N //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+  my $rs = $self->wmi_output_check($?, @output);
+
+  if ($rs == WMI_OK) {
+    $self->{'wmi_auth'}{$target} = '';
+    return 1;
+  }
+
+  if ($rs == WMI_UNREACHABLE) {
+    # Target does not respond.
+    $self->{'wmi'}{$target} = 0;
+    return undef;
+  }
+
+  # Test all credentials selected.
+  foreach my $key_index (@{$self->{'auth_strings_array'}}) {
+    my $cred = $self->call('get_credentials', $key_index);
+    next if ref($cred) ne 'HASH';
+
+    my $auth = $cred->{'username'}.'%'.$cred->{'password'};
+    next if $auth eq '%';
+
+    @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -U $auth //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+
+    my $rs = $self->wmi_output_check($?, @output);
+
+    if ($rs == WMI_OK) {
+      $self->{'wmi_auth'}{$target} = $auth;
+      $self->{'wmi'}{$target} = 1;
+      $self->{'summary'}->{'WMI'} += 1;
+      $self->call('message', "[".$target."] WMI available.", 10);
+      return 1;
     }
 
-    foreach my $line (@output) {
-      chomp($line);
-      return $auth if ($line =~ m/^CLASS: Win32_ComputerSystem$/);
+    if ($rs == WMI_UNREACHABLE) {
+      # Target does not respond.
+      $self->call('message', "[".$target."] WMI unreachable.", 10);
+      $self->{'wmi'}{$target} = 0;
+      return undef;
     }
   }
 
@@ -2150,74 +2189,16 @@ sub responds_to_wmi {
 }
 
 ################################################################################
-# Add wmi modules to the given host.
+# Tests wmi capability for addr.
 ################################################################################
-sub wmi_scan {
-  my ($self, $target) = @_;
+sub wmi_discovery {
+  my ($self, $addr) = @_;
 
-  $self->call('message', "[".$target."] Checking WMI.", 5);
+  # Initialization.
+  $self->{'wmi'} = {} unless ref($self->{'wmi'}) eq 'HASH';
 
-  my $auth = $self->responds_to_wmi($target);
-  return unless defined($auth);
-
-  $self->{'summary'}->{'WMI'} += 1;
-
-  $self->call('message', "[".$target."] WMI available.", 10);
-
-  # Register agent.
-  $self->add_agent($target);
-
-  # Add modules.
-  # CPU.
-  my @cpus = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceId FROM Win32_Processor', 0);
-  foreach my $cpu (@cpus) {
-    $self->add_module($target,
-      {
-        'target' => $target,
-        'query' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",
-        'auth' => $auth,
-        'column' => 1,
-        'name' => "CPU Load $cpu",
-        'description' => "Load for $cpu (%)",
-        'type' => 'generic_data',
-        'unit' => '%',
-      }
-    );
-  }
-
-  # Memory.
-  my $mem = $self->wmi_get_value($target, $auth, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
-  if (defined($mem)) {
-    $self->add_module($target,
-      {
-        'target' => $target,
-        'query' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
-        'auth' => $auth,
-        'column' => 0,
-        'name' => 'FreeMemory',
-        'description' => 'Free memory',
-        'type' => 'generic_data',
-        'unit' => 'KB',
-      }
-    );
-  }
-
-  # Disk.
-  my @units = $self->wmi_get_value_array($target, $auth, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
-  foreach my $unit (@units) {
-      $self->add_module($target,
-      {
-        'target' => $target,
-        'query' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
-        'auth' => $auth,
-        'column' => 1,
-        'name' => "FreeDisk $unit",
-        'description' => 'Available disk space in kilobytes',
-        'type' => 'generic_data',
-        'unit' => 'KB',
-      }
-    );
-  }
+  # Calculate credentials.
+  $self->wmi_credentials_calculation($addr);
 
 }
 
@@ -2226,9 +2207,51 @@ sub wmi_scan {
 ################################################################################
 
 ################################################################################
+# Validate wmi output. (err code and messages).
+################################################################################
+sub wmi_output_check {
+  my ($self, $rc, @output) = @_;
+  if ($? != 0) {
+    # Something went wrong.
+    if (defined($output[-1]) && $output[-1] =~ /NTSTATUS: (.*)/) {
+      my $err = $1;
+      $self->{'last_wmi_error'} = $err;
+
+      if ($err =~ /NT_STATUS_IO_TIMEOUT/
+        || $err =~ /NT_STATUS_CONNECTION_REFUSED/
+      ) {
+        # Fail.
+        return WMI_UNREACHABLE;
+      }
+
+      if ($err =~ /NT_STATUS_ACCESS_DENIED/) {
+        return WMI_BAD_PASSWORD;
+      }
+    }
+
+    # Fail.
+    return WMI_GENERIC_ERROR;
+  }
+
+  # Ok.
+  return WMI_OK;
+}
+
+################################################################################
 # Performs a wmi get requests and returns the response as an array.
 ################################################################################
 sub wmi_get {
+  my ($self, $target, $query) = @_;
+
+  return () unless $self->wmi_responds($target);
+
+  return $self->wmi_get_command($target, $self->{'wmi_auth'}{$target}, $query);
+}
+
+################################################################################
+# Performs a wmi get requests and returns the response as an array.
+################################################################################
+sub wmi_get_command {
   my ($self, $target, $auth, $query) = @_;
 
   my @output;
@@ -2238,10 +2261,28 @@ sub wmi_get {
     @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -N //$target "$query" 2>&1`;
   }
 
-  # Something went wrong.
-  return () if ($? != 0);
+  my $rs = $self->wmi_output_check($?, @output);
 
-  return @output;
+  if ($rs == WMI_OK) {
+    return @output;
+  }
+
+  $self->call(
+    'message',
+    "[".$target."] WMI error: ".$self->{'last_wmi_error'},
+    10
+  );
+
+  return ();
+}
+
+################################################################################
+# Checks if target is reachable using wmi.
+################################################################################
+sub wmi_responds {
+	my ($self, $target) = @_;
+	return 1 if is_enabled($self->{'wmi'}{$target});
+	return 0;
 }
 
 ################################################################################
@@ -2249,10 +2290,10 @@ sub wmi_get {
 # Returns undef on error.
 ################################################################################
 sub wmi_get_value {
-  my ($self, $target, $auth, $query, $column) = @_;
+  my ($self, $target, $query, $column) = @_;
   my @result;
 
-  my @output = $self->wmi_get($target, $auth, $query);
+  my @output = $self->wmi_get($target, $query);
   return undef unless defined($output[2]);
 
   my $line = $output[2];
@@ -2268,10 +2309,10 @@ sub wmi_get_value {
 # in an array.
 ################################################################################
 sub wmi_get_value_array {
-  my ($self, $target, $auth, $query, $column) = @_;
+  my ($self, $target, $query, $column) = @_;
   my @result;
 
-  my @output = $self->wmi_get($target, $auth, $query);
+  my @output = $self->wmi_get($target, $query);
   foreach (my $i = 2; defined($output[$i]); $i++) {
     my $line = $output[$i];
     chomp($line);

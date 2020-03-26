@@ -757,10 +757,8 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
   # Add modules to the agent if it responds to WMI.
   return unless ($self->wmi_responds($target));
 
-	my $auth = $self->wmi_credentials($target);
-
-	# Register agent.
-	$self->add_agent($target);
+	my $key = $self->wmi_credentials_key($target);
+  my $creds = $self->call('get_credentials', $key);
 
 	# Add modules.
 	# CPU.
@@ -769,12 +767,13 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
 		$self->add_module(
 			$target,
 			{
-				'target' => $target,
-				'query' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId='$cpu'",
-				'auth' => $auth,
-				'column' => 1,
+				'ip_target' => $target,
+				'snmp_oid' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId=\'$cpu\'",
+				'plugin_user' => $creds->{'username'},
+        'plugin_pass' => $creds->{'password'},
+				'tcp_port' => 1,
 				'name' => "CPU Load $cpu",
-				'description' => safe_input("Load for $cpu (%)"),
+				'descripcion' => safe_input("Load for $cpu (%)"),
 				'id_tipo_modulo' => 1,
         'id_modulo' => 6,
 				'unit' => '%',
@@ -788,12 +787,13 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
 		$self->add_module(
 			$target,
 			{
-				'target' => $target,
-				'query' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
-				'auth' => $auth,
-				'column' => 0,
+				'ip_target' => $target,
+				'snmp_oid' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
+				'plugin_user' => $creds->{'username'},
+				'plugin_pass' => $creds->{'password'},
+				'tcp_port' => 0,
 				'name' => 'FreeMemory',
-				'description' => safe_input('Free memory'),
+				'descripcion' => safe_input('Free memory'),
 				'id_tipo_modulo' => 1,
         'id_modulo' => 6,
 				'unit' => 'KB',
@@ -807,12 +807,13 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
 		$self->add_module(
 			$target,
 			{
-				'target' => $target,
-				'query' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
-				'auth' => $auth,
-				'column' => 1,
+				'ip_target' => $target,
+				'snmp_oid' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
+				'plugin_user' => $creds->{'username'},
+				'plugin_pass' => $creds->{'password'},
+				'tcp_port' => 1,
 				'name' => "FreeDisk $unit",
-				'description' => safe_input('Available disk space in kilobytes'),
+				'descripcion' => safe_input('Available disk space in kilobytes'),
 				'id_tipo_modulo' => 1,
         'id_modulo' => 6,
 				'unit' => 'KB',
@@ -1089,6 +1090,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
                 # Create module - Direct.
                 my $name = $module->{'name'};
                 delete $module->{'name'};
+                delete $module->{'description'};
                 $agentmodule_id = pandora_create_module_from_hash(
                   $self->{'pa_config'},
                   {
@@ -1104,7 +1106,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
                 );
 
   							$module->{'name'} = $name;
-
+                $module->{'description'} = safe_output($description);
               }
 
               # Restore.
@@ -1499,35 +1501,6 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 
   $self->{'agents_found'}{$host}{'parent'} = $parent;
 
-}
-
-################################################################################
-# Create a WMI module for the given agent.
-################################################################################
-sub PandoraFMS::Recon::Base::wmi_module {
-  my ($self, $agent_id, $target, $wmi_query, $wmi_auth, $column,
-    $module_name, $module_description, $module_type, $unit) = @_;
-
-  # Check whether the module already exists.
-  my $module_id = get_agent_module_id($self->{'dbh'}, $module_name, $agent_id);
-  return if ($module_id > 0);
-
-  my ($user, $pass) = ($wmi_auth ne '') ? split('%', $wmi_auth) : (undef, undef);
-  my %module = (
-    'descripcion' => safe_input($module_description),
-    'id_agente' => $agent_id,
-    'id_modulo' => 6,
-    'id_tipo_modulo' => get_module_id($self->{'dbh'}, $module_type),
-    'ip_target' => $target,
-    'nombre' => safe_input($module_name),
-    'plugin_pass' => defined($pass) ? $pass : '',
-    'plugin_user' => defined($user) ? $user : '',
-    'snmp_oid' => $wmi_query,
-    'tcp_port' => $column,
-    'unit' => defined($unit) ? $unit : ''
-  );
-  
-  pandora_create_module_from_hash($self->{'pa_config'}, \%module, $self->{'dbh'});
 }
 
 ################################################################################

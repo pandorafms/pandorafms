@@ -2136,6 +2136,15 @@ sub wmi_credentials {
 }
 
 ################################################################################
+# Returns the credentials KEY with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+################################################################################
+sub wmi_credentials_key {
+	my ($self, $target) = @_;
+	return $self->{'wmi_auth_key'}{$target};
+}
+
+################################################################################
 # Calculate WMI credentials for target, 1 if calculated, undef if cannot
 # connect to target. Credentials could be empty (-N)
 ################################################################################
@@ -2148,6 +2157,7 @@ sub wmi_credentials_calculation {
 
   if ($rs == WMI_OK) {
     $self->{'wmi_auth'}{$target} = '';
+    $self->{'wmi_auth_key'}{$target} = '';
     return 1;
   }
 
@@ -2171,6 +2181,7 @@ sub wmi_credentials_calculation {
 
     if ($rs == WMI_OK) {
       $self->{'wmi_auth'}{$target} = $auth;
+      $self->{'wmi_auth_key'}{$target} = $key_index;
       $self->{'wmi'}{$target} = 1;
       $self->{'summary'}->{'WMI'} += 1;
       $self->call('message', "[".$target."] WMI available.", 10);

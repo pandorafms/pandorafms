@@ -113,7 +113,6 @@ if (isset($_GET['modified']) && !$view_mode) {
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
-
     // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
     if (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) {
@@ -342,27 +341,23 @@ if (!$meta) {
         'Tactical view'  => __('Tactical view'),
         'Alert detail'   => __('Alert detail'),
         'Other'          => __('Other'),
+        'Dashboard'      => __('Dashboard'),
     ];
-    if (enterprise_installed()) {
-        $values['Dashboard'] = __('Dashboard');
-    }
 
     $home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
 
-    if (enterprise_installed()) {
-        $dashboards = get_user_dashboards($config['id_user']);
+    $dashboards = get_user_dashboards($config['id_user']);
 
-        $dashboards_aux = [];
-        if ($dashboards === false) {
-            $dashboards = ['None' => 'None'];
-        } else {
-            foreach ($dashboards as $key => $dashboard) {
-                $dashboards_aux[$dashboard['name']] = $dashboard['name'];
-            }
+    $dashboards_aux = [];
+    if ($dashboards === false) {
+        $dashboards = ['None' => 'None'];
+    } else {
+        foreach ($dashboards as $key => $dashboard) {
+            $dashboards_aux[$dashboard['id']] = $dashboard['name'];
         }
-
-        $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
     }
+
+    $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
 
     $layouts = visual_map_get_user_layouts($config['id_user'], true);
     $layouts_aux = [];
@@ -459,8 +454,8 @@ if (is_metaconsole()) {
 $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
 $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
 $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
-$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
-$autorefresh_list_out['enterprise/dashboard/main_dashboard'] = 'Dashboard';
+$autorefresh_list_out['operation/operation/services/services'] = 'Services';
+$autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
 $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
 $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
 

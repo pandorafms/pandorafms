@@ -216,10 +216,13 @@ if ($view_graph) {
     if ($graph_return) {
         echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
         echo '<tr><td>';
-        echo $graph_return;
-        // Add space to the legend transformation
         if ($stacked == CUSTOM_GRAPH_VBARS) {
-            echo '<br /><br /><br /><br />';
+            echo '<div style="width:100%; height:600px;">';
+        }
+
+        echo $graph_return;
+        if ($stacked == CUSTOM_GRAPH_VBARS) {
+            echo '<div>';
         }
 
         echo '</td></tr></table>';
@@ -387,4 +390,3 @@ if (! empty($graphs)) {
 } else {
     echo "<div class='nf'>".__('There are no defined reportings').'</div>';
 }
-

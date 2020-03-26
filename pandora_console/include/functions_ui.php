@@ -1451,11 +1451,16 @@ function ui_print_help_icon(
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_css_file($name, $path='include/styles/')
+function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
 {
     global $config;
 
     $filename = $path.$name.'.css';
+
+    if ($echo_tag === true) {
+        echo '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
+        return null;
+    }
 
     if (! isset($config['css'])) {
         $config['css'] = [];
@@ -1678,7 +1683,7 @@ function ui_process_page_head($string, $bitfield)
             || $_GET['sec2'] == 'operation/agentes/group_view'
             || $_GET['sec2'] == 'operation/events/events'
             || $_GET['sec2'] == 'operation/snmpconsole/snmp_view'
-            || $_GET['sec2'] == 'enterprise/dashboard/main_dashboard'
+            || $_GET['sec2'] == 'operation/dashboard/dashboard'
         ) {
             $query = ui_get_url_refresh(false, false);
 

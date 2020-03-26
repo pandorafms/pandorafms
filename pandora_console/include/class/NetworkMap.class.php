@@ -2676,10 +2676,15 @@ class NetworkMap
 
         $simulate = false;
         if (isset($networkmap['__simulated']) === false) {
-            $networkmap['filter'] = json_decode(
-                $networkmap['filter'],
-                true
-            );
+            if ($this->widget) {
+                $networkmap['filter'] = $this->mapOptions;
+            } else {
+                $networkmap['filter'] = json_decode(
+                    $networkmap['filter'],
+                    true
+                );
+            }
+
             $networkmap['filter']['holding_area'] = [
                 500,
                 500,
@@ -3460,7 +3465,11 @@ class NetworkMap
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
             if ($this->fullSize) {
-                $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden; background: #FAFAFA">';
+                if ($this->widget) {
+                    $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden;">';
+                } else {
+                    $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden; background: #FAFAFA">';
+                }
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
             }

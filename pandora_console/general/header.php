@@ -180,7 +180,7 @@ if ($config['menu_type'] == 'classic') {
                     break;
 
                     case 'Dashboard':
-                        $_GET['sec2'] = 'enterprise/dashboard/main_dashboard';
+                        $_GET['sec2'] = 'operation/dashboard/dashboard';
                     break;
 
                     case 'Visual console':
@@ -779,9 +779,7 @@ if ($config['menu_type'] == 'classic') {
                 }
             }
 
-            $new_dashboard = get_parameter('new_dashboard', 0);
-
-            if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
+            if ($_GET['sec2'] == 'operation/dashboard/dashboard' && $new_dashboard) {
                 $do_refresh = false;
             }
         }

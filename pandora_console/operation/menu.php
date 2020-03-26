@@ -15,6 +15,10 @@ if (! isset($config['id_user'])) {
     return;
 }
 
+require 'vendor/autoload.php';
+
+use PandoraFMS\Dashboard\Manager;
+
 require_once 'include/functions_menu.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
@@ -344,7 +348,32 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
         'godmode/reporting/graph_builder',
     ];
 
-    enterprise_hook('dashboard_menu');
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/dashboard/dashboard']['text'] = __('Dashboard');
+        $sub['operation/dashboard/dashboard']['id'] = 'Dashboard';
+        $sub['operation/dashboard/dashboard']['refr'] = 0;
+        $sub['operation/dashboard/dashboard']['subsecs'] = ['operation/dashboard/dashboard'];
+
+        $dashboards = Manager::getDashboards(-1, -1, true);
+
+        $sub2 = [];
+        foreach ($dashboards as $dashboard) {
+            $name = io_safe_output($dashboard['name']);
+
+            $sub2['operation/dashboard/dashboard&dashboardId='.$dashboard['id']] = [
+                'text'  => mb_substr($name, 0, 19),
+                'title' => $name,
+            ];
+        }
+
+        if (empty($sub2) === false) {
+            $sub['operation/dashboard/dashboard']['sub2'] = $sub2;
+        }
+    }
+
     enterprise_hook('reporting_godmenu');
 
     $menu_operation['reporting']['sub'] = $sub;

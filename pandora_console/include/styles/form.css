@@ -205,7 +205,7 @@ label {
 }
 
 li > input[type="number"],
-li > input[type="text"],
+li > input[type="text"]:not(.search_input),
 li > input[type="email"],
 li > input[type="password"],
 .discovery_text_input > input[type="password"],
@@ -299,6 +299,7 @@ ul.wizard li > textarea {
   display: none;
 }
 
+form.modal-dashboard ul.wizard li.hidden,
 form.modal ul.wizard li.hidden {
   display: none;
 }
@@ -308,6 +309,7 @@ form.top-action-buttons ul.wizard {
   flex-direction: row;
 }
 
+form.modal-dashboard ul.wizard li,
 form.modal ul.wizard li {
   display: flex;
   flex-direction: row;
@@ -316,6 +318,7 @@ form.modal ul.wizard li {
   justify-items: center;
 }
 
+form.modal-dashboard ul.wizard li *,
 form.modal ul.wizard li * {
   flex: 1;
 }

@@ -190,11 +190,13 @@ final class BarsGraph extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -317,7 +319,10 @@ final class BarsGraph extends Item
             }
         }
 
-        $moduleData = \get_bars_module_data($moduleId);
+        $moduleData = \get_bars_module_data(
+            $moduleId,
+            ($typeGraph !== 'horizontal')
+        );
         if ($moduleData !== false && is_array($moduleData) === true) {
             array_pop($moduleData);
         }
@@ -373,33 +378,26 @@ final class BarsGraph extends Item
                     true
                 );
             } else {
-                $graph = \vbar_graph(
-                    $moduleData,
-                    $width,
-                    $height,
-                    $color,
-                    [],
-                    [],
-                    \ui_get_full_url(
-                        'images/image_problem_area.png',
-                        false,
-                        false,
-                        false
-                    ),
-                    '',
-                    '',
-                    $waterMark,
-                    $config['fontpath'],
-                    $config['fontsize'],
-                    '',
-                    2,
-                    $config['homeurl'],
-                    $backGroundColor,
-                    true,
-                    false,
-                    $gridColor,
-                    true
-                );
+                $options = [];
+                $options['generals']['rotate'] = true;
+                $options['generals']['forceTicks'] = true;
+                $options['generals']['arrayColors'] = $color;
+                $options['grid']['backgroundColor'] = $backGroundColor;
+                $options['y']['color'] = $backGroundColor;
+                $options['x']['color'] = $backGroundColor;
+
+                if ($ratio != 0) {
+                    $options['x']['font']['size'] = (($config['font_size'] * $ratio) + 1);
+                    $options['x']['font']['color'] = $gridColor;
+                    $options['y']['font']['size'] = (($config['font_size'] * $ratio) + 1);
+                    $options['y']['font']['color'] = $gridColor;
+                }
+
+                $options['generals']['pdf']['width'] = $width;
+                $options['generals']['pdf']['width'] = $width;
+                $options['generals']['pdf']['height'] = $height;
+                $options['x']['labelWidth'] = $sizeLabelTickWidth;
+                $graph = vbar_graph($moduleData, $options, 2);
             }
         }
 

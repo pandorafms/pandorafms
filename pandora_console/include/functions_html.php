@@ -1270,8 +1270,21 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='', $autocomplete='off')
-{
+function html_print_input_text_extended(
+    $name,
+    $value,
+    $id,
+    $alt,
+    $size,
+    $maxlength,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $password=false,
+    $function='',
+    $autocomplete='off'
+) {
     static $idcounter = 0;
 
     if ($maxlength == 0) {
@@ -1288,6 +1301,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
 
     $valid_attrs = [
         'accept',
+        'autofocus',
         'disabled',
         'maxlength',
         'name',
@@ -1345,7 +1359,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         $output .= 'alt="'.$alt.'" ';
     }
 
-    // Attributes specified by function call
+    // Attributes specified by function call.
     $attrs = [
         'name'      => 'unnamed',
         'value'     => '',
@@ -1523,8 +1537,21 @@ function html_print_input_password(
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255, $return=false, $disabled=false, $required=false, $function='', $class='', $onChange='', $autocomplete='')
-{
+function html_print_input_text(
+    $name,
+    $value,
+    $alt='',
+    $size=50,
+    $maxlength=255,
+    $return=false,
+    $disabled=false,
+    $required=false,
+    $function='',
+    $class='',
+    $onChange='',
+    $autocomplete='',
+    $autofocus=false
+) {
     if ($maxlength == 0) {
         $maxlength = 255;
     }
@@ -1552,7 +1579,24 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
         $attr['autocomplete'] = $autocomplete;
     }
 
-    return html_print_input_text_extended($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
+    if ($autofocus === true) {
+        $attr['autofocus'] = $autofocus;
+    }
+
+    return html_print_input_text_extended(
+        $name,
+        $value,
+        'text-'.$name,
+        $alt,
+        $size,
+        $maxlength,
+        $disabled,
+        '',
+        $attr,
+        $return,
+        false,
+        $function
+    );
 }
 
 
@@ -1687,6 +1731,7 @@ function html_print_input_number(array $settings):string
         'autocomplete',
         'min',
         'max',
+        'step',
     ];
 
     $output = '';
@@ -3466,7 +3511,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                ((isset($data['autofocus']) === true) ? $data['autofocus'] : false)
             );
         break;
 
@@ -3727,6 +3773,16 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $params['add_none_module'] = $data['module_none'];
             }
 
+            if (isset($data['size']) === true) {
+                $params['size'] = $data['size'];
+            }
+
+            if (isset($data['from_wux']) === true
+                && $data['from_wux'] === true
+            ) {
+                $params['from_wux'] = 1;
+            }
+
             $params['use_hidden_input_idagent'] = true;
             $params['hidden_input_idagent_id'] = 'hidden-'.$data['name_agent_hidden'];
             if (is_metaconsole()) {
@@ -3764,6 +3820,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $string_filter .= '';
                 if ($data['get_only_string_modules'] === true) {
                     $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
+                }
+
+                if ($data['from_wux'] === true) {
+                    $string_filter = ' AND id_tipo_modulo = 25 ';
                 }
 
                 $sql = sprintf(

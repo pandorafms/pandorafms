@@ -1086,7 +1086,10 @@ var TreeController = {
         }
 
         controller.recipient.empty();
-        if (controller.tree.length !== undefined) {
+        if (
+          controller.tree.length !== undefined &&
+          controller.foundMessage !== "not"
+        ) {
           controller.recipient.html(
             "<div> " +
               controller.foundMessage +

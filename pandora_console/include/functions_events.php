@@ -4810,7 +4810,7 @@ function events_page_comments($event, $ajax=false)
             __('Add comment'),
             'comment_button',
             false,
-            'event_comment();',
+            'event_comment(\''.base64_encode(json_encode($event)).'\');',
             'class="sub next"',
             true
         );

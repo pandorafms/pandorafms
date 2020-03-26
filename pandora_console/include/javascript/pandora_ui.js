@@ -300,6 +300,9 @@ function load_modal(settings) {
         } else {
           // No onsumbit configured. Directly close.
           $(this).dialog("close");
+          if (document.getElementById(settings.form) != undefined) {
+            document.getElementById(settings.form).submit();
+          }
         }
       },
       error: function(data) {

@@ -45,11 +45,6 @@ try {
 <script>
 
     function SendPENsAjax(action, id, number, manufacturer, description){
-        console.log(action);
-        console.log(id);
-        console.log(number);
-        console.log(manufacturer);
-        console.log(description);
         $.ajax({
             async: true,
             type: "POST",
@@ -63,44 +58,39 @@ try {
                 pen_description: description,
             },
             success: function(d) {
-                console.log(d);
-                console.log(action);
-                if (action == 'add' || action == 'delete') {
-                    $('#main_table_area').html(d);
-                } else {
-                    $('#message_show_area').html(d);
-                }
+                $('#main_table_area').html(d);
             },
             error: function(d) {
-                alert('Something goes wrong! -> '+String(data));
+                alert('Failed trying update database! -> '+String(data)); // True, must change the message
             }
         });
 
     }
 
-    function deletePEN(e){
-        var action = 'delete';
-        var pen_id = e.target.value;
-        SendPENsAjax(action, '2', pen_id, '', '');
-    }
-
     function addNewPEN(){
         var action = 'add';
-        var pen_id = '2';
+        var pen_id = '2'; // Temporary solution
+        var success = true;
         var pen_number = $('#text-pen_number');
         var pen_number_val = pen_number.val();
         var pen_manufacturer = $('#text-pen_manufacturer');
         var pen_manufacturer_val = pen_manufacturer.val();
         var pen_description = $('#text-pen_description');
         var pen_description_val = pen_description.val();
-        
+        // Test if the data is correct.
         if (pen_number_val == '' || isNaN(pen_number_val)) {
+            success = false;
             pen_number.css('border','1px solid red');
-        } else if (pen_manufacturer_val == '') {
+        } 
+        if (pen_manufacturer_val == '') {
+            success = false;
             pen_manufacturer.css('border','1px solid red');
-        } else if (pen_description_val == '') {
+        } 
+        if (pen_description_val == '') {
             pen_description.css('border','1px solid red');
-        } else {
+        } 
+        // Number and Manuacturer are enought for save data.
+        if (success) {
             SendPENsAjax(action, pen_id, pen_number_val, pen_manufacturer_val, pen_description_val);
         }
     }
@@ -108,8 +98,8 @@ try {
     function modifyPENLine(e){
         var action = 'update';
         var pen_id = e.target.value;
-
         var changed = false;
+        // Enable the label for be editable.
         $("span[id$='_"+pen_id+"']").each(function(){
             let thisElement = $(this);
             if (thisElement.attr('contenteditable') === 'false') {
@@ -123,15 +113,21 @@ try {
                 $('#'+e.target.id).attr('src','images/edit.png')
             }
         });
-        
+        // If select the red pill.
         if (changed === true) {
-        
             let pen_number = $('#pen_number_'+pen_id).html();
             let pen_manufacturer = $('#pen_manufacturer_'+pen_id).html();
             let pen_description = $('#pen_description_'+pen_id).html();
-
+            // Modify the data. // Temporary solution
             SendPENsAjax(action, '2', pen_number, pen_manufacturer, pen_description);
         }
 
+    }
+
+    function deletePEN(e){
+        var action = 'delete';
+        var pen_id = e.target.value;
+        //Is not necessary pass more data.
+        SendPENsAjax(action, '2', pen_id, '', '');
     }
 </script>

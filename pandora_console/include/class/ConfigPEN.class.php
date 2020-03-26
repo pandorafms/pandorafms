@@ -159,7 +159,7 @@ class ConfigPEN extends HTML
             ]
         );
 
-        ui_pagination($countPENs, false, $this->offset);
+        $output = ui_pagination($countPENs, false, $this->offset, 0, true);
         // Create the table with Module Block list.
         $table = new StdClasS();
         $table->class = 'databox data';
@@ -206,7 +206,7 @@ class ConfigPEN extends HTML
                 true,
                 [
                     'title'   => 'Edit',
-                    'onclick' => 'javascript:modifyPENLine(event)',
+                    'onclick' => 'modifyPENLine(event)',
                 ]
             );
             $data[4] .= html_print_input_image(
@@ -217,7 +217,7 @@ class ConfigPEN extends HTML
                 true,
                 [
                     'title'   => 'Delete PEN',
-                    'onclick' => 'if (confirm(\''.__('Are you sure?').'\')) deletePEN(event);',
+                    'onclick' => 'if (confirm(\''.sprintf(__('Are you sure to remove the PEN: %s?'), $row['pen']).'\')) deletePEN(event);',
                 ]
             );
 
@@ -239,14 +239,16 @@ class ConfigPEN extends HTML
             true,
             [
                 'title'   => 'Add new PEN',
-                'onclick' => 'javascript:addNewPEN()',
+                'onclick' => 'addNewPEN()',
             ]
         );
 
         // Add last line.
         array_push($table->data, $data);
         // Return the entire table.
-        return html_print_table($table, true);
+        $output .= html_print_table($table, true);
+        // $output = 'mis huevos morenos';
+        return $output;
     }
 
 

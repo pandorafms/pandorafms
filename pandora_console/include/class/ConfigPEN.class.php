@@ -53,16 +53,12 @@ class ConfigPEN extends HTML
         // Check access.
         check_login();
 
-        if (! check_acl($config['id_user'], 0, 'AR')) {
+        if (! check_acl($config['id_user'], 0, 'PM')) {
             db_pandora_audit(
                 'ACL Violation',
-                'Trying to access event viewer'
+                'Trying to access PEN Definition feature'
             );
-            /*
-                if (is_ajax()) {
-                echo json_encode(['error' => 'noaccess']);
-                }
-            */
+
             include 'general/noaccess.php';
             exit;
         }

@@ -12,12 +12,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // Load global vars
-// TESTING
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-
-// END
 global $config;
 
 check_login();
@@ -25,7 +19,7 @@ check_login();
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access Network Profile Management'
+        'Trying to access Wizard Setup'
     );
     include 'general/noaccess.php';
     return;
@@ -61,7 +55,7 @@ try {
                 $('#main_table_area').html(d);
             },
             error: function(d) {
-                alert('Failed trying update database! -> '+String(data)); // True, must change the message
+                alert('Failed trying update database -> '+String(data)); // True, must change the message
             }
         });
 

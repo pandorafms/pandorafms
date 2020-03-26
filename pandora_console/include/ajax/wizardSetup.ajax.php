@@ -35,13 +35,10 @@ require_once 'include/functions_io.php';
 require_once 'include/functions.php';
 require_once $config['homedir'].'/include/class/ConfigPEN.class.php';
 // Security.
-if (! check_acl($config['id_user'], 0, 'PM')
-    && ! check_acl($config['id_user'], 0, 'EW')
-    && ! check_acl($config['id_user'], 0, 'EM')
-) {
+if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
-        'Trying to access to Wizard Setup'
+        'Trying to access to Wizard Setup Ajax'
     );
     include 'general/noaccess.php';
     return;
@@ -128,20 +125,7 @@ switch ($action) {
     break;
 }
 
-// Make the data for return
-$output = html_print_div(
-    [
-        'id'      => 'ajax_message_show',
-        'content' => $message,
-    ]
-);
-
-$output .= html_print_div(
-    [
-        'id'      => 'ajax_main_table',
-        'content' => $configPEN->createMainTable(),
-    ]
-);
+// Create the response data.
+$output = $message.$configPEN->createMainTable();
 // Return data.
 echo $output;
-// return $output;

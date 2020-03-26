@@ -53,10 +53,10 @@ $pen_id_np          = get_parameter('pen_id');
 $pen_number         = get_parameter('pen_number');
 $pen_manufacturer   = get_parameter('pen_manufacturer');
 $pen_description    = get_parameter('pen_description');
-
 // Set the variables needed here.
-$configPEN  = new ConfigPEN();
-$output     = '';
+$configPEN      = new ConfigPEN();
+$message        = '';
+$output         = '';
 // Let's do something.
 // First, get the current data.
 $actual_pen = db_get_row('tpen', 'pen', $pen_number);
@@ -74,12 +74,12 @@ switch ($action) {
                 ]
             );
             if ($work === false) {
-                $output = ui_print_error_message(__('Error inserting new PEN'));
+                $message = ui_print_error_message(__('Error inserting new PEN'), '', true);
             } else {
-                $output = $configPEN->createMainTable();
+                $message = ui_print_success_message(__('PEN added in DB'), '', true);
             }
         } else {
-            $output = ui_print_error_message(sprintf(__('The PEN %s exists already'), $pen_number));
+            $message = ui_print_error_message(sprintf(__('The PEN %s exists already'), $pen_number));
         }
     break;
 
@@ -100,12 +100,12 @@ switch ($action) {
             );
 
             if ($work === false) {
-                $output = ui_print_error_message(__('Error updating data'));
+                $message = ui_print_error_message(__('Error updating data'));
             } else {
-                $output = ui_print_success_message(__('PEN updated in DB'));
+                $message = ui_print_success_message(__('PEN updated in DB'));
             }
         } else {
-            $output = ui_print_error_message(__('No changes applied'));
+            $message = ui_print_error_message(__('No changes applied'));
         }
     break;
 
@@ -116,9 +116,10 @@ switch ($action) {
                 'tpen',
                 ['pen' => $pen_number]
             );
-            $output = $configPEN->createMainTable();
+
+            $message = ui_print_success_message(__('PEN deleted in DB'), '', true);
         } else {
-            $output = ui_print_error_message(__('Something goes wrong. Please, retry'));
+            $message = ui_print_error_message(__('Something goes wrong. Please, retry'), '', true);
         }
     break;
 
@@ -127,5 +128,20 @@ switch ($action) {
     break;
 }
 
+// Make the data for return
+$output = html_print_div(
+    [
+        'id'      => 'ajax_message_show',
+        'content' => $message,
+    ]
+);
+
+$output .= html_print_div(
+    [
+        'id'      => 'ajax_main_table',
+        'content' => $configPEN->createMainTable(),
+    ]
+);
 // Return data.
-return $output;
+echo $output;
+// return $output;

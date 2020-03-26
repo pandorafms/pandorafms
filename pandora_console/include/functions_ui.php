@@ -1451,11 +1451,16 @@ function ui_print_help_icon(
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_css_file($name, $path='include/styles/')
+function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
 {
     global $config;
 
     $filename = $path.$name.'.css';
+
+    if ($echo_tag === true) {
+        echo '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
+        return null;
+    }
 
     if (! isset($config['css'])) {
         $config['css'] = [];
@@ -1678,7 +1683,7 @@ function ui_process_page_head($string, $bitfield)
             || $_GET['sec2'] == 'operation/agentes/group_view'
             || $_GET['sec2'] == 'operation/events/events'
             || $_GET['sec2'] == 'operation/snmpconsole/snmp_view'
-            || $_GET['sec2'] == 'enterprise/dashboard/main_dashboard'
+            || $_GET['sec2'] == 'operation/dashboard/dashboard'
         ) {
             $query = ui_get_url_refresh(false, false);
 
@@ -2654,6 +2659,7 @@ function ui_get_status_images_path()
  * @param array   $options        Options to set image attributes: I.E.: style.
  * @param string  $path           Path of the image, if not provided use the status path.
  * @param boolean $image_with_css Don't use an image. Draw an image with css styles.
+ * @param string  $extra_text     Text that is displayed after title (i.e. time elapsed since last status change of module).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2663,7 +2669,8 @@ function ui_print_status_image(
     $return=false,
     $options=false,
     $path=false,
-    $image_with_css=false
+    $image_with_css=false,
+    $extra_info=''
 ) {
     if ($path === false) {
         $imagepath_array = ui_get_status_images_path();
@@ -2680,7 +2687,7 @@ function ui_print_status_image(
 
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
-        return ui_print_status_sets($type, $title, $return, $shape_status);
+        return ui_print_status_sets($type, $title, $return, $shape_status, $extra_info);
     } else {
         if ($options === false) {
             $options = [];
@@ -2716,6 +2723,7 @@ function get_shape_status_set($type)
         case STATUS_MODULE_NO_DATA:
         case STATUS_AGENT_NO_DATA:
         case STATUS_MODULE_CRITICAL:
+        case STATUS_MODULE_ALERT_TRIGGERED:
         case STATUS_AGENT_CRITICAL:
         case STATUS_MODULE_WARNING:
         case STATUS_AGENT_WARNING:
@@ -2767,10 +2775,11 @@ function get_shape_status_set($type)
 /**
  * Prints an image representing a status.
  *
- * @param string  $status  Module status.
- * @param string  $title   Title.
- * @param boolean $return  Whether to return an output string or echo now (optional, echo by default).
- * @param array   $options Options to set image attributes: I.E.: style.
+ * @param string  $status     Module status.
+ * @param string  $title      Title.
+ * @param boolean $return     Whether to return an output string or echo now (optional, echo by default).
+ * @param array   $options    Options to set image attributes: I.E.: style.
+ * @param string  $extra_info Text that is displayed after title (i.e. time elapsed since last status change of module).
  *
  * @return string HTML.
  */
@@ -2778,7 +2787,8 @@ function ui_print_status_sets(
     $status,
     $title='',
     $return=false,
-    $options=false
+    $options=false,
+    $extra_info=''
 ) {
     global $config;
 
@@ -2797,8 +2807,8 @@ function ui_print_status_sets(
     }
 
     if ($title != '') {
-        $options['title'] = $title;
-        $options['data-title'] = $title;
+        $options['title'] = empty($extra_info) ? $title : $title.'&#10'.$extra_info;
+        $options['data-title'] = empty($extra_info) ? $title : $title.'<br>'.$extra_info;
         $options['data-use_title_for_force_title'] = 1;
         if (isset($options['class'])) {
             $options['class'] .= ' forced_title';
@@ -4777,9 +4787,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				inputs.push ("force_local_modules=1");
 			}
 
-			if ('.((int) $get_order_json).') {
-				inputs.push ("get_order_json=1");
-			}
+			inputs.push ("get_order_json=1");
 
 			if ('.((int) $get_only_string_modules).') {
 				inputs.push ("get_only_string_modules=1");
@@ -4814,6 +4822,14 @@ function ui_print_agent_autocomplete_input($parameters)
 				url: action="'.$javascript_ajax_page.'",
 				dataType: "json",
 				success: function (data) {
+                    if (Array.isArray(data) === true) {
+                        data.sort(function(a, b) {
+                            var textA = a.nombre.toUpperCase();
+                            var textB = b.nombre.toUpperCase();
+                            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                        });
+                    }
+
 					if ('.((int) $add_none_module).') {
 						$("#'.$selectbox_id.'")
 							.append($("<option></option>")

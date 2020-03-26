@@ -1,15 +1,12 @@
 /*global jQuery,$,forced_title_callback,Base64, dt_events*/
 
 // Show the modal window of an event
-var current_event;
 function show_event_dialog(event, dialog_page, result) {
   var ajax_file = $("#hidden-ajax_file").val();
 
   if (dialog_page == undefined) {
     dialog_page = "general";
   }
-
-  current_event = event;
 
   try {
     event = JSON.parse(atob(event));
@@ -480,7 +477,9 @@ function event_change_status(event_ids) {
       }
 
       if (data == "status_ok") {
-        dt_events.draw(false);
+        if (typeof dt_events !== "undefined") {
+          dt_events.draw(false);
+        }
         $("#notification_status_success").show();
       } else {
         $("#notification_status_error").show();
@@ -526,7 +525,9 @@ function event_change_owner() {
       }
 
       if (data == "owner_ok") {
-        dt_events.draw(false);
+        if (typeof dt_events !== "undefined") {
+          dt_events.draw(false);
+        }
         $("#notification_owner_success").show();
         if (new_owner == -1) {
           $("#extended_event_general_page table td.general_owner").html(
@@ -547,7 +548,7 @@ function event_change_owner() {
 }
 
 // Save a comment into an event
-function event_comment() {
+function event_comment(current_event) {
   var event;
   try {
     event = JSON.parse(atob(current_event));
@@ -558,8 +559,15 @@ function event_comment() {
 
   var event_id = event.id_evento;
   var comment = $("#textarea_comment").val();
-  var meta = $("#hidden-meta").val();
-  var history = $("#hidden-history").val();
+  var meta = 0;
+  if ($("#hidden-meta").val() != undefined) {
+    meta = $("#hidden-meta").val();
+  }
+
+  var history = 0;
+  if ($("#hidden-history").val() != undefined) {
+    history = $("#hidden-history").val();
+  }
 
   if (comment == "") {
     show_event_dialog(current_event, "comments", "comment_error");

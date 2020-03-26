@@ -305,7 +305,7 @@ function d3_gauges(
     $output = include_javascript_d3(true);
 
     foreach ($chart_data as $module) {
-        $output .= "<div id='".$module['gauge']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
+        $output .= "<div class='gauge_d3_class' id='".$module['gauge']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
     }
 
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
@@ -317,8 +317,13 @@ function d3_gauges(
 }
 
 
-function ux_console_phases_donut($phases, $id, $return=false)
-{
+function ux_console_phases_donut(
+    $phases,
+    $id,
+    $width=800,
+    $height=500,
+    $return=false
+) {
     global $config;
 
     foreach ($phases as $i => $phase) {
@@ -341,10 +346,10 @@ function ux_console_phases_donut($phases, $id, $return=false)
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					print_phases_donut('".$recipient_name_to_js."', ".$phases.');
+					print_phases_donut('".$recipient_name_to_js."', ".$phases.', '.$width.', '.$height.');
 				</script>';
 
-    if (!$return) {
+    if ($return === false) {
         echo $output;
     }
 
@@ -479,79 +484,78 @@ function d3_donut_graph($id, $width, $height, $module_data, $resume_color)
 }
 
 
-function print_clock_analogic_1($time_format, $timezone, $clock_animation, $width, $height, $id_element, $color)
-{
+function print_clock_analogic_1(
+    $time_format,
+    $timezone,
+    $clock_animation,
+    $width,
+    $height,
+    $id_element,
+    $color,
+    $title=true
+) {
     global $config;
     $output .= '<style type="text/css">
-								body {
-								background: #fff;
-							}
+		#rim {
+			fill: none;
+			stroke: #999;
+			stroke-width: 3px;
+		}
 
-							svg{
-								stroke: #000;
-								font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
-							}
+		.second-hand{
+			stroke-width:3;
 
-							#rim {
-								fill: none;
-								stroke: #999;
-								stroke-width: 3px;
-							}
+		}
 
-							.second-hand{
-								stroke-width:3;
+		.minute-hand{
+			stroke-width:8;
+			stroke-linecap:round;
+		}
 
-							}
+		.hour-hand{
+			stroke-width:12;
+			stroke-linecap:round;
+		}
 
-							.minute-hand{
-								stroke-width:8;
-								stroke-linecap:round;
-							}
+		.hands-cover{
+			stroke-width:3;
+			fill:#fff;
+		}
 
-							.hour-hand{
-								stroke-width:12;
-								stroke-linecap:round;
-							}
+		.second-tick{
+			stroke-width:3;
+			fill:#000;
+		}
 
-							.hands-cover{
-								stroke-width:3;
-								fill:#fff;
-							}
+		.hour-tick{
+			stroke-width:8; //same as the miute hand
+		}
 
-							.second-tick{
-								stroke-width:3;
-								fill:#000;	
-							}
+		.second-label{
+			font-size: 12px;
+		}
 
-							.hour-tick{
-								stroke-width:8; //same as the miute hand
-							}
+		.hour-label{
+			font-size: 24px;
+		}
+	}
+	</style>';
 
-							.second-label{
-								font-size: 12px;
-							}
+    $tz = $timezone;
+    $timestamp = time();
+    $dt = new DateTime('now', new DateTimeZone($tz));
+    // first argument "must" be a string.
+    $dt->setTimestamp($timestamp);
+    // adjust the object to correct timestamp.
+    $dateTimeZoneOption = new DateTimeZone(date_default_timezone_get());
+    $dateTimeZonePandora = new DateTimeZone($timezone);
 
-							.hour-label{
-								font-size: 24px;
-							}
-					}
-				</style>';
+    $dateTimeOption = new DateTime('now', $dateTimeZoneOption);
+    $dateTimePandora = new DateTime('now', $dateTimeZonePandora);
 
-                $tz = $timezone;
-                $timestamp = time();
-                $dt = new DateTime('now', new DateTimeZone($tz));
-    // first argument "must" be a string
-                $dt->setTimestamp($timestamp);
-    // adjust the object to correct timestamp
-                $dateTimeZoneOption = new DateTimeZone(date_default_timezone_get());
-                $dateTimeZonePandora = new DateTimeZone($timezone);
+    $timeOffset = $dateTimeZonePandora->getOffset($dateTimeOption);
 
-                $dateTimeOption = new DateTime('now', $dateTimeZoneOption);
-                $dateTimePandora = new DateTime('now', $dateTimeZonePandora);
-
-                $timeOffset = $dateTimeZonePandora->getOffset($dateTimeOption);
-
-                $output .= include_javascript_d3(true);
+    $output .= include_javascript_d3(true);
 
     if ($width == 0) {
         $date_width = 200;
@@ -559,24 +563,25 @@ function print_clock_analogic_1($time_format, $timezone, $clock_animation, $widt
         $date_width = $width;
     }
 
-                $output .= '<div style="width:'.$date_width.'px;text-align:center;font-style:italic;font-size:12pt;color:'.$color.'">';
+    if ($title === true) {
+        $output .= '<div style="width:'.$date_width.'px;text-align:center;font-style:italic;font-size:12pt;color:'.$color.'">';
 
-    if ($time_format == 'timedate') {
-        $output .= $dt->format('d / m / Y').' - ';
+        if ($time_format == 'timedate') {
+            $output .= $dt->format('d / m / Y').' - ';
+        }
+
+        $output .= $dt->format('a').'</div>';
+
+        $timezone_short = explode('/', $timezone);
+        $timezone_short_end = end($timezone_short);
+        $output .= '<div style="width:'.$date_width.'px;text-align:center;font-style:italic;font-size:12pt;color:'.$color.'">'.$timezone_short_end.'</div>';
     }
 
-                $output .= $dt->format('a').'</div>';
+    $output .= "<script language=\"javascript\" type=\"text/javascript\">
+					printClockAnalogic1('".$time_format."', '".$timeOffset."', '".$clock_animation."','".$width."','".$height."','".$id_element."','".$color."');
+				</script>";
 
-                $output .= "<script language=\"javascript\" type=\"text/javascript\">
-								printClockAnalogic1('".$time_format."', '".$timeOffset."', '".$clock_animation."','".$width."','".$height."','".$id_element."','".$color."');
-							</script>";
-
-                $timezone_short = explode('/', $timezone);
-                $timezone_short_end = end($timezone_short);
-
-                $output .= '<div style="width:'.$date_width.'px;text-align:center;font-style:italic;font-size:12pt;color:'.$color.'">'.$timezone_short_end.'</div>';
-
-                return $output;
+    return $output;
 
 }
 

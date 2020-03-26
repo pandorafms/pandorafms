@@ -12,32 +12,13 @@
 // GNU General Public License for more details.
 global $config;
 
-enterprise_include_once('include/functions_dashboard.php');
 require_once 'include/functions_visual_map.php';
 enterprise_include_once('include/functions_visual_map.php');
 
-$public_hash = get_parameter('hash', false);
 $id_visual_console = get_parameter('id_visual_console', null);
 
-// Try to authenticate by hash on public dashboards
-if ($public_hash === false) {
-    // Login check
-    check_login();
-} else {
-    $validate_hash = enterprise_hook(
-        'dasboard_validate_public_hash',
-        [
-            $public_hash,
-            $id_visual_console,
-            'visual_console',
-        ]
-    );
-    if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
-        db_pandora_audit('Invalid public hash', 'Trying to access report builder');
-        include 'general/noaccess.php';
-        exit;
-    }
-}
+// Login check.
+check_login();
 
 // Fix: IW was the old ACL to check for report editing, now is RW
 if (! check_acl($config['id_user'], 0, 'VR')) {

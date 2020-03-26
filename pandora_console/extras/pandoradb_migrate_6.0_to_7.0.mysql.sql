@@ -666,6 +666,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 
 ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
 ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
+ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
@@ -1239,6 +1240,7 @@ ALTER TABLE talert_templates ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT
 ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
@@ -1248,6 +1250,7 @@ ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
 	MODIFY COLUMN `al_field12` text NOT NULL,
 	MODIFY COLUMN `al_field13` text NOT NULL,
@@ -1284,6 +1287,7 @@ ALTER TABLE `tagente_estado` MODIFY COLUMN `datos` mediumtext NOT NULL,
 	MODIFY COLUMN `last_known_status` tinyint(4) NULL DEFAULT '0',
 	MODIFY COLUMN `last_dynamic_update` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `last_unknown_update` bigint(20) NOT NULL DEFAULT '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `last_status_change` bigint(20) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1338,13 +1342,13 @@ ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 36);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 37);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '744');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '745');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1638,7 +1642,8 @@ UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.no
 -- ---------------------------------------------------------------------
 -- Table `twidget_dashboard`
 -- ---------------------------------------------------------------------
-ALTER TABLE twidget_dashboard MODIFY options LONGTEXT NOT NULL default "";
+ALTER TABLE `twidget_dashboard` MODIFY `options` LONGTEXT NOT NULL default "";
+ALTER TABLE `twidget_dashboard` ADD COLUMN `position` TEXT NOT NULL default "";
 
 -- ---------------------------------------------------------------------
 -- Table `trecon_task`

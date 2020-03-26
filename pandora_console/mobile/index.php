@@ -44,7 +44,6 @@ require_once 'operation/agent.php';
 require_once 'operation/visualmaps.php';
 require_once 'operation/visualmap.php';
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
-$enterpriseHook = enterprise_include('mobile/operation/dashboard.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
 $is_mobile = true;
@@ -291,12 +290,6 @@ switch ($action) {
                     $page = 'tactical';
                 break;
 
-                case 'Dashboard':
-                    $page = 'dashboard';
-                    $id_dashboard = (int) db_get_value('id', 'tdashboard', 'name', $section_data);
-                    $_GET['id_dashboard'] = $id_dashboard;
-                break;
-
                 case 'Visual console':
                     $page = 'visualmap';
                     $id_map = (int) db_get_value('id', 'tlayout', 'name', $section_data);
@@ -365,36 +358,6 @@ switch ($action) {
             case 'visualmap':
                 $visualmap = new Visualmap();
                 $visualmap->show();
-            break;
-
-            case 'dashboard_list':
-                if (class_exists('Dashboards')) {
-                    $dashboard = new Dashboards();
-                    $dashboard->showDashboards();
-                } else {
-                    if (class_exists('HomeEnterprise')) {
-                        $home = new HomeEnterprise();
-                    } else {
-                        $home = new Home();
-                    }
-
-                    $home->show();
-                }
-            break;
-
-            case 'dashboard':
-                if (class_exists('Dashboards')) {
-                    $dashboard = new Dashboards();
-                    $dashboard->show();
-                } else {
-                    if (class_exists('HomeEnterprise')) {
-                        $home = new HomeEnterprise();
-                    } else {
-                        $home = new Home();
-                    }
-
-                    $home->show();
-                }
             break;
         }
     break;

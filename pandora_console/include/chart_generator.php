@@ -216,24 +216,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'vbar':
-            echo flot_vcolumn_chart(
-                $params['chart_data'],
-                $params['width'],
-                $params['height'],
-                $params['color'],
-                $params['legend'],
-                $params['long_index'],
-                $params['homeurl'],
-                $params['unit'],
-                $params['water_mark_url'],
-                $params['homedir'],
-                $params['font'],
-                $config['font_size'],
-                $params['from_ux'],
-                $params['from_wux'],
-                $params['backgroundColor'],
-                $params['tick_color']
-            );
+            echo flot_vcolumn_chart($params);
         break;
 
         case 'hbar':
@@ -292,7 +275,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['full_legend_daterray'],
                 $params['not_interactive'],
                 $params['ttl'],
-                $params['widgets'],
+                $params['sizeForTicks'],
                 $params['show'],
                 $params['date_to']
             );

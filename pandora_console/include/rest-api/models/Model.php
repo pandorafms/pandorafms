@@ -128,7 +128,10 @@ abstract class Model
      *
      * @abstract
      */
-    abstract protected static function fetchDataFromDB(array $filter);
+    abstract protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    );
 
 
     /**
@@ -138,10 +141,10 @@ abstract class Model
      *
      * @return self A modeled element's instance.
      */
-    public static function fromDB(array $filter): self
+    public static function fromDB(array $filter, ?float $ratio=0): self
     {
         // The reserved word static refers to the invoked class at runtime.
-        return static::fromArray(static::fetchDataFromDB($filter));
+        return static::fromArray(static::fetchDataFromDB($filter, $ratio));
     }
 
 

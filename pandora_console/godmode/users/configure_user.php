@@ -16,6 +16,10 @@ global $config;
 
 check_login();
 
+require 'vendor/autoload.php';
+
+use PandoraFMS\Dashboard\Manager;
+
 enterprise_hook('open_meta_frame');
 
 require_once $config['homedir'].'/include/functions_profile.php';
@@ -31,7 +35,6 @@ if (enterprise_installed() && defined('METACONSOLE')) {
 }
 
 $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
-enterprise_include_once('include/functions_dashboard.php');
 
 // Add the columns for the enterprise Pandora edition.
 $enterprise_include = false;
@@ -833,26 +836,26 @@ $values = [
     'External link'  => __('External link'),
     'Other'          => __('Other'),
 ];
-if (enterprise_installed() && !is_metaconsole()) {
+if (!is_metaconsole()) {
     $values['Dashboard'] = __('Dashboard');
 }
 
 
 $table->data[12][1] = html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false);
 
-if (enterprise_installed()) {
-    $dashboards = dashboard_get_dashboards();
-    $dashboards_aux = [];
-    if ($dashboards === false) {
-        $dashboards = ['None' => 'None'];
-    } else {
-        foreach ($dashboards as $key => $dashboard) {
-            $dashboards_aux[$dashboard['name']] = $dashboard['name'];
-        }
-    }
 
-    $table->data[12][1] .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+$dashboards = Manager::getDashboards(-1, -1);
+$dashboards_aux = [];
+if ($dashboards === false) {
+    $dashboards = ['None' => 'None'];
+} else {
+    foreach ($dashboards as $key => $dashboard) {
+        $dashboards_aux[$dashboard['id']] = $dashboard['name'];
+    }
 }
+
+$table->data[12][1] .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+
 
 $layouts = visual_map_get_user_layouts($config['id_user'], true);
 $layouts_aux = [];

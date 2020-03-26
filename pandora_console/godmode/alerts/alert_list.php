@@ -67,6 +67,7 @@ $searchFlag = get_parameter('search', 0);
 $enabledisable = get_parameter('enabledisable', '');
 $standby = get_parameter('standby', '');
 $pure = get_parameter('pure', 0);
+$ag_group = get_parameter('ag_group', 0);
 $messageAction = '';
 
 if ($update_alert) {

@@ -221,7 +221,7 @@ class OrderInterpreter extends Wizard
                     'images/op_reporting.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
-                    'index.php?sec=reporting&sec2=enterprise/dashboard/dashboards'
+                    'index.php?sec=reporting&sec2=operation/dashboard/dashboard'
                 ),
                 'acl'  => check_acl(
                     $config['id_user'],

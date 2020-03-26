@@ -62,6 +62,10 @@ $onheader = ['view' => $viewtab];
 // Header.
 ui_print_page_header(__('Agents defined in %s', get_product_name()), 'images/agent_mc.png', false, '', true, $onheader);
 
+if (is_central_policies_on_node()) {
+    ui_print_warning_message(__('This node is configured with centralized mode. To delete an agent go to metaconsole.'));
+}
+
 // Perform actions.
 $agent_to_delete = (int) get_parameter('borrar_agente');
 $enable_agent = (int) get_parameter('enable_agent');
@@ -694,7 +698,7 @@ if ($agents !== false) {
             echo html_print_image('images/lightbulb.png', true, ['alt' => __('Disable agent'), 'title' => __('Disable agent')]).'</a>';
         }
 
-        if ($check_aw) {
+        if ($check_aw && !is_central_policies_on_node()) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 

@@ -97,6 +97,10 @@ if ($fields_selected[0] != '') {
                 $result = __('Status');
             break;
 
+            case 'last_status_change':
+                $result = __('Last status change');
+            break;
+
             case 'graph':
                 $result = __('Graph');
             break;
@@ -111,10 +115,6 @@ if ($fields_selected[0] != '') {
 
             case 'timestamp':
                 $result = __('Timestamp');
-            break;
-
-            case 'to_critical':
-                $result = __('Last status change');
             break;
         }
 
@@ -146,11 +146,11 @@ $fields_available['module_name'] = __('Module name');
 $fields_available['server_type'] = __('Server type');
 $fields_available['interval'] = __('Interval');
 $fields_available['status'] = __('Status');
+$fields_available['last_status_change'] = __('Last status change');
 $fields_available['graph'] = __('Graph');
 $fields_available['warn'] = __('Warn');
 $fields_available['data'] = __('Data');
 $fields_available['timestamp'] = __('Timestamp');
-$fields_available['to_critical'] = __('Last status change');
 
 // remove fields already selected
 foreach ($fields_available as $key => $available) {

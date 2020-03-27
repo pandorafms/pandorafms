@@ -147,10 +147,10 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2 = [];
     $sub2['godmode/modules/private_enterprise_numbers']['text'] = __('Private Enterprise Numbers');
     $sub2['godmode/modules/private_enterprise_numbers']['id'] = 'Private Enterprise Numbers';
-    $sub2['godmode/modules/SNMP_modules']['text'] = __('SNMP Modules');
-    $sub2['godmode/modules/SNMP_modules']['id'] = 'SNMP Modules';
-    $sub2['godmode/modules/WMI_modules']['text'] = __('WMI Modules');
-    $sub2['godmode/modules/WMI_modules']['id'] = 'WMI Modules';
+    $sub2['godmode/modules/manage_snmp_modules']['text'] = __('SNMP Modules');
+    $sub2['godmode/modules/manage_snmp_modules']['id'] = 'SNMP Modules';
+    $sub2['godmode/modules/manage_wmi_modules']['text'] = __('WMI Modules');
+    $sub2['godmode/modules/manage_wmi_modules']['id'] = 'WMI Modules';
     $sub['configuration_wizard_setup']['sub2'] = $sub2;
     $sub['godmode/modules/manage_block_templates']['text'] = __('Module blocks');
     $sub['godmode/modules/manage_block_templates']['id'] = 'Module blocks';

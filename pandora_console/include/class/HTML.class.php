@@ -746,6 +746,7 @@ class HTML
     ) {
         $form = $data['form'];
         $inputs = $data['inputs'];
+        $rawInputs = $data['rawInputs'];
         $js = $data['js'];
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
@@ -788,6 +789,11 @@ class HTML
 
         $output .= '</ul>';
 
+        // There is possible add raw inputs for this form.
+        if (empty($rawInputs) === false) {
+            $output .= $rawInputs;
+        }
+
         if ($print_white_box === true) {
             $output .= '</div>';
         }
@@ -821,7 +827,7 @@ class HTML
         $form = $data['form'];
 
         $rows = $data['rows'];
-
+        $rawInputs = $data['rawInputs'];
         $js = $data['js'];
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
@@ -896,6 +902,11 @@ class HTML
             }
         }
 
+        // There is possible add raw inputs for this form.
+        if (empty($rawInputs) === false) {
+            $output .= $rawInputs;
+        }
+
         $output .= '</div>';
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
@@ -962,11 +973,12 @@ class HTML
         }
 
         $output .= '</ul>';
-        $output .= '</div>';
         // There is possible add raw inputs for this form.
         if (empty($rawInputs) === false) {
             $output .= $rawInputs;
         }
+
+        $output .= '</div>';
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
         $output .= '</form>';

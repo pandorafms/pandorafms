@@ -3498,24 +3498,6 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
-        case 'text':
-            $output .= html_print_input_text(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : ''),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
-                ((isset($data['autofocus']) === true) ? $data['autofocus'] : false)
-            );
-        break;
-
         case 'email':
             $output .= html_print_input_email($data);
         break;

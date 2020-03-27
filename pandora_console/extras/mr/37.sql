@@ -36,11 +36,11 @@ CREATE TABLE `tdiscovery_tmp_connections` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tpen` (
-  `id_np` int(10) unsigned NOT NULL,
   `pen` int(10) unsigned NOT NULL,
-  `manufacturer` TEXT NOT NULL,
-  `description` TEXT NULL,
-  PRIMARY KEY (`id_np`,`pen`),
+  `manufacturer` TEXT,
+  `description` TEXT,
+  `id_np` int(10) unsigned,
+  PRIMARY KEY (`pen`),
   CONSTRAINT `fk_np_id` FOREIGN KEY (`id_np`)
     REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

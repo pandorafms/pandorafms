@@ -3504,10 +3504,13 @@ function ui_print_datatable(array $parameters)
     ui_require_javascript_file('buttons.html5.min');
     ui_require_javascript_file('buttons.print.min');
 
-    $output = $include.$output;
+    if (isset($parameters['return']) && $parameters['return'] == true) {
+        // Compat.
+        $parameters['print'] = false;
+    }
 
     // Print datatable if needed.
-    if (isset($parameters['print']) === false || $parameters['print'] === false) {
+    if (isset($parameters['print']) === false || $parameters['print'] === true) {
         echo $output;
     }
 

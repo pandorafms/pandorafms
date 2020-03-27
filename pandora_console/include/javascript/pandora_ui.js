@@ -319,6 +319,21 @@ function load_modal(settings) {
     contentType: false,
     data: data,
     success: function(data) {
+      if (settings.onshow.parser) {
+        data = settings.onshow.parser(data);
+      } else {
+        data = (function(d) {
+          try {
+            d = JSON.parse(d);
+          } catch (e) {
+            // Not JSON
+            return d;
+          }
+          if (d.error) return d.error;
+
+          if (d.result) return d.result;
+        })(data);
+      }
       settings.target.html(data);
       if (settings.onload != undefined) {
         settings.onload(data);

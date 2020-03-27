@@ -1480,11 +1480,11 @@ ALTER TABLE `tnetwork_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NUL
 -- Table `tpen`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpen` (
-  `id_np` int(10) unsigned NOT NULL,
   `pen` int(10) unsigned NOT NULL,
-  `manufacturer` TEXT NOT NULL,
-  `description` TEXT NULL,
-  PRIMARY KEY (`id_np`,`pen`),
+  `manufacturer` TEXT,
+  `description` TEXT,
+  `id_np` int(10) unsigned,
+  PRIMARY KEY (`pen`),
   CONSTRAINT `fk_np_id` FOREIGN KEY (`id_np`)
     REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

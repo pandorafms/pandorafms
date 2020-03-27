@@ -400,18 +400,24 @@ class ConfigPEN extends HTML
 
         $inputs = [];
 
+        $arguments = [
+            'name'     => 'pen',
+            'type'     => 'number',
+            'value'    => $values['pen'],
+            'required' => true,
+            'return'   => true,
+            'size'     => 50,
+        ];
+
+        if ((bool) $values['pen']) {
+            $arguments['disabled'] = true;
+        }
+
         $inputs[] = [
             'label'     => __('PEN'),
             'class'     => 'flex-row',
             'id'        => 'div-pen',
-            'arguments' => [
-                'name'     => 'pen',
-                'type'     => 'number',
-                'value'    => $values['pen'],
-                'required' => true,
-                'return'   => true,
-                'size'     => 50,
-            ],
+            'arguments' => $arguments,
         ];
 
         $inputs[] = [
@@ -477,7 +483,7 @@ class ConfigPEN extends HTML
 
 
     /**
-     * Add a manufacturer to private enterprise numbers.
+     * Add or update a manufacturer to private enterprise numbers.
      *
      * @return void
      */
@@ -486,6 +492,7 @@ class ConfigPEN extends HTML
         $pen = get_parameter('pen', 0);
         $manufacturer = get_parameter('manufacturer', '');
         $description = get_parameter('description', '');
+        $is_new = (bool) get_parameter('is_new', false);
 
         if (empty($pen)) {
             $error = __('PEN is required.');
@@ -506,6 +513,15 @@ class ConfigPEN extends HTML
 
         if ($current === false) {
             // New.
+            if ($is_new === false) {
+                echo json_encode(
+                    [
+                        'error' => __('This PEN definition does not exist'),
+                    ]
+                );
+                exit;
+            }
+
             $rs = db_process_sql_insert(
                 'tpen',
                 [
@@ -517,6 +533,15 @@ class ConfigPEN extends HTML
             $str = __('created');
         } else {
             // Update.
+            if ($is_new === true) {
+                echo json_encode(
+                    [
+                        'error' => __('This PEN definition already exists'),
+                    ]
+                );
+                exit;
+            }
+
             $rs = db_process_sql_update(
                 'tpen',
                 [
@@ -656,9 +681,11 @@ function showForm(id) {
   var btn_ok_text = "<?php echo __('OK'); ?>";
   var btn_cancel_text = "<?php echo __('Cancel'); ?>";
   var title = "<?php echo __('Register new manufacturer'); ?>";
+  var is_new = 1;
   if (id) {
     btn_ok_text = "<?php echo __('Update'); ?>";
     title = "<?php echo __('Update'); ?> " + id;
+    is_new = 0;
   }
   load_modal({
     target: $("#modal"),
@@ -675,6 +702,10 @@ function showForm(id) {
       {
         name: "pen",
         value: id
+      },
+      {
+        name: 'is_new',
+        value: is_new
       }
     ],
     onshow: {

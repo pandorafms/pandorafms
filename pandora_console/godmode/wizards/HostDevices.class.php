@@ -951,7 +951,7 @@ class HostDevices extends Wizard
             $n_agents = 0;
             foreach (explode(',', $this->task['subnet']) as $net) {
                 $mask = explode('/', $net, 2)[1];
-                if (empty($mask) === true) {
+                if (empty($mask)) {
                     $n_agents++;
                 } else {
                     $n_agents += pow(2, (32 - $mask));
@@ -987,7 +987,7 @@ class HostDevices extends Wizard
                     'name'     => 'review_results',
                     'type'     => 'switch',
                     'return'   => true,
-                    'value'    => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? ($limited ? 1 : 0) : 1,
+                    'value'    => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? (($limited) ? 1 : 0) : 1,
                     'disabled' => $limited,
                 ],
             ];

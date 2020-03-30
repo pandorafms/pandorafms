@@ -402,16 +402,11 @@ sub pandora_purgedb ($$) {
 		log_message ('PURGE', 'netflow_max_lifetime is set to 0. Old netflow data will not be deleted.');
 	}
 	
-	
-	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");
-	if (!defined ($conf->{'logstash_host'}) || $conf->{'logstash_host'} eq '') {
-		log_message ('!', "Log collection disabled.");
-	}
-	elsif (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
+	if (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
 		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_days_purge_old_information'} . ' days.');
-    	enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
+    enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');

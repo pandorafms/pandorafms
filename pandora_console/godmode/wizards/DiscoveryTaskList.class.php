@@ -1250,6 +1250,12 @@ class DiscoveryTaskList extends HTML
             echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
             echo __('deselect all');
             echo '</button>';
+            echo '<button onclick="$(\'.sim-tree-spread.sim-icon-r\').click();">';
+            echo __('expand all');
+            echo '</button>';
+            echo '<button onclick="$(\'.sim-tree-spread.sim-icon-d\').click();">';
+            echo __('collapse all');
+            echo '</button>';
             echo '</div>';
             echo '</div>';
 
@@ -1279,12 +1285,18 @@ class DiscoveryTaskList extends HTML
         }
 
         $ids = [];
+        $n_agents = 0;
         $selection = io_safe_output(get_parameter('tree-data-tree', ''));
         if (empty($selection) === false) {
             $selection = json_decode($selection, true);
             $ids = array_reduce(
                 $selection,
-                function ($carry, $item) {
+                function ($carry, $item) use (&$n_agents) {
+                    if (explode('-', $item['id'])[1] === null) {
+                        // String is agent-module.
+                        $n_agents++;
+                    }
+
                     $carry[] = $item['id'];
                     return $carry;
                 }
@@ -1295,6 +1307,24 @@ class DiscoveryTaskList extends HTML
             'tdiscovery_tmp_agents',
             ['id_rt' => $id_task]
         );
+
+        // License precheck.
+        $license = enterprise_hook('license_get_info');
+
+        if (is_array($license) === true
+            && $n_agents > ($license['limit'] - $license['count'])
+        ) {
+            $limit = ($license['limit'] - $license['count']);
+            echo json_encode(
+                [
+                    'error' => __(
+                        'Your selection exceeds the agents available on your license. Limit %d',
+                        $limit
+                    ),
+                ]
+            );
+            return;
+        }
 
         $summary = [];
         if (is_array($ids)) {

@@ -1,5 +1,7 @@
 <?php
 
+enterprise_include_once('include/functions_license.php');
+
 global $config;
 
 check_login();

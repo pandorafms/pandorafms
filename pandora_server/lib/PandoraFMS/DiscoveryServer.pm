@@ -58,8 +58,8 @@ use constant {
   STEP_AFT => 2,
   STEP_TRACEROUTE => 3,
   STEP_GATEWAY => 4,
-	STEP_MONITORING => 5,
-	STEP_PROCESSING => 6,
+  STEP_MONITORING => 5,
+  STEP_PROCESSING => 6,
   STEP_STATISTICS => 1,
   STEP_APP_SCAN => 2,
   STEP_CUSTOM_QUERIES => 3,
@@ -206,16 +206,25 @@ sub data_consumer ($$) {
       @auth_strings = split(/,/, safe_output($task->{'auth_strings'}));
     }
 
-    my $main_event = pandora_event($pa_config, "[Discovery] Execution summary",$task->{'id_group'}, 0, 0, 0, 0, 'system', 0, $dbh);
+    my $main_event = pandora_event($pa_config,
+      "[Discovery] Execution summary",
+      $task->{'id_group'}, 0, 0, 0, 0, 'system', 0, $dbh
+    );
 
     my %cnf_extra;
     
-    my $r = enterprise_hook('discovery_generate_extra_cnf',[$pa_config, $dbh, $task, \%cnf_extra]);
+    my $r = enterprise_hook(
+      'discovery_generate_extra_cnf',
+      [
+        $pa_config,
+        $dbh, $task,
+        \%cnf_extra
+      ]
+    );
     if (defined($r) && $r eq 'ERR') {
       # Could not generate extra cnf, skip this task.
       return;
     }
-
 
     if ($task->{'type'} == DISCOVERY_APP_SAP) {
       # SAP TASK, retrieve license.
@@ -752,74 +761,74 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
 # Add wmi modules to the given host.
 ################################################################################
 sub PandoraFMS::Recon::Base::create_wmi_modules {
-	my ($self, $target) = @_;
+  my ($self, $target) = @_;
 
   # Add modules to the agent if it responds to WMI.
   return unless ($self->wmi_responds($target));
 
-	my $key = $self->wmi_credentials_key($target);
+  my $key = $self->wmi_credentials_key($target);
   my $creds = $self->call('get_credentials', $key);
 
-	# Add modules.
-	# CPU.
-	my @cpus = $self->wmi_get_value_array($target, 'SELECT DeviceId FROM Win32_Processor', 0);
-	foreach my $cpu (@cpus) {
-		$self->add_module(
-			$target,
-			{
-				'ip_target' => $target,
-				'snmp_oid' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId=\'$cpu\'",
-				'plugin_user' => $creds->{'username'},
+  # Add modules.
+  # CPU.
+  my @cpus = $self->wmi_get_value_array($target, 'SELECT DeviceId FROM Win32_Processor', 0);
+  foreach my $cpu (@cpus) {
+    $self->add_module(
+      $target,
+      {
+        'ip_target' => $target,
+        'snmp_oid' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId=\'$cpu\'",
+        'plugin_user' => $creds->{'username'},
         'plugin_pass' => $creds->{'password'},
-				'tcp_port' => 1,
-				'name' => "CPU Load $cpu",
-				'descripcion' => safe_input("Load for $cpu (%)"),
-				'id_tipo_modulo' => 1,
+        'tcp_port' => 1,
+        'name' => "CPU Load $cpu",
+        'descripcion' => safe_input("Load for $cpu (%)"),
+        'id_tipo_modulo' => 1,
         'id_modulo' => 6,
-				'unit' => '%',
-			}
-		);
-	}
+        'unit' => '%',
+      }
+    );
+  }
 
-	# Memory.
-	my $mem = $self->wmi_get_value($target, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
-	if (defined($mem)) {
-		$self->add_module(
-			$target,
-			{
-				'ip_target' => $target,
-				'snmp_oid' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
-				'plugin_user' => $creds->{'username'},
-				'plugin_pass' => $creds->{'password'},
-				'tcp_port' => 0,
-				'name' => 'FreeMemory',
-				'descripcion' => safe_input('Free memory'),
-				'id_tipo_modulo' => 1,
+  # Memory.
+  my $mem = $self->wmi_get_value($target, 'SELECT FreePhysicalMemory FROM Win32_OperatingSystem', 0);
+  if (defined($mem)) {
+    $self->add_module(
+      $target,
+      {
+        'ip_target' => $target,
+        'snmp_oid' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
+        'plugin_user' => $creds->{'username'},
+        'plugin_pass' => $creds->{'password'},
+        'tcp_port' => 0,
+        'name' => 'FreeMemory',
+        'descripcion' => safe_input('Free memory'),
+        'id_tipo_modulo' => 1,
         'id_modulo' => 6,
-				'unit' => 'KB',
-			}
-		);
-	}
+        'unit' => 'KB',
+      }
+    );
+  }
 
-	# Disk.
-	my @units = $self->wmi_get_value_array($target, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
-	foreach my $unit (@units) {
-		$self->add_module(
-			$target,
-			{
-				'ip_target' => $target,
-				'snmp_oid' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
-				'plugin_user' => $creds->{'username'},
-				'plugin_pass' => $creds->{'password'},
-				'tcp_port' => 1,
-				'name' => "FreeDisk $unit",
-				'descripcion' => safe_input('Available disk space in kilobytes'),
-				'id_tipo_modulo' => 1,
+  # Disk.
+  my @units = $self->wmi_get_value_array($target, 'SELECT DeviceID FROM Win32_LogicalDisk', 0);
+  foreach my $unit (@units) {
+    $self->add_module(
+      $target,
+      {
+        'ip_target' => $target,
+        'snmp_oid' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
+        'plugin_user' => $creds->{'username'},
+        'plugin_pass' => $creds->{'password'},
+        'tcp_port' => 1,
+        'name' => "FreeDisk $unit",
+        'descripcion' => safe_input('Available disk space in kilobytes'),
+        'id_tipo_modulo' => 1,
         'id_modulo' => 6,
-				'unit' => 'KB',
-			}
-		);
-	}
+        'unit' => 'KB',
+      }
+    );
+  }
 
 }
 
@@ -978,7 +987,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
         my $parent_id;
         my $os_id = $self->guess_os($data->{'agent'}{'direccion'});
 
-    		$self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
+        $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
         # Agent creation.
         my $agent_id = $data->{'agent'}{'agent_id'};
@@ -1003,6 +1012,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
           );
 
           if (!defined($agent_id) || $agent_id <= 0) {
+            # Agent creation.
             $agent_id = pandora_create_agent(
               $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
               $data->{'agent'}{'direccion'}, $self->{'task_data'}{'group_id'}, $parent_id,
@@ -1010,6 +1020,42 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
               $data->{'agent'}{'interval'}, $self->{'dbh'},
               $data->{'agent'}{'timezone_offset'}
             );
+
+            # Agent autoconfiguration.
+            if (is_enabled($self->{'autoconfiguration_enabled'})) {
+              my $agent_data = PandoraFMS::DB::get_db_single_row(
+                $self->{'dbh'},
+                'SELECT * FROM tagente WHERE id_agente = ?',
+                $agent_id
+              );
+
+              # Update agent configuration once, after create agent.
+              enterprise_hook(
+                'autoconfigure_agent',
+                [
+                  $self->{'pa_config'},
+                  $data->{'agent'}{'direccion'},
+                  $agent_id,
+                  $agent_data,
+                  $self->{'dbh'},
+                  1
+                ]
+              );
+            }
+
+            if (defined($self->{'main_event_id'})) {
+              my $addresses_str = join(
+                ',',
+                safe_output($self->get_addresses($data->{'agent'}{'nombre'}))
+              );
+              pandora_extended_event(
+                $self->{'pa_config'}, $self->{'dbh'},
+                $self->{'main_event_id'},"[Discovery] New " 
+                  . safe_output($self->get_device_type($data->{'agent'}{'nombre'}))
+                  . " found " . $$data->{'agent'}{'nombre'} . " (" . $addresses_str
+                  . ") Agent $agent_id."
+              );
+            }
 
             $agent_learning = 1;
           } else {
@@ -1061,7 +1107,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
               # Delete unwanted fields.
               delete $module->{'agentmodule_id'};
-        			delete $module->{'checked'};
+              delete $module->{'checked'};
 
               my $id_tipo_modulo = $module->{'id_tipo_modulo'};
               $id_tipo_modulo = get_module_id($self->{'dbh'}, $module->{'type'})
@@ -1105,7 +1151,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
                   $self->{'dbh'}
                 );
 
-  							$module->{'name'} = $name;
+                $module->{'name'} = $name;
                 $module->{'description'} = safe_output($description);
               }
 
@@ -1213,8 +1259,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
   $self->call('message', "Storing results", 6);
   my @hosts = keys %{$self->{'agents_found'}};
-	$self->{'step'} = STEP_PROCESSING;
-	my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
+  $self->{'step'} = STEP_PROCESSING;
+  my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
   foreach my $label (keys %{$self->{'agents_found'}}) {
     $self->call('update_progress', $progress);
     $progress += $step;
@@ -1261,6 +1307,37 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
     );
   }
 
+  # Notify.
+  my $notification = {};
+  $notification->{'subject'} = safe_input('Review pending');
+  $notification->{'mensaje'} = safe_input(
+    'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})
+    .'\' has been completed. Please review the results.'
+  );
+  $notification->{'id_source'} = get_db_value(
+    $self->{'dbh'},
+    'SELECT id FROM tnotification_source WHERE description = ?',
+    safe_input('System status')
+  );
+
+  # Create message
+  my $notification_id = db_process_insert(
+    $self->{'dbh'},
+    'id_mensaje',
+    'tmensajes',
+    $notification
+  );
+
+  if (is_enabled($notification_id)) {
+    my @users = notification_get_users($self->{'dbh'}, 'System status');
+    my @groups = notification_get_groups($self->{'dbh'}, 'System status');
+
+    notification_set_targets(
+      $self->{'pa_config'}, $self->{'dbh'},
+	    $notification_id, \@users, \@groups
+    );
+  }
+
   $self->call('message', "Completed", 5);
 }
 
@@ -1272,9 +1349,9 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
 
   my @hosts = keys %{$self->{'agents_found'}};
 
-	$self->{'step'} = STEP_MONITORING;
+  $self->{'step'} = STEP_MONITORING;
   # From 80% to 90%.
-	my ($progress, $step) = (80, 10.0 / scalar(@hosts));
+  my ($progress, $step) = (80, 10.0 / scalar(@hosts));
   my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
 
   foreach my $label (keys %{$self->{'agents_found'}}) {

@@ -1686,7 +1686,8 @@ ALTER TABLE `trecon_task` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `autoconfiguration_enabled` tinyint(1) unsigned NULL DEFAULT '0',
 	MODIFY COLUMN `summary` text NULL,
 	MODIFY COLUMN `id_network_profile` text,
-	CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 0;
+	CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 0,
+	ADD COLUMN `subnet_csv` TINYINT(1) UNSIGNED DEFAULT 0;
 
 -- Old recon always report.
 UPDATE `trecon_task` SET `review_mode` = 1;

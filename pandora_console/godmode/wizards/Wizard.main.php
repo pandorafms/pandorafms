@@ -587,66 +587,40 @@ class Wizard
 
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<div id="'.$input['block_id'].'" class="wizard '.$class.'">';
             $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= $this->printBlockAsGrid($input, $return);
             }
 
-            $output .= '</ul></li>';
+            $output .= '</ul></div>';
         } else {
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
             ) {
-                if ($input['arguments']['inline'] != 'true') {
-                    $output .= '<div class="edit_discovery_input">';
-                } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
-                    if (!isset($input['extra'])) {
-                        $output .= '<div style="width: 50%;">';
-                    }
-
-                    if (isset($input['extra'])) {
-                        $output .= '<div style="display: flex; margin-right:10px;">';
-                    }
+                $id = '';
+                if ($input['id']) {
+                    $id = $input['id'];
                 }
 
-                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="margin-right:10px;">';
+                if ($input['arguments']['inline'] != 'true') {
+                    $output .= '<div id="'.$id.'" class="std_input '.$class.'">';
+                } else {
+                    $output .= '<div id="'.$id.'" class="inline_input '.$class.'">';
                 }
 
                 $output .= '<div class="label_select">';
                 $output .= $input['label'];
                 $output .= '</div>';
 
-                if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '</div>';
-                }
-
-                if ($input['arguments']['inline'] == 'true' && !isset($input['extra'])) {
-                    $output .= '</div>';
-                }
-
                 if ($input['arguments']['type'] == 'text' || $input['arguments']['type'] == 'text_extended') {
                     $output .= '<div class="discovery_text_input">';
                     $output .= $this->printInput($input['arguments']);
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
-                    if (isset($input['extra'])) {
-                        $output .= '<div style="">';
-                        $output .= '<div style="float: left;">';
-                    } else {
-                        $output .= '<div style="width:50%;">';
-                        $output .= '<div style="float: right;">';
-                    }
-
+                    $output .= '<div class="discovery_inline_input">';
                     $output .= $this->printInput($input['arguments']);
                     $output .= '</div>';
-                    $output .= '</div>';
-
-                    if (isset($input['extra'])) {
-                        $output .= '</div>';
-                    }
                 } else {
                     $output .= $this->printInput($input['arguments']);
                 }
@@ -821,7 +795,7 @@ class Wizard
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery wizard" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {

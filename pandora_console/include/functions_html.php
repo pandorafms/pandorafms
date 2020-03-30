@@ -1087,7 +1087,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:flex;align-items: baseline;">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1121,7 +1121,7 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:flex;">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1159,8 +1159,8 @@ function html_print_extended_select_for_time(
 			$('#text-".$uniq_name."_text').val(seconds);
 			adjustTextUnits('".$uniq_name."');
 			calculateSeconds('".$uniq_name."');
-			$('#".$uniq_name."_manual').show();
-			$('#".$uniq_name."_default').hide();
+			$('#".$uniq_name."_manual').css('display', 'flex');
+			$('#".$uniq_name."_default').css('display', 'none');
 		}
 	</script>";
     $returnString = ob_get_clean();

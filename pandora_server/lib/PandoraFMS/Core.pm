@@ -270,7 +270,9 @@ our @EXPORT = qw(
 	pandora_delete_custom_graph
 	pandora_edit_custom_graph
 	notification_set_targets
-	);
+	notification_get_users
+	notification_get_groups
+);
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
@@ -6253,6 +6255,55 @@ sub notification_set_targets {
 
 	return 1;
 }
+
+##########################################################################
+
+=head2 C<< notification_get_users (I<$dbh>, I<$source>) >>
+Get targets for given sources
+=cut
+
+##########################################################################
+sub notification_get_users {
+	my ($dbh, $source) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT id_user
+		 FROM tnotification_source_user nsu
+		   INNER JOIN tnotification_source ns ON nsu.id_source=ns.id
+		 WHERE ns.description = ?
+		',
+		safe_input($source)
+	);
+
+	@results = map { $_->{'id_user'} } @results;
+	return @results;
+}
+
+##########################################################################
+
+=head2 C<< notification_get_groups (I<$dbh>, I<$source>) >>
+Get targets for given sources
+=cut
+
+##########################################################################
+sub notification_get_groups {
+	my ($dbh, $source) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT id_group
+		 FROM tnotification_source_group nsg
+		   INNER JOIN tnotification_source ns ON nsg.id_source=ns.id
+		 WHERE ns.description = ?
+		',
+		safe_input($source)
+	);
+
+	@results = map { $_->{'id_group'} } @results;
+	return @results;
+}
+
 
 # End of function declaration
 # End of defined Code

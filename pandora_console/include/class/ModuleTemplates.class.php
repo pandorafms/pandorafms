@@ -86,7 +86,7 @@ class ModuleTemplates extends HTML
 
     /**
      * Group for adding modules
-     * 
+     *
      * @var string
      */
     private $ncGroup;
@@ -131,11 +131,14 @@ class ModuleTemplates extends HTML
         $this->id_np            = get_parameter('id_np', -1);
         $this->name             = get_parameter('name', '');
         $this->description      = get_parameter('description', '');
-        $this->pen              = get_parameter('pen', '');
+        $pensList               = get_parameter('pen', []);
+        // Separate all PENs received.
+        $this->pen              = explode(',', $pensList);
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
         $this->ncGroup          = get_parameter('ncgroup', -1);
         $this->ncFilter         = get_parameter('ncfilter', '');
+
         return $this;
     }
 
@@ -205,19 +208,15 @@ class ModuleTemplates extends HTML
 
 
     /**
-     * Undocumented function
+     * Save or Update the data received.
      *
      * @return void
      */
     public function processData()
     {
-        // This data is sent always
-        $name        = get_parameter('name', '');
-        $description = get_parameter('description', '');
-        $pensList    = get_parameter('pen', '');
+        // Get action if is needed.
         $action      = get_parameter('submit_button', '');
-
-        // Evaluate the modules allowed
+        // Evaluate the modules allowed.
         if (!empty($action)) {
             $numberComponent = [];
             foreach ($_POST as $k => $value) {
@@ -232,48 +231,51 @@ class ModuleTemplates extends HTML
                     $dbResult_tnp = db_process_sql_update(
                         'tnetwork_profile',
                         [
-                            'name'        => $name,
-                            'description' => $description,
+                            'name'        => $this->name,
+                            'description' => $this->description,
                         ],
                         ['id_np' => $this->id_np]
                     );
-
-                    $getProfilePens = db_get_all_rows_sql(sprintf('SELECT pen FROM tpen WHERE id_np = %s', $this->id_np));
-
-                    $dbResult_pen = db_process_sql_update(
-                        'tpen',
-                        [
-                            'pen'          => $pen,
-                            'manufacturer' => '',
-                            'description'  => '',
-                            'id_np'        => $this->id_np,
-                        ],
-                        ['id_np' => $this->id_np]
-                    );
-
+                    // The update gone fine!
+                    if ($dbResult_tnp != false) {
+                        // Clean the PENs associated with this id_np.
+                        db_process_sql_delete('tnetwork_profile_pen', ['id_np' => $this->id_np]);
+                        // Set again the new PENs associated.
+                        foreach ($this->pen as $currentPen) {
+                            $dbResult_pen = db_process_sql_insert(
+                                'tnetwork_profile_pen',
+                                [
+                                    'pen'   => $currentPen,
+                                    'id_np' => $this->id_np,
+                                ]
+                            );
+                        }
+                    }
                 break;
 
                 case 'Create':
                     $dbResult_tnp = db_process_sql_insert(
                         'tnetwork_profile',
                         [
-                            'name'        => $name,
-                            'description' => $description,
+                            'name'        => $this->name,
+                            'description' => $this->description,
                         ]
                     );
-
+                    // The insert gone fine!
                     if ($dbResult_tnp != false) {
-                        foreach ($pensList as $currentPen) {
+                        // Set the new id_np.
+                        $this->id_np = $dbResult_tnp;
+                        // Insert all of new PENs associated with this id_np.
+                        foreach ($this->pen as $currentPen) {
+                            hd($currentPen);
                             $dbResult_pen = db_process_sql_insert(
-                                'tpen',
+                                'tnetwork_profile_pen',
                                 [
-                                    'pen'          => $currentPen,
-                                    'manufacturer' => '',
-                                    'description'  => '',
-                                    'id_np'        => $this->id_np,
+                                    'pen'   => $currentPen,
+                                    'id_np' => $this->id_np,
                                 ]
                             );
-
+                            // If something is wrong, is better stop.
                             if ($dbResult_pen === false) {
                                 break;
                             }
@@ -297,13 +299,24 @@ class ModuleTemplates extends HTML
 
 
     /**
+     * Get the match between this id_np and one pen in db
+     *
+     * @param  integer $pen
+     * @return void
+     */
+    private function penMatch($pen)
+    {
+        return db_get_num_rows('SELECT * FROM tnetwork_profile_pen WHERE pen = %d AND id_np = %d', $pen, $this->id_np);
+    }
+
+
+    /**
      * Undocumented function
      *
      * @return void
      */
     public function addingModulesForm()
     {
-
         // Get the groups for select input
         $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
         if ($result === false) {
@@ -326,9 +339,8 @@ class ModuleTemplates extends HTML
             $groups_compound[$row['id_sg']] .= $row['name'];
         }
 
-        # For erase
-        #$group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
-
+        // For erase
+        // $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
         // Get the components for show in a list for select
         if ($this->ncGroup > 0) {
             $sql = sprintf(
@@ -434,53 +446,53 @@ class ModuleTemplates extends HTML
                 true
             ]
         );
-/*
-        $table = new StdClasS();
+        /*
+            $table = new StdClasS();
 
-        $table->head = [];
-        $table->data = [];
-        $table->align = [];
-        $table->width = '100%';
-        $table->cellpadding = 0;
-        $table->cellspacing = 0;
-        $table->class = 'databox filters';
-    
-        $table->style[0] = 'font-weight: bold';
-    
-        // The form to submit when adding a list of components
-        $filter = '<form name="filter_component" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&ncgroup='.$ncgroup.'&id_np='.$id_np.'#filter">';
-        $filter .= html_print_input_text('ncfilter', $ncfilter, '', 50, 255, true);
-        $filter .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
-        $filter .= '</form>';
-    
-        $group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
-        $group_filter .= '<div style="width:540px"><a name="filter"></a>';
-        $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
-        if ($result === false) {
+            $table->head = [];
+            $table->data = [];
+            $table->align = [];
+            $table->width = '100%';
+            $table->cellpadding = 0;
+            $table->cellspacing = 0;
+            $table->class = 'databox filters';
+
+            $table->style[0] = 'font-weight: bold';
+
+            // The form to submit when adding a list of components
+            $filter = '<form name="filter_component" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&ncgroup='.$ncgroup.'&id_np='.$id_np.'#filter">';
+            $filter .= html_print_input_text('ncfilter', $ncfilter, '', 50, 255, true);
+            $filter .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
+            $filter .= '</form>';
+
+            $group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
+            $group_filter .= '<div style="width:540px"><a name="filter"></a>';
+            $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
+            if ($result === false) {
             $result = [];
-        }
-    
-        // 2 arrays. 1 with the groups, 1 with the groups by parent
-        $groups = [];
-        $groups_compound = [];
-        foreach ($result as $row) {
+            }
+
+            // 2 arrays. 1 with the groups, 1 with the groups by parent
+            $groups = [];
+            $groups_compound = [];
+            foreach ($result as $row) {
             $groups[$row['id_sg']] = $row['name'];
-        }
-    
-        foreach ($result as $row) {
+            }
+
+            foreach ($result as $row) {
             $groups_compound[$row['id_sg']] = '';
             if ($row['parent'] > 1) {
                 $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / ';
             }
-    
+
             $groups_compound[$row['id_sg']] .= $row['name'];
-        }
-    
-        $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
-    
-        $group_filter .= '</div></form>';
-    
-        if ($ncgroup > 0) {
+            }
+
+            $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
+
+            $group_filter .= '</div></form>';
+
+            if ($ncgroup > 0) {
             $sql = sprintf(
                 "
                 SELECT id_nc, name, id_group
@@ -489,38 +501,38 @@ class ModuleTemplates extends HTML
                 ORDER BY name",
                 $ncgroup
             );
-        } else {
+            } else {
             $sql = "
                 SELECT id_nc, name, id_group
                 FROM tnetwork_component
                 WHERE name LIKE '%".$ncfilter."%'
                 ORDER BY name";
-        }
-    
-        $result = db_get_all_rows_sql($sql);
-        $components = [];
-        if ($result === false) {
+            }
+
+            $result = db_get_all_rows_sql($sql);
+            $components = [];
+            if ($result === false) {
             $result = [];
-        }
-    
-        foreach ($result as $row) {
+            }
+
+            foreach ($result as $row) {
             $components[$row['id_nc']] = $row['name'];
-        }
-    
-        $components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-        $components_select .= html_print_select($components, 'components[]', $id_nc, '', '', -1, true, true, false, '" style="width:350px');
-    
-        $table->data[0][0] = __('Filter');
-        $table->data[0][1] = $filter;
-        $table->data[1][0] = __('Group');
-        $table->data[1][1] = $group_filter;
-        $table->data[2][0] = __('Components');
-        $table->data[2][1] = $components_select;
-    
-        html_print_table($table);
-    
-        echo '<div style="width:'.$table->width.'; text-align:right">';
-        html_print_submit_button(__('Add'), 'crtbutton', false, 'class="sub wand"');
+            }
+
+            $components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
+            $components_select .= html_print_select($components, 'components[]', $id_nc, '', '', -1, true, true, false, '" style="width:350px');
+
+            $table->data[0][0] = __('Filter');
+            $table->data[0][1] = $filter;
+            $table->data[1][0] = __('Group');
+            $table->data[1][1] = $group_filter;
+            $table->data[2][0] = __('Components');
+            $table->data[2][1] = $components_select;
+
+            html_print_table($table);
+
+            echo '<div style="width:'.$table->width.'; text-align:right">';
+            html_print_submit_button(__('Add'), 'crtbutton', false, 'class="sub wand"');
         echo '</div></form>';*/
     }
 
@@ -533,10 +545,11 @@ class ModuleTemplates extends HTML
     private function setNetworkProfile()
     {
         if ($this->id_np !== 0) {
-            $output = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
-            $this->name = $output['name'];
-            $this->description = $output['description'];
-            $this->pen = $output['pen'];
+            $profileInfo = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
+            $this->name = $profileInfo['name'];
+            $this->description = $profileInfo['description'];
+            $penInfo = db_get_all_rows_filter('tnetwork_profile_pen', ['id_np' => $this->id_np]);
+            $this->pen = $penInfo['pen'];
         }
     }
 

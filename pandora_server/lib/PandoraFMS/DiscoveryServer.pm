@@ -916,23 +916,21 @@ sub PandoraFMS::Recon::Base::get_credentials {
 ################################################################################
 # Create agents and modules reported by Recon::Base.
 ################################################################################
-sub PandoraFMS::Recon::Base::report_scanned_agents($) {
-  my ($self) = @_;
+sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
+  my ($self,$force) = @_;
 
-  my $force_creation = 0;
-
-  if (defined($self->{'task_data'}{'review_mode'})
-    && $self->{'task_data'}{'review_mode'} == DISCOVERY_STANDARD
-  ) {
-    $force_creation = 1;
-  }
+  my $force_creation = $force;
+  $force_creation = 0 unless (is_enabled($force));
 
   #
   # Creation
   #
-  if(defined($self->{'task_data'}{'review_mode'})
-    && $self->{'task_data'}{'review_mode'} == DISCOVERY_RESULTS
+
+  if($force_creation == 1
+    || (defined($self->{'task_data'}{'review_mode'})
+        && $self->{'task_data'}{'review_mode'} == DISCOVERY_RESULTS)
   ) {
+
     # Load cache.
     my @rows = get_db_rows(
       $self->{'dbh'},
@@ -1008,7 +1006,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
           $agent_id = get_db_value(
             $self->{'dbh'},
             'SELECT id_agente FROM tagente WHERE nombre = ?',
-            safe_input($data->{'agent'}->{'name'})
+            safe_input($data->{'agent'}{'nombre'})
           );
 
           if (!defined($agent_id) || $agent_id <= 0) {
@@ -1046,13 +1044,14 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
             if (defined($self->{'main_event_id'})) {
               my $addresses_str = join(
                 ',',
-                safe_output($self->get_addresses($data->{'agent'}{'nombre'}))
+                $self->get_addresses(safe_output($data->{'agent'}{'nombre'}))
               );
+
               pandora_extended_event(
                 $self->{'pa_config'}, $self->{'dbh'},
                 $self->{'main_event_id'},"[Discovery] New " 
-                  . safe_output($self->get_device_type($data->{'agent'}{'nombre'}))
-                  . " found " . $$data->{'agent'}{'nombre'} . " (" . $addresses_str
+                  . $self->get_device_type(safe_output($data->{'agent'}{'nombre'}))
+                  . " found " . $data->{'agent'}{'nombre'} . " (" . $addresses_str
                   . ") Agent $agent_id."
               );
             }
@@ -1090,17 +1089,13 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
 
             $self->call('message', "[$agent_id] Module: ".$module->{'name'}, 5);
 
-            my $agentmodule_id = $module->{'agentmodule_id'};
-
-            if (defined($agentmodule_id) && $agentmodule_id > 0) {
-              $agentmodule_id = get_db_value(
-                $self->{'dbh'},
-                'SELECT id_agente_modulo FROM tagente_modulo
-                 WHERE id_agente_modulo = ? AND nombre = ?',
-                $agentmodule_id,
-                safe_input($module->{'name'})
-              );
-            }
+            my $agentmodule_id = get_db_value(
+              $self->{'dbh'},
+              'SELECT id_agente_modulo FROM tagente_modulo
+               WHERE id_agente = ? AND nombre = ?',
+              $agent_id,
+              safe_input($module->{'name'})
+            );
 
             if (!is_enabled($agentmodule_id)) {
               # Create.
@@ -1307,35 +1302,40 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($) {
     );
   }
 
-  # Notify.
-  my $notification = {};
-  $notification->{'subject'} = safe_input('Review pending');
-  $notification->{'mensaje'} = safe_input(
-    'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})
-    .'\' has been completed. Please review the results.'
-  );
-  $notification->{'id_source'} = get_db_value(
-    $self->{'dbh'},
-    'SELECT id FROM tnotification_source WHERE description = ?',
-    safe_input('System status')
-  );
 
-  # Create message
-  my $notification_id = db_process_insert(
-    $self->{'dbh'},
-    'id_mensaje',
-    'tmensajes',
-    $notification
-  );
-
-  if (is_enabled($notification_id)) {
-    my @users = notification_get_users($self->{'dbh'}, 'System status');
-    my @groups = notification_get_groups($self->{'dbh'}, 'System status');
-
-    notification_set_targets(
-      $self->{'pa_config'}, $self->{'dbh'},
-	    $notification_id, \@users, \@groups
+  if(defined($self->{'task_data'}{'review_mode'})
+    && $self->{'task_data'}{'review_mode'} == DISCOVERY_REVIEW
+  ) {
+    # Notify.
+    my $notification = {};
+    $notification->{'subject'} = safe_input('Review pending');
+    $notification->{'mensaje'} = safe_input(
+      'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})
+      .'\' has been completed. Please review the results.'
     );
+    $notification->{'id_source'} = get_db_value(
+      $self->{'dbh'},
+      'SELECT id FROM tnotification_source WHERE description = ?',
+      safe_input('System status')
+    );
+
+    # Create message
+    my $notification_id = db_process_insert(
+      $self->{'dbh'},
+      'id_mensaje',
+      'tmensajes',
+      $notification
+    );
+
+    if (is_enabled($notification_id)) {
+      my @users = notification_get_users($self->{'dbh'}, 'System status');
+      my @groups = notification_get_groups($self->{'dbh'}, 'System status');
+
+      notification_set_targets(
+        $self->{'pa_config'}, $self->{'dbh'},
+        $notification_id, \@users, \@groups
+      );
+    }
   }
 
   $self->call('message', "Completed", 5);

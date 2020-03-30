@@ -683,7 +683,11 @@ sub get_device_type($$) {
   my ($self, $device) = @_;
 
   if (defined($self->{'visited_devices'}->{$device})) {
-    return $self->{'visited_devices'}->{$device}->{'type'};
+    if (defined($self->{'visited_devices'}->{$device}->{'type'})) {
+      return $self->{'visited_devices'}->{$device}->{'type'};
+    } else {
+      $self->{'visited_devices'}->{$device}->{'type'} = 'host';
+    }
   }
 
   # Assume 'host' by default.
@@ -1931,7 +1935,14 @@ sub scan($) {
 	$self->call('message', "[6/6] Processing results.", 3);
   $self->{'step'} = STEP_PROCESSING;
   # Send agent information to Database (Discovery) or XML (satellite.).
-  $self->call('report_scanned_agents', $self->{'agents_found'});
+  $self->call('report_scanned_agents');
+
+  if(defined($self->{'task_data'}{'review_mode'})
+    && $self->{'task_data'}{'review_mode'} == DISCOVERY_STANDARD
+  ) {
+    # Send agent information to Database (Discovery) or XML (satellite.).
+    $self->call('report_scanned_agents', 1);
+  }
 
   # Done!
   $self->{'step'} = '';

@@ -1308,11 +1308,15 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
   ) {
     # Notify.
     my $notification = {};
-    $notification->{'subject'} = safe_input('Review pending');
+    $notification->{'subject'} = safe_input('Discovery task ');
+    $notification->{'subject'} .= $self->{'task_data'}{'name'};
+    $notification->{'subject'} .= safe_input(' review pending');
+
     $notification->{'mensaje'} = safe_input(
       'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})
       .'\' has been completed. Please review the results.'
     );
+
     $notification->{'id_source'} = get_db_value(
       $self->{'dbh'},
       'SELECT id FROM tnotification_source WHERE description = ?',

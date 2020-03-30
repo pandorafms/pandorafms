@@ -946,6 +946,36 @@ class HostDevices extends Wizard
                 ],
             ];
 
+            // License precheck.
+            $license = enterprise_hook('license_get_info');
+            $n_agents = 0;
+            foreach (explode(',', $this->task['subnet']) as $net) {
+                $mask = explode('/', $net, 2)[1];
+                if (empty($mask) === true) {
+                    $n_agents++;
+                } else {
+                    $n_agents += pow(2, (32 - $mask));
+                }
+            }
+
+            $limited = false;
+            if (is_array($license) === true
+                && $n_agents > ($license['limit'] - $license['count'])
+            ) {
+                $limit = ($license['limit'] - $license['count']);
+                $limited = true;
+            }
+
+            if ($limited === true) {
+                ui_print_warning_message(
+                    __(
+                        'Configured networks could generate %d agents, your license only allows %d, \'review results\' is mandatory.',
+                        $n_agents,
+                        $limit
+                    )
+                );
+            }
+
             $form['inputs'][] = [
                 'label'     => __('Review results').ui_print_help_tip(
                     __(
@@ -954,10 +984,11 @@ class HostDevices extends Wizard
                     true
                 ),
                 'arguments' => [
-                    'name'   => 'review_results',
-                    'type'   => 'switch',
-                    'return' => true,
-                    'value'  => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? 0 : 1,
+                    'name'     => 'review_results',
+                    'type'     => 'switch',
+                    'return'   => true,
+                    'value'    => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? ($limited ? 1 : 0) : 1,
+                    'disabled' => $limited,
                 ],
             ];
 

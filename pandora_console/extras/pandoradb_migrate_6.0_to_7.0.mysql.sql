@@ -1477,19 +1477,6 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned defaul
 ALTER TABLE `tnetwork_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0';
 
 -- ----------------------------------------------------------------------
--- Table `tnetwork_profile_pen`
--- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
-  `pen` int(10) unsigned NOT NULL,
-  `id_np` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`pen`),
-  CONSTRAINT `fk_network_profile_pen_pen` FOREIGN KEY (`pen`)
-    REFERENCES `tpen` (`pen`) ON DELETE CASCADE ON UPDATE CASCADE
-  CONSTRAINT `fk_network_profile_pen_id_np` FOREIGN KEY (`id_np`)
-    REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------------------------------------------------
 -- Table `tpen`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpen` (
@@ -1497,6 +1484,19 @@ CREATE TABLE IF NOT EXISTS `tpen` (
   `manufacturer` TEXT,
   `description` TEXT,
   PRIMARY KEY (`pen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_profile_pen`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
+  `pen` int(10) unsigned NOT NULL,
+  `id_np` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`pen`),
+  CONSTRAINT `fk_network_profile_pen_pen` FOREIGN KEY (`pen`)
+    REFERENCES `tpen` (`pen`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_network_profile_pen_id_np` FOREIGN KEY (`id_np`)
+    REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

@@ -46,18 +46,17 @@ CREATE TABLE `tpen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
--- New table `tnetwork_profile_pen`
+-- Table `tnetwork_profile_pen`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
   `pen` int(10) unsigned NOT NULL,
   `id_np` int(10) unsigned NOT NULL,
   PRIMARY KEY (`pen`),
   CONSTRAINT `fk_network_profile_pen_pen` FOREIGN KEY (`pen`)
-    REFERENCES `tpen` (`pen`) ON DELETE CASCADE ON UPDATE CASCADE
+    REFERENCES `tpen` (`pen`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_network_profile_pen_id_np` FOREIGN KEY (`id_np`)
     REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 ALTER TABLE `twidget_dashboard` ADD COLUMN `position` TEXT NOT NULL default '';
 

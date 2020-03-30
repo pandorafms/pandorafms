@@ -30,9 +30,9 @@ global $config;
 
 require_once $config['homedir'].'/include/class/HTML.class.php';
 /**
- * Class ManageBlock
+ * Class ModuleTemplates
  */
-class ManageBlock extends HTML
+class ModuleTemplates extends HTML
 {
 
     /**
@@ -84,6 +84,20 @@ class ManageBlock extends HTML
      */
     private $pen;
 
+    /**
+     * Group for adding modules
+     * 
+     * @var string
+     */
+    private $ncGroup;
+
+    /**
+     * Filter for adding modules
+     *
+     * @var string
+     */
+    private $ncFilter;
+
 
     /**
      * Constructor
@@ -112,7 +126,7 @@ class ManageBlock extends HTML
         }
 
         // Set baseUrl for use it in several locations in this class.
-        $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_block_templates');
+        $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_module_templates');
         // Capture all parameters before start.
         $this->id_np            = get_parameter('id_np', -1);
         $this->name             = get_parameter('name', '');
@@ -120,7 +134,8 @@ class ManageBlock extends HTML
         $this->pen              = get_parameter('pen', '');
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
-        $this->saveData         = (bool) get_parameter('save', 0);
+        $this->ncGroup          = get_parameter('ncgroup', -1);
+        $this->ncFilter         = get_parameter('ncfilter', '');
         return $this;
     }
 
@@ -148,8 +163,13 @@ class ManageBlock extends HTML
                     'selected' => false,
                 ],
                 [
+                    'link'     => '',
+                    'label'    => __('Templates'),
+                    'selected' => false,
+                ],
+                [
                     'link'     => $this->baseUrl,
-                    'label'    => __('Module Blocks'),
+                    'label'    => __('Module template management'),
                     'selected' => true,
                 ],
             ],
@@ -157,7 +177,7 @@ class ManageBlock extends HTML
         );
 
         ui_print_page_header(
-            __('Manage module blocks'),
+            __('Module template management'),
             '',
             false,
             '',
@@ -185,13 +205,94 @@ class ManageBlock extends HTML
 
 
     /**
-     * Get the value of if we want save the changes
+     * Undocumented function
      *
-     * @return boolean True if must save the changes
+     * @return void
      */
-    public function getSaveData()
+    public function processData()
     {
-        return $this->saveData;
+        // This data is sent always
+        $name        = get_parameter('name', '');
+        $description = get_parameter('description', '');
+        $pensList    = get_parameter('pen', '');
+        $action      = get_parameter('submit_button', '');
+
+        // Evaluate the modules allowed
+        if (!empty($action)) {
+            $numberComponent = [];
+            foreach ($_POST as $k => $value) {
+                if (strpos($k, 'module_check_') >= 0 && $value == 1) {
+                    $tmpNumberComponent = explode('_', $k);
+                    $numberComponent[] = $tmpNumberComponent[2];
+                }
+            }
+
+            switch ($action) {
+                case 'Update':
+                    $dbResult_tnp = db_process_sql_update(
+                        'tnetwork_profile',
+                        [
+                            'name'        => $name,
+                            'description' => $description,
+                        ],
+                        ['id_np' => $this->id_np]
+                    );
+
+                    $getProfilePens = db_get_all_rows_sql(sprintf('SELECT pen FROM tpen WHERE id_np = %s', $this->id_np));
+
+                    $dbResult_pen = db_process_sql_update(
+                        'tpen',
+                        [
+                            'pen'          => $pen,
+                            'manufacturer' => '',
+                            'description'  => '',
+                            'id_np'        => $this->id_np,
+                        ],
+                        ['id_np' => $this->id_np]
+                    );
+
+                break;
+
+                case 'Create':
+                    $dbResult_tnp = db_process_sql_insert(
+                        'tnetwork_profile',
+                        [
+                            'name'        => $name,
+                            'description' => $description,
+                        ]
+                    );
+
+                    if ($dbResult_tnp != false) {
+                        foreach ($pensList as $currentPen) {
+                            $dbResult_pen = db_process_sql_insert(
+                                'tpen',
+                                [
+                                    'pen'          => $currentPen,
+                                    'manufacturer' => '',
+                                    'description'  => '',
+                                    'id_np'        => $this->id_np,
+                                ]
+                            );
+
+                            if ($dbResult_pen === false) {
+                                break;
+                            }
+                        }
+                    }
+                break;
+
+                default:
+                    $dbResult_tnp = false;
+                break;
+            }
+
+            if ($dbResult_tnp === false || $dbResult_pen === false) {
+                ui_print_error_message(__('Error saving data'));
+            } else {
+                ui_print_success_message(__('Changes saved sucessfully'));
+            }
+        }
+
     }
 
 
@@ -200,18 +301,235 @@ class ManageBlock extends HTML
      *
      * @return void
      */
-    private function saveData()
+    public function addingModulesForm()
     {
-        // if ($)
-        $name        = get_parameter('name', '');
-        $description = get_parameter('description', '');
-        $pen         = get_parameter('pen', '');
-        hd($name);
-        hd($description);
-        hd($pen);
+
+        // Get the groups for select input
+        $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
+        if ($result === false) {
+            $result = [];
+        }
+
+        // 2 arrays. 1 with the groups, 1 with the groups by parent
+        $groups = [];
+        $groups_compound = [];
+        foreach ($result as $row) {
+            $groups[$row['id_sg']] = $row['name'];
+        }
+
+        foreach ($result as $row) {
+            $groups_compound[$row['id_sg']] = '';
+            if ($row['parent'] > 1) {
+                $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / ';
+            }
+
+            $groups_compound[$row['id_sg']] .= $row['name'];
+        }
+
+        # For erase
+        #$group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
+
+        // Get the components for show in a list for select
+        if ($this->ncGroup > 0) {
+            $sql = sprintf(
+                "
+                SELECT id_nc, name, id_group
+                FROM tnetwork_component
+                WHERE id_group = %d AND name LIKE '%".$this->ncFilter."%'
+                ORDER BY name",
+                $this->ncGroup
+            );
+        } else {
+            $sql = "
+                SELECT id_nc, name, id_group
+                FROM tnetwork_component
+                WHERE name LIKE '%".$this->ncFilter."%'
+                ORDER BY name";
+        }
+
+        $result = db_get_all_rows_sql($sql);
+        $components = [];
+        if ($result === false) {
+            $result = [];
+        }
+
+        foreach ($result as $row) {
+            $components[$row['id_nc']] = $row['name'];
+        }
+
+        // Main form.
+        $form = [
+            'action' => $this->baseUrl,
+            'id'     => 'add_module_form',
+            'method' => 'POST',
+            'class'  => 'databox filters',
+            'extra'  => '',
+        ];
+
+        // Inputs.
+        $inputs = [];
+
+        $inputs[] = [
+            'id'        => 'inp-id_np',
+            'arguments' => [
+                'name'   => 'id_np',
+                'type'   => 'hidden',
+                'value'  => $this->id_np,
+                'return' => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Filter'),
+            'id'        => 'add-modules-filter',
+            'arguments' => [
+                'name'        => 'add-modules-filter',
+                'input_class' => 'flex-row',
+                'type'        => 'text',
+                'value'       => '',
+                'return'      => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Group'),
+            'id'        => 'add-modules-group',
+            'arguments' => [
+                'name'        => 'add-modules-group',
+                'input_class' => 'flex-row',
+                'type'        => 'select',
+                'script'      => 'this.form.submit()',
+                'fields'      => $groups_compound,
+                'return'      => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Components'),
+            'id'        => 'add-modules-components',
+            'arguments' => [
+                'name'        => 'add-modules-components',
+                'input_class' => 'flex-row',
+                'type'        => 'select',
+                'multiple'    => true,
+                'fields'      => $components,
+                'return'      => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'arguments' => [
+                'label'      => __('Add components'),
+                'name'       => 'add-modules-submit',
+                'type'       => 'submit',
+                'attributes' => 'class="sub wand"',
+                'return'     => true,
+            ],
+        ];
+
+        $this->printFormAsList(
+            [
+                'form'   => $form,
+                'inputs' => $inputs,
+                true
+            ]
+        );
+/*
+        $table = new StdClasS();
+
+        $table->head = [];
+        $table->data = [];
+        $table->align = [];
+        $table->width = '100%';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->class = 'databox filters';
+    
+        $table->style[0] = 'font-weight: bold';
+    
+        // The form to submit when adding a list of components
+        $filter = '<form name="filter_component" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&ncgroup='.$ncgroup.'&id_np='.$id_np.'#filter">';
+        $filter .= html_print_input_text('ncfilter', $ncfilter, '', 50, 255, true);
+        $filter .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
+        $filter .= '</form>';
+    
+        $group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
+        $group_filter .= '<div style="width:540px"><a name="filter"></a>';
+        $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
+        if ($result === false) {
+            $result = [];
+        }
+    
+        // 2 arrays. 1 with the groups, 1 with the groups by parent
+        $groups = [];
+        $groups_compound = [];
+        foreach ($result as $row) {
+            $groups[$row['id_sg']] = $row['name'];
+        }
+    
+        foreach ($result as $row) {
+            $groups_compound[$row['id_sg']] = '';
+            if ($row['parent'] > 1) {
+                $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / ';
+            }
+    
+            $groups_compound[$row['id_sg']] .= $row['name'];
+        }
+    
+        $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
+    
+        $group_filter .= '</div></form>';
+    
+        if ($ncgroup > 0) {
+            $sql = sprintf(
+                "
+                SELECT id_nc, name, id_group
+                FROM tnetwork_component
+                WHERE id_group = %d AND name LIKE '%".$ncfilter."%'
+                ORDER BY name",
+                $ncgroup
+            );
+        } else {
+            $sql = "
+                SELECT id_nc, name, id_group
+                FROM tnetwork_component
+                WHERE name LIKE '%".$ncfilter."%'
+                ORDER BY name";
+        }
+    
+        $result = db_get_all_rows_sql($sql);
+        $components = [];
+        if ($result === false) {
+            $result = [];
+        }
+    
+        foreach ($result as $row) {
+            $components[$row['id_nc']] = $row['name'];
+        }
+    
+        $components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
+        $components_select .= html_print_select($components, 'components[]', $id_nc, '', '', -1, true, true, false, '" style="width:350px');
+    
+        $table->data[0][0] = __('Filter');
+        $table->data[0][1] = $filter;
+        $table->data[1][0] = __('Group');
+        $table->data[1][1] = $group_filter;
+        $table->data[2][0] = __('Components');
+        $table->data[2][1] = $components_select;
+    
+        html_print_table($table);
+    
+        echo '<div style="width:'.$table->width.'; text-align:right">';
+        html_print_submit_button(__('Add'), 'crtbutton', false, 'class="sub wand"');
+        echo '</div></form>';*/
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     private function setNetworkProfile()
     {
         if ($this->id_np !== 0) {
@@ -352,17 +670,17 @@ class ManageBlock extends HTML
      */
     public function moduleTemplateForm()
     {
-        $createNewBlock = ($this->id_np === 0) ? true : false;
+        $createNewBlock = ($this->id_np == 0) ? true : false;
 
         if ($createNewBlock) {
             // Assignation for submit button.
             $formButtonClass = 'sub wand';
-            $formButtonName = 'crtbutton';
+            $formButtonValue = 'create';
             $formButtonLabel = __('Create');
         } else {
             // Assignation for submit button.
             $formButtonClass = 'sub upd';
-            $formButtonName = 'updbutton';
+            $formButtonValue = 'update';
             $formButtonLabel = __('Update');
             // Profile exists. Set the attributes with the info.
             $this->setNetworkProfile();
@@ -381,6 +699,16 @@ class ManageBlock extends HTML
         $inputs = [];
         // Inputs.
         $rawInputs = '';
+
+        $inputs[] = [
+            'id'        => 'inp-id_np',
+            'arguments' => [
+                'name'   => 'id_np',
+                'type'   => 'hidden',
+                'value'  => $this->id_np,
+                'return' => true,
+            ],
+        ];
 
         $inputs[] = [
             'label'     => __('Name'),
@@ -420,9 +748,10 @@ class ManageBlock extends HTML
 
         $inputs[] = [
             'arguments' => [
-                'name'       => $formButtonName,
+                'name'       => 'submit_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
+                'value'      => $formButtonValue,
                 'attributes' => 'class="'.$formButtonClass.'"',
                 'return'     => true,
             ],
@@ -506,7 +835,7 @@ class ManageBlock extends HTML
                             $data[0] = $module['name'];
                             $data[1] = ui_print_moduletype_icon($module['type'], true);
                             $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
-                            $data[3] = html_print_checkbox_switch_extended('switch_'.$id_group.'_'.$module['component_id'], 1, 0, false, 'switchBlockControl(event)', '', true);
+                            $data[3] = html_print_checkbox_switch_extended('module_check_'.$id_group.'_'.$module['component_id'], 1, 0, false, 'switchBlockControl(event)', '', true);
 
                             array_push($table->data, $data);
                         }
@@ -551,14 +880,10 @@ class ManageBlock extends HTML
 
         echo $javascript;
 
+        $this->addingModulesForm();
+
         $this->printGoBackButton($this->baseUrl);
     }
 
 
 }
-
-/*
-    ui_require_jquery_file('tag-editor');
-    ui_require_css_file('jquery.tag-editor');
-    $(\'#text-community\').tagEditor();
-*/

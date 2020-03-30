@@ -143,8 +143,10 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['templates']['type'] = 'direct';
     $sub['templates']['subtype'] = 'nolink';
     $sub2 = [];
-    $sub2['godmode/modules/manage_block_templates']['text'] = __('Module templates');
-    $sub2['godmode/modules/manage_block_templates']['id'] = 'Module templates';
+    $sub2['godmode/modules/manage_network_templates']['text'] = __('Module templates (legacy)');
+    $sub2['godmode/modules/manage_network_templates']['id'] = 'Module templates';
+    $sub2['godmode/modules/manage_module_templates']['text'] = __('Module templates');
+    $sub2['godmode/modules/manage_module_templates']['id'] = 'Module templates';
     $sub2['godmode/modules/private_enterprise_numbers']['text'] = __('Private Enterprise Numbers');
     $sub2['godmode/modules/private_enterprise_numbers']['id'] = 'Private Enterprise Numbers';
     $sub2['enterprise/godmode/modules/local_components']['text'] = __('Local components');

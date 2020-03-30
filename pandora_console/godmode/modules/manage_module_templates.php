@@ -13,13 +13,13 @@
 // GNU General Public License for more details.
 // Load global vars
 // TESTING
-    /*
-        ini_set('display_errors', 1);
+    
+    /*     ini_set('display_errors', 1);
         ini_set('display_startup_errors', 1);
     error_reporting(E_ALL); */
 // END
 global $config;
-
+hd($_POST);
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
@@ -32,14 +32,14 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 }
 
 
-require_once $config['homedir'].'/include/class/ManageBlock.class.php';
-$ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ManageBlock';
+require_once $config['homedir'].'/include/class/ModuleTemplates.class.php';
+$ajaxPage = ENTERPRISE_DIR.'/godmode/agentes/ModuleTemplates';
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
-    $manageBlock = new ManageBlock('');
+    $moduleTemplates = new ModuleTemplates('');
 } catch (Exception $e) {
-    echo '[ManageBlock]'.$e->getMessage();
+    echo '[ModuleTemplates]'.$e->getMessage();
     /*
         if (is_ajax()) {
         echo json_encode(['error' => '[MiFuncionalidad]'.$e->getMessage() ]);
@@ -69,21 +69,18 @@ if (is_ajax()) {
     // Stop any execution.
     exit;
 } else {
+    //hd($_POST);
     // Run.
-    $manageBlock->run();
+    $moduleTemplates->run();
     // Get the id_np.
-    $id_np = $manageBlock->getIdNp();
-    $saveData = $manageBlock->getSaveData();
-
-    if ($saveData === true) {
-        // Save the data sent
-        $manageBlock->saveData();
-    } else if ($id_np === -1) {
+    $id_np = $moduleTemplates->getIdNp();
+    $moduleTemplates->processData();
+    if ($id_np === -1) {
         // List all Module Blocks.
-        $manageBlock->moduleBlockList();
+        $moduleTemplates->moduleBlockList();
     } else {
         // Create new o update Template.
-        $manageBlock->moduleTemplateForm();
+        $moduleTemplates->moduleTemplateForm();
     }
 }
 

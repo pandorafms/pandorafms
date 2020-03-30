@@ -318,7 +318,12 @@ class ConfigPEN extends HTML
             [
                 [
                     'link'     => '',
-                    'label'    => __('Wizard Setup'),
+                    'label'    => __('Configuration'),
+                    'selected' => false,
+                ],
+                [
+                    'link'     => '',
+                    'label'    => __('Templates'),
                     'selected' => false,
                 ],
                 [

@@ -1492,7 +1492,6 @@ CREATE TABLE IF NOT EXISTS `tpen` (
 CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
   `pen` int(10) unsigned NOT NULL,
   `id_np` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`pen`),
   CONSTRAINT `fk_network_profile_pen_pen` FOREIGN KEY (`pen`)
     REFERENCES `tpen` (`pen`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_network_profile_pen_id_np` FOREIGN KEY (`id_np`)

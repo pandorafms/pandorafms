@@ -300,8 +300,49 @@ class HostDevices extends Wizard
             $comment = get_parameter('comment', '');
             $server_id = get_parameter('id_recon_server', '');
             $network = get_parameter('network', '');
+            $network_csv_enabled = (bool) get_parameter_switch(
+                'network_csv_enabled',
+                false
+            );
             $id_group = get_parameter('id_group', '');
             $interval = get_parameter('interval', 0);
+
+            if ($network_csv_enabled) {
+                if ($_FILES['network_csv']['type'] != 'text/csv') {
+                    $this->msg = __(
+                        'Invalid mimetype for csv file: %s',
+                        $_FILES['network_csv']['type']
+                    );
+                    return false;
+                }
+
+                $network = preg_split(
+                    "/\n|,|;/",
+                    trim(
+                        file_get_contents(
+                            $_FILES['network_csv']['tmp_name']
+                        )
+                    )
+                );
+                unlink($_FILES['network_csv']['tmp_name']);
+                if (empty($network) || is_array($network) === false) {
+                    $this->msg = __(
+                        'Invalid content readed from csv file: %s',
+                        $_FILES['network_csv']['name']
+                    );
+                    return false;
+                }
+
+                // Sanitize.
+                $network = array_unique($network);
+                $network = array_filter(
+                    $network,
+                    function ($item) {
+                        return (!empty($item));
+                    }
+                );
+                $network = join(',', $network);
+            }
 
             if (isset($task_id) === true) {
                 // We're updating this task.
@@ -338,6 +379,7 @@ class HostDevices extends Wizard
                 && $server_id == null
                 && empty($id_group) === true
                 && empty($network) === true
+                && empty($network_csv) === true
                 && $interval === 0
             ) {
                 // Default values, no data received.
@@ -385,6 +427,7 @@ class HostDevices extends Wizard
                 $this->task['id_recon_server'] = $server_id;
                 $this->task['id_group'] = $id_group;
                 $this->task['interval_sweep'] = $interval;
+                $this->task['subnet_csv'] = $network_csv_enabled;
 
                 if (isset($this->task['id_rt']) === false) {
                     // Create.
@@ -701,7 +744,7 @@ class HostDevices extends Wizard
 
                 $form['rows'][0]['columns'][0] = [
                     'width'  => '30%',
-                    'style'  => 'padding: 9px;',
+                    'style'  => 'padding: 9px;min-width: 250px;',
                     'inputs' => [
                         '0' => [
                             'arguments' => [
@@ -728,7 +771,10 @@ class HostDevices extends Wizard
                                 'name'     => 'interval_manual_defined',
                                 'return'   => true,
                             ],
-                            'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
+                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container">'.ui_print_help_tip(
+                                __('The minimum recomended interval for Recon Task is 5 minutes'),
+                                true
+                            ).html_print_extended_select_for_time(
                                 'interval',
                                 $this->task['interval_sweep'],
                                 '',
@@ -738,10 +784,7 @@ class HostDevices extends Wizard
                                 true,
                                 false,
                                 false
-                            ).ui_print_help_tip(
-                                __('The minimum recomended interval for Recon Task is 5 minutes'),
-                                true
-                            ).'</span>',
+                            ).'</div></div>',
 
                         ],
                     ],
@@ -751,6 +794,7 @@ class HostDevices extends Wizard
                     'width'         => '40%',
                     'padding-right' => '12%',
                     'padding-left'  => '5%',
+                    'style'         => 'min-width: 350px',
                     'inputs'        => [
                         '0' => [
                             'label'     => '<b>'.__('Task name').':</b>',
@@ -783,6 +827,54 @@ class HostDevices extends Wizard
                             ],
                         ],
                         '2' => [
+                            'label'     => '<b>'.__('Use CSV file definition').':</b>'.ui_print_help_tip(
+                                __('Define targets using csv o network definition.'),
+                                true
+                            ),
+                            'class'     => 'no-margin',
+                            'arguments' => [
+                                'name'    => 'network_csv_enabled',
+                                'value'   => $this->task['subnet_csv'],
+                                'type'    => 'switch',
+                                'inline'  => true,
+                                'class'   => 'discovery_full_width_input',
+                                'onclick' => 'toggleNetwork(this);',
+                            ],
+                        ],
+                        '3' => [
+                            'hidden'        => (($this->task['subnet_csv'] == '1') ? 0 : 1),
+                            'block_id'      => 'csv_subnet',
+                            'block_content' => [
+                                [
+                                    'label'     => '<b>'.__('Networks (csv)').':</b>'.ui_print_help_tip(
+                                        __('You can upload a CSV file. Each line must contain a network in IP/MASK format. For instance: 192.168.1.1/32'),
+                                        true
+                                    ),
+                                    'arguments' => [
+                                        'name'    => 'network_csv',
+                                        'type'    => 'file',
+                                        'columns' => 25,
+                                        'rows'    => 10,
+                                        'class'   => 'discovery_full_width_input',
+                                    ],
+                                ],
+                                [
+                                    'label'     => '<b>'.__('Networks (current)').':</b>'.ui_print_help_tip(
+                                        __('Plese upload a new file to overwrite this content.'),
+                                        true
+                                    ),
+                                    'arguments' => [
+                                        'attributes' => 'readonly',
+                                        'type'       => 'textarea',
+                                        'size'       => 25,
+                                        'value'      => $this->task['subnet'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        '4' => [
+                            'hidden'    => (($this->task['subnet_csv'] == '1') ? 1 : 0),
+                            'id'        => 'std_subnet',
                             'label'     => '<b>'.__('Network').':</b>'.ui_print_help_tip(
                                 __('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'),
                                 true
@@ -817,6 +909,7 @@ class HostDevices extends Wizard
 
                 $form['rows'][0]['columns'][2] = [
                     'width'  => '30%',
+                    'style'  => 'min-width: 250px',
                     'inputs' => ['0' => $group_select],
                 ];
 
@@ -846,8 +939,9 @@ class HostDevices extends Wizard
                 }
 
                 $form['form'] = [
-                    'method' => 'POST',
-                    'action' => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
+                    'method'  => 'POST',
+                    'enctype' => 'multipart/form-data',
+                    'action'  => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
                 ];
 
                 // Default.
@@ -871,7 +965,19 @@ class HostDevices extends Wizard
                             $("#hidden-interval").val('.$interval.');
                             $("#interval_units").val('.$unit.');
                         }
-                    }).change();';
+                    }).change();
+                    
+                    function toggleNetwork(e) {
+                        if (e.checked) {
+                            $(\'#csv_subnet\').removeClass("hidden");
+                            $(\'#std_subnet\').addClass("hidden");
+                        } else {
+                            $(\'#csv_subnet\').addClass("hidden");
+                            $(\'#std_subnet\').removeClass("hidden");
+                        }
+                    };
+                    
+                    ';
 
                 $this->printFormAsGrid($form);
                 $this->printGoBackButton($this->url.'&page='.($this->page - 1));

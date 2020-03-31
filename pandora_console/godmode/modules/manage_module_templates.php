@@ -13,13 +13,15 @@
 // GNU General Public License for more details.
 // Load global vars
 // TESTING
-    
-    /*     ini_set('display_errors', 1);
+    /*
+        ini_set('display_errors', 1);
         ini_set('display_startup_errors', 1);
     error_reporting(E_ALL); */
 // END
 global $config;
-hd($_POST);
+/*
+    hd($_POST);
+hd($_REQUEST); */
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
@@ -69,7 +71,6 @@ if (is_ajax()) {
     // Stop any execution.
     exit;
 } else {
-    //hd($_POST);
     // Run.
     $moduleTemplates->run();
     // Get the id_np.

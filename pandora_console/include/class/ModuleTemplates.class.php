@@ -80,7 +80,7 @@ class ModuleTemplates extends HTML
     /**
      * Private Enterprise Numbers of Block Templates
      *
-     * @var [type]
+     * @var array
      */
     private $pen;
 
@@ -131,9 +131,8 @@ class ModuleTemplates extends HTML
         $this->id_np            = get_parameter('id_np', -1);
         $this->name             = get_parameter('name', '');
         $this->description      = get_parameter('description', '');
-        $pensList               = get_parameter('pen', []);
+        $this->pen              = get_parameter('pen', '');
         // Separate all PENs received.
-        $this->pen              = explode(',', $pensList);
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
         $this->ncGroup          = get_parameter('ncgroup', -1);
@@ -216,6 +215,8 @@ class ModuleTemplates extends HTML
     {
         // Get action if is needed.
         $action      = get_parameter('submit_button', '');
+        // Success variable.
+        $success     = false;
         // Evaluate the modules allowed.
         if (!empty($action)) {
             $numberComponent = [];
@@ -236,19 +237,30 @@ class ModuleTemplates extends HTML
                         ],
                         ['id_np' => $this->id_np]
                     );
-                    // The update gone fine!
-                    if ($dbResult_tnp != false) {
-                        // Clean the PENs associated with this id_np.
+                    if ($dbResult_tnp === false) {
+                        $success = false;
+                    } else {
                         db_process_sql_delete('tnetwork_profile_pen', ['id_np' => $this->id_np]);
-                        // Set again the new PENs associated.
-                        foreach ($this->pen as $currentPen) {
-                            $dbResult_pen = db_process_sql_insert(
-                                'tnetwork_profile_pen',
-                                [
-                                    'pen'   => $currentPen,
-                                    'id_np' => $this->id_np,
-                                ]
-                            );
+                        $pensList = explode(',', $this->pen);
+                        if (count($pensList) > 0) {
+                            // Set again the new PENs associated.
+                            foreach ($pensList as $currentPen) {
+                                $dbResult_pen = db_process_sql_insert(
+                                    'tnetwork_profile_pen',
+                                    [
+                                        'pen'   => $currentPen,
+                                        'id_np' => $this->id_np,
+                                    ]
+                                );
+                                if ($dbResult_pen === false) {
+                                    $success = false;
+                                    break;
+                                }
+
+                                $success = true;
+                            }
+                        } else {
+                            $success = true;
                         }
                     }
                 break;
@@ -265,9 +277,9 @@ class ModuleTemplates extends HTML
                     if ($dbResult_tnp != false) {
                         // Set the new id_np.
                         $this->id_np = $dbResult_tnp;
+                        $pensList = explode(',', $this->pen);
                         // Insert all of new PENs associated with this id_np.
-                        foreach ($this->pen as $currentPen) {
-                            hd($currentPen);
+                        foreach ($pensList as $currentPen) {
                             $dbResult_pen = db_process_sql_insert(
                                 'tnetwork_profile_pen',
                                 [
@@ -279,16 +291,28 @@ class ModuleTemplates extends HTML
                             if ($dbResult_pen === false) {
                                 break;
                             }
+
+                            $success = true;
                         }
                     }
                 break;
 
+                case 'Delete':
+                    // Only in this case, catch delete_profile.
+                    $deleteProfile = get_parameter('delete_profile', -1);
+                    $dbResult = db_process_sql_delete('tnetwork_profile', ['id_np' => $deleteProfile]);
+
+                    if ($dbResult != false) {
+                        $success = true;
+                    }
+                break;
+
                 default:
-                    $dbResult_tnp = false;
+                    $success = false;
                 break;
             }
 
-            if ($dbResult_tnp === false || $dbResult_pen === false) {
+            if ($success === false) {
                 ui_print_error_message(__('Error saving data'));
             } else {
                 ui_print_success_message(__('Changes saved sucessfully'));
@@ -299,19 +323,7 @@ class ModuleTemplates extends HTML
 
 
     /**
-     * Get the match between this id_np and one pen in db
-     *
-     * @param  integer $pen
-     * @return void
-     */
-    private function penMatch($pen)
-    {
-        return db_get_num_rows('SELECT * FROM tnetwork_profile_pen WHERE pen = %d AND id_np = %d', $pen, $this->id_np);
-    }
-
-
-    /**
-     * Undocumented function
+     * Show the adding modules form
      *
      * @return void
      */
@@ -326,6 +338,7 @@ class ModuleTemplates extends HTML
         // 2 arrays. 1 with the groups, 1 with the groups by parent
         $groups = [];
         $groups_compound = [];
+        $groups_compound[0] = 'Group - All';
         foreach ($result as $row) {
             $groups[$row['id_sg']] = $row['name'];
         }
@@ -339,8 +352,6 @@ class ModuleTemplates extends HTML
             $groups_compound[$row['id_sg']] .= $row['name'];
         }
 
-        // For erase
-        // $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
         // Get the components for show in a list for select
         if ($this->ncGroup > 0) {
             $sql = sprintf(
@@ -412,6 +423,7 @@ class ModuleTemplates extends HTML
                 'type'        => 'select',
                 'script'      => 'this.form.submit()',
                 'fields'      => $groups_compound,
+                'nothing'     => $groups_compound[0],
                 'return'      => true,
             ],
         ];
@@ -538,19 +550,24 @@ class ModuleTemplates extends HTML
 
 
     /**
-     * Undocumented function
+     * General setter
      *
      * @return void
      */
     private function setNetworkProfile()
     {
-        if ($this->id_np !== 0) {
-            $profileInfo = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
-            $this->name = $profileInfo['name'];
-            $this->description = $profileInfo['description'];
-            $penInfo = db_get_all_rows_filter('tnetwork_profile_pen', ['id_np' => $this->id_np]);
-            $this->pen = $penInfo['pen'];
+        // Get t
+        $profileInfo = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
+        $this->name = $profileInfo['name'];
+        $this->description = $profileInfo['description'];
+
+        $penInfo = db_get_all_rows_filter('tnetwork_profile_pen', ['id_np' => $this->id_np]);
+        $penList = [];
+        foreach ($penInfo as $pen) {
+            $penList[] = $pen['pen'];
         }
+
+        $this->pen = implode(',', $penList);
     }
 
 
@@ -630,7 +647,7 @@ class ModuleTemplates extends HTML
                 true,
                 ['title' => 'Export to CSV']
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&submit_button=Delete&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
             $data[3] .= '<a href="'.$this->baseUrl.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
             array_push($table->data, $data);
@@ -893,7 +910,9 @@ class ModuleTemplates extends HTML
 
         echo $javascript;
 
-        $this->addingModulesForm();
+        if ($createNewBlock === false) {
+            $this->addingModulesForm();
+        }
 
         $this->printGoBackButton($this->baseUrl);
     }

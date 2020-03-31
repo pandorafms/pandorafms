@@ -79,7 +79,7 @@ cp Linux/pandora_agent.conf temp_package/etc/pandora/
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
 # Relocate plugins to the final dir and delete 
-mv temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+cp temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
 
 echo "Official plugins are placed on /etc/pandora/plugins" > temp_package/usr/share/pandora_agent/plugins/README
 

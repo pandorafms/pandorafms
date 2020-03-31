@@ -24,22 +24,13 @@ CREATE TABLE `tdiscovery_tmp_agents` (
 CREATE TABLE `tdiscovery_tmp_connections` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_rt` int(10) unsigned NOT NULL,
-  `id1` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `id2` int(10) unsigned NOT NULL,
-  `if1` text,
-  `if2` text,
-  PRIMARY KEY (`id1`,`id2`),
-  CONSTRAINT `tdtc_trt` FOREIGN KEY (`id_rt`)
-    REFERENCES `trecon_task` (`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `tdtc_tdta1` FOREIGN KEY (`id1`)
-    REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `tdtc_tdta2` FOREIGN KEY (`id2`)
-    REFERENCES `tdiscovery_tmp_agents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `dev_1` text,
+  `dev_2` text,
+  `if_1` text,
+  `if_2` text,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
--- New table `tpen`
--- ----------------------------------------------------------------------
 CREATE TABLE `tpen` (
   `pen` int(10) unsigned NOT NULL,
   `manufacturer` TEXT,
@@ -47,9 +38,6 @@ CREATE TABLE `tpen` (
   PRIMARY KEY (`pen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
--- Table `tnetwork_profile_pen`
--- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
   `pen` int(10) unsigned NOT NULL,
   `id_np` int(10) unsigned NOT NULL,

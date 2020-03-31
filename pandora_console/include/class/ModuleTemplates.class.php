@@ -132,11 +132,10 @@ class ModuleTemplates extends HTML
         $this->name             = get_parameter('name', '');
         $this->description      = get_parameter('description', '');
         $this->pen              = get_parameter('pen', '');
-        // Separate all PENs received.
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
-        $this->ncGroup          = get_parameter('ncgroup', -1);
-        $this->ncFilter         = get_parameter('ncfilter', '');
+        $this->ncGroup          = get_parameter('add-modules-group', '0');
+        $this->ncFilter         = get_parameter('add-modules-filter', '');
 
         return $this;
     }
@@ -214,7 +213,8 @@ class ModuleTemplates extends HTML
     public function processData()
     {
         // Get action if is needed.
-        $action      = get_parameter('submit_button', '');
+        $action         = get_parameter('submit_button', '');
+        $modules_submit = get_parameter('add-modules-submit', '');
         // Success variable.
         $success     = false;
         // Evaluate the modules allowed.
@@ -317,6 +317,19 @@ class ModuleTemplates extends HTML
             } else {
                 ui_print_success_message(__('Changes saved sucessfully'));
             }
+        } else if ($modules_submit != '') {
+            $modulesToAdd = get_parameter('add-modules-components-values', '');
+            $modulesToAddList = explode(',', $modulesToAdd);
+
+            foreach ($modulesToAddList as $module) {
+                db_process_sql_insert(
+                    'tnetwork_profile_component',
+                    [
+                        'id_nc' => $module,
+                        'id_np' => $this->id_np,
+                    ]
+                );
+            }
         }
 
     }
@@ -338,6 +351,7 @@ class ModuleTemplates extends HTML
         // 2 arrays. 1 with the groups, 1 with the groups by parent
         $groups = [];
         $groups_compound = [];
+        // Default group filter.
         $groups_compound[0] = 'Group - All';
         foreach ($result as $row) {
             $groups[$row['id_sg']] = $row['name'];
@@ -403,8 +417,18 @@ class ModuleTemplates extends HTML
         ];
 
         $inputs[] = [
+            'id'        => 'add-modules-components-values',
+            'arguments' => [
+                'name'   => 'add-modules-components-values',
+                'type'   => 'hidden',
+                'value'  => '',
+                'return' => true,
+            ],
+        ];
+
+        $inputs[] = [
             'label'     => __('Filter'),
-            'id'        => 'add-modules-filter',
+            'id'        => 'txt-add-modules-filter',
             'arguments' => [
                 'name'        => 'add-modules-filter',
                 'input_class' => 'flex-row',
@@ -423,14 +447,14 @@ class ModuleTemplates extends HTML
                 'type'        => 'select',
                 'script'      => 'this.form.submit()',
                 'fields'      => $groups_compound,
-                'nothing'     => $groups_compound[0],
+                'nothing'     => $groups_compound[$this->ncGroup],
                 'return'      => true,
             ],
         ];
 
         $inputs[] = [
             'label'     => __('Components'),
-            'id'        => 'add-modules-components',
+            'id'        => 'slc-add-modules-components2',
             'arguments' => [
                 'name'        => 'add-modules-components',
                 'input_class' => 'flex-row',
@@ -458,94 +482,6 @@ class ModuleTemplates extends HTML
                 true
             ]
         );
-        /*
-            $table = new StdClasS();
-
-            $table->head = [];
-            $table->data = [];
-            $table->align = [];
-            $table->width = '100%';
-            $table->cellpadding = 0;
-            $table->cellspacing = 0;
-            $table->class = 'databox filters';
-
-            $table->style[0] = 'font-weight: bold';
-
-            // The form to submit when adding a list of components
-            $filter = '<form name="filter_component" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&ncgroup='.$ncgroup.'&id_np='.$id_np.'#filter">';
-            $filter .= html_print_input_text('ncfilter', $ncfilter, '', 50, 255, true);
-            $filter .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
-            $filter .= '</form>';
-
-            $group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
-            $group_filter .= '<div style="width:540px"><a name="filter"></a>';
-            $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
-            if ($result === false) {
-            $result = [];
-            }
-
-            // 2 arrays. 1 with the groups, 1 with the groups by parent
-            $groups = [];
-            $groups_compound = [];
-            foreach ($result as $row) {
-            $groups[$row['id_sg']] = $row['name'];
-            }
-
-            foreach ($result as $row) {
-            $groups_compound[$row['id_sg']] = '';
-            if ($row['parent'] > 1) {
-                $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / ';
-            }
-
-            $groups_compound[$row['id_sg']] .= $row['name'];
-            }
-
-            $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
-
-            $group_filter .= '</div></form>';
-
-            if ($ncgroup > 0) {
-            $sql = sprintf(
-                "
-                SELECT id_nc, name, id_group
-                FROM tnetwork_component
-                WHERE id_group = %d AND name LIKE '%".$ncfilter."%'
-                ORDER BY name",
-                $ncgroup
-            );
-            } else {
-            $sql = "
-                SELECT id_nc, name, id_group
-                FROM tnetwork_component
-                WHERE name LIKE '%".$ncfilter."%'
-                ORDER BY name";
-            }
-
-            $result = db_get_all_rows_sql($sql);
-            $components = [];
-            if ($result === false) {
-            $result = [];
-            }
-
-            foreach ($result as $row) {
-            $components[$row['id_nc']] = $row['name'];
-            }
-
-            $components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-            $components_select .= html_print_select($components, 'components[]', $id_nc, '', '', -1, true, true, false, '" style="width:350px');
-
-            $table->data[0][0] = __('Filter');
-            $table->data[0][1] = $filter;
-            $table->data[1][0] = __('Group');
-            $table->data[1][1] = $group_filter;
-            $table->data[2][0] = __('Components');
-            $table->data[2][1] = $components_select;
-
-            html_print_table($table);
-
-            echo '<div style="width:'.$table->width.'; text-align:right">';
-            html_print_submit_button(__('Add'), 'crtbutton', false, 'class="sub wand"');
-        echo '</div></form>';*/
     }
 
 
@@ -802,7 +738,7 @@ class ModuleTemplates extends HTML
                 $this->id_np
             );
             $moduleBlocks = db_get_all_rows_sql($sql);
-
+            // hd($moduleBlocks);
             if ($moduleBlocks) {
                 $blockTables = [];
                 // Build the information of the blocks
@@ -812,14 +748,14 @@ class ModuleTemplates extends HTML
                             'name' => $block['group_name'],
                             'data' => [],
                         ];
-                    } else {
-                        $blockTables[$block['group']]['data'][] = [
-                            'component_id' => $block['component_id'],
-                            'name'         => $block['name'],
-                            'type'         => $block['type'],
-                            'description'  => $block['description'],
-                        ];
                     }
+
+                    $blockTables[$block['group']]['data'][] = [
+                        'component_id' => $block['component_id'],
+                        'name'         => $block['name'],
+                        'type'         => $block['type'],
+                        'description'  => $block['description'],
+                    ];
                 }
 
                 if (count($blockTables) === 0) {
@@ -911,6 +847,7 @@ class ModuleTemplates extends HTML
         echo $javascript;
 
         if ($createNewBlock === false) {
+            echo '<h1>Add modules</h1>';
             $this->addingModulesForm();
         }
 

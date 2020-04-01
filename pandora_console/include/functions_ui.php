@@ -3711,8 +3711,8 @@ function ui_toggle(
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image($img_a, true, false, true);
-    $image_b = html_print_image($img_b, true, false, true);
+    $image_a = html_print_image($img_a, true, [ 'style' => 'object-fit: contain;' ], true);
+    $image_b = html_print_image($img_b, true, [ 'style' => 'object-fit: contain;' ], true);
     // Options.
     if ($hidden_default) {
         $style = 'display:none';
@@ -3736,6 +3736,7 @@ function ui_toggle(
         $original,
         true,
         [
+            'style' => 'object-fit: contain;',
             'title' => $title,
             'id'    => 'image_'.$uniqid,
         ]

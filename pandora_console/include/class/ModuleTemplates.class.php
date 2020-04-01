@@ -151,8 +151,8 @@ class ModuleTemplates extends HTML
         // Capture all parameters before start.
         $this->id_np            = get_parameter('id_np', -1);
         $this->action           = get_parameter('action_button', '');
+        // Profile exists. Set the attributes with the info.
         if ($this->id_np > 0 || empty($this->action)) {
-            // Profile exists. Set the attributes with the info.
             $this->setNetworkProfile();
         }
 
@@ -907,17 +907,20 @@ class ModuleTemplates extends HTML
             ],
         ];
 
-        // Adding components button.
-        $inputs[] = [
-            'arguments' => [
-                'name'       => 'add_components_button',
-                'label'      => __('Add components'),
-                'type'       => 'button',
-                'attributes' => 'class="sub cog"',
-                'script'     => 'showAddComponent();',
-                'return'     => true,
-            ],
-        ];
+        if ($createNewBlock === false) {
+            // Adding components button.
+            $inputs[] = [
+                'arguments' => [
+                    'name'       => 'add_components_button',
+                    'label'      => __('Add components'),
+                    'type'       => 'button',
+                    'attributes' => 'class="sub cog"',
+                    'script'     => 'showAddComponent();',
+                    'return'     => true,
+                ],
+            ];
+        }
+
         // Required for PEN field.
         ui_require_jquery_file('tag-editor');
         ui_require_css_file('jquery.tag-editor');
@@ -1190,7 +1193,8 @@ class ModuleTemplates extends HTML
                     if (!failed) {
                     $(".ui-dialog-content").dialog("close");
                     $(".info").hide();
-                    location.reload();
+                    var id_np = <?php echo $this->id_np; ?>;
+                    window.location = window.location.href+'&id_np='+id_np;
                     } else {
                     $(this).dialog("close");
                     }

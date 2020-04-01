@@ -3308,7 +3308,7 @@ function get_module_realtime_link_graph($module)
         'agent_alias'    => urlencode(modules_get_agentmodule_agent_alias($module['id_agente_modulo'])),
         'module_name'    => urlencode($module['nombre']),
         'snmp_address'   => $module['ip_target'],
-        'snmp_community' => $module['snmp_community'],
+        'snmp_community' => urlencode($module['snmp_community']),
         'snmp_oid'       => $module['snmp_oid'],
         'snmp_ver'       => $module['tcp_send'],
         'hide_header'    => 1,

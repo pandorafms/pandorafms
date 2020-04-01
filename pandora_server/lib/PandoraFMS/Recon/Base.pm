@@ -1421,6 +1421,8 @@ sub scan_subnet($) {
     # By default 200, (20 * 10)
     my $host_block_size = $self->{'block_size'};
 
+    $host_block_size = 50 unless defined($self->{'block_size'});
+
     # The first 50% of the recon task approx.
     my $step = 25.0 / scalar(@subnets) / (($total_hosts / $host_block_size)+1);
     my $subnet_step = 50.0 / (($total_hosts / $host_block_size)+1);

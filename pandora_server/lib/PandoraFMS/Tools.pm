@@ -1453,6 +1453,8 @@ sub pandora_block_ping($@) {
 	my ($pa_config, @hosts) = @_;
 	my ($cmd, $output);
 
+	return () if is_empty(@hosts);
+
 	if (-x $pa_config->{'fping'}) {
 		# fping timeout in milliseconds
 		$cmd = $pa_config->{'fping'} . " -a -q -t " . (1000 * $pa_config->{'networktimeout'}) . " " . (join (' ', @hosts));

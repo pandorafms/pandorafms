@@ -150,16 +150,12 @@ class ModuleTemplates extends HTML
         $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_module_templates');
         // Capture all parameters before start.
         $this->id_np            = get_parameter('id_np', -1);
-        if ($this->id_np > 0) {
+        $this->action           = get_parameter('action_button', '');
+        if ($this->id_np > 0 || empty($this->action)) {
             // Profile exists. Set the attributes with the info.
             $this->setNetworkProfile();
-        } else {
-            $this->name             = get_parameter('name', '');
-            $this->description      = get_parameter('description', '');
-            $this->pen              = get_parameter('pen', '');
         }
 
-        $this->action           = get_parameter('action_button', '');
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
         $this->ncGroup          = get_parameter('add-modules-group', '0');
@@ -257,7 +253,7 @@ class ModuleTemplates extends HTML
             $this->printHeader(true)
         );
 
-        // Process the data if action is required
+        // Process the data if action is required.
         if (!empty($this->action)) {
             $this->processData();
         }
@@ -330,6 +326,10 @@ class ModuleTemplates extends HTML
                     $numberComponent[] = $tmpNumberComponent[2];
                 }
             }
+
+            $this->name             = get_parameter('name', '');
+            $this->description      = get_parameter('description', '');
+            $this->pen              = get_parameter('pen', '');
 
             switch ($this->action) {
                 case 'Update':

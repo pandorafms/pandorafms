@@ -531,8 +531,8 @@ class ConfigPEN extends HTML
                 'tpen',
                 [
                     'pen'          => $pen,
-                    'manufacturer' => io_safe_input($manufacturer),
-                    'description'  => io_safe_input($description),
+                    'manufacturer' => $manufacturer,
+                    'description'  => $description,
                 ]
             );
             $str = __('created');
@@ -550,8 +550,8 @@ class ConfigPEN extends HTML
             $rs = db_process_sql_update(
                 'tpen',
                 [
-                    'manufacturer' => io_safe_input($manufacturer),
-                    'description'  => io_safe_input($description),
+                    'manufacturer' => $manufacturer,
+                    'description'  => $description,
                 ],
                 ['pen' => $pen]
             );

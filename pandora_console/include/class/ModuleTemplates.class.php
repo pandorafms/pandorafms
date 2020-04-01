@@ -1,6 +1,6 @@
 <?php
 /**
- * Module Block feature.
+ * Module Template feature.
  *
  * @category   Class
  * @package    Pandora FMS
@@ -98,6 +98,27 @@ class ModuleTemplates extends HTML
      */
     private $ncFilter;
 
+    /**
+     * List of valid PENs
+     *
+     * @var string
+     */
+    private $validPen;
+
+    /**
+     * Complete list of PENes.
+     *
+     * @var array.
+     */
+    private $penRefs;
+
+    /**
+     * List of valid PENs
+     *
+     * @var string
+     */
+    private $action;
+
 
     /**
      * Constructor
@@ -129,13 +150,40 @@ class ModuleTemplates extends HTML
         $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_module_templates');
         // Capture all parameters before start.
         $this->id_np            = get_parameter('id_np', -1);
-        $this->name             = get_parameter('name', '');
-        $this->description      = get_parameter('description', '');
-        $this->pen              = get_parameter('pen', '');
+        if ($this->id_np > 0) {
+            // Profile exists. Set the attributes with the info.
+            $this->setNetworkProfile();
+        } else {
+            $this->name             = get_parameter('name', '');
+            $this->description      = get_parameter('description', '');
+            $this->pen              = get_parameter('pen', '');
+        }
+
+        $this->action           = get_parameter('action_button', '');
         $this->offset           = get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
         $this->ncGroup          = get_parameter('add-modules-group', '0');
         $this->ncFilter         = get_parameter('add-modules-filter', '');
+        // Get all of PENs valid for autocomplete.
+        $getPENs = db_get_all_rows_sql('SELECT pen,manufacturer FROM tpen');
+        $outputPENs = [];
+
+        $this->validPen = '';
+        $this->penRefs = [];
+        foreach ($getPENs as $pen) {
+            $this->validPen .= ((int) $pen['pen']).',';
+            $this->penRefs[] = [
+                'label' => io_safe_output($pen['manufacturer']),
+                'value' => $pen['pen'],
+            ];
+            // Reverse autocompletion.
+            $this->penRefs[] = [
+                'label' => $pen['pen'],
+                'value' => $pen['pen'],
+            ];
+        }
+
+        chop($this->validPen);
 
         return $this;
     }
@@ -148,35 +196,53 @@ class ModuleTemplates extends HTML
      */
     public function run()
     {
-        // Require specific CSS and JS.
+        // CSS.
         ui_require_css_file('wizard');
         ui_require_css_file('discovery');
 
-        // Header section.
+        // Javascript.
+        ui_require_javascript_file('jquery.caret.min');
+
         // Breadcrums.
         $this->setBreadcrum([]);
 
-        $this->prepareBreadcrum(
-            [
-                [
-                    'link'     => '',
-                    'label'    => __('Configuration'),
-                    'selected' => false,
-                ],
-                [
-                    'link'     => '',
-                    'label'    => __('Templates'),
-                    'selected' => false,
-                ],
-                [
-                    'link'     => $this->baseUrl,
-                    'label'    => __('Module template management'),
-                    'selected' => true,
-                ],
-            ],
-            true
-        );
+        if ($this->id_np > 0) {
+            // Add a breadcrumb with the current template.
+            $urlToGo = $this->baseUrl.'&id_np='.$this->id_np;
 
+            $this->prepareBreadcrum(
+                [
+                    ['label' => __('Configuration')],
+                    ['label' => __('Templates')],
+                    [
+                        'link'     => $this->baseUrl,
+                        'label'    => __('Module template management'),
+                        'selected' => false,
+                    ],
+                    [
+                        'link'     => $urlToGo,
+                        'label'    => $this->name,
+                        'selected' => true,
+                    ],
+                ],
+                true
+            );
+        } else {
+            $this->prepareBreadcrum(
+                [
+                    ['label' => __('Configuration')],
+                    ['label' => __('Templates')],
+                    [
+                        'link'     => $this->baseUrl,
+                        'label'    => __('Module template management'),
+                        'selected' => true,
+                    ],
+                ],
+                true
+            );
+        }
+
+        // Prints the header.
         ui_print_page_header(
             __('Module template management'),
             '',
@@ -191,17 +257,56 @@ class ModuleTemplates extends HTML
             $this->printHeader(true)
         );
 
+        // Process the data if action is required
+        if (!empty($this->action)) {
+            $this->processData();
+        }
+
+        if ($this->id_np === -1) {
+            // List all Module Blocks.
+            $this->moduleTemplateList();
+        } else {
+            // Show form for create or update template.
+            $this->moduleTemplateForm();
+        }
+
+        $this->loadJS();
     }
 
 
     /**
-     * Get the value of this current thing ???
+     * Minor function to dump json message as ajax response.
      *
-     * @return integer Id of this thing ???
+     * @param string $type Type: result || error.
+     * @param string $msg  Message.
+     *
+     * @return void
      */
-    public function getIdNp()
+    private function ajaxMsg($type, $msg)
     {
-        return $this->id_np;
+        if ($type == 'error') {
+            echo json_encode(
+                [
+                    $type => ui_print_error_message(
+                        __($msg),
+                        '',
+                        true
+                    ),
+                ]
+            );
+        } else {
+            echo json_encode(
+                [
+                    $type => ui_print_success_message(
+                        __($msg),
+                        '',
+                        true
+                    ),
+                ]
+            );
+        }
+
+        exit;
     }
 
 
@@ -212,13 +317,12 @@ class ModuleTemplates extends HTML
      */
     public function processData()
     {
-        // Get action if is needed.
-        $action         = get_parameter('submit_button', '');
+        // Only needed if process data.
         $modules_submit = get_parameter('add-modules-submit', '');
         // Success variable.
         $success     = false;
         // Evaluate the modules allowed.
-        if (!empty($action)) {
+        if (!empty($this->action)) {
             $numberComponent = [];
             foreach ($_POST as $k => $value) {
                 if (strpos($k, 'module_check_') >= 0 && $value == 1) {
@@ -227,7 +331,7 @@ class ModuleTemplates extends HTML
                 }
             }
 
-            switch ($action) {
+            switch ($this->action) {
                 case 'Update':
                     $dbResult_tnp = db_process_sql_update(
                         'tnetwork_profile',
@@ -263,6 +367,12 @@ class ModuleTemplates extends HTML
                             $success = true;
                         }
                     }
+
+                    if ($success === true) {
+                        $msg = __('Template %s successfully updated', $this->name);
+                    } else {
+                        $msg = __('Error updating template');
+                    }
                 break;
 
                 case 'Create':
@@ -295,30 +405,74 @@ class ModuleTemplates extends HTML
                             $success = true;
                         }
                     }
-                break;
 
-                case 'Delete':
-                    // Only in this case, catch delete_profile.
-                    $deleteProfile = get_parameter('delete_profile', -1);
-                    $dbResult = db_process_sql_delete('tnetwork_profile', ['id_np' => $deleteProfile]);
-
-                    if ($dbResult != false) {
-                        $success = true;
+                    if ($success === true) {
+                        $msg = __('Template %s successfully created', $this->name);
+                    } else {
+                        $msg = __('Error creating template');
                     }
                 break;
 
+                case 'Delete':
+                    $success = db_process_sql_delete('tnetwork_profile', ['id_np' => $this->id_np]);
+
+                    if ($success != false) {
+                        $msg = __('Template %s successfully deleted', $this->name);
+                    } else {
+                        $msg = __('Error deleting %s template', $this->name);
+                    }
+
+                    // Reset id_np for show the templates list.
+                    $this->id_np = -1;
+                break;
+
                 default:
-                    $success = false;
+                    // There is possible want do an action detailed.
+                    $action_detailed = explode('_', $this->action);
+                    // Action deletion.
+                    if ($action_detailed[0] === 'del') {
+                        // Block or Module is affected.
+                        switch ($action_detailed[1]) {
+                            case 'module':
+                                $success = $this->deleteModule($action_detailed[2]);
+
+                                if ($success != false) {
+                                    $msg = __('Module successfully deleted');
+                                } else {
+                                    $msg = __('Error deleting module');
+                                }
+                            break;
+
+                            case 'block':
+                                $block = explode('-', $action_detailed[2]);
+                                foreach ($block as $module) {
+                                    $success = $this->deleteModule($module);
+                                }
+
+                                if ($success != false) {
+                                    $msg = __('Block successfully deleted');
+                                } else {
+                                    $msg = __('Error deleting block');
+                                }
+                            break;
+
+                            default:
+                                // Do nothing.
+                            break;
+                        }
+                    } else {
+                        $msg = __('Something gone wrong. Please, try again');
+                    }
                 break;
             }
 
             if ($success === false) {
-                ui_print_error_message(__('Error saving data'));
+                ui_print_error_message($msg);
             } else {
-                ui_print_success_message(__('Changes saved sucessfully'));
+                ui_print_success_message($msg);
             }
         } else if ($modules_submit != '') {
-            $modulesToAdd = get_parameter('add-modules-components-values', '');
+            $modulesToAdd = get_parameter('add-modules-components', '');
             $modulesToAddList = explode(',', $modulesToAdd);
 
             foreach ($modulesToAddList as $module) {
@@ -330,8 +484,30 @@ class ModuleTemplates extends HTML
                     ]
                 );
             }
-        }
 
+            $this->ajaxMsg('result', __('Components added sucessfully'));
+        }
+    }
+
+
+    /**
+     * Delete of block the module desired
+     *
+     * @param integer $id_module Id of module that must delete.
+     *
+     * @return mixed Return false if something went wrong.
+     */
+    private function deleteModule($id_module)
+    {
+        $dbResult = db_process_sql_delete(
+            'tnetwork_profile_component',
+            [
+                'id_np' => $this->id_np,
+                'id_nc' => $id_module,
+            ]
+        );
+
+        return $dbResult;
     }
 
 
@@ -342,7 +518,7 @@ class ModuleTemplates extends HTML
      */
     public function addingModulesForm()
     {
-        // Get the groups for select input
+        // Get the groups for select input.
         $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
         if ($result === false) {
             $result = [];
@@ -362,11 +538,9 @@ class ModuleTemplates extends HTML
             if ($row['parent'] > 1) {
                 $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / ';
             }
-
-            $groups_compound[$row['id_sg']] .= $row['name'];
         }
 
-        // Get the components for show in a list for select
+        // Get the components for show in a list for select.
         if ($this->ncGroup > 0) {
             $sql = sprintf(
                 "
@@ -399,7 +573,7 @@ class ModuleTemplates extends HTML
             'action' => $this->baseUrl,
             'id'     => 'add_module_form',
             'method' => 'POST',
-            'class'  => 'databox filters',
+            'class'  => 'modal',
             'extra'  => '',
         ];
 
@@ -439,6 +613,17 @@ class ModuleTemplates extends HTML
         ];
 
         $inputs[] = [
+            'arguments' => [
+                'label'      => __('Filter'),
+                'name'       => 'add-modules-submit',
+                'type'       => 'button',
+                'script'     => 'this.form.submit()',
+                'attributes' => 'class="sub search"',
+                'return'     => true,
+            ],
+        ];
+
+        $inputs[] = [
             'label'     => __('Group'),
             'id'        => 'add-modules-group',
             'arguments' => [
@@ -454,7 +639,7 @@ class ModuleTemplates extends HTML
 
         $inputs[] = [
             'label'     => __('Components'),
-            'id'        => 'slc-add-modules-components2',
+            'id'        => 'slc-add-modules-components',
             'arguments' => [
                 'name'        => 'add-modules-components',
                 'input_class' => 'flex-row',
@@ -465,17 +650,7 @@ class ModuleTemplates extends HTML
             ],
         ];
 
-        $inputs[] = [
-            'arguments' => [
-                'label'      => __('Add components'),
-                'name'       => 'add-modules-submit',
-                'type'       => 'submit',
-                'attributes' => 'class="sub wand"',
-                'return'     => true,
-            ],
-        ];
-
-        $this->printFormAsList(
+        $this->printForm(
             [
                 'form'   => $form,
                 'inputs' => $inputs,
@@ -492,7 +667,6 @@ class ModuleTemplates extends HTML
      */
     private function setNetworkProfile()
     {
-        // Get t
         $profileInfo = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
         $this->name = $profileInfo['name'];
         $this->description = $profileInfo['description'];
@@ -510,9 +684,9 @@ class ModuleTemplates extends HTML
     /**
      * Create the table with the list of Blocks Templates
      *
-     * @return html Formed table
+     * @return void
      */
-    public function moduleBlockList()
+    public function moduleTemplateList()
     {
         global $config;
         // Get the count of Blocks.
@@ -583,7 +757,7 @@ class ModuleTemplates extends HTML
                 true,
                 ['title' => 'Export to CSV']
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&submit_button=Delete&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&action_button=Delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
             $data[3] .= '<a href="'.$this->baseUrl.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
             array_push($table->data, $data);
@@ -633,6 +807,8 @@ class ModuleTemplates extends HTML
 
     /**
      * Prints Form for template management
+     *
+     * @return mixed
      */
     public function moduleTemplateForm()
     {
@@ -648,17 +824,15 @@ class ModuleTemplates extends HTML
             $formButtonClass = 'sub upd';
             $formButtonValue = 'update';
             $formButtonLabel = __('Update');
-            // Profile exists. Set the attributes with the info.
-            $this->setNetworkProfile();
         }
 
         // Main form.
         $form = [
             'action' => $this->baseUrl,
-            'id'     => 'module_block_form',
+            'id'     => 'module_template_form',
             'method' => 'POST',
             'class'  => 'databox filters',
-            'extra'  => '',
+            'extra'  => 'id="module_template_form"',
         ];
 
         // Inputs.
@@ -672,6 +846,16 @@ class ModuleTemplates extends HTML
                 'name'   => 'id_np',
                 'type'   => 'hidden',
                 'value'  => $this->id_np,
+                'return' => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'id'        => 'inp-valid-pen',
+            'arguments' => [
+                'name'   => 'valid-pen',
+                'type'   => 'hidden',
+                'value'  => $this->validPen,
                 'return' => true,
             ],
         ];
@@ -714,7 +898,7 @@ class ModuleTemplates extends HTML
 
         $inputs[] = [
             'arguments' => [
-                'name'       => 'submit_button',
+                'name'       => 'action_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
                 'value'      => $formButtonValue,
@@ -723,10 +907,20 @@ class ModuleTemplates extends HTML
             ],
         ];
 
+        // Adding components button.
+        $inputs[] = [
+            'arguments' => [
+                'name'       => 'add_components_button',
+                'label'      => __('Add components'),
+                'type'       => 'button',
+                'attributes' => 'class="sub cog"',
+                'script'     => 'showAddComponent();',
+                'return'     => true,
+            ],
+        ];
+        // Required for PEN field.
         ui_require_jquery_file('tag-editor');
         ui_require_css_file('jquery.tag-editor');
-
-        $js = '$(\'#text-pen\').tagEditor();';
 
         if ($createNewBlock === false) {
             // Get the data.
@@ -738,10 +932,10 @@ class ModuleTemplates extends HTML
                 $this->id_np
             );
             $moduleBlocks = db_get_all_rows_sql($sql);
-            // hd($moduleBlocks);
+
             if ($moduleBlocks) {
                 $blockTables = [];
-                // Build the information of the blocks
+                // Build the information of the blocks.
                 foreach ($moduleBlocks as $block) {
                     if (key_exists($block['group'], $blockTables) === false) {
                         $blockTables[$block['group']] = [
@@ -762,9 +956,32 @@ class ModuleTemplates extends HTML
                     ui_print_info_message(__('No module blocks for this profile'));
                 } else {
                     foreach ($blockTables as $id_group => $blockTable) {
+                        // Data with all components.
                         $blockData = $blockTable['data'];
-                        $blockTitle = $blockTable['name'];
-                        $blockTitle .= '<div class="white_table_header_checkbox">'.html_print_checkbox_switch_extended('block_id_'.$id_group, 1, 0, false, '', '', true).'</div>';
+                        // Creation of list of all components.
+                        $blockComponentList = '';
+                        foreach ($blockData as $component) {
+                            $blockComponentList .= $component['component_id'].'-';
+                        }
+
+                        $blockComponentList = chop($blockComponentList, '-');
+                        // Title of Block.
+                        $blockTitle = '<div style="padding-top: 8px;">';
+                        $blockTitle .= $blockTable['name'];
+                        $blockTitle .= '<div class="white_table_header_checkbox">';
+                        $blockTitle .= html_print_input_image(
+                            'del_block_'.$id_group.'_',
+                            'images/cross.png',
+                            1,
+                            false,
+                            true,
+                            [
+                                'title'   => __('Delete this block'),
+                                'onclick' => 'if(confirm(\''.__('Do you want delete this block?').'\')){deleteModuleTemplate(\'block\',\''.$blockComponentList.'\')};return false;',
+                            ]
+                        );
+
+                        $blockTitle .= '</div></div>';
 
                         $table = new StdClasS();
                         $table->class = 'databox data';
@@ -782,7 +999,7 @@ class ModuleTemplates extends HTML
                         $table->head[0] = __('Module Name');
                         $table->head[1] = __('Type');
                         $table->head[2] = __('Description');
-                        $table->head[3] = '<span style="float:right;margin-right:2em;">'.__('Add').'</span>';
+                        $table->head[3] = '<span style="float:right;margin-right:1.2em;">'.__('Delete').'</span>';
 
                         $table->size = [];
                         $table->size[0] = '20%';
@@ -801,7 +1018,17 @@ class ModuleTemplates extends HTML
                             $data[0] = $module['name'];
                             $data[1] = ui_print_moduletype_icon($module['type'], true);
                             $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
-                            $data[3] = html_print_checkbox_switch_extended('module_check_'.$id_group.'_'.$module['component_id'], 1, 0, false, 'switchBlockControl(event)', '', true);
+                            $data[3] = html_print_input_image(
+                                'del_module_'.$module['component_id'].'_',
+                                'images/cross.png',
+                                1,
+                                '',
+                                true,
+                                [
+                                    'title'   => __('Delete this module'),
+                                    'onclick' => 'if(confirm(\''.__('Do you want delete this module?').'\')){deleteModuleTemplate(\'module\','.$module['component_id'].')};return false;',
+                                ]
+                            );
 
                             array_push($table->data, $data);
                         }
@@ -821,37 +1048,194 @@ class ModuleTemplates extends HTML
                 'form'      => $form,
                 'inputs'    => $inputs,
                 'rawInputs' => $rawInputs,
-                'js'        => $js,
                 true
             ]
         );
 
-        $javascript = "
-            <script>
-            function switchBlockControl(e){
-                var switchId = e.target.id.split('_');
-                var blockNumber = switchId[1];
-                var switchNumber = switchId[2];
-            
-                $('[id*=checkbox-switch_'+blockNumber+']').each(function(){
-                    console.log($(this).val());
-                })
-            
-                console.log(blockNumber);
-                console.log(switchNumber);
-                
-            }
-            </script>
-        ";
-
-        echo $javascript;
-
         if ($createNewBlock === false) {
-            echo '<h1>Add modules</h1>';
-            $this->addingModulesForm();
+            echo '<div style="display:none;" id="modal"></div>';
+            echo '<div style="display:none;" id="msg"></div>';
         }
 
         $this->printGoBackButton($this->baseUrl);
+    }
+
+
+    /**
+     * Loads JS and return code.
+     *
+     * @return string
+     */
+    public function loadJS()
+    {
+        $str = '';
+
+        ob_start();
+        ?>
+        <script type="text/javascript">
+
+        function deleteModuleTemplate(type, id){
+                var input_hidden = '<input type="hidden" name="action_button" value="del_'+type+'_'+id+'"/>';
+                $('#module_template_form').append(input_hidden);
+                $('#module_template_form').submit();
+        }
+
+        function switchBlockControl(e) {
+            var switchId = e.target.id.split("_");
+            var blockNumber = switchId[2];
+            var switchNumber = switchId[3];
+            var totalCount = 0;
+            var markedCount = 0;
+        
+            $("[id*=checkbox-module_check_" + blockNumber + "]").each(function() {
+            if ($(this).prop("checked")) {
+                markedCount++;
+            }
+            totalCount++;
+            });
+        
+            if (totalCount == markedCount) {
+            $("#checkbox-block_id_" + blockNumber).prop("checked", true);
+            $("#checkbox-block_id_" + blockNumber)
+                .parent()
+                .removeClass("alpha50");
+            } else if (markedCount == 0) {
+            $("#checkbox-block_id_" + blockNumber).prop("checked", false);
+            $("#checkbox-block_id_" + blockNumber)
+                .parent()
+                .removeClass("alpha50");
+            } else {
+            $("#checkbox-block_id_" + blockNumber).prop("checked", true);
+            $("#checkbox-block_id_" + blockNumber)
+                .parent()
+                .addClass("alpha50");
+            }
+        }
+        
+        function showAddComponent() {
+            var btn_ok_text = "<?php echo __('OK'); ?>";
+            var btn_cancel_text = "<?php echo __('Cancel'); ?>";
+            var title = "<?php echo __('Add components'); ?>";
+        
+            load_modal({
+            target: $("#modal"),
+            form: "add_module_form",
+            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            ajax_callback: showMsg,
+            modal: {
+                title: title,
+                ok: btn_ok_text,
+                cancel: btn_cancel_text
+            },
+            extradata: [
+                {
+                name: "id_np",
+                value: "<?php echo $this->id_np; ?>"
+                }
+            ],
+            onshow: {
+                page: "<?php echo $this->ajaxController; ?>",
+                method: "addingModulesForm"
+            },
+            onsubmit: {
+                page: "<?php echo $this->ajaxController; ?>",
+                method: "processData"
+            }
+            });
+        }
+        
+        /**
+        * Process ajax responses and shows a dialog with results.
+        */
+        function showMsg(data) {
+            var title = "<?php echo __('Success'); ?>";
+            var text = "";
+            var failed = 0;
+            try {
+            data = JSON.parse(data);
+            text = data["result"];
+            } catch (err) {
+            title = "<?php echo __('Failed'); ?>";
+            text = err.message;
+            failed = 1;
+            }
+            if (!failed && data["error"] != undefined) {
+            title = "<?php echo __('Failed'); ?>";
+            text = data["error"];
+            failed = 1;
+            }
+            if (data["report"] != undefined) {
+            data["report"].forEach(function(item) {
+                text += "<br>" + item;
+            });
+            }
+        
+            $("#msg").empty();
+            $("#msg").html(text);
+            $("#msg").dialog({
+            width: 450,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "fit"
+            },
+            title: title,
+            buttons: [
+                {
+                class:
+                    "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+                text: "OK",
+                click: function(e) {
+                    if (!failed) {
+                    $(".ui-dialog-content").dialog("close");
+                    $(".info").hide();
+                    location.reload();
+                    } else {
+                    $(this).dialog("close");
+                    }
+                }
+                }
+            ]
+            });
+        }
+        
+        $(document).ready(function() {
+            var listValidPens = $("#hidden-valid-pen").val();
+            try {
+                listValidPens = listValidPens.split(',');
+            } catch (e) {
+                console.error(e);
+                return;
+            }
+
+            //Adding tagEditor for PEN management.
+            $("#text-pen").tagEditor({
+            beforeTagSave: function(field, editor, tags, tag, val) {
+                if (listValidPens.indexOf(val) == -1) {
+                return false;
+                }
+            },
+            autocomplete: {
+                source: <?php echo json_encode($this->penRefs); ?>
+
+            }
+            });
+            //Values for add.
+            $("#add-modules-components").change(function() {
+            var valores = $("#add-modules-components")
+                .val()
+                .join(",");
+            $("#hidden-add-modules-components-values").val(valores);
+            });
+        });
+
+    </script>
+
+        <?php
+        $str = ob_get_clean();
+        echo $str;
+        return $str;
     }
 
 

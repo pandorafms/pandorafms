@@ -1020,11 +1020,10 @@ class HostDevices extends Wizard
                     true
                 ),
                 'arguments' => [
-                    'name'    => 'auto_monitor',
-                    'type'    => 'switch',
-                    'return'  => true,
-                    'value'   => (isset($this->task['auto_monitor'])) ? $this->task['auto_monitor'] : 1,
-                    'onclick' => 'toggleTemplatesSelection();',
+                    'name'   => 'auto_monitor',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['auto_monitor'])) ? $this->task['auto_monitor'] : 1,
                 ],
             ];
 
@@ -1129,36 +1128,10 @@ class HostDevices extends Wizard
                 }
             }
 
-            $form['js'] .= '
-
-    function toggleTemplatesSelection() {
-        if (document.getElementsByName("auto_monitor")[0].checked) {
-            document.getElementById("templates_selection").style["display"] = "none";
-            var snmp = document.getElementsByName("snmp_enabled");
-            if (snmp[0] != undefined) {
-                if(snmp[0].checked != 1) {
-                    snmp[0].click();
-                }
-            } else {
-                // Not found.
-                document.getElementById("templates_selection").style["display"] = "block";
-                document.getElementsByName("auto_monitor")[0].checked = false;
-            }
-        } else {
-            document.getElementById("templates_selection").style["display"] = "block";
-        }
-    }
-
-    $(document).ready(function () {
-        toggleTemplatesSelection();
-    });
-
-';
-
             // Submit button.
             $form['inputs'][] = [
                 'arguments' => [
-                    'name'       => 'submit',
+                    'name'       => 'submit-finish',
                     'label'      => __('Finish'),
                     'type'       => 'submit',
                     'attributes' => 'class="sub next"',

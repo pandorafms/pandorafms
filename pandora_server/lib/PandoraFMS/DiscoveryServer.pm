@@ -938,6 +938,9 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       $self->{'task_data'}{'id_rt'}
     );
 
+    # Return if no entries.
+    return unless scalar @rows > 0;
+
     my @agents;
 
     my $progress = 0;

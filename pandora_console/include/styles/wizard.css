@@ -28,7 +28,7 @@ ul.wizard li > textarea {
 }
 
 .wizard .hidden {
-  display: none !important;
+  display: none;
 }
 
 .wizard .indented {

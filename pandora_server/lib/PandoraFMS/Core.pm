@@ -3905,7 +3905,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					'direccion' => $trap_agent,
 					'comentarios' => '',
 					'id_agente' =>  0,
-					'id_grupo' => 0
+					'id_grupo' => $alert->{'id_group'}
 				);
 			}
 			

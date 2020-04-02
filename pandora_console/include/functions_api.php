@@ -13541,6 +13541,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
     // 1 hour by default.
     $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
+    // Graph height when send email by alert
+    $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : null;
+
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
         // returnError('error_module_graph', __(''));
         return;

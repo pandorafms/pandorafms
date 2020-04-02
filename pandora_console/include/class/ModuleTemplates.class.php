@@ -314,11 +314,11 @@ class ModuleTemplates extends HTML
     public function processData()
     {
         // Only needed if process data.
-        $modules_submit = get_parameter('add-modules-submit', '');
-        // Success variable.
-        $success     = false;
+        $modulesToAdd = get_parameter('add-modules-components', '');
         // Evaluate the modules allowed.
         if (!empty($this->action)) {
+            // Success variable.
+            $success     = false;
             $this->name             = get_parameter('name', '');
             $this->description      = get_parameter('description', '');
             $this->pen              = get_parameter('pen', '');
@@ -494,10 +494,8 @@ class ModuleTemplates extends HTML
             } else {
                 ui_print_success_message($msg);
             }
-        } else if ($modules_submit != '') {
-            $modulesToAdd = get_parameter('add-modules-components', '');
+        } else if ($modulesToAdd != '') {
             $modulesToAddList = explode(',', $modulesToAdd);
-
             foreach ($modulesToAddList as $module) {
                 db_process_sql_insert(
                     'tnetwork_profile_component',
@@ -591,8 +589,8 @@ class ModuleTemplates extends HTML
                 'return' => true,
             ],
         ];
-
-        $inputs[] = [
+        /*
+            $inputs[] = [
             'id'        => 'add-modules-components-values',
             'arguments' => [
                 'name'   => 'add-modules-components-values',
@@ -600,28 +598,18 @@ class ModuleTemplates extends HTML
                 'value'  => '',
                 'return' => true,
             ],
-        ];
-
+            ];
+        */
         $inputs[] = [
             'label'     => __('Filter'),
             'id'        => 'txt-add-modules-filter',
             'arguments' => [
-                'name'        => 'add-modules-filter',
                 'input_class' => 'flex-row',
                 'type'        => 'text',
+                'size'        => '57',
+                'onKeyDown'   => 'filterTextComponents(event);',
                 'value'       => '',
                 'return'      => true,
-            ],
-        ];
-
-        $inputs[] = [
-            'arguments' => [
-                'label'      => __('Filter'),
-                'name'       => 'add-modules-submit',
-                'type'       => 'button',
-                'script'     => 'this.form.submit()',
-                'attributes' => 'class="sub search"',
-                'return'     => true,
             ],
         ];
 
@@ -629,10 +617,9 @@ class ModuleTemplates extends HTML
             'label'     => __('Group'),
             'id'        => 'add-modules-group',
             'arguments' => [
-                'name'        => 'add-modules-group',
                 'input_class' => 'flex-row',
                 'type'        => 'select',
-                'script'      => 'this.form.submit()',
+                'script'      => '',
                 'fields'      => $groups_compound,
                 'nothing'     => $groups_compound[$this->ncGroup],
                 'return'      => true,
@@ -645,6 +632,7 @@ class ModuleTemplates extends HTML
             'arguments' => [
                 'name'        => 'add-modules-components',
                 'input_class' => 'flex-row',
+                'style'       => 'width:100%;',
                 'type'        => 'select',
                 'multiple'    => true,
                 'fields'      => $components,
@@ -1099,6 +1087,22 @@ class ModuleTemplates extends HTML
             $('#module_template_form').submit();
         }
        
+       /**
+        * Filter with text the components form
+        */
+        function filterTextComponents(e){
+            var text_search = e.target.value;
+            text_search = text_search.toLowerCase();
+            $('#add-modules-components').children().each(function(){
+                var name = $(this).text().toLowerCase();
+                if (name.indexOf(text_search) === -1) {
+                    $(this).css('display','none');
+                } else {
+                    $(this).css('display','block');
+                }
+            });
+        }
+
         /**
         * Show the modal with list of entire components
         */
@@ -1132,6 +1136,7 @@ class ModuleTemplates extends HTML
                 method: "processData"
             }
             });
+
         }
         
         /**
@@ -1242,7 +1247,7 @@ class ModuleTemplates extends HTML
             var valores = $("#add-modules-components")
                 .val()
                 .join(",");
-            $("#hidden-add-modules-components-values").val(valores);
+            //$("#hidden-add-modules-components-values").val(valores);
             });
         });
 

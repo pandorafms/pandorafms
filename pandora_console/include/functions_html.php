@@ -1550,7 +1550,8 @@ function html_print_input_text(
     $class='',
     $onChange='',
     $autocomplete='',
-    $autofocus=false
+    $autofocus=false,
+    $onKeyDown=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -1573,6 +1574,10 @@ function html_print_input_text(
 
     if ($onChange != '') {
         $attr['onchange'] = $onChange;
+    }
+
+    if ($onKeyDown != '') {
+        $attr['onkeydown'] = $onKeyDown;
     }
 
     if ($autocomplete !== '') {
@@ -3451,7 +3456,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                false,
+                ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : '')
             );
         break;
 

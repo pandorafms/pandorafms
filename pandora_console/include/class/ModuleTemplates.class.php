@@ -319,14 +319,6 @@ class ModuleTemplates extends HTML
         $success     = false;
         // Evaluate the modules allowed.
         if (!empty($this->action)) {
-            $numberComponent = [];
-            foreach ($_POST as $k => $value) {
-                if (strpos($k, 'module_check_') >= 0 && $value == 1) {
-                    $tmpNumberComponent = explode('_', $k);
-                    $numberComponent[] = $tmpNumberComponent[2];
-                }
-            }
-
             $this->name             = get_parameter('name', '');
             $this->description      = get_parameter('description', '');
             $this->pen              = get_parameter('pen', '');
@@ -434,7 +426,10 @@ class ModuleTemplates extends HTML
                         // Block or Module is affected.
                         switch ($action_detailed[1]) {
                             case 'module':
-                                $success = $this->deleteModule($action_detailed[2]);
+                                $success = db_process_sql_delete(
+                                    'tnetwork_profile_component',
+                                    'id_nc='.$action_detailed[2].' AND id_np='.$this->id_np
+                                );
 
                                 if ($success != false) {
                                     $msg = __('Module successfully deleted');
@@ -444,16 +439,44 @@ class ModuleTemplates extends HTML
                             break;
 
                             case 'block':
-                                $block = explode('-', $action_detailed[2]);
-                                foreach ($block as $module) {
-                                    $success = $this->deleteModule($module);
-                                }
+                                $success = db_process_sql_delete(
+                                    'tnetwork_profile_component',
+                                    'id_nc in ('.$action_detailed[2].') AND id_np='.$this->id_np
+                                );
 
                                 if ($success != false) {
                                     $msg = __('Block successfully deleted');
                                 } else {
                                     $msg = __('Error deleting block');
                                 }
+                            break;
+
+                            case 'template':
+                                if ($action_detailed[2] === 'all') {
+                                    $success = db_process_sql_delete(
+                                        'tnetwork_profile',
+                                        ['1' => 1]
+                                    );
+
+                                    if ($success != false) {
+                                        $msg = __('All templates deleted');
+                                    } else {
+                                        $msg = __('Error deleting all templates');
+                                    }
+                                } else {
+                                    $success = db_process_sql_delete(
+                                        'tnetwork_profile',
+                                        'id_np in ('.$action_detailed[2].')'
+                                    );
+
+                                    if ($success != false) {
+                                        $msg = __('Selected templates deleted');
+                                    } else {
+                                        $msg = __('Error deleting selected templates');
+                                    }
+                                }
+
+                                $this->id_np = -1;
                             break;
 
                             default:
@@ -487,27 +510,6 @@ class ModuleTemplates extends HTML
 
             $this->ajaxMsg('result', __('Components added sucessfully'));
         }
-    }
-
-
-    /**
-     * Delete of block the module desired
-     *
-     * @param integer $id_module Id of module that must delete.
-     *
-     * @return mixed Return false if something went wrong.
-     */
-    private function deleteModule($id_module)
-    {
-        $dbResult = db_process_sql_delete(
-            'tnetwork_profile_component',
-            [
-                'id_np' => $this->id_np,
-                'id_nc' => $id_module,
-            ]
-        );
-
-        return $dbResult;
     }
 
 
@@ -690,13 +692,13 @@ class ModuleTemplates extends HTML
     {
         global $config;
         // Get the count of Blocks.
-        $countModuleBlocks = db_get_value(
+        $countModuleTemplates = db_get_value(
             'count(*)',
             'tnetwork_profile'
         );
 
         // Get all the data.
-        $resultModuleBlocksTable = db_get_all_rows_filter(
+        $resultModuleTemplatesTable = db_get_all_rows_filter(
             'tnetwork_profile',
             [
                 'order'  => 'name',
@@ -705,7 +707,7 @@ class ModuleTemplates extends HTML
             ]
         );
 
-        ui_pagination($countModuleBlocks, false, $this->offset);
+        ui_pagination($countModuleTemplates, false, $this->offset);
         // Create the table with Module Block list.
         $table = new StdClasS();
         $table->class = 'databox data';
@@ -735,7 +737,7 @@ class ModuleTemplates extends HTML
 
         $table->data = [];
 
-        foreach ($resultModuleBlocksTable as $row) {
+        foreach ($resultModuleTemplatesTable as $row) {
             $data = [];
             $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
             $data[1] = '<a href="'.$this->baseUrl.'&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
@@ -770,6 +772,7 @@ class ModuleTemplates extends HTML
         $form = [
             'method' => 'POST',
             'action' => $this->baseUrl,
+            'id'     => 'main_management_form',
         ];
 
         $inputs[] = [
@@ -787,6 +790,16 @@ class ModuleTemplates extends HTML
                 'name'       => 'crt',
                 'type'       => 'submit',
                 'attributes' => 'class="sub wand"',
+                'return'     => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'arguments' => [
+                'label'      => __('Delete selected'),
+                'name'       => 'erase',
+                'type'       => 'button',
+                'attributes' => 'class="sub cancel"',
                 'return'     => true,
             ],
         ];
@@ -812,9 +825,9 @@ class ModuleTemplates extends HTML
      */
     public function moduleTemplateForm()
     {
-        $createNewBlock = ($this->id_np == 0) ? true : false;
+        $createNewTemplate = ($this->id_np == 0) ? true : false;
 
-        if ($createNewBlock) {
+        if ($createNewTemplate) {
             // Assignation for submit button.
             $formButtonClass = 'sub wand';
             $formButtonValue = 'create';
@@ -907,7 +920,7 @@ class ModuleTemplates extends HTML
             ],
         ];
 
-        if ($createNewBlock === false) {
+        if ($createNewTemplate === false) {
             // Adding components button.
             $inputs[] = [
                 'arguments' => [
@@ -925,7 +938,7 @@ class ModuleTemplates extends HTML
         ui_require_jquery_file('tag-editor');
         ui_require_css_file('jquery.tag-editor');
 
-        if ($createNewBlock === false) {
+        if ($createNewTemplate === false) {
             // Get the data.
             $sql = sprintf(
                 'SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_group AS `group`, ncg.name AS `group_name`
@@ -964,10 +977,10 @@ class ModuleTemplates extends HTML
                         // Creation of list of all components.
                         $blockComponentList = '';
                         foreach ($blockData as $component) {
-                            $blockComponentList .= $component['component_id'].'-';
+                            $blockComponentList .= $component['component_id'].',';
                         }
 
-                        $blockComponentList = chop($blockComponentList, '-');
+                        $blockComponentList = chop($blockComponentList, ',');
                         // Title of Block.
                         $blockTitle = '<div style="padding-top: 8px;">';
                         $blockTitle .= $blockTable['name'];
@@ -1055,7 +1068,7 @@ class ModuleTemplates extends HTML
             ]
         );
 
-        if ($createNewBlock === false) {
+        if ($createNewTemplate === false) {
             echo '<div style="display:none;" id="modal"></div>';
             echo '<div style="display:none;" id="msg"></div>';
         }
@@ -1077,44 +1090,18 @@ class ModuleTemplates extends HTML
         ?>
         <script type="text/javascript">
 
+        /**
+        * Function for action of delete modules or blocks in template form
+        */
         function deleteModuleTemplate(type, id){
-                var input_hidden = '<input type="hidden" name="action_button" value="del_'+type+'_'+id+'"/>';
-                $('#module_template_form').append(input_hidden);
-                $('#module_template_form').submit();
+            var input_hidden = '<input type="hidden" name="action_button" value="del_'+type+'_'+id+'"/>';
+            $('#module_template_form').append(input_hidden);
+            $('#module_template_form').submit();
         }
-
-        function switchBlockControl(e) {
-            var switchId = e.target.id.split("_");
-            var blockNumber = switchId[2];
-            var switchNumber = switchId[3];
-            var totalCount = 0;
-            var markedCount = 0;
-        
-            $("[id*=checkbox-module_check_" + blockNumber + "]").each(function() {
-            if ($(this).prop("checked")) {
-                markedCount++;
-            }
-            totalCount++;
-            });
-        
-            if (totalCount == markedCount) {
-            $("#checkbox-block_id_" + blockNumber).prop("checked", true);
-            $("#checkbox-block_id_" + blockNumber)
-                .parent()
-                .removeClass("alpha50");
-            } else if (markedCount == 0) {
-            $("#checkbox-block_id_" + blockNumber).prop("checked", false);
-            $("#checkbox-block_id_" + blockNumber)
-                .parent()
-                .removeClass("alpha50");
-            } else {
-            $("#checkbox-block_id_" + blockNumber).prop("checked", true);
-            $("#checkbox-block_id_" + blockNumber)
-                .parent()
-                .addClass("alpha50");
-            }
-        }
-        
+       
+        /**
+        * Show the modal with list of entire components
+        */
         function showAddComponent() {
             var btn_ok_text = "<?php echo __('OK'); ?>";
             var btn_cancel_text = "<?php echo __('Cancel'); ?>";
@@ -1205,6 +1192,31 @@ class ModuleTemplates extends HTML
         }
         
         $(document).ready(function() {
+            //Main module template form deleting selected items
+            $('#button-erase').click(function(){
+                var message = '';
+                var templatesList = '';
+                if($('#checkbox-all_delete').prop('checked') == true){
+                    message = "<?php echo __('Do you want delete all templates?'); ?>";
+                    templatesList = 'all';
+                } else {
+                    message = "<?php echo __('Do you want delete the selected templates?'); ?>";
+                    $("[id*=checkbox-delete_multiple]").each(function(){
+                        if ($(this).prop('checked') == true) {
+                            templatesList = templatesList + $(this).val() + ',';
+                        }
+                    });
+                    // Clean the last comma
+                    templatesList = templatesList.slice(0, -1);
+                }
+
+                if (confirm(message)) {
+                    let hidden = '<input type="hidden" name="action_button" value="del_template_'+templatesList+'">';
+                    $('#main_management_form').append(hidden);
+                    $('#main_management_form').submit();
+                }
+            });
+
             var listValidPens = $("#hidden-valid-pen").val();
             try {
                 listValidPens = listValidPens.split(',');

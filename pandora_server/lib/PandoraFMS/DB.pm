@@ -669,7 +669,8 @@ sub get_pen_templates($$) {
 		$dbh,
 		'SELECT t.`id_np`
 		 FROM `tnetwork_profile` t
-		  INNER JOIN `tpen` p ON p.`id_np` = t.`id_np`
+		 INNER JOIN `tnetwork_profile_pen` pp ON pp.`id_np` = t.`id_np`
+		 INNER JOIN `tpen` p ON pp.pen = p.pen
 		 WHERE p.`pen` = ?',
 		$pen
 	);
@@ -685,7 +686,9 @@ sub get_nc_profile_advanced($$) {
 	return get_db_single_row(
 		$dbh,
 		'SELECT t.*,GROUP_CONCAT(p.pen) AS "pen"
-		 FROM `tnetwork_profile` t LEFT JOIN `tpen` p ON t.id_np = p.id_np
+		 FROM `tnetwork_profile` t
+		 LEFT JOIN `tnetwork_profile_pen` pp ON t.id_np = pp.id_np
+		 LEFT JOIN `tpen` p ON pp.pen = p.pen
 		 WHERE t.`id_np` = ?
 		 GROUP BY t.`id_np`',
 		$id_nc

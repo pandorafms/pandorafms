@@ -1,4 +1,4 @@
-FROM centos:centos7
+FROM centos:7
 
 RUN { \
 	echo '[artica_pandorafms]'; \

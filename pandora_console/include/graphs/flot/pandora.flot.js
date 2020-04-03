@@ -458,10 +458,19 @@ function pandoraFlotHBars(
   // v, axis;
   function xFormatter(v) {
     var label = parseFloat(v);
+
+    const unit_prefixes = ["K", "M", "G"];
+    var unit_prefix;
+    var i = 0;
+
+    while (label >= 1000 && i < 3) {
+      label = label / 1000;
+      unit_prefix = unit_prefixes[i];
+      i++;
+    }
     var text = label.toLocaleString();
-    if (label >= 1000000) text = text.substring(0, 4) + "M";
-    else if (label >= 100000) text = text.substring(0, 3) + "K";
-    else if (label >= 1000) text = text.substring(0, 2) + "K";
+
+    text = text + unit_prefix;
 
     return (
       '<div style="font-size:' +

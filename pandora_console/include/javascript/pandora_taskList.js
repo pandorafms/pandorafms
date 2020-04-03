@@ -86,8 +86,12 @@ function show_map(id, name) {
       resizable: true,
       draggable: true,
       modal: false,
-      width: 1280,
-      height: 700
+      width: 900,
+      height: 550,
+      position: {
+        my: "cener",
+        at: "center"
+      }
     })
     .show();
 

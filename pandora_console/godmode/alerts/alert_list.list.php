@@ -696,7 +696,7 @@ foreach ($simple_alerts as $alert) {
                 $data[3] .= __('Agent');
                 $data[3] .= '</td>';
                 $data[3] .= '<td class="datos">';
-                $data[3] .= ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]');
+                $data[3] .= ui_print_truncate_text($alias, 'agent_small', false, true, true, '[&hellip;]');
                 $data[3] .= '</td>';
             $data[3] .= '</tr>';
         }

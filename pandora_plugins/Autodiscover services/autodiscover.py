@@ -345,7 +345,7 @@ def main():
     if psutil.WINDOWS:
         OS = "Windows"
         service_list = ["MySQL", "postgresql", "pgsql", "oracle", "MSSQL", "IISADMIN",
-                        "W3svc", "NTDS", "Netlogon", "DNS", "MSExchangeADTopology",
+                        "apache", "nginx", "W3svc", "NTDS", "Netlogon", "DNS", "MSExchangeADTopology",
                         "MSExchangeServiceHost", "MSExchangeSA", "MSExchangeTransport"]
         discover(OS, service_list)
     elif psutil.LINUX:

@@ -160,7 +160,7 @@ def proc_percentbyname(procname): ############# 03/03/2020
     #print ("proc_percentbyname END "+str(now(0,1)))
     return ([sum(memory),sum(cpu)])
 
-def win_service(servicelist, option=None, memcpu=False):
+def win_service(servicelist, option=False, memcpu=False):
     """Creates modules for Windows servers."""
     modules = []
     for srvc in servicelist:
@@ -344,7 +344,7 @@ def main():
     """Checks OS and calls the discover function."""
     if psutil.WINDOWS:
         OS = "Windows"
-        service_list = ["MySQL", "postgresql", "oracle", "MSSQL", "IISADMIN",
+        service_list = ["MySQL", "postgresql", "pgsql", "oracle", "MSSQL", "IISADMIN",
                         "W3svc", "NTDS", "Netlogon", "DNS", "MSExchangeADTopology",
                         "MSExchangeServiceHost", "MSExchangeSA", "MSExchangeTransport"]
         discover(OS, service_list)
@@ -364,16 +364,10 @@ def discover(osyst, servicelist):
     else:
         memcpu = False
     if len(argv) > 2 and argv[1] == "--list":
+        servicelist = argv[2].split(",")
         if osyst == "Windows":
-            servicelist = argv[2:]
-            try:
-                argv.remove("--usage")
-                servicelist = argv[2:]
-            except ValueError:
-                next
             win_service(servicelist, False, memcpu) ## False won't get children
         elif osyst == "Linux":
-            servicelist = argv[2].split(",")
             lnx_service(servicelist, memcpu)
     elif len(argv) > 1 and argv[1] == "--default":
         if osyst == "Windows":
@@ -391,8 +385,8 @@ def discover(osyst, servicelist):
         print ("\tRuns this tool with default monitoring.".format(argv[0]))
         print ("\tServices monitored by default for {}:".format(osyst))
         print ("\t",", ".join(servicelist))
-        print ("--list <srvc1,srvc2,srvc3>")
-        print ("\tReplaces default services for a given list (separated by commas)")
+        print ("--list \"<srvc1,srvc2,srvc3>\"")
+        print ("\tReplaces default services for a given list (comma-separated)")
         if osyst == "Windows":
             print ("\tEach element of the list will be treated as a regexp, but they must be over 2 characters.")
             print ("\tElements under 2 characters will be discarded.")

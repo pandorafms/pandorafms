@@ -64,7 +64,10 @@ echo '<div id="user-notifications-wrapper" class="white_box table_div table_thre
             <div class="table_th">'.__('Also receive an email').'</div>
         </div>';
 
-        $sources = notifications_get_all_sources();
+$sources = notifications_get_all_sources();
+
+$disabled_flag = false;
+
 foreach ($sources as $source) {
     echo '<div class="table_tbody">';
     $table_content = [
@@ -72,10 +75,22 @@ foreach ($sources as $source) {
         notifications_print_user_switch($source, $id, 'enabled'),
         notifications_print_user_switch($source, $id, 'also_mail'),
     ];
+
+    $notifications_enabled = notifications_print_user_switch($source, $id, 'enabled');
+    $notifications_also_mail = notifications_print_user_switch($source, $id, 'also_mail');
+
+    if ($notifications_enabled['disabled'] == 1 || $notifications_also_mail['disabled'] == 1) {
+        $disabled_flag = true;
+    }
+
     echo '<div class="table_td">'.$source['description'].'</div>';
-    echo '<div class="table_td">'.notifications_print_user_switch($source, $id, 'enabled').'</div>';
-    echo '<div class="table_td">'.notifications_print_user_switch($source, $id, 'also_mail').'</div>';
+    echo '<div class="table_td">'.$notifications_enabled['switch'].'</div>';
+    echo '<div class="table_td">'.$notifications_also_mail['switch'].'</div>';
     echo '</div>';
+}
+
+if ($disabled_flag) {
+    echo '<span style="font-weight: bold; color: #ff0000;">Disabled controls have been set by the system administrator</span>';
 }
 
 echo '</div>';

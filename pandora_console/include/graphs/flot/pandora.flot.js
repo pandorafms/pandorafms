@@ -460,7 +460,7 @@ function pandoraFlotHBars(
     var label = parseFloat(v);
 
     const unit_prefixes = ["K", "M", "G"];
-    var unit_prefix;
+    var unit_prefix = "";
     var i = 0;
 
     while (label >= 1000 && i < 3) {

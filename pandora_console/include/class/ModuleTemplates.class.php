@@ -534,39 +534,37 @@ class ModuleTemplates extends HTML
         }
 
         foreach ($result as $row) {
-            $groups_compound[$row['id_sg']] = '';
             if ($row['parent'] > 1) {
-                $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / ';
+                $groups_compound[$row['id_sg']] = $groups[$row['parent']].' / '.$row['name'];
+            } else {
+                $groups_compound[$row['id_sg']] = $row['name'];
             }
         }
 
-        // Get the components for show in a list for select.
-        if ($this->ncGroup > 0) {
-            $sql = sprintf(
-                "
-                SELECT id_nc, name, id_group
-                FROM tnetwork_component
-                WHERE id_group = %d AND name LIKE '%".$this->ncFilter."%'
-                ORDER BY name",
-                $this->ncGroup
-            );
-        } else {
-            $sql = "
-                SELECT id_nc, name, id_group
-                FROM tnetwork_component
-                WHERE name LIKE '%".$this->ncFilter."%'
-                ORDER BY name";
-        }
+        $result = db_get_all_rows_sql(
+            'SELECT id_nc, name, id_group
+            FROM tnetwork_component
+            ORDER BY name'
+        );
 
-        $result = db_get_all_rows_sql($sql);
+        $entireComponentsList = [];
         $components = [];
         if ($result === false) {
             $result = [];
         }
 
         foreach ($result as $row) {
+            $strIdGroup = (string) $row['id_group'];
+            if (!isset($entireComponentsList[$strIdGroup])) {
+                $entireComponentsList[$strIdGroup] = $row['id_nc'];
+            } else {
+                $entireComponentsList[$strIdGroup] .= ','.$row['id_nc'];
+            }
+
             $components[$row['id_nc']] = $row['name'];
         }
+
+        $entireComponentsList = json_encode($entireComponentsList);
 
         // Main form.
         $form = [
@@ -589,24 +587,16 @@ class ModuleTemplates extends HTML
                 'return' => true,
             ],
         ];
-        /*
-            $inputs[] = [
-            'id'        => 'add-modules-components-values',
-            'arguments' => [
-                'name'   => 'add-modules-components-values',
-                'type'   => 'hidden',
-                'value'  => '',
-                'return' => true,
-            ],
-            ];
-        */
+
         $inputs[] = [
             'label'     => __('Filter'),
             'id'        => 'txt-add-modules-filter',
             'arguments' => [
                 'input_class' => 'flex-row',
+                'name'        => 'filter',
                 'type'        => 'text',
-                'size'        => '57',
+                'size'        => '45',
+                'class'       => 'float-right',
                 'onKeyDown'   => 'filterTextComponents(event);',
                 'value'       => '',
                 'return'      => true,
@@ -619,10 +609,21 @@ class ModuleTemplates extends HTML
             'arguments' => [
                 'input_class' => 'flex-row',
                 'type'        => 'select',
-                'script'      => '',
+                'script'      => 'filterGroupComponents(event);',
+                'class'       => 'float-right',
                 'fields'      => $groups_compound,
                 'nothing'     => $groups_compound[$this->ncGroup],
                 'return'      => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'id'        => 'group-components',
+            'arguments' => [
+                'name'   => 'group-components',
+                'type'   => 'hidden',
+                'value'  => $entireComponentsList,
+                'return' => true,
             ],
         ];
 
@@ -632,7 +633,7 @@ class ModuleTemplates extends HTML
             'arguments' => [
                 'name'        => 'add-modules-components',
                 'input_class' => 'flex-row',
-                'style'       => 'width:100%;',
+                'style'       => 'width:100%;margin-top: 1em;',
                 'type'        => 'select',
                 'multiple'    => true,
                 'fields'      => $components,
@@ -1100,6 +1101,25 @@ class ModuleTemplates extends HTML
                 } else {
                     $(this).css('display','block');
                 }
+            });
+        }
+
+        /**
+         * Filter with group the components form
+         */
+        function filterGroupComponents(e){
+            var selectedGroup = e.target.value;
+            var entireList = JSON.parse($('#hidden-group-components').val());
+            var componentsToShow = entireList[selectedGroup];
+            $('#add-modules-components').children().each(function(){
+                var id = $(this).val();
+                if (typeof componentsToShow === 'undefined' && selectedGroup != '0') {
+                    $(this).css('display','none');
+                } else if (selectedGroup == '0' || componentsToShow.includes(id)) {
+                    $(this).css('display','block');
+                } else {
+                    $(this).css('display','none');
+                }                
             });
         }
 

@@ -422,6 +422,117 @@ class ModuleTemplates extends HTML
                     $this->id_np = -1;
                 break;
 
+                case 'Export':
+                    global $config;
+
+                    $id_network_profile = safe_int($this->id_np);
+                    if (empty($id_network_profile)) {
+                        return false;
+                    }
+
+                    $filter['id_np'] = $id_network_profile;
+
+                    $profile_info = @db_get_row_filter('tnetwork_profile', $filter, false);
+
+                    if (empty($profile_info)) {
+                        $success = false;
+                        // ui_print_error_message(__('This template does not exist'));
+                        return;
+                    }
+
+                    // It's important to keep the structure and order in the same way for backwards compatibility.
+                    switch ($config['dbtype']) {
+                        case 'mysql':
+                            $sql = sprintf(
+                                '
+                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
+                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
+                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
+                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
+                                    components.max_critical, components.str_critical, components.min_ff_event, components.dynamic_interval, components.dynamic_max, components.dynamic_min, components.dynamic_two_tailed, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
+                                FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
+                                WHERE tpc.id_nc = components.id_nc
+                                    AND components.id_group = comp_group.id_sg
+                                    AND tpc.id_np = %d',
+                                $this->id_np
+                            );
+                        break;
+
+                        case 'postgresql':
+                            $sql = sprintf(
+                                '
+                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
+                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
+                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
+                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
+                                    components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
+                                FROM "tnetwork_component" AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
+                                WHERE tpc.id_nc = components.id_nc
+                                    AND components.id_group = comp_group.id_sg
+                                    AND tpc.id_np = %d',
+                                $this->id_np
+                            );
+                        break;
+
+                        case 'oracle':
+                            $sql = sprintf(
+                                '
+                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
+                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
+                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
+                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
+                                    components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
+                                FROM tnetwork_component AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
+                                WHERE tpc.id_nc = components.id_nc
+                                    AND components.id_group = comp_group.id_sg
+                                    AND tpc.id_np = %d',
+                                $this->id_np
+                            );
+                        break;
+                    }
+
+                    $components = db_get_all_rows_sql($sql);
+
+                    $row_names = [];
+                    $inv_names = [];
+                    // Find the names of the rows that we are getting and throw away the duplicate numeric keys
+                    foreach ($components[0] as $row_name => $detail) {
+                        if (is_numeric($row_name)) {
+                            $inv_names[] = $row_name;
+                        } else {
+                            $row_names[] = $row_name;
+                        }
+                    }
+
+                    // Send headers to tell the browser we're sending a file
+                    header('Content-type: application/octet-stream');
+                    header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $profile_info['name']).'.csv');
+                    header('Pragma: no-cache');
+                    header('Expires: 0');
+
+                    // Clean up output buffering
+                    while (@ob_end_clean()) {
+                    }
+
+                    // Then print the first line (row names)
+                    echo '"'.implode('","', $row_names).'"';
+                    echo "\n";
+
+                    // Then print the rest of the data. Encapsulate in quotes in case we have comma's in any of the descriptions
+                    foreach ($components as $row) {
+                        foreach ($inv_names as $bad_key) {
+                            unset($row[$bad_key]);
+                        }
+
+                        echo '"'.implode('","', $row).'"';
+                        echo "\n";
+                    }
+
+                    // We're done here. The original page will still be there
+                exit;
+
+                break;
+
                 default:
                     // There is possible want do an action detailed.
                     $action_detailed = explode('_', $this->action);
@@ -752,7 +863,7 @@ class ModuleTemplates extends HTML
                 ['title' => 'Export to CSV']
             );
             $data[3] = '<a href="'.$this->baseUrl.'&action_button=Delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action_button=Export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
             array_push($table->data, $data);
         }

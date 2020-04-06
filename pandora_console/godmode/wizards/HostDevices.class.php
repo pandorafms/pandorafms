@@ -466,7 +466,7 @@ class HostDevices extends Wizard
             }
 
             $id_network_profile = get_parameter('id_network_profile', []);
-            $review_results = get_parameter_switch('review_results');
+            $review_results = get_parameter_switch('review_results', -1);
             $auto_monitor = get_parameter_switch('auto_monitor');
             $autoconf_enabled = get_parameter_switch(
                 'autoconfiguration_enabled'
@@ -502,6 +502,11 @@ class HostDevices extends Wizard
                     ',',
                     $id_network_profile
                 );
+            }
+
+            if ($review_results < 0) {
+                // License limited, force review.
+                $this->task['review_mode'] = DISCOVERY_REVIEW;
             }
 
             if ($review_results) {

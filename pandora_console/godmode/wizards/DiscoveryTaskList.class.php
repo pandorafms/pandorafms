@@ -1295,10 +1295,10 @@ class DiscoveryTaskList extends HTML
             echo '<span>';
             echo __('Please select devices to be monitored');
             echo '</span><div class="manage">';
-            echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
+            echo '<button onclick="$(\'.sim-tree li:not(.disabled) a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
             echo __('select all');
             echo '</button>';
-            echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
+            echo '<button onclick="$(\'.sim-tree li:not(.disabled) a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
             echo __('deselect all');
             echo '</button>';
             echo '<button onclick="$(\'.sim-tree-spread.sim-icon-r\').click();">';

@@ -504,9 +504,10 @@ class ModuleTemplates extends HTML
                         }
                     }
 
+                    $fileName = io_safe_output($profile_info['name']);
                     // Send headers to tell the browser we're sending a file
                     header('Content-type: application/octet-stream');
-                    header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $profile_info['name']).'.csv');
+                    header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $fileName).'.csv');
                     header('Pragma: no-cache');
                     header('Expires: 0');
 

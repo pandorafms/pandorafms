@@ -1343,9 +1343,21 @@ class DiscoveryTaskList extends HTML
             $ids = array_reduce(
                 $selection,
                 function ($carry, $item) use (&$n_agents) {
-                    if (explode('-', $item['id'])[1] === null) {
-                        // String is agent-module.
-                        $n_agents++;
+                    // String is agent-module.
+                    $fields = explode('-', $item['id']);
+                    $agent_name = $fields[0];
+                    $module_name = $fields[1];
+                    if ($module_name === null) {
+                        // Do not count if already created.
+                        if (db_get_value(
+                            'id_agente',
+                            'tagente',
+                            'nombre',
+                            io_safe_input($agent_name)
+                        ) === false
+                        ) {
+                            $n_agents++;
+                        }
                     }
 
                     $carry[] = $item['id'];

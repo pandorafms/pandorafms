@@ -1042,9 +1042,12 @@ class HostDevices extends Wizard
                 'arguments' => [
                     'name'          => 'id_network_profile[]',
                     'type'          => 'select_from_sql',
-                    'sql'           => 'SELECT id_np, name
-                            FROM tnetwork_profile
-                            ORDER BY name',
+                    'sql'           => 'SELECT tn.id_np, tn.name
+                            FROM tnetwork_profile tn
+                            LEFT JOIN `tnetwork_profile_pen` tp
+                                ON tp.id_np = tn.id_np
+                            WHERE tp.id_np IS NULL
+                            ORDER BY tn.name',
                     'return'        => true,
                     'selected'      => explode(
                         ',',

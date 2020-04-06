@@ -1595,7 +1595,7 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
 
   my $stats = {};
   if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
-    $stats->{'summary'} = $self->{'summary'};
+    $stats->{'summary'} = $self->{'task_data'}{'summary'};
   }
   $stats->{'step'} = $self->{'step'};
   $stats->{'c_network_name'} = $self->{'c_network_name'};

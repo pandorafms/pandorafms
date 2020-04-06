@@ -1538,7 +1538,7 @@ if (!empty($result)) {
 
                 $graph_params_str = http_build_query($graph_params);
 
-                $link = 'winopeng(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\')';
+                $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 1000, 700)';
 
                 $data[8] = get_module_realtime_link_graph($row);
 

@@ -1423,7 +1423,9 @@ class DiscoveryTaskList extends HTML
                                 $data['modules'][$module_name]['checked'] = 1;
                             } else {
                                 if ($data['modules'][$module_name]['checked'] == 1) {
-                                    $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
+                                    if ($module_name != 'Host Alive') {
+                                        $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
+                                    }
                                 }
 
                                 $data['modules'][$module_name]['checked'] = 0;

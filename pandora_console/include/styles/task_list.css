@@ -105,3 +105,8 @@ span.link {
 span.link.review {
   font-weight: bold;
 }
+
+#review {
+  padding-top: 2em;
+  padding-left: 6.7em;
+}

@@ -1016,7 +1016,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
             # Agent creation.
             $agent_id = pandora_create_agent(
               $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
-              $data->{'agent'}{'direccion'}, $self->{'task_data'}{'group_id'}, $parent_id,
+              $data->{'agent'}{'direccion'}, $self->{'task_data'}{'id_group'}, $parent_id,
               $os_id, $data->{'agent'}->{'description'},
               $data->{'agent'}{'interval'}, $self->{'dbh'},
               $data->{'agent'}{'timezone_offset'}

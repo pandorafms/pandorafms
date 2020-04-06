@@ -916,7 +916,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
 function notifications_print_user_switch($source, $user, $label)
 {
     $status = notifications_get_user_label_status($source, $user, $label);
-    return html_print_switch(
+    $switch = html_print_switch(
         [
             'name'     => $label,
             'value'    => $status['status'],
@@ -925,6 +925,13 @@ function notifications_print_user_switch($source, $user, $label)
             'id'       => 'notifications-user-'.$source['id'].'-label-'.$label,
         ]
     );
+
+    $data = [
+        'disabled' => !$status['enabled'],
+        'switch'   => $switch,
+    ];
+
+    return $data;
 }
 
 

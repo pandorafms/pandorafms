@@ -6275,6 +6275,10 @@ sub notification_get_users {
 		',
 		safe_input($source)
 	);
+
+	@results = map { $_->{'id_user'} } @results;
+
+	return @results;
 }
 
 ##########################################################################
@@ -6296,6 +6300,10 @@ sub notification_get_groups {
 		',
 		safe_input($source)
 	);
+
+	@results = map { $_->{'id_group'} } @results;
+
+	return @results;
 }
 
 

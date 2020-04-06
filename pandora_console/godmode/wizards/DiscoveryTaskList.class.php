@@ -1295,10 +1295,10 @@ class DiscoveryTaskList extends HTML
             echo '<span>';
             echo __('Please select devices to be monitored');
             echo '</span><div class="manage">';
-            echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
+            echo '<button onclick="$(\'.sim-tree li:not(.disabled) a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
             echo __('select all');
             echo '</button>';
-            echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
+            echo '<button onclick="$(\'.sim-tree li:not(.disabled) a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
             echo __('deselect all');
             echo '</button>';
             echo '<button onclick="$(\'.sim-tree-spread.sim-icon-r\').click();">';
@@ -1343,9 +1343,21 @@ class DiscoveryTaskList extends HTML
             $ids = array_reduce(
                 $selection,
                 function ($carry, $item) use (&$n_agents) {
-                    if (explode('-', $item['id'])[1] === null) {
-                        // String is agent-module.
-                        $n_agents++;
+                    // String is agent-module.
+                    $fields = explode('-', $item['id']);
+                    $agent_name = $fields[0];
+                    $module_name = $fields[1];
+                    if ($module_name === null) {
+                        // Do not count if already created.
+                        if (db_get_value(
+                            'id_agente',
+                            'tagente',
+                            'nombre',
+                            io_safe_input($agent_name)
+                        ) === false
+                        ) {
+                            $n_agents++;
+                        }
                     }
 
                     $carry[] = $item['id'];
@@ -1411,7 +1423,9 @@ class DiscoveryTaskList extends HTML
                                 $data['modules'][$module_name]['checked'] = 1;
                             } else {
                                 if ($data['modules'][$module_name]['checked'] == 1) {
-                                    $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
+                                    if ($module_name != 'Host Alive') {
+                                        $summary[] = '<li class="removed">'.__('Removed').' '.$agent_name.' - '.$module_name.'</li>';
+                                    }
                                 }
 
                                 $data['modules'][$module_name]['checked'] = 0;

@@ -57,10 +57,15 @@ div.subtitle div.manage button {
   font-size: 1.2em;
   font-family: "lato", "Open Sans", sans-serif;
   display: inline-block;
-  padding: 5px;
   margin-right: 1em;
   cursor: pointer;
   text-align: left;
+  border-radius: 21px;
+  box-shadow: 0 0 10px -5px #888;
+  padding: 0.5em 1em;
+  border: 1px solid #ddd;
+  user-select: none;
+  color: #424242;
 }
 
 div.subtitle .link.review {
@@ -99,4 +104,9 @@ span.link {
 
 span.link.review {
   font-weight: bold;
+}
+
+#review {
+  padding-top: 2em;
+  padding-left: 6.7em;
 }

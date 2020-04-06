@@ -545,7 +545,8 @@ sub PandoraFMS::Recon::Base::test_module($$) {
         $test->{'id_tipo_modulo'}
       )
   ) {
-    # Numeric.
+    # Numeric. Remove " symbols if any.
+    $value =~ s/\"//g;
     return 0 unless is_numeric($value);
 
     if (is_in_array([2,6,9,18,21,31,35], $test->{'id_tipo_modulo'})) {
@@ -842,7 +843,9 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
 
   if (is_enabled($self->{'task_data'}{'auto_monitor'})) {
     # Apply PEN monitoring template (HW).
-    push @template_ids, get_pen_templates($self->{'dbh'}, $self->get_pen($device));
+    my @pen_templates= get_pen_templates($self->{'dbh'}, $self->get_pen($device));
+    # Join.
+    @template_ids = (@template_ids, @pen_templates);
   } else {
     # Return if no specific templates are selected.
     return if is_empty($self->{'id_network_profile'});
@@ -861,7 +864,7 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
     if (defined($template->{'pen'})) {
       my @penes = split(',', $template->{'pen'});
 
-      next unless (is_in_array(\@penes, $data->{'pen'}));
+      next unless (is_in_array(\@penes, $self->get_pen($device)));
     }
 
     # 3. Retrieve module list from target template.
@@ -1595,8 +1598,9 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
 
   my $stats = {};
   if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
-    $stats->{'summary'} = $self->{'task_data'}{'summary'};
+    $stats->{'summary'} = $self->{'summary'};
   }
+
   $stats->{'step'} = $self->{'step'};
   $stats->{'c_network_name'} = $self->{'c_network_name'};
   $stats->{'c_network_percent'} = $self->{'c_network_percent'};

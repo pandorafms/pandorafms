@@ -675,6 +675,12 @@ sub get_pen_templates($$) {
 		$pen
 	);
 
+	@results = map {
+		if (ref($_) eq 'HASH') { $_->{'id_np'} }
+		else {}
+	} @results;
+
+
   return @results;
 }
 

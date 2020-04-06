@@ -1271,11 +1271,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C0%7C0';
+				$params->{"other"} = $period . '%7C0%7C0%7C225';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C0%7C1';
+				$params->{"other"} = $period . '%7C0%7C1%7C225';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -3917,7 +3917,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					'direccion' => $trap_agent,
 					'comentarios' => '',
 					'id_agente' =>  0,
-					'id_grupo' => 0
+					'id_grupo' => $alert->{'id_group'}
 				);
 			}
 			

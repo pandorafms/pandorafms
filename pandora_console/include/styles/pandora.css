@@ -4656,6 +4656,10 @@ div#dialog_messages table th:last-child {
   border-radius: 34px;
 }
 
+.p-slider-disabled {
+  background-color: #dfdfdf !important;
+}
+
 .p-slider:before {
   position: absolute;
   content: "";

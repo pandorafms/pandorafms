@@ -124,16 +124,16 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $table->data['module_group'] = $row;
 
     // Description
-    $module_description = '';
-    if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
-        $module_description = utf8_decode($module['descripcion']);
-    } else {
-        $module_description = $module['descripcion'];
-    }
-
     $row = [];
     $row['title'] = __('Description');
-    $row['data'] = ui_print_truncate_text($module_description, 'description', true, true, true, '[&hellip;]');
+    $row['data'] = ui_print_truncate_text(
+        $module['descripcion'];,
+        'description',
+        true,
+        true,
+        true,
+        '[&hellip;]'
+    );
     $table->data['description'] = $row;
 
     // Tags

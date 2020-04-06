@@ -337,8 +337,10 @@ class ModuleTemplates extends HTML
                         $success = false;
                     } else {
                         db_process_sql_delete('tnetwork_profile_pen', ['id_np' => $this->id_np]);
-                        $pensList = explode(',', $this->pen);
-                        if (count($pensList) > 0) {
+                        if (empty($this->pen)) {
+                            $success = true;
+                        } else {
+                            $pensList = explode(',', $this->pen);
                             // Set again the new PENs associated.
                             foreach ($pensList as $currentPen) {
                                 $dbResult_pen = db_process_sql_insert(
@@ -355,8 +357,6 @@ class ModuleTemplates extends HTML
 
                                 $success = true;
                             }
-                        } else {
-                            $success = true;
                         }
                     }
 
@@ -379,22 +379,26 @@ class ModuleTemplates extends HTML
                     if ($dbResult_tnp != false) {
                         // Set the new id_np.
                         $this->id_np = $dbResult_tnp;
-                        $pensList = explode(',', $this->pen);
-                        // Insert all of new PENs associated with this id_np.
-                        foreach ($pensList as $currentPen) {
-                            $dbResult_pen = db_process_sql_insert(
-                                'tnetwork_profile_pen',
-                                [
-                                    'pen'   => $currentPen,
-                                    'id_np' => $this->id_np,
-                                ]
-                            );
-                            // If something is wrong, is better stop.
-                            if ($dbResult_pen === false) {
-                                break;
-                            }
-
+                        if (empty($this->pen)) {
                             $success = true;
+                        } else {
+                            $pensList = explode(',', $this->pen);
+                            // Insert all of new PENs associated with this id_np.
+                            foreach ($pensList as $currentPen) {
+                                $dbResult_pen = db_process_sql_insert(
+                                    'tnetwork_profile_pen',
+                                    [
+                                        'pen'   => $currentPen,
+                                        'id_np' => $this->id_np,
+                                    ]
+                                );
+                                // If something is wrong, is better stop.
+                                if ($dbResult_pen === false) {
+                                    break;
+                                }
+
+                                $success = true;
+                            }
                         }
                     }
 
@@ -527,8 +531,7 @@ class ModuleTemplates extends HTML
         // 2 arrays. 1 with the groups, 1 with the groups by parent
         $groups = [];
         $groups_compound = [];
-        // Default group filter.
-        $groups_compound[0] = 'Group - All';
+
         foreach ($result as $row) {
             $groups[$row['id_sg']] = $row['name'];
         }
@@ -612,7 +615,7 @@ class ModuleTemplates extends HTML
                 'script'      => 'filterGroupComponents(event);',
                 'class'       => 'float-right',
                 'fields'      => $groups_compound,
-                'nothing'     => $groups_compound[$this->ncGroup],
+                'nothing'     => 'Group - All',
                 'return'      => true,
             ],
         ];

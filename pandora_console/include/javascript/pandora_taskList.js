@@ -77,6 +77,7 @@ function fetchTaskList(id, callback) {
 }
 
 function show_map(id, name) {
+  var myPos = ["center" / 2, 1];
   $("#map_task")
     .empty()
     .hide()
@@ -88,10 +89,7 @@ function show_map(id, name) {
       modal: false,
       width: 900,
       height: 550,
-      position: {
-        my: "cener",
-        at: "center"
-      }
+      position: { my: "center", at: "center", of: window }
     })
     .show();
 

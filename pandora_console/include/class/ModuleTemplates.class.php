@@ -85,20 +85,6 @@ class ModuleTemplates extends HTML
     private $pen;
 
     /**
-     * Group for adding modules
-     *
-     * @var string
-     */
-    private $ncGroup;
-
-    /**
-     * Filter for adding modules
-     *
-     * @var string
-     */
-    private $ncFilter;
-
-    /**
      * List of valid PENs
      *
      * @var string
@@ -156,10 +142,8 @@ class ModuleTemplates extends HTML
             $this->setNetworkProfile();
         }
 
-        $this->offset           = get_parameter('offset', 0);
+        $this->offset           = (int) get_parameter('offset', 0);
         $this->ajaxController   = $ajax_controller;
-        $this->ncGroup          = get_parameter('add-modules-group', '0');
-        $this->ncFilter         = get_parameter('add-modules-filter', '');
         // Get all of PENs valid for autocomplete.
         $getPENs = db_get_all_rows_sql('SELECT pen,manufacturer FROM tpen');
         $outputPENs = [];
@@ -811,7 +795,7 @@ class ModuleTemplates extends HTML
             ]
         );
 
-        ui_pagination($countModuleTemplates, false, $this->offset);
+        ui_pagination($countModuleTemplates, $this->baseUrl, $this->offset);
         // Create the table with Module Block list.
         $table = new StdClasS();
         $table->class = 'databox data';

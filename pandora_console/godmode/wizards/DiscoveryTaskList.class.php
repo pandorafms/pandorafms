@@ -1256,6 +1256,7 @@ class DiscoveryTaskList extends HTML
                 if ($agent_id > 0) {
                     $tmp['disabled'] = 1;
                     $tmp['agent_id'] = $agent_id;
+                    $tmp['checked'] = 1;
                 }
 
                 // Store.

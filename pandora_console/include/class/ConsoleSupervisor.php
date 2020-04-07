@@ -2383,9 +2383,12 @@ class ConsoleSupervisor
 
         $message = 'If AllowOverride is disabled, .htaccess will not works.';
         $message .= '<pre>Please check /etc/httpd/conf/httpd.conf for keep this problems';
+
+        // Get content file.
         $file = file_get_contents('/etc/httpd/conf/httpd.conf');
         $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
         $is_none = false;
+
         foreach ($file_lines as $line) {
             if (preg_match('/ AllowOverride/', $line)) {
                 $result = explode(' ', $line);
@@ -2403,6 +2406,7 @@ class ConsoleSupervisor
             }
         }
 
+        // Cleanup notifications if AllowOverride is All.
         if (!$is_none) {
             $this->cleanNotifications('NOTIF.ALLOWOVERRIDE.MESSAGE');
         }

@@ -466,7 +466,8 @@ class HostDevices extends Wizard
             }
 
             $id_network_profile = get_parameter('id_network_profile', []);
-            $review_results = get_parameter_switch('review_results', -1);
+            $review_results = get_parameter_switch('review_results');
+            $review_limited = (bool) get_parameter('review_limited', 0);
             $auto_monitor = get_parameter_switch('auto_monitor');
             $autoconf_enabled = get_parameter_switch(
                 'autoconfiguration_enabled'
@@ -504,17 +505,17 @@ class HostDevices extends Wizard
                 );
             }
 
-            if ($review_results < 0) {
+            if ($review_limited === true) {
                 // License limited, force review.
                 $this->task['review_mode'] = DISCOVERY_REVIEW;
-            }
-
-            if ($review_results) {
-                if ($this->task['review_mode'] != DISCOVERY_RESULTS) {
-                    $this->task['review_mode'] = DISCOVERY_REVIEW;
-                }
             } else {
-                $this->task['review_mode'] = DISCOVERY_STANDARD;
+                if ($review_results) {
+                    if ($this->task['review_mode'] != DISCOVERY_RESULTS) {
+                        $this->task['review_mode'] = DISCOVERY_REVIEW;
+                    }
+                } else {
+                    $this->task['review_mode'] = DISCOVERY_STANDARD;
+                }
             }
 
             $this->task['auto_monitor'] = $auto_monitor;
@@ -1102,6 +1103,16 @@ class HostDevices extends Wizard
                     'return'   => true,
                     'value'    => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? (($limited) ? 1 : 0) : 1,
                     'disabled' => $limited,
+                ],
+            ];
+
+            // Review limited.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'   => 'review_limited',
+                    'type'   => 'hidden',
+                    'return' => true,
+                    'value'  => (($limited === true) ? 1 : 0),
                 ],
             ];
 

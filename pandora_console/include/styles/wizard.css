@@ -110,3 +110,9 @@ ul.wizard li > textarea {
 .wizard #interval_manual_container #interval_manual > * {
   flex: 1 1 auto;
 }
+
+.wizard-column-levels {
+  float: left;
+  width: 33%;
+  text-align: center;
+}

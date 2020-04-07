@@ -341,18 +341,19 @@ class AgentWizard extends HTML
                 'return'     => true,
             ],
         ];
-
-        $output = '<div class="white_box">';
-        $output .= $this->printForm(
+        // Prints main form.
+        html_print_div(
             [
-                'form'   => $form,
-                'inputs' => $inputs,
-            ],
-            true
+                'class'   => 'white_box',
+                'content' => $this->printForm(
+                    [
+                        'form'   => $form,
+                        'inputs' => $inputs,
+                    ],
+                    true
+                ),
+            ]
         );
-        $output .= '</div>';
-
-        echo $output;
     }
 
 
@@ -392,7 +393,8 @@ class AgentWizard extends HTML
             ];
         }
 
-        $output = '<div class="white_box" style="margin-top: 20px;">';
+        // Lets generate the block tables.
+        $output = '';
         foreach ($blockTables as $id_group => $blockTable) {
             // Data with all components.
             $blockData = $blockTable['data'];
@@ -405,9 +407,21 @@ class AgentWizard extends HTML
             $blockComponentList = chop($blockComponentList, ',');
             // Title of Block.
             $blockTitle = $blockTable['name'];
-            $blockTitle .= '<div class="white_table_header_checkbox">';
-            $blockTitle .= html_print_checkbox_switch_extended('sel_block_'.$id_group, 1, 0, false, 'switchBlockControl(event)', '', true);
-            $blockTitle .= '</div>';
+            $blockTitle .= html_print_div(
+                [
+                    'class'   => 'white_table_header_checkbox',
+                    'content' => html_print_checkbox_switch_extended(
+                        'sel_block_'.$id_group,
+                        1,
+                        0,
+                        false,
+                        'switchBlockControl(event)',
+                        '',
+                        true
+                    ),
+                ],
+                true
+            );
 
             $table = new StdClasS();
             $table->class = 'databox data';
@@ -422,12 +436,12 @@ class AgentWizard extends HTML
             $table->class = 'info_table';
 
             $table->head = [];
-            $table->head[0] = '<div style="font-weight:700;">'.__('Module Name').'</div>';
-            $table->head[1] = '<div style="text-align:center;font-weight:700;">'.__('Type').'</div>';
-            $table->head[2] = '<div style="font-weight:700;">'.__('Module info').'</div>';
-            $table->head[3] = '<div style="text-align:center;font-weight:700;">'.__('Warning').'</div>';
-            $table->head[4] = '<div style="text-align:center;font-weight:700;">'.__('Critical').'</div>';
-            $table->head[5] = '<div style="margin-right:1.2em;font-weight:700;">'.__('Active').'</div>';
+            $table->head[0] = html_print_div(['style' => 'font-weight:700;', 'content' => __('Module Name')], true);
+            $table->head[1] = html_print_div(['style' => 'font-weight:700;text-align:center;', 'content' => __('Type')], true);
+            $table->head[2] = html_print_div(['style' => 'font-weight:700;', 'content' => __('Module info')], true);
+            $table->head[3] = html_print_div(['style' => 'font-weight:700;text-align:center;', 'content' => __('Warning')], true);
+            $table->head[4] = html_print_div(['style' => 'font-weight:700;text-align:center;', 'content' => __('Critical')], true);
+            $table->head[5] = html_print_div(['style' => 'font-weight:700;margin-right:1.2em;', 'content' => __('Active')], true);
 
             $table->size = [];
             $table->size[0] = '15%';
@@ -449,69 +463,92 @@ class AgentWizard extends HTML
                 // Module info column.
                 $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
                 // Warning column.
-                $data[3] = '<div style="float: left;width: 33%;text-align: center;">Min: ';
-                $data[3] .= html_print_input_text(
-                    'txt_min_warn_'.$module['component_id'],
-                    '0',
-                    '',
-                    3,
-                    4,
+                $data[3] = html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels',
+                        'content' => 'Min: '.html_print_input_text(
+                            'warning_min_'.$module['component_id'],
+                            '0',
+                            '',
+                            3,
+                            4,
+                            true
+                        ).' ',
+                    ],
                     true
                 );
-                $data[3] .= '</div>';
-                $data[3] .= ' ';
-                $data[3] .= '<div style="float: left;width: 33%;text-align: center;">Max: ';
-                $data[3] .= html_print_input_text(
-                    'txt_max_warn_'.$module['component_id'],
-                    '0',
-                    '',
-                    3,
-                    4,
+                $data[3] .= html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels',
+                        'content' => 'Max: '.html_print_input_text(
+                            'warning_max_'.$module['component_id'],
+                            '0',
+                            '',
+                            3,
+                            4,
+                            true
+                        ),
+                    ],
                     true
                 );
-                $data[3] .= '</div>';
-                $data[3] .= '<div style="float: left;width: 33%;margin-top: 0.3em;">Inv: ';
-                $data[3] .= html_print_checkbox(
-                    'chk_inv_warn_'.$module['component_id'],
-                    0,
-                    false,
-                    true,
-                    false
+                $data[3] .= html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels',
+                        'style'   => 'margin-top: 0.3em;',
+                        'content' => 'Inv: '.html_print_checkbox(
+                            'warning_inv_'.$module['component_id'],
+                            0,
+                            false,
+                            true,
+                            false
+                        ),
+                    ],
+                    true
                 );
-                $data[3] .= '</div>';
                 // Critical column.
-                $data[4] = '<div style="float: left;width: 33%;text-align: center;">Min: ';
-                $data[4] .= html_print_input_text(
-                    'txt_min_crit_'.$module['component_id'],
-                    '0',
-                    '',
-                    3,
-                    4,
+                $data[4] = html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels',
+                        'content' => 'Min: '.html_print_input_text(
+                            'critical_min_'.$module['component_id'],
+                            '0',
+                            '',
+                            3,
+                            4,
+                            true
+                        ).' ',
+                    ],
                     true
                 );
-                $data[4] .= '</div>';
-                $data[4] .= ' ';
-                $data[4] .= '<div style="float: left;width: 33%;text-align: center;">Max: ';
-                $data[4] .= html_print_input_text(
-                    'txt_max_crit_'.$module['component_id'],
-                    '0',
-                    '',
-                    3,
-                    4,
+                $data[4] .= html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels',
+                        'content' => 'Max: '.html_print_input_text(
+                            'critical_max_'.$module['component_id'],
+                            '0',
+                            '',
+                            3,
+                            4,
+                            true
+                        ),
+                    ],
                     true
                 );
-                $data[4] .= '</div>';
-                $data[4] .= ' ';
-                $data[4] .= '<div style="float: left;width: 33%;margin-top: 0.3em;">Inv: ';
-                $data[4] .= html_print_checkbox(
-                    'chk_inv_crit_'.$module['component_id'],
-                    0,
-                    false,
-                    true,
-                    false
+                $data[4] .= html_print_div(
+                    [
+                        'class'   => 'wizard-column-levels',
+                        'style'   => 'margin-top: 0.3em;',
+                        'content' => 'Inv: '.html_print_checkbox(
+                            'critical_inv_'.$module['component_id'],
+                            0,
+                            false,
+                            true,
+                            false
+                        ),
+                    ],
+                    true
                 );
-                $data[4] .= '</div>';
-                // Activavion column.
+                // Activation column.
                 $data[5] = html_print_checkbox_switch_extended('sel_module_'.$id_group.'_'.$module['component_id'], 1, 0, false, 'switchBlockControl(event)', '', true);
 
                 array_push($table->data, $data);
@@ -522,10 +559,15 @@ class AgentWizard extends HTML
             $output .= ui_toggle($content, $blockTitle, '', '', false, true);
         }
 
-        $output .= '</div>';
+        html_print_div(
+            [
+                'class'   => 'white_box',
+                'style'   => 'margin-top: 20px;',
+                'content' => $output,
+            ]
+        );
 
-        echo $output;
-        // Main form.
+        // Form. Not used at this moment.
         $form = [
             'action' => $this->baseUrl,
             'id'     => 'modal_form_action_response',
@@ -594,7 +636,7 @@ class AgentWizard extends HTML
             // The functions goes here!
 
             /**
-             * Loads modal from AJAX to perform the required action.
+             * WIP: Loads modal from AJAX to perform the required action.
              */
             function performAction() {
                 var btn_ok_text = '<?php echo __('OK'); ?>';
@@ -632,7 +674,7 @@ class AgentWizard extends HTML
             }
 
             /**
-            * Process ajax responses and shows a dialog with results.
+            * WIP: Process ajax responses and shows a dialog with results.
             */
             function showMsg(data) {
                 var title = "<?php echo __('Success'); ?>";

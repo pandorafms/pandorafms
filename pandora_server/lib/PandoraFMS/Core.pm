@@ -633,8 +633,9 @@ Process an alert given the status returned by pandora_evaluate_alert.
 
 =cut
 ##########################################################################
-sub pandora_process_alert ($$$$$$$$;$) {
-	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp, $extra_macros) = @_;
+sub pandora_process_alert ($$$$$$$$;$$) {
+	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp,
+			$extra_macros, $is_correlated_alert) = @_;
 
 	if (defined ($agent)) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
@@ -740,7 +741,8 @@ sub pandora_process_alert ($$$$$$$$;$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, 0, $extra_macros);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
+			$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
 		return;
 	}
 }
@@ -752,9 +754,10 @@ Execute the given alert.
 
 =cut
 ##########################################################################
-sub pandora_execute_alert ($$$$$$$$$;$) {
+sub pandora_execute_alert ($$$$$$$$$;$$) {
 	my ($pa_config, $data, $agent, $module,
-		$alert, $alert_mode, $dbh, $timestamp, $forced_alert, $extra_macros) = @_;
+		$alert, $alert_mode, $dbh, $timestamp, $forced_alert,
+		$extra_macros, $is_correlated_alert) = @_;
 	
 	# 'in-process' events can inhibit alers too.
 	if ($pa_config->{'event_inhibit_alerts'} == 1 && $alert_mode != RECOVERED_ALERT) {
@@ -922,9 +925,50 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 		#If we've spotted an alert recovered, we set the new event's severity to 2 (NORMAL), otherwise the original value is maintained.
 		my ($text, $event, $severity) = ($alert_mode == RECOVERED_ALERT) ? ('recovered', 'alert_recovered', 2) : ('fired', 'alert_fired', $alert->{'priority'});
 
-		pandora_event ($pa_config, "Alert $text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
- 			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $severity, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
-			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+		if (defined($is_correlated_alert) && $is_correlated_alert == 1) {
+			$text = "Correlated alert $text";
+			pandora_event (
+				$pa_config,
+				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				(defined ($agent) ? $agent->{'id_agente'} : 0),
+				$severity,
+				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
+				$event,
+				0,
+				$dbh,
+				'monitoring_server',
+				'',
+				'',
+				'',
+				'',
+				$critical_instructions,
+				$warning_instructions,
+				$unknown_instructions
+			);
+		} else {
+			pandora_event (
+				$pa_config,
+				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				(defined ($agent) ? $agent->{'id_agente'} : 0),
+				$severity,
+				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
+				$event,
+				0,
+				$dbh,
+				'monitoring_server',
+				'',
+				'',
+				'',
+				'',
+				$critical_instructions,
+				$warning_instructions,
+				$unknown_instructions
+			);
+		}
 	}
 }
 

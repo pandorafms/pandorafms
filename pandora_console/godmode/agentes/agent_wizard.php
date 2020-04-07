@@ -25,14 +25,15 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
+// hd($_REQUEST);
 // Begin.
 global $config;
 // Require needed class.
 require_once $config['homedir'].'/include/class/AgentWizard.class.php';
+
 // This page.
-hd($_REQUEST);
 $ajaxPage = 'godmode/agentes/agent_wizard';
+
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.
@@ -116,8 +117,8 @@ if (is_ajax()) {
 // require 'agent_wizard.'.$wizard_section.'.php';
 ?>
 
-<script language="javascript" type="text/javascript">
-/*
+<!--script language="javascript" type="text/javascript">
+
 function satellite_remote_warn(id_satellite, remote)
 {
     if(!remote)
@@ -132,4 +133,4 @@ function satellite_remote_warn(id_satellite, remote)
 
 }
 
-</script>
+</script-->

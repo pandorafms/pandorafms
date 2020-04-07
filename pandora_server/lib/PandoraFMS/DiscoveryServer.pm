@@ -1330,6 +1330,9 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     $notification->{'subject'} = safe_input('Discovery task ');
     $notification->{'subject'} .= $self->{'task_data'}{'name'};
     $notification->{'subject'} .= safe_input(' review pending');
+    $notification->{'url'} = ui_get_full_url(
+      'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist#'
+    );
 
     $notification->{'mensaje'} = safe_input(
       'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})

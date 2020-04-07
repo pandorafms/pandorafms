@@ -151,6 +151,7 @@ our @EXPORT = qw(
 	get_enabled_servers
 	dateTimeToTimestamp
 	get_user_agent
+	ui_get_full_url
 );
 
 # ID of the different servers
@@ -2333,12 +2334,24 @@ sub get_user_agent {
 	return $ua;
 }
 
+################################################################################
+# Returns 'valid' url relative to current pandora_console installation.
+################################################################################
+sub ui_get_full_url {
+	my ($pa_config, $url) = @_;
 
+	if (is_empty($pa_config->{'console_api_url'})) {
+		# Do not relativize if console_api_url is empty.
+		return $url;
+	}
 
+	my $console_url = $pa_config->{'console_api_url'};
 
+	$console_url =~ s/include\/api.php$//;
 
+	return $console_url.$url;
 
-
+}
 
 1;
 __END__

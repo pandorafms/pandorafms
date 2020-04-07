@@ -722,6 +722,7 @@ function html_print_select(
  * @param string  $style          The string of style.
  * @param mixed   $size           Max elements showed in select or default (size=10)
  * @param integer $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
+ * @param integer $class          Class to apply.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -738,7 +739,8 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT
+    $trucate_size=GENERIC_SIZE_TEXT,
+    $class=''
 ) {
     global $config;
 
@@ -770,7 +772,7 @@ function html_print_select_from_sql(
         $return,
         $multiple,
         $sort,
-        '',
+        $class,
         $disabled,
         $style,
         '',
@@ -3589,7 +3591,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['style']) === true) ? $data['style'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
             );
         break;
 

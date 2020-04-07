@@ -822,7 +822,7 @@ CREATE TABLE `tdiscovery_tmp_agents` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 	`id_rt` int(10) unsigned NOT NULL,
 	`label` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
-	`data` text,
+	`data` MEDIUMTEXT,
 	`review_date` datetime DEFAULT NULL,
 	`created` datetime DEFAULT NULL,
 	PRIMARY KEY (`id`),

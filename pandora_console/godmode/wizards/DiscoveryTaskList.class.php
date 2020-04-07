@@ -523,6 +523,7 @@ class DiscoveryTaskList extends HTML
                     $data[4] = '-';
                 }
 
+                $can_be_reviewed = false;
                 if ($task['review_mode'] == DISCOVERY_STANDARD) {
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
@@ -539,6 +540,7 @@ class DiscoveryTaskList extends HTML
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
                     ) {
+                        $can_be_reviewed = true;
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[5] .= __('Review');
                         $data[5] .= '</span>';
@@ -676,10 +678,22 @@ class DiscoveryTaskList extends HTML
 
                 if (!$no_operations) {
                     if ($task['disabled'] != 2) {
-                        $data[9] = '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] = '';
+                        if ($can_be_reviewed) {
+                            $data[9] .= '<a href="#" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
+                            $data[9] .= html_print_image(
+                                'images/expand.png',
+                                true,
+                                ['title' => __('Review results')]
+                            );
+                            $data[9] .= '</a>';
+                        }
+
+                        $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[9] .= html_print_image(
                             'images/eye.png',
-                            true
+                            true,
+                            ['title' => __('View summary')]
                         );
                         $data[9] .= '</a>';
                     }
@@ -693,7 +707,8 @@ class DiscoveryTaskList extends HTML
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/dynamic_network_icon.png',
-                                true
+                                true,
+                                ['title' => __('View map')]
                             );
                             $data[9] .= '</a>';
                         }
@@ -713,13 +728,15 @@ class DiscoveryTaskList extends HTML
                                 )
                             ).'">'.html_print_image(
                                 'images/config.png',
-                                true
+                                true,
+                                ['title' => __('Edit task')]
                             ).'</a>';
                             $data[9] .= '<a href="'.ui_get_full_url(
                                 'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/cross.png',
-                                true
+                                true,
+                                ['title' => __('Delete task')]
                             ).'</a>';
                         } else {
                             // Check if is a H&D, Cloud or Application or IPAM.
@@ -731,13 +748,15 @@ class DiscoveryTaskList extends HTML
                                 )
                             ).'">'.html_print_image(
                                 'images/config.png',
-                                true
+                                true,
+                                ['title' => __('Edit task')]
                             ).'</a>';
                             $data[9] .= '<a href="'.ui_get_full_url(
                                 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/cross.png',
-                                true
+                                true,
+                                ['title' => __('Delete task')]
                             ).'</a>';
                         }
                     } else {
@@ -1214,7 +1233,6 @@ class DiscoveryTaskList extends HTML
         if (is_array($task_data)) {
             foreach ($task_data as $agent) {
                 $data = json_decode(base64_decode($agent['data']), true);
-
                 if (is_array($data) === false) {
                     continue;
                 }
@@ -1287,10 +1305,13 @@ class DiscoveryTaskList extends HTML
                     );
                 }
             }
+        }
 
-            echo '<div>';
-            echo $this->progressTaskSummary($task);
-            echo '</div>';
+        echo '<div>';
+        echo $this->progressTaskSummary($task);
+        echo '</div>';
+
+        if (count($simple_data) > 0) {
             echo '<div class="subtitle">';
             echo '<span>';
             echo __('Please select devices to be monitored');
@@ -1309,7 +1330,6 @@ class DiscoveryTaskList extends HTML
             echo '</button>';
             echo '</div>';
             echo '</div>';
-
             echo '<form id="review">';
             echo '<div id="tree"></div>';
             echo parent::printTree(
@@ -1317,6 +1337,12 @@ class DiscoveryTaskList extends HTML
                 $simple_data
             );
             echo '</form>';
+        } else {
+            echo '<div class="subtitle">';
+            echo '<span>';
+            echo __('No devices found in temporary resources, please re-launch.');
+            echo '</span>';
+            echo '</div>';
         }
 
     }

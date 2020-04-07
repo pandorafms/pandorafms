@@ -308,7 +308,18 @@ class HostDevices extends Wizard
             $interval = get_parameter('interval', 0);
 
             if ($network_csv_enabled) {
-                if ($_FILES['network_csv']['type'] != 'text/csv') {
+                if ($_FILES['network_csv']['type'] != 'text/csv'
+                    && $_FILES['network_csv']['type'] != 'text/plain'
+                    && $_FILES['network_csv']['type'] != 'application/octet-stream'
+                    && $_FILES['network_csv']['type'] != 'application/vnd.ms-excel'
+                    && $_FILES['network_csv']['type'] != 'text/x-csv'
+                    && $_FILES['network_csv']['type'] != 'application/csv'
+                    && $_FILES['network_csv']['type'] != 'application/x-csv'
+                    && $_FILES['network_csv']['type'] != 'text/csv'
+                    && $_FILES['network_csv']['type'] != 'text/comma-separated-values'
+                    && $_FILES['network_csv']['type'] != 'text/x-comma-separated-values'
+                    && $_FILES['network_csv']['type'] != 'text/tab-separated-values'
+                ) {
                     $this->msg = __(
                         'Invalid mimetype for csv file: %s',
                         $_FILES['network_csv']['type']
@@ -1057,6 +1068,7 @@ class HostDevices extends Wizard
                     'nothing_value' => 0,
                     'nothing'       => __('None'),
                     'multiple'      => true,
+                    'class'         => 'select_multiple',
                 ],
             ];
 

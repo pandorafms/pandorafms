@@ -2,6 +2,13 @@
  * TODO: This may be at hostdevices.css
  */
 
-#id_network_profile {
-  width: 300px;
+select.select_multiple {
+  min-width: 500px;
+  width: 50%;
+  height: 250px;
+}
+
+.indented select.select_multiple {
+  min-width: calc(500px - 1em);
+  width: calc(50% - 1em);
 }

@@ -2175,7 +2175,7 @@ sub wmi_credentials_calculation {
   my ($self, $target) = @_;
 
   # Test empty credentials.
-  my @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -N //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+  my @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -N //$target "SELECT * FROM Win32_ComputerSystem" 2>$DEVNULL`;
   my $rs = $self->wmi_output_check($?, @output);
 
   if ($rs == WMI_OK) {
@@ -2198,7 +2198,7 @@ sub wmi_credentials_calculation {
     my $auth = $cred->{'username'}.'%'.$cred->{'password'};
     next if $auth eq '%';
 
-    @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -U $auth //$target "SELECT * FROM Win32_ComputerSystem" 2>&1`;
+    @output = `$self->{'timeout_cmd'}$self->{'wmi_client'} -U $auth //$target "SELECT * FROM Win32_ComputerSystem" 2>$DEVNULL`;
 
     my $rs = $self->wmi_output_check($?, @output);
 
@@ -2288,11 +2288,13 @@ sub wmi_get {
 sub wmi_get_command {
   my ($self, $target, $auth, $query) = @_;
 
+  return () if is_empty($target);
+
   my @output;
   if (defined($auth) && $auth ne '') {
-    @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -U $auth //$target "$query" 2>&1`;
+    @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -U $auth //$target "$query" 2>$DEVNULL`;
   }else {
-    @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -N //$target "$query" 2>&1`;
+    @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -N //$target "$query" 2>$DEVNULL`;
   }
 
   my $rs = $self->wmi_output_check($?, @output);
@@ -2301,9 +2303,12 @@ sub wmi_get_command {
     return @output;
   }
 
+  my $err = $self->{'last_wmi_error'};
+  $err = 'Not OK, empty error' if is_empty($err);
+
   $self->call(
     'message',
-    "[".$target."] WMI error: ".$self->{'last_wmi_error'},
+    "[".$target."] WMI error: ".$err,
     10
   );
 

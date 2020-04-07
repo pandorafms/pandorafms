@@ -497,19 +497,32 @@ sub PandoraFMS::Recon::Base::test_module($$) {
 
   } elsif (($test->{'id_tipo_modulo'} >= 1 && $test->{'id_tipo_modulo'} <= 5)
     || ($test->{'id_tipo_modulo'} >= 21 && $test->{'id_tipo_modulo'} <= 23)
-    && is_enabled($test->{'id_plugin'})
   ) {
     # Generic, plugins. (21-23 ASYNC)
-    # XXX TODO: Test plugins.
-    return 1;
+    if ($test->{'id_modulo'} == 6) {
+      # WMI commands.
+      $value = $self->call(
+        'wmi_get_value',
+        $test->{'ip_target'},
+        # WMI query.
+        $test->{'snmp_oid'},
+        # Column
+        $test->{'tcp_port'}
+      );
+    } elsif(is_enabled($test->{'id_plugin'})) {
+      # XXX TODO: Test plugins. How to identify arguments? and values?
+      # Disabled until we can ensure result.
+      return 0;
+    }
 
   } elsif ($test->{'id_tipo_modulo'} >= 34 && $test->{'id_tipo_modulo'} <= 37) {
     # Remote command.
     # XXX TODO: Test remote commands.
-    return 1;
+    # Disabled until we can ensure result.
+    return 0;
+
   } elsif ($test->{'id_tipo_modulo'} >= 8 && $test->{'id_tipo_modulo'} <= 11) {
     # TCP
-
     return 0 unless is_numeric($test->{'tcp_port'})
       && $test->{'tcp_port'} > 0
       && $test->{'tcp_port'} <= 65535;

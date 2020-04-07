@@ -70,6 +70,9 @@ done
 
 # Execution
 
+which mysqldump &>/dev/null
+[ $? -eq 0 ] || echo -e "Command Mysqldump not found. \nIn order to make backups it is necessary to have mysqldump on your console."
+
 if [ ! -e "$PANDORAPATH/include/config.php" ]
 then
 	echo "Cannot read config file at $PANDORAPATH/include/config.php. Aborting"

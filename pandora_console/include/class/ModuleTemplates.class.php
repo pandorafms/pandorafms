@@ -1029,7 +1029,7 @@ class ModuleTemplates extends HTML
         if ($createNewTemplate === false) {
             // Get the data.
             $sql = sprintf(
-                'SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_group AS `group`, ncg.name AS `group_name`
+                'SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_group AS `group`, nc.id_modulo AS `id_format`, ncg.name AS `group_name`
 				FROM tnetwork_profile_component AS npc, tnetwork_component AS nc 
 				INNER JOIN tnetwork_component_group AS ncg ON ncg.id_sg = nc.id_group
                 WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d',
@@ -1053,6 +1053,7 @@ class ModuleTemplates extends HTML
                         'name'         => $block['name'],
                         'type'         => $block['type'],
                         'description'  => $block['description'],
+                        'id_format'    => $block['id_format'],
                     ];
                 }
 
@@ -1101,28 +1102,66 @@ class ModuleTemplates extends HTML
 
                         $table->head = [];
                         $table->head[0] = __('Module Name');
-                        $table->head[1] = __('Type');
-                        $table->head[2] = __('Description');
-                        $table->head[3] = '<span style="float:right;margin-right:1.2em;">'.__('Delete').'</span>';
+                        $table->head[1] = '<span style="margin-left: 0">'.__('Format').'</span>';
+                        $table->head[2] = '<span style="text-align: center">'.__('Type').'</span>';
+                        $table->head[3] = __('Description');
+                        $table->head[4] = '<span style="float:right;margin-right:1.2em;">'.__('Delete').'</span>';
 
                         $table->size = [];
-                        $table->size[0] = '20%';
-                        $table->size[2] = '65%';
-                        $table->size[3] = '15%';
+                        $table->size[0] = '15%';
+                        $table->size[3] = '65%';
+                        $table->size[4] = '15%';
 
                         $table->align = [];
-                        $table->align[3] = 'right';
+                        $table->align[4] = 'right';
 
                         $table->style = [];
-                        $table->style[3] = 'padding-right:2em';
+                        $table->style[4] = 'padding-right:2em';
 
                         $table->data = [];
 
                         foreach ($blockData as $module) {
-                            $data[0] = $module['name'];
-                            $data[1] = ui_print_moduletype_icon($module['type'], true);
-                            $data[2] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
-                            $data[3] = html_print_input_image(
+                            $data[0] = '<a href="'.ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&id='.$module['component_id']).'">'.$module['name'].'</a>';
+                            switch ($module['id_format']) {
+                                case MODULE_NETWORK:
+                                    $formatInfo = html_print_image(
+                                        'images/network.png',
+                                        true,
+                                        ['title' => __('Network module')]
+                                    );
+                                break;
+
+                                case MODULE_WMI:
+                                    $formatInfo = html_print_image(
+                                        'images/wmi.png',
+                                        true,
+                                        ['title' => __('WMI module')]
+                                    );
+                                break;
+
+                                case MODULE_PLUGIN:
+                                    $formatInfo = html_print_image(
+                                        'images/plugin.png',
+                                        true,
+                                        ['title' => __('Plug-in module')]
+                                    );
+                                break;
+
+                                default:
+                                    $formatInfo = $module['id_format'];
+                                break;
+                            }
+
+                            $data[1] = html_print_div(
+                                [
+                                    'style'   => 'margin: 0 auto;width: 50%;',
+                                    'content' => $formatInfo,
+                                ],
+                                true
+                            );
+                            $data[2] = ui_print_moduletype_icon($module['type'], true);
+                            $data[3] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
+                            $data[4] = html_print_input_image(
                                 'del_module_'.$module['component_id'].'_',
                                 'images/cross.png',
                                 1,

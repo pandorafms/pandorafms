@@ -1360,8 +1360,11 @@ sub add_module($$$) {
   return unless ref($data) eq 'HASH' && defined($data->{'name'})
     && $data->{'name'} ne '';
 
-  # Test module. Is it success?
+  # Test module. Is it success? Some components have MIB name instead OID.
+  $self->{'translate_snmp'} = 1;
   my $rs = $self->call('test_module', $agent, $data);
+  $self->{'translate_snmp'} = 0;
+
   return unless is_enabled($rs);
 
   $self->{'agents_found'}->{$agent}->{'modules'}{$data->{'name'}} = $data;
@@ -2059,10 +2062,17 @@ sub snmp_get_command {
 sub snmp_get_value($$$) {
   my ($self, $device, $oid) = @_;
 
-  my @output = $self->snmp_get($device, $oid);
+  my $effective_oid = $oid;
+  if (is_enabled($self->{'translate_snmp'})) {
+    $effective_oid = `snmptranslate $oid -On 2>$DEVNULL`;
+    chomp($effective_oid);
+  }
+
+  my @output = $self->snmp_get($device, $effective_oid);
+  
   foreach my $line (@output) {
     chomp($line);
-    return $1 if ($line =~ /^$oid\s+=\s+\S+:\s+(.*)$/);
+    return $1 if ($line =~ /^$effective_oid\s+=\s+\S+:\s+(.*)$/);
   }
 
   return undef;

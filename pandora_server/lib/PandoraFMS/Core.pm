@@ -6276,7 +6276,10 @@ sub notification_get_users {
 		safe_input($source)
 	);
 
-	@results = map { $_->{'id_user'} } @results;
+	@results = map {
+		if(ref($_) eq 'HASH') { $_->{'id_user'} }
+		else {}
+	} @results;
 
 	return @results;
 }
@@ -6301,7 +6304,10 @@ sub notification_get_groups {
 		safe_input($source)
 	);
 
-	@results = map { $_->{'id_group'} } @results;
+	@results = map {
+		if(ref($_) eq 'HASH') { $_->{'id_group'} }
+		else {}
+	} @results;
 
 	return @results;
 }

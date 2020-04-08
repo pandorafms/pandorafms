@@ -2399,7 +2399,7 @@ class ConsoleSupervisor
                             'type'    => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
                             'title'   => __('AllowOverride is disabled'),
                             'message' => __($message),
-                            'url'     => '',
+                            'url'     => ui_get_full_url('index.php'),
                         ]
                     );
                 }

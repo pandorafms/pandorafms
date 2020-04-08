@@ -116,3 +116,11 @@ ul.wizard li > textarea {
   width: 33%;
   text-align: center;
 }
+
+.action_button_list {
+  height: 60px;
+}
+
+.action_button_list li {
+  display: inline;
+}

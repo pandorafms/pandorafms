@@ -997,30 +997,38 @@ class ModuleTemplates extends HTML
             ],
         ];
 
-        $inputs[] = [
+        $availableButtons = [];
+
+        $availableButtons[] = [
             'arguments' => [
                 'name'       => 'action_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
                 'value'      => $formButtonValue,
-                'attributes' => 'class="'.$formButtonClass.'"',
+                'attributes' => 'class="float-right '.$formButtonClass.'"',
                 'return'     => true,
             ],
         ];
 
         if ($createNewTemplate === false) {
-            // Adding components button.
-            $inputs[] = [
+            $availableButtons[] = [
                 'arguments' => [
                     'name'       => 'add_components_button',
                     'label'      => __('Add components'),
-                    'type'       => 'button',
+                    'type'       => 'submit',
                     'attributes' => 'class="sub cog"',
                     'script'     => 'showAddComponent();',
                     'return'     => true,
                 ],
             ];
         }
+
+        $inputs[] = [
+            'class'         => 'action_button_list',
+            'direct'        => false,
+            'wrapper'       => 'div',
+            'block_content' => $availableButtons,
+        ];
 
         // Required for PEN field.
         ui_require_jquery_file('tag-editor');

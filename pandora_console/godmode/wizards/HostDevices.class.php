@@ -308,7 +308,7 @@ class HostDevices extends Wizard
             $interval = get_parameter('interval', 0);
 
             if ($network_csv_enabled) {
-                if (isset($_FILES['network_csv']['type'])) {
+                if (empty($_FILES['network_csv']['type']) === false) {
                     if ($_FILES['network_csv']['type'] != 'text/csv'
                         && $_FILES['network_csv']['type'] != 'text/plain'
                         && $_FILES['network_csv']['type'] != 'application/octet-stream'

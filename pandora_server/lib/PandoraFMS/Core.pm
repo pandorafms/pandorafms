@@ -1648,6 +1648,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		"' for agent " .
 		(defined ($agent) && $agent ne '' ? "'" . safe_output($agent->{'nombre'}) . "'" : 'ID ' . $module->{'id_agente'}) . ".",
 		10);
+
+	# Ensure default values.
+	$module->{'min_ff_event'} = 0 unless defined($module->{'min_ff_event'});
+	$module->{'ff_timeout'} = 0 unless defined($module->{'ff_timeout'});
+	$module->{'module_interval'} = 0 unless defined($module->{'module_interval'});
+	
+	if (ref($agent) eq 'HASH') {
+		if (!defined($agent->{'interval'}) && defined($agent->{'interval'})) {
+			$agent->{'intervalo'} = $agent->{'interval'};
+		}
+	}
 	
 	# Get agent information
 	if (! defined ($agent) || $agent eq '') {

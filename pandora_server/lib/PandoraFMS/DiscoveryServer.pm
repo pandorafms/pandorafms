@@ -469,7 +469,13 @@ sub PandoraFMS::Recon::Base::test_module($$) {
     $test->{'id_tipo_modulo'} = $module->{'type'};
   } else {
     # Module.
-    $test->{'id_tipo_modulo'} = $module->{'id_modulo'};
+    if (!defined($self->{'module_types'}{$module->{'type'}})) {
+      $self->{'module_types'}{$module->{'type'}} = get_module_id(
+        $self->{'dbh'},$module->{'type'}
+      );
+    }
+
+    $test->{'id_tipo_modulo'} = $self->{'module_types'}{$module->{'type'}};
   }
 
   my $value;

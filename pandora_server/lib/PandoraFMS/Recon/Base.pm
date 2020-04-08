@@ -1475,6 +1475,12 @@ sub scan_subnet($) {
     $self->call('update_progress', ceil($progress));
 
     $total_hosts = scalar keys %hosts_alive;
+    if ($total_hosts == 0) {
+      # Populate.
+      $self->{'c_network_percent'} += 50;
+      $self->call('update_progress', ceil($progress)+25);
+      next;
+    }
     $step = 25.0 / scalar(@subnets) / $total_hosts;
     $subnet_step = 50.0 / $total_hosts;
 

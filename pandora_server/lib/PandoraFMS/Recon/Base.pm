@@ -1341,7 +1341,10 @@ sub prepare_agent($$) {
 ################################################################################
 sub add_agent($$) {
   my ($self, $addr) = @_;
-  
+
+  # Avoid create empty agents.
+  return if is_empty($addr);
+
   $self->prepare_agent($addr);
 }
 
@@ -2141,7 +2144,7 @@ sub traceroute_connectivity($$) {
   # Look for parents.
   my $device = $host;
   for (my $i = 0; $i < $self->{'parent_recursion'}; $i++) {
-    next unless defined($hops[$i]);
+    next if is_empty($hops[$i]);
     my $parent = $hops[$i]->ipaddr();
 
     # Create an agent for the parent.

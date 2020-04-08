@@ -774,7 +774,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`description` varchar(250) NOT NULL default '',
 	`subnet` text NOT NULL,
 	`id_network_profile` text,
-	`review_mode` tinyint(1) unsigned NOT NULL default 0,
+	`review_mode` tinyint(1) unsigned NOT NULL default 1,
 	`id_group` int(10) unsigned NOT NULL default 1,
 	`utimestamp` bigint(20) unsigned NOT NULL default 0,
 	`status` tinyint(4) NOT NULL default 0,

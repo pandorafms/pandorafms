@@ -2,7 +2,7 @@ START TRANSACTION;
 
 ALTER TABLE trecon_task MODIFY COLUMN `id_network_profile` TEXT;
 ALTER TABLE `trecon_task` CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 0;
-ALTER TABLE `trecon_task` ADD COLUMN `subnet_csv` TINYINT(1) UNSIGNED DEFAULT 0;
+ALTER TABLE `trecon_task` ADD COLUMN `subnet_csv` TINYINT(1) UNSIGNED DEFAULT 1;
 
 UPDATE `trecon_task` SET `review_mode` = 1;
 ALTER TABLE trecon_task add column `auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1 AFTER `auth_strings`;

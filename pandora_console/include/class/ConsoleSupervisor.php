@@ -2389,10 +2389,14 @@ class ConsoleSupervisor
         $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
         $is_none = false;
 
+        $i = 0;
         foreach ($file_lines as $line) {
-            if (preg_match('/ AllowOverride/', $line)) {
+            $i++;
+
+            // Check Line and content.
+            if (preg_match('/ AllowOverride/', $line) && $i === 311) {
                 $result = explode(' ', $line);
-                if ($result[9] == 'None') {
+                if ($result[5] == 'None') {
                     $is_none = true;
                     $this->notify(
                         [

@@ -55,7 +55,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.744';
-use constant AGENT_BUILD => '200408';
+use constant AGENT_BUILD => '200409';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;

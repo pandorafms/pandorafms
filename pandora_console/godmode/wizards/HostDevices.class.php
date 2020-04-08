@@ -681,10 +681,21 @@ class HostDevices extends Wizard
         }
 
         if ($this->page < $this->maxPagesNetScan) {
+            $title = __('NetScan');
+
+            if ($this->page == 1) {
+                $title = __(
+                    '"%s" features',
+                    io_safe_output(
+                        $this->task['name']
+                    )
+                );
+            }
+
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
             ui_print_page_header(
-                __('NetScan'),
+                $title,
                 '',
                 false,
                 '',
@@ -1021,12 +1032,6 @@ class HostDevices extends Wizard
                     'type'   => 'hidden',
                     'return' => true,
                 ],
-            ];
-
-            $form['inputs'][] = [
-                'extra' => '<p><h3>Please, customize task <b>'.io_safe_output(
-                    $this->task['name']
-                ).'</b></h3></p>',
             ];
 
             $form['inputs'][] = [

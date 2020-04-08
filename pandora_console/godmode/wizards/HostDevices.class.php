@@ -308,51 +308,53 @@ class HostDevices extends Wizard
             $interval = get_parameter('interval', 0);
 
             if ($network_csv_enabled) {
-                if ($_FILES['network_csv']['type'] != 'text/csv'
-                    && $_FILES['network_csv']['type'] != 'text/plain'
-                    && $_FILES['network_csv']['type'] != 'application/octet-stream'
-                    && $_FILES['network_csv']['type'] != 'application/vnd.ms-excel'
-                    && $_FILES['network_csv']['type'] != 'text/x-csv'
-                    && $_FILES['network_csv']['type'] != 'application/csv'
-                    && $_FILES['network_csv']['type'] != 'application/x-csv'
-                    && $_FILES['network_csv']['type'] != 'text/csv'
-                    && $_FILES['network_csv']['type'] != 'text/comma-separated-values'
-                    && $_FILES['network_csv']['type'] != 'text/x-comma-separated-values'
-                    && $_FILES['network_csv']['type'] != 'text/tab-separated-values'
-                ) {
-                    $this->msg = __(
-                        'Invalid mimetype for csv file: %s',
-                        $_FILES['network_csv']['type']
-                    );
-                    return false;
-                }
-
-                $network = preg_split(
-                    "/\n|,|;/",
-                    trim(
-                        file_get_contents(
-                            $_FILES['network_csv']['tmp_name']
-                        )
-                    )
-                );
-                unlink($_FILES['network_csv']['tmp_name']);
-                if (empty($network) || is_array($network) === false) {
-                    $this->msg = __(
-                        'Invalid content readed from csv file: %s',
-                        $_FILES['network_csv']['name']
-                    );
-                    return false;
-                }
-
-                // Sanitize.
-                $network = array_unique($network);
-                $network = array_filter(
-                    $network,
-                    function ($item) {
-                        return (!empty($item));
+                if (isset($_FILES['network_csv']['type'])) {
+                    if ($_FILES['network_csv']['type'] != 'text/csv'
+                        && $_FILES['network_csv']['type'] != 'text/plain'
+                        && $_FILES['network_csv']['type'] != 'application/octet-stream'
+                        && $_FILES['network_csv']['type'] != 'application/vnd.ms-excel'
+                        && $_FILES['network_csv']['type'] != 'text/x-csv'
+                        && $_FILES['network_csv']['type'] != 'application/csv'
+                        && $_FILES['network_csv']['type'] != 'application/x-csv'
+                        && $_FILES['network_csv']['type'] != 'text/csv'
+                        && $_FILES['network_csv']['type'] != 'text/comma-separated-values'
+                        && $_FILES['network_csv']['type'] != 'text/x-comma-separated-values'
+                        && $_FILES['network_csv']['type'] != 'text/tab-separated-values'
+                    ) {
+                        $this->msg = __(
+                            'Invalid mimetype for csv file: %s',
+                            $_FILES['network_csv']['type']
+                        );
+                        return false;
                     }
-                );
-                $network = join(',', $network);
+
+                    $network = preg_split(
+                        "/\n|,|;/",
+                        trim(
+                            file_get_contents(
+                                $_FILES['network_csv']['tmp_name']
+                            )
+                        )
+                    );
+                    unlink($_FILES['network_csv']['tmp_name']);
+                    if (empty($network) || is_array($network) === false) {
+                        $this->msg = __(
+                            'Invalid content readed from csv file: %s',
+                            $_FILES['network_csv']['name']
+                        );
+                        return false;
+                    }
+
+                    // Sanitize.
+                    $network = array_unique($network);
+                    $network = array_filter(
+                        $network,
+                        function ($item) {
+                            return (!empty($item));
+                        }
+                    );
+                    $network = join(',', $network);
+                }
             }
 
             if (isset($task_id) === true) {

@@ -472,7 +472,7 @@ class DiscoveryTaskList extends Wizard
                 // Name task.
                 $data[1] = '';
                 if ($task['disabled'] != 2) {
-                    $data[1] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                    $data[1] .= '<a onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                 }
 
                 $data[1] .= '<b>'.$task['name'].'</b>';
@@ -623,7 +623,7 @@ class DiscoveryTaskList extends Wizard
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                     ) {
                         if (check_acl($config['id_user'], 0, 'MR')) {
-                            $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
+                            $data[9] .= '<a  onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/dynamic_network_icon.png',
                                 true

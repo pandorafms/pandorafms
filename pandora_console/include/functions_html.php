@@ -3355,9 +3355,11 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
+    $disabled_class .= (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+
     return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
-			<span class='p-slider'></span>
+			<span class='p-slider".$disabled_class."'></span>
 		</label>";
 }
 

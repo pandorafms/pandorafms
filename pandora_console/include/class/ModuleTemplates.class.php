@@ -694,7 +694,7 @@ class ModuleTemplates extends HTML
                 'input_class' => 'flex-row',
                 'name'        => 'filter',
                 'type'        => 'text',
-                'size'        => '45',
+                'size'        => '40',
                 'class'       => 'float-right',
                 'onKeyDown'   => 'filterTextComponents(event);',
                 'value'       => '',

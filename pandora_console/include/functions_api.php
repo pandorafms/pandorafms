@@ -15990,3 +15990,22 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
 
     return false;
 }
+
+
+function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
+{
+    global $config;
+
+    if (is_metaconsole()) {
+        $mc_event_id = db_get_all_rows_sql("SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ");
+        if ($mc_event_id !== false) {
+            $query = "SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ";
+            returnData($returnType, ['type' => 'string', 'data' => $mc_event_id]);
+        } else {
+            returnError('id_not_found', $console_event_id.' on '.$server_id);
+        }
+    } else {
+        returnError('forbidden', 'string');
+        return;
+    }
+}

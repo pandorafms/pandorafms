@@ -1887,15 +1887,17 @@ sub scan($) {
     # Delete previous connections.
     $self->call('delete_connections');
 
-    # Connectivity from address forwarding tables.
-    $self->call('message', "[2/6] Finding address forwarding table connectivity...", 3);
+    # Connect hosts that are still unconnected using known gateways.
+    $self->call('message', "[2/6] Finding host to gateway connectivity.", 3);
     $self->{'c_network_name'} = '';
-    $self->{'step'} = STEP_AFT;
-    ($progress, $step) = (50, 10.0 / scalar(@hosts)); # From 50% to 60%.
-    for (my $i = 0; defined($hosts[$i]); $i++) {
+    $self->{'step'} = STEP_GATEWAY;
+    ($progress, $step) = (50, 10.0 / scalar(@hosts)); # From 70% to 80%.
+    $self->get_routes(); # Update the route cache.
+    foreach my $host (@hosts) {
       $self->call('update_progress', $progress);
       $progress += $step;
-      $self->aft_connectivity($hosts[$i]);
+      next if ($self->has_parent($host));
+      $self->gateway_connectivity($host);
     }
 
     # Connect hosts that are still unconnected using traceroute.
@@ -1910,18 +1912,17 @@ sub scan($) {
       $self->traceroute_connectivity($host);
     }
 
-    # Connect hosts that are still unconnected using known gateways.
-    $self->call('message', "[4/6] Finding host to gateway connectivity.", 3);
+    # Connectivity from address forwarding tables.
+    $self->call('message', "[4/6] Finding address forwarding table connectivity...", 3);
     $self->{'c_network_name'} = '';
-    $self->{'step'} = STEP_GATEWAY;
-    ($progress, $step) = (70, 10.0 / scalar(@hosts)); # From 70% to 80%.
-    $self->get_routes(); # Update the route cache.
-    foreach my $host (@hosts) {
+    $self->{'step'} = STEP_AFT;
+    ($progress, $step) = (70, 10.0 / scalar(@hosts)); # From 50% to 60%.
+    for (my $i = 0; defined($hosts[$i]); $i++) {
       $self->call('update_progress', $progress);
       $progress += $step;
-      next if ($self->has_parent($host));
-      $self->gateway_connectivity($host);
+      $self->aft_connectivity($hosts[$i]);
     }
+
   }
 
 	# Apply monitoring templates

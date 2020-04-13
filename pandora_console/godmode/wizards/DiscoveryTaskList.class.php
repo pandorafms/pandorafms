@@ -386,18 +386,22 @@ class DiscoveryTaskList extends HTML
             $table->data = [];
             $table->align = [];
             $table->headstyle = [];
+            $table->style = [];
+            $table->style[4] = 'word-break: break-word;';
             for ($i = 0; $i < 9; $i++) {
                 $table->headstyle[$i] = 'text-align: left;';
             }
 
+            // Name.
+            $table->headstyle[4] .= 'min-width: 100px; width: 100px;';
             // Status.
-            $table->headstyle[5] .= 'min-width: 100px; width: 100px;';
+            $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 200px; width: 150px;';
+            $table->headstyle[6] .= 'min-width: 150px; width: 150px;';
             // Progress.
-            $table->headstyle[7] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[7] .= 'min-width: 50px; width: 150px;';
             // Updated at.
-            $table->headstyle[8] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[8] .= 'min-width: 50px; width: 150px;';
             // Operations.
             $table->headstyle[9] .= 'min-width: 150px; width: 150px;';
 

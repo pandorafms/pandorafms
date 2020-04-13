@@ -15992,6 +15992,19 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
 }
 
 
+/**
+ * Function for get event id and node id, then we get in return the Metaconsole event ID.
+ *
+ * @param [string] $server_id        id server (Node)
+ * @param [string] $console_event_id console Id node event in tmetaconsole_event
+ * @param [string] $trash2           don't use
+ * @param [string] $returnType
+ *
+ * Example
+ * api.php?op=get&op2=event_mcid&return_type=json&id=0&id2=0&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
 function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
 {
     global $config;

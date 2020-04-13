@@ -1015,8 +1015,8 @@ class ModuleTemplates extends HTML
                 'arguments' => [
                     'name'       => 'add_components_button',
                     'label'      => __('Add components'),
-                    'type'       => 'submit',
-                    'attributes' => 'class="sub cog"',
+                    'type'       => 'button',
+                    'attributes' => 'class="float-right sub cog"',
                     'script'     => 'showAddComponent();',
                     'return'     => true,
                 ],

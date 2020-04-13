@@ -1220,6 +1220,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
 
     # Update parent relationships.
     foreach my $agent (@agents) {
+
       # Avoid processing if does not exist.
       next unless (defined($agent->{'agent_id'}));
 

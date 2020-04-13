@@ -1221,7 +1221,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     # Update parent relationships.
     foreach my $agent (@agents) {
       # Avoid processing if does not exist.
-      next unless (defined($agent->{'agent_id'}));
+      next unless (defined($agent->{'agent'}{'agent_id'}));
 
       # Avoid processing undefined parents.
       next unless defined($agent->{'parent'});
@@ -1234,12 +1234,12 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       next unless defined($parent);
 
       # Is the agent in learning mode?
-      next unless ($agent->{'modo'} == 1);
+      next unless ($agent->{'agent'}{'modo'} == 1);
 
       # Connect the host to its parent.
       db_do($self->{'dbh'},
         'UPDATE tagente SET id_parent=? WHERE id_agente=?',
-        $parent->{'id_agente'}, $agent->{'agent_id'}
+        $parent->{'id_agente'}, $agent->{'agent'}{'agent_id'}
       );
     }
 

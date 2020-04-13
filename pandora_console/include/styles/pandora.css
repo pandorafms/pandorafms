@@ -628,6 +628,9 @@ select:-internal-list-box {
 .float-right {
   float: right;
 }
+.invisible {
+  display: none;
+}
 
 div#page {
   background: #fbfbfb;

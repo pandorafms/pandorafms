@@ -1336,6 +1336,7 @@ function html_print_input_text_extended(
         'onkeyup',
         'required',
         'autocomplete',
+        'form',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
@@ -1553,7 +1554,8 @@ function html_print_input_text(
     $onChange='',
     $autocomplete='',
     $autofocus=false,
-    $onKeyDown=''
+    $onKeyDown='',
+    $formTo=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -1588,6 +1590,10 @@ function html_print_input_text(
 
     if ($autofocus === true) {
         $attr['autofocus'] = $autofocus;
+    }
+
+    if ($formTo != '') {
+        $attr['form'] = $formTo;
     }
 
     return html_print_input_text_extended(
@@ -3462,7 +3468,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
                 false,
-                ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : '')
+                ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
+                ((isset($data['form']) === true) ? $data['form'] : '')
             );
         break;
 

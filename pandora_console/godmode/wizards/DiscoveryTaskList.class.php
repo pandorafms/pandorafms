@@ -1201,9 +1201,15 @@ class DiscoveryTaskList extends HTML
 
         $map = new NetworkMap(
             [
-                'id_task' => $id_task,
-                'pure'    => 1,
-                'widget'  => true,
+                'id_task'     => $id_task,
+                'pure'        => 1,
+                'widget'      => true,
+                'map_options' => [
+                    'map_filter' => [
+                        'x_offs'   => 120,
+                        'node_sep' => 10,
+                    ],
+                ],
             ]
         );
         $map->printMap();

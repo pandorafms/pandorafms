@@ -416,7 +416,12 @@ class EventsListWidget extends Widget
         $filter['limit'] = $this->values['limit'];
         $filter['order'] = '`utimestamp` DESC';
 
-        if ((int) $this->values['severity'] !== -1) {
+        if ((int) $this->values['severity'] === 20) {
+            $filter['criticity'] = [
+                EVENT_CRIT_WARNING,
+                EVENT_CRIT_CRITICAL,
+            ];
+        } else if ((int) $this->values['severity'] !== -1) {
             $filter['criticity'] = $this->values['severity'];
         }
 

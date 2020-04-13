@@ -469,13 +469,17 @@ sub PandoraFMS::Recon::Base::test_module($$) {
     $test->{'id_tipo_modulo'} = $module->{'type'};
   } else {
     # Module.
-    if (!defined($self->{'module_types'}{$module->{'type'}})) {
-      $self->{'module_types'}{$module->{'type'}} = get_module_id(
-        $self->{'dbh'},$module->{'type'}
-      );
-    }
+    $module->{'type'} = $module->{'module_type'} if is_empty($module->{'type'});
 
-    $test->{'id_tipo_modulo'} = $self->{'module_types'}{$module->{'type'}};
+    if (defined($module->{'type'})) {
+      if(!defined($self->{'module_types'}{$module->{'type'}})) {
+        $self->{'module_types'}{$module->{'type'}} = get_module_id(
+          $self->{'dbh'},$module->{'type'}
+        );
+      }
+
+      $test->{'id_tipo_modulo'} = $self->{'module_types'}{$module->{'type'}};
+    }
   }
 
   my $value;

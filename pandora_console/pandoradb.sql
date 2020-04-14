@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`delete_pending` int(1) unsigned default 0,
 	`policy_linked` tinyint(1) unsigned not null default 0,
 	`policy_adopted` tinyint(1) unsigned not null default 0,
-	`custom_string_1` text,
+	`custom_string_1` mediumtext,
 	`custom_string_2` text,
 	`custom_string_3` text,
 	`custom_integer_1` int(10) default 0,

@@ -1774,6 +1774,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
 	}
 
+	# Avoid warning if not initialized.
+	$min_ff_event = 0 unless defined($min_ff_event);
+	$module->{'ff_type'} = 0 unless defined($module->{'ff_type'});
+	$module->{'module_ff_interval'} = 0 unless defined($module->{'module_ff_interval'});
+
 	if ($last_known_status == $new_status) {
 		# Avoid overflows
 		$status_changes = $min_ff_event if ($status_changes > $min_ff_event && $module->{'ff_type'} == 0);
@@ -4264,7 +4269,9 @@ sub process_data ($$$$$$$) {
 
 	# Not a number
 	if (! is_numeric ($data)) {
-		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
+		my $d = $data_object->{'data'};
+		$d = '' unless defined ($data_object->{'data'});
+		logger($pa_config, "Received invalid data '" . $d . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		return undef;
 	}
 

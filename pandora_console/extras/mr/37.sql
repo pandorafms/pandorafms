@@ -1,6 +1,8 @@
 START TRANSACTION;
 
-ALTER TABLE trecon_task MODIFY COLUMN `id_network_profile` TEXT;
+ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
+
+ALTER TABLE `trecon_task` MODIFY COLUMN `id_network_profile` TEXT;
 ALTER TABLE `trecon_task` CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `trecon_task` ADD COLUMN `subnet_csv` TINYINT(1) UNSIGNED DEFAULT 1;
 

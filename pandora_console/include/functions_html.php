@@ -2177,6 +2177,10 @@ function html_print_table(&$table, $return=false)
     $output = '';
     static $table_count = 0;
 
+    if (!isset($table)) {
+        $table = new StdClass();
+    }
+
     $table_count++;
     if (isset($table->align)) {
         foreach ($table->align as $key => $aa) {

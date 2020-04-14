@@ -123,11 +123,11 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['data'] = $module_group;
     $table->data['module_group'] = $row;
 
-    // Description
+    // Description.
     $row = [];
     $row['title'] = __('Description');
     $row['data'] = ui_print_truncate_text(
-        $module['descripcion'];,
+        $module['descripcion'],
         'description',
         true,
         true,
@@ -761,21 +761,25 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    // End of table advanced
+    // End of table advanced.
     $table_advanced = html_print_table($table, true);
     $table_advanced .= '<br>';
 
     ui_toggle($table_advanced, __('Advanced information'));
 
     if ($config['agentaccess']) {
-        $access_graph = '<div style="width:100%; height:130px;">';
+        $access_graph = '<div style="width:100%; height:130px; text-align:center;">';
         $access_graph .= graphic_agentaccess(
             $id_agente,
             SECONDS_1DAY,
-            true
+            false
         );
         $access_graph .= '</div>';
-        ui_toggle($access_graph, __('Agent access rate (24h)'));
+
+        ui_toggle(
+            $access_graph,
+            __('Agent access rate (24h)')
+        );
     }
 
     $events_graph = '<div style="width: 100%; height: 90px; display: flex; flex-direction: row; justify-content: center;">';

@@ -2712,3 +2712,12 @@ SET @template_description = 'Windows antivirus monitoring template (WMI)';
 
 INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Norton' OR g.name = 'Panda' OR g.name = 'McAfee' OR g.name = 'Bitdefender' OR g.name = 'BullGuard' OR g.name = 'AVG' OR g.name = 'Kaspersky')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+
+-- Update widget.
+
+UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMadeByUser';
+UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
+UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
+
+

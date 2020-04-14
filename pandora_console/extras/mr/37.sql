@@ -57,6 +57,10 @@ ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
+UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMadeByUser';
+UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
+UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
+
 INSERT IGNORE INTO `tpen` VALUES (9,'cisco','Cisco&#x20;System'),(11,'hp','Hewlett&#x20;Packard'),(2021,'general_snmp','U.C.&#x20;Davis,&#x20;ECE&#x20;Dept.&#x20;Tom'),(2636,'juniper','Juniper&#x20;Networks'),(3375,'f5','F5&#x20;Labs'),(8072,'general_snmp','Net&#x20;SNMP'),(12356,'fortinet','Fortinet');
 
 SET @template_name = 'Network&#x20;Management';
@@ -159,3 +163,5 @@ SET @template_description = 'Windows antivirus monitoring template (WMI)';
 
 INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Norton' OR g.name = 'Panda' OR g.name = 'McAfee' OR g.name = 'Bitdefender' OR g.name = 'BullGuard' OR g.name = 'AVG' OR g.name = 'Kaspersky')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+COMMIT;

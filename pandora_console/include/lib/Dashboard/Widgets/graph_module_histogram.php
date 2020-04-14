@@ -309,12 +309,6 @@ class GraphModuleHistogramWidget extends Widget
         $size = parent::getSize();
 
         // Desactive scroll bars only this item.
-        $output .= '<style type="text/css">
-        .grid-stack-item .grid-stack-item-content .content-widget {
-            overflow-x: hidden;
-            overflow-y: hidden;
-          }
-        </style>';
         $id_agent = $this->values['agentId'];
         $id_module = $this->values['moduleId'];
         $period = $this->values['period'];

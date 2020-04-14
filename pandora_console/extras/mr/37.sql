@@ -10,4 +10,8 @@ ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
+UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMadeByUser';
+UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
+UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
+
 COMMIT;

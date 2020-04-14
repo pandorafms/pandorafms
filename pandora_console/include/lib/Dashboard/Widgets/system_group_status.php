@@ -439,7 +439,7 @@ class SystemGroupStatusWidget extends Widget
             }
         }
 
-        $height = (count($result_groups) * 30);
+        $height = (count($table->data) * 30);
         $style = 'min-width:200px; min-height:'.$height.'px;';
         $output = '<div class="container-center" style="'.$style.'">';
         if ($flag_groups === true) {

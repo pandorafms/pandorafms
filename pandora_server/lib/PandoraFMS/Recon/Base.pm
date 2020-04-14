@@ -2301,7 +2301,8 @@ sub wmi_get_command {
 
   my @output;
   if (defined($auth) && $auth ne '') {
-    @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -U $auth //$target "$query" 2>$DEVNULL`;
+    $auth =~ s/'/\'/g;
+    @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -U '$auth' //$target "$query" 2>$DEVNULL`;
   }else {
     @output = `$self->{'timeout_cmd'}"$self->{'wmi_client'}" -N //$target "$query" 2>$DEVNULL`;
   }

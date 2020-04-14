@@ -2912,7 +2912,16 @@ function ui_progress(
                         try {
                             val = JSON.parse(data);
                             $("#'.$id.'").attr("data-label", val + " %");
-                            $("#'.$id.'_progress").width(val+"%");
+                            $("#'.$id.'_progress").width(val+"%");';
+            if (isset($ajax['oncomplete'])) {
+                $output .= '
+                            if (val == 100) {
+                                '.$ajax['oncomplete'].'($("#'.$id.'"));
+                            }
+                ';
+            }
+
+            $output .= '
                         } catch (e) {
                             console.error(e);
                         }

@@ -168,6 +168,16 @@ class DiscoveryTaskList extends HTML
                             'attributes' => 'class="sub cancel"',
                             'return'     => true,
                         ],
+                    ],[
+                        'class'     => 'action-buttons rule-builder-actions',
+                        'arguments' => [
+                            'name'       => 'refresh',
+                            'label'      => __('Refresh'),
+                            'type'       => 'button',
+                            'attributes' => 'class="sub upd"',
+                            'return'     => true,
+                            'script'     => 'location.reload();',
+                        ],
                     ],
                 ],
             ];

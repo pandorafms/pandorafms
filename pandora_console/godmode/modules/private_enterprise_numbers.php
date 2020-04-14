@@ -1,10 +1,10 @@
 <?php
 /**
- * Extension to schedule tasks on Pandora FMS Console
+ * Private Enterprise Number managemtn.
  *
- * @category   Ajax
+ * @category   PEN management.
  * @package    Pandora FMS
- * @subpackage Host&Devices
+ * @subpackage Opensource
  * @version    1.0.0
  * @license    See below
  *
@@ -24,7 +24,45 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * ============================================================================
- *
- *
- * MOVED TO DiscoveryTaskList.class.
  */
+
+// Begin.
+global $config;
+
+require_once $config['homedir'].'/include/class/ConfigPEN.class.php';
+
+// This page.
+$ajaxPage = 'godmode/modules/private_enterprise_numbers';
+
+// Control call flow.
+try {
+    // User access and validation is being processed on class constructor.
+    $obj = new ConfigPEN($ajaxPage);
+} catch (Exception $e) {
+    if (is_ajax()) {
+        echo json_encode(['error' => '[ConfigPEN]'.$e->getMessage() ]);
+        exit;
+    } else {
+        echo '[ConfigPEN]'.$e->getMessage();
+    }
+
+    // Stop this execution, but continue 'globally'.
+    return;
+}
+
+// AJAX controller.
+if (is_ajax()) {
+    $method = get_parameter('method');
+
+    if (method_exists($obj, $method) === true) {
+        $obj->{$method}();
+    } else {
+        $obj->error('Method not found. ['.$method.']');
+    }
+
+    // Stop any execution.
+    exit;
+} else {
+    // Run.
+    $obj->run();
+}

@@ -270,7 +270,9 @@ our @EXPORT = qw(
 	pandora_delete_custom_graph
 	pandora_edit_custom_graph
 	notification_set_targets
-	);
+	notification_get_users
+	notification_get_groups
+);
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
@@ -1646,6 +1648,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		"' for agent " .
 		(defined ($agent) && $agent ne '' ? "'" . safe_output($agent->{'nombre'}) . "'" : 'ID ' . $module->{'id_agente'}) . ".",
 		10);
+
+	# Ensure default values.
+	$module->{'min_ff_event'} = 0 unless defined($module->{'min_ff_event'});
+	$module->{'ff_timeout'} = 0 unless defined($module->{'ff_timeout'});
+	$module->{'module_interval'} = 0 unless defined($module->{'module_interval'});
+	
+	if (ref($agent) eq 'HASH') {
+		if (!defined($agent->{'interval'}) && defined($agent->{'interval'})) {
+			$agent->{'intervalo'} = $agent->{'interval'};
+		}
+	}
 	
 	# Get agent information
 	if (! defined ($agent) || $agent eq '') {
@@ -3129,6 +3142,8 @@ sub pandora_create_module_from_network_component ($$$$) {
 	pandora_create_module_tags ($pa_config, $dbh, $module_id, $component_tags);
 	
 	logger($pa_config, 'Creating module ' . safe_output ($component->{'nombre'}) . " (ID $module_id) for agent $addr from network component.", 10);
+
+	return $module_id;
 }
 
 ##########################################################################
@@ -3136,7 +3151,7 @@ sub pandora_create_module_from_network_component ($$$$) {
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
-	
+
 	logger($pa_config,
 		"Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 	
@@ -3167,8 +3182,12 @@ sub pandora_create_module_from_hash ($$$) {
 	}
 
 	# Encrypt SNMP v3 passwords.
-	if ($parameters->{'id_tipo_modulo'} >= 15 && $parameters->{'id_tipo_modulo'} <= 18 &&
-		$parameters->{'tcp_send'} eq '3') {
+	if (defined($parameters->{'tcp_send'})
+		&& $parameters->{'tcp_send'} eq '3'
+		&& defined($parameters->{'id_tipo_modulo'})
+		&& $parameters->{'id_tipo_modulo'} >= 15
+		&& $parameters->{'id_tipo_modulo'} <= 18
+	) {
 		$parameters->{'custom_string_2'} = pandora_input_password($pa_config, $parameters->{'custom_string_2'});
 	}
 
@@ -3176,7 +3195,11 @@ sub pandora_create_module_from_hash ($$$) {
 		'tagente_modulo', $parameters);
 	
 	my $status = 4;
-	if (defined ($parameters->{'id_tipo_modulo'}) && ($parameters->{'id_tipo_modulo'} == 21 || $parameters->{'id_tipo_modulo'} == 22 || $parameters->{'id_tipo_modulo'} == 23)) {
+	if (defined ($parameters->{'id_tipo_modulo'})
+		&& ($parameters->{'id_tipo_modulo'} == 21
+			|| $parameters->{'id_tipo_modulo'} == 22
+			|| $parameters->{'id_tipo_modulo'} == 23)
+	) {
 		$status = 0;
 	}
 	
@@ -3328,7 +3351,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	$agent_mode = 1 unless defined($agent_mode);
 	$alias = $agent_name unless defined($alias);
 
-	$description = "Created by $server_name" unless ($description ne '');	
+	$description = "Created by $server_name" unless (defined($description) && $description ne '');	
 	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),
 	                                                 'direccion' => $address,
 	                                                 'comentarios' => $description,
@@ -6287,6 +6310,63 @@ sub notification_set_targets {
 
 	return 1;
 }
+
+##########################################################################
+
+=head2 C<< notification_get_users (I<$dbh>, I<$source>) >>
+Get targets for given sources
+=cut
+
+##########################################################################
+sub notification_get_users {
+	my ($dbh, $source) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT id_user
+		 FROM tnotification_source_user nsu
+		   INNER JOIN tnotification_source ns ON nsu.id_source=ns.id
+		 WHERE ns.description = ?
+		',
+		safe_input($source)
+	);
+
+	@results = map {
+		if(ref($_) eq 'HASH') { $_->{'id_user'} }
+		else {}
+	} @results;
+
+	return @results;
+}
+
+##########################################################################
+
+=head2 C<< notification_get_groups (I<$dbh>, I<$source>) >>
+Get targets for given sources
+=cut
+
+##########################################################################
+sub notification_get_groups {
+	my ($dbh, $source) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT id_group
+		 FROM tnotification_source_group nsg
+		   INNER JOIN tnotification_source ns ON nsg.id_source=ns.id
+		 WHERE ns.description = ?
+		',
+		safe_input($source)
+	);
+
+	@results = map {
+		if(ref($_) eq 'HASH') { $_->{'id_group'} }
+		else {}
+	} @results;
+
+	return @results;
+}
+
 
 # End of function declaration
 # End of defined Code

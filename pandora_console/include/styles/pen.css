@@ -1,0 +1,38 @@
+ul.wizard li > label:not(.p-switch) {
+  width: auto;
+}
+
+form.top-action-buttons ul.wizard {
+  display: flex;
+  flex-direction: row;
+}
+
+ul.wizard li {
+  margin-right: 1em;
+}
+
+form.modal ul.wizard li {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  margin: 0 auto;
+  justify-items: center;
+}
+
+form.modal ul.wizard li * {
+  flex: 1;
+}
+
+ul.wizard li.flex-indep {
+  flex: 1;
+  margin: 0;
+}
+
+div#div-form {
+  padding: 0 2em;
+}
+
+div#div-form textarea {
+  width: 100%;
+  margin-top: 1em;
+}

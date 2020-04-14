@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension to schedule tasks on Pandora FMS Console
+ * Defines wizard to configure discovery tasks (Host&devices)
  *
  * @category   Wizard
  * @package    Pandora FMS
@@ -58,7 +58,6 @@ class HostDevices extends Wizard
     public $pageLabelsNetScan = [
         'NetScan definition',
         'NetScan features',
-
     ];
 
     /**
@@ -138,6 +137,8 @@ class HostDevices extends Wizard
 
         // Load styles.
         parent::run();
+
+        ui_require_css_file('hostdevices');
 
         $mode = get_parameter('mode', null);
 
@@ -269,6 +270,8 @@ class HostDevices extends Wizard
      */
     public function parseNetScan()
     {
+        global $config;
+
         if ($this->page == 0) {
             // Check if we're updating a task.
             $task_id = get_parameter('task', null);
@@ -297,8 +300,62 @@ class HostDevices extends Wizard
             $comment = get_parameter('comment', '');
             $server_id = get_parameter('id_recon_server', '');
             $network = get_parameter('network', '');
+            $network_csv_enabled = (bool) get_parameter_switch(
+                'network_csv_enabled',
+                false
+            );
             $id_group = get_parameter('id_group', '');
             $interval = get_parameter('interval', 0);
+
+            if ($network_csv_enabled) {
+                if (empty($_FILES['network_csv']['type']) === false) {
+                    if ($_FILES['network_csv']['type'] != 'text/csv'
+                        && $_FILES['network_csv']['type'] != 'text/plain'
+                        && $_FILES['network_csv']['type'] != 'application/octet-stream'
+                        && $_FILES['network_csv']['type'] != 'application/vnd.ms-excel'
+                        && $_FILES['network_csv']['type'] != 'text/x-csv'
+                        && $_FILES['network_csv']['type'] != 'application/csv'
+                        && $_FILES['network_csv']['type'] != 'application/x-csv'
+                        && $_FILES['network_csv']['type'] != 'text/csv'
+                        && $_FILES['network_csv']['type'] != 'text/comma-separated-values'
+                        && $_FILES['network_csv']['type'] != 'text/x-comma-separated-values'
+                        && $_FILES['network_csv']['type'] != 'text/tab-separated-values'
+                    ) {
+                        $this->msg = __(
+                            'Invalid mimetype for csv file: %s',
+                            $_FILES['network_csv']['type']
+                        );
+                        return false;
+                    }
+
+                    $network = preg_split(
+                        "/\n|,|;/",
+                        trim(
+                            file_get_contents(
+                                $_FILES['network_csv']['tmp_name']
+                            )
+                        )
+                    );
+                    unlink($_FILES['network_csv']['tmp_name']);
+                    if (empty($network) || is_array($network) === false) {
+                        $this->msg = __(
+                            'Invalid content readed from csv file: %s',
+                            $_FILES['network_csv']['name']
+                        );
+                        return false;
+                    }
+
+                    // Sanitize.
+                    $network = array_unique($network);
+                    $network = array_filter(
+                        $network,
+                        function ($item) {
+                            return (!empty($item));
+                        }
+                    );
+                    $network = join(',', $network);
+                }
+            }
 
             if (isset($task_id) === true) {
                 // We're updating this task.
@@ -333,18 +390,15 @@ class HostDevices extends Wizard
             if ($task_id !== null
                 && $taskname == null
                 && $server_id == null
-                && $id_group == null
-                && $server == null
-                && $datacenter == ''
-                && $user == ''
-                && $pass == ''
-                && $encrypt == null
-                && $interval == 0
+                && empty($id_group) === true
+                && empty($network) === true
+                && empty($network_csv) === true
+                && $interval === 0
             ) {
                 // Default values, no data received.
                 // User is accesing directly to this page.
                 if (check_acl(
-                    $config['id_usuario'],
+                    $config['id_user'],
                     $this->task['id_group'],
                     $this->access
                 ) != true
@@ -386,6 +440,7 @@ class HostDevices extends Wizard
                 $this->task['id_recon_server'] = $server_id;
                 $this->task['id_group'] = $id_group;
                 $this->task['interval_sweep'] = $interval;
+                $this->task['subnet_csv'] = $network_csv_enabled;
 
                 if (isset($this->task['id_rt']) === false) {
                     // Create.
@@ -423,7 +478,10 @@ class HostDevices extends Wizard
                 return false;
             }
 
-            $id_network_profile = get_parameter('id_network_profile', null);
+            $id_network_profile = get_parameter('id_network_profile', []);
+            $review_results = get_parameter_switch('review_results');
+            $review_limited = (bool) get_parameter('review_limited', 0);
+            $auto_monitor = get_parameter_switch('auto_monitor');
             $autoconf_enabled = get_parameter_switch(
                 'autoconfiguration_enabled'
             );
@@ -443,7 +501,7 @@ class HostDevices extends Wizard
             $snmp_privacy_pass = get_parameter('snmp_privacy_pass', null);
             $snmp_auth_method = get_parameter('snmp_auth_method', null);
             $snmp_security_level = get_parameter('snmp_security_level', null);
-            $auth_strings = get_parameter('auth_strings', null);
+            $auth_strings = get_parameter('auth_strings', []);
 
             if ($snmp_version == 3) {
                 $this->task['snmp_community'] = $snmp_context;
@@ -452,7 +510,28 @@ class HostDevices extends Wizard
             }
 
             $this->task['autoconfiguration_enabled'] = $autoconf_enabled;
-            $this->task['id_network_profile'] = $id_network_profile;
+            $this->task['id_network_profile'] = '';
+            if (is_array($id_network_profile) === true) {
+                $this->task['id_network_profile'] = join(
+                    ',',
+                    $id_network_profile
+                );
+            }
+
+            if ($review_limited === true) {
+                // License limited, force review.
+                $this->task['review_mode'] = DISCOVERY_REVIEW;
+            } else {
+                if ($review_results) {
+                    if ($this->task['review_mode'] != DISCOVERY_RESULTS) {
+                        $this->task['review_mode'] = DISCOVERY_REVIEW;
+                    }
+                } else {
+                    $this->task['review_mode'] = DISCOVERY_STANDARD;
+                }
+            }
+
+            $this->task['auto_monitor'] = $auto_monitor;
             $this->task['snmp_enabled'] = $snmp_enabled;
             $this->task['os_detect'] = $os_detect;
             $this->task['parent_detection'] = $parent_detection;
@@ -467,7 +546,13 @@ class HostDevices extends Wizard
             $this->task['snmp_privacy_pass'] = $snmp_privacy_pass;
             $this->task['snmp_auth_method'] = $snmp_auth_method;
             $this->task['snmp_security_level'] = $snmp_security_level;
-            $this->task['auth_strings'] = $auth_strings;
+            $this->task['auth_strings'] = '';
+            if (is_array($auth_strings) === true) {
+                $this->task['auth_strings'] = join(
+                    ',',
+                    $auth_strings
+                );
+            }
 
             if ($this->task['disabled'] == 2) {
                 // Wizard finished.
@@ -562,7 +647,7 @@ class HostDevices extends Wizard
             // Check ACL. If user is not able to manage target task,
             // redirect him to main page.
             if (check_acl(
-                $config['id_usuario'],
+                $config['id_user'],
                 $this->task['id_group'],
                 $this->access
             ) != true
@@ -598,10 +683,21 @@ class HostDevices extends Wizard
         }
 
         if ($this->page < $this->maxPagesNetScan) {
+            $title = __('NetScan');
+
+            if ($this->page == 1) {
+                $title = __(
+                    '"%s" features',
+                    io_safe_output(
+                        $this->task['name']
+                    )
+                );
+            }
+
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
             ui_print_page_header(
-                __('NetScan'),
+                $title,
                 '',
                 false,
                 '',
@@ -678,7 +774,7 @@ class HostDevices extends Wizard
 
                 $form['rows'][0]['columns'][0] = [
                     'width'  => '30%',
-                    'style'  => 'padding: 9px;',
+                    'style'  => 'padding: 9px;min-width: 250px;',
                     'inputs' => [
                         '0' => [
                             'arguments' => [
@@ -705,7 +801,10 @@ class HostDevices extends Wizard
                                 'name'     => 'interval_manual_defined',
                                 'return'   => true,
                             ],
-                            'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
+                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container">'.ui_print_help_tip(
+                                __('The minimum recomended interval for Recon Task is 5 minutes'),
+                                true
+                            ).html_print_extended_select_for_time(
                                 'interval',
                                 $this->task['interval_sweep'],
                                 '',
@@ -715,10 +814,7 @@ class HostDevices extends Wizard
                                 true,
                                 false,
                                 false
-                            ).ui_print_help_tip(
-                                __('The minimum recomended interval for Recon Task is 5 minutes'),
-                                true
-                            ).'</span>',
+                            ).'</div></div>',
 
                         ],
                     ],
@@ -728,6 +824,7 @@ class HostDevices extends Wizard
                     'width'         => '40%',
                     'padding-right' => '12%',
                     'padding-left'  => '5%',
+                    'style'         => 'min-width: 350px',
                     'inputs'        => [
                         '0' => [
                             'label'     => '<b>'.__('Task name').':</b>',
@@ -760,6 +857,54 @@ class HostDevices extends Wizard
                             ],
                         ],
                         '2' => [
+                            'label'     => '<b>'.__('Use CSV file definition').':</b>'.ui_print_help_tip(
+                                __('Define targets using csv o network definition.'),
+                                true
+                            ),
+                            'class'     => 'no-margin',
+                            'arguments' => [
+                                'name'    => 'network_csv_enabled',
+                                'value'   => $this->task['subnet_csv'],
+                                'type'    => 'switch',
+                                'inline'  => true,
+                                'class'   => 'discovery_full_width_input',
+                                'onclick' => 'toggleNetwork(this);',
+                            ],
+                        ],
+                        '3' => [
+                            'hidden'        => (($this->task['subnet_csv'] == '1') ? 0 : 1),
+                            'block_id'      => 'csv_subnet',
+                            'block_content' => [
+                                [
+                                    'label'     => '<b>'.__('Networks (csv)').':</b>'.ui_print_help_tip(
+                                        __('You can upload a CSV file. Each line must contain a network in IP/MASK format. For instance: 192.168.1.1/32'),
+                                        true
+                                    ),
+                                    'arguments' => [
+                                        'name'    => 'network_csv',
+                                        'type'    => 'file',
+                                        'columns' => 25,
+                                        'rows'    => 10,
+                                        'class'   => 'discovery_full_width_input',
+                                    ],
+                                ],
+                                [
+                                    'label'     => '<b>'.__('Networks (current)').':</b>'.ui_print_help_tip(
+                                        __('Plese upload a new file to overwrite this content.'),
+                                        true
+                                    ),
+                                    'arguments' => [
+                                        'attributes' => 'readonly',
+                                        'type'       => 'textarea',
+                                        'size'       => 25,
+                                        'value'      => $this->task['subnet'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        '4' => [
+                            'hidden'    => (($this->task['subnet_csv'] == '1') ? 1 : 0),
+                            'id'        => 'std_subnet',
                             'label'     => '<b>'.__('Network').':</b>'.ui_print_help_tip(
                                 __('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'),
                                 true
@@ -794,6 +939,7 @@ class HostDevices extends Wizard
 
                 $form['rows'][0]['columns'][2] = [
                     'width'  => '30%',
+                    'style'  => 'min-width: 250px',
                     'inputs' => ['0' => $group_select],
                 ];
 
@@ -823,8 +969,9 @@ class HostDevices extends Wizard
                 }
 
                 $form['form'] = [
-                    'method' => 'POST',
-                    'action' => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
+                    'method'  => 'POST',
+                    'enctype' => 'multipart/form-data',
+                    'action'  => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
                 ];
 
                 // Default.
@@ -848,7 +995,19 @@ class HostDevices extends Wizard
                             $("#hidden-interval").val('.$interval.');
                             $("#interval_units").val('.$unit.');
                         }
-                    }).change();';
+                    }).change();
+                    
+                    function toggleNetwork(e) {
+                        if (e.checked) {
+                            $(\'#csv_subnet\').removeClass("hidden");
+                            $(\'#std_subnet\').addClass("hidden");
+                        } else {
+                            $(\'#csv_subnet\').addClass("hidden");
+                            $(\'#std_subnet\').removeClass("hidden");
+                        }
+                    };
+                    
+                    ';
 
                 $this->printFormAsGrid($form);
                 $this->printGoBackButton($this->url.'&page='.($this->page - 1));
@@ -878,21 +1037,101 @@ class HostDevices extends Wizard
             ];
 
             $form['inputs'][] = [
-                'extra' => '<p><h3>Please, configure task <b>'.io_safe_output($this->task['name']).'</b></h3></p>',
+                'label'     => __('Auto discover known hardware').ui_print_help_tip(
+                    __(
+                        'Targets will be monitorized based on its <i>Private Enterprise Number</i>. Requires SNMP.'
+                    ),
+                    true
+                ),
+                'arguments' => [
+                    'name'   => 'auto_monitor',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['auto_monitor'])) ? $this->task['auto_monitor'] : 1,
+                ],
             ];
 
             $form['inputs'][] = [
-                'label'     => __('Module template'),
+                'label'     => __('Module templates').ui_print_help_tip(
+                    __(
+                        'Module <i>Host Alive</i> will be added to discovered agents by default.'
+                    ),
+                    true
+                ),
                 'arguments' => [
-                    'name'          => 'id_network_profile',
+                    'name'          => 'id_network_profile[]',
                     'type'          => 'select_from_sql',
-                    'sql'           => 'SELECT id_np, name
-                            FROM tnetwork_profile
-                            ORDER BY name',
+                    'sql'           => 'SELECT tn.id_np, tn.name
+                            FROM tnetwork_profile tn
+                            LEFT JOIN `tnetwork_profile_pen` tp
+                                ON tp.id_np = tn.id_np
+                            WHERE tp.id_np IS NULL
+                            ORDER BY tn.name',
                     'return'        => true,
-                    'selected'      => $this->task['id_network_profile'],
+                    'selected'      => explode(
+                        ',',
+                        $this->task['id_network_profile']
+                    ),
                     'nothing_value' => 0,
                     'nothing'       => __('None'),
+                    'multiple'      => true,
+                    'class'         => 'select_multiple',
+                ],
+            ];
+
+            // License precheck.
+            $license = enterprise_hook('license_get_info');
+            $n_agents = 0;
+            foreach (explode(',', $this->task['subnet']) as $net) {
+                $mask = explode('/', $net, 2)[1];
+                if (empty($mask)) {
+                    $n_agents++;
+                } else {
+                    $n_agents += pow(2, (32 - $mask));
+                }
+            }
+
+            $limited = false;
+            if (is_array($license) === true
+                && $n_agents > ($license['limit'] - $license['count'])
+            ) {
+                $limit = ($license['limit'] - $license['count']);
+                $limited = true;
+            }
+
+            if ($limited === true) {
+                ui_print_warning_message(
+                    __(
+                        'Configured networks could generate %d agents, your license only allows %d, \'review results\' is mandatory.',
+                        $n_agents,
+                        $limit
+                    )
+                );
+            }
+
+            $form['inputs'][] = [
+                'label'     => __('Review results').ui_print_help_tip(
+                    __(
+                        'Targets must be validated by user before create agents.'
+                    ),
+                    true
+                ),
+                'arguments' => [
+                    'name'     => 'review_results',
+                    'type'     => 'switch',
+                    'return'   => true,
+                    'value'    => ($this->task['review_mode'] == DISCOVERY_STANDARD) ? (($limited) ? 1 : 0) : 1,
+                    'disabled' => $limited,
+                ],
+            ];
+
+            // Review limited.
+            $form['inputs'][] = [
+                'arguments' => [
+                    'name'   => 'review_limited',
+                    'type'   => 'hidden',
+                    'return' => true,
+                    'value'  => (($limited === true) ? 1 : 0),
                 ],
             ];
 
@@ -930,7 +1169,7 @@ class HostDevices extends Wizard
             // Submit button.
             $form['inputs'][] = [
                 'arguments' => [
-                    'name'       => 'submit',
+                    'name'       => 'submit-finish',
                     'label'      => __('Finish'),
                     'type'       => 'submit',
                     'attributes' => 'class="sub next"',

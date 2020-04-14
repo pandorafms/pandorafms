@@ -1,5 +1,7 @@
 <?php
 
+enterprise_include_once('include/functions_license.php');
+
 global $config;
 
 check_login();
@@ -47,6 +49,9 @@ function get_wiz_class($str)
 
         case 'ctask':
         return 'ConsoleTasks';
+
+        case 'deploymentCenter':
+        return 'DeploymentCenter';
 
         default:
             // Main, show header.
@@ -124,13 +129,28 @@ $classname_selected = get_wiz_class($wiz_in_use);
 
 // Else: class not found pseudo exception.
 if ($classname_selected !== null) {
-    $wiz = new $classname_selected($page);
-    $result = $wiz->run();
-    if (is_array($result) === true) {
-        // Redirect control and messages to DiscoveryTasklist.
-        $classname_selected = 'DiscoveryTaskList';
-        $wiz = new $classname_selected($page);
-        $result = $wiz->run($result['msg'], $result['result']);
+    $wiz = new $classname_selected((int) $page);
+
+    // AJAX controller.
+    if (is_ajax()) {
+        $method = get_parameter('method');
+
+        if (method_exists($wiz, $method) === true) {
+            $wiz->{$method}();
+        } else {
+            $wiz->error('Method not found. ['.$method.']');
+        }
+
+        // Stop any execution.
+        exit;
+    } else {
+        $result = $wiz->run();
+        if (is_array($result) === true) {
+            // Redirect control and messages to DiscoveryTasklist.
+            $classname_selected = 'DiscoveryTaskList';
+            $wiz = new $classname_selected($page);
+            $result = $wiz->run($result['msg'], $result['result']);
+        }
     }
 }
 

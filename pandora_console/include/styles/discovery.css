@@ -169,6 +169,7 @@ span.breadcrumb_link {
 
 form.discovery * {
   font-size: 10pt;
+  font-family: "lato", "Open Sans", sans-serif;
 }
 
 form.discovery .label_select b {

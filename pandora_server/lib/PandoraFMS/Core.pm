@@ -929,10 +929,12 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 				$pa_config,
 				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
 				(defined ($agent) ? $agent->{'id_grupo'} : 0),
-				(defined ($agent) ? $agent->{'id_agente'} : 0),
+				# id agent.
+				0,
 				$severity,
 				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
-				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
+				# id agent module.
+				0,
 				$event,
 				0,
 				$dbh,
@@ -4178,7 +4180,9 @@ sub on_demand_macro($$$$$$;$) {
 		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
 
 		my $field_value = "";
-		if ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 ){
+		if (defined($type_mod)
+			&& ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 )
+		) {
 			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
 		}
 		else{

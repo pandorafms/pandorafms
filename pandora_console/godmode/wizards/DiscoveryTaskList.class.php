@@ -403,7 +403,7 @@ class DiscoveryTaskList extends HTML
             }
 
             // Name.
-            $table->headstyle[4] .= 'min-width: 100px; width: 100px;';
+            $table->headstyle[4] .= 'min-width: 100px; width: 600px;';
             // Status.
             $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
             // Task type.

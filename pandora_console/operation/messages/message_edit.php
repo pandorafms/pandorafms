@@ -127,17 +127,7 @@ if ($read_message) {
             ).' '.$user_name;
         }
 
-        $order = [
-            "\r\n",
-            "\n",
-            "\r",
-        ];
-        $replace = '<br />';
-        $parsed_message = str_replace(
-            $order,
-            $replace,
-            trim(io_safe_output($row['message']))
-        );
+        $parsed_message = nl2br(htmlspecialchars(trim(io_safe_output($row['message']))));
 
         echo '<div class="container">';
         echo '  <p>'.$parsed_message.'</p>';

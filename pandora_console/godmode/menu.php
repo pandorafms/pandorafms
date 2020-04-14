@@ -137,11 +137,31 @@ if (!empty($sub)) {
 
 $sub = [];
 if (check_acl($config['id_user'], 0, 'PM')) {
-    $sub['godmode/modules/manage_network_components']['text'] = __('Network components');
-    $sub['godmode/modules/manage_network_components']['id'] = 'Network components';
-    enterprise_hook('components_submenu');
-    $sub['godmode/modules/manage_network_templates']['text'] = __('Module templates');
-    $sub['godmode/modules/manage_network_templates']['id'] = 'Module templates';
+    // enterprise_hook('components_submenu');
+    $sub['templates']['text'] = __('Templates');
+    $sub['templates']['id'] = 'Templates';
+    $sub['templates']['type'] = 'direct';
+    $sub['templates']['subtype'] = 'nolink';
+    $sub2 = [];
+    $sub2['godmode/modules/manage_module_templates']['text'] = __('Module templates');
+    $sub2['godmode/modules/manage_module_templates']['id'] = 'Module templates';
+    $sub2['godmode/modules/private_enterprise_numbers']['text'] = __('Private Enterprise Numbers');
+    $sub2['godmode/modules/private_enterprise_numbers']['id'] = 'Private Enterprise Numbers';
+    $sub2['enterprise/godmode/modules/local_components']['text'] = __('Local components');
+    $sub2['enterprise/godmode/modules/local_components']['id'] = 'Local components';
+    $sub2['godmode/modules/manage_network_components']['text'] = __('Remote components');
+    $sub2['godmode/modules/manage_network_components']['id'] = 'Network components';
+    $sub['templates']['sub2'] = $sub2;
+    /*
+        $sub2['godmode/modules/manage_snmp_modules']['text'] = __('SNMP Modules');
+        $sub2['godmode/modules/manage_snmp_modules']['id'] = 'SNMP Modules';
+        $sub2['godmode/modules/manage_wmi_modules']['text'] = __('WMI Modules');
+        $sub2['godmode/modules/manage_wmi_modules']['id'] = 'WMI Modules';
+        $sub['godmode/modules/manage_block_templates']['text'] = __('Module blocks');
+        $sub['godmode/modules/manage_block_templates']['id'] = 'Module blocks';
+    */
+
+
     enterprise_hook('inventory_submenu');
     enterprise_hook('autoconfiguration_menu');
     enterprise_hook('agent_repository_menu');

@@ -2439,7 +2439,13 @@ function graphic_agentaccess(
     if ($return === true) {
         return vbar_graph($data_array, $options, 1);
     } else {
-        echo vbar_graph($data_array, $options, 1);
+        $options['generals']['pdf']['width'] = 350;
+        $options['generals']['pdf']['height'] = 125;
+
+        $imgbase64 = '<img src="data:image/jpg;base64,';
+        $imgbase64 .= vbar_graph($data_array, $options, 2);
+        $imgbase64 .= '" />';
+        return $imgbase64;
     }
 }
 

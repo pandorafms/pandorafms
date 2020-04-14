@@ -66,7 +66,7 @@ if (defined('METACONSOLE')) {
     }
 
     ui_print_page_header(
-        __('Module management').' &raquo; '.__('Network component management'),
+        __('Module management').' &raquo; '.__('Remote component management'),
         '',
         false,
         $help_header,

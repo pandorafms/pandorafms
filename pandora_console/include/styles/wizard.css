@@ -42,6 +42,10 @@ ul.wizard li > textarea {
   justify-content: space-between;
 }
 
+.std_input.hidden {
+  display: none;
+}
+
 .wizard .std_input > .label_select {
   flex: 1 1 100%;
 }

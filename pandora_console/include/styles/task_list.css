@@ -110,3 +110,8 @@ span.link.review {
   padding-top: 2em;
   padding-left: 6.7em;
 }
+
+#review .sim-tree li.disabled > a .sim-tree-checkbox {
+  border-color: #eee;
+  background-color: #ddd;
+}

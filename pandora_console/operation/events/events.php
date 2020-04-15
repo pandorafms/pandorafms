@@ -1765,6 +1765,9 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
+    if(item.meta === true) {
+        evn += '<input id="hidden-server_id_'+item.id_evento+'" type="hidden" value="'+item.server_id+'">';
+    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;

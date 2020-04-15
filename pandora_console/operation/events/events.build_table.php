@@ -1119,12 +1119,13 @@ if ($group_rep == 2) {
                                 server_id,
                                 response_command
                             );
+                            response["server_id"] = server_id;
+                            response["event_id"] = event_id;
 
                             if (total_checked-1 === counter)
                                 end=1;
 
                             show_massive_response_dialog(
-                                event_id,
                                 response_id,
                                 response,
                                 counter,

@@ -1311,6 +1311,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
   my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
 
   foreach my $addr (keys %{$self->{'agents_found'}}) {
+    next if is_empty($addr);
+
 	  my $label = $self->{'agents_found'}->{$addr}{'agent'}{'nombre'};
 
     $self->call('update_progress', $progress);

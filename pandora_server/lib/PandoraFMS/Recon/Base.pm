@@ -8,6 +8,7 @@ use warnings;
 
 # Default lib dir for RPM and DEB packages
 use NetAddr::IP;
+use IO::Socket::INET;
 use POSIX qw/ceil/;
 use Socket qw/inet_aton/;
 
@@ -1320,16 +1321,23 @@ sub remote_arp($$) {
 ################################################################################
 sub prepare_agent($$) {
   my ($self, $addr) = @_;
+
+	# Resolve hostnames.
+	my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($addr), AF_INET) : $addr);
+
+	# Fallback to device IP if host name could not be resolved.
+	$host_name = $addr if (!defined($host_name) || $host_name eq '');
+  
   $self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
   # Already initialized.
-  return if ref($self->{'agents_found'}->{$addr}) eq 'HASH';
+  return if ref($self->{'agents_found'}->{$host_name}) eq 'HASH';
 
   $self->{'agents_found'}->{$addr} = {
     'agent' => {
-      'nombre' => $addr,
+      'nombre' => $host_name,
       'direccion' => $addr,
-      'alias' => $addr,
+      'alias' => $host_name,
     },
     'pen' => $self->{'pen'}{$addr},
     'modules' => [],

@@ -1059,18 +1059,20 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
             );
 
             # Add found IP addresses to the agent.
-            foreach my $ip_addr ($self->get_addresses($data->{'agent'}{'direccion'})) {
-              my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
-              $addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
-              next unless ($addr_id > 0);
+            if (ref($data->{'other_ips'}) eq 'ARRAY') {
+              foreach my $ip_addr (@{$data->{'other_ips'}}) {
+                my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
+                $addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
+                next unless ($addr_id > 0);
 
-              # Assign the new address to the agent
-              my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
-              if ($agent_addr_id <= 0) {
-                db_do(
-                  $self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-                                    VALUES (?, ?)', $addr_id, $agent_id
-                );
+                # Assign the new address to the agent
+                my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
+                if ($agent_addr_id <= 0) {
+                  db_do(
+                    $self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+                                      VALUES (?, ?)', $addr_id, $agent_id
+                  );
+                }
               }
             }
 

@@ -1019,34 +1019,62 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         # Agent creation.
         my $agent_id = $data->{'agent'}{'agent_id'};
         my $agent_learning;
+        my $agent_data;
 
         if (defined($agent_id) && $agent_id > 0) {
-          $agent_learning = get_db_value(
+          $agent_data = get_db_single_row(
             $self->{'dbh'},
-            'SELECT modo FROM tagente WHERE id_agente = ?',
+            'SELECT * FROM tagente WHERE id_agente = ?',
             $agent_id
           );
+          $agent_learning = $agent_data->{'modo'} if ref($agent_data) eq 'HASH';
         }
 
         if (!defined($agent_learning)) {
           # Agent id does not exists or is invalid.
 
-          # Check if has been created by another process.
-          $agent_id = get_db_value(
-            $self->{'dbh'},
-            'SELECT id_agente FROM tagente WHERE nombre = ?',
-            safe_input($data->{'agent'}{'nombre'})
-          );
+          # Check if has been created by another process, if not found.
+          $agent_data = PandoraFMS::Core::locate_agent(
+            $self->{'pa_config'}, $self->{'dbh'}, $data->{'agent'}{'direccion'}
+          ) if ref($agent_data) ne 'HASH';
 
-          if (!defined($agent_id) || $agent_id <= 0) {
+          $agent_id = $agent_data->{'id_agente'} if ref($agent_data) eq 'HASH';
+          if (ref($agent_data) eq 'HASH' && $agent_data->{'modo'} != 1) {
+            # Agent previously exists, but is not in learning mode, so skip
+            # modules scan and jump directly to parent analysis.
+            $data->{'agent'}{'agent_id'} = $agent_id;
+            push @agents, $data->{'agent'};
+            next;
+          }
+
+          if (!defined($agent_id) || $agent_id <= 0 || !defined($agent_data)) {
             # Agent creation.
             $agent_id = pandora_create_agent(
               $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
               $data->{'agent'}{'direccion'}, $self->{'task_data'}{'id_group'}, $parent_id,
               $os_id, $data->{'agent'}->{'description'},
               $data->{'agent'}{'interval'}, $self->{'dbh'},
-              $data->{'agent'}{'timezone_offset'}
+              $data->{'agent'}{'timezone_offset'}, undef, undef, undef, undef,
+              undef, undef, 1, $data->{'agent'}{'alias'}
             );
+
+            # Add found IP addresses to the agent.
+            if (ref($data->{'other_ips'}) eq 'ARRAY') {
+              foreach my $ip_addr (@{$data->{'other_ips'}}) {
+                my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
+                $addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
+                next unless ($addr_id > 0);
+
+                # Assign the new address to the agent
+                my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
+                if ($agent_addr_id <= 0) {
+                  db_do(
+                    $self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+                                      VALUES (?, ?)', $addr_id, $agent_id
+                  );
+                }
+              }
+            }
 
             # Agent autoconfiguration.
             if (is_enabled($self->{'autoconfiguration_enabled'})) {
@@ -1093,6 +1121,25 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               'SELECT modo FROM tagente WHERE id_agente = ?',
               $agent_id
             );
+
+            # Update new IPs.
+            # Add found IP addresses to the agent.
+            if (ref($data->{'other_ips'}) eq 'ARRAY') {
+              foreach my $ip_addr (@{$data->{'other_ips'}}) {
+                my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
+                $addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
+                next unless ($addr_id > 0);
+
+                # Assign the new address to the agent
+                my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
+                if ($agent_addr_id <= 0) {
+                  db_do(
+                    $self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+                                      VALUES (?, ?)', $addr_id, $agent_id
+                  );
+                }
+              }
+            }
           }
 
           $data->{'agent'}{'agent_id'} = $agent_id;
@@ -1215,12 +1262,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         );
 
       }
-
     }
 
     # Update parent relationships.
     foreach my $agent (@agents) {
-
       # Avoid processing if does not exist.
       next unless (defined($agent->{'agent_id'}));
 
@@ -1228,10 +1273,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       next unless defined($agent->{'parent'});
 
       # Get parent id.
-      my $parent = get_agent_from_addr($self->{'dbh'}, $agent->{'parent'});
-      if (!defined($parent)) {
-        $parent = get_agent_from_name($self->{'dbh'}, $agent->{'parent'});
-      }
+      my $parent = PandoraFMS::Core::locate_agent(
+        $self->{'pa_config'}, $self->{'dbh'}, $agent->{'parent'}
+      );
+
       next unless defined($parent);
 
       # Is the agent in learning mode?
@@ -1286,7 +1331,12 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
   my @hosts = keys %{$self->{'agents_found'}};
   $self->{'step'} = STEP_PROCESSING;
   my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
-  foreach my $label (keys %{$self->{'agents_found'}}) {
+
+  foreach my $addr (keys %{$self->{'agents_found'}}) {
+	  my $label = $self->{'agents_found'}->{$addr}{'agent'}{'nombre'};
+
+  	next if is_empty($label);
+
     $self->call('update_progress', $progress);
     $progress += $step;
     # Store temporally. Wait user approval.
@@ -1294,7 +1344,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     eval {
       local $SIG{__DIE__};
       $encoded = encode_base64(
-        encode_json($self->{'agents_found'}->{$label})
+        encode_json($self->{'agents_found'}->{$addr})
       );
     };
 
@@ -1307,7 +1357,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     
     if (defined($id)) {
       # Already defined.
-      $self->{'agents_found'}{$label}{'id'} = $id;
+      $self->{'agents_found'}{$addr}{'id'} = $id;
 
       db_do(
         $self->{'dbh'},
@@ -1321,7 +1371,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     }
 
     # Insert.
-    $self->{'agents_found'}{$label}{'id'} = db_insert(
+    $self->{'agents_found'}{$addr}{'id'} = db_insert(
       $self->{'dbh'},
       'id',
       'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
@@ -1615,6 +1665,16 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 
   $self->{'agents_found'}{$host}{'agent'}{'parent'} = $parent;
 
+  # Add host alive module for parent.
+  $self->add_module($parent,
+    {
+      'ip_target' => $parent,
+      'name' => "Host Alive",
+      'description' => '',
+      'type' => 'remote_icmp_proc',
+      'id_modulo' => 2,
+    }
+  );
 }
 
 ################################################################################

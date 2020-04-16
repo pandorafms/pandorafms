@@ -8,6 +8,7 @@ use warnings;
 
 # Default lib dir for RPM and DEB packages
 use NetAddr::IP;
+use IO::Socket::INET;
 use POSIX qw/ceil/;
 use Socket qw/inet_aton/;
 
@@ -171,6 +172,9 @@ sub new {
     # Visited devices (initially empty).
     visited_devices => {},
 
+    # Inverse relationship for visited devices (initially empty).
+    addresses => {},
+
     # Per device VLAN cache.
     vlan_cache => {},
     vlan_cache_enabled => 1,     # User configuration. Globally disables the VLAN cache.
@@ -308,6 +312,26 @@ sub add_addresses($$$) {
   my ($self, $device, $ip_address) = @_;
 
   $self->{'visited_devices'}->{$device}->{'addr'}->{$ip_address} = '';
+
+  # Inverse relationship.
+  $self->{'addresses'}{$ip_address} = $device;
+
+  # Update IP references.
+  if (ref($self->{'agents_found'}{$device}) eq 'HASH') {
+    my @addresses = $self->get_addresses($device);
+    $self->{'agents_found'}{$device}{'other_ips'} = \@addresses;
+    $self->call('message', 'New IP detected for '.$device.': '.$ip_address, 5);
+  }
+
+}
+
+################################################################################
+# Get main address from given address (multi addressed devices).
+################################################################################
+sub get_main_address($$) {
+  my ($self, $addr) = @_;
+
+  return $self->{'addresses'}{$addr};
 }
 
 ################################################################################
@@ -1320,17 +1344,30 @@ sub remote_arp($$) {
 ################################################################################
 sub prepare_agent($$) {
   my ($self, $addr) = @_;
+
+  # Avoid multi-ip agent. No reference, is first encounter.
+  my $main_address = $self->get_main_address($addr);
+  return unless is_empty($main_address);
+
+	# Resolve hostnames.
+	my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($addr), AF_INET) : $addr);
+
+	# Fallback to device IP if host name could not be resolved.
+	$host_name = $addr if (!defined($host_name) || $host_name eq '');
+  
   $self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
   # Already initialized.
-  return if ref($self->{'agents_found'}->{$addr}) eq 'HASH';
+  return if ref($self->{'agents_found'}->{$host_name}) eq 'HASH';
 
+  my @addresses = $self->get_addresses($addr);
   $self->{'agents_found'}->{$addr} = {
     'agent' => {
-      'nombre' => $addr,
+      'nombre' => $host_name,
       'direccion' => $addr,
-      'alias' => $addr,
+      'alias' => $host_name,
     },
+    'other_ips' => \@addresses,
     'pen' => $self->{'pen'}{$addr},
     'modules' => [],
   };

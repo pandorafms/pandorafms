@@ -1054,7 +1054,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               $data->{'agent'}{'direccion'}, $self->{'task_data'}{'id_group'}, $parent_id,
               $os_id, $data->{'agent'}->{'description'},
               $data->{'agent'}{'interval'}, $self->{'dbh'},
-              $data->{'agent'}{'timezone_offset'}
+              $data->{'agent'}{'timezone_offset'}, undef, undef, undef, undef,
+              undef, undef, 1, $data->{'agent'}{'alias'}
             );
 
             # Add found IP addresses to the agent.

@@ -628,6 +628,9 @@ select:-internal-list-box {
 .float-right {
   float: right;
 }
+.invisible {
+  display: none;
+}
 
 div#page {
   background: #fbfbfb;
@@ -4081,101 +4084,9 @@ div#footer_help {
   background-size: 120px 80px;
 }
 
-/*
- * ---------------------------------------------------------------------
- * - WUX VIEW														-
- * ---------------------------------------------------------------------
- */
 #mssg_error_div {
   color: red;
   font-size: 12px;
-}
-
-.wux_global_result_container {
-  width: 100%;
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.wux_global_result_title {
-  width: 100%;
-  text-align: center;
-  color: white;
-  background-color: #373737;
-  border: 1px solid #373737;
-  height: 28px;
-}
-
-.wux_global_result_title p {
-  margin: 8px;
-}
-
-.wux_global_result_content {
-  width: 100%;
-  border: 1px solid #e2e2e2;
-  height: 120px;
-}
-
-.wux_global_result_content_left {
-  float: left;
-  width: 40%;
-  text-align: center;
-}
-
-.wux_global_result_content_left ul {
-  display: inline-flex;
-  margin-top: 15px;
-}
-
-.wux_global_result_content_left ul li p {
-  margin-top: 35px;
-  margin-right: 10px;
-  margin-left: 10px;
-}
-
-.wux_global_result_content_left ul li p b {
-  font-size: 16px;
-}
-
-.wux_global_result_content_right {
-  float: right;
-  width: 60%;
-}
-
-.wux_global_result_content_right ul {
-  display: inline-flex;
-  margin-top: 15px;
-  margin-left: 100px;
-}
-
-.wux_global_result_content_right ul li p {
-  margin-top: 36px;
-  margin-right: 10px;
-  margin-left: 10px;
-}
-
-.wux_global_result_content_right ul li p b {
-  font-size: 16px;
-}
-
-.wux_transaction_container {
-  width: 100%;
-  margin-bottom: 30px;
-}
-
-.wux_result_transaction {
-  width: 33%;
-  float: left;
-}
-
-.wux_transaction_graphs {
-  width: 33%;
-  float: left;
-}
-
-.wux_transaction_graphs_pie {
-  width: 33%;
-  float: left;
 }
 
 .pagination_show_more {
@@ -4654,6 +4565,10 @@ div#dialog_messages table th:last-child {
   -webkit-transition: 0.4s;
   transition: 0.4s;
   border-radius: 34px;
+}
+
+.p-slider-disabled {
+  background-color: #dfdfdf !important;
 }
 
 .p-slider:before {
@@ -5735,6 +5650,11 @@ div#status_pie {
 .white_table_graph_header b {
   font-size: 10pt;
   font-weight: 600;
+  width: 100%;
+}
+
+.white_table_graph_header div.white_table_header_checkbox {
+  float: right;
 }
 
 .white_table_graph_header div#bullets_modules {

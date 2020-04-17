@@ -783,7 +783,7 @@ function snmp_browser_print_container($return=false, $width='100%', $height='60%
     $table2->cellstyle[0][2] = 'text-align:center;';
 
     // This extra div that can be handled by jquery's dialog.
-    $output = '<div id="snmp_browser_container" style="display:'.$display.'">';
+    $output = '<div id="snmp_browser_container" style="'.$display.'">';
     $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
     $output .= '<div style="width: 100%">';
     $output .= html_print_table($table, true);

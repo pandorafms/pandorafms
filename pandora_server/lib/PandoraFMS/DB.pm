@@ -20,6 +20,7 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
+use Carp qw/croak/;
 
 use lib '/usr/lib/perl5';
 use PandoraFMS::Tools;
@@ -80,6 +81,8 @@ our @EXPORT = qw(
 		get_module_id
 		get_module_name
 		get_nc_profile_name
+		get_pen_templates
+		get_nc_profile_advanced
 		get_os_id
 		get_os_name
 		get_plugin_id
@@ -657,6 +660,48 @@ sub get_nc_profile_name ($$) {
 }
 
 ##########################################################################
+## Return all network component's profile ids matching given PEN.
+##########################################################################
+sub get_pen_templates($$) {
+	my ($dbh, $pen) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT t.`id_np`
+		 FROM `tnetwork_profile` t
+		 INNER JOIN `tnetwork_profile_pen` pp ON pp.`id_np` = t.`id_np`
+		 INNER JOIN `tpen` p ON pp.pen = p.pen
+		 WHERE p.`pen` = ?',
+		$pen
+	);
+
+	@results = map {
+		if (ref($_) eq 'HASH') { $_->{'id_np'} }
+		else {}
+	} @results;
+
+
+  return @results;
+}
+
+##########################################################################
+## Return a network component's profile data and pen list, given its ID.
+##########################################################################
+sub get_nc_profile_advanced($$) {
+	my ($dbh, $id_nc) = @_;
+	return get_db_single_row(
+		$dbh,
+		'SELECT t.*,GROUP_CONCAT(p.pen) AS "pen"
+		 FROM `tnetwork_profile` t
+		 LEFT JOIN `tnetwork_profile_pen` pp ON t.id_np = pp.id_np
+		 LEFT JOIN `tpen` p ON pp.pen = p.pen
+		 WHERE t.`id_np` = ?
+		 GROUP BY t.`id_np`',
+		$id_nc
+	);
+}
+
+##########################################################################
 ## Return user profile ID given the user id, group id and profile id.
 ##########################################################################
 sub get_user_profile_id ($$$$) {
@@ -894,7 +939,7 @@ sub db_insert ($$$;@) {
 			$insert_id = $dbh->{'mysql_insertid'};
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 	
@@ -917,7 +962,7 @@ sub db_update ($$;@) {
 			$rows = $dbh->do($query, undef, @values);
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 	
@@ -1163,7 +1208,7 @@ sub db_do ($$;@) {
 			$dbh->do($query, undef, @values);
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 }

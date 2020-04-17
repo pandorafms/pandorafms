@@ -443,6 +443,8 @@ class CredentialStore extends Wizard
      */
     public function draw()
     {
+        global $config;
+
         // Datatables offset, limit and order.
         $filter = get_parameter('filter', []);
         $start = get_parameter('start', 0);

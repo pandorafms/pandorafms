@@ -328,6 +328,8 @@ if (is_ajax()) {
                 $data = array_reduce(
                     $events,
                     function ($carry, $item) {
+                        global $config;
+
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
                         if (is_metaconsole()) {
@@ -360,7 +362,10 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric($tmp->data, 1);
+                        $tmp->data = format_numeric(
+                            $tmp->data,
+                            $config['graph_precision']
+                        );
 
                         $tmp->instructions = events_get_instructions($item);
 

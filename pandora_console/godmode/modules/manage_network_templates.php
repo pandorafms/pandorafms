@@ -45,8 +45,15 @@ ui_print_page_header(
     true,
     'modulemodal'
 );
-
-
+/*
+    // At this moment, this message is not necessary
+    ui_print_info_message(
+    __(
+        'This section is maintained only for legacy use. Please, keep in mind use %s for manage template blocks.',
+        '<a href="'.ui_get_full_url('index.php?logged=1&sec=gmodules&sec2=godmode/modules/manage_block_templates').'">Module Blocks</a>'
+    )
+    );
+*/
 require_once 'include/functions_network_profiles.php';
 
 $delete_profile = (bool) get_parameter('delete_profile');

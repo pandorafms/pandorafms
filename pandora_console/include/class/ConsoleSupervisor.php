@@ -2316,9 +2316,10 @@ class ConsoleSupervisor
             sprintf(
                 'SELECT `name`, `version` 
                 FROM tserver 
-                WHERE server_type != %d
+                WHERE server_type NOT IN ( %d , %d )
                 GROUP BY `version`',
-                SERVER_TYPE_ENTERPRISE_SATELLITE
+                SERVER_TYPE_ENTERPRISE_SATELLITE,
+                SERVER_TYPE_MAINFRAME
             )
         );
 

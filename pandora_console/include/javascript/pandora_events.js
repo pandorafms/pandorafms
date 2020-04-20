@@ -118,30 +118,26 @@ function execute_response(event_id, server_id) {
   }
 
   response["target"] = get_response_target(event_id, response_id, server_id);
+  response["event_id"] = event_id;
+  response["server_id"] = server_id;
 
-  switch (response["type"]) {
-    case "command":
-      show_response_dialog(event_id, response_id, response);
-      break;
-    case "url":
-      if (response["new_window"] == 1) {
-        window.open(response["target"], "_blank");
-      } else {
-        show_response_dialog(event_id, response_id, response);
-      }
-      break;
+  if (response["type"] == "url" && response["new_window"] == 1) {
+    window.open(response["target"], "_blank");
+  } else {
+    show_response_dialog(response_id, response);
   }
 }
 
 //Show the modal window of an event response
-function show_response_dialog(event_id, response_id, response) {
+function show_response_dialog(response_id, response) {
   var params = [];
   params.push("page=include/ajax/events");
   params.push("dialogue_event_response=1");
   params.push("massive=0");
-  params.push("event_id=" + event_id);
+  params.push("event_id=" + response["event_id"]);
   params.push("target=" + response["target"]);
   params.push("response_id=" + response_id);
+  params.push("server_id=" + response["server_id"]);
 
   jQuery.ajax({
     data: params.join("&"),
@@ -159,7 +155,7 @@ function show_response_dialog(event_id, response_id, response) {
           draggable: true,
           modal: false,
           open: function() {
-            perform_response(response["target"], response_id);
+            perform_response(response, response_id);
           },
           width: response["modal_width"],
           height: response["modal_height"]
@@ -171,7 +167,6 @@ function show_response_dialog(event_id, response_id, response) {
 
 //Show the modal window of event responses when multiple events are selected
 function show_massive_response_dialog(
-  event_id,
   response_id,
   response,
   out_iterator,
@@ -183,13 +178,14 @@ function show_massive_response_dialog(
   params.push("massive=1");
   params.push("end=" + end);
   params.push("out_iterator=" + out_iterator);
-  params.push("event_id=" + event_id);
+  params.push("event_id=" + response["event_id"]);
   params.push("target=" + response["target"]);
   params.push("response_id=" + response_id);
+  params.push("server_id=" + response["server_id"]);
 
   jQuery.ajax({
     data: params.join("&"),
-    response_tg: response["target"],
+    response_tg: response,
     response_id: response_id,
     out_iterator: out_iterator,
     type: "POST",
@@ -384,7 +380,7 @@ function get_response_target(
 }
 
 // Perform a response and put the output into a div
-function perform_response(target, response_id) {
+function perform_response(response, response_id) {
   $("#re_exec_command").hide();
   $("#response_loading_command").show();
   $("#response_out").html("");
@@ -392,8 +388,10 @@ function perform_response(target, response_id) {
   var params = [];
   params.push("page=include/ajax/events");
   params.push("perform_event_response=1");
-  params.push("target=" + target);
+  params.push("target=" + response["target"]);
   params.push("response_id=" + response_id);
+  params.push("event_id=" + response["event_id"]);
+  params.push("server_id=" + response["server_id"]);
 
   jQuery.ajax({
     data: params.join("&"),
@@ -413,7 +411,7 @@ function perform_response(target, response_id) {
 }
 
 // Perform a response and put the output into a div
-function perform_response_massive(target, response_id, out_iterator) {
+function perform_response_massive(response, response_id, out_iterator) {
   $("#re_exec_command").hide();
   $("#response_loading_command_" + out_iterator).show();
   $("#response_out_" + out_iterator).html("");
@@ -421,8 +419,10 @@ function perform_response_massive(target, response_id, out_iterator) {
   var params = [];
   params.push("page=include/ajax/events");
   params.push("perform_event_response=1");
-  params.push("target=" + target);
+  params.push("target=" + response["target"]);
   params.push("response_id=" + response_id);
+  params.push("event_id=" + response["event_id"]);
+  params.push("server_id=" + response["server_id"]);
 
   jQuery.ajax({
     data: params.join("&"),
@@ -916,17 +916,24 @@ function check_massive_response_event(
 
   $(".chk_val:checked").each(function() {
     var event_id = $(this).val();
-    var server_id = $("#hidden-server_id_" + event_id).val();
+    var meta = $("#hidden-meta").val();
+    var server_id = 0;
+    if (meta) {
+      server_id = $("#hidden-server_id_" + event_id).val();
+    }
+
     response["target"] = get_response_target(
       event_id,
       response_id,
       server_id,
       response_command
     );
+    response["server_id"] = server_id;
+    response["event_id"] = event_id;
 
     if (total_checked - 1 === counter) end = 1;
 
-    show_massive_response_dialog(event_id, response_id, response, counter, end);
+    show_massive_response_dialog(response_id, response, counter, end);
 
     counter++;
   });

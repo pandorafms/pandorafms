@@ -206,9 +206,9 @@ class MapsMadeByUser extends Widget
 
         $fields = \visual_map_get_user_layouts($config['id_user'], true);
 
-        // Event Type.
+        // Visual console.
         $inputs[] = [
-            'label'     => __('Event type'),
+            'label'     => __('Visual console'),
             'arguments' => [
                 'type'     => 'select',
                 'fields'   => $fields,

@@ -38,7 +38,7 @@ DEBIAN_FILES="$CODEHOME/pandora_console/DEBIAN \
 $CODEHOME/pandora_server/DEBIAN \
 $CODEHOME/pandora_agents/unix/DEBIAN \
 $PANDHOME_ENT/pandora_console/DEBIAN \
-$PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/DEBIAN"
+$PANDHOME_ENT/pandora_server/DEBIAN"
 INSTALLER_FILES="$CODEHOME/pandora_console/pandora_console_install \
 $CODEHOME/pandora_server/pandora_server_installer \
 $CODEHOME/pandora_agents/unix/pandora_agent_installer"

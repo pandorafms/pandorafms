@@ -310,6 +310,10 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
             $subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
         }
+
+        // Filter by agents id.
+        $id_agents_list = implode(',', $id_agent);
+        $subQuery .= ' AND id_agente in ('.$id_agents_list.')';
     } else if ($id_agent === false || empty($id_agent)) {
         if ($allModules) {
             $disabled = '';

@@ -612,11 +612,13 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
                     'UPDATE %s
                     SET estado = %d,
                         ack_utimestamp = %d,
-                        id_usuario = "%s"
+                        id_usuario = "%s",
+                        owner_user = "%s"
                     WHERE id_evento IN (%s)',
                     $table,
                     $status,
                     time(),
+                    $config['id_user'],
                     $config['id_user'],
                     join(',', $target_ids)
                 );

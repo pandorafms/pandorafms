@@ -626,6 +626,9 @@ wuxserver 0
 # Maximum timeout to connect to a target web site, also for communications with a Selenium Grid server.
 #wux_webagent_timeout 15
 
+# Force closing previous sessions on remote wux_host, only for Selenium Grid server 3.
+#clean_wux_sessions 1
+
 # Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 syslogserver 1
 

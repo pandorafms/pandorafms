@@ -3596,11 +3596,7 @@ function visual_map_print_visual_map(
         $proportion_width = ($mapWidth / $layout['width']);
 
         if ($layout['background'] != 'None.png') {
-            if (is_metaconsole()) {
-                $backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size='.$mapWidth.'x'.$mapHeight.'&file='.$config['homeurl'].'images/console/background/'.$layout['background'];
-            } else {
                 $backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size='.$mapWidth.'x'.$mapHeight.'&file='.$config['homedir'].'/images/console/background/'.($layout['background']);
-            }
         }
     } else {
         $mapWidth = $layout['width'];

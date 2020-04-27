@@ -58,7 +58,7 @@ if ($manageDashboards !== 0) {
         $output .= '</a> ';
     }
 
-    $output .= '<a id="delete-widget-'.$cellData['id'].'" class="" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+    $output .= '<a id="delete-widget-'.$cellData['id'].'" class="">';
     $output .= html_print_image(
         'images/input_delete_white.png',
         true,

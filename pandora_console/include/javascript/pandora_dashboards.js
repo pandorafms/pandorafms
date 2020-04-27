@@ -244,8 +244,18 @@ function initialiceLayout(data) {
         }
 
         $("#delete-widget-" + id).click(function(event) {
-          var nodo = event.target.offsetParent;
-          deleteCell(id, nodo.parentNode);
+          // eslint-disable-next-line no-undef
+          confirmDialog({
+            title: "Are you sure?",
+            message: "",
+            cancel: "Cancel",
+            ok: "Ok",
+            onAccept: function() {
+              // Continue execution.
+              var nodo = event.target.offsetParent;
+              deleteCell(id, nodo.parentNode);
+            }
+          });
         });
 
         $("#configure-widget-" + id).click(function() {

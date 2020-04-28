@@ -1,9 +1,18 @@
+#
+# Instructions for unix:
+#
+# 1. Copy this file to the directory: /etc/systemd/system
+# 2. Start and stop the service running: systemctl start/stop
+# 3. Enable autostart at boot running: sudo systemctl enable pandora_agent_daemon
+# 4. Can be monitored with journal: journalctl -f -u pandora_agent_daemon
+#
 [Unit]
-Description=Pandora FMS agent daemon
+Description=Pandora FMS agent daemon ( %H )
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/pandora_agent /etc/pandora
+Environment=PANDORA_PATH=/etc/pandora
+ExecStart=/usr/bin/pandora_agent $PANDORA_PATH
 
 [Install]
 WantedBy=multi-user.target

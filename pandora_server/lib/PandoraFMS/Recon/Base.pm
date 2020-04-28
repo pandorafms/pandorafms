@@ -2109,16 +2109,16 @@ sub snmp_get_value($$$) {
   my ($self, $device, $oid) = @_;
 
   my $effective_oid = $oid;
-  if (is_enabled($self->{'translate_snmp'})) {
+  if (is_enabled($self->{'translate_snmp'}) && $oid !~ /^[\.\d]+$/) {
     $effective_oid = `snmptranslate $oid -On 2>$DEVNULL`;
-    chomp($effective_oid);
+    $effective_oid =~ s/[\r\n]//g;
   }
 
   my @output = $self->snmp_get($device, $effective_oid);
-  
+
   foreach my $line (@output) {
-    chomp($line);
-    return $1 if ($line =~ /^$effective_oid\s+=\s+\S+:\s+(.*)$/);
+    $line =~ s/[\r\n]//g;
+    return $1 if ($line =~ /^$effective_oid\s+=\s+\S+:\s+(.*)/);
   }
 
   return undef;

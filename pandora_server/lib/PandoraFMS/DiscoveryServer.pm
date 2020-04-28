@@ -26,7 +26,7 @@ use Thread::Semaphore;
 
 use IO::Socket::INET;
 use POSIX qw(strftime ceil);
-use JSON qw(decode_json encode_json);
+use JSON;
 use Encode qw(encode_utf8);
 use MIME::Base64;
 
@@ -336,14 +336,14 @@ sub exec_recon_script ($$$) {
   
   my $macros = safe_output($task->{'macros'});
 
-  # \r and \n should be escaped for decode_json().
+  # \r and \n should be escaped for p_decode_json().
   $macros =~ s/\n/\\n/g;
   $macros =~ s/\r/\\r/g;
   my $decoded_macros;
   
   if ($macros) {
     eval {
-      $decoded_macros = decode_json(encode_utf8($macros));
+      $decoded_macros = p_decode_json($pa_config, $macros);
     };
   }
   
@@ -980,7 +980,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       my $data;
       eval {
         local $SIG{__DIE__};
-        $data = decode_json(decode_base64($row->{'data'}));
+        $data = p_decode_json($self->{'pa_config'}, decode_base64($row->{'data'}));
       };
       if ($@) {
         $self->call('message', "ERROR JSON: $@", 3);
@@ -1245,7 +1245,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         eval {
           local $SIG{__DIE__};
           $encoded = encode_base64(
-            encode_json($data)
+            p_encode_json($self->{'pa_config'}, $data)
           );
         };
 
@@ -1344,7 +1344,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     eval {
       local $SIG{__DIE__};
       $encoded = encode_base64(
-        encode_json($self->{'agents_found'}->{$addr})
+        p_encode_json($self->{'pa_config'}, $self->{'agents_found'}->{$addr})
       );
     };
 
@@ -1684,17 +1684,25 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
   my ($self, $progress) = @_;
 
   my $stats = {};
-  if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
-    $stats->{'summary'} = $self->{'summary'};
+  eval {
+    local $SIG{__DIE__};
+    if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
+      $stats->{'summary'} = $self->{'summary'};
+    }
+
+    $stats->{'step'} = $self->{'step'};
+    $stats->{'c_network_name'} = $self->{'c_network_name'};
+    $stats->{'c_network_percent'} = $self->{'c_network_percent'};
+
+    # Store progress, last contact and overall status.
+    db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+      time (), $progress, p_encode_json($self->{'pa_config'}, $stats), $self->{'task_id'});
+  };
+  if ($@) {
+    $self->call('message', "Problems updating progress $@", 5);
+    db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+      time (), $progress, "{}", $self->{'task_id'});
   }
-
-  $stats->{'step'} = $self->{'step'};
-  $stats->{'c_network_name'} = $self->{'c_network_name'};
-  $stats->{'c_network_percent'} = $self->{'c_network_percent'};
-
-  # Store progress, last contact and overall status.
-  db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
-    time (), $progress, encode_json($stats), $self->{'task_id'});
 }
 
 1;

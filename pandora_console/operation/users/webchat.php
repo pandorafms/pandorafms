@@ -118,9 +118,7 @@ echo "<div style='width:100%'>".html_print_button(
             cancel: "Cancel",
             ok: "Ok",
             onAccept: function() {
-              // Continue execution.
-              var nodo = event.target.offsetParent;
-              deleteCell(id, nodo.parentNode);
+                // Nothing to do.
             }
           });
         $("input[name=\"message_box\"]").keydown(function(e) {

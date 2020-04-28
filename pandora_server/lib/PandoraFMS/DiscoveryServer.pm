@@ -1684,17 +1684,23 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
   my ($self, $progress) = @_;
 
   my $stats = {};
-  if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
-    $stats->{'summary'} = $self->{'summary'};
+  eval {
+    local $SIG{__DIE__};
+    if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
+      $stats->{'summary'} = $self->{'summary'};
+    }
+
+    $stats->{'step'} = $self->{'step'};
+    $stats->{'c_network_name'} = $self->{'c_network_name'};
+    $stats->{'c_network_percent'} = $self->{'c_network_percent'};
+
+    # Store progress, last contact and overall status.
+    db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+      time (), $progress, encode_json($stats), $self->{'task_id'});
+  };
+  if ($@) {
+    $self->call('Message', "Problems updating progress $@");
   }
-
-  $stats->{'step'} = $self->{'step'};
-  $stats->{'c_network_name'} = $self->{'c_network_name'};
-  $stats->{'c_network_percent'} = $self->{'c_network_percent'};
-
-  # Store progress, last contact and overall status.
-  db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
-    time (), $progress, encode_json($stats), $self->{'task_id'});
 }
 
 1;

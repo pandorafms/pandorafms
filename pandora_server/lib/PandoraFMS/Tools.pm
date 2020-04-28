@@ -31,6 +31,9 @@ use LWP::UserAgent;
 use threads;
 use threads::shared;
 
+use JSON;
+use Encode qw/decode_utf8 encode_utf8/;
+
 use lib '/usr/lib/perl5';
 use PandoraFMS::Sendmail;
 
@@ -152,6 +155,8 @@ our @EXPORT = qw(
 	dateTimeToTimestamp
 	get_user_agent
 	ui_get_full_url
+	p_encode_json
+	p_decode_json
 );
 
 # ID of the different servers
@@ -2352,6 +2357,55 @@ sub ui_get_full_url {
 	return $console_url.$url;
 
 }
+
+################################################################################
+# Encodes a json.
+################################################################################
+sub p_encode_json {
+	my ($pa_config, $data) = @_;
+
+	# Initialize JSON manager.
+	my $json = JSON->new->allow_nonref;
+	my $encoded_data;
+
+	eval {
+		local $SIG{__DIE__};
+		if ($JSON::VERSION > 2.90) {
+			$encoded_data = $json->encode($data);	
+		} else {
+			$encoded_data = encode_utf8($json->encode($data));
+		}
+	};
+	if ($@){
+		if (defined($data)) {
+			logger($pa_config, 'Failed to encode data: '.$@, 5);
+		}
+	}
+
+	return $encoded_data;
+}
+
+################################################################################
+# Dencodes a json.
+################################################################################
+sub p_decode_json {
+	my ($pa_config, $data) = @_;
+
+	# Initialize JSON manager.
+	my $json = JSON->new->allow_nonref;
+	my $decoded_data;
+
+  if ($JSON::VERSION > 2.90) {
+    $decoded_data = $json->decode($data);
+  } else {
+    if (!is_empty($decoded_data)) {
+      $decoded_data = decode_json($data);
+    }
+  }
+
+	return $decoded_data;
+}
+
 
 1;
 __END__

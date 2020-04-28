@@ -247,7 +247,8 @@ function initialiceLayout(data) {
           // eslint-disable-next-line no-undef
           confirmDialog({
             title: "Are you sure?",
-            message: "",
+            message:
+              "<h4 style='text-align: center;padding-top: 20px;'>If you delete it, will can't be recovered</h4>",
             cancel: "Cancel",
             ok: "Ok",
             onAccept: function() {

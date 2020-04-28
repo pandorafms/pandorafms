@@ -248,7 +248,7 @@ function initialiceLayout(data) {
           confirmDialog({
             title: "Are you sure?",
             message:
-              "<h4 style='text-align: center;padding-top: 20px;'>If you delete it, will can't be recovered</h4>",
+              "<h4 style='text-align: center;padding-top: 20px;'>All changes made to this widget will be lost</h4>",
             cancel: "Cancel",
             ok: "Ok",
             onAccept: function() {

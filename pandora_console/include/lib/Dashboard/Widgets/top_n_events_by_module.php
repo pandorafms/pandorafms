@@ -147,7 +147,7 @@ class TopNEventByModuleWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -174,6 +174,59 @@ class TopNEventByModuleWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['amount']) === true) {
+            $values['amountShow'] = $decoder['amount'];
+        }
+
+        if (isset($decoder['amountShow']) === true) {
+            $values['amountShow'] = $decoder['amountShow'];
+        }
+
+        if (isset($decoder['event_view_hr']) === true) {
+            $values['maxHours'] = $decoder['event_view_hr'];
+        }
+
+        if (isset($decoder['maxHours']) === true) {
+            $values['maxHours'] = $decoder['maxHours'];
+        }
+
+        if (isset($decoder['id_groups']) === true) {
+            if (is_array($decoder['id_groups']) === true) {
+                $decoder['id_groups'][0] = implode(',', $decoder['id_groups']);
+            }
+
+            $values['groupId'] = $decoder['id_groups'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        if (isset($decoder['legend_position']) === true) {
+            $values['legendPosition'] = $decoder['legend_position'];
+        }
+
+        if (isset($decoder['legendPosition']) === true) {
+            $values['legendPosition'] = $decoder['legendPosition'];
+        }
+
+        return $values;
     }
 
 
@@ -311,20 +364,26 @@ class TopNEventByModuleWidget extends Widget
 
             if ($all_group === false) {
                 $sql = sprintf(
-                    'SELECT id_agentmodule, COUNT(*) AS count
+                    'SELECT id_agente,
+                        id_agentmodule,
+                        event_type,
+                        COUNT(*) AS count
                     FROM tevento
                     WHERE utimestamp >= %d
                         AND id_grupo IN (%s)
                     GROUP BY id_agentmodule, event_type
                     ORDER BY count DESC
                     LIMIT %d',
-                    implode(',', $this->values['groupId']),
                     $timestamp,
+                    implode(',', $this->values['groupId']),
                     $this->values['amountShow']
                 );
             } else {
                 $sql = sprintf(
-                    'SELECT id_agentmodule, COUNT(*) AS count
+                    'SELECT id_agente,
+                        id_agentmodule,
+                        event_type,
+                        COUNT(*) AS count
                     FROM tevento
                     WHERE utimestamp >= %d
                     GROUP BY id_agentmodule, event_type
@@ -353,8 +412,9 @@ class TopNEventByModuleWidget extends Widget
                         $name = __('System');
                     } else {
                         $name_agent = io_safe_output(
-                            agents_get_alias($row['id_agentmodule'])
+                            agents_get_alias($row['id_agente'])
                         );
+
                         $name_module = io_safe_output(
                             modules_get_agentmodule_name($row['id_agentmodule'])
                         );

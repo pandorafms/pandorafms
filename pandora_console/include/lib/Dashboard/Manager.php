@@ -1042,6 +1042,17 @@ class Manager
                     $cellData['id_widget'] = $this->widgetId;
                 }
             }
+
+            $instance = $this->instanceWidget();
+            $cellData['options'] = $instance->decoders(
+                $instance->getOptionsWidget()
+            );
+
+            if (isset($cellData['options']['title']) === false) {
+                $cellData['options']['title'] = $instance->getDescription();
+            }
+
+            $cellData['options'] = json_encode($cellData['options']);
         }
 
         View::render(

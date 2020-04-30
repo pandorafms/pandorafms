@@ -2390,12 +2390,12 @@ sub p_encode_json {
 ################################################################################
 sub p_decode_json {
 	my ($pa_config, $data) = @_;
-
-	# Initialize JSON manager.
-	my $json = JSON->new->allow_nonref;
 	my $decoded_data;
 
   if ($JSON::VERSION > 2.90) {
+		# Initialize JSON manager.
+		my $json = JSON->new->allow_nonref;
+
     $decoded_data = $json->decode($data);
   } else {
     if (!is_empty($decoded_data)) {

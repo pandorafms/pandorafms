@@ -122,7 +122,7 @@ if ($enable_agent) {
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 0];
         enterprise_hook('agent_update_from_cache', [$enable_agent, $values, $server_name]);
-        config_agents_update_config_token($enable_agent, 'standby', 0);
+        enterprise_hook('config_agents_update_config_token', [$enable_agent, 'standby', 0]);
         db_pandora_audit('Agent management', 'Enable  '.$alias);
     } else {
         db_pandora_audit('Agent management', 'Fail to enable '.$alias);
@@ -144,7 +144,7 @@ if ($disable_agent) {
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 1];
         enterprise_hook('agent_update_from_cache', [$disable_agent, $values, $server_name]);
-        config_agents_update_config_token($disable_agent, 'standby', 1);
+        enterprise_hook('config_agents_update_config_token', [$disable_agent, 'standby', 1]);
 
         db_pandora_audit('Agent management', 'Disable  '.$alias);
     } else {

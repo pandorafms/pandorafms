@@ -1358,7 +1358,7 @@ sub prepare_agent($$) {
   $self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
   # Already initialized.
-  return if ref($self->{'agents_found'}->{$host_name}) eq 'HASH';
+  return if ref($self->{'agents_found'}->{$addr}) eq 'HASH';
 
   my @addresses = $self->get_addresses($addr);
   $self->{'agents_found'}->{$addr} = {

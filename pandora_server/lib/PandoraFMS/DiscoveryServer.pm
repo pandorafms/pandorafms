@@ -935,6 +935,16 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         $np_component->{'id_nc'}
       );
 
+      # Tag cleanup.
+      if (!is_empty($component->{'tags'})) {
+        my @tags = map {
+          if ($_ > 0) { $_ }
+          else {}
+        } split ',', $component->{'tags'};
+
+        $component->{'tags'} = join ',', @tags;
+      }
+
       $component->{'name'} = safe_output($component->{'name'});
       if ($component->{'type'} >= 15 && $component->{'type'} <= 18) {
         $component->{'snmp_community'} = safe_output($self->get_community($device));
@@ -1386,6 +1396,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     $progress += $step;
     # Store temporally. Wait user approval.
     my $encoded;
+
     eval {
       local $SIG{__DIE__};
       $encoded = encode_base64(

@@ -142,7 +142,7 @@ class GroupsStatusWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -169,6 +169,31 @@ class GroupsStatusWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['groups']) === true) {
+            $values['groupId'] = $decoder['groups'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        return $values;
     }
 
 

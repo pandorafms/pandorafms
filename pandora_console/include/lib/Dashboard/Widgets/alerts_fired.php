@@ -146,7 +146,7 @@ class AlertsFiredWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -173,6 +173,31 @@ class AlertsFiredWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['group']) === true) {
+            $values['groupId'] = $decoder['group'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        return $values;
     }
 
 
@@ -234,7 +259,7 @@ class AlertsFiredWidget extends Widget
 
         $output = '';
 
-        if ($this->values['groupId'] === 0) {
+        if ((int) $this->values['groupId'] === 0) {
             $groups = users_get_groups(false, 'AR', false);
         } else {
             $groups = [$this->values['groupId'] => ''];
@@ -254,7 +279,7 @@ class AlertsFiredWidget extends Widget
 
             $flag = false;
             foreach ($groups as $id_group => $name) {
-                $alerts_group = get_group_alerts($id_group);
+                $alerts_group = get_group_alerts([$id_group]);
                 if (isset($alerts_group['simple']) === true) {
                     $alerts_group = $alerts_group['simple'];
                 }

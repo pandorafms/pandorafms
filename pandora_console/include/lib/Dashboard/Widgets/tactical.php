@@ -160,7 +160,7 @@ class TacticalWidget extends Widget
         $this->pmAccess = \users_can_manage_group_all('PM');
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -190,6 +190,43 @@ class TacticalWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['statusmonitors']) === true) {
+            $values['statusMonitor'] = $decoder['statusmonitors'];
+        }
+
+        if (isset($decoder['statusMonitor']) === true) {
+            $values['statusMonitor'] = $decoder['statusMonitor'];
+        }
+
+        if (isset($decoder['serverperf']) === true) {
+            $values['serverPerformance'] = $decoder['serverperf'];
+        }
+
+        if (isset($decoder['serverPerformance']) === true) {
+            $values['serverPerformance'] = $decoder['serverPerformance'];
+        }
+
+        if (isset($decoder['summary']) === true) {
+            $values['summary'] = $decoder['summary'];
+        }
+
+        return $values;
     }
 
 
@@ -366,7 +403,7 @@ class TacticalWidget extends Widget
             );
         }
 
-        if ($this->values['statusMonitor'] === 1) {
+        if ((int) $this->values['statusMonitor'] === 1) {
             $table = new \stdClass();
             $table->width = '100%';
 
@@ -396,7 +433,7 @@ class TacticalWidget extends Widget
             $output .= \html_print_table($table, true);
         }
 
-        if ($this->values['serverPerformance'] === 1
+        if ((int) $this->values['serverPerformance'] === 1
             && $this->pmAccess === true
         ) {
             $table = new \stdClass();
@@ -414,7 +451,7 @@ class TacticalWidget extends Widget
             $output .= \html_print_table($table, true);
         }
 
-        if ($this->values['summary'] === 1) {
+        if ((int) $this->values['summary'] === 1) {
             $table = new \stdClass();
             $table->width = '100%';
             $table->class = '';

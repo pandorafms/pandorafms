@@ -34,6 +34,7 @@ if ($redraw === false) {
 
 $output .= '<div class="header-widget">';
 $output .= '<div>';
+
 if ((int) $cellData['id_widget'] !== 0) {
     $options = json_decode($cellData['options'], true);
     $output .= $options['title'];

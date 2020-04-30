@@ -147,7 +147,7 @@ class TopNEventByGroupWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -174,6 +174,59 @@ class TopNEventByGroupWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['amount']) === true) {
+            $values['amountShow'] = $decoder['amount'];
+        }
+
+        if (isset($decoder['amountShow']) === true) {
+            $values['amountShow'] = $decoder['amountShow'];
+        }
+
+        if (isset($decoder['event_view_hr']) === true) {
+            $values['maxHours'] = $decoder['event_view_hr'];
+        }
+
+        if (isset($decoder['maxHours']) === true) {
+            $values['maxHours'] = $decoder['maxHours'];
+        }
+
+        if (isset($decoder['id_groups']) === true) {
+            if (is_array($decoder['id_groups']) === true) {
+                $implode = implode(',', $decoder['id_groups']);
+                $values['groupId'] = [];
+                $values['groupId'][0] = $implode;
+            }
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        if (isset($decoder['legend_position']) === true) {
+            $values['legendPosition'] = $decoder['legend_position'];
+        }
+
+        if (isset($decoder['legendPosition']) === true) {
+            $values['legendPosition'] = $decoder['legendPosition'];
+        }
+
+        return $values;
     }
 
 
@@ -320,8 +373,8 @@ class TopNEventByGroupWidget extends Widget
                     GROUP BY id_agente
                     ORDER BY count DESC
                     LIMIT %d',
-                    implode(',', $this->values['groupId']),
                     $timestamp,
+                    implode(',', $this->values['groupId']),
                     $this->values['amountShow']
                 );
             } else {

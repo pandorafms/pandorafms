@@ -276,6 +276,9 @@ sub data_consumer ($$) {
       task_id => $task->{'id_rt'},
       vlan_cache_enabled => $task->{'vlan_enabled'},
       wmi_enabled => $task->{'wmi_enabled'},
+      rcmd_enabled => $task->{'rcmd_enabled'},
+      rcmd_timeout => $pa_config->{'rcmd_timeout'},
+      rcmd_timeout_bin => $pa_config->{'rcmd_timeout_bin'},
       auth_strings_array => \@auth_strings,
       autoconfiguration_enabled => $task->{'autoconfiguration_enabled'},
       main_event_id => $main_event,
@@ -402,6 +405,8 @@ sub exec_recon_script ($$$) {
 sub PandoraFMS::Recon::Base::guess_os($$) {
   my ($self, $device) = @_;
 
+  return $self->{'os_id'}{$device} if defined($self->{'os_id'}{$device});
+
   $DEVNULL = '/dev/null' if (!defined($DEVNULL));
   $DEVNULL = '/NUL' if ($^O =~ /win/i && !defined($DEVNULL));
 
@@ -510,6 +515,9 @@ sub PandoraFMS::Recon::Base::test_module($$) {
   ) {
     # Generic, plugins. (21-23 ASYNC)
     if ($test->{'id_modulo'} == 6) {
+
+      return 0 unless $self->wmi_responds($addr);
+
       # WMI commands.
       $value = $self->call(
         'wmi_get_value',
@@ -527,9 +535,31 @@ sub PandoraFMS::Recon::Base::test_module($$) {
 
   } elsif ($test->{'id_tipo_modulo'} >= 34 && $test->{'id_tipo_modulo'} <= 37) {
     # Remote command.
-    # XXX TODO: Test remote commands.
-    # Disabled until we can ensure result.
-    return 0;
+    return 0 unless $self->rcmd_responds($addr);
+
+    my $target_os = pandora_get_os($self->{'dbh'}, $test->{'custom_string_2'});
+
+    $value = enterprise_hook(
+      'remote_execution_module',
+      [
+        # pa_config,
+        $self->{'pa_config'},
+        # dbh,
+        $self->{'dbh'},
+        # module,
+        $test,
+        # target_os,
+        $target_os,
+        # ip_target,
+        $test->{'ip_target'},
+        # tcp_port
+        $test->{'tcp_port'}
+      ]
+    );
+
+    chomp($value);
+
+    return 0 unless defined($value);
 
   } elsif ($test->{'id_tipo_modulo'} >= 8 && $test->{'id_tipo_modulo'} <= 11) {
     # TCP
@@ -917,6 +947,15 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
       }
 
+      if ($component->{'type'} >= 34 && $component->{'type'} <= 37) {
+        # Update module credentials.
+        $component->{'custom_string_1'} = $self->rcmd_credentials_key($device);
+        $component->{'custom_string_2'} = pandora_get_os_by_id(
+          $self->{'dbh'},
+          $self->guess_os($device)
+        );
+      }
+
       $component->{'__module_component'} = 1;
 
       # 3. Try to register module into monitoring list.
@@ -1012,7 +1051,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         || $force_creation
       ) {
         my $parent_id;
-        my $os_id = $self->guess_os($data->{'agent'}{'direccion'});
+        my $os_id = $data->{'agent'}{'id_os'};
+        if (is_empty($os_id)) {
+          $os_id = $self->guess_os($data->{'agent'}{'direccion'});
+        }
 
         $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
@@ -1336,6 +1378,9 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
 	  my $label = $self->{'agents_found'}->{$addr}{'agent'}{'nombre'};
 
   	next if is_empty($label);
+
+    # Retrieve target agent OS version.
+		$self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
 
     $self->call('update_progress', $progress);
     $progress += $step;

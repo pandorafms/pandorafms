@@ -160,6 +160,12 @@ sub new {
 
     # Globally enable/disable WMI scans.
     wmi_enabled => 0,
+
+    # Globally enable/disable RCMD scans.
+    rcmd_enabled => 0,
+    rcmd_timeout => 4,
+    rcmd_timeout_bin => '/usr/bin/timeout',
+
     auth_strings_array => [],
     wmi_timeout => 3,
     timeout_cmd => '',
@@ -1429,6 +1435,12 @@ sub test_capabilities($$) {
     # Add wmi scan if enabled.
     $self->wmi_discovery($addr);
   }
+
+  # WMI discovery.
+  if (is_enabled($self->{'rcmd_enabled'})) {
+    # Add wmi scan if enabled.
+    $self->rcmd_discovery($addr);
+  }
 }
 
 ################################################################################
@@ -2269,6 +2281,105 @@ sub wmi_credentials_calculation {
 }
 
 ################################################################################
+# Returns the credentials with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+################################################################################
+sub rcmd_credentials {
+  my ($self, $target) = @_;
+  return $self->{'rcmd_auth'}{$target};
+}
+
+################################################################################
+# Returns the credentials KEY with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+################################################################################
+sub rcmd_credentials_key {
+	my ($self, $target) = @_;
+	return $self->{'rcmd_auth_key'}{$target};
+}
+
+################################################################################
+# Calculate WMI credentials for target, 1 if calculated, undef if cannot
+# connect to target. Credentials could be empty (-N)
+################################################################################
+sub rcmd_credentials_calculation {
+  my ($self, $target) = @_;
+
+  my $rcmd = PandoraFMS::Recon::Util::enterprise_new(
+	  'PandoraFMS::RemoteCmd',[{
+      'psexec' => $self->{'parent'}->{'pa_config'}->{'psexec'},
+      'winexe' => $self->{'parent'}->{'pa_config'}->{'winexe'},
+      'plink' => $self->{'parent'}->{'pa_config'}->{'plink'}
+    }]
+  );
+
+  if (!$rcmd) {
+    # Library not available.
+    $self->call('message', "PandoraFMS::RemoteCmd library not available", 10);
+    return undef;
+  }
+
+  my $id_os = $self->call('guess_os', $target);
+	$rcmd->set_host($target);
+	$rcmd->set_os($id_os);
+
+  # Test all credentials selected.
+  foreach my $key_index (@{$self->{'auth_strings_array'}}) {
+    my $cred = $self->call('get_credentials', $key_index);
+    next if ref($cred) ne 'HASH';
+		$rcmd->clean_ssh_lib();
+
+		my $username;
+		my $domain;
+
+		if($cred->{'username'} =~ /^(.*?)\\(.*)$/) {
+			$domain = $1;
+			$username = $2;
+		} else {
+			$username = $cred->{'username'};
+		}
+
+		$rcmd->set_credentials(
+			{
+				'user' => $username,
+				'pass' => $cred->{'password'},
+				'domain' => $domain
+			}
+		);
+
+    $rcmd->set_timeout(
+      $self->{'rcmd_timeout_bin'},
+      $self->{'rcmd_timeout'}
+    );
+
+		my $result;
+		eval {
+			$result = $rcmd->rcmd('echo 1');
+      chomp($result);
+      my $out = '';
+      $out = $result if !is_empty($result);
+			$self->call('message', "Trying [".$key_index."] in [". $target."] [".$id_os."]: [$out]", 10);
+		};
+		if ($@) {
+			$self->call('message', "Failed while trying [".$key_index."] in [". $target."] [".$id_os."]:" . @_, 10);
+		}
+
+    if (!is_empty($result) && $result == "1") {
+      $self->{'rcmd_auth'}{$target} = $cred;
+      $self->{'rcmd_auth_key'}{$target} = $key_index;
+      $self->{'rcmd'}{$target} = 1;
+      $self->{'summary'}->{'RCMD'} += 1;
+      $self->call('message', "RCMD available for $target", 10);
+      return 1;
+    }
+
+	}
+
+	# Not found.
+	return 0;
+}
+
+################################################################################
 # Tests wmi capability for addr.
 ################################################################################
 sub wmi_discovery {
@@ -2279,6 +2390,20 @@ sub wmi_discovery {
 
   # Calculate credentials.
   $self->wmi_credentials_calculation($addr);
+
+}
+
+################################################################################
+# Tests credentials against addr.
+################################################################################
+sub rcmd_discovery {
+	my ($self, $addr) = @_;
+
+	# Initialization.
+	$self->{'rcmd'} = {} unless ref($self->{'rcmd'}) eq 'HASH';
+
+	# Calculate credentials.
+	$self->rcmd_credentials_calculation($addr);
 
 }
 
@@ -2368,6 +2493,15 @@ sub wmi_get_command {
 sub wmi_responds {
 	my ($self, $target) = @_;
 	return 1 if is_enabled($self->{'wmi'}{$target});
+	return 0;
+}
+
+################################################################################
+# Checks if target is reachable using rcmd.
+################################################################################
+sub rcmd_responds {
+	my ($self, $target) = @_;
+	return 1 if is_enabled($self->{'rcmd'}{$target});
 	return 0;
 }
 

@@ -491,6 +491,7 @@ class HostDevices extends Wizard
             $parent_recursion = get_parameter_switch('parent_recursion');
             $vlan_enabled = get_parameter_switch('vlan_enabled');
             $wmi_enabled = get_parameter_switch('wmi_enabled');
+            $rcmd_enabled = get_parameter_switch('rcmd_enabled');
             $resolve_names = get_parameter_switch('resolve_names');
             $snmp_version = get_parameter('snmp_version', null);
             $community = get_parameter('community', null);
@@ -538,6 +539,7 @@ class HostDevices extends Wizard
             $this->task['parent_recursion'] = $parent_recursion;
             $this->task['vlan_enabled'] = $vlan_enabled;
             $this->task['wmi_enabled'] = $wmi_enabled;
+            $this->task['rcmd_enabled'] = $rcmd_enabled;
             $this->task['resolve_names'] = $resolve_names;
             $this->task['snmp_version'] = $snmp_version;
             $this->task['snmp_auth_user'] = $snmp_auth_user;

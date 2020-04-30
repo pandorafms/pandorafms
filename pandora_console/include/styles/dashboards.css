@@ -487,3 +487,7 @@ div#main_pure {
 .info_box tbody tr td.icon {
   padding-right: 10px !important;
 }
+
+.content-widget .databox.filters > tbody > tr > td {
+  padding-right: 30px;
+}

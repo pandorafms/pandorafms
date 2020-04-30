@@ -104,6 +104,13 @@ class CustomGraphWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Cell ID.
+     *
+     * @var integer
+     */
+    protected $cellId;
+
 
     /**
      * Construct.
@@ -141,8 +148,11 @@ class CustomGraphWidget extends Widget
         // Grid Width.
         $this->gridWidth = $gridWidth;
 
+        // Cell Id.
+        $this->cellId = $cellId;
+
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -170,6 +180,43 @@ class CustomGraphWidget extends Widget
             $this->configurationRequired = true;
         }
 
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['id_graph']) === true) {
+            $values['id_graph'] = $decoder['id_graph'];
+        }
+
+        if (isset($decoder['stacked']) === true) {
+            $values['type'] = $decoder['stacked'];
+        }
+
+        if (isset($decoder['type']) === true) {
+            $values['type'] = $decoder['type'];
+        }
+
+        if (isset($decoder['period']) === true) {
+            $values['period'] = $decoder['period'];
+        }
+
+        if (isset($decoder['showLegend']) === true) {
+            $values['showLegend'] = $decoder['showLegend'];
+        }
+
+        return $values;
     }
 
 

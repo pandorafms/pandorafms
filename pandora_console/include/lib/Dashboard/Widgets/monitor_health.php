@@ -142,7 +142,7 @@ class MonitorHealthWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -164,11 +164,25 @@ class MonitorHealthWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (isset($this->values['title']) === false) {
-            $this->configurationRequired = true;
-        }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        return $values;
     }
 
 
@@ -234,8 +248,11 @@ class MonitorHealthWidget extends Widget
         $data['mW'] = (int) $all_data['_monitors_warning_'];
         $data['mC'] = (int) $all_data['_monitors_critical_'];
         $data['mNN'] = (int) $all_data['_monitor_not_normal_'];
+        $data['monitor_not_normal'] = (int) $all_data['_monitor_not_normal_'];
+        $data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
         $data['monitor_alerts'] = (int) $all_data['_monitors_alerts_'];
         $data['mAFired'] = (int) $all_data['_monitors_alerts_fired_'];
+        $data['monitor_alerts_fired'] = (int) $all_data['_monitors_alerts_fired_'];
 
         $data['total_agents'] = (int) $all_data['_total_agents_'];
 

@@ -155,7 +155,7 @@ class TreeViewWidget extends Widget
         $this->cellId = $cellId;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -177,11 +177,133 @@ class TreeViewWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (isset($this->values['groupId']) === false) {
-            $this->configurationRequired = true;
-        }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['tab']) === true) {
+            $values['typeTree'] = $decoder['tab'];
+        }
+
+        if (isset($decoder['typeTree']) === true) {
+            $values['typeTree'] = $decoder['typeTree'];
+        }
+
+        if (isset($decoder['search_group']) === true) {
+            $values['groupId'] = $decoder['search_group'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        if (isset($decoder['open_all_nodes']) === true) {
+            $values['openAllGroups'] = $decoder['open_all_nodes'];
+        }
+
+        if (isset($decoder['openAllGroups']) === true) {
+            $values['openAllGroups'] = $decoder['openAllGroups'];
+        }
+
+        if (isset($decoder['status_agent']) === true) {
+            switch ((int) $decoder['status_agent']) {
+                case 0:
+                    $values['agentStatus'] = AGENT_STATUS_NORMAL;
+                break;
+
+                case 1:
+                    $values['agentStatus'] = AGENT_STATUS_CRITICAL;
+                break;
+
+                case 2:
+                    $values['agentStatus'] = AGENT_STATUS_WARNING;
+                break;
+
+                case 3:
+                    $values['agentStatus'] = AGENT_STATUS_UNKNOWN;
+                break;
+
+                case 5:
+                    $values['agentStatus'] = AGENT_STATUS_NOT_INIT;
+                break;
+
+                default:
+                case -1:
+                    $values['agentStatus'] = AGENT_STATUS_ALL;
+                break;
+            }
+        }
+
+        if (isset($decoder['agentStatus']) === true) {
+            $values['agentStatus'] = $decoder['agentStatus'];
+        }
+
+        if (isset($decoder['search_agent']) === true) {
+            $values['filterAgent'] = $decoder['search_agent'];
+        }
+
+        if (isset($decoder['filterAgent']) === true) {
+            $values['filterAgent'] = $decoder['filterAgent'];
+        }
+
+        if (isset($decoder['status_module']) === true) {
+            switch ((int) $decoder['status_module']) {
+                case 0:
+                    $values['moduleStatus'] = AGENT_MODULE_STATUS_NORMAL;
+                break;
+
+                case 1:
+                    $values['moduleStatus'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+                break;
+
+                case 2:
+                    $values['moduleStatus'] = AGENT_MODULE_STATUS_WARNING;
+                break;
+
+                case 3:
+                    $values['moduleStatus'] = AGENT_MODULE_STATUS_UNKNOWN;
+                break;
+
+                case 5:
+                    $values['moduleStatus'] = AGENT_MODULE_STATUS_NOT_INIT;
+                break;
+
+                default:
+                case -1:
+                    $values['moduleStatus'] = -1;
+                break;
+            }
+
+            $values['moduleStatus'] = $decoder['status_module'];
+        }
+
+        if (isset($decoder['moduleStatus']) === true) {
+            $values['moduleStatus'] = $decoder['moduleStatus'];
+        }
+
+        if (isset($decoder['search_module']) === true) {
+            $values['filterModule'] = $decoder['search_module'];
+        }
+
+        if (isset($decoder['filterModule']) === true) {
+            $values['filterModule'] = $decoder['filterModule'];
+        }
+
+        return $values;
     }
 
 

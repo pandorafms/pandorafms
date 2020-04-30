@@ -111,6 +111,16 @@ echo "<div style='width:100%'>".html_print_button(
     var first_time = true;
     
     $(document).ready(function() {
+        confirmDialog({
+            title: "Attention",
+            message:
+              "<h4 style='text-align: center;'>This feature will be removed from the console in the next version of Pandora FMS.<br><br> If you want to keep the history, make a backup.</h4>",
+            cancel: "Cancel",
+            ok: "Ok",
+            onAccept: function() {
+                // Nothing to do.
+            }
+          });
         $("input[name=\"message_box\"]").keydown(function(e) {
             //Enter key.
             if (e.keyCode == 13) {

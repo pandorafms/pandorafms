@@ -1364,7 +1364,7 @@ sub prepare_agent($$) {
   $self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
   # Already initialized.
-  return if (ref($self->{'agents_found'}->{$addr}) eq 'HASH');
+  return if ref($self->{'agents_found'}->{$addr}) eq 'HASH';
 
   my @addresses = $self->get_addresses($addr);
   $self->{'agents_found'}->{$addr} = {
@@ -1413,7 +1413,8 @@ sub add_module($$$) {
 
   return unless is_enabled($rs);
 
-  $self->{'agents_found'}->{$agent}->{'modules'}->{$data->{'name'}} = $data;
+  $self->{'agents_found'}->{$agent}->{'modules'}{$data->{'name'}} = $data;
+  
 }
 
 ################################################################################
@@ -1435,7 +1436,7 @@ sub test_capabilities($$) {
     $self->wmi_discovery($addr);
   }
 
-  # WMI discovery.
+  # RCMD discovery.
   if (is_enabled($self->{'rcmd_enabled'})) {
     # Add wmi scan if enabled.
     $self->rcmd_discovery($addr);

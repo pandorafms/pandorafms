@@ -1549,6 +1549,11 @@ sub scan_subnet($) {
       # Populate.
       $self->call('update_progress', ceil($progress));
 
+      # Filter by port (if enabled).
+      if (!is_empty($self->{'recon_ports'})) {
+        next unless $self->call("tcp_scan", $addr) > 0;
+      }
+
       # Enable/ disable capabilities.
       $self->test_capabilities($addr);
     }

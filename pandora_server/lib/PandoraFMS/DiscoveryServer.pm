@@ -105,7 +105,7 @@ sub new ($$$$$$) {
        get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
   # Reset (but do not restart) manual recon tasks.
-  db_do ($dbh, 'UPDATE trecon_task  SET status = -1 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
+  db_do ($dbh, 'UPDATE trecon_task  SET status = -1, summary = "cancelled" WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
        get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
   # Call the constructor of the parent class
@@ -247,6 +247,13 @@ sub data_consumer ($$) {
         $task->{'username'} = $key->{'username'};
         $task->{'password'} = $key->{'password'};
 
+      }
+    }
+
+    if (!is_empty($task->{'recon_ports'})) {
+      # Accept only valid symbols.
+      if ($task->{'recon_ports'} !~ /[\d\-\,\ ]+/) {
+        $task->{'recon_ports'} = '';
       }
     }
 
@@ -448,6 +455,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 ################################################################################
 sub PandoraFMS::Recon::Base::tcp_scan ($$) {
   my ($self, $host) = @_;
+
+  return if is_empty($host);
+  return if is_empty($self->{'recon_ports'});
 
   my $r = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host`;
 

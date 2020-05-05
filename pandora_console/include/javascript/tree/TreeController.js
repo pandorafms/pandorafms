@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -20,7 +22,7 @@ var TreeController = {
       recipient: "",
       tree: [],
       emptyMessage: "No data found.",
-      foundMessage: "Found groups",
+      foundMessage: "Groups found",
       errorMessage: "Error",
       baseURL: "",
       ajaxURL: "ajax.php",
@@ -48,9 +50,15 @@ var TreeController = {
               .addClass("tree-root")
               .hide()
               .prepend(
-                '<img src="' +
+                '<div class="tree-node flex-row-vcenter">' +
+                  '<img src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                  'images/pandora.png" />'
+                  'images/pandora.png" />' +
+                  "<span class='margin-left-1'>" +
+                  (controller.tree.length > 0
+                    ? controller.foundMessage + ": " + controller.tree.length
+                    : "") +
+                  "</div>"
               );
           }
           // Normal group
@@ -315,7 +323,7 @@ var TreeController = {
                 _processNodeCounterTitle($totalCounter, type, "total");
 
                 // Open the parentheses
-                $counters.append(" (");
+                $counters.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ ");
 
                 $counters.append($totalCounter);
 
@@ -409,7 +417,7 @@ var TreeController = {
               }
 
               // Close the parentheses
-              $counters.append(")");
+              $counters.append(" ]");
 
               hasCounters = true;
             }
@@ -1086,20 +1094,6 @@ var TreeController = {
         }
 
         controller.recipient.empty();
-        if (
-          controller.tree.length !== undefined &&
-          controller.foundMessage !== "not"
-        ) {
-          controller.recipient.html(
-            "<div> " +
-              controller.foundMessage +
-              ": " +
-              controller.tree.length +
-              "</div>" +
-              "<br/>"
-          );
-        }
-
         var $children = _processGroup(this.recipient, this.tree, true);
         $children.show();
 

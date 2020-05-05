@@ -4,7 +4,7 @@
 }
 
 .tree-group {
-  margin-left: 19px;
+  margin-left: 24px;
   padding-top: 1px;
 }
 
@@ -18,12 +18,24 @@
   min-height: 26px;
 }
 
+div.tree-node {
+  background: 0 0;
+}
+
+div.tree-node span {
+  font-size: 1.2em;
+}
+
 .tree-node:last-child {
   background: 0 0;
 }
 .node-content {
   height: 26px;
   font-size: 1.2em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .node-content > img {
@@ -121,6 +133,7 @@
 }
 
 .tree-node > .node-content > .tree-node-counters {
+  font-size: 1em;
 }
 
 .tree-node > .node-content > img {

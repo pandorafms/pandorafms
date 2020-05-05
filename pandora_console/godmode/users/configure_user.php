@@ -16,7 +16,7 @@ global $config;
 
 check_login();
 
-require 'vendor/autoload.php';
+require_once $config['homedir'].'/vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
 

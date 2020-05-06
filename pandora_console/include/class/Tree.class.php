@@ -557,7 +557,7 @@ class Tree
         $module['id_module_type'] = (int) $module['id_tipo_modulo'];
         $module['server_type'] = (int) $module['id_modulo'];
         $module['status'] = $module['estado'];
-        $module['value'] = $module['datos'];
+        $module['value'] = modules_get_agentmodule_data_for_humans($module);
 
         if (is_metaconsole()) {
             $module['serverID'] = $this->serverID;
@@ -738,11 +738,9 @@ class Tree
             $agent['counters']['warning'],
             $agent['counters']['unknown'],
             $agent['counters']['total'],
-            $agent['counters']['not_init']
+            $agent['counters']['not_init'],
+            $agent['counters']['alerts']
         );
-
-        // Alerts fired image
-        $agent['alertImageHTML'] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
 
         // search module recalculate counters
         if (array_key_exists('state_normal', $agent)) {

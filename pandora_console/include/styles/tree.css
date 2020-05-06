@@ -118,6 +118,30 @@ div.tree-node span {
   padding-right: 3px;
 }
 
+.tree-node > .node-content > .agent-status.status_balls,
+.tree-node > .node-content > .status_small_balls {
+  width: 0.6em;
+  height: 1.5em;
+  margin-bottom: -0.4em;
+  border-radius: 0;
+}
+.tree-node > .node-content > .module-status.status_small_balls {
+  width: 0.4em;
+}
+
+.tree-node > .node-content > .module-name {
+  margin: 0 1em;
+  width: 420px;
+  display: inline-block;
+}
+
+.tree-node > .node-content > .module-value {
+  width: 120px;
+  display: inline-block;
+  text-align: right;
+  margin: 0 1em;
+}
+
 .tree-node > .node-content > img.module-server-type,
 .tree-node > .node-content > img.agent-status,
 .tree-node > .node-content > img.agent-alerts-fired,
@@ -133,7 +157,7 @@ div.tree-node span {
 }
 
 .tree-node > .node-content > .tree-node-counters {
-  font-size: 1em;
+  font-size: 1.2em;
 }
 
 .tree-node > .node-content > img {
@@ -142,7 +166,7 @@ div.tree-node span {
 
 .tree-node > .node-content > .tree-node-counters > .tree-node-counter {
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 0.9em;
   cursor: default;
 }
 

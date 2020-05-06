@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -549,6 +547,7 @@ var TreeController = {
               break;
             case "agent":
               // Is quiet
+
               if (
                 typeof element.quietImageHTML != "undefined" &&
                 element.quietImageHTML.length > 0
@@ -567,16 +566,6 @@ var TreeController = {
                 $statusImage.addClass("agent-status");
 
                 $content.append($statusImage);
-              }
-              // Alerts fired image
-              if (
-                typeof element.alertImageHTML != "undefined" &&
-                element.alertImageHTML.length > 0
-              ) {
-                var $alertImage = $(element.alertImageHTML);
-                $alertImage.addClass("agent-alerts-fired");
-
-                $content.append($alertImage);
               }
 
               // Events by agent
@@ -698,6 +687,8 @@ var TreeController = {
               $content.append(" " + element.name);
               break;
             case "module":
+              $content.addClass("module");
+
               // Status image
               if (
                 typeof element.statusImageHTML != "undefined" &&
@@ -708,17 +699,19 @@ var TreeController = {
 
                 $content.append($statusImage);
               }
-              // Server type
-              if (
-                typeof element.serverTypeHTML != "undefined" &&
-                element.serverTypeHTML.length > 0 &&
-                element.serverTypeHTML != "--"
-              ) {
-                var $serverTypeImage = $(element.serverTypeHTML);
-                $serverTypeImage.addClass("module-server-type");
 
-                $content.append($serverTypeImage);
-              }
+              // Name max 42 chars.
+              $content.append(
+                '<span class="module-name">' +
+                  element.name.substring(0, 42) +
+                  (element.name.length > 42 ? "..." : "") +
+                  "</span>"
+              );
+
+              // Value.
+              $content.append(
+                '<span class="module-value">' + element.value + "</span>"
+              );
 
               if (
                 typeof element.showGraphs != "undefined" &&
@@ -840,7 +833,6 @@ var TreeController = {
                 $content.append($alertsImage);
               }
 
-              $content.append(element.name);
               break;
             case "os":
               if (

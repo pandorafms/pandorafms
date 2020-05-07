@@ -130,8 +130,8 @@ div.tree-node span {
 }
 
 .tree-node > .node-content > .module-name {
-  margin: 0 1em;
-  width: 420px;
+  margin: 0 0 0 1em;
+  width: 250px;
   display: inline-block;
 }
 

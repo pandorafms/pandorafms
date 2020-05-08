@@ -2642,12 +2642,28 @@ function agents_tree_view_status_img($critical, $warning, $unknown, $total, $not
 
 
 // Returns the status ball image to display tree view
-function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total, $notinit)
+function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total, $notinit, $alerts)
 {
     if ($total == 0 || $total == $notinit) {
         return ui_print_status_image(
             STATUS_AGENT_NO_MONITORS_BALL,
             __('No Monitors'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
+            true
+        );
+    }
+
+    if ($alerts > 0) {
+        return ui_print_status_image(
+            STATUS_ALERT_FIRED_BALL,
+            __('Alert fired on agent'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     }
@@ -2656,24 +2672,40 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
         return ui_print_status_image(
             STATUS_AGENT_CRITICAL_BALL,
             __('At least one module in CRITICAL status'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     } else if ($warning > 0) {
         return ui_print_status_image(
             STATUS_AGENT_WARNING_BALL,
             __('At least one module in WARNING status'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     } else if ($unknown > 0) {
         return ui_print_status_image(
             STATUS_AGENT_DOWN_BALL,
             __('At least one module is in UKNOWN status'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     } else {
         return ui_print_status_image(
             STATUS_AGENT_OK_BALL,
             __('All Monitors OK'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     }

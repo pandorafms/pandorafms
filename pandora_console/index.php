@@ -1002,58 +1002,7 @@ if ($process_login) {
         }
     }
 
-    // Set the initial global counter for chat.
-    users_get_last_global_counter('session');
-
     $config['logged'] = true;
-}
-
-// ----------------------------------------------------------------------
-// Get old parameters before navigation.
-$old_sec = '';
-$old_sec2 = '';
-$old_page = '';
-if (isset($_SERVER['HTTP_REFERER'])) {
-    $old_page = $_SERVER['HTTP_REFERER'];
-}
-
-$chunks = explode('?', $old_page);
-if (count($chunks) == 2) {
-    $chunks = explode('&', $chunks[1]);
-
-    foreach ($chunks as $chunk) {
-        if (strstr($chunk, 'sec=') !== false) {
-            $old_sec = str_replace('sec=', '', $chunk);
-        }
-
-        if (strstr($chunk, 'sec2=') !== false) {
-            $old_sec = str_replace('sec2=', '', $chunk);
-        }
-    }
-}
-
-$_SESSION['new_chat'] = false;
-if ($old_sec2 == 'operation/users/webchat') {
-    users_get_last_global_counter('session');
-}
-
-if ($page == 'operation/users/webchat') {
-    // Reload the global counter.
-    users_get_last_global_counter('session');
-}
-
-if (isset($_SESSION['global_counter_chat'])) {
-    $old_global_counter_chat = $_SESSION['global_counter_chat'];
-} else {
-    $old_global_counter_chat = users_get_last_global_counter('return');
-}
-
-$now_global_counter_chat = users_get_last_global_counter('return');
-
-if ($old_global_counter_chat != $now_global_counter_chat) {
-    if (!users_is_last_system_message()) {
-        $_SESSION['new_chat'] = true;
-    }
 }
 
 require_once 'general/register.php';

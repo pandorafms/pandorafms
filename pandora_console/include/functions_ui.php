@@ -1908,8 +1908,6 @@ function ui_process_page_head($string, $bitfield)
     );
     // Load base64 javascript library.
     $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
-    // Load webchat javascript library.
-    $config['js']['webchat'] = 'include/javascript/webchat.js';
     // Load qrcode library.
     $config['js']['qrcode'] = 'include/javascript/qrcode.js';
     // Load intro.js library (for bubbles and clippy).

@@ -482,12 +482,6 @@ $sub['operation/users/user_edit_notifications']['text'] = __('Configure user not
 $sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
-// ANY user can chat with other user and dogs.
-// Users.
-$sub['operation/users/webchat']['text'] = __('WebChat');
-$sub['operation/users/webchat']['id'] = 'WebChat';
-$sub['operation/users/webchat']['refr'] = 0;
-
 
 // Incidents.
 if (check_acl($config['id_user'], 0, 'IR')

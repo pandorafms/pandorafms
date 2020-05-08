@@ -530,15 +530,34 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    function print_toast(title, subtitle, severity, url, id, onclick) {
+    function closeToast(event) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
+        var div_id = document.getElementById(match.input);
+        $(div_id).attr("hidden",true);
+    }
+
+    function print_toast(title, subtitle, severity, url, id, onclick, closeToast) {
         // TODO severity.
         severity = '';
-
         // Start the toast.
+
+        var parent_div = document.createElement('div');
+
+        // Print close image
+        var img = document.createElement('img');
+        img.setAttribute('id', id);
+        img.setAttribute("src", './images/close_button_dialog.png');
+        img.setAttribute('onclick', closeToast);
+        img.setAttribute('style', 'margin-left: 95%;');
+        parent_div.appendChild(img);
+
+        // Print a element
         var toast = document.createElement('a');
-        toast.setAttribute('onclick', onclick);
-        toast.setAttribute('href', url);
         toast.setAttribute('target', '_blank');
+        toast.setAttribute('href', url);
+        toast.setAttribute('onclick', onclick);
+
+        var link_div = document.createElement('div');
 
         // Fill toast.
         var toast_div = document.createElement('div');
@@ -548,9 +567,13 @@ if ($config['menu_type'] == 'classic') {
         var toast_text = document.createElement('p');
         toast_title.innerHTML = title;
         toast_text.innerHTML = subtitle;
-        toast_div.appendChild(toast_title);
+
+        // Append Elements
+        toast_div.appendChild(img);
+        link_div.appendChild(toast_title);
+        toast.appendChild(link_div);
+        toast_div.appendChild(toast);
         toast_div.appendChild(toast_text);
-        toast.appendChild(toast_div);
 
         // Show and program the hide event.
         toast_div.className = toast_div.className + ' show';
@@ -558,9 +581,11 @@ if ($config['menu_type'] == 'classic') {
             toast_div.className = toast_div.className.replace("show", "");
         }, 8000);
 
-        return toast;
-    }
+        toast_div.appendChild(parent_div);
 
+        return toast_div;
+    }
+  
     function check_new_notifications() {
         var last_id = document.getElementById('notification-ball-header')
             .getAttribute('last_id');
@@ -617,9 +642,11 @@ if ($config['menu_type'] == 'classic') {
                                 ele.criticity,
                                 ele.full_url,
                                 'notification-toast-id-' + ele.id_mensaje,
-                                'click_on_notification_toast(event)'
+                                'click_on_notification_toast(event)',
+                                'closeToast(event)'
                             )
                         );
+                        
                     });
                 }
             },

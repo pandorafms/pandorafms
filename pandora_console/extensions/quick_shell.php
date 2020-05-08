@@ -188,9 +188,10 @@ function quickShell()
     } else if ($method == 'telnet') {
         // Telnet.
         $port = $config['gotty_telnet_port'];
+        $username = preg_replace('/[^a-zA-Z0-9\-\.]/', '', $username);
         $command_arguments = "var args = '?arg=-l ".$username;
         $command_arguments .= '&arg='.$address;
-        $command_arguments .= '&arg='.$method_port."';";
+        $command_arguments .= '&arg='.$method_port."&arg=-E';";
     } else {
         ui_print_error_message(__('Please use SSH or Telnet.'));
         return;

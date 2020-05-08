@@ -103,6 +103,7 @@ $(document).ready(function() {
       url:
         "https://pandorafms.com/library/wp-json/wp/v2/categories?per_page=100",
       type: "GET",
+      cache: false,
       crossDomain: true,
       contentType: "application/json",
       success: function(data) {
@@ -136,6 +137,7 @@ $(document).ready(function() {
       url:
         api_url + search_modules + "&orderby=modified&per_page=9&page=" + page,
       type: "GET",
+      cache: false,
       crossDomain: true,
       contentType: "application/json",
       beforeSend: function(xhr) {
@@ -238,6 +240,7 @@ function library_main() {
   $.ajax({
     url: "https://pandorafms.com/library/wp-json/wp/v2/pages/121",
     type: "GET",
+    cache: false,
     crossDomain: true,
     contentType: "application/json",
     beforeSend: function(xhr) {
@@ -313,6 +316,7 @@ function get_category(id) {
   $.ajax({
     url: "https://pandorafms.com/library/wp-json/wp/v2/categories/" + id,
     type: "GET",
+    cache: false,
     contentType: "application/json",
     success: function(response) {
       $("#category_title_result h2").append(

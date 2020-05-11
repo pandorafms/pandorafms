@@ -289,23 +289,23 @@ my $Master :shared = 0;
 # Return the agent given the agent name or alias or address.
 ##########################################################################
 sub locate_agent {
-	my ($pa_config, $dbh, $field) = @_;
+	my ($pa_config, $dbh, $field, $relative) = @_;
 
 	if (is_metaconsole($pa_config)) {
 		# Locate agent first in tmetaconsole_agent
 		return undef if (! defined ($field) || $field eq '');
 
-		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field]);
+		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field]);
+		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-		$rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field]);
+		$rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
 	} else {
-		return get_agent($dbh, $field);
+		return get_agent($dbh, $field, $relative);
 	}
 
 	return undef;
@@ -316,17 +316,17 @@ sub locate_agent {
 # Return the agent given the agent name or alias or address.
 ##########################################################################
 sub get_agent {
-    my ($dbh, $field) = @_;
+    my ($dbh, $field, $relative) = @_;
 
     return undef if (! defined ($field) || $field eq '');
 
-    my $rs = get_agent_from_alias($dbh, $field);
+    my $rs = get_agent_from_alias($dbh, $field, $relative);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     $rs = get_agent_from_addr($dbh, $field);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-    $rs = get_agent_from_name($dbh, $field);
+    $rs = get_agent_from_name($dbh, $field, $relative);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     return undef;
@@ -335,10 +335,13 @@ sub get_agent {
 ##########################################################################
 # Return the agent given the agent name.
 ##########################################################################
-sub get_agent_from_alias ($$) {
-	my ($dbh, $alias) = @_;
+sub get_agent_from_alias ($$;$) {
+	my ($dbh, $alias, $relative) = @_;
 	
 	return undef if (! defined ($alias) || $alias eq '');
+	if ($relative) {
+		return get_db_single_row($dbh, 'SELECT * FROM tagente WHERE tagente.alias like ?', safe_input($alias));
+	}
 	
 	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.alias = ?', safe_input($alias));
 }
@@ -361,10 +364,14 @@ sub get_agent_from_addr ($$) {
 ##########################################################################
 # Return the agent given the agent name.
 ##########################################################################
-sub get_agent_from_name ($$) {
-	my ($dbh, $name) = @_;
+sub get_agent_from_name ($$;$) {
+	my ($dbh, $name, $relative) = @_;
 	
 	return undef if (! defined ($name) || $name eq '');
+
+	if ($relative) {
+		return get_db_single_row($dbh, 'SELECT * FROM tagente WHERE tagente.nombre like ?', safe_input($name));
+	}
 	
 	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', safe_input($name));
 }

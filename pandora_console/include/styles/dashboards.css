@@ -477,14 +477,14 @@ div#main_pure {
   margin-top: 30px;
 }
 
-.info_box {
+.content-widget .info_box {
   border-radius: 5px;
   width: 90%;
 }
-.info_box tbody tr td {
+.content-widget .info_box tbody tr td {
   padding: 10px;
 }
-.info_box tbody tr td.icon {
+.content-widget .info_box tbody tr td.icon {
   padding-right: 10px !important;
 }
 

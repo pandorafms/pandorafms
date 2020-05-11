@@ -339,10 +339,8 @@ table.widget_maps_status tr td:first-child {
 table.widget_maps_status tr td a {
   font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
-  font-size: 11pt;
+  font-size: 9pt;
   text-decoration: none;
-  color: #3f3f3f;
-  font-weight: bolder;
 }
 
 table.widget_maps_status tr td img {
@@ -488,4 +486,8 @@ div#main_pure {
 }
 .info_box tbody tr td.icon {
   padding-right: 10px !important;
+}
+
+.content-widget .databox.filters > tbody > tr > td {
+  padding-right: 30px;
 }

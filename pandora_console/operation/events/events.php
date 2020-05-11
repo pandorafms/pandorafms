@@ -328,6 +328,8 @@ if (is_ajax()) {
                 $data = array_reduce(
                     $events,
                     function ($carry, $item) {
+                        global $config;
+
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
                         if (is_metaconsole()) {
@@ -360,7 +362,10 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric($tmp->data, 1);
+                        $tmp->data = format_numeric(
+                            $tmp->data,
+                            $config['graph_precision']
+                        );
 
                         $tmp->instructions = events_get_instructions($item);
 
@@ -1760,6 +1765,9 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
+    if(item.meta === true) {
+        evn += '<input id="hidden-server_id_'+item.id_evento+'" type="hidden" value="'+item.server_id+'">';
+    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;

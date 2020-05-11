@@ -106,6 +106,13 @@ class GraphModuleHistogramWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Cell ID.
+     *
+     * @var integer
+     */
+    protected $cellId;
+
 
     /**
      * Construct.
@@ -148,8 +155,11 @@ class GraphModuleHistogramWidget extends Widget
         // Grid Width.
         $this->gridWidth = $gridWidth;
 
+        // Cell Id.
+        $this->cellId = $cellId;
+
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -176,6 +186,63 @@ class GraphModuleHistogramWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['label_'.$this->cellId]) === true) {
+            $values['label'] = $decoder['label_'.$this->cellId];
+        }
+
+        if (isset($decoder['label']) === true) {
+            $values['label'] = $decoder['label'];
+        }
+
+        if (isset($decoder['id_agent_'.$this->cellId]) === true) {
+            $values['agentId'] = $decoder['id_agent_'.$this->cellId];
+        }
+
+        if (isset($decoder['agentId']) === true) {
+            $values['agentId'] = $decoder['agentId'];
+        }
+
+        if (isset($decoder['metaconsoleId']) === true) {
+            $values['metaconsoleId'] = $decoder['metaconsoleId'];
+        }
+
+        if (isset($decoder['id_module_'.$this->cellId]) === true) {
+            $values['moduleId'] = $decoder['id_module_'.$this->cellId];
+        }
+
+        if (isset($decoder['moduleId']) === true) {
+            $values['moduleId'] = $decoder['moduleId'];
+        }
+
+        if (isset($decoder['size_label_'.$this->cellId]) === true) {
+            $values['sizeLabel'] = $decoder['size_label_'.$this->cellId];
+        }
+
+        if (isset($decoder['sizeLabel']) === true) {
+            $values['sizeLabel'] = $decoder['sizeLabel'];
+        }
+
+        if (isset($decoder['period']) === true) {
+            $values['period'] = $decoder['period'];
+        }
+
+        return $values;
     }
 
 
@@ -309,12 +376,6 @@ class GraphModuleHistogramWidget extends Widget
         $size = parent::getSize();
 
         // Desactive scroll bars only this item.
-        $output .= '<style type="text/css">
-        .grid-stack-item .grid-stack-item-content .content-widget {
-            overflow-x: hidden;
-            overflow-y: hidden;
-          }
-        </style>';
         $id_agent = $this->values['agentId'];
         $id_module = $this->values['moduleId'];
         $period = $this->values['period'];

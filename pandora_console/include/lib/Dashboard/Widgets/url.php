@@ -142,7 +142,7 @@ class UrlWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -169,6 +169,31 @@ class UrlWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['url']) === true) {
+            $values['urlText'] = $decoder['url'];
+        }
+
+        if (isset($decoder['urlText']) === true) {
+            $values['urlText'] = $decoder['urlText'];
+        }
+
+        return $values;
     }
 
 

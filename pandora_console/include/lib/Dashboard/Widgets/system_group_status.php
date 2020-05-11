@@ -142,7 +142,7 @@ class SystemGroupStatusWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -164,11 +164,77 @@ class SystemGroupStatusWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (empty($this->values['groupId']) === true) {
-            $this->configurationRequired = true;
-        }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['status']) === true) {
+            if (is_array($decoder['status']) === true) {
+                $compatibilityStatus = [];
+                foreach ($decoder['status'] as $key => $value) {
+                    switch ((int) $value) {
+                        case 2:
+                            $compatibilityStatus[] = AGENT_STATUS_WARNING;
+                        break;
+
+                        case 3:
+                            $compatibilityStatus[] = AGENT_STATUS_CRITICAL;
+                        break;
+
+                        case 4:
+                            $compatibilityStatus[] = 4;
+                        break;
+
+                        default:
+                        case 1:
+                            $compatibilityStatus[] = AGENT_STATUS_NORMAL;
+                        break;
+                    }
+                }
+
+                $decoder['status'][0] = implode(',', $compatibilityStatus);
+            }
+
+            $values['status'] = $decoder['status'];
+        } else {
+            $values['status'][0] = implode(
+                ',',
+                [
+                    AGENT_STATUS_NORMAL,
+                    AGENT_STATUS_WARNING,
+                    AGENT_STATUS_CRITICAL,
+                    4,
+                ]
+            );
+        }
+
+        if (isset($decoder['id_groups']) === true) {
+            if (is_array($decoder['id_groups']) === true) {
+                $decoder['id_groups'][0] = implode(',', $decoder['id_groups']);
+            }
+
+            $values['groupId'] = $decoder['id_groups'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        return $values;
     }
 
 
@@ -185,6 +251,19 @@ class SystemGroupStatusWidget extends Widget
 
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
+
+        // Default values.
+        if (isset($values['status']) === false) {
+            $values['status'][0] = implode(
+                ',',
+                [
+                    AGENT_STATUS_NORMAL,
+                    AGENT_STATUS_WARNING,
+                    AGENT_STATUS_CRITICAL,
+                    4,
+                ]
+            );
+        }
 
         // Restrict access to group.
         $inputs[] = [
@@ -439,7 +518,7 @@ class SystemGroupStatusWidget extends Widget
             }
         }
 
-        $height = (count($result_groups) * 30);
+        $height = (count($table->data) * 32);
         $style = 'min-width:200px; min-height:'.$height.'px;';
         $output = '<div class="container-center" style="'.$style.'">';
         if ($flag_groups === true) {

@@ -107,6 +107,13 @@ class ModuleTableValueWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Cell ID.
+     *
+     * @var integer
+     */
+    protected $cellId;
+
 
     /**
      * Construct.
@@ -148,8 +155,11 @@ class ModuleTableValueWidget extends Widget
         // Grid Width.
         $this->gridWidth = $gridWidth;
 
+        // Cell Id.
+        $this->cellId = $cellId;
+
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -176,6 +186,59 @@ class ModuleTableValueWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['id_agent_'.$this->cellId]) === true) {
+            $values['agentId'] = $decoder['id_agent_'.$this->cellId];
+        }
+
+        if (isset($decoder['agentId']) === true) {
+            $values['agentId'] = $decoder['agentId'];
+        }
+
+        if (isset($decoder['metaconsoleId']) === true) {
+            $values['metaconsoleId'] = $decoder['metaconsoleId'];
+        }
+
+        if (isset($decoder['id_module_'.$this->cellId]) === true) {
+            $values['moduleId'] = $decoder['id_module_'.$this->cellId];
+        }
+
+        if (isset($decoder['moduleId']) === true) {
+            $values['moduleId'] = $decoder['moduleId'];
+        }
+
+        if (isset($decoder['size_text_'.$this->cellId]) === true) {
+            $values['sizeLabel'] = $decoder['size_text_'.$this->cellId];
+        }
+
+        if (isset($decoder['sizeLabel']) === true) {
+            $values['sizeLabel'] = $decoder['sizeLabel'];
+        }
+
+        if (isset($decoder['separator_data_'.$this->cellId]) === true) {
+            $values['separator'] = $decoder['separator_data_'.$this->cellId];
+        }
+
+        if (isset($decoder['separator']) === true) {
+            $values['separator'] = $decoder['separator'];
+        }
+
+        return $values;
     }
 
 

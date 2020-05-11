@@ -147,7 +147,7 @@ class EventsListWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -174,6 +174,71 @@ class EventsListWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['type']) === true) {
+            $values['eventType'] = $decoder['type'];
+        }
+
+        if (isset($decoder['eventType']) === true) {
+            $values['eventType'] = $decoder['eventType'];
+        }
+
+        if (isset($decoder['event_view_hr']) === true) {
+            $values['maxHours'] = $decoder['event_view_hr'];
+        }
+
+        if (isset($decoder['maxHours']) === true) {
+            $values['maxHours'] = $decoder['maxHours'];
+        }
+
+        if (isset($decoder['limit']) === true) {
+            $values['limit'] = $decoder['limit'];
+        }
+
+        if (isset($decoder['status']) === true) {
+            $values['eventStatus'] = $decoder['status'];
+        }
+
+        if (isset($decoder['eventStatus']) === true) {
+            $values['eventStatus'] = $decoder['eventStatus'];
+        }
+
+        if (isset($decoder['severity']) === true) {
+            $values['severity'] = $decoder['severity'];
+        }
+
+        if (isset($decoder['id_groups']) === true) {
+            if (is_array($decoder['id_groups']) === true) {
+                $decoder['id_groups'][0] = implode(',', $decoder['id_groups']);
+            }
+
+            $values['groupId'] = $decoder['id_groups'];
+        }
+
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        if (isset($decoder['tagsId']) === true) {
+            $values['tagsId'] = $decoder['tagsId'];
+        }
+
+        return $values;
     }
 
 
@@ -416,8 +481,15 @@ class EventsListWidget extends Widget
         $filter['limit'] = $this->values['limit'];
         $filter['order'] = '`utimestamp` DESC';
 
-        if ((int) $this->values['severity'] !== -1) {
-            $filter['criticity'] = $this->values['severity'];
+        if (isset($this->values['severity']) === true) {
+            if ((int) $this->values['severity'] === 20) {
+                $filter['criticity'] = [
+                    EVENT_CRIT_WARNING,
+                    EVENT_CRIT_CRITICAL,
+                ];
+            } else if ((int) $this->values['severity'] !== -1) {
+                $filter['criticity'] = $this->values['severity'];
+            }
         }
 
         if (empty($this->values['tagsId']) === false) {

@@ -2382,7 +2382,7 @@ class ConsoleSupervisor
         global $config;
 
         $message = 'If AllowOverride is disabled, .htaccess will not works.';
-        $message .= '<pre>Please check /etc/httpd/conf/httpd.conf for keep this problems';
+        $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
 
         // Get content file.
         $file = file_get_contents('/etc/httpd/conf/httpd.conf');

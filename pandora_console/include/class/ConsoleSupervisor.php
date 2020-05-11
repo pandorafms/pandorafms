@@ -215,6 +215,12 @@ class ConsoleSupervisor
          */
         $this->checkConsoleServerVersions();
 
+        /*
+         * Check if AllowOverride is None or All.
+         *  NOTIF.ALLOWOVERIDE.MESSAGE
+         */
+        $this->checkAllowOverrideEnabled();
+
     }
 
 
@@ -440,6 +446,11 @@ class ConsoleSupervisor
          */
         $this->checkConsoleServerVersions();
 
+        /*
+         * Check if AllowOverride is None or All.
+         */
+        $this->checkAllowOverrideEnabled();
+
     }
 
 
@@ -606,6 +617,7 @@ class ConsoleSupervisor
             case 'NOTIF.UPDATEMANAGER.MINOR':
             case 'NOTIF.UPDATEMANAGER.MESSAGES':
             case 'NOTIF.CRON.CONFIGURED':
+            case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -2357,6 +2369,52 @@ class ConsoleSupervisor
         if ($missed == 0) {
             $this->cleanNotifications('NOTIF.SERVER.MISALIGNED');
         }
+    }
+
+
+    /**
+     * Check if AllowOveride is None or All.
+     *
+     * @return void
+     */
+    public function checkAllowOverrideEnabled()
+    {
+        global $config;
+
+        $message = 'If AllowOverride is disabled, .htaccess will not works.';
+        $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
+
+        // Get content file.
+        $file = file_get_contents('/etc/httpd/conf/httpd.conf');
+        $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
+        $is_none = false;
+
+        $i = 0;
+        foreach ($file_lines as $line) {
+            $i++;
+
+            // Check Line and content.
+            if (preg_match('/ AllowOverride/', $line) && $i === 311) {
+                $result = explode(' ', $line);
+                if ($result[5] == 'None') {
+                    $is_none = true;
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
+                            'title'   => __('AllowOverride is disabled'),
+                            'message' => __($message),
+                            'url'     => ui_get_full_url('index.php'),
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Cleanup notifications if AllowOverride is All.
+        if (!$is_none) {
+            $this->cleanNotifications('NOTIF.ALLOWOVERRIDE.MESSAGE');
+        }
+
     }
 
 

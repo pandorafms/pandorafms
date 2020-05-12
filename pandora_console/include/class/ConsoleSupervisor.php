@@ -752,25 +752,41 @@ class ConsoleSupervisor
 
         // Expiry.
         if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
+            if ($config['license_mode'] == 1) {
+                $title = __('License is about to expire');
+                $msg = 'Your license will expire in %d days. Please, contact our sales department.';
+            } else {
+                $title = __('Support is about to expire');
+                $msg = 'Your support license will expire in %d days. Please, contact our sales department.';
+            }
+
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('License is about to expire'),
+                    'title'   => $title,
                     'message' => __(
-                        'Your license will expire in %d days. Please, contact our sales department.',
+                        $msg,
                         $days_to_expiry
                     ),
                     'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
         } else if ($days_to_expiry < 0) {
+            if ($config['license_mode'] == 1) {
+                $title = __('Expired license');
+                $msg = __('Your license has expired. Please, contact our sales department.');
+            } else {
+                $title = __('Support expired');
+                $msg = __('This license is outside of support. Please, contact our sales department.');
+            }
+
             // Warn user, license has expired.
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('Expired license'),
-                    'message' => __('Your license has expired. Please, contact our sales department.'),
+                    'title'   => $title,
+                    'message' => $msg,
                     'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );

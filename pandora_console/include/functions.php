@@ -3947,7 +3947,7 @@ function get_copyright_notice()
 {
     $stored_name = enterprise_hook('enterprise_get_copyright_notice');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        return 'Ártica ST';
+        return 'PandoraFMS.com';
     }
 
     return $stored_name;

@@ -41,9 +41,11 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
     $downloadable_file = '';
     $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
     $parse_sec2_query = explode('=', $parse_all_queries[1]);
+    // If is metaconsole, the file manager has a route distinct than node.
+    $main_file_manager = (is_metaconsole() === true) ? 'advanced/metasetup' : 'godmode/setup/file_manager';
     if ($parse_sec2_query[0] === 'sec2') {
         switch ($parse_sec2_query[1]) {
-            case 'godmode/setup/file_manager':
+            case $main_file_manager:
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/'.$file;
             break;
 

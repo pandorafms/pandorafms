@@ -1181,8 +1181,16 @@ function add_agent_node(agents) {
             $("#agent_name").val("");
             $("#dialog_node_add").dialog("close");
 
+            const new_id =
+              Math.max.apply(
+                Math,
+                graph.nodes.map(function(o) {
+                  return o.id;
+                })
+              ) + 1;
+
             var temp_node = {};
-            temp_node["id"] = graph.nodes.length;
+            temp_node["id"] = new_id;
             temp_node["id_db"] = data["id_node"];
             temp_node["id_agent"] = data["id_agent"];
             temp_node["id_module"] = "";
@@ -2423,7 +2431,13 @@ function refresh_holding_area() {
           jQuery.each(holding_area.nodes, function(i, node) {
             var temp_node = {};
 
-            temp_node["id"] = graph.nodes.length;
+            temp_node["id"] =
+              Math.max.apply(
+                Math,
+                graph.nodes.map(function(o) {
+                  return o.id;
+                })
+              ) + 1;
             holding_area.nodes[i]["id"] = temp_node["id"];
 
             temp_node["id_db"] = node["id_db"];
@@ -2711,6 +2725,20 @@ function set_parent(parent_data) {
         url: "ajax.php",
         success: function(data) {
           if (data["correct"]) {
+            var child_index = -1;
+            var parent_index = -1;
+
+            // Get indexes of child and parent nodes.
+            $.each(graph.nodes, function(i, d) {
+              if (child_data.id == d.id) {
+                child_index = i;
+              }
+
+              if (parent_data.id == d.id) {
+                parent_index = i;
+              }
+            });
+
             //Add the relationship and paint
             item = {};
             item["arrow_start"] = "";
@@ -2723,11 +2751,11 @@ function set_parent(parent_data) {
             item["id_module_end"] = 0;
             item["id_db"] = data["id"];
             item["source_id_db"] = child_data.id_db;
-            item["target_id_db"] = parent_data.id;
-            item["id_agent_start"] = graph.nodes[child_data.id]["id_agent"];
-            item["id_agent_end"] = graph.nodes[parent_data.id]["id_agent"];
-            item["target"] = graph.nodes[parent_data.id];
-            item["source"] = graph.nodes[child_data.id];
+            item["target_id_db"] = parent_data.id_db;
+            item["id_agent_start"] = graph.nodes[child_index]["id_agent"];
+            item["id_agent_end"] = graph.nodes[parent_index]["id_agent"];
+            item["target"] = graph.nodes[parent_index];
+            item["source"] = graph.nodes[child_index];
 
             graph.links.push(item);
           }
@@ -2922,8 +2950,16 @@ function add_fictional_node() {
         if (data["correct"]) {
           $("#dialog_node_add").dialog("close");
 
+          const new_id =
+            Math.max.apply(
+              Math,
+              graph.nodes.map(function(o) {
+                return o.id;
+              })
+            ) + 1;
+
           var temp_node = {};
-          temp_node["id"] = graph.nodes.length;
+          temp_node["id"] = new_id;
           temp_node["id_db"] = data["id_node"];
           temp_node["id_agent"] = data["id_agent"];
           temp_node["id_module"] = 0;
@@ -2951,8 +2987,16 @@ function add_fictional_node() {
   } else {
     $("#dialog_node_add").dialog("close");
 
+    const new_id =
+      Math.max.apply(
+        Math,
+        graph.nodes.map(function(o) {
+          return o.id;
+        })
+      ) + 1;
+
     var temp_node = {};
-    temp_node["id"] = graph.nodes.length;
+    temp_node["id"] = new_id;
     temp_node["id_db"] = data["id_node"];
     temp_node["id_agent"] = data["id_agent"];
     temp_node["id_module"] = 0;

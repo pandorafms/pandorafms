@@ -41,8 +41,9 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
     $downloadable_file = '';
     $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
     $parse_sec2_query = explode('=', $parse_all_queries[1]);
-    // If is metaconsole, the file manager has a route distinct than node.
+    // Metaconsole have a route distinct than node.
     $main_file_manager = (is_metaconsole() === true) ? 'advanced/metasetup' : 'godmode/setup/file_manager';
+    $main_collections = (is_metaconsole() === true) ? 'advanced/collections' : 'enterprise/godmode/agentes/collections';
     if ($parse_sec2_query[0] === 'sec2') {
         switch ($parse_sec2_query[1]) {
             case $main_file_manager:
@@ -53,14 +54,8 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/files_repo/'.$file;
             break;
 
-            case 'enterprise/godmode/agentes/collections':
+            case $main_collections:
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/collection/'.$file;
-            break;
-
-            case 'advanced/collections':
-                if (is_metaconsole() === true) {
-                    $downloadable_file = '/'.$file;
-                }
             break;
 
             default:

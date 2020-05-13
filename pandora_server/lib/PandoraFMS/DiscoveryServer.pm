@@ -553,9 +553,12 @@ sub PandoraFMS::Recon::Base::test_module($$) {
 
     my $target_os;
     if ($test->{'custom_string_2'} =~ /inherited/i) {
-      $target_os = $self->{'os_cache'}{$test->{'ip_target'}};
+      $target_os = pandora_get_os(
+        $self->{'dbh'},
+        $self->{'os_cache'}{$test->{'ip_target'}}
+      );
     } else {
-      $target_os = $test->{'custom_string_2'};
+      $target_os = pandora_get_os($self->{'dbh'}, $test->{'custom_string_2'});
     }
 
     $value = enterprise_hook(
@@ -571,8 +574,8 @@ sub PandoraFMS::Recon::Base::test_module($$) {
         $target_os,
         # ip_target,
         $test->{'ip_target'},
-        # tcp_send
-        $test->{'tcp_send'}
+        # tcp_port
+        $test->{'tcp_port'}
       ]
     );
 

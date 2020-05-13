@@ -1502,6 +1502,8 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
 
   my @hosts = keys %{$self->{'agents_found'}};
 
+  my $progress = 80;
+
   if (scalar @hosts > 0) {
     $self->{'step'} = STEP_MONITORING;
     # From 80% to 90%.

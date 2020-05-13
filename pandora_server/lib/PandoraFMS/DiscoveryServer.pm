@@ -1502,28 +1502,31 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
 
   my @hosts = keys %{$self->{'agents_found'}};
 
-  $self->{'step'} = STEP_MONITORING;
-  # From 80% to 90%.
-  my ($progress, $step) = (80, 10.0 / scalar(@hosts));
-  my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
+  if (scalar @hosts > 0) {
+    $self->{'step'} = STEP_MONITORING;
+    # From 80% to 90%.
+    my ($progress, $step) = (80, 10.0 / scalar(@hosts));
+    my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
 
-  foreach my $label (keys %{$self->{'agents_found'}}) {
-    $self->{'c_network_percent'} = $partial;
-    $self->{'c_network_name'} = $label;
-    $self->call('update_progress', $progress);
-    $progress += $step;
-    $partial += $sub_step;
-    $self->call('message', "Checking modules for $label", 5);
+    foreach my $label (keys %{$self->{'agents_found'}}) {
+      $self->{'c_network_percent'} = $partial;
+      $self->{'c_network_name'} = $label;
+      $self->call('update_progress', $progress);
+      $progress += $step;
+      $partial += $sub_step;
+      $self->call('message', "Checking modules for $label", 5);
 
-    # Monitorization selected.
-    $self->call('create_network_profile_modules', $label);
+      # Monitorization selected.
+      $self->call('create_network_profile_modules', $label);
 
-    # Monitorization - interfaces
-    $self->call('create_interface_modules', $label);
+      # Monitorization - interfaces
+      $self->call('create_interface_modules', $label);
 
-    # Monitorization - WMI modules.
-    $self->call('create_wmi_modules', $label);
+      # Monitorization - WMI modules.
+      $self->call('create_wmi_modules', $label);
 
+    }
+    
   }
 
   $self->{'c_network_percent'} = 100;

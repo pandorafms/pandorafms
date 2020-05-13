@@ -2324,9 +2324,12 @@ sub rcmd_credentials_calculation {
     return undef;
   }
 
-  my $id_os = $self->call('guess_os', $target, 1);
+  my $os = $self->{'os_cache'}{$target};
+  $os = $self->call('guess_os', $target, 1) if is_empty($os);
   $rcmd->set_host($target);
-  $rcmd->set_os($id_os);
+  $rcmd->set_os($os);
+
+  $self->{'os_cache'}{$target} = $os;
 
   # Test all credentials selected.
   foreach my $key_index (@{$self->{'auth_strings_array'}}) {
@@ -2363,10 +2366,10 @@ sub rcmd_credentials_calculation {
       chomp($result);
       my $out = '';
       $out = $result if !is_empty($result);
-      $self->call('message', "Trying [".$key_index."] in [". $target."] [".$id_os."]: [$out]", 10);
+      $self->call('message', "Trying [".$key_index."] in [". $target."] [".$os."]: [$out]", 10);
     };
     if ($@) {
-      $self->call('message', "Failed while trying [".$key_index."] in [". $target."] [".$id_os."]:" . @_, 10);
+      $self->call('message', "Failed while trying [".$key_index."] in [". $target."] [".$os."]:" . @_, 10);
     }
 
     if (!is_empty($result) && $result == "1") {
@@ -2377,7 +2380,7 @@ sub rcmd_credentials_calculation {
       $self->call('message', "RCMD available for $target", 10);
       return 1;
     } else {
-      $self->call('message', "Last error ($target|$id_os|$result) was [".$rcmd->get_last_error()."]", 10);
+      $self->call('message', "Last error ($target|$os|$result) was [".$rcmd->get_last_error()."]", 10);
     }
 
   }

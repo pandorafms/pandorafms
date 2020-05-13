@@ -551,7 +551,12 @@ sub PandoraFMS::Recon::Base::test_module($$) {
     # Remote command.
     return 0 unless $self->rcmd_responds($addr);
 
-    my $target_os = pandora_get_os($self->{'dbh'}, $test->{'custom_string_2'});
+    my $target_os;
+    if ($test->{'custom_string_2'} =~ /inherited/i) {
+      $target_os = $self->{'os_cache'}{$test->{'ip_target'}};
+    } else {
+      $target_os = $test->{'custom_string_2'};
+    }
 
     $value = enterprise_hook(
       'remote_execution_module',
@@ -566,8 +571,8 @@ sub PandoraFMS::Recon::Base::test_module($$) {
         $target_os,
         # ip_target,
         $test->{'ip_target'},
-        # tcp_port
-        $test->{'tcp_port'}
+        # tcp_send
+        $test->{'tcp_send'}
       ]
     );
 

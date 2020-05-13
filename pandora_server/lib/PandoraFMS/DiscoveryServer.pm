@@ -409,8 +409,8 @@ sub exec_recon_script ($$$) {
 ################################################################################
 # Guess the OS using xprobe2 or nmap.
 ################################################################################
-sub PandoraFMS::Recon::Base::guess_os($$) {
-  my ($self, $device) = @_;
+sub PandoraFMS::Recon::Base::guess_os($$;$) {
+  my ($self, $device, $string_flag) = @_;
 
   return $self->{'os_id'}{$device} if defined($self->{'os_id'}{$device});
 
@@ -432,7 +432,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
     if ($? == 0) {
       if($return =~ /Running OS:(.*)/) {
-        return pandora_get_os($self->{'dbh'}, $1);
+        my $str_os = $1;
+        return $str_os if is_enabled($string_flag);
+        return pandora_get_os($self->{'dbh'}, $str_os);
       }
     }
   }
@@ -443,7 +445,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     return OS_OTHER if ($? != 0);
 
     if ($return =~ /Aggressive OS guesses:\s*(.*)/) {
-      return pandora_get_os($self->{'dbh'}, $1);
+      my $str_os = $1;
+      return $str_os if is_enabled($string_flag);
+      return pandora_get_os($self->{'dbh'}, $str_os);
     }
   }
 

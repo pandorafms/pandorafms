@@ -438,11 +438,11 @@ sub are_connected($$$$$) {
 sub icmp_discovery($$) {
   my ($self, $addr) = @_;
 
-	# Create an agent for the device and add it to the list of known hosts.
-	push(@{$self->{'hosts'}}, $addr);
+  # Create an agent for the device and add it to the list of known hosts.
+  push(@{$self->{'hosts'}}, $addr);
 
-	# Create an agent for the device and add it to the list of known hosts.
-	$self->add_agent($addr);
+  # Create an agent for the device and add it to the list of known hosts.
+  $self->add_agent($addr);
 
   $self->add_module($addr,
     {
@@ -1355,11 +1355,11 @@ sub prepare_agent($$) {
   my $main_address = $self->get_main_address($addr);
   return unless is_empty($main_address);
 
-	# Resolve hostnames.
-	my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($addr), AF_INET) : $addr);
+  # Resolve hostnames.
+  my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($addr), AF_INET) : $addr);
 
-	# Fallback to device IP if host name could not be resolved.
-	$host_name = $addr if (!defined($host_name) || $host_name eq '');
+  # Fallback to device IP if host name could not be resolved.
+  $host_name = $addr if (!defined($host_name) || $host_name eq '');
   
   $self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
@@ -1978,10 +1978,10 @@ sub scan($) {
     }
   }
 
-	# Apply monitoring templates
-	$self->call('message', "[5/6] Applying monitoring.", 3);
+  # Apply monitoring templates
+  $self->call('message', "[5/6] Applying monitoring.", 3);
   $self->{'step'} = STEP_MONITORING;
-	$self->call('apply_monitoring', $self);
+  $self->call('apply_monitoring', $self);
 
   # Print debug information on found devices.
   $self->call('message', "[Summary]", 3);
@@ -1999,8 +1999,8 @@ sub scan($) {
     $self->call('message', $dev_info, 3);
   }
 
-	# Apply monitoring templates
-	$self->call('message', "[6/6] Processing results.", 3);
+  # Apply monitoring templates
+  $self->call('message', "[6/6] Processing results.", 3);
   $self->{'step'} = STEP_PROCESSING;
   # Send agent information to Database (Discovery) or XML (satellite.).
   $self->call('report_scanned_agents');
@@ -2226,8 +2226,8 @@ sub wmi_credentials {
 # undef if it does not respond to WMI.
 ################################################################################
 sub wmi_credentials_key {
-	my ($self, $target) = @_;
-	return $self->{'wmi_auth_key'}{$target};
+  my ($self, $target) = @_;
+  return $self->{'wmi_auth_key'}{$target};
 }
 
 ################################################################################
@@ -2299,8 +2299,8 @@ sub rcmd_credentials {
 # undef if it does not respond to WMI.
 ################################################################################
 sub rcmd_credentials_key {
-	my ($self, $target) = @_;
-	return $self->{'rcmd_auth_key'}{$target};
+  my ($self, $target) = @_;
+  return $self->{'rcmd_auth_key'}{$target};
 }
 
 ################################################################################
@@ -2311,7 +2311,7 @@ sub rcmd_credentials_calculation {
   my ($self, $target) = @_;
 
   my $rcmd = PandoraFMS::Recon::Util::enterprise_new(
-	  'PandoraFMS::RemoteCmd',[{
+    'PandoraFMS::RemoteCmd',[{
       'psexec' => $self->{'parent'}->{'pa_config'}->{'psexec'},
       'winexe' => $self->{'parent'}->{'pa_config'}->{'winexe'},
       'plink' => $self->{'parent'}->{'pa_config'}->{'plink'}
@@ -2324,50 +2324,50 @@ sub rcmd_credentials_calculation {
     return undef;
   }
 
-  my $id_os = $self->call('guess_os', $target);
-	$rcmd->set_host($target);
-	$rcmd->set_os($id_os);
+  my $id_os = $self->call('guess_os', $target, 1);
+  $rcmd->set_host($target);
+  $rcmd->set_os($id_os);
 
   # Test all credentials selected.
   foreach my $key_index (@{$self->{'auth_strings_array'}}) {
     my $cred = $self->call('get_credentials', $key_index);
     next if ref($cred) ne 'HASH';
-		$rcmd->clean_ssh_lib();
+    $rcmd->clean_ssh_lib();
 
-		my $username;
-		my $domain;
+    my $username;
+    my $domain;
 
-		if($cred->{'username'} =~ /^(.*?)\\(.*)$/) {
-			$domain = $1;
-			$username = $2;
-		} else {
-			$username = $cred->{'username'};
-		}
+    if($cred->{'username'} =~ /^(.*?)\\(.*)$/) {
+      $domain = $1;
+      $username = $2;
+    } else {
+      $username = $cred->{'username'};
+    }
 
-		$rcmd->set_credentials(
-			{
-				'user' => $username,
-				'pass' => $cred->{'password'},
-				'domain' => $domain
-			}
-		);
+    $rcmd->set_credentials(
+      {
+        'user' => $username,
+        'pass' => $cred->{'password'},
+        'domain' => $domain
+      }
+    );
 
     $rcmd->set_timeout(
       $self->{'rcmd_timeout_bin'},
       $self->{'rcmd_timeout'}
     );
 
-		my $result;
-		eval {
-			$result = $rcmd->rcmd('echo 1');
+    my $result;
+    eval {
+      $result = $rcmd->rcmd('echo 1');
       chomp($result);
       my $out = '';
       $out = $result if !is_empty($result);
-			$self->call('message', "Trying [".$key_index."] in [". $target."] [".$id_os."]: [$out]", 10);
-		};
-		if ($@) {
-			$self->call('message', "Failed while trying [".$key_index."] in [". $target."] [".$id_os."]:" . @_, 10);
-		}
+      $self->call('message', "Trying [".$key_index."] in [". $target."] [".$id_os."]: [$out]", 10);
+    };
+    if ($@) {
+      $self->call('message', "Failed while trying [".$key_index."] in [". $target."] [".$id_os."]:" . @_, 10);
+    }
 
     if (!is_empty($result) && $result == "1") {
       $self->{'rcmd_auth'}{$target} = $cred;
@@ -2376,12 +2376,14 @@ sub rcmd_credentials_calculation {
       $self->{'summary'}->{'RCMD'} += 1;
       $self->call('message', "RCMD available for $target", 10);
       return 1;
+    } else {
+      $self->call('message', "Last error ($target|$id_os|$result) was [".$rcmd->get_last_error()."]", 10);
     }
 
-	}
+  }
 
-	# Not found.
-	return 0;
+  # Not found.
+  return 0;
 }
 
 ################################################################################
@@ -2402,13 +2404,13 @@ sub wmi_discovery {
 # Tests credentials against addr.
 ################################################################################
 sub rcmd_discovery {
-	my ($self, $addr) = @_;
+  my ($self, $addr) = @_;
 
-	# Initialization.
-	$self->{'rcmd'} = {} unless ref($self->{'rcmd'}) eq 'HASH';
+  # Initialization.
+  $self->{'rcmd'} = {} unless ref($self->{'rcmd'}) eq 'HASH';
 
-	# Calculate credentials.
-	$self->rcmd_credentials_calculation($addr);
+  # Calculate credentials.
+  $self->rcmd_credentials_calculation($addr);
 
 }
 
@@ -2496,18 +2498,18 @@ sub wmi_get_command {
 # Checks if target is reachable using wmi.
 ################################################################################
 sub wmi_responds {
-	my ($self, $target) = @_;
-	return 1 if is_enabled($self->{'wmi'}{$target});
-	return 0;
+  my ($self, $target) = @_;
+  return 1 if is_enabled($self->{'wmi'}{$target});
+  return 0;
 }
 
 ################################################################################
 # Checks if target is reachable using rcmd.
 ################################################################################
 sub rcmd_responds {
-	my ($self, $target) = @_;
-	return 1 if is_enabled($self->{'rcmd'}{$target});
-	return 0;
+  my ($self, $target) = @_;
+  return 1 if is_enabled($self->{'rcmd'}{$target});
+  return 0;
 }
 
 ################################################################################

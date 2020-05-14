@@ -57,8 +57,13 @@ class View
             extract($data);
         }
 
-        if (file_exists($config['homedir'].'/views/'.$page.'.php') === true) {
-            include $config['homedir'].'/views/'.$page.'.php';
+        $open = $config['homedir'].'/views/'.$page.'.php';
+        $ent = $config['homedir'].'/'.ENTERPRISE_DIR.'/views/'.$page.'.php';
+
+        if (file_exists($ent) === true) {
+            include $ent;
+        } else if (file_exists($open) === true) {
+            include $open;
         } else {
             ui_print_error_message(__('View %s not found', $page), true);
         }

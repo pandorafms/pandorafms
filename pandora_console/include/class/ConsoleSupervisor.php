@@ -215,6 +215,12 @@ class ConsoleSupervisor
          */
         $this->checkConsoleServerVersions();
 
+        /*
+         * Check if AllowOverride is None or All.
+         *  NOTIF.ALLOWOVERIDE.MESSAGE
+         */
+        $this->checkAllowOverrideEnabled();
+
     }
 
 
@@ -440,6 +446,11 @@ class ConsoleSupervisor
          */
         $this->checkConsoleServerVersions();
 
+        /*
+         * Check if AllowOverride is None or All.
+         */
+        $this->checkAllowOverrideEnabled();
+
     }
 
 
@@ -606,6 +617,7 @@ class ConsoleSupervisor
             case 'NOTIF.UPDATEMANAGER.MINOR':
             case 'NOTIF.UPDATEMANAGER.MESSAGES':
             case 'NOTIF.CRON.CONFIGURED':
+            case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -740,25 +752,41 @@ class ConsoleSupervisor
 
         // Expiry.
         if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
+            if ($config['license_mode'] == 1) {
+                $title = __('License is about to expire');
+                $msg = 'Your license will expire in %d days. Please, contact our sales department.';
+            } else {
+                $title = __('Support is about to expire');
+                $msg = 'Your support license will expire in %d days. Please, contact our sales department.';
+            }
+
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('License is about to expire'),
+                    'title'   => $title,
                     'message' => __(
-                        'Your license will expire in %d days. Please, contact our sales department.',
+                        $msg,
                         $days_to_expiry
                     ),
                     'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
         } else if ($days_to_expiry < 0) {
+            if ($config['license_mode'] == 1) {
+                $title = __('Expired license');
+                $msg = __('Your license has expired. Please, contact our sales department.');
+            } else {
+                $title = __('Support expired');
+                $msg = __('This license is outside of support. Please, contact our sales department.');
+            }
+
             // Warn user, license has expired.
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('Expired license'),
-                    'message' => __('Your license has expired. Please, contact our sales department.'),
+                    'title'   => $title,
+                    'message' => $msg,
                     'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
@@ -2357,6 +2385,52 @@ class ConsoleSupervisor
         if ($missed == 0) {
             $this->cleanNotifications('NOTIF.SERVER.MISALIGNED');
         }
+    }
+
+
+    /**
+     * Check if AllowOveride is None or All.
+     *
+     * @return void
+     */
+    public function checkAllowOverrideEnabled()
+    {
+        global $config;
+
+        $message = 'If AllowOverride is disabled, .htaccess will not works.';
+        $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
+
+        // Get content file.
+        $file = file_get_contents('/etc/httpd/conf/httpd.conf');
+        $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
+        $is_none = false;
+
+        $i = 0;
+        foreach ($file_lines as $line) {
+            $i++;
+
+            // Check Line and content.
+            if (preg_match('/ AllowOverride/', $line) && $i === 311) {
+                $result = explode(' ', $line);
+                if ($result[5] == 'None') {
+                    $is_none = true;
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
+                            'title'   => __('AllowOverride is disabled'),
+                            'message' => __($message),
+                            'url'     => ui_get_full_url('index.php'),
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Cleanup notifications if AllowOverride is All.
+        if (!$is_none) {
+            $this->cleanNotifications('NOTIF.ALLOWOVERRIDE.MESSAGE');
+        }
+
     }
 
 

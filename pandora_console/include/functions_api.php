@@ -14294,7 +14294,7 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
  * @param $trash2
  * @param string $returnType
  *  Example:
- *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora&id=pandrora&id2=strict
+ *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora&id=pandorafms&id2=strict
  */
 function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
 {
@@ -14307,9 +14307,9 @@ function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
     }
 
     if (is_metaconsole()) {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE $where_clause");
+        $all_agents = db_get_all_rows_sql("SELECT alias, nombre, id_agente, id_tagente,id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE $where_clause");
     } else {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente from tagente WHERE $where_clause");
+        $all_agents = db_get_all_rows_sql("SELECT alias, nombre, id_agente from tagente WHERE $where_clause");
     }
 
     if ($all_agents !== false) {
@@ -15989,4 +15989,35 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
     }
 
     return false;
+}
+
+
+/**
+ * Function for get event id and node id, then we get in return the Metaconsole event ID.
+ *
+ * @param [string] $server_id        id server (Node)
+ * @param [string] $console_event_id console Id node event in tmetaconsole_event
+ * @param [string] $trash2           don't use
+ * @param [string] $returnType
+ *
+ * Example
+ * api.php?op=get&op2=event_mcid&return_type=json&id=0&id2=0&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
+{
+    global $config;
+
+    if (is_metaconsole()) {
+        $mc_event_id = db_get_all_rows_sql("SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ");
+        if ($mc_event_id !== false) {
+            returnData($returnType, ['type' => 'string', 'data' => $mc_event_id]);
+        } else {
+            returnError('id_not_found', 'string');
+        }
+    } else {
+        returnError('forbidden', 'string');
+        return;
+    }
 }

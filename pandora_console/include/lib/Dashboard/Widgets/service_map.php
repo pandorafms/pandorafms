@@ -146,7 +146,7 @@ class ServiceMapWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -173,6 +173,39 @@ class ServiceMapWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['service_id']) === true) {
+            $values['serviceId'] = $decoder['service_id'];
+        }
+
+        if (isset($decoder['serviceId']) === true) {
+            $values['serviceId'] = $decoder['serviceId'];
+        }
+
+        if (isset($decoder['show_legend']) === true) {
+            $values['showLegend'] = (int) $decoder['show_legend'];
+        }
+
+        if (isset($decoder['showLegend']) === true) {
+            $values['showLegend'] = $decoder['showLegend'];
+        }
+
+        return $values;
     }
 
 

@@ -81,13 +81,6 @@ if ($config['menu_type'] == 'classic') {
         }
 
 
-        // Chat messages.
-        $header_chat = "<div id='header_chat'><span id='icon_new_messages_chat' style='display: none;'>";
-        $header_chat .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-        $header_chat .= html_print_image('images/header_chat_gray.png', true, ['title' => __('New chat message')]);
-        $header_chat .= '</a></span></div>';
-
-
         // Search.
         $acl_head_search = true;
         if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
@@ -417,7 +410,7 @@ if ($config['menu_type'] == 'classic') {
 
         echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
@@ -640,8 +633,6 @@ if ($config['menu_type'] == 'classic') {
 
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 
-    var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
-    
     function showinterpreter(){
 
         document.onclick = function(e) {
@@ -789,9 +780,7 @@ if ($config['menu_type'] == 'classic') {
             $('div#head').addClass('fixed_header');
             $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
-        
-        check_new_chats_icon('icon_new_messages_chat');
-        
+      
         /* Temporal fix to hide graphics when ui_dialog are displayed */
         $("#yougotalert").click(function () { 
             $("#agent_access").css("display", "none");

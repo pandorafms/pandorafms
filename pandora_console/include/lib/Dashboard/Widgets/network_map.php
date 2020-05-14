@@ -154,7 +154,7 @@ class NetworkMapWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -181,6 +181,55 @@ class NetworkMapWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['networkmaps']) === true) {
+            $values['networkmapId'] = $decoder['networkmaps'];
+        }
+
+        if (isset($decoder['networkmapId']) === true) {
+            $values['networkmapId'] = $decoder['networkmapId'];
+        }
+
+        if (isset($decoder['map_translate_x']) === true) {
+            $values['xOffset'] = $decoder['map_translate_x'];
+        }
+
+        if (isset($decoder['xOffset']) === true) {
+            $values['xOffset'] = $decoder['xOffset'];
+        }
+
+        if (isset($decoder['map_translate_y']) === true) {
+            $values['yOffset'] = $decoder['map_translate_y'];
+        }
+
+        if (isset($decoder['yOffset']) === true) {
+            $values['yOffset'] = $decoder['yOffset'];
+        }
+
+        if (isset($decoder['zoom_level_dash']) === true) {
+            $values['zoomLevel'] = $decoder['zoom_level_dash'];
+        }
+
+        if (isset($decoder['zoomLevel']) === true) {
+            $values['zoomLevel'] = $decoder['zoomLevel'];
+        }
+
+        return $values;
     }
 
 

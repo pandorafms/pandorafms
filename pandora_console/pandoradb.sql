@@ -805,6 +805,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`snmp_privacy_pass` varchar(255) NOT NULL default '',
 	`snmp_security_level` varchar(25) NOT NULL default '',
 	`wmi_enabled` tinyint(1) unsigned DEFAULT 0,
+	`rcmd_enabled` tinyint(1) unsigned DEFAULT 0,
 	`auth_strings` text,
 	`auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1,
 	`autoconfiguration_enabled` tinyint(1) unsigned default 0,

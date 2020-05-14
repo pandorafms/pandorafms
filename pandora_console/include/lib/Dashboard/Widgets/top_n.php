@@ -375,7 +375,7 @@ class TopNWidget extends Widget
         }
 
         // This function check ACL.
-        $agents = agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);
+        $agents = @agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);
         $agentsId = \array_keys($agents);
         $agentsIdString = \implode(',', $agentsId);
 
@@ -414,7 +414,7 @@ class TopNWidget extends Widget
             $quantity
         );
 
-        $modules = \db_get_all_rows_sql(
+        $modules = @db_get_all_rows_sql(
             $sql,
             $search_in_history_db
         );
@@ -422,7 +422,7 @@ class TopNWidget extends Widget
         if (empty($modules) === true) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
-                __('There are no Agent/Modules defined'),
+                __('There are no agents/modules found matching filter set'),
                 '',
                 true
             );

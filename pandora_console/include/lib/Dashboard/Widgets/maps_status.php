@@ -142,7 +142,7 @@ class MapsStatusWidget extends Widget
         $this->gridWidth = $gridWidth;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -169,6 +169,31 @@ class MapsStatusWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['maps']) === true) {
+            if (is_array($decoder['maps']) === true) {
+                $decoder['maps'][0] = implode(',', $decoder['maps']);
+            }
+
+            $values['maps'] = $decoder['maps'];
+        }
+
+        return $values;
     }
 
 

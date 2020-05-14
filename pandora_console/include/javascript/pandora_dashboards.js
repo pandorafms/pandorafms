@@ -244,8 +244,19 @@ function initialiceLayout(data) {
         }
 
         $("#delete-widget-" + id).click(function(event) {
-          var nodo = event.target.offsetParent;
-          deleteCell(id, nodo.parentNode);
+          // eslint-disable-next-line no-undef
+          confirmDialog({
+            title: "Are you sure?",
+            message:
+              "<h4 style='text-align: center;padding-top: 20px;'>All changes made to this widget will be lost</h4>",
+            cancel: "Cancel",
+            ok: "Ok",
+            onAccept: function() {
+              // Continue execution.
+              var nodo = event.target.offsetParent;
+              deleteCell(id, nodo.parentNode);
+            }
+          });
         });
 
         $("#configure-widget-" + id).click(function() {

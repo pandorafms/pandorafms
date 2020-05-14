@@ -482,6 +482,7 @@ class HostDevices extends Wizard
             $review_results = get_parameter_switch('review_results');
             $review_limited = (bool) get_parameter('review_limited', 0);
             $auto_monitor = get_parameter_switch('auto_monitor');
+            $recon_ports = get_parameter('recon_ports', null);
             $autoconf_enabled = get_parameter_switch(
                 'autoconfiguration_enabled'
             );
@@ -491,6 +492,7 @@ class HostDevices extends Wizard
             $parent_recursion = get_parameter_switch('parent_recursion');
             $vlan_enabled = get_parameter_switch('vlan_enabled');
             $wmi_enabled = get_parameter_switch('wmi_enabled');
+            $rcmd_enabled = get_parameter_switch('rcmd_enabled');
             $resolve_names = get_parameter_switch('resolve_names');
             $snmp_version = get_parameter('snmp_version', null);
             $community = get_parameter('community', null);
@@ -532,12 +534,14 @@ class HostDevices extends Wizard
             }
 
             $this->task['auto_monitor'] = $auto_monitor;
+            $this->task['recon_ports'] = $recon_ports;
             $this->task['snmp_enabled'] = $snmp_enabled;
             $this->task['os_detect'] = $os_detect;
             $this->task['parent_detection'] = $parent_detection;
             $this->task['parent_recursion'] = $parent_recursion;
             $this->task['vlan_enabled'] = $vlan_enabled;
             $this->task['wmi_enabled'] = $wmi_enabled;
+            $this->task['rcmd_enabled'] = $rcmd_enabled;
             $this->task['resolve_names'] = $resolve_names;
             $this->task['snmp_version'] = $snmp_version;
             $this->task['snmp_auth_user'] = $snmp_auth_user;
@@ -1033,6 +1037,21 @@ class HostDevices extends Wizard
                     'value'  => ($this->page + 1),
                     'type'   => 'hidden',
                     'return' => true,
+                ],
+            ];
+
+            $form['inputs'][] = [
+                'label'     => __('Filter by opened ports').ui_print_help_tip(
+                    __(
+                        'Targets will be scanned if at least one of defined ports (comma separated) is open.'
+                    ),
+                    true
+                ),
+                'arguments' => [
+                    'name'   => 'recon_ports',
+                    'type'   => 'text',
+                    'return' => true,
+                    'value'  => $this->task['recon_ports'],
                 ],
             ];
 

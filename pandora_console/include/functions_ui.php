@@ -3157,6 +3157,13 @@ function ui_print_datatable(array $parameters)
         throw new Exception('[ui_print_datatable]: You must define columns for datatable');
     }
 
+    if (isset($parameters['column_names'])
+        && is_array($parameters['column_names'])
+        && count($parameters['columns']) != count($parameters['column_names'])
+    ) {
+        throw new Exception('[ui_print_datatable]: Columns and columns names must have same length');
+    }
+
     if (!isset($parameters['ajax_url'])) {
         throw new Exception('[ui_print_datatable]: Parameter ajax_url is required');
     }

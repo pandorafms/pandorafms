@@ -342,7 +342,7 @@ class HTML
      *
      * @return string
      */
-    public function error($message)
+    public static function error($message)
     {
         if (is_ajax()) {
             echo json_encode(
@@ -363,7 +363,7 @@ class HTML
      *
      * @return string HTML code for desired input.
      */
-    public function printInput($data)
+    public static function printInput($data)
     {
         global $config;
 
@@ -398,7 +398,7 @@ class HTML
      *
      * @return void
      */
-    public function printGoBackButton($url=null)
+    public static function printGoBackButton($url=null)
     {
         if (isset($url) === false) {
             $url = ui_get_full_url(
@@ -425,7 +425,7 @@ class HTML
             ],
         ];
 
-        $this->printForm($form);
+        self::printForm($form);
     }
 
 
@@ -467,7 +467,7 @@ class HTML
      *
      * @return string HTML content.
      */
-    public function printBlock(
+    public static function printBlock(
         array $input,
         bool $return=false,
         bool $direct=false
@@ -502,7 +502,7 @@ class HTML
             $html = '';
 
             foreach ($input['block_content'] as $in) {
-                $html .= $this->printBlock(
+                $html .= self::printBlock(
                     $in,
                     $return,
                     (bool) $direct
@@ -549,14 +549,14 @@ class HTML
                 }
 
                 $output .= '<label>'.$input['label'].'</label>';
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
                 if (!$direct) {
                     $output .= '</li>';
                 }
             } else {
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -578,7 +578,7 @@ class HTML
      *
      * @return string HTML content.
      */
-    public function printBlockAsGrid(array $input, bool $return=false)
+    public static function printBlockAsGrid(array $input, bool $return=false)
     {
         $output = '';
         if ($input['hidden'] == 1) {
@@ -596,7 +596,7 @@ class HTML
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlockAsGrid($input, $return);
+                $output .= self::printBlockAsGrid($input, $return);
             }
 
             $output .= '</ul></li>';
@@ -635,7 +635,7 @@ class HTML
 
                 if ($input['arguments']['type'] == 'text' || $input['arguments']['type'] == 'text_extended') {
                     $output .= '<div class="discovery_text_input">';
-                    $output .= $this->printInput($input['arguments']);
+                    $output .= self::printInput($input['arguments']);
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
                     if (isset($input['extra'])) {
@@ -646,7 +646,7 @@ class HTML
                         $output .= '<div style="float: right;">';
                     }
 
-                    $output .= $this->printInput($input['arguments']);
+                    $output .= self::printInput($input['arguments']);
                     $output .= '</div>';
                     $output .= '</div>';
 
@@ -654,14 +654,14 @@ class HTML
                         $output .= '</div>';
                     }
                 } else {
-                    $output .= $this->printInput($input['arguments']);
+                    $output .= self::printInput($input['arguments']);
                 }
 
                 // Allow dynamic content.
                 $output .= $input['extra'];
                 $output .= '</div>';
             } else {
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -683,7 +683,7 @@ class HTML
      *
      * @return string HTML content.
      */
-    public function printBlockAsList(array $input, bool $return=false)
+    public static function printBlockAsList(array $input, bool $return=false)
     {
         $output = '';
         if ($input['hidden'] == 1) {
@@ -701,7 +701,7 @@ class HTML
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlockAsList($input, $return);
+                $output .= self::printBlockAsList($input, $return);
             }
 
             $output .= '</ul></li>';
@@ -711,12 +711,12 @@ class HTML
             ) {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
                 $output .= '</li>';
             } else {
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -739,7 +739,7 @@ class HTML
      *
      * @return string HTML code.
      */
-    public function printForm(
+    public static function printForm(
         array $data,
         bool $return=false,
         bool $print_white_box=false
@@ -781,9 +781,9 @@ class HTML
 
         foreach ($inputs as $input) {
             if ($input['arguments']['type'] != 'submit') {
-                $output .= $this->printBlock($input, true);
+                $output .= self::printBlock($input, true);
             } else {
-                $output_submit .= $this->printBlock($input, true);
+                $output_submit .= self::printBlock($input, true);
             }
         }
 
@@ -822,7 +822,7 @@ class HTML
      *
      * @return string HTML code.
      */
-    public function printFormAsGrid(array $data, bool $return=false)
+    public static function printFormAsGrid(array $data, bool $return=false)
     {
         $form = $data['form'];
 
@@ -886,9 +886,9 @@ class HTML
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
                             if ($input['arguments']['type'] != 'submit') {
-                                $output .= $this->printBlockAsGrid($input, true);
+                                $output .= self::printBlockAsGrid($input, true);
                             } else {
-                                $output_submit .= $this->printBlockAsGrid($input, true);
+                                $output_submit .= self::printBlockAsGrid($input, true);
                             }
                         } else {
                             $output .= $input;
@@ -933,7 +933,7 @@ class HTML
      *
      * @return string HTML code.
      */
-    public function printFormAsList(array $data, bool $return=false)
+    public static function printFormAsList(array $data, bool $return=false)
     {
         $form = $data['form'];
         $inputs = $data['inputs'];
@@ -966,9 +966,9 @@ class HTML
 
         foreach ($inputs as $input) {
             if ($input['arguments']['type'] != 'submit') {
-                $output .= $this->printBlockAsList($input, true);
+                $output .= self::printBlockAsList($input, true);
             } else {
-                $output_submit .= $this->printBlockAsList($input, true);
+                $output_submit .= self::printBlockAsList($input, true);
             }
         }
 

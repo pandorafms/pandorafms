@@ -19,7 +19,29 @@
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
-require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_users.php';/**
+                                                                * Return the agent if exists in the DB.
+                                                                *
+                                                                * @param integer $id_agent      The agent id.
+                                                                * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+                                                                * @param boolean $force_meta
+                                                                *
+                                                                * @return boolean The result to check if the agent is in the DB.
+                                                                */
+
+
+function agents_get_agent($id_agent, $show_disabled=true, $force_meta=false)
+{
+    $agent = db_get_row_filter(
+        $force_meta ? 'tmetaconsole_agent' : 'tagente',
+        [
+            'id_agente' => $id_agent,
+            'disabled'  => !$show_disabled,
+        ]
+    );
+
+    return $agent;
+}
 
 
 /**

@@ -462,29 +462,45 @@ select:-internal-list-box {
 .mw250px {
   min-width: 250px;
 }
+.mw500px {
+  min-width: 500px;
+}
+.mw600px {
+  min-width: 600px;
+}
+.mw800px {
+  min-width: 800px;
+}
 .w20px {
   width: 20px;
 }
 .w10p {
   width: 10%;
 }
-
 .w20p {
   width: 20%;
 }
-
 .w30p {
   width: 30%;
 }
-
 .w40p {
   width: 40%;
 }
-
 .w50p {
   width: 50%;
 }
-
+.w60p {
+  width: 60%;
+}
+.w70p {
+  width: 70%;
+}
+.w80p {
+  width: 80%;
+}
+.w90p {
+  width: 90%;
+}
 .w100p {
   width: 100%;
 }

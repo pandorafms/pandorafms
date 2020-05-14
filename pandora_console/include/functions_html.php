@@ -605,22 +605,24 @@ function html_print_select(
 
     $output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
-    if ($nothing != '' || empty($fields)) {
-        if ($nothing == '') {
-            $nothing = __('None');
-        }
-
-        $output .= '<option value="'.$nothing_value.'"';
-
-        if ($nothing_value == $selected) {
-            $output .= ' selected="selected"';
-        } else if (is_array($selected)) {
-            if (in_array($nothing_value, $selected)) {
-                $output .= ' selected="selected"';
+    if ($nothing !== false) {
+        if ($nothing != '' || empty($fields)) {
+            if ($nothing == '') {
+                $nothing = __('None');
             }
-        }
 
-        $output .= '>'.$nothing.'</option>';
+            $output .= '<option value="'.$nothing_value.'"';
+
+            if ($nothing_value == $selected) {
+                $output .= ' selected="selected"';
+            } else if (is_array($selected)) {
+                if (in_array($nothing_value, $selected)) {
+                    $output .= ' selected="selected"';
+                }
+            }
+
+            $output .= '>'.$nothing.'</option>';
+        }
     }
 
     if (is_array($fields) && !empty($fields)) {
@@ -699,6 +701,337 @@ function html_print_select(
     }
 
     echo $output;
+}
+
+
+/**
+ * Generates a multiselect component with filters.
+ *
+ * @param array   $available    Available.
+ * @param array   $selected     Selected.
+ * @param string  $name         Custom identifier (optional).
+ * @param string  $class        Custom class for main container (optional).
+ * @param boolean $return       Dump to output or only return.
+ * @param array   $group_filter Ajax information to reload content while
+ *                              using different group filter (if enabled). Uses:
+ *                                [
+ *                                  page => 'your/controller/php',
+ *                                  method => 'yourMethodName'
+ *                                ]
+ *                              Ensure you return data in json format as:
+ *                                {id:label,id2:label2...}
+ *                              Provided by caller.
+ * @param array   $texts        Texts.
+ * @param array   $sections     Enables or disables sub-components.
+ *
+ * @return string HTML code with component.
+ */
+function html_print_select_multiple_filtered(
+    array $available,
+    array $selected,
+    ?string $name=null,
+    string $class='',
+    bool $return=true,
+    array $group_filter=[],
+    array $texts=[],
+    array $sections=[]
+) {
+    ui_require_css_file('multiselect_filtered');
+    ui_require_javascript_file('multiselect_filtered');
+
+    if (empty($name) === true) {
+        $rid = uniqid();
+    } else {
+        $rid = $name;
+    }
+
+    if (empty($texts) === true) {
+        $texts = [
+            'filter-item' => 'Filter agent alias',
+            'title-add'   => 'Add selected',
+            'title-del'   => 'Remove selected',
+            'title-left'  => 'Available items',
+            'title-right' => 'Selected items',
+        ];
+    }
+
+    if (empty($sections) === true) {
+        $sections = [
+            'filters'               => 1,
+            'group-filter'          => 1,
+            'item-available-filter' => 1,
+            'item-selected-filter'  => 1,
+        ];
+    }
+
+    if (empty($group_filter) === true) {
+        $sections['group-filter'] = 0;
+    }
+
+    // Main container.
+    $output .= '<div class="multi-select flex-row-vcenter '.$class.'">';
+
+    // Left box.
+    $output .= '<div class="multi-select-container flex-column">';
+
+    // Filtering.
+    if (isset($sections['filters']) === true
+        && $sections['filters'] === 1
+    ) {
+        // Filtering.
+        if (isset($sections['group-filter']) === true
+            && $sections['group-filter'] === 1
+        ) {
+            $output .= '<div class="filter">';
+
+            $output .= '<div class="group-filter flex-row-vcenter">';
+
+            $reload_content = "reloadContent('".$rid."'";
+            $reload_content .= ", '".ui_get_full_url('ajax.php')."'";
+            $reload_content .= ", '".base64_encode(
+                json_encode($group_filter)
+            )."'";
+            $reload_content .= ", 'left'";
+            $reload_content .= ", '".__('None')."')";
+
+            $output .= html_print_input(
+                [
+                    'label'          => __('Filter group'),
+                    'name'           => 'id-group-available-select-'.$rid,
+                    'returnAllGroup' => true,
+                    'privilege'      => 'AR',
+                    'type'           => 'select_groups',
+                    'return'         => true,
+                    'script'         => $reload_content,
+                ]
+            );
+
+            $output .= html_print_input(
+                [
+                    'label'  => __('Group recursion'),
+                    'name'   => 'id-group-recursion-available-select-'.$rid,
+                    'type'   => 'checkbox',
+                    'script' => $reload_content,
+                    'return' => true,
+                ]
+            );
+
+            $output .= '</div>';
+
+            $output .= '</div>';
+        }
+
+        if (isset($sections['item-available-filter']) === true
+            && $sections['item-available-filter'] === 1
+        ) {
+            $output .= '<div class="item-filter flex-row-vcenter">';
+
+            $output .= html_print_input(
+                [
+                    'style'   => 'display:none;',
+                    'name'    => 'tmp-available-select-'.$rid,
+                    'type'    => 'select',
+                    'nothing' => false,
+                    'return'  => true,
+                ]
+            );
+
+            $f = "filterAvailableItems(this.value,'".$rid."','".__('None')."')";
+            $output .= html_print_input(
+                [
+                    'label'       => __($texts['filter-item']),
+                    'name'        => 'filter-item-available-'.$rid,
+                    'onKeyUp'     => $f,
+                    'input_class' => 'filter w100p',
+                    'size'        => 20,
+                    'type'        => 'text',
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+        }
+    }
+
+    $output .= '<span class="title">'.$texts['title-left'].'</span>';
+
+    // Selector boxes.
+    $output .= html_print_input(
+        [
+            'type'                    => 'select',
+            'fields'                  => $available,
+            'name'                    => 'available-select-'.$rid.'[]',
+            'selected'                => '',
+            'script'                  => '',
+            'nothing'                 => '',
+            'nothing_value'           => 0,
+            'return'                  => true,
+            'multiple'                => true,
+            'sort'                    => true,
+            'class'                   => 'select-multiple',
+            'disabled'                => false,
+            'style'                   => false,
+            'option_style'            => false,
+            'size'                    => false,
+            'modal'                   => false,
+            'message'                 => '',
+            'select_all'              => false,
+            'simple_multiple_options' => false,
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Middle buttons actions.
+    $add = "addItems('".$rid."','".__('None')."'); return false";
+    $del = "removeItems('".$rid."','".__('None')."'); return false";
+
+    $output .= '<div class="arrows-container flex-column">';
+
+    $output .= html_print_input(
+        [
+            'type'    => 'image',
+            'src'     => 'images/darrowright.png',
+            'return'  => true,
+            'options' => [
+                'title'   => $texts['title-add'],
+                'onclick' => $add,
+            ],
+        ]
+    );
+
+    $output .= html_print_input(
+        [
+            'type'    => 'image',
+            'src'     => 'images/darrowleft.png',
+            'return'  => true,
+            'options' => [
+                'title'   => $texts['title-del'],
+                'onclick' => $del,
+            ],
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Left box.
+    $output .= '<div class="multi-select-container flex-column">';
+
+    // Filtering.
+    if (isset($sections['filters']) === true
+        && $sections['filters'] === 1
+    ) {
+        if (isset($sections['group-filter']) === true
+            && $sections['group-filter'] === 1
+        ) {
+            $output .= '<div class="filter">';
+
+            $output .= '<div class="group-filter flex-row-vcenter">';
+
+            $reload_content = "reloadContent('".$rid."'";
+            $reload_content .= ", '".ui_get_full_url('ajax.php')."'";
+            $reload_content .= ", '".base64_encode(
+                json_encode($group_filter)
+            )."'";
+            $reload_content .= ", 'right'";
+            $reload_content .= ", '".__('None')."')";
+
+            $output .= html_print_input(
+                [
+                    'label'          => __('Filter group'),
+                    'name'           => 'id-group-selected-select-'.$rid,
+                    'returnAllGroup' => true,
+                    'privilege'      => 'AR',
+                    'type'           => 'select_groups',
+                    'return'         => true,
+                    'script'         => $reload_content,
+                ]
+            );
+
+            $output .= html_print_input(
+                [
+                    'label'  => __('Group recursion'),
+                    'name'   => 'id-group-recursion-selected-select-'.$rid,
+                    'type'   => 'checkbox',
+                    'script' => $reload_content,
+                    'return' => true,
+                ]
+            );
+
+            $output .= '</div>';
+
+            $output .= '</div>';
+        }
+
+        // Filtering.
+        if (isset($sections['item-selected-filter']) === true
+            && $sections['item-selected-filter'] === 1
+        ) {
+            $output .= '<div class="item-filter flex-row-vcenter">';
+
+            $output .= html_print_input(
+                [
+                    'style'   => 'display:none;',
+                    'name'    => 'tmp-selected-select-'.$rid,
+                    'type'    => 'select',
+                    'nothing' => false,
+                    'return'  => true,
+                ]
+            );
+
+            $f = "filterSelectedItems(this.value,'".$rid."','".__('None')."')";
+            $output .= html_print_input(
+                [
+                    'label'       => __($texts['filter-item']),
+                    'name'        => 'filter-item-selected-'.$rid,
+                    'onKeyUp'     => $f,
+                    'input_class' => 'filter w100p',
+                    'size'        => 20,
+                    'type'        => 'text',
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+        }
+    }
+
+    $output .= '<span class="title">'.$texts['title-right'].'</span>';
+
+    $output .= html_print_input(
+        [
+            'type'                    => 'select',
+            'fields'                  => $selected,
+            'name'                    => 'selected-select-'.$rid.'[]',
+            'selected'                => '',
+            'script'                  => '',
+            'nothing'                 => '',
+            'nothing_value'           => 0,
+            'return'                  => true,
+            'multiple'                => true,
+            'sort'                    => true,
+            'class'                   => 'select-multiple',
+            'disabled'                => false,
+            'style'                   => false,
+            'option_style'            => false,
+            'size'                    => false,
+            'modal'                   => false,
+            'message'                 => '',
+            'select_all'              => true,
+            'simple_multiple_options' => false,
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Close main.
+    $output .= '</div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
 }
 
 
@@ -1555,7 +1888,8 @@ function html_print_input_text(
     $autocomplete='',
     $autofocus=false,
     $onKeyDown='',
-    $formTo=''
+    $formTo='',
+    $onKeyUp=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -1582,6 +1916,10 @@ function html_print_input_text(
 
     if ($onKeyDown != '') {
         $attr['onkeydown'] = $onKeyDown;
+    }
+
+    if ($onKeyUp != '') {
+        $attr['onkeyup'] = $onKeyUp;
     }
 
     if ($autocomplete !== '') {
@@ -3471,9 +3809,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
-                false,
+                ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
-                ((isset($data['form']) === true) ? $data['form'] : '')
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : '')
             );
         break;
 
@@ -3892,6 +4231,19 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['modal']) === true) ? $data['modal'] : false),
                 ((isset($data['message']) === true) ? $data['message'] : ''),
                 ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+            );
+        break;
+
+        case 'select_multiple_filtered':
+            $output .= html_print_select_multiple_filtered(
+                $data['available'],
+                $data['selected'],
+                ((isset($data['name']) === true) ? $data['name'] : null),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : true),
+                ((isset($data['group_filter']) === true) ? $data['group_filter'] : []),
+                ((isset($data['texts']) === true) ? $data['texts'] : []),
+                ((isset($data['sections']) === true) ? $data['sections'] : [])
             );
         break;
 

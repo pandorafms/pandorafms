@@ -521,7 +521,9 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = ' AND ( nombre '.$order_collation."
-			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
+            COLLATE utf8_general_ci LIKE '%$search%' 
+            OR comentarios ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%'
+            OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
     }
 }
 

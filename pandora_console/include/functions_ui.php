@@ -5634,7 +5634,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl_static'].'/operation/agentes/snapshot_view.php';
+    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 

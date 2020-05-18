@@ -105,7 +105,7 @@ sub new ($$$$$$) {
        get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
   # Reset (but do not restart) manual recon tasks.
-  db_do ($dbh, 'UPDATE trecon_task  SET status = -1 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
+  db_do ($dbh, 'UPDATE trecon_task  SET status = -1, summary = "cancelled" WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
        get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
   # Call the constructor of the parent class
@@ -250,6 +250,13 @@ sub data_consumer ($$) {
       }
     }
 
+    if (!is_empty($task->{'recon_ports'})) {
+      # Accept only valid symbols.
+      if ($task->{'recon_ports'} !~ /[\d\-\,\ ]+/) {
+        $task->{'recon_ports'} = '';
+      }
+    }
+
     my $recon = new PandoraFMS::Recon::Base(
       communities => \@communities,
       dbh => $dbh,
@@ -276,6 +283,9 @@ sub data_consumer ($$) {
       task_id => $task->{'id_rt'},
       vlan_cache_enabled => $task->{'vlan_enabled'},
       wmi_enabled => $task->{'wmi_enabled'},
+      rcmd_enabled => $task->{'rcmd_enabled'},
+      rcmd_timeout => $pa_config->{'rcmd_timeout'},
+      rcmd_timeout_bin => $pa_config->{'rcmd_timeout_bin'},
       auth_strings_array => \@auth_strings,
       autoconfiguration_enabled => $task->{'autoconfiguration_enabled'},
       main_event_id => $main_event,
@@ -399,8 +409,10 @@ sub exec_recon_script ($$$) {
 ################################################################################
 # Guess the OS using xprobe2 or nmap.
 ################################################################################
-sub PandoraFMS::Recon::Base::guess_os($$) {
-  my ($self, $device) = @_;
+sub PandoraFMS::Recon::Base::guess_os($$;$) {
+  my ($self, $device, $string_flag) = @_;
+
+  return $self->{'os_id'}{$device} if defined($self->{'os_id'}{$device});
 
   $DEVNULL = '/dev/null' if (!defined($DEVNULL));
   $DEVNULL = '/NUL' if ($^O =~ /win/i && !defined($DEVNULL));
@@ -420,7 +432,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
     if ($? == 0) {
       if($return =~ /Running OS:(.*)/) {
-        return pandora_get_os($self->{'dbh'}, $1);
+        my $str_os = $1;
+        return $str_os if is_enabled($string_flag);
+        return pandora_get_os($self->{'dbh'}, $str_os);
       }
     }
   }
@@ -431,7 +445,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     return OS_OTHER if ($? != 0);
 
     if ($return =~ /Aggressive OS guesses:\s*(.*)/) {
-      return pandora_get_os($self->{'dbh'}, $1);
+      my $str_os = $1;
+      return $str_os if is_enabled($string_flag);
+      return pandora_get_os($self->{'dbh'}, $str_os);
     }
   }
 
@@ -443,6 +459,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 ################################################################################
 sub PandoraFMS::Recon::Base::tcp_scan ($$) {
   my ($self, $host) = @_;
+
+  return if is_empty($host);
+  return if is_empty($self->{'recon_ports'});
 
   my $r = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host`;
 
@@ -510,6 +529,9 @@ sub PandoraFMS::Recon::Base::test_module($$) {
   ) {
     # Generic, plugins. (21-23 ASYNC)
     if ($test->{'id_modulo'} == 6) {
+
+      return 0 unless $self->wmi_responds($addr);
+
       # WMI commands.
       $value = $self->call(
         'wmi_get_value',
@@ -527,9 +549,39 @@ sub PandoraFMS::Recon::Base::test_module($$) {
 
   } elsif ($test->{'id_tipo_modulo'} >= 34 && $test->{'id_tipo_modulo'} <= 37) {
     # Remote command.
-    # XXX TODO: Test remote commands.
-    # Disabled until we can ensure result.
-    return 0;
+    return 0 unless $self->rcmd_responds($addr);
+
+    my $target_os;
+    if ($test->{'custom_string_2'} =~ /inherited/i) {
+      $target_os = pandora_get_os(
+        $self->{'dbh'},
+        $self->{'os_cache'}{$test->{'ip_target'}}
+      );
+    } else {
+      $target_os = pandora_get_os($self->{'dbh'}, $test->{'custom_string_2'});
+    }
+
+    $value = enterprise_hook(
+      'remote_execution_module',
+      [
+        # pa_config,
+        $self->{'pa_config'},
+        # dbh,
+        $self->{'dbh'},
+        # module,
+        $test,
+        # target_os,
+        $target_os,
+        # ip_target,
+        $test->{'ip_target'},
+        # tcp_port
+        $test->{'tcp_port'}
+      ]
+    );
+
+    chomp($value);
+
+    return 0 unless defined($value);
 
   } elsif ($test->{'id_tipo_modulo'} >= 8 && $test->{'id_tipo_modulo'} <= 11) {
     # TCP
@@ -905,6 +957,16 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         $np_component->{'id_nc'}
       );
 
+      # Tag cleanup.
+      if (!is_empty($component->{'tags'})) {
+        my @tags = map {
+          if ($_ > 0) { $_ }
+          else {}
+        } split ',', $component->{'tags'};
+
+        $component->{'tags'} = join ',', @tags;
+      }
+
       $component->{'name'} = safe_output($component->{'name'});
       if ($component->{'type'} >= 15 && $component->{'type'} <= 18) {
         $component->{'snmp_community'} = safe_output($self->get_community($device));
@@ -915,6 +977,15 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         $component->{'plugin_parameter'} = $self->{'snmp_auth_method'};
         $component->{'plugin_user'} = $self->{'snmp_auth_user'};
         $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
+      }
+
+      if ($component->{'type'} >= 34 && $component->{'type'} <= 37) {
+        # Update module credentials.
+        $component->{'custom_string_1'} = $self->rcmd_credentials_key($device);
+        $component->{'custom_string_2'} = pandora_get_os_by_id(
+          $self->{'dbh'},
+          $self->guess_os($device)
+        );
       }
 
       $component->{'__module_component'} = 1;
@@ -1012,7 +1083,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         || $force_creation
       ) {
         my $parent_id;
-        my $os_id = $self->guess_os($data->{'agent'}{'direccion'});
+        my $os_id = $data->{'agent'}{'id_os'};
+        if (is_empty($os_id)) {
+          $os_id = $self->guess_os($data->{'agent'}{'direccion'});
+        }
 
         $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
@@ -1337,10 +1411,14 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
 
   	next if is_empty($label);
 
+    # Retrieve target agent OS version.
+		$self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
+
     $self->call('update_progress', $progress);
     $progress += $step;
     # Store temporally. Wait user approval.
     my $encoded;
+
     eval {
       local $SIG{__DIE__};
       $encoded = encode_base64(
@@ -1436,28 +1514,33 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
 
   my @hosts = keys %{$self->{'agents_found'}};
 
-  $self->{'step'} = STEP_MONITORING;
-  # From 80% to 90%.
-  my ($progress, $step) = (80, 10.0 / scalar(@hosts));
-  my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
+  my $progress = 80;
 
-  foreach my $label (keys %{$self->{'agents_found'}}) {
-    $self->{'c_network_percent'} = $partial;
-    $self->{'c_network_name'} = $label;
-    $self->call('update_progress', $progress);
-    $progress += $step;
-    $partial += $sub_step;
-    $self->call('message', "Checking modules for $label", 5);
+  if (scalar @hosts > 0) {
+    $self->{'step'} = STEP_MONITORING;
+    # From 80% to 90%.
+    my ($progress, $step) = (80, 10.0 / scalar(@hosts));
+    my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
 
-    # Monitorization selected.
-    $self->call('create_network_profile_modules', $label);
+    foreach my $label (keys %{$self->{'agents_found'}}) {
+      $self->{'c_network_percent'} = $partial;
+      $self->{'c_network_name'} = $label;
+      $self->call('update_progress', $progress);
+      $progress += $step;
+      $partial += $sub_step;
+      $self->call('message', "Checking modules for $label", 5);
 
-    # Monitorization - interfaces
-    $self->call('create_interface_modules', $label);
+      # Monitorization selected.
+      $self->call('create_network_profile_modules', $label);
 
-    # Monitorization - WMI modules.
-    $self->call('create_wmi_modules', $label);
+      # Monitorization - interfaces
+      $self->call('create_interface_modules', $label);
 
+      # Monitorization - WMI modules.
+      $self->call('create_wmi_modules', $label);
+
+    }
+    
   }
 
   $self->{'c_network_percent'} = 100;

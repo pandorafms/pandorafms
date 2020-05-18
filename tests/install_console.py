@@ -10,7 +10,7 @@ if ('DISPLAY' not in os.environ):
     display.start()
 
 # Go to the installation page.
-browser = webdriver.Firefox()
+browser = webdriver.Firefox(timeout=15)
 browser.implicitly_wait(5)
 browser.get('http://localhost/pandora_console/install.php')
 assert("Pandora FMS - Installation Wizard" in browser.title)

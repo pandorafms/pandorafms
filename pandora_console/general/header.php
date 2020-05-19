@@ -587,6 +587,24 @@ if ($config['menu_type'] == 'classic') {
             return;
         }
 
+        // Get notifications buffer in local storage.
+        var user_notifications = localStorage.getItem('user_notifications');
+
+        if (user_notifications !== null && user_notifications.length) {
+            var user_notifications_parsed = JSON.parse(user_notifications);
+            var current_timestamp = Math.floor(Date.now() / 1000);
+
+            // Remove old notifications from local storage.
+            user_notifications_parsed_updated = user_notifications_parsed.filter(function(notification) {
+                return (notification.item_datetime > current_timestamp - 90);
+            });
+
+            if (user_notifications_parsed_updated.length !== user_notifications_parsed.length) {
+                localStorage.setItem('user_notifications', JSON.stringify(user_notifications_parsed_updated));
+                user_notifications_parsed = user_notifications_parsed_updated;
+            }
+        }
+
         jQuery.post ("ajax.php",
             {
                 "page" : "godmode/setup/setup_notifications",
@@ -625,22 +643,43 @@ if ($config['menu_type'] == 'classic') {
                     not_drop.removeChild(not_drop.firstChild);
                 }
 
-                // Add the new toasts.
-                if (Array.isArray(data.new_notifications)) {
-                    data.new_notifications.forEach(function(ele) {
-                        toast_wrapper.appendChild(
-                            print_toast(
-                                ele.subject,
-                                ele.mensaje,
-                                ele.criticity,
-                                ele.full_url,
-                                'notification-toast-id-' + ele.id_mensaje,
-                                'click_on_notification_toast(event)',
-                                'closeToast(event)'
-                            )
-                        );
-                        
-                    });
+                // Prevent to print toasts if tab is not active.
+                if (document.hidden === false) {
+                    var localStorageItemsArray = [];
+
+                    // Add the new toasts.
+                    if (Array.isArray(data.new_notifications)) {
+                        data.new_notifications.forEach(function(ele) {
+                            // Keep track of notifications in browser local storage to avoid displaying toasts more than once across different tabs for a specific user.
+                            if (typeof user_notifications_parsed !== "undefined") {
+                                localStorageItemsArray = user_notifications_parsed;
+
+                                // Check if toast has already been fired and therefore it should be skipped.
+                                if (localStorageItemsArray.some(function(item) {
+                                    return item.message_id == ele.id_mensaje && ele.id_usuario_origen == ele.id_usuario_origen
+                                })) {
+                                    return;
+                                }
+
+                            }
+
+                            localStorageItemsArray.push({message_id: ele.id_mensaje, source_user_id: ele.id_usuario_origen, item_datetime: Math.floor(Date.now() / 1000)});
+
+                            localStorage.setItem('user_notifications', JSON.stringify(localStorageItemsArray));
+                            
+                            toast_wrapper.appendChild(
+                                print_toast(
+                                    ele.subject,
+                                    ele.mensaje,
+                                    ele.criticity,
+                                    ele.full_url,
+                                    'notification-toast-id-' + ele.id_mensaje,
+                                    'click_on_notification_toast(event)',
+                                    'closeToast(event)'
+                                )
+                            );
+                        });
+                    }
                 }
             },
             "json"
@@ -773,7 +812,7 @@ if ($config['menu_type'] == 'classic') {
     $(document).ready (function () {
 
         // Check new notifications on a periodic way
-        setInterval(check_new_notifications, 10000);
+        setInterval(check_new_notifications, 60000);
 
         // Print the wrapper for notifications
         var notifications_toasts_wrapper = document.createElement('div');

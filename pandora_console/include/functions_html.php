@@ -2526,8 +2526,14 @@ function html_print_radio_button_extended(
     $output .= ' '.$attributes;
     $output .= ' />';
 
-    if ($label != '') {
-        $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+    if (is_array($label)) {
+        if (!empty($label)) {
+            $output .= '<label for="'.$htmlid.'" title="'.$label['help_tip'].'">'.$label['label'].'</label>'."\n";
+        }
+    } else {
+        if ($label != '') {
+            $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+        }
     }
 
     if ($modal && !enterprise_installed()) {

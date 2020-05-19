@@ -1604,15 +1604,14 @@
     }),
     d.GridStackUI
   );
-})
-/**
- * gridstack.js 0.3.0
- * http://troolee.github.io/gridstack.js/
- * (c) 2014-2016 Pavel Reznikov, Dylan Weiss
- * gridstack.js may be freely distributed under the MIT license.
- * @preserve
- */,
-  (function(a) {
+}),
+  /**
+   * gridstack.js 0.3.0
+   * http://troolee.github.io/gridstack.js/
+   * (c) 2014-2016 Pavel Reznikov, Dylan Weiss
+   * gridstack.js may be freely distributed under the MIT license.
+   * @preserve
+   */ (function(a) {
     if ("function" == typeof define && define.amd)
       define([
         "jquery",

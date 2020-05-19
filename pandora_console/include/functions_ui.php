@@ -1908,8 +1908,6 @@ function ui_process_page_head($string, $bitfield)
     );
     // Load base64 javascript library.
     $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
-    // Load webchat javascript library.
-    $config['js']['webchat'] = 'include/javascript/webchat.js';
     // Load qrcode library.
     $config['js']['qrcode'] = 'include/javascript/qrcode.js';
     // Load intro.js library (for bubbles and clippy).
@@ -2848,6 +2846,7 @@ function ui_print_status_sets(
  *   [
  *       'page'     => 'operation/agentes/ver_agente', Target page.
  *       'interval' => 100 / $agent["intervalo"], Ask every interval seconds.
+ *       'simple'   => 0,
  *       'data'     => [ Data to be sent to target page.
  *           'id_agente'       => $id_agente,
  *           'refresh_contact' => 1,
@@ -2881,56 +2880,99 @@ function ui_progress(
         $text = $progress.'%';
     }
 
+    $id = uniqid();
+
     ui_require_css_file('progress');
-    $output .= '<span class="progress_main" data-label="'.$text;
+    $output .= '<span id="'.$id.'" class="progress_main" data-label="'.$text;
     $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
-    $output .= '<span class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
+    $output .= '<span id="'.$id.'_progress" class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
     $output .= '</span>';
 
     if ($ajax !== false && is_array($ajax)) {
-        $output .= '<script type="text/javascript">
+        if ($ajax['simple']) {
+            $output .= '<script type="text/javascript">
     $(document).ready(function() {
         setInterval(() => {
-                last = $(".progress_main").attr("data-label").split(" ")[0]*1;
-                width = $(".progress").width() / $(".progress").parent().width() * 100;
+                $.post({
+                    url: "'.ui_get_full_url('ajax.php', false, false, false).'",
+                    data: {';
+            if (is_array($ajax['data'])) {
+                foreach ($ajax['data'] as $token => $value) {
+                    $output .= '
+                            '.$token.':"'.$value.'",';
+                }
+            }
+
+            $output .= '
+                        page: "'.$ajax['page'].'"
+                    },
+                    success: function(data) {
+                        try {
+                            val = JSON.parse(data);
+                            $("#'.$id.'").attr("data-label", val + " %");
+                            $("#'.$id.'_progress").width(val+"%");';
+            if (isset($ajax['oncomplete'])) {
+                $output .= '
+                            if (val == 100) {
+                                '.$ajax['oncomplete'].'($("#'.$id.'"));
+                            }
+                ';
+            }
+
+            $output .= '
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                });
+            }, '.($ajax['interval'] > 0 ? $ajax['interval'] * 1000 : 30000 ).');
+    });
+    </script>';
+        } else {
+            $output .= '<script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(() => {
+                last = $("#'.$id.'").attr("data-label").split(" ")[0]*1;
+                width = $("#'.$id.'_progress").width() / $("#'.$id.'_progress").parent().width() * 100;
                 width_interval = '.$ajax['interval'].';
                 if (last % 10 == 0) {
                     $.post({
                         url: "'.ui_get_full_url('ajax.php', false, false, false).'",
                         data: {';
-        if (is_array($ajax['data'])) {
-            foreach ($ajax['data'] as $token => $value) {
-                $output .= '
-                            '.$token.':"'.$value.'",';
+            if (is_array($ajax['data'])) {
+                foreach ($ajax['data'] as $token => $value) {
+                    $output .= '
+                                '.$token.':"'.$value.'",';
+                }
             }
-        }
 
-        $output .= '
+            $output .= '
                             page: "'.$ajax['page'].'"
                         },
                         success: function(data) {
                             try {
                                 val = JSON.parse(data);
-                                $(".progress_main").attr("data-label", val["last_contact"]+" s");
-                                $(".progress").width(val["progress"]+"%");
+                                $("#'.$id.'").attr("data-label", val["last_contact"]+" s");
+                                $("#'.$id.'_progress").width(val["progress"]+"%");
                             } catch (e) {
                                 console.error(e);
                                 $(".progress_text").attr("data-label", (last -1) + " s");
                                 if (width < 100) {
-                                    $(".progress").width((width+width_interval) + "%");
+                                    $("#'.$id.'_progress").width((width+width_interval) + "%");
                                 }
                             }
                         }
                     });
                 } else {
-                    $(".progress_main").attr("data-label", (last -1) + " s");
+                    $("#'.$id.'").attr("data-label", (last -1) + " s");
                     if (width < 100) {
-                        $(".progress").width((width+width_interval) + "%");
+                        $("#'.$id.'_progress").width((width+width_interval) + "%");
                     }
                 }
             }, 1000);
     });
     </script>';
+        }
     }
 
     if (!$return) {
@@ -3469,10 +3511,13 @@ function ui_print_datatable(array $parameters)
     ui_require_javascript_file('buttons.html5.min');
     ui_require_javascript_file('buttons.print.min');
 
-    $output = $include.$output;
+    if (isset($parameters['return']) && $parameters['return'] == true) {
+        // Compat.
+        $parameters['print'] = false;
+    }
 
     // Print datatable if needed.
-    if (isset($parameters['print']) === false || $parameters['print'] === false) {
+    if (isset($parameters['print']) === false || $parameters['print'] === true) {
         echo $output;
     }
 
@@ -3673,8 +3718,8 @@ function ui_toggle(
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image($img_a, true, false, true);
-    $image_b = html_print_image($img_b, true, false, true);
+    $image_a = html_print_image($img_a, true, [ 'style' => 'object-fit: contain;' ], true);
+    $image_b = html_print_image($img_b, true, [ 'style' => 'object-fit: contain;' ], true);
     // Options.
     if ($hidden_default) {
         $style = 'display:none';
@@ -3698,6 +3743,7 @@ function ui_toggle(
         $original,
         true,
         [
+            'style' => 'object-fit: contain;',
             'title' => $title,
             'id'    => 'image_'.$uniqid,
         ]
@@ -5588,7 +5634,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl_static'].'/operation/agentes/snapshot_view.php';
+    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 

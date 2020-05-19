@@ -564,13 +564,13 @@ function visual_map_print_item(
                 }
 
                 if ($is_a_link_to_other_visualconsole) {
-                    if (METACONSOLE == 1) {
+                    if (is_metaconsole() === true) {
                         $url = $config['homeurl'].'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$layoutData['id_layout_linked'].'&refr=300';
                     } else {
                         $url = $config['homeurl'].'index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     }
                 } else {
-                    if (METACONSOLE == 1) {
+                    if (is_metaconsole() === true) {
                         $url = $config['homeurl'].'index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$layoutData['id_group'].'&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status=-1&sort_field=&sort=none&pure=';
                     } else {
                         $url = $config['homeurl'].'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$layoutData['id_group'];

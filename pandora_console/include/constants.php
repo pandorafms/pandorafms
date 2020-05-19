@@ -524,9 +524,15 @@ define('ARROW_TYPE', 1);
 
 // Discovery task steps.
 define('STEP_SCANNING', 1);
+define('STEP_CAPABILITIES', 7);
 define('STEP_AFT', 2);
 define('STEP_TRACEROUTE', 3);
 define('STEP_GATEWAY', 4);
+define('STEP_MONITORING', 5);
+define('STEP_PROCESSING', 6);
+define('STEP_STATISTICS', 1);
+define('STEP_APP_SCAN', 2);
+define('STEP_CUSTOM_QUERIES', 3);
 
 // Networkmap node types.
 define('NODE_AGENT', 0);
@@ -593,6 +599,11 @@ define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
 
+
+// Force task build tmp results.
+define('DISCOVERY_REVIEW', 0);
+define('DISCOVERY_STANDARD', 1);
+define('DISCOVERY_RESULTS', 2);
 
 // Discovery types matching definition.
 define('DISCOVERY_SCRIPT_HOSTDEVICES_CUSTOM', 0);

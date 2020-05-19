@@ -36,7 +36,86 @@ ul.progress_task_discovery {
   flex-direction: column;
 }
 
+div.subtitle {
+  width: 100%;
+  margin-top: 40px;
+  text-align: center;
+}
+
+div.subtitle span {
+  font-size: 1.9em;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+div.subtitle div.manage {
+  text-align: center;
+  padding-top: 2em;
+  padding-bottom: 1em;
+}
+
+div.subtitle div.manage button {
+  font-size: 1.2em;
+  font-family: "lato", "Open Sans", sans-serif;
+  display: inline-block;
+  margin-right: 1em;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 21px;
+  box-shadow: 0 0 10px -5px #888;
+  padding: 0.5em 1em;
+  border: 1px solid #ddd;
+  user-select: none;
+  color: #424242;
+}
+
+div.subtitle .link.review {
+  margin: 15px 0 -30px;
+  display: block;
+  font-weight: bold;
+}
+
+#msg ul li {
+  margin-left: 3em;
+}
+
+li.added {
+  list-style: url("../../images/header_ready.png");
+}
+li.removed {
+  list-style: url("../../images/header_down.png");
+}
+
+#msg ul {
+  list-style: url("../../images/header_ready.png");
+}
+
 ul.progress_task_discovery li span {
   font-size: 9pt;
   margin-left: 20px;
+}
+
+.ui-dialog.ui-widget-content {
+  cursor: initial;
+}
+
+span.link {
+  cursor: pointer;
+}
+
+span.link.review {
+  font-weight: bold;
+}
+
+#review {
+  padding-top: 2em;
+  padding-left: 6.7em;
+}
+
+#review .sim-tree li.disabled > a .sim-tree-checkbox {
+  border-color: #eee;
+  background-color: #ddd;
+}
+
+#task_review {
+  width: 100% !important;
 }

@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.744-200331"
+pandora_version="7.0NG.745-200519"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -79,7 +79,7 @@ cp Linux/pandora_agent.conf temp_package/etc/pandora/
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
 # Relocate plugins to the final dir and delete 
-mv temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+cp temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
 
 echo "Official plugins are placed on /etc/pandora/plugins" > temp_package/usr/share/pandora_agent/plugins/README
 

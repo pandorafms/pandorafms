@@ -722,6 +722,7 @@ function html_print_select(
  * @param string  $style          The string of style.
  * @param mixed   $size           Max elements showed in select or default (size=10)
  * @param integer $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
+ * @param integer $class          Class to apply.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -738,7 +739,8 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT
+    $trucate_size=GENERIC_SIZE_TEXT,
+    $class=''
 ) {
     global $config;
 
@@ -770,7 +772,7 @@ function html_print_select_from_sql(
         $return,
         $multiple,
         $sort,
-        '',
+        $class,
         $disabled,
         $style,
         '',
@@ -1087,7 +1089,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:flex;align-items: baseline;">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1121,7 +1123,7 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:flex;">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1159,8 +1161,8 @@ function html_print_extended_select_for_time(
 			$('#text-".$uniq_name."_text').val(seconds);
 			adjustTextUnits('".$uniq_name."');
 			calculateSeconds('".$uniq_name."');
-			$('#".$uniq_name."_manual').show();
-			$('#".$uniq_name."_default').hide();
+			$('#".$uniq_name."_manual').css('display', 'flex');
+			$('#".$uniq_name."_default').css('display', 'none');
 		}
 	</script>";
     $returnString = ob_get_clean();
@@ -1334,6 +1336,7 @@ function html_print_input_text_extended(
         'onkeyup',
         'required',
         'autocomplete',
+        'form',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
@@ -1550,7 +1553,9 @@ function html_print_input_text(
     $class='',
     $onChange='',
     $autocomplete='',
-    $autofocus=false
+    $autofocus=false,
+    $onKeyDown='',
+    $formTo=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -1575,12 +1580,20 @@ function html_print_input_text(
         $attr['onchange'] = $onChange;
     }
 
+    if ($onKeyDown != '') {
+        $attr['onkeydown'] = $onKeyDown;
+    }
+
     if ($autocomplete !== '') {
         $attr['autocomplete'] = $autocomplete;
     }
 
     if ($autofocus === true) {
         $attr['autofocus'] = $autofocus;
+    }
+
+    if ($formTo != '') {
+        $attr['form'] = $formTo;
     }
 
     return html_print_input_text_extended(
@@ -2075,10 +2088,10 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
+function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='', $disable=false)
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'">';
-    // $output .= io_safe_input ($value);
+    $disabled = ($disable) ? 'disabled' : '';
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
     $output .= '</textarea>';
 
@@ -2163,6 +2176,10 @@ function html_print_table(&$table, $return=false)
 {
     $output = '';
     static $table_count = 0;
+
+    if (!isset($table)) {
+        $table = new StdClass();
+    }
 
     $table_count++;
     if (isset($table->align)) {
@@ -2509,8 +2526,14 @@ function html_print_radio_button_extended(
     $output .= ' '.$attributes;
     $output .= ' />';
 
-    if ($label != '') {
-        $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+    if (is_array($label)) {
+        if (!empty($label)) {
+            $output .= '<label for="'.$htmlid.'" title="'.$label['help_tip'].'">'.$label['label'].'</label>'."\n";
+        }
+    } else {
+        if ($label != '') {
+            $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+        }
     }
 
     if ($modal && !enterprise_installed()) {
@@ -3351,9 +3374,11 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
+    $disabled_class .= (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+
     return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
-			<span class='p-slider'></span>
+			<span class='p-slider".$disabled_class."'></span>
 		</label>";
 }
 
@@ -3451,7 +3476,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                false,
+                ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
+                ((isset($data['form']) === true) ? $data['form'] : '')
             );
         break;
 
@@ -3495,24 +3523,6 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['required']) === true) ? $data['required'] : false),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off')
-            );
-        break;
-
-        case 'text':
-            $output .= html_print_input_text(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : ''),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
-                ((isset($data['autofocus']) === true) ? $data['autofocus'] : false)
             );
         break;
 
@@ -3598,7 +3608,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['style']) === true) ? $data['style'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
             );
         break;
 

@@ -160,8 +160,6 @@ if (isset($_GET['user_del'])) {
         $result = delete_user($id_user);
 
         if ($result) {
-            users_save_logout($user_row, true);
-
             db_pandora_audit(
                 'User management',
                 __('Deleted user %s', io_safe_input($id_user))
@@ -468,12 +466,12 @@ foreach ($info as $user_id => $user_info) {
 
     $data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
     $data[1] = '<ul style="margin-top: 0 !important; margin-left: auto !important; padding-left: 10px !important; list-style-type: none !important;">';
-    $data[1] .= '<li><b>'.__('Name').':</b> '.$user_info['fullname'].'</li>';
+    $data[1] .= '<li>'.$user_info['fullname'].'</li>';
     /*
         $data[1] .= '<li><b>' . __('First name') . ':</b> ' . $user_info["firstname"] . '</li>';
     $data[1] .= '<li><b>' . __('Last name') . ':</b> ' . $user_info["lastname"] . '</li>';*/
-    $data[1] .= '<li><b>'.__('Phone').':</b> '.$user_info['phone'].'</li>';
-    $data[1] .= '<li><b>'.__('E-mail').':</b> '.$user_info['email'].'</li>';
+    $data[1] .= '<li>'.$user_info['phone'].'</li>';
+    $data[1] .= '<li>'.$user_info['email'].'</li>';
     $data[1] .= '</ul>';
     $data[2] = ui_print_timestamp($user_info['last_connect'], true);
 

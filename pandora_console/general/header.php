@@ -81,13 +81,6 @@ if ($config['menu_type'] == 'classic') {
         }
 
 
-        // Chat messages.
-        $header_chat = "<div id='header_chat'><span id='icon_new_messages_chat' style='display: none;'>";
-        $header_chat .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-        $header_chat .= html_print_image('images/header_chat_gray.png', true, ['title' => __('New chat message')]);
-        $header_chat .= '</a></span></div>';
-
-
         // Search.
         $acl_head_search = true;
         if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
@@ -417,7 +410,7 @@ if ($config['menu_type'] == 'classic') {
 
         echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
@@ -530,15 +523,34 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    function print_toast(title, subtitle, severity, url, id, onclick) {
+    function closeToast(event) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
+        var div_id = document.getElementById(match.input);
+        $(div_id).attr("hidden",true);
+    }
+
+    function print_toast(title, subtitle, severity, url, id, onclick, closeToast) {
         // TODO severity.
         severity = '';
-
         // Start the toast.
+
+        var parent_div = document.createElement('div');
+
+        // Print close image
+        var img = document.createElement('img');
+        img.setAttribute('id', id);
+        img.setAttribute("src", './images/close_button_dialog.png');
+        img.setAttribute('onclick', closeToast);
+        img.setAttribute('style', 'margin-left: 95%;');
+        parent_div.appendChild(img);
+
+        // Print a element
         var toast = document.createElement('a');
-        toast.setAttribute('onclick', onclick);
-        toast.setAttribute('href', url);
         toast.setAttribute('target', '_blank');
+        toast.setAttribute('href', url);
+        toast.setAttribute('onclick', onclick);
+
+        var link_div = document.createElement('div');
 
         // Fill toast.
         var toast_div = document.createElement('div');
@@ -548,9 +560,13 @@ if ($config['menu_type'] == 'classic') {
         var toast_text = document.createElement('p');
         toast_title.innerHTML = title;
         toast_text.innerHTML = subtitle;
-        toast_div.appendChild(toast_title);
+
+        // Append Elements
+        toast_div.appendChild(img);
+        link_div.appendChild(toast_title);
+        toast.appendChild(link_div);
+        toast_div.appendChild(toast);
         toast_div.appendChild(toast_text);
-        toast.appendChild(toast_div);
 
         // Show and program the hide event.
         toast_div.className = toast_div.className + ' show';
@@ -558,9 +574,11 @@ if ($config['menu_type'] == 'classic') {
             toast_div.className = toast_div.className.replace("show", "");
         }, 8000);
 
-        return toast;
-    }
+        toast_div.appendChild(parent_div);
 
+        return toast_div;
+    }
+  
     function check_new_notifications() {
         var last_id = document.getElementById('notification-ball-header')
             .getAttribute('last_id');
@@ -617,9 +635,11 @@ if ($config['menu_type'] == 'classic') {
                                 ele.criticity,
                                 ele.full_url,
                                 'notification-toast-id-' + ele.id_mensaje,
-                                'click_on_notification_toast(event)'
+                                'click_on_notification_toast(event)',
+                                'closeToast(event)'
                             )
                         );
+                        
                     });
                 }
             },
@@ -640,8 +660,6 @@ if ($config['menu_type'] == 'classic') {
 
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 
-    var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
-    
     function showinterpreter(){
 
         document.onclick = function(e) {
@@ -789,9 +807,7 @@ if ($config['menu_type'] == 'classic') {
             $('div#head').addClass('fixed_header');
             $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
-        
-        check_new_chats_icon('icon_new_messages_chat');
-        
+      
         /* Temporal fix to hide graphics when ui_dialog are displayed */
         $("#yougotalert").click(function () { 
             $("#agent_access").css("display", "none");

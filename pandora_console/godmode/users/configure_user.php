@@ -390,7 +390,7 @@ if ($update_user) {
         $password_confirm = (string) get_parameter('password_confirm', '');
         if ($password_new != '') {
             if ($password_confirm == $password_new) {
-                if ((!$values['is_admin'] || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
                     $pass_ok = login_validate_pass($password_new, $id, true);
                     if ($pass_ok != 1) {
                         ui_print_error_message($pass_ok);

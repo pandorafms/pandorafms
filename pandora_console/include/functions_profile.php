@@ -189,14 +189,15 @@ function profile_print_profile_table($id)
 
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     if (defined('METACONSOLE')) {
         $table->head_colspan[0] = 0;
         $table->width = '100%';
         $table->class = 'databox_tactical data';
         $table->title = $title;
     } else {
-        echo '<h4>'.$title.'</h4>';
+        echo '<div id="edit_user_profiles" class="white_box">';
+        echo '<h4><p class="edit_user_labels">'.$title.'</p></h4>';
     }
 
     $table->data = [];
@@ -204,8 +205,8 @@ function profile_print_profile_table($id)
     $table->align = [];
     $table->style = [];
     if (!defined('METACONSOLE')) {
-        $table->style[0] = 'font-weight: bold';
-        $table->style[1] = 'font-weight: bold';
+        $table->style['name'] = 'font-weight: bold';
+        $table->style['group'] = 'font-weight: bold';
     }
 
     $table->head['name'] = __('Profile name');
@@ -324,5 +325,9 @@ function profile_print_profile_table($id)
     array_push($table->data, $data);
 
     html_print_table($table);
+    if (!is_metaconsole()) {
+        echo '</div>';
+    }
+
     unset($table);
 }

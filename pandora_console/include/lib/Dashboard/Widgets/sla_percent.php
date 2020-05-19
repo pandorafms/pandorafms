@@ -110,6 +110,13 @@ class SLAPercentWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Cell ID.
+     *
+     * @var integer
+     */
+    protected $cellId;
+
 
     /**
      * Construct.
@@ -147,8 +154,11 @@ class SLAPercentWidget extends Widget
         // Grid Width.
         $this->gridWidth = $gridWidth;
 
+        // Cell Id.
+        $this->cellId = $cellId;
+
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -175,6 +185,71 @@ class SLAPercentWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['label_'.$this->cellId]) === true) {
+            $values['label'] = $decoder['label_'.$this->cellId];
+        }
+
+        if (isset($decoder['label']) === true) {
+            $values['label'] = $decoder['label'];
+        }
+
+        if (isset($decoder['id_agent_'.$this->cellId]) === true) {
+            $values['agentId'] = $decoder['id_agent_'.$this->cellId];
+        }
+
+        if (isset($decoder['agentId']) === true) {
+            $values['agentId'] = $decoder['agentId'];
+        }
+
+        if (isset($decoder['metaconsoleId']) === true) {
+            $values['metaconsoleId'] = $decoder['metaconsoleId'];
+        }
+
+        if (isset($decoder['id_module_'.$this->cellId]) === true) {
+            $values['moduleId'] = $decoder['id_module_'.$this->cellId];
+        }
+
+        if (isset($decoder['moduleId']) === true) {
+            $values['moduleId'] = $decoder['moduleId'];
+        }
+
+        if (isset($decoder['size_value_'.$this->cellId]) === true) {
+            $values['sizeValue'] = $decoder['size_value_'.$this->cellId];
+        }
+
+        if (isset($decoder['sizeValue']) === true) {
+            $values['sizeValue'] = $decoder['sizeValue'];
+        }
+
+        if (isset($decoder['size_label_'.$this->cellId]) === true) {
+            $values['sizeLabel'] = $decoder['size_label_'.$this->cellId];
+        }
+
+        if (isset($decoder['sizeLabel']) === true) {
+            $values['sizeLabel'] = $decoder['sizeLabel'];
+        }
+
+        if (isset($decoder['period']) === true) {
+            $values['period'] = $decoder['period'];
+        }
+
+        return $values;
     }
 
 
@@ -387,7 +462,7 @@ class SLAPercentWidget extends Widget
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div style="flex: 1 1; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
+            $output .= '<div style="flex: 1 1; font-size:'.$sizeLabel.'px; text-align: left;">'.$label.'</div>';
         }
 
         $output .= '</div>';

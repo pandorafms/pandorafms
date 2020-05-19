@@ -16,7 +16,7 @@ global $config;
 
 check_login();
 
-require 'vendor/autoload.php';
+require_once $config['homedir'].'/vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
 
@@ -44,6 +44,54 @@ if (ENTERPRISE_NOT_HOOK !== enterprise_include('include/functions_policies.php')
 
 if ($enterprise_include) {
     enterprise_include_once('meta/include/functions_users_meta.php');
+}
+
+
+if (!is_metaconsole()) {
+    date_default_timezone_set('UTC');
+    include 'include/javascript/timezonepicker/includes/parser.inc';
+
+    // Read in options for map builder.
+    $bases = [
+        'gray'           => 'Gray',
+        'blue-marble'    => 'Blue marble',
+        'night-electric' => 'Night Electric',
+        'living'         => 'Living Earth',
+    ];
+
+    $local_file = 'include/javascript/timezonepicker/images/gray-400.png';
+
+    // Dimensions must always be exact since the imagemap does not scale.
+    $array_size = getimagesize($local_file);
+
+    $map_width = $array_size[0];
+    $map_height = $array_size[1];
+
+    $timezones = timezone_picker_parse_files(
+        $map_width,
+        $map_height,
+        'include/javascript/timezonepicker/tz_world.txt',
+        'include/javascript/timezonepicker/tz_islands.txt'
+    );
+
+
+    foreach ($timezones as $timezone_name => $tz) {
+        if ($timezone_name == 'America/Montreal') {
+            $timezone_name = 'America/Toronto';
+        } else if ($timezone_name == 'Asia/Chongqing') {
+            $timezone_name = 'Asia/Shanghai';
+        }
+
+        $area_data_timezone_polys .= '';
+        foreach ($tz['polys'] as $coords) {
+            $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
+        }
+
+        $area_data_timezone_rects .= '';
+        foreach ($tz['rects'] as $coords) {
+            $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
+        }
+    }
 }
 
 // This defines the working user. Beware with this, old code get confusses
@@ -75,6 +123,12 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
 
 $tab = get_parameter('tab', 'user');
 
+if ($id) {
+    $header_title = ' &raquo; '.__('Update user');
+} else {
+    $header_title = ' &raquo; '.__('Create user');
+}
+
 // Header
 if ($meta) {
     user_meta_print_header();
@@ -94,7 +148,7 @@ if ($meta) {
     $buttons[$tab]['active'] = true;
 
     ui_print_page_header(
-        __('User detail editor'),
+        __('User detail editor').$header_title,
         'images/gm_users.png',
         false,
         'profile_tab',
@@ -625,59 +679,61 @@ if ($values) {
     $user_info = $values;
 }
 
-$table = new stdClass();
-$table->id = 'user_configuration_table';
-$table->width = '100%';
-$table->class = 'databox filters';
 if (defined('METACONSOLE')) {
     if ($id) {
-        $table->head[0] = __('Update User');
+        echo '<div class="user_form_title">'.__('Update User').'</div>';
     } else {
-        $table->head[0] = __('Create User');
+        echo '<div class="user_form_title">'.__('Create User').'</div>';
     }
-
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
 }
 
-$table->data = [];
-$table->colspan = [];
-$table->size = [];
-$table->size[0] = '35%';
-$table->size[1] = '65%';
-$table->style = [];
-$table->style[0] = 'font-weight: bold;';
+if (!$new_user) {
+    $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
+    $user_id .= '<span>'.$id.'</span>';
+    $user_id .= html_print_input_hidden('id_user', $id, true);
+    $user_id .= '</div>';
+} else {
+    $user_id = '<div class="label_select_simple">'.html_print_input_text_extended(
+        'id_user',
+        $id,
+        '',
+        '',
+        20,
+        100,
+        !$new_user || $view_mode,
+        '',
+        [
+            'class'       => 'input_line user_icon_input',
+            'placeholder' => __('User ID'),
+        ],
+        true
+    ).'</div>';
+}
 
-$table->data[0][0] = __('User ID');
-$table->data[0][1] = html_print_input_text_extended(
-    'id_user',
-    $id,
-    '',
-    '',
-    20,
-    60,
-    !$new_user || $view_mode,
-    '',
-    '',
-    true
-);
+if (is_user_admin($id)) {
+    $avatar = html_print_image('images/people_1.png', true, ['class' => 'user_avatar']);
+} else {
+    $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
+}
 
-$table->data[1][0] = __('Full (display) name');
-$table->data[1][1] = html_print_input_text_extended(
+$full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',
     $user_info['fullname'],
+    'fullname',
     '',
-    '',
-    30,
-    125,
+    20,
+    100,
     $view_mode,
     '',
-    '',
+    [
+        'class'       => 'input',
+        'placeholder' => __('Full (display) name'),
+    ],
     true
-);
+).'</div>';
 
-$table->data[2][0] = __('Language');
-$table->data[2][1] = html_print_select_from_sql(
+$language = '<div class="label_select"><p class="edit_user_labels">'.__('Language').': </p>';
+$language .= html_print_select_from_sql(
     'SELECT id_language, name FROM tlanguage',
     'language',
     $user_info['language'],
@@ -685,88 +741,112 @@ $table->data[2][1] = html_print_select_from_sql(
     __('Default'),
     'default',
     true
-);
+).'</div>';
 
-$table->data[3][0] = __('Timezone');
-$table->data[3][1] = html_print_timezone_select('timezone', $user_info['timezone']);
+
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').': </p>';
+$timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 if ($config['user_can_update_password']) {
-    $table->data[4][0] = __('Password');
-    $table->data[4][1] = html_print_input_text_extended(
+    $new_pass = '<div class="label_select_simple"><span>'.html_print_input_text_extended(
         'password_new',
         '',
+        'password_new',
         '',
-        '',
-        15,
-        45,
+        '25',
+        '45',
         $view_mode,
         '',
-        '',
+        [
+            'class'       => 'input',
+            'placeholder' => __('Password'),
+        ],
         true,
         true
-    );
-    $table->data[5][0] = __('Password confirmation');
-    $table->data[5][1] = html_print_input_text_extended(
+    ).'</span></div>';
+    $new_pass_confirm = '<div class="label_select_simple"><span>'.html_print_input_text_extended(
         'password_confirm',
         '',
+        'password_conf',
         '',
-        '',
-        15,
-        45,
+        '20',
+        '45',
         $view_mode,
         '',
-        '',
+        [
+            'class'       => 'input',
+            'placeholder' => __('Password confirmation'),
+        ],
         true,
         true
-    );
+    ).'</span></div>';
 }
 
 $own_info = get_user_info($config['id_user']);
-if ($config['admin_can_make_admin']) {
-    $table->data[6][0] = __('Global Profile');
-    $table->data[6][1] = '';
-    if ($own_info['is_admin'] || $user_info['is_admin']) {
-        $table->data[6][1] = html_print_radio_button('is_admin', 1, '', $user_info['is_admin'], true);
-        $table->data[6][1] .= __('Administrator');
-        $table->data[6][1] .= ui_print_help_tip(__('This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL.'), true);
-        $table->data[6][1] .= '<br />';
-    }
+$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" style="margin:0;">'.__('Global Profile').': </span>';
+$global_profile .= '<div class="switch_radio_button">';
+$global_profile .= html_print_radio_button_extended(
+    'is_admin',
+    1,
+    [
+        'label'    => __('Administrator'),
+        'help_tip' => __('This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL.'),
+    ],
+    $user_info['is_admin'],
+    false,
+    '',
+    '',
+    true
+);
+$global_profile .= html_print_radio_button_extended(
+    'is_admin',
+    0,
+    [
+        'label'    => __('Standard User'),
+        'help_tip' => __('This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles'),
+    ],
+    $user_info['is_admin'],
+    false,
+    '',
+    '',
+    true
+);
+$global_profile .= '</div></div>';
 
-    $table->data[6][1] .= html_print_radio_button('is_admin', 0, '', $user_info['is_admin'], true);
-    $table->data[6][1] .= __('Standard User');
-    $table->data[6][1] .= ui_print_help_tip(__('This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles'), true);
-}
-
-$table->data[7][0] = __('E-mail');
-$table->data[7][1] = html_print_input_text_extended(
+$email = '<div class="label_select_simple">'.html_print_input_text_extended(
     'email',
     $user_info['email'],
+    'email',
     '',
-    '',
-    20,
-    100,
+    '25',
+    '100',
     $view_mode,
     '',
-    '',
+    [
+        'class'       => 'input input_line email_icon_input',
+        'placeholder' => __('E-mail'),
+    ],
     true
-);
+).'</div>';
 
-$table->data[8][0] = __('Phone number');
-$table->data[8][1] = html_print_input_text_extended(
+$phone = '<div class="label_select_simple">'.html_print_input_text_extended(
     'phone',
     $user_info['phone'],
+    'phone',
     '',
-    '',
-    10,
-    30,
+    '20',
+    '30',
     $view_mode,
     '',
-    '',
+    [
+        'class'       => 'input input_line phone_icon_input',
+        'placeholder' => __('Phone number'),
+    ],
     true
-);
+).'</div>';
 
-$table->data[9][0] = __('Comments');
-$table->data[9][1] = html_print_textarea(
+$comments = '<p class="edit_user_labels">'.__('Comments').': </p>';
+$comments .= html_print_textarea(
     'comments',
     2,
     65,
@@ -795,16 +875,17 @@ if (!$meta) {
     // User only can change skins if has more than one group
     if (count($usr_groups) > 1) {
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            $table->data[10][0] = __('Skin');
-            $table->data[10][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
+            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
 }
 
 if ($meta) {
     $array_filters = get_filters_custom_fields_view(0, true);
-    $table->data[11][0] = __('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true);
-    $table->data[11][1] = html_print_select(
+
+    $search_custom_fields_view = '<div class="label_select"><p class="edit_user_labels">'.__('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true).'</p>';
+    $search_custom_fields_view .= html_print_select(
         $array_filters,
         'default_custom_view',
         $user_info['default_custom_view'],
@@ -816,7 +897,7 @@ if ($meta) {
         true,
         '',
         false
-    );
+    ).'</div>';
 }
 
 $values = [
@@ -825,7 +906,8 @@ $values = [
     0  => __('No'),
 ];
 
-$table->data[12][0] = __('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true);
+$home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
+;
 $values = [
     'Default'        => __('Default'),
     'Visual console' => __('Visual console'),
@@ -841,7 +923,7 @@ if (!is_metaconsole()) {
 }
 
 
-$table->data[12][1] = html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false);
+$home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
 
 
 $dashboards = Manager::getDashboards(-1, -1);
@@ -854,7 +936,7 @@ if ($dashboards === false) {
     }
 }
 
-$table->data[12][1] .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+$home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
 
 
 $layouts = visual_map_get_user_layouts($config['id_user'], true);
@@ -867,14 +949,14 @@ if ($layouts === false) {
     }
 }
 
-$table->data[12][1] .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
-$table->data[12][1] .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
+$home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+$home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
-$table->data[13][0] = __('Block size for pagination');
-$table->data[13][1] = html_print_input_text('block_size', $user_info['block_size'], '', 5, 5, true);
+$size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
+$size_pagination .= html_print_input_text('block_size', $user_info['block_size'], '', 5, 5, true).'</div>';
 
 if ($id == $config['id_user']) {
-    $table->data[13][1] .= html_print_input_hidden('quick_language_change', 1, true);
+    $language .= html_print_input_hidden('quick_language_change', 1, true);
 }
 
 if (enterprise_installed() && defined('METACONSOLE')) {
@@ -883,12 +965,12 @@ if (enterprise_installed() && defined('METACONSOLE')) {
         $user_info_metaconsole_access = $user_info['metaconsole_access'];
     }
 
-    $table->data[13][0] = __('Metaconsole access').' '.ui_print_help_icon('meta_access', true);
+    $meta_access = '<div class="label_select"><p class="edit_user_labels">'.__('Metaconsole access').' '.ui_print_help_icon('meta_access', true).'</p>';
     $metaconsole_accesses = [
         'basic'    => __('Basic'),
         'advanced' => __('Advanced'),
     ];
-    $table->data[13][1] = html_print_select(
+    $meta_access .= html_print_select(
         $metaconsole_accesses,
         'metaconsole_access',
         $user_info_metaconsole_access,
@@ -898,16 +980,16 @@ if (enterprise_installed() && defined('METACONSOLE')) {
         true,
         false,
         false
-    );
+    ).'</div>';
 }
 
-$table->data[14][0] = __('Not Login');
-$table->data[14][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
-$table->data[14][1] = html_print_checkbox('not_login', 1, $user_info['not_login'], true);
+$not_login = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Not Login').'</p>';
+$not_login .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
+$not_login .= html_print_checkbox_switch('not_login', 1, $user_info['not_login'], true).'</div>';
 
-$table->data[15][0] = __('Session Time');
-$table->data[15][0] .= ui_print_help_tip(__('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'), true);
-$table->data[15][1] = html_print_input_text('session_time', $user_info['session_time'], '', 5, 5, true);
+$session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
+$session_time .= ui_print_help_tip(__('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'), true).'</p>';
+$session_time .= html_print_input_text('session_time', $user_info['session_time'], '', 5, 5, true.false, false, '', 'class="input_line_small"').'</div>';
 
 $event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
 if ($event_filter_data === false) {
@@ -920,69 +1002,104 @@ foreach ($event_filter_data as $filter) {
     $event_filter[$filter['id_filter']] = $filter['id_name'];
 }
 
-$table->data[16][0] = __('Default event filter');
-$table->data[16][1] = html_print_select($event_filter, 'default_event_filter', $user_info['default_event_filter'], '', '', __('None'), true, false, false);
+$default_event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Default event filter').'</p>';
+$default_event_filter .= html_print_select($event_filter, 'default_event_filter', $user_info['default_event_filter'], '', '', __('None'), true, false, false).'</div>';
 
-$table->data[17][0] = __('Disabled newsletter');
+$newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Disabled newsletter').'</p>';
 if ($user_info['middlename'] >= 0) {
     $middlename = false;
 } else {
     $middlename = true;
 }
 
-$table->data[17][1] = html_print_checkbox(
+$newsletter .= html_print_checkbox_switch(
     'middlename',
     -1,
     $middlename,
     true
-);
+).'</div>';
 
 if ($config['ehorus_user_level_conf']) {
-    $table->data[18][0] = __('eHorus user acces enabled');
-    $table->data[18][1] = html_print_checkbox('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
-    $table->data[19][0] = __('eHorus user');
-    $table->data[20][0] = __('eHorus password');
-    $table->data[19][1] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 15, 45, true);
-    $table->data[20][1] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 15, 45, true);
+    $ehorus = '<div class="label_select_simple"><p class="edit_user_labels">'.__('eHorus user access enabled').'</p>';
+    $ehorus .= html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true).'</div>';
+    $ehorus .= '<div class="user_edit_ehorus_outer">';
+    $ehorus .= '<div class="label_select_simple user_edit_ehorus_inner"><p class="edit_user_labels">'.__('eHorus user').'</p>';
+    $ehorus .= html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 15, 45, true).'</div>';
+    $ehorus .= '<div class="label_select_simple user_edit_ehorus_inner"><p class="edit_user_labels">'.__('eHorus password').'</p>';
+    $ehorus .= html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 15, 45, true).'</div>';
+    $ehorus .= '</div>';
 }
 
 
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
 
-    $data = [];
-    $data[0] = __('Enable agents managment');
-    $data[1] = html_print_checkbox('metaconsole_agents_manager', 1, $user_info['metaconsole_agents_manager'], true);
-    $table->rowclass[] = '';
-    $table->rowstyle[] = 'font-weight: bold;';
-    $table->data['metaconsole_agents_manager'] = $data;
+    $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
+    $metaconsole_agents_manager .= html_print_checkbox_switch('metaconsole_agents_manager', 1, $user_info['metaconsole_agents_manager'], true).'</div>';
 
-    $data = [];
-    $data[0] = __('Assigned node').ui_print_help_tip(__('Server where the agents created of this user will be placed'), true);
+    $metaconsole_assigned_server = '<div class="label_select" id="metaconsole_assigned_server_div"><p class="edit_user_labels">'.__('Assigned node').ui_print_help_tip(__('Server where the agents created of this user will be placed'), true).'</p>';
     $servers = metaconsole_get_servers();
     $servers_for_select = [];
     foreach ($servers as $server) {
         $servers_for_select[$server['id']] = $server['server_name'];
     }
 
-    $data[1] = html_print_select($servers_for_select, 'metaconsole_assigned_server', $user_info['metaconsole_assigned_server'], '', '', -1, true, false, false);
-    $table->rowclass[] = '';
-    $table->rowstyle[] = 'font-weight: bold;';
-    $table->data['metaconsole_assigned_server'] = $data;
+    $metaconsole_assigned_server .= html_print_select($servers_for_select, 'metaconsole_assigned_server', $user_info['metaconsole_assigned_server'], '', '', -1, true, false, false).'</div>';
 
-    $data = [];
-    $data[0] = __('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true);
-    $data[2] = html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true);
-    $table->rowclass[] = '';
-    $table->rowstyle[] = '';
-    $table->data['metaconsole_access_node'] = $data;
+    $metaconsole_access_node = '<div class="label_select_simple" id="metaconsole_access_node_div"><p class="edit_user_labels">'.__('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true).'</p>';
+    $metaconsole_access_node .= html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true).'</div>';
 }
 
 echo '<form method="post" autocomplete="off">';
 
-html_print_table($table);
 
-echo '<div style="width: '.$table->width.'" class="action-buttons">';
+if (!$id) {
+    $user_id_update_view = $user_id;
+    $user_id_create = '';
+} else {
+    $user_id_update_view = '';
+    $user_id_create = $user_id;
+}
+
+if (is_metaconsole()) {
+    $access_or_pagination = $meta_access;
+} else {
+    $access_or_pagination = $size_pagination;
+}
+
+
+echo '<div id="user_form">
+<div class="user_edit_first_row">
+    <div class="edit_user_info white_box">
+        <div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
+        <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>
+    </div>  
+    <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info:</p>'.$email.$phone.$not_login.$session_time.'</div>
+</div> 
+<div class="user_edit_second_row white_box">
+    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.'</div>
+
+    <div class="edit_user_timezone">'.$timezone;
+if (!is_metaconsole()) {
+    echo '<div id="timezone-picker">
+                        <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
+                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                        <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
+                    </div>';
+} else {
+    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_assigned_server.$metaconsole_access_node;
+}
+
+    echo '</div>
+</div> 
+
+<div class="user_edit_third_row white_box">
+    <div class="edit_user_comments">'.$comments.'</div>
+</div>  
+<div class="user_edit_third_row white_box">'.$ehorus.'</div>  
+</div>';
+
+echo '<div style="width: 100%" class="action-buttons">';
 if ($config['admin_can_add_user']) {
     html_print_csrf_hidden();
     if ($new_user) {
@@ -1005,32 +1122,62 @@ if (!empty($id) && !$new_user) {
 
 enterprise_hook('close_meta_frame');
 
+if (!is_metaconsole()) {
+    ?>
+
+    <style>
+        /* Styles for timezone map */
+        #timezone-picker div.timezone-picker {
+            margin: 0 auto;
+        }
+    </style>
+
+    <script language="javascript" type="text/javascript">
+        $(document).ready (function () {
+            // Set up the picker to update target timezone and country select lists.
+            $('#timezone-image').timezonePicker({
+                target: '#timezone',
+            });
+
+            // Optionally an auto-detect button to trigger JavaScript geolocation.
+            $('#timezone-detect').click(function() {
+                $('#timezone-image').timezonePicker('detectLocation');
+            });
+        });
+    </script>
+    <?php
+    // Include OpenLayers and timezone user map library.
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
+    // Closes no meta condition.
+}
+
 ?>
 
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
     $('input:radio[name="is_admin"]').change(function() {
-        if($('#radiobtn0002').prop('checked')) {            
-            $('#user_configuration_table-metaconsole_agents_manager').show();
-            $('#user_configuration_table-metaconsole_access_node').show();
-            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {            
-                $('#user_configuration_table-metaconsole_assigned_server').show();
+        if($('#radiobtn0002').prop('checked')) {     
+            $('#metaconsole_agents_manager_div').show();
+            $('#metaconsole_access_node_div').show();
+            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {       
+                $('#metaconsole_assigned_server_div').show();
             }
         }
         else {            
-            $('#user_configuration_table-metaconsole_agents_manager').hide();
-            $('#user_configuration_table-metaconsole_access_node').hide();
-            $('#user_configuration_table-metaconsole_assigned_server').hide();
+            $('#metaconsole_agents_manager_div').hide();
+            $('#metaconsole_access_node_div').hide();
+            $('#metaconsole_assigned_server_div').hide();
         }
     });
     
-    $('#checkbox-metaconsole_agents_manager').change(function() {
+    $('#checkbox-metaconsole_agents_manager').change(function() { 
         if($('#checkbox-metaconsole_agents_manager').prop('checked')) {            
-            $('#user_configuration_table-metaconsole_assigned_server').show();
+            $('#metaconsole_assigned_server_div').show();
         }
-        else {            
-            $('#user_configuration_table-metaconsole_assigned_server').hide();
+        else {
+            $('#metaconsole_assigned_server_div').hide();
         }
     });
     
@@ -1101,13 +1248,11 @@ function switch_ehorus_conf()
 {
     if(!$('#checkbox-ehorus_user_level_enabled').prop('checked')) 
     {
-        $("#user_configuration_table-18").hide();
-        $("#user_configuration_table-19").hide();
+        $(".user_edit_ehorus_outer").hide();
 
     }else
     {
-        $("#user_configuration_table-18").show();
-        $("#user_configuration_table-19").show()   
+        $(".user_edit_ehorus_outer").show();
     }
 
 

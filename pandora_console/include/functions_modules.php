@@ -2272,6 +2272,102 @@ function modules_get_agentmodule_data(
 
 
 /**
+ * Return module data in readable format.
+ *
+ * @param array $module Current module.
+ *
+ * @return void
+ */
+function modules_get_agentmodule_data_for_humans($module)
+{
+    global $config;
+
+    if (is_numeric($module['datos']) && !modules_is_string_type($module['id_tipo_modulo'])) {
+        if ($config['render_proc']) {
+            switch ($module['id_tipo_modulo']) {
+                case 2:
+                case 6:
+                case 9:
+                case 18:
+                case 21:
+                case 31:
+                    if ($module['datos'] >= 1) {
+                        $salida = $config['render_proc_ok'];
+                    } else {
+                        $salida = $config['render_proc_fail'];
+                    }
+                break;
+
+                default:
+                    switch ($module['id_tipo_modulo']) {
+                        case 15:
+                            $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+                            if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                                if ($module['post_process'] > 0) {
+                                    $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
+                                } else {
+                                    $salida = human_milliseconds_to_string($module['datos']);
+                                }
+                            } else {
+                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                            }
+                        break;
+
+                        default:
+                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                        break;
+                    }
+                break;
+            }
+        } else {
+            switch ($module['id_tipo_modulo']) {
+                case 15:
+                    $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+                    if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                        if ($module['post_process'] > 0) {
+                            $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
+                        } else {
+                            $salida = human_milliseconds_to_string($module['datos']);
+                        }
+                    } else {
+                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                    }
+                break;
+
+                default:
+                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
+                break;
+            }
+        }
+
+        // Show units ONLY in numeric data types
+        if (isset($module['unit'])) {
+            $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
+            if ($data_macro) {
+                $salida = $data_macro;
+            } else {
+                $salida .= '&nbsp;<i>'.io_safe_output($module['unit']).'</i>';
+            }
+        }
+    } else {
+        $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
+        if ($data_macro) {
+            $salida = $data_macro;
+        } else {
+            $salida = ui_print_module_string_value(
+                $module['datos'],
+                $module['id_agente_modulo'],
+                $module['current_interval'],
+                $module['module_name']
+            );
+        }
+    }
+
+    return $salida;
+}
+
+
+/**
  * This function gets the modulegroup for a given group
  *
  * @param int The group id

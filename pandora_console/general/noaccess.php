@@ -136,8 +136,11 @@ font-size:10pt;
             <div class='modalcontenttex'>
                 <?php
                 echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance.');
-                    echo '<br/> <br/>';
-                    echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
+                echo '<br/> <br/>';
+                echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
+                if ($config['logged'] == false) {
+                    session_destroy();
+                }
                 ?>
                       
             </div>

@@ -538,7 +538,14 @@ class DiscoveryTaskList extends HTML
                 }
 
                 $can_be_reviewed = false;
-                if ($task['review_mode'] == DISCOVERY_STANDARD) {
+                if (empty($task['summary']) === false
+                    && $task['summary'] == 'cancelled'
+                ) {
+                    $data[5] = __('Cancelled').ui_print_help_tip(
+                        __('Server has been restarted while executing this task, please retry.'),
+                        true
+                    );
+                } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
                     ) {

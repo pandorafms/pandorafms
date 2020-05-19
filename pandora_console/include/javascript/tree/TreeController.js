@@ -20,7 +20,7 @@ var TreeController = {
       recipient: "",
       tree: [],
       emptyMessage: "No data found.",
-      foundMessage: "Found groups",
+      foundMessage: "Groups found",
       errorMessage: "Error",
       baseURL: "",
       ajaxURL: "ajax.php",
@@ -48,9 +48,15 @@ var TreeController = {
               .addClass("tree-root")
               .hide()
               .prepend(
-                '<img src="' +
+                '<div class="tree-node flex-row-vcenter">' +
+                  '<img src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                  'images/pandora.png" />'
+                  'images/pandora.png" />' +
+                  "<span class='margin-left-1'>" +
+                  (controller.tree.length > 0
+                    ? controller.foundMessage + ": " + controller.tree.length
+                    : "") +
+                  "</div>"
               );
           }
           // Normal group
@@ -315,7 +321,7 @@ var TreeController = {
                 _processNodeCounterTitle($totalCounter, type, "total");
 
                 // Open the parentheses
-                $counters.append(" (");
+                $counters.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ ");
 
                 $counters.append($totalCounter);
 
@@ -409,7 +415,7 @@ var TreeController = {
               }
 
               // Close the parentheses
-              $counters.append(")");
+              $counters.append(" ]");
 
               hasCounters = true;
             }
@@ -541,6 +547,7 @@ var TreeController = {
               break;
             case "agent":
               // Is quiet
+
               if (
                 typeof element.quietImageHTML != "undefined" &&
                 element.quietImageHTML.length > 0
@@ -559,16 +566,6 @@ var TreeController = {
                 $statusImage.addClass("agent-status");
 
                 $content.append($statusImage);
-              }
-              // Alerts fired image
-              if (
-                typeof element.alertImageHTML != "undefined" &&
-                element.alertImageHTML.length > 0
-              ) {
-                var $alertImage = $(element.alertImageHTML);
-                $alertImage.addClass("agent-alerts-fired");
-
-                $content.append($alertImage);
               }
 
               // Events by agent
@@ -690,6 +687,8 @@ var TreeController = {
               $content.append(" " + element.name);
               break;
             case "module":
+              $content.addClass("module");
+
               // Status image
               if (
                 typeof element.statusImageHTML != "undefined" &&
@@ -700,17 +699,19 @@ var TreeController = {
 
                 $content.append($statusImage);
               }
-              // Server type
-              if (
-                typeof element.serverTypeHTML != "undefined" &&
-                element.serverTypeHTML.length > 0 &&
-                element.serverTypeHTML != "--"
-              ) {
-                var $serverTypeImage = $(element.serverTypeHTML);
-                $serverTypeImage.addClass("module-server-type");
 
-                $content.append($serverTypeImage);
-              }
+              // Name max 42 chars.
+              $content.append(
+                '<span class="module-name">' +
+                  element.name.substring(0, 42) +
+                  (element.name.length > 42 ? "..." : "") +
+                  "</span>"
+              );
+
+              // Value.
+              $content.append(
+                '<span class="module-value">' + element.value + "</span>"
+              );
 
               if (
                 typeof element.showGraphs != "undefined" &&
@@ -832,7 +833,6 @@ var TreeController = {
                 $content.append($alertsImage);
               }
 
-              $content.append(element.name);
               break;
             case "os":
               if (
@@ -1086,20 +1086,6 @@ var TreeController = {
         }
 
         controller.recipient.empty();
-        if (
-          controller.tree.length !== undefined &&
-          controller.foundMessage !== "not"
-        ) {
-          controller.recipient.html(
-            "<div> " +
-              controller.foundMessage +
-              ": " +
-              controller.tree.length +
-              "</div>" +
-              "<br/>"
-          );
-        }
-
         var $children = _processGroup(this.recipient, this.tree, true);
         $children.show();
 

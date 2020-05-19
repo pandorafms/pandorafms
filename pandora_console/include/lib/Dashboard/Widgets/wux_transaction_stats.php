@@ -154,7 +154,7 @@ class WuxStatsWidget extends Widget
         $this->cellId = $cellId;
 
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -181,6 +181,51 @@ class WuxStatsWidget extends Widget
         }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['id_agent_'.$this->cellId]) === true) {
+            $values['agentId'] = $decoder['id_agent_'.$this->cellId];
+        }
+
+        if (isset($decoder['agentId']) === true) {
+            $values['agentId'] = $decoder['agentId'];
+        }
+
+        if (isset($decoder['metaconsoleId']) === true) {
+            $values['metaconsoleId'] = $decoder['metaconsoleId'];
+        }
+
+        if (isset($decoder['wux_transaction_'.$this->cellId]) === true) {
+            $values['transactionId'] = $decoder['wux_transaction_'.$this->cellId];
+        }
+
+        if (isset($decoder['transactionId']) === true) {
+            $values['transactionId'] = $decoder['transactionId'];
+        }
+
+        if (isset($decoder['view_all_stats']) === true) {
+            $values['allStats'] = $decoder['view_all_stats'];
+        }
+
+        if (isset($decoder['allStats']) === true) {
+            $values['allStats'] = $decoder['allStats'];
+        }
+
+        return $values;
     }
 
 

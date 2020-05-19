@@ -45,7 +45,7 @@ $(document).ready(function() {
     jQuery.post(
       "ajax.php",
       {
-        page: "operation/messages/message_list"
+        page: "operation/messages/message_list",
       },
       function(data, status) {
         $("#dialog_messages")
@@ -58,10 +58,10 @@ $(document).ready(function() {
             modal: true,
             overlay: {
               opacity: 0.5,
-              background: "black"
+              background: "black",
             },
             width: 700,
-            height: 300
+            height: 300,
           })
           .show();
       },
@@ -80,7 +80,7 @@ $(document).ready(function() {
     jQuery.post(
       "ajax.php",
       {
-        page: "operation/system_alert"
+        page: "operation/system_alert",
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -104,7 +104,7 @@ $(document).ready(function() {
       "ajax.php",
       {
         page: "general/alert_enterprise",
-        message: elem
+        message: elem,
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -130,7 +130,7 @@ $(document).ready(function() {
       "ajax.php",
       {
         page: "general/alert_enterprise",
-        message: elem
+        message: elem,
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -155,7 +155,7 @@ $(document).ready(function() {
       "ajax.php",
       {
         page: "general/alert_enterprise",
-        message: elem
+        message: elem,
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -174,6 +174,11 @@ $(document).ready(function() {
 
     if (typeof show_error_license == "undefined") show_error_license = 0;
 
+    if (typeof hide_counter == "undefined") hide_counter = 0;
+
+    let height = 300;
+    if (typeof invalid_license != "undefined") height = 350;
+
     if (process_login_ok || show_error_license) {
       $("#license_error_msg_dialog").dialog({
         dialogClass: "no-close",
@@ -181,29 +186,33 @@ $(document).ready(function() {
         resizable: false,
         draggable: true,
         modal: true,
-        height: 470,
+        height: height,
         width: 850,
         overlay: {
           opacity: 0.5,
-          background: "black"
+          background: "black",
         },
         open: function() {
-          var remaining = 30;
+          if (hide_counter != 1) {
+            var remaining = 30;
 
-          // Timeout counter.
-          var count = function() {
-            if (remaining > 0) {
-              $("#license_error_remaining").text(remaining);
-              remaining -= 1;
-            } else {
-              $("#license_error_remaining").hide();
-              $("#ok_buttom").show();
-              clearInterval(count);
-            }
-          };
+            // Timeout counter.
+            var count = function() {
+              if (remaining > 0) {
+                $("#license_error_remaining").text(remaining);
+                remaining -= 1;
+              } else {
+                $("#license_error_remaining").hide();
+                $("#ok_buttom").show();
+                clearInterval(count);
+              }
+            };
 
-          setInterval(count, 1000);
-        }
+            setInterval(count, 1000);
+          } else {
+            $("#ok_buttom").show();
+          }
+        },
       });
 
       $("#submit-hide-license-error-msg").click(function() {
@@ -221,8 +230,8 @@ $(document).ready(function() {
       width: 620,
       overlay: {
         opacity: 0.5,
-        background: "black"
-      }
+        background: "black",
+      },
     });
   }
 
@@ -235,8 +244,8 @@ $(document).ready(function() {
       width: 520,
       overlay: {
         opacity: 0.5,
-        background: "black"
-      }
+        background: "black",
+      },
     });
   }
 
@@ -249,8 +258,8 @@ $(document).ready(function() {
       width: 520,
       overlay: {
         opacity: 0.5,
-        background: "black"
-      }
+        background: "black",
+      },
     });
   }
 
@@ -318,7 +327,7 @@ $(document).ready(function() {
     left:
       +parseInt(screen.width / 2) -
       parseInt($("#alert_messages").css("width")) / 2 +
-      "px"
+      "px",
   });
 });
 

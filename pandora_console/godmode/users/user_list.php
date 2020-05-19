@@ -160,8 +160,6 @@ if (isset($_GET['user_del'])) {
         $result = delete_user($id_user);
 
         if ($result) {
-            users_save_logout($user_row, true);
-
             db_pandora_audit(
                 'User management',
                 __('Deleted user %s', io_safe_input($id_user))

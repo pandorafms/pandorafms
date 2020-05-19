@@ -8,6 +8,7 @@ use warnings;
 
 # Default lib dir for RPM and DEB packages
 use NetAddr::IP;
+use IO::Socket::INET;
 use POSIX qw/ceil/;
 use Socket qw/inet_aton/;
 
@@ -159,6 +160,12 @@ sub new {
 
     # Globally enable/disable WMI scans.
     wmi_enabled => 0,
+
+    # Globally enable/disable RCMD scans.
+    rcmd_enabled => 0,
+    rcmd_timeout => 4,
+    rcmd_timeout_bin => '/usr/bin/timeout',
+
     auth_strings_array => [],
     wmi_timeout => 3,
     timeout_cmd => '',
@@ -170,6 +177,9 @@ sub new {
 
     # Visited devices (initially empty).
     visited_devices => {},
+
+    # Inverse relationship for visited devices (initially empty).
+    addresses => {},
 
     # Per device VLAN cache.
     vlan_cache => {},
@@ -308,6 +318,26 @@ sub add_addresses($$$) {
   my ($self, $device, $ip_address) = @_;
 
   $self->{'visited_devices'}->{$device}->{'addr'}->{$ip_address} = '';
+
+  # Inverse relationship.
+  $self->{'addresses'}{$ip_address} = $device;
+
+  # Update IP references.
+  if (ref($self->{'agents_found'}{$device}) eq 'HASH') {
+    my @addresses = $self->get_addresses($device);
+    $self->{'agents_found'}{$device}{'other_ips'} = \@addresses;
+    $self->call('message', 'New IP detected for '.$device.': '.$ip_address, 5);
+  }
+
+}
+
+################################################################################
+# Get main address from given address (multi addressed devices).
+################################################################################
+sub get_main_address($$) {
+  my ($self, $addr) = @_;
+
+  return $self->{'addresses'}{$addr};
 }
 
 ################################################################################
@@ -408,11 +438,11 @@ sub are_connected($$$$$) {
 sub icmp_discovery($$) {
   my ($self, $addr) = @_;
 
-	# Create an agent for the device and add it to the list of known hosts.
-	push(@{$self->{'hosts'}}, $addr);
+  # Create an agent for the device and add it to the list of known hosts.
+  push(@{$self->{'hosts'}}, $addr);
 
-	# Create an agent for the device and add it to the list of known hosts.
-	$self->add_agent($addr);
+  # Create an agent for the device and add it to the list of known hosts.
+  $self->add_agent($addr);
 
   $self->add_module($addr,
     {
@@ -1320,17 +1350,30 @@ sub remote_arp($$) {
 ################################################################################
 sub prepare_agent($$) {
   my ($self, $addr) = @_;
+
+  # Avoid multi-ip agent. No reference, is first encounter.
+  my $main_address = $self->get_main_address($addr);
+  return unless is_empty($main_address);
+
+  # Resolve hostnames.
+  my $host_name = (($self->{'resolve_names'} == 1) ? gethostbyaddr(inet_aton($addr), AF_INET) : $addr);
+
+  # Fallback to device IP if host name could not be resolved.
+  $host_name = $addr if (!defined($host_name) || $host_name eq '');
+  
   $self->{'agents_found'} = {} if ref($self->{'agents_found'}) ne 'HASH';
 
   # Already initialized.
   return if ref($self->{'agents_found'}->{$addr}) eq 'HASH';
 
+  my @addresses = $self->get_addresses($addr);
   $self->{'agents_found'}->{$addr} = {
     'agent' => {
-      'nombre' => $addr,
+      'nombre' => $host_name,
       'direccion' => $addr,
-      'alias' => $addr,
+      'alias' => $host_name,
     },
+    'other_ips' => \@addresses,
     'pen' => $self->{'pen'}{$addr},
     'modules' => [],
   };
@@ -1391,6 +1434,12 @@ sub test_capabilities($$) {
   if (is_enabled($self->{'wmi_enabled'})) {
     # Add wmi scan if enabled.
     $self->wmi_discovery($addr);
+  }
+
+  # RCMD discovery.
+  if (is_enabled($self->{'rcmd_enabled'})) {
+    # Add wmi scan if enabled.
+    $self->rcmd_discovery($addr);
   }
 }
 
@@ -1499,6 +1548,11 @@ sub scan_subnet($) {
 
       # Populate.
       $self->call('update_progress', ceil($progress));
+
+      # Filter by port (if enabled).
+      if (!is_empty($self->{'recon_ports'})) {
+        next unless $self->call("tcp_scan", $addr) > 0;
+      }
 
       # Enable/ disable capabilities.
       $self->test_capabilities($addr);
@@ -1924,10 +1978,10 @@ sub scan($) {
     }
   }
 
-	# Apply monitoring templates
-	$self->call('message', "[5/6] Applying monitoring.", 3);
+  # Apply monitoring templates
+  $self->call('message', "[5/6] Applying monitoring.", 3);
   $self->{'step'} = STEP_MONITORING;
-	$self->call('apply_monitoring', $self);
+  $self->call('apply_monitoring', $self);
 
   # Print debug information on found devices.
   $self->call('message', "[Summary]", 3);
@@ -1945,8 +1999,8 @@ sub scan($) {
     $self->call('message', $dev_info, 3);
   }
 
-	# Apply monitoring templates
-	$self->call('message', "[6/6] Processing results.", 3);
+  # Apply monitoring templates
+  $self->call('message', "[6/6] Processing results.", 3);
   $self->{'step'} = STEP_PROCESSING;
   # Send agent information to Database (Discovery) or XML (satellite.).
   $self->call('report_scanned_agents');
@@ -2072,16 +2126,16 @@ sub snmp_get_value($$$) {
   my ($self, $device, $oid) = @_;
 
   my $effective_oid = $oid;
-  if (is_enabled($self->{'translate_snmp'})) {
+  if (is_enabled($self->{'translate_snmp'}) && $oid !~ /^[\.\d]+$/) {
     $effective_oid = `snmptranslate $oid -On 2>$DEVNULL`;
-    chomp($effective_oid);
+    $effective_oid =~ s/[\r\n]//g;
   }
 
   my @output = $self->snmp_get($device, $effective_oid);
-  
+
   foreach my $line (@output) {
-    chomp($line);
-    return $1 if ($line =~ /^$effective_oid\s+=\s+\S+:\s+(.*)$/);
+    $line =~ s/[\r\n]//g;
+    return $1 if ($line =~ /^$effective_oid\s+=\s+\S+:\s+(.*)/);
   }
 
   return undef;
@@ -2172,8 +2226,8 @@ sub wmi_credentials {
 # undef if it does not respond to WMI.
 ################################################################################
 sub wmi_credentials_key {
-	my ($self, $target) = @_;
-	return $self->{'wmi_auth_key'}{$target};
+  my ($self, $target) = @_;
+  return $self->{'wmi_auth_key'}{$target};
 }
 
 ################################################################################
@@ -2232,6 +2286,110 @@ sub wmi_credentials_calculation {
 }
 
 ################################################################################
+# Returns the credentials with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+################################################################################
+sub rcmd_credentials {
+  my ($self, $target) = @_;
+  return $self->{'rcmd_auth'}{$target};
+}
+
+################################################################################
+# Returns the credentials KEY with which the host responds to WMI queries or
+# undef if it does not respond to WMI.
+################################################################################
+sub rcmd_credentials_key {
+  my ($self, $target) = @_;
+  return $self->{'rcmd_auth_key'}{$target};
+}
+
+################################################################################
+# Calculate WMI credentials for target, 1 if calculated, undef if cannot
+# connect to target. Credentials could be empty (-N)
+################################################################################
+sub rcmd_credentials_calculation {
+  my ($self, $target) = @_;
+
+  my $rcmd = PandoraFMS::Recon::Util::enterprise_new(
+    'PandoraFMS::RemoteCmd',[{
+      'psexec' => $self->{'parent'}->{'pa_config'}->{'psexec'},
+      'winexe' => $self->{'parent'}->{'pa_config'}->{'winexe'},
+      'plink' => $self->{'parent'}->{'pa_config'}->{'plink'}
+    }]
+  );
+
+  if (!$rcmd) {
+    # Library not available.
+    $self->call('message', "PandoraFMS::RemoteCmd library not available", 10);
+    return undef;
+  }
+
+  my $os = $self->{'os_cache'}{$target};
+  $os = $self->call('guess_os', $target, 1) if is_empty($os);
+  $rcmd->set_host($target);
+  $rcmd->set_os($os);
+
+  $self->{'os_cache'}{$target} = $os;
+
+  # Test all credentials selected.
+  foreach my $key_index (@{$self->{'auth_strings_array'}}) {
+    my $cred = $self->call('get_credentials', $key_index);
+    next if ref($cred) ne 'HASH';
+    $rcmd->clean_ssh_lib();
+
+    my $username;
+    my $domain;
+
+    if($cred->{'username'} =~ /^(.*?)\\(.*)$/) {
+      $domain = $1;
+      $username = $2;
+    } else {
+      $username = $cred->{'username'};
+    }
+
+    $rcmd->set_credentials(
+      {
+        'user' => $username,
+        'pass' => $cred->{'password'},
+        'domain' => $domain
+      }
+    );
+
+    $rcmd->set_timeout(
+      $self->{'rcmd_timeout_bin'},
+      $self->{'rcmd_timeout'}
+    );
+
+    my $result;
+    eval {
+      $result = $rcmd->rcmd('echo 1');
+      chomp($result);
+      my $out = '';
+      $out = $result if !is_empty($result);
+      $self->call('message', "Trying [".$key_index."] in [". $target."] [".$os."]: [$out]", 10);
+    };
+    if ($@) {
+      $self->call('message', "Failed while trying [".$key_index."] in [". $target."] [".$os."]:" . @_, 10);
+    }
+
+    if (!is_empty($result) && $result == "1") {
+      $self->{'rcmd_auth'}{$target} = $cred;
+      $self->{'rcmd_auth_key'}{$target} = $key_index;
+      $self->{'rcmd'}{$target} = 1;
+      $self->{'summary'}->{'RCMD'} += 1;
+      $self->call('message', "RCMD available for $target", 10);
+      return 1;
+    } else {
+      $self->call('message', "Last error ($target|$os|$result) was [".$rcmd->get_last_error()."]", 10);
+    }
+
+  }
+
+  # Not found.
+  return 0;
+}
+
+################################################################################
 # Tests wmi capability for addr.
 ################################################################################
 sub wmi_discovery {
@@ -2242,6 +2400,20 @@ sub wmi_discovery {
 
   # Calculate credentials.
   $self->wmi_credentials_calculation($addr);
+
+}
+
+################################################################################
+# Tests credentials against addr.
+################################################################################
+sub rcmd_discovery {
+  my ($self, $addr) = @_;
+
+  # Initialization.
+  $self->{'rcmd'} = {} unless ref($self->{'rcmd'}) eq 'HASH';
+
+  # Calculate credentials.
+  $self->rcmd_credentials_calculation($addr);
 
 }
 
@@ -2329,9 +2501,18 @@ sub wmi_get_command {
 # Checks if target is reachable using wmi.
 ################################################################################
 sub wmi_responds {
-	my ($self, $target) = @_;
-	return 1 if is_enabled($self->{'wmi'}{$target});
-	return 0;
+  my ($self, $target) = @_;
+  return 1 if is_enabled($self->{'wmi'}{$target});
+  return 0;
+}
+
+################################################################################
+# Checks if target is reachable using rcmd.
+################################################################################
+sub rcmd_responds {
+  my ($self, $target) = @_;
+  return 1 if is_enabled($self->{'rcmd'}{$target});
+  return 0;
 }
 
 ################################################################################

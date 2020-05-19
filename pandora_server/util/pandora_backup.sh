@@ -32,6 +32,7 @@ QUIET=0
 RESTOREFILES=0
 DATABASE=1
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
+MDE=1
 
 # Main parsing code
 
@@ -71,7 +72,13 @@ done
 # Execution
 
 which mysqldump &>/dev/null
-[ $? -eq 0 ] || echo -e "Command Mysqldump not found. \nIn order to make backups it is necessary to have mysqldump on your console."
+[ $? -eq 0 ] || MDE=0
+
+if [ $MDE == 0 ]
+then
+	echo -e "Command Mysqldump not found. \nIn order to make backups it is necessary to have mysqldump on your console.\nAborting..."
+	exit 1
+fi
 
 if [ ! -e "$PANDORAPATH/include/config.php" ]
 then

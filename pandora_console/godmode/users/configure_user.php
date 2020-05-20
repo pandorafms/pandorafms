@@ -319,34 +319,11 @@ if ($create_user) {
         $password_confirm = '';
         $new_user = true;
     } else {
-        if ($config['enable_pass_policy']) {
-            $have_number = true;
-            $have_simbols = true;
-            if ($config['pass_needs_numbers']) {
-                $nums = preg_match('/([[:alpha:]])*(\d)+(\w)*/', $password_confirm);
-                if ($nums == 0) {
-                    ui_print_error_message(__('Password must contain numbers'));
-                    $user_info = $values;
-                    $password_new = '';
-                    $password_confirm = '';
-                    $new_user = true;
-                    $have_number = false;
-                }
-            }
-
-            if ($config['pass_needs_symbols']) {
-                $symbols = preg_match('/(\w)*(\W)+(\w)*/', $password_confirm);
-                if ($symbols == 0) {
-                    ui_print_error_message(__('Password must contain symbols'));
-                    $user_info = $values;
-                    $password_new = '';
-                    $password_confirm = '';
-                    $new_user = true;
-                    $have_simbols = false;
-                }
-            }
-
-            if ($have_number && $have_simbols) {
+        if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+            $pass_ok = login_validate_pass($password_new, $id, true);
+            if ($pass_ok != 1) {
+                ui_print_error_message($pass_ok);
+            } else {
                 $result = create_user($id, $password_new, $values);
             }
         } else {
@@ -467,7 +444,7 @@ if ($update_user) {
         $password_confirm = (string) get_parameter('password_confirm', '');
         if ($password_new != '') {
             if ($password_confirm == $password_new) {
-                if ((!$values['is_admin'] || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
                     $pass_ok = login_validate_pass($password_new, $id, true);
                     if ($pass_ok != 1) {
                         ui_print_error_message($pass_ok);

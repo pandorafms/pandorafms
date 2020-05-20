@@ -3482,7 +3482,7 @@ class NetworkMap
             $output .= ' style="position: absolute; left: 0px; top: 0px;">';
             $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
             $output .= html_print_image('/images/minimap_open_arrow.png', true, ['id' => 'arrow_minimap_'.$networkmap['id']]);
-            $output .= '</a><div></div></div>';
+            $output .= '</a></div></div>';
 
             $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
             $output .= ' style="position: absolute; right: 10px; top: 10px;">';

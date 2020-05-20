@@ -746,22 +746,47 @@ function html_print_select_multiple_filtered(
     }
 
     if (empty($texts) === true) {
-        $texts = [
-            'filter-item' => 'Filter agent alias',
-            'title-add'   => 'Add selected',
-            'title-del'   => 'Remove selected',
-            'title-left'  => 'Available items',
-            'title-right' => 'Selected items',
-        ];
+        $texts = [];
+    }
+
+    if (empty($texts['filter-item']) === true) {
+        $texts['filter-item'] = 'Filter agent alias';
+    }
+
+    if (empty($texts['title-add']) === true) {
+        $texts['title-add'] = 'Add selected';
+    }
+
+    if (empty($texts['title-del']) === true) {
+        $texts['title-del'] = 'Remove selected';
+    }
+
+    if (empty($texts['title-left']) === true) {
+        $texts['title-left'] = 'Available items';
+    }
+
+    if (empty($texts['title-right']) === true) {
+        $texts['title-right'] = 'Selected items';
     }
 
     if (empty($sections) === true) {
-        $sections = [
-            'filters'               => 1,
-            'group-filter'          => 1,
-            'item-available-filter' => 1,
-            'item-selected-filter'  => 1,
-        ];
+        $sections = [];
+    }
+
+    if (empty($sections['filters']) === true) {
+        $sections['filters'] = 1;
+    }
+
+    if (empty($sections['group-filter']) === true) {
+        $sections['group-filter'] = 1;
+    }
+
+    if (empty($sections['item-available-filter']) === true) {
+        $sections['item-available-filter'] = 1;
+    }
+
+    if (empty($sections['item-selected-filter']) === true) {
+        $sections['item-selected-filter'] = 1;
     }
 
     if (empty($group_filter) === true) {

@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable Squiz.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 /**
  * Agent entity class.
  *
@@ -35,19 +36,51 @@ namespace PandoraFMS;
 class Agent extends Entity
 {
 
+    /**
+     * Agent's modules.
+     *
+     * @var array
+     */
+    private $modules = [];
+
+    /**
+     * Flag to verify if modules has been loaded.
+     *
+     * @var boolean
+     */
+    private $modulesLoaded = false;
+
 
     /**
      * Builds a PandoraFMS\Agent object from a agent id.
      *
-     * @param integer $id_agent Agent Id.
+     * @param integer $id_agent     Agent Id.
+     * @param boolean $load_modules Load all modules of this agent. Be careful.
      */
-    public function __construct(?int $id_agent=null)
+    public function __construct(?int $id_agent=null, ?bool $load_modules=false)
     {
         if (is_numeric($id_agent) === true) {
             parent::__construct('tagente', ['id_agente' => $id_agent]);
+            if ($load_modules === true) {
+                $rows = \db_get_all_rows_filter(
+                    'tagente_modulo',
+                    ['id_agente' => $id_agent]
+                );
+
+                if (is_array($rows) === true) {
+                    foreach ($rows as $row) {
+                        $this->modules[] = Module::build($row);
+                    }
+                }
+
+                $this->modulesLoaded = true;
+            }
         } else {
             // Create empty skel.
             parent::__construct('tagente');
+
+            // New agent has no modules.
+            $this->modulesLoaded = true;
         }
 
         // Customize certain fields.
@@ -56,7 +89,36 @@ class Agent extends Entity
 
 
     /**
-     * Saves current group definition to database.
+     * Returns current object as array.
+     *
+     * @return array Of fields.
+     */
+    public function toArray()
+    {
+        return $this->fields;
+    }
+
+
+    /**
+     * Overrides Entity method.
+     *
+     * @param integer $id_group Target group Id.
+     *
+     * @return integer|null Group Id or null.
+     */
+    public function id_grupo(?int $id_group=null)
+    {
+        if ($id_group === null) {
+            return $this->fields['id_grupo'];
+        } else {
+            $this->fields['id_grupo'] = $id_group;
+            $this->fields['group'] = new Group($this->fields['id_grupo']);
+        }
+    }
+
+
+    /**
+     * Saves current definition to database.
      *
      * @param boolean $alias_as_name Use alias as agent name.
      *
@@ -79,22 +141,26 @@ class Agent extends Entity
         }
 
         if ($this->fields['id_agente'] > 0) {
-            // Agent exists.
+            // Agent update.
             $updates = $this->fields;
 
             // Remove shortcuts from values.
             unset($updates['group']);
 
-            $this->fields['id_agente'] = \agents_create_agent(
-                $updates['nombre'],
-                $updates['id_grupo'],
-                $updates['intervalo'],
-                $updates['direccion'],
+            $rs = \db_process_sql_update(
+                'tagente',
                 $updates,
-                $alias_as_name
+                ['id_agente' => $this->fields['id_agente']]
             );
+
+            if ($rs === false) {
+                global $config;
+                throw new \Exception(
+                    __METHOD__.' error: '.$config['dbconnection']->error
+                );
+            }
         } else {
-            // Agent update.
+            // Agent creation.
             $updates = $this->fields;
 
             // Remove shortcuts from values.
@@ -107,7 +173,7 @@ class Agent extends Entity
                 }
             }
 
-            $this->fields['id_agente'] = \agents_create_agent(
+            $rs = \agents_create_agent(
                 $updates['nombre'],
                 $updates['id_grupo'],
                 $updates['intervalo'],
@@ -115,6 +181,15 @@ class Agent extends Entity
                 $updates,
                 $alias_as_name
             );
+
+            if ($rs === false) {
+                global $config;
+                throw new \Exception(
+                    __METHOD__.' error: '.$config['dbconnection']->error
+                );
+            }
+
+            $this->fields['id_agente'] = $rs;
         }
 
         if ($this->fields['group']->id_grupo() === null) {
@@ -122,7 +197,100 @@ class Agent extends Entity
             $this->fields['group'] = new Group($this->fields['id_grupo']);
         }
 
-        return false;
+        return true;
+    }
+
+
+    /**
+     * Creates a module in current agent.
+     *
+     * @param array $params Module definition (each db field).
+     *
+     * @return integer Id of new module.
+     * @throws \Exception On error.
+     */
+    public function addModule(array $params)
+    {
+        $err = __METHOD__.' error: ';
+
+        if (empty($params['nombre']) === true) {
+            throw new \Exception(
+                $err.' module name is mandatory'
+            );
+        }
+
+        $params['id_agente'] = $this->fields['id_agente'];
+
+        $id_module = modules_create_agent_module(
+            $this->fields['id_agente'],
+            $params['nombre'],
+            $params
+        );
+
+        if ($id_module === false) {
+            global $config;
+            throw new \Exception(
+                $err.$config['dbconnection']->error
+            );
+        }
+
+        return $id_module;
+
+    }
+
+
+    /**
+     * Search for modules into this agent.
+     *
+     * @param array $filter Filters.
+     *
+     * @return PandoraFMS\Module Module found.
+     */
+    public function searchModules(array $filter)
+    {
+        $filter['id_agente'] = $this->id_agente();
+
+        if ($this->modulesLoaded === true) {
+            // Search in $this->modules.
+            $results = [];
+
+            foreach ($this->modules as $module) {
+                $found = true;
+                foreach ($filter as $field => $value) {
+                    if ($module->{$field}() !== $value) {
+                        $found = false;
+                        break;
+                    }
+                }
+
+                if ($found === true) {
+                    $results[] = $module;
+                }
+            }
+
+            return $results;
+        } else {
+            // Search in db.
+            return Module::search($filter);
+        }
+
+    }
+
+
+    /**
+     * Delete agent from db.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        // This function also mark modules for deletion.
+        \agents_delete_agent(
+            $this->fields['id_agente']
+        );
+
+        unset($this->fields);
+        unset($this->modules);
     }
 
 

@@ -3115,6 +3115,17 @@ function agents_get_agent_custom_field($agent_id, $custom_field_name)
 }
 
 
+/**
+ * Unverified documentation.
+ *
+ * @param integer $id_group      Module group.
+ * @param array   $id_agents     Array of agent ids.
+ * @param boolean $selection     Show common (false) or all modules (true).
+ * @param boolean $return        Return (false) or dump to output (true).
+ * @param boolean $index_by_name Use module name as key.
+ *
+ * @return array With modules or null if error.
+ */
 function select_modules_for_agent_group(
     $id_group,
     $id_agents,

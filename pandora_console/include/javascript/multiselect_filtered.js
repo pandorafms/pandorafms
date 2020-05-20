@@ -133,5 +133,5 @@ $(document).submit(function() {
   $("[id*=text-filter-item-selected-")
     .val("")
     .keyup();
-  $("[id*=selected-select-] option").prop("selected", true);
+  $("[id^=selected-select-] option").prop("selected", true);
 });

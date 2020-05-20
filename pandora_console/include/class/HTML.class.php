@@ -487,6 +487,10 @@ class HTML
             $direct = (bool) $input['direct'];
             $toggle = (bool) $input['toggle'];
 
+            if (isset($input['label']) === true) {
+                $output .= '<span>'.$input['label'].'</span>';
+            }
+
             // Print independent block of inputs.
             $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
 
@@ -548,7 +552,10 @@ class HTML
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
 
-                $output .= '<label>'.$input['label'].'</label>';
+                if (isset($input['label']) === true) {
+                    $output .= '<label>'.$input['label'].'</label>';
+                }
+
                 $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];

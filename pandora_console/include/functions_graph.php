@@ -1989,8 +1989,8 @@ function graphic_combined_module(
             $color = color_graph_array();
 
             if ($params['vconsole'] === false) {
-                $width = 200;
-                $height = 200;
+                $new_width = 200;
+                $new_height = 200;
             } else {
                 $ratio = ((200 * ( $height / (200 * $number_elements) )) / (200 * ( $width / (200 * $number_elements))));
 

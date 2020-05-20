@@ -7788,8 +7788,9 @@ function reporting_custom_graph(
                 'labels'         => $content['style']['label'],
             ];
 
+            $return['chart'] = '';
             if ($pdf === true) {
-                $return['chart'] = '<img src="data:image/jpg;base64,';
+                $return['chart'] .= '<img src="data:image/jpg;base64,';
                 $return['chart'] .= graphic_combined_module(
                     $modules,
                     $params,
@@ -7797,11 +7798,18 @@ function reporting_custom_graph(
                 );
                 $return['chart'] .= '" />';
             } else {
-                $return['chart'] = graphic_combined_module(
+                if ($graphs[0]['stacked'] == CUSTOM_GRAPH_VBARS) {
+                    $return['chart'] .= '<div style="height:'.$config['graph_image_height'].'px;">';
+                }
+
+                $return['chart'] .= graphic_combined_module(
                     $modules,
                     $params,
                     $params_combined
                 );
+                if ($graphs[0]['stacked'] === CUSTOM_GRAPH_VBARS) {
+                    $return['chart'] .= '</div>';
+                }
             }
         break;
 

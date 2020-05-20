@@ -300,6 +300,7 @@ INSERT INTO `ttipo_modulo` VALUES
 (35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
 (36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
 (37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
+(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','mod_web_data.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 --

@@ -514,6 +514,8 @@ class NetworkMap
      */
     public function createMap()
     {
+        global $config;
+
         // If exists, load from DB.
         if ($this->idMap) {
             $this->loadMap();
@@ -1025,13 +1027,17 @@ class NetworkMap
                 // Handmade ones.
                 // Add also parent relationship.
                 if (isset($node['id_parent'])) {
-                    $parent_id = $node['id_parent'];
+                    $parent_id = NODE_AGENT.'_'.$node['id_parent'];
+                    $parent_node = $this->nodes[$parent_id]['id_node'];
 
-                    if ((int) $parent_id >= 0) {
-                        $parent_node = $this->getNodeData(
-                            (int) $parent_id,
-                            'id_node'
-                        );
+                    if ($parent_node === null) {
+                        $parent_id = NODE_MODULE.'_'.$node['id_parent'];
+                        $parent_node = $this->nodes[$parent_id]['id_node'];
+                    }
+
+                    if ($parent_node === null) {
+                        $parent_id = NODE_GENERIC.'_'.$node['id_parent'];
+                        $parent_node = $this->nodes[$parent_id]['id_node'];
                     }
 
                     // Store relationship.
@@ -1130,6 +1136,7 @@ class NetworkMap
         $map_filter = $this->mapOptions['map_filter'];
         $nooverlap = $this->mapOptions['nooverlap'];
         $zoom = $this->mapOptions['zoom'];
+        $layout = $this->mapOptions['layout'];
 
         if (isset($this->mapOptions['width'])
             && isset($this->mapOptions['height'])
@@ -1152,7 +1159,7 @@ class NetworkMap
 
         $size = $size_x.','.$size_y;
 
-        if ($size_canvas === null) {
+        if ($this->mapOptions['size_canvas'] !== null) {
             $size = ($this->mapOptions['size_canvas']['x'] / 100);
             $size .= ','.($this->mapOptions['size_canvas']['y'] / 100);
         }
@@ -1274,12 +1281,7 @@ class NetworkMap
         $radius /= GRAPHVIZ_CONVERSION_FACTOR;
 
         if (is_array($label)) {
-            $label = array_reduce(
-                function ($carry, $item) {
-                    $carry .= $item;
-                    return $carry;
-                }
-            );
+            $label = join('', $label);
         }
 
         if (strlen($label) > 16) {
@@ -1295,7 +1297,7 @@ class NetworkMap
         // retrieve X,Y positions from graphviz no for personalization.
         $dot_str = $data['id_node'].' [ parent="'.$data['id_parent'].'"';
         $dot_str .= ', color="'.$color.'", fontsize='.$font_size;
-        $dot_str .= ', shape="doublecircle"'.$url_node_link;
+        $dot_str .= ', shape="doublecircle"'.$data['url_node_link'];
         $dot_str .= ', style="filled", fixedsize=true, width='.$radius;
         $dot_str .= ', height='.$radius.', label="'.$label.'"]'."\n";
 
@@ -1596,6 +1598,7 @@ class NetworkMap
         global $config;
 
         $return = [];
+        $count_item_holding_area = 0;
         foreach ($nodes as $node) {
             $item = [];
             $item['id'] = $node['id'];
@@ -1669,7 +1672,10 @@ class NetworkMap
                 default:
                     foreach ($source_data as $k => $v) {
                         $node[$k] = $v;
+                        $item[$k] = $v;
                     }
+
+                    $item['id_agent'] = $node['id_agente'];
 
                     if (!empty($node['text'])) {
                         $node['style']['label'] = $node['text'];
@@ -2193,6 +2199,7 @@ class NetworkMap
 
         $nodes = [];
         $relations = [];
+
         foreach ($content as $key => $line) {
             // Reduce blank spaces.
             $line = preg_replace('/\ +/', ' ', $line);
@@ -2232,12 +2239,12 @@ class NetworkMap
                 }
 
                 $relations[] = [
-                    'id_parent'             => $target_node['id_node'],
+                    'id_parent'             => $fields[1],
                     'parent_type'           => NODE_GENERIC,
-                    'id_parent_source_data' => $mod_rel['module_b'],
-                    'id_child'              => $node['id_node'],
+                    'id_parent_source_data' => $fields[3],
+                    'id_child'              => $fields[2],
                     'child_type'            => NODE_GENERIC,
-                    'id_child_source_data'  => $mod_rel['module_a'],
+                    'id_child_source_data'  => null,
                 ];
             }
         }
@@ -2268,11 +2275,11 @@ class NetworkMap
             case 'WIN32':
             case 'WINNT':
             case 'Windows':
-                $filename_dot = sys_get_temp_dir()."\\networkmap_".$filter;
+                $filename_dot = sys_get_temp_dir()."\\networkmap_".$this->filter;
             break;
 
             default:
-                $filename_dot = sys_get_temp_dir().'/networkmap_'.$filter;
+                $filename_dot = sys_get_temp_dir().'/networkmap_'.$this->filter;
             break;
         }
 
@@ -2392,36 +2399,6 @@ class NetworkMap
         $graph .= $this->closeDotFile();
 
         $this->dotGraph = $graph;
-    }
-
-
-    /**
-     * Returns the most representative ID based on the tipe of node received.
-     *
-     * @param array $node Source data.
-     *
-     * @return integer Source id.
-     */
-    private function auxGetIdByType($node)
-    {
-        if (!is_array($node)) {
-            return 0;
-        }
-
-        switch ($to_source['node_type']) {
-            case NODE_MODULE:
-            return $node['id_agente_modulo'];
-
-            case NODE_AGENT:
-            return $node['id_agente'];
-
-            case NODE_GENERIC:
-            return $node['id_node'];
-
-            case NODE_PANDORA:
-            default:
-            return 0;
-        }
     }
 
 
@@ -2551,6 +2528,7 @@ class NetworkMap
                     $node_tmp['id_agent'] = $source['id_agente'];
                     $node_tmp['id_module'] = $source['id_agente_modulo'];
                     $node_tmp['source_data'] = $source['id_source'];
+                    $node_tmp['image'] = $source['image'];
                 break;
             }
 
@@ -3314,9 +3292,11 @@ class NetworkMap
     /**
      * Loads advanced map controller (JS).
      *
+     * @param boolean $return Dumps to output if false.
+     *
      * @return string HTML code for advanced controller.
      */
-    public function loadController()
+    public function loadController(?bool $return=true)
     {
         $output = '';
 
@@ -3513,6 +3493,8 @@ class NetworkMap
     public function printMap($return=false)
     {
         global $config;
+
+        $networkmap = $this->map;
 
         // ACL.
         $networkmap_read = check_acl(

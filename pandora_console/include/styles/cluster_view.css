@@ -19,3 +19,7 @@
   width: 100%;
   height: 100%;
 }
+
+.w100p.modules {
+  min-width: 985px;
+}

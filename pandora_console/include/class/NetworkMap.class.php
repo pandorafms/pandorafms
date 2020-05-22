@@ -1537,14 +1537,15 @@ class NetworkMap
     /**
      * Returns target color to be used based on the status received.
      *
-     * @param integer $status Source information.
+     * @param integer $status       Source information.
+     * @param boolean $force_module It's a module.
      *
      * @return string HTML tag for color.
      */
-    public static function getColorByStatus($status)
+    public static function getColorByStatus($status, ?bool $force_module=false)
     {
         include_once __DIR__.'/../functions_modules.php';
-        return modules_get_color_status($status);
+        return modules_get_color_status($status, $force_module);
     }
 
 
@@ -1661,6 +1662,10 @@ class NetworkMap
 
                 case NODE_MODULE:
                     $item['id_module'] = $node['source_data'];
+                    $item['color'] = self::getColorByStatus(
+                        $source_data['status'],
+                        true
+                    );
                 break;
 
                 case NODE_PANDORA:
@@ -1687,7 +1692,8 @@ class NetworkMap
                         $item['color'] = $source_data['color'];
                     } else {
                         $item['color'] = self::getColorByStatus(
-                            $node['status']
+                            $node['status'],
+                            (bool) $node['id_module']
                         );
                     }
                 break;

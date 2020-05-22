@@ -89,17 +89,6 @@ class Agent extends Entity
 
 
     /**
-     * Returns current object as array.
-     *
-     * @return array Of fields.
-     */
-    public function toArray()
-    {
-        return $this->fields;
-    }
-
-
-    /**
      * Overrides Entity method.
      *
      * @param integer $id_group Target group Id.

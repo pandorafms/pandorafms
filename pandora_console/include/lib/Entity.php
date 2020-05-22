@@ -132,6 +132,17 @@ abstract class Entity
 
 
     /**
+     * Returns current object as array.
+     *
+     * @return array Of fields.
+     */
+    public function toArray()
+    {
+        return $this->fields;
+    }
+
+
+    /**
      * Saves current object definition to database.
      *
      * @return boolean Success or not.

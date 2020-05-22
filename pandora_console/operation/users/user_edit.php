@@ -463,7 +463,7 @@ $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
-$autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'Cluster view';
+$autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
 if (enterprise_installed()) {
     $autorefresh_list_out['general/sap_view'] = 'SAP view';
 }

@@ -22,10 +22,20 @@
   width: 50px;
 }
 
-.multi-select-container .filter label,
 .multi-select-container .filter input,
 .multi-select-container .filter select {
-  font-size: 0.8em;
+  float: right;
+  width: 50%;
+  text-align: left;
+}
+.multi-select-container .filter input[type="checkbox"] {
+  width: auto;
+}
+
+.group-filter.flex-row-vcenter div,
+.item-filter.flex-row-vcenter div {
+  flex: 1 1 auto;
+  width: 100%;
 }
 
 .multi-select-container .title {

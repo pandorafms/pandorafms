@@ -614,6 +614,7 @@ if ($agents !== false) {
                         $url.'&op=update&id='.$cluster->id()
                     );
                     echo '<a href="'.$url.'">'.__('Edit').'</a>';
+                    echo ' | ';
                 }
             } else {
                 echo '<a href="index.php?sec=gagente&

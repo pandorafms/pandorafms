@@ -79,6 +79,14 @@ function filterSelectedItems(txt, id, noneStr) {
   keepSelectClean("selected-select-" + id, noneStr);
 }
 
+function disableFilters(id) {
+  $("#id-group-selected-select-" + id).prop("disabled", true);
+  $("#checkbox-id-group-recursion-selected-select-" + id).prop(
+    "disabled",
+    true
+  );
+}
+
 function reloadContent(id, url, options, side, noneStr) {
   var current;
   var opposite;
@@ -110,7 +118,11 @@ function reloadContent(id, url, options, side, noneStr) {
       // Cleanup previous content.
       $("#" + current).empty();
 
-      for (var [value, label] of Object.entries(data)) {
+      let items = Object.entries(data).sort(function(a, b) {
+        return a[1] >= b[1];
+      });
+
+      for (var [value, label] of items) {
         if (
           $("#" + opposite + " option[value=" + value + "]").length == 0 &&
           $("#tmp-" + current + " option[value=" + value + "]").length == 0

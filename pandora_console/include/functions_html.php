@@ -798,6 +798,7 @@ function html_print_select_multiple_filtered(
 
     // Left box.
     $output .= '<div class="multi-select-container flex-column">';
+    $disable_filters = '';
 
     // Filtering.
     if (isset($sections['filters']) === true
@@ -844,6 +845,7 @@ function html_print_select_multiple_filtered(
             $output .= '</div>';
 
             $output .= '</div>';
+            $disable_filters = "disableFilters('".$rid."')";
         }
 
         if (isset($sections['item-available-filter']) === true
@@ -887,7 +889,7 @@ function html_print_select_multiple_filtered(
             'fields'                  => $available,
             'name'                    => 'available-select-'.$rid.'[]',
             'selected'                => '',
-            'script'                  => '',
+            'script'                  => $disable_filters,
             'nothing'                 => '',
             'nothing_value'           => 0,
             'return'                  => true,

@@ -221,6 +221,11 @@ class ConsoleSupervisor
          */
         $this->checkAllowOverrideEnabled();
 
+        /*
+         * Check if AllowOverride is None or All.
+         *  NOTIF.HAMASTER.MESSAGE
+         */
+        $this->checkHaStatus();
     }
 
 
@@ -451,6 +456,11 @@ class ConsoleSupervisor
          */
         $this->checkAllowOverrideEnabled();
 
+          /*
+           * Check if HA status.
+           */
+        $this->checkHaStatus();
+
     }
 
 
@@ -618,6 +628,8 @@ class ConsoleSupervisor
             case 'NOTIF.UPDATEMANAGER.MESSAGES':
             case 'NOTIF.CRON.CONFIGURED':
             case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
+            case 'NOTIF.HAMASTER.MESSAGE':
+
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -2344,10 +2356,9 @@ class ConsoleSupervisor
             sprintf(
                 'SELECT `name`, `version` 
                 FROM tserver 
-                WHERE server_type NOT IN ( %d , %d )
+                WHERE server_type != %d
                 GROUP BY `version`',
-                SERVER_TYPE_ENTERPRISE_SATELLITE,
-                SERVER_TYPE_MAINFRAME
+                SERVER_TYPE_ENTERPRISE_SATELLITE
             )
         );
 
@@ -2430,6 +2441,54 @@ class ConsoleSupervisor
         // Cleanup notifications if AllowOverride is All.
         if (!$is_none) {
             $this->cleanNotifications('NOTIF.ALLOWOVERRIDE.MESSAGE');
+        }
+
+    }
+
+
+    /**
+     * Check if AllowOveride is None or All.
+     *
+     * @return void
+     */
+    public function checkHaStatus()
+    {
+        global $config;
+
+        $dbh = @get_dbconnection(
+            [
+                'dbhost' => $node['host'],
+                'dbport' => $node['db_port'],
+                'dbname' => '',
+                'dbuser' => $config['pandora_db_repl_user'],
+                'dbpass' => $config['pandora_db_repl_pass'],
+            ]
+        );
+
+        $message = '<pre>One or more nodes have a master role in DB and Cluster';
+        $db = db_process_sql(
+            'SELECT @@global.read_only',
+            'info',
+            $dbh
+        );
+
+        $cluster = db_process_sql(
+            'SHOW SLAVE STATUS ',
+            'info',
+            $dbh
+        );
+
+        if ($cluster == 0 && $cluster != false) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.HAMASTER.MESSAGE',
+                    'title'   => __('Database HA has problem '),
+                    'message' => __($message),
+                    'url'     => ui_get_full_url('index.php'),
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
         }
 
     }

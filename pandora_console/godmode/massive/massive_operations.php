@@ -246,7 +246,7 @@ ui_print_page_header(
     $help_header,
     true,
     $onheader,
-    true,
+    false,
     'massivemodal'
 );
 

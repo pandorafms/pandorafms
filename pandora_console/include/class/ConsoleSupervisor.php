@@ -1349,7 +1349,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.INPUT_TIME');
         }
 
-        if ($PHPmax_execution_time !== '0') {
+        if ((int) $PHPmax_execution_time !== 0) {
             $url = 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time';
             if ($config['language'] == 'es') {
                 $url = 'http://php.net/manual/es/info.configuration.php#ini.max-execution-time';

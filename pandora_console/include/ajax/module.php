@@ -1004,9 +1004,7 @@ if (check_login()) {
                 $data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
-
             $data[4] = ui_print_string_substr($module['descripcion'], 60, true, 8);
-
 
             if ($module['datos'] != strip_tags($module['datos'])) {
                 $module_value = io_safe_input($module['datos']);

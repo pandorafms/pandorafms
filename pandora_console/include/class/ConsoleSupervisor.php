@@ -2465,7 +2465,9 @@ class ConsoleSupervisor
             ]
         );
 
-        $message = '<pre>One or more nodes have a master role in DB and Cluster';
+        $message = '<pre>A node in the database cluster is not performing its role correctly:
+            <br>Role in the cluster: Master
+            <br>Role in the database: Slave';
         $db = db_process_sql(
             'SELECT @@global.read_only',
             'info',
@@ -2478,7 +2480,7 @@ class ConsoleSupervisor
             $dbh
         );
 
-        if ($cluster == 0 && $cluster != false) {
+        if ($cluster == 0 && $db == false) {
             $this->notify(
                 [
                     'type'    => 'NOTIF.HAMASTER.MESSAGE',

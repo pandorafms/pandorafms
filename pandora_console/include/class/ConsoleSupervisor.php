@@ -2454,45 +2454,51 @@ class ConsoleSupervisor
     public function checkHaStatus()
     {
         global $config;
+        enterprise_include_once('include/class/DatabaseHA.class.php');
+        $cluster = new DatabaseHA();
+        $nodes = $cluster->getNodes();
 
-        $dbh = @get_dbconnection(
-            [
-                'dbhost' => $node['host'],
-                'dbport' => $node['db_port'],
-                'dbname' => '',
-                'dbuser' => $config['pandora_db_repl_user'],
-                'dbpass' => $config['pandora_db_repl_pass'],
-            ]
-        );
-
-        $message = '<pre>A node in the database cluster is not performing its role correctly:
-            <br>Role in the cluster: Master
-            <br>Role in the database: Slave';
-        $db = db_process_sql(
-            'SELECT @@global.read_only',
-            'info',
-            $dbh
-        );
-
-        $cluster = db_process_sql(
-            'SHOW SLAVE STATUS ',
-            'info',
-            $dbh
-        );
-
-        if ($cluster == 0 && $db == false) {
-            $this->notify(
+        foreach ($nodes as $node) {
+            $message = '<pre>The roles played by node '.$node['host'].' are out of sync:
+            Role in the cluster: Master
+            Role in the database: Slave Desynchronized operation in the node';
+            $dbh = @get_dbconnection(
                 [
-                    'type'    => 'NOTIF.HAMASTER.MESSAGE',
-                    'title'   => __('Database HA has problem '),
-                    'message' => __($message),
-                    'url'     => ui_get_full_url('index.php'),
+                    'dbhost' => $node['host'],
+                    'dbport' => $node['db_port'],
+                    'dbname' => '',
+                    'dbuser' => $config['pandora_db_repl_user'],
+                    'dbpass' => $config['pandora_db_repl_pass'],
                 ]
             );
-        } else {
-            $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
-        }
+            ob_start();
+            $db = db_process_sql(
+                'SHOW SLAVE STATUS ',
+                'info',
+                $dbh
+            );
+            ob_clean();
 
+            ob_start();
+            $cluster = db_process_sql(
+                'SELECT @@global.read_only',
+                'info',
+                $dbh
+            );
+            ob_clean();
+            if ($cluster == $db) {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.HAMASTER.MESSAGE',
+                        'title'   => __('Desynchronized operation on the node '.$node['host']),
+                        'message' => __($message),
+                        'url'     => ui_get_full_url('index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster'),
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
+            }
+        }
     }
 
 

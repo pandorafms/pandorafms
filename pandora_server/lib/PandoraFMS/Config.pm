@@ -399,7 +399,8 @@ sub pandora_load_config {
 	$pa_config->{'max_log_generation'} = 1;
 
 	# Ignore the timestamp in the XML and use the file timestamp instead
-	$pa_config->{'use_xml_timestamp'} = 0; 
+	# If 1 => uses timestamp from received XML #5763.
+	$pa_config->{'use_xml_timestamp'} = 1;
 
 	# Server restart delay in seconds
 	$pa_config->{'restart_delay'} = 60; 

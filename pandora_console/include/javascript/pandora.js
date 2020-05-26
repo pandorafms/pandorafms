@@ -838,7 +838,7 @@ function post_process_select_events(name) {
 function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").css("display", "none");
-  $("#" + name + "_default").css("display", "flex");
+  $("#" + name + "_default").css("display", "inline");
 
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
@@ -852,7 +852,7 @@ function period_select_init(name, allow_zero) {
     }
   } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
-    $("#" + name + "_manual").css("display", "flex");
+    $("#" + name + "_manual").css("display", "inline");
     $("#" + name + "_default").css("display", "none");
   }
 }
@@ -941,13 +941,13 @@ function selectFirst(name) {
  */
 function toggleBoth(name) {
   if ($("#" + name + "_default").css("display") == "none") {
-    $("#" + name + "_default").css("display", "flex");
+    $("#" + name + "_default").css("display", "inline");
   } else {
     $("#" + name + "_default").css("display", "none");
   }
 
   if ($("#" + name + "_manual").css("display") == "none") {
-    $("#" + name + "_manual").css("display", "flex");
+    $("#" + name + "_manual").css("display", "inline");
   } else {
     $("#" + name + "_manual").css("display", "none");
   }

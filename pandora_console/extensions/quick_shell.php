@@ -318,15 +318,15 @@ function quickShellSettings()
         );
         $gotty_host = get_parameter(
             'gotty_host',
-            $config['gotty_host']
+            ''
         );
         $gotty_ssh_port = get_parameter(
             'gotty_ssh_port',
-            $config['gotty_ssh_port']
+            ''
         );
         $gotty_telnet_port = get_parameter(
             'gotty_telnet_port',
-            $config['gotty_telnet_port']
+            ''
         );
 
         $gotty_user = get_parameter(

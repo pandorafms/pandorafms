@@ -3718,6 +3718,14 @@ function series_type_graph_array($data, $show_elements_graph)
                     }
                 }
 
+                if ((int) $value['min'] === PHP_INT_MAX) {
+                    $value['min'] = 0;
+                }
+
+                if ((int) $value['max'] === (-PHP_INT_MAX)) {
+                    $value['max'] = 0;
+                }
+
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
                     number_format(
                         $value['min'],

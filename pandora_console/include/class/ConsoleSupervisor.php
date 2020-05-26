@@ -2486,7 +2486,7 @@ class ConsoleSupervisor
                 $dbh
             );
             ob_clean();
-            if ($cluster == $db) {
+            if ($cluster != $db) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.HAMASTER.MESSAGE',

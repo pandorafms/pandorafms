@@ -2455,13 +2455,15 @@ class ConsoleSupervisor
     {
         global $config;
         enterprise_include_once('include/class/DatabaseHA.class.php');
+
         $cluster = new DatabaseHA();
         $nodes = $cluster->getNodes();
 
         foreach ($nodes as $node) {
             $message = '<pre>The roles played by node '.$node['host'].' are out of sync:
-            Role in the cluster: Master
-            Role in the database: Slave Desynchronized operation in the node';
+        Role in the cluster: Master
+        Role in the database: Slave Desynchronized operation in the node';
+
             $dbh = @get_dbconnection(
                 [
                     'dbhost' => $node['host'],
@@ -2473,7 +2475,7 @@ class ConsoleSupervisor
             );
             ob_start();
             $db = db_process_sql(
-                'SHOW SLAVE STATUS ',
+                'SHOW MASTER STATUS ',
                 'info',
                 $dbh
             );
@@ -2481,12 +2483,14 @@ class ConsoleSupervisor
 
             ob_start();
             $cluster = db_process_sql(
-                'SELECT @@global.read_only',
+                'SELECT COUNT(1) as maste FROM information_schema.processlist
+            WHERE command = "binlog dump"',
                 'info',
                 $dbh
             );
+
             ob_clean();
-            if ($cluster != $db) {
+            if ($cluster[0]['maste'] !== '0' && $db !== false) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.HAMASTER.MESSAGE',
@@ -2499,6 +2503,7 @@ class ConsoleSupervisor
                 $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
             }
         }
+
     }
 
 

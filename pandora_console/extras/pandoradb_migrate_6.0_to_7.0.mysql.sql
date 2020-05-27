@@ -2723,4 +2723,15 @@ UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMad
 UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
 UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
 
+-- ----------------------------------------------------------------------
+-- Table `tnode_relations`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnode_relations` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+    `gateway` VARCHAR(100) NOT NULL,
+	`imei` VARCHAR(100) NOT NULL,
+	`node_address` VARCHAR(60) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 

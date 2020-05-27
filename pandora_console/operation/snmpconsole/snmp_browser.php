@@ -241,7 +241,7 @@ function snmp_show_result_message(data) {
     if (dato.length !== 0) {
       $("#error_text").text("");
 
-      if (dato[0] ===- 1) {
+      if (dato[0] === -1) {
           $("#dialog_no_agents_selected").dialog({
             resizable: true,
             draggable: true,

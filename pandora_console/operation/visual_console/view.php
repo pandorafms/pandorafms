@@ -373,7 +373,6 @@ if ($pure === true) {
     body.pure {
         min-height: 100px;
         margin: 0px;
-        overflow: hidden;
         height: 100%;
         background-color: <?php echo $visualConsoleData['backgroundColor']; ?>;
     }
@@ -499,6 +498,12 @@ ui_require_css_file('form');
         item["receivedAt"] = receivedAt;
         return item;
     });
+
+console.log(container);
+console.log(props, true);
+console.log(items, true);
+console.log(baseUrl, true);
+console.log(handleUpdate);
 
     var visualConsoleManager = createVisualConsole(
         container,

@@ -250,7 +250,6 @@ if ($config['pure']) {
         body.pure {
             min-height: 100px;
             margin: 0px;
-            overflow: hidden;
             height: 100%;
             <?php
             echo 'background-color: '.$layout['background_color'].';';

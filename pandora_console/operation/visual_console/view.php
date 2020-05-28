@@ -499,12 +499,6 @@ ui_require_css_file('form');
         return item;
     });
 
-console.log(container);
-console.log(props, true);
-console.log(items, true);
-console.log(baseUrl, true);
-console.log(handleUpdate);
-
     var visualConsoleManager = createVisualConsole(
         container,
         props,

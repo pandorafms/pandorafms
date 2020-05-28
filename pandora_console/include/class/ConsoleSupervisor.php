@@ -2460,37 +2460,14 @@ class ConsoleSupervisor
         $nodes = $cluster->getNodes();
 
         foreach ($nodes as $node) {
+            $cluster_master = $cluster->isClusterMaster($node);
+            $db_master = $cluster->isDBMaster($node);
+
             $message = '<pre>The roles played by node '.$node['host'].' are out of sync:
-        Role in the cluster: Master
-        Role in the database: Slave Desynchronized operation in the node';
+            Role in the cluster: Master
+            Role in the database: Slave Desynchronized operation in the node';
 
-            $dbh = @get_dbconnection(
-                [
-                    'dbhost' => $node['host'],
-                    'dbport' => $node['db_port'],
-                    'dbname' => '',
-                    'dbuser' => $config['pandora_db_repl_user'],
-                    'dbpass' => $config['pandora_db_repl_pass'],
-                ]
-            );
-            ob_start();
-            $db = db_process_sql(
-                'SHOW MASTER STATUS ',
-                'info',
-                $dbh
-            );
-            ob_clean();
-
-            ob_start();
-            $cluster = db_process_sql(
-                'SELECT COUNT(1) as maste FROM information_schema.processlist
-            WHERE command = "binlog dump"',
-                'info',
-                $dbh
-            );
-
-            ob_clean();
-            if ($cluster[0]['maste'] !== '0' && $db !== false) {
+            if ((int) $db_master !== (int) $cluster_master) {
                 $this->notify(
                     [
                         'type'    => 'NOTIF.HAMASTER.MESSAGE',
@@ -2503,7 +2480,6 @@ class ConsoleSupervisor
                 $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
             }
         }
-
     }
 
 

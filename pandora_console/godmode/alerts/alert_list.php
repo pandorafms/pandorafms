@@ -444,9 +444,9 @@ if ($id_agente) {
         }
 
         if ($tab == 'list') {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('List'), 'images/gm_alerts.png', false, 'alerts_config', true, $buttons);
+            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('List'), 'images/gm_alerts.png', false, '', true, $buttons);
         } else {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('Create'), 'images/gm_alerts.png', false, 'manage_alert_list', true, $buttons);
+            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('Create'), 'images/gm_alerts.png', false, '', true, $buttons);
         }
     } else {
         alerts_meta_print_header();

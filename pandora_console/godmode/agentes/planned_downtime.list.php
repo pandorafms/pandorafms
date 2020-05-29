@@ -55,7 +55,7 @@ ui_print_page_header(
     __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
-    'planned_downtime',
+    '',
     true,
     ''
 );

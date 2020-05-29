@@ -450,7 +450,7 @@ function mainAgentsModules()
             __('Agents/Modules'),
             'images/module_mc.png',
             false,
-            'agents_module_view',
+            '',
             false,
             $updated_time
         );
@@ -541,11 +541,14 @@ function mainAgentsModules()
                 $show_filters .= '<td>'.$filter_modules.'</td>';
             $show_filters .= '</tr>';
             $show_filters .= '<tr>';
-                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
+                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</span></td>';
             $show_filters .= '</tr>';
         $show_filters .= '</table>';
         $show_filters .= '</form>';
-        ui_toggle($show_filters, __('Filters'));
+        ui_toggle(
+            $show_filters,
+            __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true)
+        );
     }
 
     if ($agents_id[0] != -1) {

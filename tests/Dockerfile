@@ -10,12 +10,12 @@ RUN { \
 
 # Pandora FMS dependencies.
 RUN yum install -y epel-release vim wget bzip2 curl && \
-	yum install yum-utils && \
+	yum install -y yum-utils && \
 	yum install -y https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm && \
 	yum-config-manager --disable mysql80-community && \
 	yum-config-manager --enable mysql57-community && \
 	yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm && \
-	yum-config-manager --enable remi-php74 && \
+	yum-config-manager --enable remi-php72 && \
 	yum install -y gtk3 python-pip \
 	python-pip \
 	firefox \

@@ -731,12 +731,13 @@ if (! isset($config['id_user'])) {
         $first = (boolean) get_parameter('first', 0);
         $reset_hash = get_parameter('reset_hash', '');
 
-        if ($correct_pass_change) {
+        $pass1 = get_parameter_post('pass1');
+        $pass2 = get_parameter_post('pass2');
+        $id_user = get_parameter_post('id_user');
+
+        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user)) {
             $correct_reset_pass_process = '';
             $process_error_message = '';
-            $pass1 = get_parameter('pass1');
-            $pass2 = get_parameter('pass2');
-            $id_user = get_parameter('id_user');
 
             if ($pass1 == $pass2) {
                 $res = update_user_password($id_user, $pass1);

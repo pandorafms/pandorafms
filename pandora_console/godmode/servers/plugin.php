@@ -283,7 +283,7 @@ if (($create != '') || ($view != '')) {
                 __('Plugin registration'),
                 'images/gm_servers.png',
                 false,
-                'plugin_definition',
+                '',
                 true
             );
         } else {
@@ -291,7 +291,7 @@ if (($create != '') || ($view != '')) {
                 __('Plugin update'),
                 'images/gm_servers.png',
                 false,
-                'plugin_definition',
+                '',
                 true
             );
         }
@@ -391,7 +391,7 @@ if (($create != '') || ($view != '')) {
     }
 
     $data = [];
-    $data[0] = __('Plugin command');
+    $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
     $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
     if ($locked) {
         $data[1] .= html_print_image('images/lock.png', true, ['class' => 'command_advanced_conf lock']);

@@ -387,7 +387,7 @@ if (!$meta) {
     $skin = '';
 }
 
-$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').': </p>';
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
 $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 // Double auth.

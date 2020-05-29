@@ -185,7 +185,14 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $onheader = ['setup' => $setuptab];
 }
 
-ui_print_page_header(__('Agent detail'), 'images/agent_mc.png', false, 'agent_status', false, $onheader);
+ui_print_page_header(
+    __('Agent detail'),
+    'images/agent_mc.png',
+    false,
+    '',
+    false,
+    $onheader
+);
 
 if (!$strict_user) {
     if (tags_has_user_acl_tags()) {

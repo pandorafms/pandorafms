@@ -314,7 +314,7 @@ if (defined('METACONSOLE')) {
         $title,
         'images/group.png',
         false,
-        'group_list_tab',
+        '',
         true,
         $buttons
     );

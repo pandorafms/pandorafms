@@ -152,7 +152,7 @@ class Diagnostics extends Wizard
             __('%s Diagnostic tool', $this->product_name),
             'images/gm_massive_operations.png',
             false,
-            'diagnostic_tool_tab',
+            '',
             true,
             $header_buttons
         );

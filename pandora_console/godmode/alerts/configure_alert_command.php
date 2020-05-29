@@ -43,7 +43,7 @@ if (defined('METACONSOLE')) {
         __('Alerts').' &raquo; '.__('Configure alert command'),
         'images/gm_alerts.png',
         false,
-        'alerts_config_command_tab',
+        '',
         true
     );
 }
@@ -206,7 +206,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 
     $table->data['field'.$i][1] = html_print_input_text('field'.$i.'_description', $field_description, '', 30, 255, true);
 
-    $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
+    $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i).ui_print_help_tip(__('value1,tag1;value2,tag2;value3,tag3'), true);
 
     if (!empty($fields_values)) {
         $field_values = $fields_values[($i - 1)];

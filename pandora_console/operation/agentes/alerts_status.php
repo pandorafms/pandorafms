@@ -174,7 +174,12 @@ if ($idAgent != 0) {
     $print_agent = true;
 
     if (!is_metaconsole()) {
-        ui_print_page_header(__('Alert detail'), 'images/op_alerts.png', false, 'alert_validation');
+        ui_print_page_header(
+            __('Alert detail'),
+            'images/op_alerts.png',
+            false,
+            ''
+        );
     } else {
         ui_meta_print_header(__('Alerts view'));
     }

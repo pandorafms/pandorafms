@@ -3128,22 +3128,14 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
     // Print header.
     ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
 } else {
-    switch ($activeTab) {
-        case 'main':
-            $helpers = '';
-        break;
-
-        default:
-            $helpers = 'reporting_'.$activeTab.'_tab';
-        break;
-    }
+    $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
     if ($action !== 'update' && !is_metaconsole()) {
         ui_print_page_header(
             $textReportName,
             'images/op_reporting.png',
             false,
-            $helpers,
+            $tab_builder,
             false,
             $buttons,
             false,

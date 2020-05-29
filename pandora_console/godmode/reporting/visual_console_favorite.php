@@ -78,7 +78,7 @@ if (!$is_metaconsole) {
         __('Reporting').' &raquo; '.__('Visual Favourite Console'),
         'images/op_reporting.png',
         false,
-        'map_builder_favorite',
+        '',
         false,
         $buttons
     );

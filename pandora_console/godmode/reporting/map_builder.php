@@ -84,7 +84,7 @@ if (!$is_metaconsole) {
         __('Reporting').' &raquo; '.__('Visual Console'),
         'images/op_reporting.png',
         false,
-        'map_builder_intro',
+        '',
         false,
         $buttons
     );

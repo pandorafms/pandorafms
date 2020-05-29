@@ -120,8 +120,13 @@ function reloadContent(id, url, options, side, noneStr) {
 
       let items = Object.entries(data).sort(function(a, b) {
         if (a[1] == b[1]) return 0;
-        if (parseInt(a[1]) != 0 && parseInt(b[1]) != 0)
-          return parseInt(a[1]) > parseInt(b[1]) ? 1 : -1;
+
+        var int_a = parseInt(a[1]);
+        var int_b = parseInt(b[1]);
+
+        if (!isNaN(int_a) && !isNaN(int_b)) {
+          return int_a > int_b ? 1 : -1;
+        }
         return a[1] > b[1] ? 1 : -1;
       });
 

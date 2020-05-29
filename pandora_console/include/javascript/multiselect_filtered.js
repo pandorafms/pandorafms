@@ -119,7 +119,8 @@ function reloadContent(id, url, options, side, noneStr) {
       $("#" + current).empty();
 
       let items = Object.entries(data).sort(function(a, b) {
-        return a[1] >= b[1];
+        if (a[1] == b[1]) return 0;
+        return a[1] > b[1] ? 1 : -1;
       });
 
       for (var [value, label] of items) {

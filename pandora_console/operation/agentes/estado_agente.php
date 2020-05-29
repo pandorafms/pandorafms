@@ -808,7 +808,7 @@ foreach ($agents as $agent) {
             $url = ui_get_full_url(
                 $url.'&op=view&id='.$cluster->id()
             );
-            echo '<a href="'.$url.'">'.__('View').'</a>';
+            $data[0] .= '<a href="'.$url.'">'.__('View').'</a>';
         }
     } else {
         $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'">'.__('View').'</a>';
@@ -827,7 +827,7 @@ foreach ($agents as $agent) {
                 $url = ui_get_full_url(
                     $url.'&op=update&id='.$cluster->id()
                 );
-                echo '<a href="'.$url.'">'.__('Edit').'</a>';
+                $data[0] .= '<a href="'.$url.'">'.__('Edit').'</a>';
             }
         } else {
                 $data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent['id_agente'].'">'.__('Edit').'</a>';

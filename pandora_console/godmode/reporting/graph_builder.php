@@ -296,7 +296,7 @@ switch ($tab) {
             $head,
             'images/chart.png',
             false,
-            'graph_editor',
+            '',
             false,
             $buttons
         );

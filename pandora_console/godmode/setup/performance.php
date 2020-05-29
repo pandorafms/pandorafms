@@ -249,10 +249,6 @@ $table->size[1] = '30%';
 
 // enterprise_hook('enterprise_warnings_history_days');
 $table->data[1][0] = __('Max. days before delete events');
-$table->data[1][0] .= ui_print_help_tip(
-    __('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'),
-    true
-);
 
 $table->data[1][1] = html_print_input_text(
     'event_purge',
@@ -304,10 +300,6 @@ $table->data[5][1] = html_print_input_text(
 );
 
 $table->data[6][0] = __('Max. days before purge');
-$table->data[6][0] .= ui_print_help_tip(
-    __('Configure a purge period more frequent than a compact data period has no sense'),
-    true
-);
 $table->data[6][1] = html_print_input_text(
     'days_purge',
     $config['days_purge'],
@@ -348,10 +340,6 @@ $table->data[9][1] = html_print_input_text(
 );
 
 $table->data[10][0] = __('Retention period of past special days');
-$table->data[10][0] .= ui_print_help_tip(
-    __('This number is days to keep past special days. 0 means never remove.'),
-    true
-);
 $table->data[10][1] = html_print_input_text(
     'num_past_special_days',
     $config['num_past_special_days'],
@@ -362,10 +350,6 @@ $table->data[10][1] = html_print_input_text(
 );
 
 $table->data[11][0] = __('Max. macro data fields');
-$table->data[11][0] .= ui_print_help_tip(
-    __('Number of macro fields in alerts and templates between 1 and 15'),
-    true
-);
 $table->data[11][1] = html_print_input_text(
     'max_macro_fields',
     $config['max_macro_fields'],
@@ -454,10 +438,6 @@ if ($config['history_db_enabled'] == 1) {
     enterprise_hook('enterprise_warnings_history_days');
 
     $table_historical->data[0][0] = __('Max. days before purge');
-    $table_historical->data[0][0] .= ui_print_help_tip(
-        __('Configure a purge period more frequent than a compact data period has no sense'),
-        true
-    );
     $table_historical->data[0][1] = html_print_input_text(
         'historical_days_purge',
         $config_history['days_purge'],
@@ -478,10 +458,6 @@ if ($config['history_db_enabled'] == 1) {
     );
 
     $table_historical->data[2][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-    $table_historical->data[2][0] .= ui_print_help_tip(
-        __('Data will be compacted in intervals of the specified length.'),
-        true
-    );
     $table_historical->data[2][1] = html_print_input_text(
         'historical_step_compact',
         $config_history['step_compact'],
@@ -492,11 +468,6 @@ if ($config['history_db_enabled'] == 1) {
     );
 
     $table_historical->data[3][0] = __('Max. days before delete events');
-    $table_historical->data[3][0] .= ui_print_help_tip(
-        __('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'),
-        true
-    );
-
     $table_historical->data[3][1] = html_print_input_text(
         'historical_event_purge',
         $config_history['event_purge'],
@@ -558,10 +529,6 @@ $table_other->size[0] = '70%';
 $table_other->size[1] = '30%';
 
 $table_other->data[1][0] = __('Item limit for realtime reports');
-$table_other->data[1][0] .= ui_print_help_tip(
-    __('Set a value too high cause a slowdown on console and a performance penalty in the system.'),
-    true
-);
 $table_other->data[1][1] = html_print_input_text(
     'report_limit',
     $config['report_limit'],
@@ -572,10 +539,6 @@ $table_other->data[1][1] = html_print_input_text(
 );
 
 $table_other->data[2][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table_other->data[2][0] .= ui_print_help_tip(
-    __('Data will be compacted in intervals of the specified length.'),
-    true
-);
 $table_other->data[2][1] = html_print_input_text(
     'step_compact',
     $config['step_compact'],
@@ -614,10 +577,6 @@ $table_other->data[5][1] = html_print_checkbox_switch(
 );
 
 $table_other->data[6][0] = __('Batch statistics period (secs)');
-$table_other->data[6][0] .= ui_print_help_tip(
-    __('If realtime statistics are disabled, statistics interval resfresh will be set here.'),
-    true
-);
 $table_other->data[6][1] = html_print_input_text(
     'stats_interval',
     $config['stats_interval'],
@@ -631,10 +590,6 @@ $table_other->data[7][0] = __('Use agent access graph');
 $table_other->data[7][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true);
 
 $table_other->data[8][0] = __('Max. recommended number of files in attachment directory');
-$table_other->data[8][0] .= ui_print_help_tip(
-    __('This number is the maximum number of files in attachment directory. If this number is reached then a warning message will appear in the header notification space.'),
-    true
-);
 $table_other->data[8][1] = html_print_input_text(
     'num_files_attachment',
     $config['num_files_attachment'],
@@ -648,10 +603,6 @@ $table_other->data[9][0] = __('Delete not init modules');
 $table_other->data[9][1] = html_print_checkbox_switch('delete_notinit', 1, $config['delete_notinit'], true);
 
 $table_other->data[10][0] = __('Big Operation Step to purge old data');
-$table_other->data[10][0] .= ui_print_help_tip(
-    __('The number of blocks that a time interval is split into. A bigger value means bigger blocks, which is faster but heavier on the database. Default is 100.'),
-    true
-);
 $table_other->data[10][1] = html_print_input_text(
     'big_operation_step_datos_purge',
     $config['big_operation_step_datos_purge'],
@@ -662,10 +613,6 @@ $table_other->data[10][1] = html_print_input_text(
 );
 
 $table_other->data[11][0] = __('Small Operation Step to purge old data');
-$table_other->data[11][0] .= ui_print_help_tip(
-    __('The number of rows that are processed in a single query in deletion. Default is 1000. Increase to 3000-5000 in fast systems. Decrease to 500 or 250 on systems with locks.'),
-    true
-);
 $table_other->data[11][1] = html_print_input_text(
     'small_operation_step_datos_purge',
     $config['small_operation_step_datos_purge'],
@@ -676,10 +623,6 @@ $table_other->data[11][1] = html_print_input_text(
 );
 
 $table_other->data[12][0] = __('Graph container - Max. Items');
-$table_other->data[12][0] .= ui_print_help_tip(
-    __('The number of graphs that are viewed in a container. Default is 10 .Increasing this number could lead to performance problems'),
-    true
-);
 $table_other->data[12][1] = html_print_input_text(
     'max_graph_container',
     $config['max_graph_container'],
@@ -690,10 +633,6 @@ $table_other->data[12][1] = html_print_input_text(
 );
 
 $table_other->data[13][0] = __('Events response max. execution');
-$table_other->data[13][0] .= ui_print_help_tip(
-    __('Number of events that will perform the desired action at the same time'),
-    true
-);
 $table_other->data[13][1] = html_print_input_text(
     'max_execution_event_response',
     $config['max_execution_event_response'],

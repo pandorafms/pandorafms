@@ -1537,7 +1537,7 @@ if (!$config['pure']) {
         agents_get_alias($id_agente),
         $icon,
         false,
-        $help_header,
+        '',
         false,
         $onheader,
         false,

@@ -1169,10 +1169,7 @@ $class = 'databox filters';
                     <tr>
                         <td>
                             <?php
-                            echo __('Time from').ui_print_help_tip(
-                                __('Watch format is hours (24h):minutes:seconds'),
-                                true
-                            );
+                            echo __('Time from');
                             ?>
                         </td>
                         <td colspan="6">
@@ -1190,10 +1187,7 @@ $class = 'databox filters';
                     <tr>
                         <td>
                             <?php
-                            echo __('Time to').ui_print_help_tip(
-                                __('Watch format is hours (24h):minutes:seconds'),
-                                true
-                            );
+                            echo __('Time to');
                             ?>
                         </td>
                         <td colspan="6">

@@ -284,7 +284,7 @@ if (defined('METACONSOLE')) {
         __('Alerts').' &raquo; '.__('Alert commands'),
         'images/gm_alerts.png',
         false,
-        'alerts_command_tab',
+        '',
         true
     );
 }

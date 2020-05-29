@@ -248,7 +248,7 @@ function mainModuleGroups()
         __('Combined table of agent group and module group'),
         'images/module_group.png',
         false,
-        'module_groups_view',
+        '',
         false,
         ''
     );

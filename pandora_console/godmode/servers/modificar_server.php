@@ -30,7 +30,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 if (isset($_GET['server'])) {
     $id_server = get_parameter_get('server');
-    // Headers
+    // Headers.
     ui_print_page_header(__('Update Server'), 'images/gm_servers.png', false, 'servers', true);
     $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
     $row = db_get_row_sql($sql);
@@ -98,16 +98,16 @@ if (isset($_GET['server'])) {
     echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
     echo '</div>';
 } else if (isset($_GET['server_remote'])) {
-    // Headers
+    // Headers.
     $id_server = get_parameter_get('server_remote');
     $ext = get_parameter('ext', '');
     ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true);
     enterprise_include('godmode/servers/server_disk_conf_editor.php');
 } else {
-    // Header
-    ui_print_page_header(__('%s servers', get_product_name()), 'images/gm_servers.png', false, 'servers', true);
+    // Header.
+    ui_print_page_header(__('%s servers', get_product_name()), 'images/gm_servers.png', false, '', true);
 
-    // Move SNMP modules back to the enterprise server
+    // Move SNMP modules back to the enterprise server.
     if (isset($_GET['server_reset_snmp_enterprise'])) {
         $result = db_process_sql('UPDATE tagente_estado SET last_error=0');
 
@@ -118,7 +118,7 @@ if (isset($_GET['server'])) {
         }
     }
 
-    // Reset module count
+    // Reset module count.
     if (isset($_GET['server_reset_counts'])) {
         $reslt = db_process_sql('UPDATE tagente SET update_module_count=1, update_alert_count=1');
 
@@ -167,7 +167,7 @@ if (isset($_GET['server'])) {
         $server_md5 = md5(io_safe_output(servers_get_name($id_server, 'none').$ext), false);
 
         if (file_exists($config['remote_config'].'/md5/'.$server_md5.'.srv.md5')) {
-            // Server remote configuration editor
+            // Server remote configuration editor.
             $file_name = $config['remote_config'].'/conf/'.$server_md5.'.srv.conf';
             $correct = @unlink($file_name);
 

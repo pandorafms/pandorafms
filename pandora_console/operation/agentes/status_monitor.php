@@ -62,7 +62,14 @@ if (! defined('METACONSOLE')) {
         break;
     }
 
-    ui_print_page_header(__('Monitor detail').$subpage, '', false, 'monitor_detail_view', true, $buttons);
+    ui_print_page_header(
+        __('Monitor detail').$subpage,
+        '',
+        false,
+        '',
+        true,
+        $buttons
+    );
 
     if ($section == 'fields') {
         include_once $config['homedir'].'/godmode/agentes/status_monitor_custom_fields.php';

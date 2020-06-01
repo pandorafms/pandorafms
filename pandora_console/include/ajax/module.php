@@ -551,6 +551,13 @@ if (check_login()) {
         include_once $config['homedir'].'/include/functions_tags.php';
         include_once $config['homedir'].'/include/functions_clippy.php';
 
+
+        // Disable module edition in cluster module list.
+        $cluster_view = (bool) preg_match(
+            '/operation\/cluster\/cluster/',
+            $_SERVER['HTTP_REFERER']
+        );
+
         $agent_a = check_acl($config['id_user'], 0, 'AR');
         $agent_w = check_acl($config['id_user'], 0, 'AW');
         $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
@@ -962,7 +969,9 @@ if (check_login()) {
 
             $data[2] = servers_show_type($module['id_modulo']).'&nbsp;';
 
-            if (check_acl($config['id_user'], $id_grupo, 'AW')) {
+            if (check_acl($config['id_user'], $id_grupo, 'AW')
+                && $cluster_view === false
+            ) {
                 $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">'.html_print_image('images/config.png', true, ['alt' => '0', 'border' => '', 'title' => __('Edit'), 'class' => 'action_button_img']).'</a>';
             }
 

@@ -139,7 +139,9 @@ font-size:10pt;
                 echo '<br/> <br/>';
                 echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
                 if ($config['logged'] == false) {
-                    session_destroy();
+                    if (session_status() === PHP_SESSION_ACTIVE) {
+                        session_destroy();
+                    }
                 }
                 ?>
                       

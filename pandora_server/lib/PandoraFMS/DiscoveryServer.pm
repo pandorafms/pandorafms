@@ -1404,62 +1404,63 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
   $self->call('message', "Storing results", 6);
   my @hosts = keys %{$self->{'agents_found'}};
   $self->{'step'} = STEP_PROCESSING;
-  my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
+  if ((scalar (@hosts)) > 0) {
+    my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
 
-  foreach my $addr (keys %{$self->{'agents_found'}}) {
-	  my $label = $self->{'agents_found'}->{$addr}{'agent'}{'nombre'};
+    foreach my $addr (keys %{$self->{'agents_found'}}) {
+      my $label = $self->{'agents_found'}->{$addr}{'agent'}{'nombre'};
 
-  	next if is_empty($label);
+      next if is_empty($label);
 
-    # Retrieve target agent OS version.
-		$self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
+      # Retrieve target agent OS version.
+      $self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
 
-    $self->call('update_progress', $progress);
-    $progress += $step;
-    # Store temporally. Wait user approval.
-    my $encoded;
+      $self->call('update_progress', $progress);
+      $progress += $step;
+      # Store temporally. Wait user approval.
+      my $encoded;
 
-    eval {
-      local $SIG{__DIE__};
-      $encoded = encode_base64(
-        p_encode_json($self->{'pa_config'}, $self->{'agents_found'}->{$addr})
-      );
-    };
+      eval {
+        local $SIG{__DIE__};
+        $encoded = encode_base64(
+          p_encode_json($self->{'pa_config'}, $self->{'agents_found'}->{$addr})
+        );
+      };
 
-    my $id = get_db_value(
-      $self->{'dbh'},
-      'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
-      $self->{'task_data'}{'id_rt'},
-      safe_input($label)
-    );
-    
-    if (defined($id)) {
-      # Already defined.
-      $self->{'agents_found'}{$addr}{'id'} = $id;
-
-      db_do(
+      my $id = get_db_value(
         $self->{'dbh'},
-        'UPDATE tdiscovery_tmp_agents SET `data` = ? '
-        .'WHERE `id_rt` = ? AND `label` = ?',
-        $encoded,
+        'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
         $self->{'task_data'}{'id_rt'},
         safe_input($label)
       );
-      next;
+      
+      if (defined($id)) {
+        # Already defined.
+        $self->{'agents_found'}{$addr}{'id'} = $id;
+
+        db_do(
+          $self->{'dbh'},
+          'UPDATE tdiscovery_tmp_agents SET `data` = ? '
+          .'WHERE `id_rt` = ? AND `label` = ?',
+          $encoded,
+          $self->{'task_data'}{'id_rt'},
+          safe_input($label)
+        );
+        next;
+      }
+
+      # Insert.
+      $self->{'agents_found'}{$addr}{'id'} = db_insert(
+        $self->{'dbh'},
+        'id',
+        'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
+        .'VALUES (?, ?, ?, now())',
+        $self->{'task_data'}{'id_rt'},
+        safe_input($label),
+        $encoded
+      );
     }
-
-    # Insert.
-    $self->{'agents_found'}{$addr}{'id'} = db_insert(
-      $self->{'dbh'},
-      'id',
-      'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
-      .'VALUES (?, ?, ?, now())',
-      $self->{'task_data'}{'id_rt'},
-      safe_input($label),
-      $encoded
-    );
   }
-
 
   if(defined($self->{'task_data'}{'review_mode'})
     && $self->{'task_data'}{'review_mode'} == DISCOVERY_REVIEW

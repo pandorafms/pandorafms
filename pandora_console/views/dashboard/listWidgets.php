@@ -52,8 +52,7 @@ $inputs = [
     ],
 ];
 
-$html = new HTML();
-$html->printForm(
+HTML::printForm(
     [
         'form'   => $form,
         'inputs' => $inputs,

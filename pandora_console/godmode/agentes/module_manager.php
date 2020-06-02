@@ -703,6 +703,10 @@ foreach ($modules as $module) {
     $module_interval2 = $module['module_interval'];
     $module_group2 = $module['id_module_group'];
 
+    if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
+        $nombre_modulo = utf8_decode($module['nombre']);
+    }
+
     $data = [];
 
     if (!$checked) {
@@ -834,7 +838,7 @@ foreach ($modules as $module) {
 
     $data[6] = ui_print_status_image($status, htmlspecialchars($title), true);
 
-    // MAX / MIN values
+    // MAX / MIN values.
     if ($module['id_tipo_modulo'] != 25) {
         $data[7] = ui_print_module_warn_value(
             $module['max_warning'],

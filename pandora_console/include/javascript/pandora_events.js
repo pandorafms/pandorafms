@@ -791,8 +791,6 @@ function delete_event(table, id_evento, event_rep, row) {
     processed += 1;
     return;
   }
-  button.children[0];
-  button.children[0].src = "images/spinner.gif";
   var message =
     "<h4 style = 'text-align: center; color: black;' > Are you sure?</h4> ";
   confirmDialog({

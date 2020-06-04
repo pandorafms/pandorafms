@@ -712,7 +712,7 @@ function update_event(table, id_evento, type, event_rep, row) {
     values[this.name] = $(this).val();
   });
   var t1 = new Date();
-
+  console.log("al ajax directo");
   // Update events matching current filters and id_evento selected.
   $.ajax({
     async: true,
@@ -791,10 +791,25 @@ function delete_event(table, id_evento, event_rep, row) {
     processed += 1;
     return;
   }
-
-  button.children[0];
-  button.children[0].src = "images/spinner.gif";
-  return update_event(table, id_evento, { delete_event: 1 }, event_rep, row);
+  confirmDialog({
+    title: "ATTENTION",
+    message:
+      "<h4 style='text-align: center;padding-top: 20px;'>Are you sure?</h4>",
+    cancel: "Cancel",
+    ok: "Ok",
+    onAccept: function() {
+      // Continue execution.
+      button.children[0];
+      button.children[0].src = "images/spinner.gif";
+      return update_event(
+        table,
+        id_evento,
+        { delete_event: 1 },
+        event_rep,
+        row
+      );
+    }
+  });
 }
 
 // Imported from old files.

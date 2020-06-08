@@ -36,6 +36,12 @@ function winopeng_var(url, wid, width, height) {
   status = wid;
 }
 
+function newTabjs(content) {
+  content = atob(content);
+  var printWindow = window.open("");
+  printWindow.document.body.innerHTML += "<div>" + content + "</div>";
+}
+
 function open_help(url) {
   if (!navigator.onLine) {
     alert(

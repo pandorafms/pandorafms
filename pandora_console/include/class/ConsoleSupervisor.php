@@ -226,6 +226,19 @@ class ConsoleSupervisor
          *  NOTIF.HAMASTER.MESSAGE
          */
         $this->checkHaStatus();
+
+        /*
+         * Check if the Pandora Console log
+         * file remains in old location.
+         */
+        $this->checkPandoraConsoleLogOldLocation();
+
+        /*
+         * Check if the audit log file
+         * remains in old location.
+         */
+        $this->checkAuditLogOldLocation();
+
     }
 
 
@@ -460,6 +473,17 @@ class ConsoleSupervisor
            * Check if HA status.
            */
         $this->checkHaStatus();
+
+        /*
+         * Check if the audit log file
+         * remains in old location.
+         */
+        $this->checkAuditLogOldLocation();
+
+        /*
+            Check if AllowOverride is None or All.
+        */
+        $this->checkAllowOverrideEnabled();
 
     }
 
@@ -2253,8 +2277,8 @@ class ConsoleSupervisor
                     ui_get_full_url(false)
                 );
                 $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; ';
-                $message_conf_cron .= $config['homedir'].'/pandora_console.log</pre>';
+                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                $message_conf_cron .= $config['homedir'].'/log/console.log</pre>';
             }
 
             if (isset($config['cron_last_run']) === true) {
@@ -2479,6 +2503,74 @@ class ConsoleSupervisor
             } else {
                 $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
             }
+        }
+    }
+
+
+    /*
+     * Check if Pandora console log file remains in old location.
+     *
+     * @return void
+     */
+    public function checkPandoraConsoleLogOldLocation()
+    {
+        global $config;
+
+        if (file_exists($config['homedir'].'/pandora_console.log')) {
+            $title_pandoraconsole_old_log = __(
+                'Pandora FMS console log file changed location',
+                $config['homedir']
+            );
+            $message_pandoraconsole_old_log = __(
+                'Pandora FMS console log file has been moved to new location %s/pandora_console/log/pandora. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                $config['homedir'],
+                $config['homedir']
+            );
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
+                    'title'   => __($title_pandoraconsole_old_log),
+                    'message' => __($message_pandoraconsole_old_log),
+                    'url'     => '#',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PANDORACONSOLE.LOG.OLD');
+        }
+    }
+
+
+    /**
+     * Check if audit log file remains in old location.
+     *
+     * @return void
+     */
+    public function checkAuditLogOldLocation()
+    {
+        global $config;
+
+        if (file_exists($config['homedir'].'/audit.log')) {
+            $title_audit_old_log = __(
+                'Pandora FMS audit log file changed location',
+                $config['homedir']
+            );
+            $message_audit_old_log = __(
+                'Pandora FMS audit log file has been moved to new location %s/pandora_console/log/pandora. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                $config['homedir'],
+                $config['homedir']
+            );
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.AUDIT.LOG.OLD',
+                    'title'   => __($title_audit_old_log),
+                    'message' => __($message_audit_old_log),
+                    'url'     => '#',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.AUDIT.LOG.OLD');
         }
     }
 

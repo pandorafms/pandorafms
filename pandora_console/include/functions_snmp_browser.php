@@ -159,7 +159,7 @@ function snmp_browser_get_html_tree(
         $status = (!empty($checked) && isset($checked[$level]));
         $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
-            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
+            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
         }
 
         $output .= '</li>';

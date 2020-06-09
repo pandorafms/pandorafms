@@ -1,4 +1,5 @@
 # Centos, Redhat, Fedora
+/var/www/html/pandora_console/log/audit.log
 /var/www/html/pandora_console/log/console.log {
         weekly
         missingok

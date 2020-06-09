@@ -115,3 +115,7 @@ span.link.review {
   border-color: #eee;
   background-color: #ddd;
 }
+
+#task_review {
+  width: 100% !important;
+}

@@ -35,7 +35,7 @@ ui_print_page_header(
     __('GIS Maps'),
     'images/op_gis.png',
     false,
-    'configure_gis_map',
+    '',
     false,
     $buttons
 );

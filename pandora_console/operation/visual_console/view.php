@@ -187,7 +187,7 @@ if (!is_metaconsole()) {
             $visualConsoleName,
             'images/visual_console.png',
             false,
-            '',
+            'visual_console_view',
             false,
             $options
         );

@@ -1342,13 +1342,13 @@ ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 37);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 38);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '745');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '746');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1674,6 +1674,7 @@ ALTER TABLE trecon_task ADD `alias_as_name` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `snmp_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `wmi_enabled` tinyint(1) unsigned DEFAULT '0';
+ALTER TABLE trecon_task ADD `rcmd_enabled` tinyint(1) unsigned DEFAULT '0';
 ALTER TABLE trecon_task ADD `auth_strings` text;
 ALTER TABLE trecon_task ADD `autoconfiguration_enabled` tinyint(1) unsigned default '0';
 ALTER TABLE trecon_task ADD `summary` text;
@@ -1865,7 +1866,8 @@ INSERT INTO `ttipo_modulo` VALUES
 (34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
 (35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
 (36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
-(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
+(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','mod_web_data.png');
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -2720,5 +2722,16 @@ INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id
 UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMadeByUser';
 UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
 UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
+
+-- ----------------------------------------------------------------------
+-- Table `tnode_relations`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnode_relations` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+    `gateway` VARCHAR(100) NOT NULL,
+	`imei` VARCHAR(100) NOT NULL,
+	`node_address` VARCHAR(60) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

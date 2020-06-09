@@ -356,6 +356,9 @@ define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
 
+// Forced agent OS ID for cluster agents.
+define('CLUSTER_OS_ID', 100);
+
 // Type of Webserver Modules.
 define('MODULE_WEBSERVER_CHECK_LATENCY', 30);
 define('MODULE_WEBSERVER_CHECK_SERVER_RESPONSE', 31);

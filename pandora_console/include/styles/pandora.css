@@ -462,29 +462,45 @@ select:-internal-list-box {
 .mw250px {
   min-width: 250px;
 }
+.mw500px {
+  min-width: 500px;
+}
+.mw600px {
+  min-width: 600px;
+}
+.mw800px {
+  min-width: 800px;
+}
 .w20px {
   width: 20px;
 }
 .w10p {
   width: 10%;
 }
-
 .w20p {
   width: 20%;
 }
-
 .w30p {
   width: 30%;
 }
-
 .w40p {
   width: 40%;
 }
-
 .w50p {
   width: 50%;
 }
-
+.w60p {
+  width: 60%;
+}
+.w70p {
+  width: 70%;
+}
+.w80p {
+  width: 80%;
+}
+.w90p {
+  width: 90%;
+}
 .w100p {
   width: 100%;
 }
@@ -588,8 +604,17 @@ select:-internal-list-box {
 .padding-6 {
   padding: 6em;
 }
+.margin-right-1 {
+  margin-right: 1em;
+}
+.margin-left-1 {
+  margin-left: 1em;
+}
 .margin-right-2 {
   margin-right: 2em;
+}
+.margin-left-2 {
+  margin-left: 2em;
 }
 .no-border {
   border: none;
@@ -4779,7 +4804,8 @@ input:checked + .p-slider:before {
   width: 75%;
 }
 
-.edit_user_info_right input {
+.edit_user_info_right input,
+.input_line {
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -4796,15 +4822,18 @@ input:checked + .p-slider:before {
   font-weight: bold;
 }
 
-.edit_user_info_right #fullname {
+.edit_user_info_right #fullname,
+.user_icon_input {
   background-image: url("../../images/user_name.png");
 }
 
-.edit_user_info_right #email {
+.edit_user_info_right #email,
+.email_icon_input {
   background-image: url("../../images/user_email.png");
 }
 
-.edit_user_info_right #phone {
+.edit_user_info_right #phone,
+.phone_icon_input {
   background-image: url("../../images/user_phone.png");
 }
 
@@ -4822,7 +4851,8 @@ input:checked + .p-slider:before {
   padding-right: 50px;
 }
 
-.edit_user_options #text-block_size {
+.edit_user_options #text-block_size,
+.input_line_small {
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -4866,12 +4896,14 @@ input:checked + .p-slider:before {
   display: inline;
 }
 
-.edit_user_options .label_select_simple {
+.edit_user_options .label_select_simple,
+.edit_user_autorefresh .label_select_simple {
   display: flex;
   align-items: center;
 }
 
-.edit_user_options .label_select_simple .p-switch {
+.edit_user_options .label_select_simple .p-switch,
+.edit_user_autorefresh .label_select_simple .p-switch {
   margin-right: 5px;
   margin-left: 10px;
 }
@@ -4925,6 +4957,24 @@ input:checked + .p-slider:before {
 .edit_user_autorefresh select,
 .user_edit_second_row select {
   width: 100%;
+}
+
+@media screen and (min-width: 1200px) {
+  .user_global_profile {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.user_edit_ehorus_outer {
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+}
+
+.user_edit_ehorus_inner {
+  display: flex;
+  justify-content: space-between;
 }
 
 .edit_user_button {
@@ -5396,7 +5446,7 @@ table.info_table.policy_sub_table {
 .switch_radio_button input:checked + label {
   background-color: #82b92e;
   box-shadow: none;
-  color: #fff;
+  color: #fff !important;
 }
 
 .switch_radio_button label:last-child {

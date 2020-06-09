@@ -7788,8 +7788,9 @@ function reporting_custom_graph(
                 'labels'         => $content['style']['label'],
             ];
 
+            $return['chart'] = '';
             if ($pdf === true) {
-                $return['chart'] = '<img src="data:image/jpg;base64,';
+                $return['chart'] .= '<img src="data:image/jpg;base64,';
                 $return['chart'] .= graphic_combined_module(
                     $modules,
                     $params,
@@ -7797,11 +7798,18 @@ function reporting_custom_graph(
                 );
                 $return['chart'] .= '" />';
             } else {
-                $return['chart'] = graphic_combined_module(
+                if ($graphs[0]['stacked'] == CUSTOM_GRAPH_VBARS) {
+                    $return['chart'] .= '<div style="height:'.$config['graph_image_height'].'px;">';
+                }
+
+                $return['chart'] .= graphic_combined_module(
                     $modules,
                     $params,
                     $params_combined
                 );
+                if ($graphs[0]['stacked'] === CUSTOM_GRAPH_VBARS) {
+                    $return['chart'] .= '</div>';
+                }
             }
         break;
 
@@ -8993,22 +9001,22 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
 
     if ($html) {
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Server health').ui_print_help_tip(sprintf(__('%d Downed servers'), $servers['down']), true).'</legend>'.progress_bar($servers['health'], $width, $height, '', 0).'</fieldset>';
+                        <legend>'.__('Server health').ui_print_help_tip(sprintf(__('%d Downed servers'), (int) $servers['down']), true).'</legend>'.progress_bar($servers['health'], $width, $height, '', 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Monitor health').ui_print_help_tip(sprintf(__('%d Not Normal monitors'), $data['monitor_not_normal']), true).'</legend>'.progress_bar($data['monitor_health'], $width, $height, $data['monitor_health'].'% '.__('of monitors up'), 0).'</fieldset>';
+                        <legend>'.__('Monitor health').ui_print_help_tip(sprintf(__('%d Not Normal monitors'), (int) $data['monitor_not_normal']), true).'</legend>'.progress_bar($data['monitor_health'], $width, $height, $data['monitor_health'].'% '.__('of monitors up'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
+                        <legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Alert level').ui_print_help_tip(sprintf(__('%d Fired alerts'), $data['monitor_alerts_fired']), true).'</legend>'.progress_bar($data['alert_level'], $width, $height, $data['alert_level'].'% '.__('of defined alerts not fired'), 0).'</fieldset>';
+                        <legend>'.__('Alert level').ui_print_help_tip(sprintf(__('%d Fired alerts'), (int) $data['monitor_alerts_fired']), true).'</legend>'.progress_bar($data['alert_level'], $width, $height, $data['alert_level'].'% '.__('of defined alerts not fired'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 

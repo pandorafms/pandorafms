@@ -343,9 +343,6 @@ function main_net_tools()
     echo "<table class='databox filters' width=100% id=netToolTable>";
     echo '<tr><td>';
     echo __('Operation');
-    ui_print_help_tip(
-        __('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools')
-    );
     echo '</td><td>';
 
     html_print_select(
@@ -429,7 +426,12 @@ function godmode_net_tools()
         return;
     }
 
-    ui_print_page_header(__('Config Network Tools'));
+    ui_print_page_header(
+        __('Config Network Tools'),
+        '',
+        false,
+        'network_tools_tab'
+    );
 
     $update_traceroute = (bool) get_parameter('update_traceroute', 0);
 
@@ -472,23 +474,18 @@ function godmode_net_tools()
     $table->data = [];
 
     $table->data[0][0] = __('Traceroute path');
-    $table->data[0][0] .= ui_print_help_tip(__('If empty, %s will search the traceroute system.', get_product_name()), true);
     $table->data[0][1] = html_print_input_text('traceroute_path', $traceroute_path, '', 40, 255, true);
 
     $table->data[1][0] = __('Ping path');
-    $table->data[1][0] .= ui_print_help_tip(__('If empty, %s will search the ping system.', get_product_name()), true);
     $table->data[1][1] = html_print_input_text('ping_path', $ping_path, '', 40, 255, true);
 
     $table->data[2][0] = __('Nmap path');
-    $table->data[2][0] .= ui_print_help_tip(__('If empty, %s will search the nmap system.', get_product_name()), true);
     $table->data[2][1] = html_print_input_text('nmap_path', $nmap_path, '', 40, 255, true);
 
     $table->data[3][0] = __('Dig path');
-    $table->data[3][0] .= ui_print_help_tip(__('If empty, %s will search the dig system', get_product_name()), true);
     $table->data[3][1] = html_print_input_text('dig_path', $dig_path, '', 40, 255, true);
 
     $table->data[4][0] = __('Snmpget path');
-    $table->data[4][0] .= ui_print_help_tip(__('If empty, %s will search the snmpget system.', get_product_name()), true);
     $table->data[4][1] = html_print_input_text('snmpget_path', $snmpget_path, '', 40, 255, true);
 
     echo '<form id="form_setup" method="post" >';

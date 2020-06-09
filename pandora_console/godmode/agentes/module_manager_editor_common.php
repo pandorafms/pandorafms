@@ -572,15 +572,13 @@ if ($moduletype == MODULE_DATA) {
 
     if ($__code_from == 'policies') {
         // If is the policy form, module_interval will store the factor (not the seconds).
-        // So server will transform it to interval in seconds
+        // So server will transform it to interval in seconds.
         $table_advanced->data[1][1] = sprintf(__('Default').': 1', $interval_factor);
         $table_advanced->data[1][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
-    } else if ($module_id_policy_module != 0) {
-        $table_advanced->data[1][1] .= ui_print_help_tip(__('The policy modules of data type will only update their intervals when policy is applied.'), true);
     }
 
-    // If it is a non policy form, the module_interval will not provided and will
-    // be taken the agent interval (this code is at configurar_agente.php)
+    // If it is a non policy form, the module_interval will not provided and will.
+    // be taken the agent interval (this code is at configurar_agente.php).
 } else {
     $table_advanced->data[1][0] = __('Interval');
     $table_advanced->colspan[1][1] = 2;
@@ -607,9 +605,9 @@ $table_advanced->colspan[1][4] = 3;
 $table_advanced->data[2][0] = __('Min. Value');
 $table_advanced->colspan[2][1] = 2;
 
-$table_advanced->data[2][1] = html_print_input_text('min', $min, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).' '.ui_print_help_tip(__('Any value below this number is discarted.'), true);
+$table_advanced->data[2][1] = html_print_input_text('min', $min, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->data[2][3] = __('Max. Value');
-$table_advanced->data[2][4] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).' '.ui_print_help_tip(__('Any value over this number is discarted.'), true);
+$table_advanced->data[2][4] = html_print_input_text('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 
 
@@ -685,10 +683,10 @@ $table_advanced->data[4][1] = html_print_select_from_sql(
     false,
     false,
     $disabled_export
-).ui_print_help_tip(__('In case you use an Export server you can link this module and export data to one these.'), true);
+);
 $table_advanced->colspan[4][1] = 2;
 
-// Code comes from module_editor
+// Code comes from module_editor.
 if ($__code_from == 'modules') {
     $throw_unknown_events_check = modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
 } else {
@@ -806,7 +804,7 @@ $table_advanced->data[6][1] = html_print_input_text(
     false,
     '',
     $classdisabledBecauseInPolicy
-).ui_print_help_tip(__('Module execution flip flop time interval (in secs).'), true);
+);
 $table_advanced->colspan[6][1] = 2;
 
 $table_advanced->data[6][3] = __('FF timeout');
@@ -822,11 +820,11 @@ if (preg_match('/async/', $module_type_name) || $edit) {
         10,
         true,
         $disabledBecauseInPolicy
-    ).ui_print_help_tip(__('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'), true).'</span>';
+    ).'</span>';
 }
 
 if (!preg_match('/async/', $module_type_name) || $edit) {
-    $table_advanced->data[6][4] .= '<span id="ff_timeout_disable">'.__('Disabled').ui_print_help_tip(__('This value can be set only in the async modules.'), true).'</span>';
+    $table_advanced->data[6][4] .= '<span id="ff_timeout_disable">'.__('Disabled').'</span>';
 }
 
 $table_advanced->colspan[6][4] = 3;
@@ -972,7 +970,6 @@ if ($__code_from == 'modules') {
 }
 
 $table_advanced->data[8][0] = __('Quiet');
-$table_advanced->data[8][0] .= ui_print_help_tip(__('The module still stores data but the alerts and events will be stop'), true);
 $table_advanced->data[8][1] = html_print_checkbox('quiet_module', 1, $quiet_module, true, $disabledBecauseInPolicy);
 
 $cps_array[-1] = __('Disabled');
@@ -992,7 +989,6 @@ if ($cps_module > 0) {
 
 $table_advanced->data[8][2] = '';
 $table_advanced->data[8][3] = __('Cascade Protection Services');
-$table_advanced->data[8][3] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
 $table_advanced->colspan[8][4] = 3;
 $table_advanced->data[8][4] = html_print_select($cps_array, 'cps_module', $cps_module, '', '', 0, true, false, true, '', $disabledBecauseInPolicy);
 
@@ -1010,16 +1006,16 @@ $table_advanced->data[9][1] = html_print_textarea(
     $largeClassDisabledBecauseInPolicy
 );
 
-$table_advanced->data[10][0] = __('Critical instructions').ui_print_help_tip(__('Instructions when the status is critical'), true);
+$table_advanced->data[10][0] = __('Critical instructions');
 $table_advanced->data[10][1] = html_print_textarea('critical_instructions', 3, 65, $critical_instructions, $disabledTextBecauseInPolicy.$textarea_custom_style, true, $largeClassDisabledBecauseInPolicy);
 
 $table_advanced->colspan[10][1] = 6;
 
-$table_advanced->data[11][0] = __('Warning instructions').ui_print_help_tip(__('Instructions when the status is warning'), true);
+$table_advanced->data[11][0] = __('Warning instructions');
 $table_advanced->data[11][1] = html_print_textarea('warning_instructions', 3, 65, $warning_instructions, $disabledTextBecauseInPolicy.$textarea_custom_style, true, $largeClassDisabledBecauseInPolicy);
 $table_advanced->colspan[11][1] = 6;
 
-$table_advanced->data[12][0] = __('Unknown instructions').ui_print_help_tip(__('Instructions when the status is unknown'), true);
+$table_advanced->data[12][0] = __('Unknown instructions');
 $table_advanced->data[12][1] = html_print_textarea('unknown_instructions', 3, 65, $unknown_instructions, $disabledTextBecauseInPolicy.$textarea_custom_style, true, $largeClassDisabledBecauseInPolicy);
 $table_advanced->colspan[12][1] = 6;
 
@@ -1053,10 +1049,10 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
 }
 
 $table_advanced->data[15][0] = __('Timeout');
-$table_advanced->data[15][1] = html_print_input_text('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).' '.ui_print_help_tip(__('Seconds that agent will wait for the execution of the module.'), true);
+$table_advanced->data[15][1] = html_print_input_text('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->data[15][2] = '';
 $table_advanced->data[15][3] = __('Retries');
-$table_advanced->data[15][4] = html_print_input_text('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).' '.ui_print_help_tip(__('Number of retries that the module will attempt to run.'), true);
+$table_advanced->data[15][4] = html_print_input_text('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->colspan[15][4] = 3;
 
 if (check_acl($config['id_user'], 0, 'PM')) {
@@ -1223,10 +1219,7 @@ $table_relations->style[4] = 'width: 10%; text-align: center;';
 $table_relations->head[0] = __('Agent');
 $table_relations->head[1] = __('Module');
 $table_relations->head[2] = __('Type');
-$table_relations->head[3] = __('Changes').ui_print_help_tip(
-    __('Activate this to prevent the relation from being updated or deleted'),
-    true
-);
+$table_relations->head[3] = __('Changes');
 $table_relations->head[4] = __('Delete');
 
 // Create an invisible row to use their html to add new rows.

@@ -26,7 +26,7 @@ use Thread::Semaphore;
 
 use IO::Socket::INET;
 use POSIX qw(strftime ceil);
-use JSON qw(decode_json encode_json);
+use JSON;
 use Encode qw(encode_utf8);
 use MIME::Base64;
 
@@ -105,7 +105,7 @@ sub new ($$$$$$) {
        get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
   # Reset (but do not restart) manual recon tasks.
-  db_do ($dbh, 'UPDATE trecon_task  SET status = -1 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
+  db_do ($dbh, 'UPDATE trecon_task  SET status = -1, summary = "cancelled" WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
        get_server_id ($dbh, $config->{'servername'}, DISCOVERYSERVER));
 
   # Call the constructor of the parent class
@@ -250,6 +250,13 @@ sub data_consumer ($$) {
       }
     }
 
+    if (!is_empty($task->{'recon_ports'})) {
+      # Accept only valid symbols.
+      if ($task->{'recon_ports'} !~ /[\d\-\,\ ]+/) {
+        $task->{'recon_ports'} = '';
+      }
+    }
+
     my $recon = new PandoraFMS::Recon::Base(
       communities => \@communities,
       dbh => $dbh,
@@ -276,6 +283,9 @@ sub data_consumer ($$) {
       task_id => $task->{'id_rt'},
       vlan_cache_enabled => $task->{'vlan_enabled'},
       wmi_enabled => $task->{'wmi_enabled'},
+      rcmd_enabled => $task->{'rcmd_enabled'},
+      rcmd_timeout => $pa_config->{'rcmd_timeout'},
+      rcmd_timeout_bin => $pa_config->{'rcmd_timeout_bin'},
       auth_strings_array => \@auth_strings,
       autoconfiguration_enabled => $task->{'autoconfiguration_enabled'},
       main_event_id => $main_event,
@@ -336,14 +346,14 @@ sub exec_recon_script ($$$) {
   
   my $macros = safe_output($task->{'macros'});
 
-  # \r and \n should be escaped for decode_json().
+  # \r and \n should be escaped for p_decode_json().
   $macros =~ s/\n/\\n/g;
   $macros =~ s/\r/\\r/g;
   my $decoded_macros;
   
   if ($macros) {
     eval {
-      $decoded_macros = decode_json(encode_utf8($macros));
+      $decoded_macros = p_decode_json($pa_config, $macros);
     };
   }
   
@@ -399,8 +409,10 @@ sub exec_recon_script ($$$) {
 ################################################################################
 # Guess the OS using xprobe2 or nmap.
 ################################################################################
-sub PandoraFMS::Recon::Base::guess_os($$) {
-  my ($self, $device) = @_;
+sub PandoraFMS::Recon::Base::guess_os($$;$) {
+  my ($self, $device, $string_flag) = @_;
+
+  return $self->{'os_id'}{$device} if defined($self->{'os_id'}{$device});
 
   $DEVNULL = '/dev/null' if (!defined($DEVNULL));
   $DEVNULL = '/NUL' if ($^O =~ /win/i && !defined($DEVNULL));
@@ -420,7 +432,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     my $return = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL`;
     if ($? == 0) {
       if($return =~ /Running OS:(.*)/) {
-        return pandora_get_os($self->{'dbh'}, $1);
+        my $str_os = $1;
+        return $str_os if is_enabled($string_flag);
+        return pandora_get_os($self->{'dbh'}, $str_os);
       }
     }
   }
@@ -431,7 +445,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
     return OS_OTHER if ($? != 0);
 
     if ($return =~ /Aggressive OS guesses:\s*(.*)/) {
-      return pandora_get_os($self->{'dbh'}, $1);
+      my $str_os = $1;
+      return $str_os if is_enabled($string_flag);
+      return pandora_get_os($self->{'dbh'}, $str_os);
     }
   }
 
@@ -443,6 +459,9 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 ################################################################################
 sub PandoraFMS::Recon::Base::tcp_scan ($$) {
   my ($self, $host) = @_;
+
+  return if is_empty($host);
+  return if is_empty($self->{'recon_ports'});
 
   my $r = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host`;
 
@@ -510,6 +529,9 @@ sub PandoraFMS::Recon::Base::test_module($$) {
   ) {
     # Generic, plugins. (21-23 ASYNC)
     if ($test->{'id_modulo'} == 6) {
+
+      return 0 unless $self->wmi_responds($addr);
+
       # WMI commands.
       $value = $self->call(
         'wmi_get_value',
@@ -527,9 +549,39 @@ sub PandoraFMS::Recon::Base::test_module($$) {
 
   } elsif ($test->{'id_tipo_modulo'} >= 34 && $test->{'id_tipo_modulo'} <= 37) {
     # Remote command.
-    # XXX TODO: Test remote commands.
-    # Disabled until we can ensure result.
-    return 0;
+    return 0 unless $self->rcmd_responds($addr);
+
+    my $target_os;
+    if ($test->{'custom_string_2'} =~ /inherited/i) {
+      $target_os = pandora_get_os(
+        $self->{'dbh'},
+        $self->{'os_cache'}{$test->{'ip_target'}}
+      );
+    } else {
+      $target_os = pandora_get_os($self->{'dbh'}, $test->{'custom_string_2'});
+    }
+
+    $value = enterprise_hook(
+      'remote_execution_module',
+      [
+        # pa_config,
+        $self->{'pa_config'},
+        # dbh,
+        $self->{'dbh'},
+        # module,
+        $test,
+        # target_os,
+        $target_os,
+        # ip_target,
+        $test->{'ip_target'},
+        # tcp_port
+        $test->{'tcp_port'}
+      ]
+    );
+
+    chomp($value);
+
+    return 0 unless defined($value);
 
   } elsif ($test->{'id_tipo_modulo'} >= 8 && $test->{'id_tipo_modulo'} <= 11) {
     # TCP
@@ -905,6 +957,16 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         $np_component->{'id_nc'}
       );
 
+      # Tag cleanup.
+      if (!is_empty($component->{'tags'})) {
+        my @tags = map {
+          if ($_ > 0) { $_ }
+          else {}
+        } split ',', $component->{'tags'};
+
+        $component->{'tags'} = join ',', @tags;
+      }
+
       $component->{'name'} = safe_output($component->{'name'});
       if ($component->{'type'} >= 15 && $component->{'type'} <= 18) {
         $component->{'snmp_community'} = safe_output($self->get_community($device));
@@ -915,6 +977,15 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         $component->{'plugin_parameter'} = $self->{'snmp_auth_method'};
         $component->{'plugin_user'} = $self->{'snmp_auth_user'};
         $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
+      }
+
+      if ($component->{'type'} >= 34 && $component->{'type'} <= 37) {
+        # Update module credentials.
+        $component->{'custom_string_1'} = $self->rcmd_credentials_key($device);
+        $component->{'custom_string_2'} = pandora_get_os_by_id(
+          $self->{'dbh'},
+          $self->guess_os($device)
+        );
       }
 
       $component->{'__module_component'} = 1;
@@ -980,7 +1051,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       my $data;
       eval {
         local $SIG{__DIE__};
-        $data = decode_json(decode_base64($row->{'data'}));
+        $data = p_decode_json($self->{'pa_config'}, decode_base64($row->{'data'}));
       };
       if ($@) {
         $self->call('message', "ERROR JSON: $@", 3);
@@ -1012,41 +1083,72 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         || $force_creation
       ) {
         my $parent_id;
-        my $os_id = $self->guess_os($data->{'agent'}{'direccion'});
+        my $os_id = $data->{'agent'}{'id_os'};
+        if (is_empty($os_id)) {
+          $os_id = $self->guess_os($data->{'agent'}{'direccion'});
+        }
 
         $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
         # Agent creation.
         my $agent_id = $data->{'agent'}{'agent_id'};
         my $agent_learning;
+        my $agent_data;
 
         if (defined($agent_id) && $agent_id > 0) {
-          $agent_learning = get_db_value(
+          $agent_data = get_db_single_row(
             $self->{'dbh'},
-            'SELECT modo FROM tagente WHERE id_agente = ?',
+            'SELECT * FROM tagente WHERE id_agente = ?',
             $agent_id
           );
+          $agent_learning = $agent_data->{'modo'} if ref($agent_data) eq 'HASH';
         }
 
         if (!defined($agent_learning)) {
           # Agent id does not exists or is invalid.
 
-          # Check if has been created by another process.
-          $agent_id = get_db_value(
-            $self->{'dbh'},
-            'SELECT id_agente FROM tagente WHERE nombre = ?',
-            safe_input($data->{'agent'}{'nombre'})
-          );
+          # Check if has been created by another process, if not found.
+          $agent_data = PandoraFMS::Core::locate_agent(
+            $self->{'pa_config'}, $self->{'dbh'}, $data->{'agent'}{'direccion'}
+          ) if ref($agent_data) ne 'HASH';
 
-          if (!defined($agent_id) || $agent_id <= 0) {
+          $agent_id = $agent_data->{'id_agente'} if ref($agent_data) eq 'HASH';
+          if (ref($agent_data) eq 'HASH' && $agent_data->{'modo'} != 1) {
+            # Agent previously exists, but is not in learning mode, so skip
+            # modules scan and jump directly to parent analysis.
+            $data->{'agent'}{'agent_id'} = $agent_id;
+            push @agents, $data->{'agent'};
+            next;
+          }
+
+          if (!defined($agent_id) || $agent_id <= 0 || !defined($agent_data)) {
             # Agent creation.
             $agent_id = pandora_create_agent(
               $self->{'pa_config'}, $self->{'servername'}, $data->{'agent'}{'nombre'},
               $data->{'agent'}{'direccion'}, $self->{'task_data'}{'id_group'}, $parent_id,
               $os_id, $data->{'agent'}->{'description'},
               $data->{'agent'}{'interval'}, $self->{'dbh'},
-              $data->{'agent'}{'timezone_offset'}
+              $data->{'agent'}{'timezone_offset'}, undef, undef, undef, undef,
+              undef, undef, 1, $data->{'agent'}{'alias'}
             );
+
+            # Add found IP addresses to the agent.
+            if (ref($data->{'other_ips'}) eq 'ARRAY') {
+              foreach my $ip_addr (@{$data->{'other_ips'}}) {
+                my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
+                $addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
+                next unless ($addr_id > 0);
+
+                # Assign the new address to the agent
+                my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
+                if ($agent_addr_id <= 0) {
+                  db_do(
+                    $self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+                                      VALUES (?, ?)', $addr_id, $agent_id
+                  );
+                }
+              }
+            }
 
             # Agent autoconfiguration.
             if (is_enabled($self->{'autoconfiguration_enabled'})) {
@@ -1093,6 +1195,25 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               'SELECT modo FROM tagente WHERE id_agente = ?',
               $agent_id
             );
+
+            # Update new IPs.
+            # Add found IP addresses to the agent.
+            if (ref($data->{'other_ips'}) eq 'ARRAY') {
+              foreach my $ip_addr (@{$data->{'other_ips'}}) {
+                my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
+                $addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
+                next unless ($addr_id > 0);
+
+                # Assign the new address to the agent
+                my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
+                if ($agent_addr_id <= 0) {
+                  db_do(
+                    $self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+                                      VALUES (?, ?)', $addr_id, $agent_id
+                  );
+                }
+              }
+            }
           }
 
           $data->{'agent'}{'agent_id'} = $agent_id;
@@ -1198,7 +1319,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         eval {
           local $SIG{__DIE__};
           $encoded = encode_base64(
-            encode_json($data)
+            p_encode_json($self->{'pa_config'}, $data)
           );
         };
 
@@ -1215,12 +1336,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
         );
 
       }
-
     }
 
     # Update parent relationships.
     foreach my $agent (@agents) {
-
       # Avoid processing if does not exist.
       next unless (defined($agent->{'agent_id'}));
 
@@ -1228,10 +1347,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       next unless defined($agent->{'parent'});
 
       # Get parent id.
-      my $parent = get_agent_from_addr($self->{'dbh'}, $agent->{'parent'});
-      if (!defined($parent)) {
-        $parent = get_agent_from_name($self->{'dbh'}, $agent->{'parent'});
-      }
+      my $parent = PandoraFMS::Core::locate_agent(
+        $self->{'pa_config'}, $self->{'dbh'}, $agent->{'parent'}
+      );
+
       next unless defined($parent);
 
       # Is the agent in learning mode?
@@ -1285,53 +1404,63 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
   $self->call('message', "Storing results", 6);
   my @hosts = keys %{$self->{'agents_found'}};
   $self->{'step'} = STEP_PROCESSING;
-  my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
-  foreach my $label (keys %{$self->{'agents_found'}}) {
-    $self->call('update_progress', $progress);
-    $progress += $step;
-    # Store temporally. Wait user approval.
-    my $encoded;
-    eval {
-      local $SIG{__DIE__};
-      $encoded = encode_base64(
-        encode_json($self->{'agents_found'}->{$label})
-      );
-    };
+  if ((scalar (@hosts)) > 0) {
+    my ($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 90% to 100%.
 
-    my $id = get_db_value(
-      $self->{'dbh'},
-      'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
-      $self->{'task_data'}{'id_rt'},
-      safe_input($label)
-    );
-    
-    if (defined($id)) {
-      # Already defined.
-      $self->{'agents_found'}{$label}{'id'} = $id;
+    foreach my $addr (keys %{$self->{'agents_found'}}) {
+      my $label = $self->{'agents_found'}->{$addr}{'agent'}{'nombre'};
 
-      db_do(
+      next if is_empty($label);
+
+      # Retrieve target agent OS version.
+      $self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
+
+      $self->call('update_progress', $progress);
+      $progress += $step;
+      # Store temporally. Wait user approval.
+      my $encoded;
+
+      eval {
+        local $SIG{__DIE__};
+        $encoded = encode_base64(
+          p_encode_json($self->{'pa_config'}, $self->{'agents_found'}->{$addr})
+        );
+      };
+
+      my $id = get_db_value(
         $self->{'dbh'},
-        'UPDATE tdiscovery_tmp_agents SET `data` = ? '
-        .'WHERE `id_rt` = ? AND `label` = ?',
-        $encoded,
+        'SELECT id FROM tdiscovery_tmp_agents WHERE id_rt = ? AND label = ?',
         $self->{'task_data'}{'id_rt'},
         safe_input($label)
       );
-      next;
+      
+      if (defined($id)) {
+        # Already defined.
+        $self->{'agents_found'}{$addr}{'id'} = $id;
+
+        db_do(
+          $self->{'dbh'},
+          'UPDATE tdiscovery_tmp_agents SET `data` = ? '
+          .'WHERE `id_rt` = ? AND `label` = ?',
+          $encoded,
+          $self->{'task_data'}{'id_rt'},
+          safe_input($label)
+        );
+        next;
+      }
+
+      # Insert.
+      $self->{'agents_found'}{$addr}{'id'} = db_insert(
+        $self->{'dbh'},
+        'id',
+        'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
+        .'VALUES (?, ?, ?, now())',
+        $self->{'task_data'}{'id_rt'},
+        safe_input($label),
+        $encoded
+      );
     }
-
-    # Insert.
-    $self->{'agents_found'}{$label}{'id'} = db_insert(
-      $self->{'dbh'},
-      'id',
-      'INSERT INTO tdiscovery_tmp_agents (`id_rt`,`label`,`data`,`created`) '
-      .'VALUES (?, ?, ?, now())',
-      $self->{'task_data'}{'id_rt'},
-      safe_input($label),
-      $encoded
-    );
   }
-
 
   if(defined($self->{'task_data'}{'review_mode'})
     && $self->{'task_data'}{'review_mode'} == DISCOVERY_REVIEW
@@ -1386,28 +1515,33 @@ sub PandoraFMS::Recon::Base::apply_monitoring($) {
 
   my @hosts = keys %{$self->{'agents_found'}};
 
-  $self->{'step'} = STEP_MONITORING;
-  # From 80% to 90%.
-  my ($progress, $step) = (80, 10.0 / scalar(@hosts));
-  my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
+  my $progress = 80;
 
-  foreach my $label (keys %{$self->{'agents_found'}}) {
-    $self->{'c_network_percent'} = $partial;
-    $self->{'c_network_name'} = $label;
-    $self->call('update_progress', $progress);
-    $progress += $step;
-    $partial += $sub_step;
-    $self->call('message', "Checking modules for $label", 5);
+  if (scalar @hosts > 0) {
+    $self->{'step'} = STEP_MONITORING;
+    # From 80% to 90%.
+    my ($progress, $step) = (80, 10.0 / scalar(@hosts));
+    my ($partial, $sub_step) = (0, 100 / scalar(@hosts));
 
-    # Monitorization selected.
-    $self->call('create_network_profile_modules', $label);
+    foreach my $label (keys %{$self->{'agents_found'}}) {
+      $self->{'c_network_percent'} = $partial;
+      $self->{'c_network_name'} = $label;
+      $self->call('update_progress', $progress);
+      $progress += $step;
+      $partial += $sub_step;
+      $self->call('message', "Checking modules for $label", 5);
 
-    # Monitorization - interfaces
-    $self->call('create_interface_modules', $label);
+      # Monitorization selected.
+      $self->call('create_network_profile_modules', $label);
 
-    # Monitorization - WMI modules.
-    $self->call('create_wmi_modules', $label);
+      # Monitorization - interfaces
+      $self->call('create_interface_modules', $label);
 
+      # Monitorization - WMI modules.
+      $self->call('create_wmi_modules', $label);
+
+    }
+    
   }
 
   $self->{'c_network_percent'} = 100;
@@ -1615,6 +1749,16 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 
   $self->{'agents_found'}{$host}{'agent'}{'parent'} = $parent;
 
+  # Add host alive module for parent.
+  $self->add_module($parent,
+    {
+      'ip_target' => $parent,
+      'name' => "Host Alive",
+      'description' => '',
+      'type' => 'remote_icmp_proc',
+      'id_modulo' => 2,
+    }
+  );
 }
 
 ################################################################################
@@ -1624,17 +1768,25 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
   my ($self, $progress) = @_;
 
   my $stats = {};
-  if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
-    $stats->{'summary'} = $self->{'summary'};
+  eval {
+    local $SIG{__DIE__};
+    if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
+      $stats->{'summary'} = $self->{'summary'};
+    }
+
+    $stats->{'step'} = $self->{'step'};
+    $stats->{'c_network_name'} = $self->{'c_network_name'};
+    $stats->{'c_network_percent'} = $self->{'c_network_percent'};
+
+    # Store progress, last contact and overall status.
+    db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+      time (), $progress, p_encode_json($self->{'pa_config'}, $stats), $self->{'task_id'});
+  };
+  if ($@) {
+    $self->call('message', "Problems updating progress $@", 5);
+    db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
+      time (), $progress, "{}", $self->{'task_id'});
   }
-
-  $stats->{'step'} = $self->{'step'};
-  $stats->{'c_network_name'} = $self->{'c_network_name'};
-  $stats->{'c_network_percent'} = $self->{'c_network_percent'};
-
-  # Store progress, last contact and overall status.
-  db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
-    time (), $progress, encode_json($stats), $self->{'task_id'});
 }
 
 1;

@@ -805,6 +805,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`snmp_privacy_pass` varchar(255) NOT NULL default '',
 	`snmp_security_level` varchar(25) NOT NULL default '',
 	`wmi_enabled` tinyint(1) unsigned DEFAULT 0,
+	`rcmd_enabled` tinyint(1) unsigned DEFAULT 0,
 	`auth_strings` text,
 	`auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1,
 	`autoconfiguration_enabled` tinyint(1) unsigned default 0,
@@ -3776,4 +3777,15 @@ CREATE TABLE `tremote_command_target` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
     ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnode_relations`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnode_relations` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+    `gateway` VARCHAR(100) NOT NULL,
+	`imei` VARCHAR(100) NOT NULL,
+	`node_address` VARCHAR(60) NOT NULL,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -91,7 +91,7 @@ if (defined('METACONSOLE')) {
         $title_in_header,
         'images/group.png',
         false,
-        'create_group_tab',
+        '',
         true,
         ''
     );
@@ -181,7 +181,7 @@ if ($config['enterprise_installed']) {
     $table->data[3][1] = html_print_input_password('group_pass', $group_pass, '', 16, 255, true);
 }
 
-$table->data[$i][0] = __('Alerts');
+$table->data[$i][0] = __('Alerts').ui_print_help_tip(__('Enable alert use in this group.'), true);
 $table->data[$i][1] = html_print_checkbox_switch('alerts_enabled', 1, ! $alerts_disabled, true);
 $i++;
 

@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.744
-%define release     200415
+%define version     7.0NG.746
+%define release     200609
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -48,7 +48,7 @@ rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
+cp -aRf . $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
 install -m 0644 pandora_console_logrotate_centos $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_console

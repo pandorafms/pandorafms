@@ -50,10 +50,7 @@ if (is_ajax()) {
         if ($type_auth != 'mysql') {
             // Fallback to local authentication.
             $row = [];
-            $row['name'] = __('Fallback to local authentication').ui_print_help_tip(
-                __('Enable this option if you want to fallback to local authentication when remote (ldap etc...) authentication failed. Only available when \'Save password\' is enabled.'),
-                true
-            );
+            $row['name'] = __('Fallback to local authentication');
             $row['control'] = html_print_checkbox_switch(
                 'fallback_local_auth',
                 1,
@@ -215,10 +212,7 @@ if (is_ajax()) {
         // Set default value.
         set_unless_defined($config['double_auth_enabled'], false);
         $row = [];
-        $row['name'] = __('Double authentication').ui_print_help_tip(
-            __('If this option is enabled, the users can use double authentication with their accounts'),
-            true
-        );
+        $row['name'] = __('Double authentication');
         $row['control'] .= html_print_checkbox_switch(
             'double_auth_enabled',
             1,
@@ -231,10 +225,7 @@ if (is_ajax()) {
         // Default session timeout.
         set_when_empty($config['session_timeout'], 90);
         $row = [];
-        $row['name'] = __('Session timeout (mins)').ui_print_help_tip(
-            __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
-            true
-        );
+        $row['name'] = __('Session timeout (mins)');
         $row['control'] = html_print_input_text(
             'session_timeout',
             $config['session_timeout'],

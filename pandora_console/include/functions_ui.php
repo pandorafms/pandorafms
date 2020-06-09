@@ -1908,8 +1908,6 @@ function ui_process_page_head($string, $bitfield)
     );
     // Load base64 javascript library.
     $config['js']['base64'] = 'include/javascript/encode_decode_base64.js';
-    // Load webchat javascript library.
-    $config['js']['webchat'] = 'include/javascript/webchat.js';
     // Load qrcode library.
     $config['js']['qrcode'] = 'include/javascript/qrcode.js';
     // Load intro.js library (for bubbles and clippy).
@@ -2701,6 +2699,35 @@ function ui_print_status_image(
 
 
 /**
+ * Returns html code to print a shape for a module.
+ *
+ * @param integer $status Module status.
+ * @param boolean $return True or false.
+ * @param string  $class  Custom class or use defined.
+ *
+ * @return string HTML code for shape.
+ */
+function ui_print_module_status(
+    $status,
+    $return=false,
+    $class='status_rounded_rectangles'
+) {
+    $color = modules_get_color_status($status, true);
+    $title = modules_get_modules_status($status);
+
+    $output = '<div style="background: '.$color;
+    $output .= '" class="'.$class;
+    $output .= '" title="'.$title.'"></div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Get the shape of an image by assigning it a CSS class. Prints an image with CSS representing a status.
  *
  * @param string $type Module/Agent/Alert status.
@@ -3157,6 +3184,13 @@ function ui_print_datatable(array $parameters)
 
     if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
         throw new Exception('[ui_print_datatable]: You must define columns for datatable');
+    }
+
+    if (isset($parameters['column_names'])
+        && is_array($parameters['column_names'])
+        && count($parameters['columns']) != count($parameters['column_names'])
+    ) {
+        throw new Exception('[ui_print_datatable]: Columns and columns names must have same length');
     }
 
     if (!isset($parameters['ajax_url'])) {
@@ -5636,7 +5670,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl_static'].'/operation/agentes/snapshot_view.php';
+    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 

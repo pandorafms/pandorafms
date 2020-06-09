@@ -1,1 +1,17 @@
 operation/servers/recon_view.php
+operation/users/webchat.php
+include/javascript/webchat.js
+attachment/pandora_chat.log.json.txt
+attachment/pandora_chat.user_list.json.txt
+attachment/pandora_chat.global_counter.txt
+enterprise/godmode/reporting/cluster_agent_check.php
+enterprise/godmode/reporting/cluster_builder.main.php
+enterprise/godmode/reporting/cluster_builder.php
+enterprise/godmode/reporting/cluster_force.php
+enterprise/godmode/reporting/cluster_list.php
+enterprise/godmode/reporting/cluster_name_agents.php
+enterprise/godmode/reporting/cluster_view.php
+enterprise/include/ajax/clustermap.php
+enterprise/include/functions_clustermap.php
+enterprise/include/functions_clusters.php
+enterprise/include/javascript/ClusterMapController.js

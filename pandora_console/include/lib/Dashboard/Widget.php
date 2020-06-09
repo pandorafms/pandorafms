@@ -59,7 +59,7 @@ class Widget
 
             $cellClass = new Cell($this->cellId, $this->dashboardId);
             $this->dataCell = $cellClass->get();
-            $this->values = $this->getOptionsWidget();
+            $this->values = $this->decoders($this->getOptionsWidget());
         }
 
         return $this;
@@ -529,6 +529,34 @@ class Widget
         $values = [];
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
+
+        return $values;
+
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder):array
+    {
+        $values = [];
+
+        if (isset($decoder['title']) === true) {
+            $values['title'] = $decoder['title'];
+        }
+
+        if (isset($decoder['background-color']) === true) {
+            $values['background'] = $decoder['background-color'];
+        }
+
+        if (isset($decoder['background']) === true) {
+            $values['background'] = $decoder['background'];
+        }
 
         return $values;
 

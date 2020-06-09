@@ -156,7 +156,7 @@ class Cell
 
         // Options for widget.
         if (empty($options) !== true) {
-            $options = json_encode($options);
+            $options = json_encode($options, JSON_UNESCAPED_UNICODE);
         } else {
             $options = $this->fieldsCell['options'];
         }

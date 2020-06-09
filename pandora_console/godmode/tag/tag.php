@@ -125,7 +125,7 @@ if (is_metaconsole()) {
         __('Tags configuration'),
         'images/tag.png',
         false,
-        'tags_config',
+        '',
         true,
         $buttons
     );

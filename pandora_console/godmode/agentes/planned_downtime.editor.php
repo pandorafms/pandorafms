@@ -62,7 +62,7 @@ ui_print_page_header(
     __('Planned Downtime'),
     'images/gm_monitoring.png',
     false,
-    'planned_downtime_editor',
+    '',
     true,
     $buttons
 );
@@ -717,11 +717,11 @@ $table->data[5][1] = "
 		<table>
 			<tr>
 				<td>".__('From:').'</td>
-				<td>'.html_print_input_text('once_date_from', $once_date_from, '', 10, 10, true, $disabled_in_execution).ui_print_help_tip(__('Date format is YY/MM/DD'), true).html_print_input_text('once_time_from', $once_time_from, '', 9, 9, true, $disabled_in_execution).ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true).'</td>
+				<td>'.html_print_input_text('once_date_from', $once_date_from, '', 10, 10, true, $disabled_in_execution).html_print_input_text('once_time_from', $once_time_from, '', 9, 9, true, $disabled_in_execution).'</td>
 			</tr>
 			<tr>
 				<td>'.__('To:').'</td>
-				<td>'.html_print_input_text('once_date_to', $once_date_to, '', 10, 10, true).ui_print_help_tip(__('Date format is YY/MM/DD'), true).html_print_input_text('once_time_to', $once_time_to, '', 9, 9, true).ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true)."</td>
+				<td>'.html_print_input_text('once_date_to', $once_date_to, '', 10, 10, true).html_print_input_text('once_time_to', $once_time_to, '', 9, 9, true)."</td>
 			</tr>
 		</table>
 	</div>
@@ -804,7 +804,7 @@ $table->data[5][1] = "
     true,
     $disabled_in_execution
 ).ui_print_help_tip(
-    __('Watch format is hours (24h):minutes:seconds.').'.<br>'.__('The end time must be higher than the start time'),
+    __('The end time must be higher than the start time'),
     true
 ).'</td>
 							<td>'.__('To hour:').'</td>
@@ -817,7 +817,7 @@ $table->data[5][1] = "
     true,
     $disabled_in_execution
 ).ui_print_help_tip(
-    __('Watch format is hours (24h):minutes:seconds.').'.<br>'.__('The end time must be higher than the start time'),
+    __('The end time must be higher than the start time'),
     true
 ).'</td>
 						</tr>

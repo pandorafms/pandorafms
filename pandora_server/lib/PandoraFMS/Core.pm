@@ -289,23 +289,23 @@ my $Master :shared = 0;
 # Return the agent given the agent name or alias or address.
 ##########################################################################
 sub locate_agent {
-	my ($pa_config, $dbh, $field) = @_;
+	my ($pa_config, $dbh, $field, $relative) = @_;
 
 	if (is_metaconsole($pa_config)) {
 		# Locate agent first in tmetaconsole_agent
 		return undef if (! defined ($field) || $field eq '');
 
-		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field]);
+		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field]);
+		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-		$rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field]);
+		$rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
 	} else {
-		return get_agent($dbh, $field);
+		return get_agent($dbh, $field, $relative);
 	}
 
 	return undef;
@@ -316,17 +316,17 @@ sub locate_agent {
 # Return the agent given the agent name or alias or address.
 ##########################################################################
 sub get_agent {
-    my ($dbh, $field) = @_;
+    my ($dbh, $field, $relative) = @_;
 
     return undef if (! defined ($field) || $field eq '');
 
-    my $rs = get_agent_from_alias($dbh, $field);
+    my $rs = get_agent_from_alias($dbh, $field, $relative);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     $rs = get_agent_from_addr($dbh, $field);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-    $rs = get_agent_from_name($dbh, $field);
+    $rs = get_agent_from_name($dbh, $field, $relative);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     return undef;
@@ -335,10 +335,13 @@ sub get_agent {
 ##########################################################################
 # Return the agent given the agent name.
 ##########################################################################
-sub get_agent_from_alias ($$) {
-	my ($dbh, $alias) = @_;
+sub get_agent_from_alias ($$;$) {
+	my ($dbh, $alias, $relative) = @_;
 	
 	return undef if (! defined ($alias) || $alias eq '');
+	if ($relative) {
+		return get_db_single_row($dbh, 'SELECT * FROM tagente WHERE tagente.alias like ?', safe_input($alias));
+	}
 	
 	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.alias = ?', safe_input($alias));
 }
@@ -361,10 +364,14 @@ sub get_agent_from_addr ($$) {
 ##########################################################################
 # Return the agent given the agent name.
 ##########################################################################
-sub get_agent_from_name ($$) {
-	my ($dbh, $name) = @_;
+sub get_agent_from_name ($$;$) {
+	my ($dbh, $name, $relative) = @_;
 	
 	return undef if (! defined ($name) || $name eq '');
+
+	if ($relative) {
+		return get_db_single_row($dbh, 'SELECT * FROM tagente WHERE tagente.nombre like ?', safe_input($name));
+	}
 	
 	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', safe_input($name));
 }
@@ -931,10 +938,12 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 				$pa_config,
 				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
 				(defined ($agent) ? $agent->{'id_grupo'} : 0),
-				(defined ($agent) ? $agent->{'id_agente'} : 0),
+				# id agent.
+				0,
 				$severity,
 				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
-				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
+				# id agent module.
+				0,
 				$event,
 				0,
 				$dbh,
@@ -1708,9 +1717,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
 	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
 	my $mark_for_update = 0;
-	
+
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
-	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
+	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});      
 	$agent_status->{'datos'} = "" unless defined($agent_status->{'datos'});
 	
 	# Do we have to save module data?
@@ -1723,13 +1732,24 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_try = ($1 == 0) ? 0 : strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
-	
+
 	# Received stale data. Save module data if needed and return.
 	if ($pa_config->{'dataserver_lifo'} == 1 && $utimestamp <= $agent_status->{'utimestamp'}) {
 		logger($pa_config, "Received stale data from agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-		
+
 		# Save module data. Async and log4x modules are not compressed.
 		if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
+
+			# If previous timestamp data changes, save the last one to avoid errors on SLA or graphs.
+			if($last_data_value ne $processed_data) { 
+
+				my $last_data_timestamp =  $agent_status->{'utimestamp'};
+				my $last_data_object;
+				
+				$last_data_object->{'data'} = $last_data_value;
+
+				save_module_data ($last_data_object, $module, $module_type, $last_data_timestamp, $dbh);
+			} 
 			save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
 		}
 
@@ -4206,7 +4226,9 @@ sub on_demand_macro($$$$$$;$) {
 		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
 
 		my $field_value = "";
-		if ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 ){
+		if (defined($type_mod)
+			&& ($type_mod eq 3 || $type_mod eq 23|| $type_mod eq 17 || $type_mod eq 10 || $type_mod eq 33 )
+		) {
 			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
 		}
 		else{

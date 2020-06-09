@@ -20,6 +20,8 @@ $searchAgents = check_acl($config['id_user'], 0, 'AR');
 
 $selectNameUp = '';
 $selectNameDown = '';
+$selectDescriptionUp = '';
+$selectDescriptionDown = '';
 $selectOsUp = '';
 $selectOsDown = '';
 $selectIntervalUp = '';
@@ -44,6 +46,26 @@ switch ($sortField) {
                 $selectNameDown = $selected;
                 $order = [
                     'field' => 'nombre',
+                    'order' => 'DESC',
+                ];
+            break;
+        }
+    break;
+
+    case 'comentarios':
+        switch ($sort) {
+            case 'up':
+                $selectDescriptionUp = $selected;
+                $order = [
+                    'field' => 'comentarios',
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $selectDescriptionDown = $selected;
+                $order = [
+                    'field' => 'comentarios',
                     'order' => 'DESC',
                 ];
             break;
@@ -133,6 +155,8 @@ switch ($sortField) {
     default:
         $selectNameUp = $selected;
         $selectNameDown = '';
+        $selectDescriptionUp = '';
+        $selectDescriptionDown = '';
         $selectOsUp = '';
         $selectOsDown = '';
         $selectIntervalUp = '';
@@ -165,7 +189,8 @@ if ($searchAgents) {
         $aux = $id[0]['id_agent'];
         $search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%cd ".$stringSearchSQL."%%' OR
 						t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-						t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+                        t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+                        t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
 						t1.id_agente = $aux";
 
         if (count($id) >= 2) {
@@ -177,7 +202,8 @@ if ($searchAgents) {
     } else {
         $search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
 			t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-			t1.direccion COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+            t1.direccion COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+            t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
 			t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%'";
     }
 
@@ -211,7 +237,7 @@ if ($searchAgents) {
 			)
 	';
 
-    $select = 'SELECT DISTINCT(t1.id_agente), t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
+    $select = 'SELECT DISTINCT(t1.id_agente), t1.ultimo_contacto, t1.nombre, t1.comentarios, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
     if ($only_count) {
         $limit = ' ORDER BY '.$order['field'].' '.$order['order'].' LIMIT '.$config['block_size'].' OFFSET 0';
     } else {

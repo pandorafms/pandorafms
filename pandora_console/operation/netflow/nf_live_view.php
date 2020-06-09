@@ -289,7 +289,7 @@ if (is_metaconsole()) {
         'images/calendar_view_day.png',
         true,
         ['alt' => 'calendar']
-    ).ui_print_help_tip(__('Date format is YY/MM/DD'), true).html_print_input_text('time', $time, false, 10, 8, true).ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
+    ).html_print_input_text('time', $time, false, 10, 8, true);
     echo '</td>';
 
     echo '<td><b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b></td>';
@@ -333,7 +333,7 @@ if (is_metaconsole()) {
     echo '<td>'.html_print_select($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true).'<a id="max_values" href="#" onclick="javascript: edit_max_value();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
     echo '</td>';
 
-    echo '<td><b>'.__('Aggregate by').'</b>'.ui_print_help_icon('aggregate_by', true).'</td>';
+    echo '<td><b>'.__('Aggregate by').'</b></td>';
     $aggregate_list = [];
     $aggregate_list = [
         'srcip'   => __('Src Ip Address'),

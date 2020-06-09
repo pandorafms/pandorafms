@@ -19,7 +19,29 @@
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
-require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_users.php';/**
+                                                                * Return the agent if exists in the DB.
+                                                                *
+                                                                * @param integer $id_agent      The agent id.
+                                                                * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+                                                                * @param boolean $force_meta
+                                                                *
+                                                                * @return boolean The result to check if the agent is in the DB.
+                                                                */
+
+
+function agents_get_agent($id_agent, $show_disabled=true, $force_meta=false)
+{
+    $agent = db_get_row_filter(
+        $force_meta ? 'tmetaconsole_agent' : 'tagente',
+        [
+            'id_agente' => $id_agent,
+            'disabled'  => !$show_disabled,
+        ]
+    );
+
+    return $agent;
+}
 
 
 /**
@@ -310,6 +332,10 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
             $subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
         }
+
+        // Filter by agents id.
+        $id_agents_list = implode(',', $id_agent);
+        $subQuery .= ' AND id_agente in ('.$id_agents_list.')';
     } else if ($id_agent === false || empty($id_agent)) {
         if ($allModules) {
             $disabled = '';
@@ -2638,12 +2664,28 @@ function agents_tree_view_status_img($critical, $warning, $unknown, $total, $not
 
 
 // Returns the status ball image to display tree view
-function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total, $notinit)
+function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total, $notinit, $alerts)
 {
     if ($total == 0 || $total == $notinit) {
         return ui_print_status_image(
             STATUS_AGENT_NO_MONITORS_BALL,
             __('No Monitors'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
+            true
+        );
+    }
+
+    if ($alerts > 0) {
+        return ui_print_status_image(
+            STATUS_ALERT_FIRED_BALL,
+            __('Alert fired on agent'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     }
@@ -2652,24 +2694,40 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
         return ui_print_status_image(
             STATUS_AGENT_CRITICAL_BALL,
             __('At least one module in CRITICAL status'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     } else if ($warning > 0) {
         return ui_print_status_image(
             STATUS_AGENT_WARNING_BALL,
             __('At least one module in WARNING status'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     } else if ($unknown > 0) {
         return ui_print_status_image(
             STATUS_AGENT_DOWN_BALL,
             __('At least one module is in UKNOWN status'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     } else {
         return ui_print_status_image(
             STATUS_AGENT_OK_BALL,
             __('All Monitors OK'),
+            true,
+            false,
+            false,
+            // Use CSS shape instead of image.
             true
         );
     }
@@ -3057,6 +3115,17 @@ function agents_get_agent_custom_field($agent_id, $custom_field_name)
 }
 
 
+/**
+ * Unverified documentation.
+ *
+ * @param integer $id_group      Module group.
+ * @param array   $id_agents     Array of agent ids.
+ * @param boolean $selection     Show common (false) or all modules (true).
+ * @param boolean $return        Return (false) or dump to output (true).
+ * @param boolean $index_by_name Use module name as key.
+ *
+ * @return array With modules or null if error.
+ */
 function select_modules_for_agent_group(
     $id_group,
     $id_agents,

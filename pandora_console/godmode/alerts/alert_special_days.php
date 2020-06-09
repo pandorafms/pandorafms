@@ -118,6 +118,10 @@ if ($create_special_day) {
     $values['id_group'] = (string) get_parameter('id_group');
     $values['description'] = (string) get_parameter('description');
 
+    $aviable_description = true;
+    if (preg_match('<script>', $values['description'])) {
+        $aviable_description = false;
+    }
 
     $array_date = explode('-', $date);
 
@@ -142,8 +146,12 @@ if ($create_special_day) {
             $result = '';
             $messageAction = __('Could not be created, it already exists');
         } else {
-            $result = alerts_create_alert_special_day($date, $same_day, $values);
-            $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
+            if ($aviable_description) {
+                $result = alerts_create_alert_special_day($date, $same_day, $values);
+                $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
+            } else {
+                $result = false;
+            }
         }
     }
 

@@ -184,6 +184,11 @@ if ($update_special_day) {
     $id_group = (string) get_parameter('id_group');
     $id_group_orig = (string) get_parameter('id_group_orig');
 
+    $aviable_description = true;
+    if (preg_match('<script>', $description)) {
+        $aviable_description = false;
+    }
+
     $array_date = explode('-', $date);
 
     $year  = $array_date[0];
@@ -214,12 +219,16 @@ if ($update_special_day) {
                 $result = '';
                 $messageAction = __('Could not be updated, it already exists');
             } else {
+                if ($aviable_description !== false) {
+                    $result = alerts_update_alert_special_day($id, $values);
+                    $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
+                }
+            }
+        } else {
+            if ($aviable_description !== false) {
                 $result = alerts_update_alert_special_day($id, $values);
                 $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
             }
-        } else {
-            $result = alerts_update_alert_special_day($id, $values);
-            $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
         }
     }
 

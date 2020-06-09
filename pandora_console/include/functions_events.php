@@ -3359,7 +3359,7 @@ function events_page_responses($event, $childrens_ids=[])
         );
         if ($strict_user) {
             $user_name = db_get_value(
-                'fullname',
+                'id_user',
                 'tusuario',
                 'id_user',
                 $config['id_user']
@@ -3377,14 +3377,14 @@ function events_page_responses($event, $childrens_ids=[])
         }
 
         foreach ($users as $u) {
-            $owners[$u['id_user']] = $u['fullname'];
+            $owners[$u['id_user']] = $u['id_user'];
         }
 
         if ($event['owner_user'] == '') {
             $owner_name = __('None');
         } else {
             $owner_name = db_get_value(
-                'fullname',
+                'id_user',
                 'tusuario',
                 'id_user',
                 $event['owner_user']

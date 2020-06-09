@@ -287,7 +287,7 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
-                    if (!config_update_value('server_log_dir', get_parameter('server_log_dir'))) {
+                    if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
 

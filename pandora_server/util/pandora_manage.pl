@@ -121,6 +121,7 @@ sub help_screen{
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agent_status', '<agent_name> [<use_alias>]', 'Get the status of an agent');
 	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
@@ -784,7 +785,7 @@ sub pandora_get_agent_status ($$) {
 	return 'normal' unless $normal == 0;
 	return 'normal' unless $normal == 0;
 		
-	return '';
+	return 'not_init';
 }
 
 ##########################################################################
@@ -4850,6 +4851,36 @@ sub cli_get_agent_modules() {
 }
 
 ##############################################################################
+# Show the status of an agent
+# Related option: --get_agent_status
+##############################################################################
+
+sub cli_get_agent_status() {
+	my ($agent_name,$use_alias) = @ARGV[2..3];
+
+	my @id_agents;
+	my $id_agent;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			exist_check($id->{'id_agente'},'agent',$agent_name);
+
+			my $agent_status = pandora_get_agent_status($dbh,$id->{'id_agente'});
+
+			print pandora_get_agent_status($dbh,$id->{'id_agente'})."\n";
+		}
+	} else {
+		$id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+
+		print pandora_get_agent_status($dbh,$id_agent)."\n";
+	}
+}
+
+
+##############################################################################
 # Show id, name and id_server of an agent given alias
 # Related option: --get_agents_id_name_by_alias
 ##############################################################################
@@ -7468,6 +7499,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_modules') {
 			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agent_status') {
+			param_check($ltotal, 2, 1);
+			cli_get_agent_status();
 		}
 		elsif ($param eq '--get_agents_id_name_by_alias') {
 			param_check($ltotal, 2,1);

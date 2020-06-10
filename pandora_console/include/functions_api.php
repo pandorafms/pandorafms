@@ -2072,7 +2072,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
                         break;
 
                         case 'alert_fired':
-                            if ($status == AGENT_STATUS_ALERT_FIRED) {
+                            if ($status == AGENT_STATUS_ALERT_FIRED || $status == AGENT_MODULE_STATUS_WARNING_ALERT || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;

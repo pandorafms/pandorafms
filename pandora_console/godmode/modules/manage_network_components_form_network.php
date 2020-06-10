@@ -180,7 +180,7 @@ $data[1] = html_print_extended_select_for_post_process(
     'post_process',
     $post_process,
     '',
-    __('Empty'),
+    '',
     '0',
     false,
     true,

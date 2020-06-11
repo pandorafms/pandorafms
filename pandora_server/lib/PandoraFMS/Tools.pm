@@ -46,6 +46,7 @@ use constant MOD232 => 2**32;
 use constant POW232 => 2**32;
 
 # UTF-8 flags deletion from multibyte characters when files are opened.
+use open IN => ":utf8";
 use open OUT => ":utf8";
 use open ":std";
 
@@ -374,11 +375,15 @@ our $THRRUN :shared = 1;
 ################################################################################
 ## Reads a file and returns entire content or undef if error.
 ################################################################################
-sub read_file {
-	my $path = shift;
+sub read_file($$) {
+	my ($path, $enc) = @_;
+
+	if ( $enc eq '' ) {
+		$enc = 'utf8';
+	}
 
 	my $_FILE;
-	if( !open($_FILE, "<", $path) ) {
+	if( !open($_FILE, "<:encoding($enc)", $path) ) {
 		# failed to open, return undef
 		return undef;
 	}

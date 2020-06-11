@@ -1,5 +1,6 @@
 /var/log/pandora/pandora_agent.log 
 /var/log/pandora/pandora_server.log 
+/var/log/pandora/web_socket.log
 /var/log/pandora/pandora_server.error {
 	weekly
 	missingok

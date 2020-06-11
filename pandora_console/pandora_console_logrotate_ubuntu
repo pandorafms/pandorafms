@@ -1,4 +1,5 @@
 # DEBIAN / UBUNTU 
+/var/www/pandora_console/log/audit.log
 /var/www/pandora_console/log/console.log {
 	weekly
         missingok

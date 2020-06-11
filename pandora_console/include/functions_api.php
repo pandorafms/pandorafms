@@ -1506,6 +1506,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if ((int) $other['data'][3] == 0) {
+        $agent_creation_error = __('The agent could not be created, for security reasons use a group another than 0');
+        returnError('generic error', $agent_creation_error);
+        return;
+    }
+
     $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
     $direccion_agente          = io_safe_input($other['data'][1]);
     $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
@@ -2048,31 +2054,31 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
                     // Filter by status
                     switch ($other['data'][2]) {
                         case 'warning':
-                            if ($status == 2) {
+                            if ($status == AGENT_MODULE_STATUS_WARNING || $status == AGENT_MODULE_STATUS_WARNING_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'critical':
-                            if ($status == 1) {
+                            if ($status == AGENT_MODULE_STATUS_CRITICAL_BAD || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'unknown':
-                            if ($status == 3) {
+                            if ($status == AGENT_MODULE_STATUS_UNKNOWN) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'normal':
-                            if ($status == 0) {
+                            if ($status == AGENT_MODULE_STATUS_NORMAL || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'alert_fired':
-                            if ($status == 4) {
+                            if ($status == AGENT_STATUS_ALERT_FIRED || $status == AGENT_MODULE_STATUS_WARNING_ALERT || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;

@@ -2522,17 +2522,22 @@ class ConsoleSupervisor
                 $config['homedir']
             );
             $message_pandoraconsole_old_log = __(
-                'Pandora FMS console log file has been moved to new location %s/pandora_console/log/pandora. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                'Pandora FMS console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
                 $config['homedir'],
                 $config['homedir']
             );
+
+            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_EN:General_Quick_Guide#Solving_problems._Where_to_look_and_who_to_ask';
+            if ($config['language'] == 'es') {
+                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_ES:Guia_Rapida_General#Soluci.C3.B3n_de_problemas._D.C3.B3nde_mirar.2C_a_qui.C3.A9n_preguntar';
+            }
 
             $this->notify(
                 [
                     'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
                     'title'   => __($title_pandoraconsole_old_log),
                     'message' => __($message_pandoraconsole_old_log),
-                    'url'     => '#',
+                    'url'     => $url,
                 ]
             );
         } else {
@@ -2556,7 +2561,7 @@ class ConsoleSupervisor
                 $config['homedir']
             );
             $message_audit_old_log = __(
-                'Pandora FMS audit log file has been moved to new location %s/pandora_console/log/pandora. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                'Pandora FMS audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
                 $config['homedir'],
                 $config['homedir']
             );

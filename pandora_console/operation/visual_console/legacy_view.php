@@ -321,8 +321,8 @@ $ignored_params['refr'] = '';
             startCountDown(refr, false);
             
             var controls = document.getElementById('vc-controls');
-            // autoHideElement(controls, 1000);
-            
+            autoHideElement(controls, 1000);
+
             $('select#refr').change(function (event) {
                 refr = Number.parseInt(event.target.value, 10);
                 new_count = event.target.value;

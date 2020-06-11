@@ -2048,31 +2048,31 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
                     // Filter by status
                     switch ($other['data'][2]) {
                         case 'warning':
-                            if ($status == 2) {
+                            if ($status == AGENT_MODULE_STATUS_WARNING || $status == AGENT_MODULE_STATUS_WARNING_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'critical':
-                            if ($status == 1) {
+                            if ($status == AGENT_MODULE_STATUS_CRITICAL_BAD || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'unknown':
-                            if ($status == 3) {
+                            if ($status == AGENT_MODULE_STATUS_UNKNOWN) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'normal':
-                            if ($status == 0) {
+                            if ($status == AGENT_MODULE_STATUS_NORMAL || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'alert_fired':
-                            if ($status == 4) {
+                            if ($status == AGENT_STATUS_ALERT_FIRED || $status == AGENT_MODULE_STATUS_WARNING_ALERT || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;

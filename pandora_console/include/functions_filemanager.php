@@ -369,11 +369,21 @@ if ($delete_file) {
         $config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
 
         if (is_dir($filename)) {
-            rmdir($filename);
-            $config['filemanager']['delete'] = 1;
+            if (rmdir($filename)) {
+                $config['filemanager']['delete'] = 1;
+            } else {
+                $config['filemanager']['delete'] = 0;
+            }
         } else {
-            unlink($filename);
-            $config['filemanager']['delete'] = 1;
+            if (unlink($filename)) {
+                    $config['filemanager']['delete'] = 1;
+            } else {
+                $config['filemanager']['delete'] = 0;
+            }
+        }
+
+        if ($config['filemanager']['delete'] == 0) {
+            $config['filemanager']['message'] = ui_print_error_message(__('Deleted'), '', true);
         }
     }
 }
@@ -743,7 +753,7 @@ function filemanager_file_explorer(
 
             if (($editor) && (!$readOnly)) {
                 if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg')
-                    && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc')
+                    && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
                 ) {
                     $hash = md5($fileinfo['realpath'].$config['dbpass']);
                     $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file')]).'</a>';

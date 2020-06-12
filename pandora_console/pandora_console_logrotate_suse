@@ -1,5 +1,6 @@
 # OpenSUSE, SLES
 /srv/www/htdocs/pandora_console/log/audit.log
+/srv/www/htdocs/pandora_console/log/cron.log
 /srv/www/htdocs/pandora_console/log/console.log {
 	weekly
 	missingok

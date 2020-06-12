@@ -2278,7 +2278,7 @@ class ConsoleSupervisor
                 );
                 $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
                 $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
-                $message_conf_cron .= $config['homedir'].'/log/console.log</pre>';
+                $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 
             if (isset($config['cron_last_run']) === true) {

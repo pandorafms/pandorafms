@@ -1008,7 +1008,7 @@ class Diagnostics extends Wizard
         $pathErrLogs = '/var/log/pandora/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
-        $pathConsoleLogs = $config['homedir'].'/log/pandora_console.log';
+        $pathConsoleLogs = $config['homedir'].'/log/console.log';
         $console = $this->getLogInfo($pathConsoleLogs);
 
         $result = [

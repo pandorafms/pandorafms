@@ -8790,6 +8790,11 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
         }
     }
 
+    // Esto es extraño, hablar con Tati
+    /*
+        $filter['1'] = $filter['sql'];
+    unset($filter['sql']); */
+
     if (isset($other['data'][4]) && $other['data'][4] != '') {
         $idTemplate = db_get_value_filter('id', 'talert_templates', ['name' => $other['data'][4]]);
         if ($idTemplate !== false) {
@@ -10718,6 +10723,85 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     }
 
     return true;
+}
+
+
+/**
+ * Update an event
+ *
+ * @param string $id_event Id of the event for change.
+ * @param string $unused1  Without use.
+ * @param array  $params   Dictionary with field,value format with the data for update.
+ * @param string $unused2  Without use.
+ * @param string $unused3  Without use.
+ *
+ * @return void
+ */
+function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
+{
+    // Get the event
+    $event = events_get_event($id_event);
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        return false;
+    }
+
+    $paramsSerialize = [];
+    // Serialize the data for update
+    if ($params['type'] === 'array') {
+        // Keys that is not available to change
+        $invalidKeys = [
+            'id_evento',
+            'id_agente',
+            'id_grupo',
+            'timestamp',
+            'utimestamp',
+            'id_agentmodule',
+            'id_alert_am',
+            'criticity',
+            'user_comment',
+            'tags',
+            'source',
+            'id_extra',
+            'critical_instructions',
+            'warning_instructions',
+            'unknown_instructions',
+            'ack_utimestamp',
+            'data',
+        ];
+
+        foreach ($params['data'] as $key_value) {
+            list($key, $value) = explode(',', $key_value, 2);
+            if (in_array($key, $invalidKeys) == false) {
+                $paramsSerialize[$key] = $value;
+            }
+        }
+    }
+
+    // TODO. Stablish security for prevent sql injection?
+    // Update the row
+    $result = db_process_sql_update(
+        'tevento',
+        $paramsSerialize,
+        [ 'id_evento' => $id_event ]
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'failed_event_update',
+            __('Failed event update')
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated']);
+    }
+
+    return;
 }
 
 

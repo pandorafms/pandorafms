@@ -347,24 +347,32 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
     $propagate = (bool) get_parameter('propagate');
 
+    $aviable_name = true;
+    if (preg_match('<script>', $name)) {
+        $aviable_name = false;
+    }
+
     // Check if name field is empty.
     if ($name != '') {
         if (!$check) {
-            $values = [
-                'nombre'      => $name,
-                'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
-                'parent'      => $id_parent,
-                'disabled'    => $alerts_disabled,
-                'custom_id'   => $custom_id,
-                'id_skin'     => $skin,
-                'description' => $description,
-                'contact'     => $contact,
-                'propagate'   => $propagate,
-                'other'       => $other,
-                'password'    => io_safe_input($group_pass),
-            ];
+            if ($aviable_name === true) {
+                $values = [
+                    'nombre'      => $name,
+                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'parent'      => $id_parent,
+                    'disabled'    => $alerts_disabled,
+                    'custom_id'   => $custom_id,
+                    'id_skin'     => $skin,
+                    'description' => $description,
+                    'contact'     => $contact,
+                    'propagate'   => $propagate,
+                    'other'       => $other,
+                    'password'    => io_safe_input($group_pass),
+                ];
 
-            $result = db_process_sql_insert('tgrupo', $values);
+                $result = db_process_sql_insert('tgrupo', $values);
+            }
+
             if ($result) {
                 ui_print_success_message(__('Group successfully created'));
             } else {
@@ -394,8 +402,13 @@ if ($update_group) {
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
 
+    $aviable_name = true;
+    if (preg_match('<script>', $name)) {
+        $aviable_name = false;
+    }
+
     // Check if name field is empty.
-    if ($name != '') {
+    if ($name != '' && $aviable_name === true) {
         $sql = sprintf(
             'UPDATE tgrupo
              SET nombre = "%s",

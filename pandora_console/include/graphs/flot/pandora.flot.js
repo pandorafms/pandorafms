@@ -3009,7 +3009,7 @@ function number_format(number, force_integer, unit, short_data, divisor) {
   var decimals = 2;
 
   if (unit == "KB") {
-    return number + unit;
+    return Math.round(number * decimals) + unit;
   }
 
   // Set maximum decimal precision to 99 in case short_data is not set.
@@ -3038,6 +3038,12 @@ function number_format(number, force_integer, unit, short_data, divisor) {
 
   if (divisor) {
     number = Math.round(number * decimals) / decimals;
+  } else {
+    number = Math.round(number * decimals);
+  }
+
+  if (isNaN(number)) {
+    number = 0;
   }
 
   return number + " " + shorts[pos] + unit;

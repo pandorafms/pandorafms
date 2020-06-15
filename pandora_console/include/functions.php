@@ -477,7 +477,8 @@ function set_user_language()
 
 
 /**
- * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
+ * INTERNAL (use ui_print_timestamp for output):
+ * Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.
  *
  * @param integer $seconds Seconds elapsed time
@@ -488,17 +489,11 @@ function set_user_language()
  */
 function human_time_description_raw($seconds, $exactly=false, $units='large')
 {
-    switch ($units) {
-        case 'large':
-            $secondsString = __('seconds');
-            $daysString = __('days');
-            $monthsString = __('months');
-            $yearsString = __('years');
-            $minutesString = __('minutes');
-            $hoursString = __('hours');
-            $nowString = __('Now');
-        break;
+    if (isset($units) === false || empty($units) === true) {
+        $units = 'large';
+    }
 
+    switch ($units) {
         case 'tiny':
             $secondsString = __('s');
             $daysString = __('d');
@@ -507,6 +502,17 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
             $minutesString = __('m');
             $hoursString = __('h');
             $nowString = __('N');
+        break;
+
+        default:
+        case 'large':
+            $secondsString = __('seconds');
+            $daysString = __('days');
+            $monthsString = __('months');
+            $yearsString = __('years');
+            $minutesString = __('minutes');
+            $hoursString = __('hours');
+            $nowString = __('Now');
         break;
     }
 
@@ -3716,6 +3722,14 @@ function series_type_graph_array($data, $show_elements_graph)
                             $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
                         }
                     }
+                }
+
+                if ((int) $value['min'] === PHP_INT_MAX) {
+                    $value['min'] = 0;
+                }
+
+                if ((int) $value['max'] === (-PHP_INT_MAX)) {
+                    $value['max'] = 0;
                 }
 
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(

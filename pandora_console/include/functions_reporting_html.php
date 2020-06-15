@@ -2686,7 +2686,7 @@ function reporting_html_agent_configuration(
             $row['description'] = $module['description'];
             $row['interval'] = $module['interval'];
             $row['unit'] = $module['unit'];
-            $row['status'] = $module['status_icon'];
+            $row['status'] = ($pdf === 0) ? $module['status_icon'] : $module['status'];
             $row['tags'] = implode(',', $module['tags']);
 
             $table1->data[] = $row;

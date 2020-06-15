@@ -227,21 +227,18 @@ $table_remote->data['integria_pass'] = $row;
 $row = [];
 $row['name'] = __('API Hostname');
 $row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Hostname of Integria IMS\' API (scheme must be specified. Example: http://192.168.0.0)'), true);
 $table_remote->data['integria_hostname'] = $row;
 
 // API password.
 $row = [];
 $row['name'] = __('API Password');
 $row['control'] = html_print_input_password('integria_api_pass', io_output_password($config['integria_api_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Password of Integria IMS\' API'), true);
 $table_remote->data['integria_api_pass'] = $row;
 
 // Request timeout.
 $row = [];
 $row['name'] = __('Request timeout');
 $row['control'] = html_print_input_text('integria_req_timeout', $config['integria_req_timeout'], '', 3, 10, true);
-$row['control'] .= ui_print_help_tip(__('Time in seconds to set the maximum time of the requests to the Integria API').'. '.__('0 to disable'), true);
 $table_remote->data['integria_req_timeout'] = $row;
 
 // Alert settings.

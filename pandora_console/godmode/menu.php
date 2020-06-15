@@ -385,6 +385,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
             $sub['extensions/dbmanager']['text'] = __('DB Interface');
             $sub['extensions/dbmanager']['id'] = 'DB Interface';
             $sub['extensions/dbmanager']['sec'] = 'gbman';
+            enterprise_hook('elasticsearch_interface_menu');
         }
     }
 

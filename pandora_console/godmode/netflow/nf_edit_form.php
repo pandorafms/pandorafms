@@ -58,7 +58,7 @@ if (! defined('METACONSOLE')) {
         __('Netflow Filter'),
         'images/gm_netflow.png',
         false,
-        'pcap_filter',
+        '',
         true,
         $buttons
     );

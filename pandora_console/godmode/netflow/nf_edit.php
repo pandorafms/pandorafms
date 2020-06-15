@@ -38,7 +38,7 @@ if (! defined('METACONSOLE')) {
         __('Manage Netflow Filter'),
         'images/gm_netflow.png',
         false,
-        'pcap_filter',
+        '',
         true
     );
 

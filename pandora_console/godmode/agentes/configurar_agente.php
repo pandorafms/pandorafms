@@ -698,13 +698,14 @@ if ($id_agente) {
         break;
     }
 
+    $helper = ($help_header === 'main_tab') ? 'main_tab' : '';
     $pure = get_parameter('pure', 0);
     if (!$pure) {
         ui_print_page_header(
             agents_get_alias($id_agente),
             'images/setup.png',
             false,
-            $help_header,
+            $helper,
             true,
             $onheader,
             false,

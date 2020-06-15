@@ -117,8 +117,20 @@ class ManageNetScanScripts extends Wizard
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
 
-            // Header
-            ui_print_page_header(__('Net scan scripts'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            // Header.
+            ui_print_page_header(
+                __('Net scan scripts'),
+                '',
+                false,
+                '',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                '',
+                $this->printHeader(true)
+            );
         }
 
         $id_script = get_parameter('id_script', 0);
@@ -535,12 +547,6 @@ class ManageNetScanScripts extends Wizard
 
         $data = [];
         $data[0] = __('Name');
-        $data[0] .= ui_print_help_icon(
-            'reconscript_definition',
-            true,
-            '',
-            'images/help_w.png'
-        );
 
         $data[1] = '<input type="text" name="form_name" size=30 value="'.$form_name.'">';
         $table->data['recon_name'] = $data;

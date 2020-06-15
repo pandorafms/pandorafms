@@ -805,12 +805,14 @@ if ($action == 'new' || $idVisualConsole === false) {
 
 $buttons[$activeTab]['active'] = true;
 
+$tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
+
 if (!defined('METACONSOLE')) {
     ui_print_page_header(
         $visualConsoleName,
         'images/visual_console.png',
         false,
-        'visual_console_editor_'.$activeTab.'_tab',
+        $tab_builder,
         false,
         $buttons
     );

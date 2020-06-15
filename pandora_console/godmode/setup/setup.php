@@ -183,6 +183,7 @@ switch ($section) {
     case 'net':
         $buttons['net']['active'] = true;
         $subpage = ' &raquo '.__('Netflow');
+        $help_header = 'setup_netflow_tab';
     break;
 
     case 'ehorus':

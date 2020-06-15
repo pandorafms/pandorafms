@@ -2441,10 +2441,14 @@ function graphic_agentaccess(
     } else {
         $options['generals']['pdf']['width'] = 350;
         $options['generals']['pdf']['height'] = 125;
+        if (!empty($data_array)) {
+            $imgbase64 = '<img src="data:image/jpg;base64,';
+            $imgbase64 .= vbar_graph($data_array, $options, 2);
+            $imgbase64 .= '" />';
+        } else {
+            $imgbase64 .= vbar_graph($data_array, $options, 2);
+        }
 
-        $imgbase64 = '<img src="data:image/jpg;base64,';
-        $imgbase64 .= vbar_graph($data_array, $options, 2);
-        $imgbase64 .= '" />';
         return $imgbase64;
     }
 }

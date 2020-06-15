@@ -170,7 +170,14 @@ $options['view']['active'] = true;
 if (!is_metaconsole()) {
     if (!$config['pure']) {
         $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
-        ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
+        ui_print_page_header(
+            $layout_name,
+            'images/visual_console.png',
+            false,
+            'visual_console_view',
+            false,
+            $options
+        );
     }
 
     // Set the hidden value for the javascript

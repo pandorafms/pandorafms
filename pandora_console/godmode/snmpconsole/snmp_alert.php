@@ -92,7 +92,7 @@ if ($update_alert || $modify_alert) {
         __('SNMP Console').' &raquo; '.__('Alert overview'),
         'images/op_snmp.png',
         false,
-        'snmp_alert_overview_tab',
+        '',
         false
     );
 }

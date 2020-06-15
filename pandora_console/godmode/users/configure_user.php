@@ -151,7 +151,7 @@ if ($meta) {
         __('User detail editor').$header_title,
         'images/gm_users.png',
         false,
-        'profile_tab',
+        '',
         true,
         $buttons
     );
@@ -665,7 +665,7 @@ if (defined('METACONSOLE')) {
 }
 
 if (!$new_user) {
-    $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
+    $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').'</p>';
     $user_id .= '<span>'.$id.'</span>';
     $user_id .= html_print_input_hidden('id_user', $id, true);
     $user_id .= '</div>';
@@ -709,7 +709,7 @@ $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended
     true
 ).'</div>';
 
-$language = '<div class="label_select"><p class="edit_user_labels">'.__('Language').': </p>';
+$language = '<div class="label_select"><p class="edit_user_labels">'.__('Language').'</p>';
 $language .= html_print_select_from_sql(
     'SELECT id_language, name FROM tlanguage',
     'language',
@@ -721,7 +721,7 @@ $language .= html_print_select_from_sql(
 ).'</div>';
 
 
-$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').': </p>';
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
 $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 if ($config['user_can_update_password']) {
@@ -760,7 +760,7 @@ if ($config['user_can_update_password']) {
 }
 
 $own_info = get_user_info($config['id_user']);
-$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" style="margin:0;">'.__('Global Profile').': </span>';
+$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" style="margin:0;">'.__('Global Profile').'</span>';
 $global_profile .= '<div class="switch_radio_button">';
 $global_profile .= html_print_radio_button_extended(
     'is_admin',
@@ -822,7 +822,7 @@ $phone = '<div class="label_select_simple">'.html_print_input_text_extended(
     true
 ).'</div>';
 
-$comments = '<p class="edit_user_labels">'.__('Comments').': </p>';
+$comments = '<p class="edit_user_labels">'.__('Comments').'</p>';
 $comments .= html_print_textarea(
     'comments',
     2,
@@ -852,7 +852,7 @@ if (!$meta) {
     // User only can change skins if has more than one group
     if (count($usr_groups) > 1) {
         if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').': </p>';
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
             $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
@@ -1051,7 +1051,7 @@ echo '<div id="user_form">
         <div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
         <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>
     </div>  
-    <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info:</p>'.$email.$phone.$not_login.$session_time.'</div>
+    <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
     <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.'</div>

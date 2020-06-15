@@ -1962,17 +1962,7 @@ function process_datatables_item(item) {
 
     /* Agent ID link */
     if (item.id_agente > 0) {
-        <?php
-        if (in_array('agent_name', $fields)) {
-            ?>
-            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
-            <?php
-        } else {
-            ?>
-            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
-            <?php
-        }
-        ?>
+        item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
     } else {
         item.id_agente = '';
     }

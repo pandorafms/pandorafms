@@ -10782,10 +10782,16 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
         }
     }
 
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
     // TODO. Stablish security for prevent sql injection?
     // Update the row
     $result = db_process_sql_update(
-        'tevento',
+        $table,
         $paramsSerialize,
         [ 'id_evento' => $id_event ]
     );

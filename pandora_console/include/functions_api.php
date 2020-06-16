@@ -10740,7 +10740,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
 {
     // Get the event
-    $event = events_get_event($id_event);
+    $event = events_get_event($id_event, false, is_metaconsole());
     // If event not exists, end the execution.
     if ($event === false) {
         returnError(
@@ -10773,6 +10773,7 @@ function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
         }
     }
 
+    // In meta or node.
     if (is_metaconsole() === true) {
         $table = 'tmetaconsole_event';
     } else {

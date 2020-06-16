@@ -2142,7 +2142,7 @@ function check_sql($sql)
 {
     // We remove "*" to avoid things like SELECT * FROM tusuario
     // Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
-    if (preg_match('/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i', $sql)) {
+    if (preg_match('/([ ]*(delete|drop|alter|modify|password|pass|insert|update)\b[ \\]+)/i', $sql)) {
         return '';
     }
 

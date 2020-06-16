@@ -277,7 +277,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['ttl'],
                 $params['sizeForTicks'],
                 $params['show'],
-                $params['date_to']
+                $params['date_to'],
+                $params['server_id']
             );
         break;
 

@@ -118,6 +118,10 @@ if ($create_special_day) {
     $values['id_group'] = (string) get_parameter('id_group');
     $values['description'] = (string) get_parameter('description');
 
+    $aviable_description = true;
+    if (preg_match('<script>', $values['description'])) {
+        $aviable_description = false;
+    }
 
     $array_date = explode('-', $date);
 
@@ -142,8 +146,12 @@ if ($create_special_day) {
             $result = '';
             $messageAction = __('Could not be created, it already exists');
         } else {
-            $result = alerts_create_alert_special_day($date, $same_day, $values);
-            $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
+            if ($aviable_description) {
+                $result = alerts_create_alert_special_day($date, $same_day, $values);
+                $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
+            } else {
+                $result = false;
+            }
         }
     }
 
@@ -176,6 +184,11 @@ if ($update_special_day) {
     $id_group = (string) get_parameter('id_group');
     $id_group_orig = (string) get_parameter('id_group_orig');
 
+    $aviable_description = true;
+    if (preg_match('<script>', $description)) {
+        $aviable_description = false;
+    }
+
     $array_date = explode('-', $date);
 
     $year  = $array_date[0];
@@ -206,12 +219,16 @@ if ($update_special_day) {
                 $result = '';
                 $messageAction = __('Could not be updated, it already exists');
             } else {
+                if ($aviable_description !== false) {
+                    $result = alerts_update_alert_special_day($id, $values);
+                    $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
+                }
+            }
+        } else {
+            if ($aviable_description !== false) {
                 $result = alerts_update_alert_special_day($id, $values);
                 $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
             }
-        } else {
-            $result = alerts_update_alert_special_day($id, $values);
-            $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
         }
     }
 

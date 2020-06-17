@@ -1798,7 +1798,7 @@ sub app_scan($) {
         if (   $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
           || $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
           || $self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2
-          || $self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER)
+          || $self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER
         ) {
 
           # Database.

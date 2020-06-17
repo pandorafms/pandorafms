@@ -629,6 +629,16 @@ class DiscoveryTaskList extends HTML
                         $data[6] .= __('Discovery.App.Oracle');
                     break;
 
+                    case DISCOVERY_APP_DB2:
+                        // Discovery Applications DB2.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications DB2')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.DB2');
+                    break;
+
                     case DISCOVERY_DEPLOY_AGENTS:
                         // Internal deployment task.
                         $no_operations = true;
@@ -732,6 +742,8 @@ class DiscoveryTaskList extends HTML
                     if ($task['disabled'] != 2 && $task['utimestamp'] > 0
                         && $task['type'] != DISCOVERY_APP_MYSQL
                         && $task['type'] != DISCOVERY_APP_ORACLE
+                        && $task['type'] != DISCOVERY_APP_DB2
+                        && $task['type'] != DISCOVERY_APP_SAP
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                     ) {
                         if (check_acl($config['id_user'], 0, 'MR')) {
@@ -891,6 +903,9 @@ class DiscoveryTaskList extends HTML
 
             case DISCOVERY_APP_ORACLE:
             return 'wiz=app&mode=oracle&page=0';
+
+            case DISCOVERY_APP_DB2:
+            return 'wiz=app&mode=DB2&page=0';
 
             case DISCOVERY_CLOUD_AWS:
             case DISCOVERY_CLOUD_AWS_EC2:

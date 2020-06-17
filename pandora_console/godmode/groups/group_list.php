@@ -314,7 +314,7 @@ if (defined('METACONSOLE')) {
         $title,
         'images/group.png',
         false,
-        'group_list_tab',
+        '',
         true,
         $buttons
     );
@@ -347,24 +347,32 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
     $propagate = (bool) get_parameter('propagate');
 
+    $aviable_name = true;
+    if (preg_match('<script>', $name)) {
+        $aviable_name = false;
+    }
+
     // Check if name field is empty.
     if ($name != '') {
         if (!$check) {
-            $values = [
-                'nombre'      => $name,
-                'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
-                'parent'      => $id_parent,
-                'disabled'    => $alerts_disabled,
-                'custom_id'   => $custom_id,
-                'id_skin'     => $skin,
-                'description' => $description,
-                'contact'     => $contact,
-                'propagate'   => $propagate,
-                'other'       => $other,
-                'password'    => io_safe_input($group_pass),
-            ];
+            if ($aviable_name === true) {
+                $values = [
+                    'nombre'      => $name,
+                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'parent'      => $id_parent,
+                    'disabled'    => $alerts_disabled,
+                    'custom_id'   => $custom_id,
+                    'id_skin'     => $skin,
+                    'description' => $description,
+                    'contact'     => $contact,
+                    'propagate'   => $propagate,
+                    'other'       => $other,
+                    'password'    => io_safe_input($group_pass),
+                ];
 
-            $result = db_process_sql_insert('tgrupo', $values);
+                $result = db_process_sql_insert('tgrupo', $values);
+            }
+
             if ($result) {
                 ui_print_success_message(__('Group successfully created'));
             } else {
@@ -394,8 +402,13 @@ if ($update_group) {
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
 
+    $aviable_name = true;
+    if (preg_match('<script>', $name)) {
+        $aviable_name = false;
+    }
+
     // Check if name field is empty.
-    if ($name != '') {
+    if ($name != '' && $aviable_name === true) {
         $sql = sprintf(
             'UPDATE tgrupo
              SET nombre = "%s",
@@ -443,36 +456,139 @@ if (($delete_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $usedGroup = groups_check_used($id_group);
 
     if (!$usedGroup['return']) {
-        $group = db_get_row_filter(
-            'tgrupo',
-            ['id_grupo' => $id_group]
-        );
+        $errors_meta = false;
+        if (is_metaconsole()) {
+            $group_name = groups_get_name($id_group);
+            $servers = metaconsole_get_servers();
 
-        db_process_sql_update(
-            'tgrupo',
-            ['parent' => $group['parent']],
-            ['parent' => $id_group]
-        );
+            $error_counter = 0;
+            $success_counter = 0;
+            $success_nodes = [];
+            $error_nodes = [];
+            // Check if the group can be deleted or not.
+            foreach ($servers as $server) {
+                if (metaconsole_connect($server) == NOERR) {
+                    $result_exist_group = db_get_row_filter('tgrupo', ['nombre' => $group_name, 'id_grupo' => $id_group]);
+                    if ($result_exist_group !== false) {
+                        $used_group = groups_check_used($id_group);
+                        // Save the names of the nodes that are empty and can be deleted, and those that cannot.
+                        if (!$used_group['return']) {
+                            $success_nodes[] .= $server['server_name'];
+                            $success_counter++;
+                        } else {
+                            $error_nodes[] .= $server['server_name'];
+                            $error_counter++;
+                        }
+                    }
+                }
 
-        $result = db_process_sql_delete(
-            'tgroup_stat',
-            ['id_group' => $id_group]
-        );
+                metaconsole_restore_db();
+            }
 
-        $result = db_process_sql_delete(
-            'tgrupo',
-            ['id_grupo' => $id_group]
-        );
+            if ($error_counter > 0) {
+                ui_print_error_message(
+                    __('The group %s could not be deleted because it is not empty in the nodes', $group_name).': '.implode(', ', $error_nodes)
+                );
+                $errors_meta = true;
+            } else {
+                if ($success_counter > 0) {
+                    $error_deleting_counter = 0;
+                    $success_deleting_counter = 0;
+                    $error_deleting = [];
+                    $success_deleting = [];
+                    $error_connecting_node = [];
+                    // Delete the group in the nodes.
+                    foreach ($servers as $server) {
+                        if (metaconsole_connect($server) == NOERR) {
+                            $group = db_get_row_filter(
+                                'tgrupo',
+                                ['id_grupo' => $id_group]
+                            );
+
+                            db_process_sql_update(
+                                'tgrupo',
+                                ['parent' => $group['parent']],
+                                ['parent' => $id_group]
+                            );
+
+                            db_process_sql_delete(
+                                'tgroup_stat',
+                                ['id_group' => $id_group]
+                            );
+
+                            $result = db_process_sql_delete(
+                                'tgrupo',
+                                ['id_grupo' => $id_group]
+                            );
+
+                            if ($result === false) {
+                                $error_deleting[] .= $server['server_name'];
+                                $error_deleting_counter++;
+                            } else {
+                                $success_deleting[] .= $server['server_name'];
+                                $success_deleting_counter++;
+                            }
+                        } else {
+                            $error_deleting_counter++;
+                            $error_connecting_node[] .= $server['server_name'];
+                        }
+
+                        metaconsole_restore_db();
+                    }
+
+                    // If the group could not be deleted in any node, do not delete it in meta.
+                    if ($error_deleting_counter > 0) {
+                        $errors_meta = true;
+                        if (!empty($error_connecting_node)) {
+                            ui_print_error_message(__('Error connecting to %s', implode(', ', $error_connecting_node).'. The group has not been deleted in the metaconsole.'));
+                        }
+
+                        if (!empty($error_deleting)) {
+                            ui_print_error_message(
+                                __('The group has not been deleted in the metaconsole due to an error in the node database').': '.implode(', ', $error_deleting)
+                            );
+                        }
+                    }
+
+                    if ($success_deleting_counter > 0) {
+                        ui_print_success_message(__('The group %s has been deleted in the nodes', $group_name).': '.implode(', ', $success_deleting));
+                    }
+                }
+            }
+        }
+
+        if ($errors_meta === false) {
+            $group = db_get_row_filter(
+                'tgrupo',
+                ['id_grupo' => $id_group]
+            );
+
+            db_process_sql_update(
+                'tgrupo',
+                ['parent' => $group['parent']],
+                ['parent' => $id_group]
+            );
+
+            $result = db_process_sql_delete(
+                'tgroup_stat',
+                ['id_group' => $id_group]
+            );
+
+            $result = db_process_sql_delete(
+                'tgrupo',
+                ['id_grupo' => $id_group]
+            );
+
+            if ($result && (!$usedGroup['return'])) {
+                ui_print_success_message(__('Group successfully deleted'));
+            } else {
+                ui_print_error_message(__('There was a problem deleting group'));
+            }
+        }
     } else {
         ui_print_error_message(
             sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables']))
         );
-    }
-
-    if ($result && (!$usedGroup['return'])) {
-        ui_print_success_message(__('Group successfully deleted'));
-    } else {
-        ui_print_error_message(__('There was a problem deleting group'));
     }
 }
 
@@ -636,7 +752,12 @@ if ($tab == 'tree') {
                 ]
             ).'</a>';
 
-            $confirm_message = __('Are you sure?');
+            if (is_metaconsole()) {
+                $confirm_message = __('Are you sure? This group will also be deleted in all the nodes.');
+            } else {
+                $confirm_message = __('Are you sure?');
+            }
+
             if ($group['has_child']) {
                 $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
             }

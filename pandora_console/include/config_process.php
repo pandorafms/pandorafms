@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC200317';
-$pandora_version = 'v7.0NG.744';
+$build_version = 'PC200617';
+$pandora_version = 'v7.0NG.746';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -227,7 +227,7 @@ $config['extensions'] = extensions_get_extensions();
 // Detect if enterprise extension is installed
 // NOTICE: This variable (config[enterprise_installed] is used in several
 // sections. Faking or forcing to 1 will make pandora fails.
-if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/index.php')) {
+if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php')) {
     $config['enterprise_installed'] = 1;
     enterprise_include_once('include/functions_enterprise.php');
 } else {

@@ -541,9 +541,8 @@ if (! isset($config['id_user'])) {
 
                             case 'Dashboard':
                                 $_GET['sec'] = 'reporting';
-                                $_GET['sec2'] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
-                                $id_dashboard_select = db_get_value('id', 'tdashboard', 'name', $home_url);
-                                $_GET['id_dashboard_select'] = $id_dashboard_select;
+                                $_GET['sec2'] = 'operation/dashboard/dashboard';
+                                $_GET['id_dashboard_select'] = $home_url;
                                 $_GET['d_from_main_page'] = 1;
                             break;
 
@@ -686,6 +685,11 @@ if (! isset($config['id_user'])) {
             unset($query_params_redirect['sec2']);
         }
 
+        // Dashboard do not want sec2.
+        if ($home_page == 'Dashboard') {
+            unset($query_params_redirect['sec2']);
+        }
+
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
             if ($key == 'login') {
@@ -732,12 +736,13 @@ if (! isset($config['id_user'])) {
         $first = (boolean) get_parameter('first', 0);
         $reset_hash = get_parameter('reset_hash', '');
 
-        if ($correct_pass_change) {
+        $pass1 = get_parameter_post('pass1');
+        $pass2 = get_parameter_post('pass2');
+        $id_user = get_parameter_post('id_user');
+
+        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user)) {
             $correct_reset_pass_process = '';
             $process_error_message = '';
-            $pass1 = get_parameter('pass1');
-            $pass2 = get_parameter('pass2');
-            $id_user = get_parameter('id_user');
 
             if ($pass1 == $pass2) {
                 $res = update_user_password($id_user, $pass1);
@@ -1003,58 +1008,7 @@ if ($process_login) {
         }
     }
 
-    // Set the initial global counter for chat.
-    users_get_last_global_counter('session');
-
     $config['logged'] = true;
-}
-
-// ----------------------------------------------------------------------
-// Get old parameters before navigation.
-$old_sec = '';
-$old_sec2 = '';
-$old_page = '';
-if (isset($_SERVER['HTTP_REFERER'])) {
-    $old_page = $_SERVER['HTTP_REFERER'];
-}
-
-$chunks = explode('?', $old_page);
-if (count($chunks) == 2) {
-    $chunks = explode('&', $chunks[1]);
-
-    foreach ($chunks as $chunk) {
-        if (strstr($chunk, 'sec=') !== false) {
-            $old_sec = str_replace('sec=', '', $chunk);
-        }
-
-        if (strstr($chunk, 'sec2=') !== false) {
-            $old_sec = str_replace('sec2=', '', $chunk);
-        }
-    }
-}
-
-$_SESSION['new_chat'] = false;
-if ($old_sec2 == 'operation/users/webchat') {
-    users_get_last_global_counter('session');
-}
-
-if ($page == 'operation/users/webchat') {
-    // Reload the global counter.
-    users_get_last_global_counter('session');
-}
-
-if (isset($_SESSION['global_counter_chat'])) {
-    $old_global_counter_chat = $_SESSION['global_counter_chat'];
-} else {
-    $old_global_counter_chat = users_get_last_global_counter('return');
-}
-
-$now_global_counter_chat = users_get_last_global_counter('return');
-
-if ($old_global_counter_chat != $now_global_counter_chat) {
-    if (!users_is_last_system_message()) {
-        $_SESSION['new_chat'] = true;
-    }
 }
 
 require_once 'general/register.php';
@@ -1200,8 +1154,7 @@ if ($searchPage) {
                 break;
 
                 case 'Dashboard':
-                    $id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
-                    $str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard.'&d_from_main_page=1';
+                    $str = 'sec=reporting&sec2=operation/dashboard/dashboard&dashboardId='.$home_url.'&d_from_main_page=1';
                     parse_str($str, $res);
                     foreach ($res as $key => $param) {
                         $_GET[$key] = $param;
@@ -1333,9 +1286,13 @@ require 'include/php_to_js_values.php';
 
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            document.getElementById("top_btn").style.display = "block";
+            if(document.getElementById("top_btn")){
+                document.getElementById("top_btn").style.display = "block";
+            }
         } else {
-            document.getElementById("top_btn").style.display = "none";
+            if(document.getElementById("top_btn")){
+                document.getElementById("top_btn").style.display = "none";
+            }
         }
     }
 

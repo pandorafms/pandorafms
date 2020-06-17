@@ -26,7 +26,9 @@ function createVisualConsole(
   items,
   baseUrl,
   updateInterval,
-  onUpdate
+  onUpdate,
+  beforeUpdate,
+  size
 ) {
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
@@ -43,6 +45,7 @@ function createVisualConsole(
         var abortable = loadVisualConsoleData(
           baseUrl,
           visualConsoleId,
+          size,
           function(error, data) {
             if (error) {
               //Remove spinner change VC.
@@ -82,18 +85,23 @@ function createVisualConsole(
                     ? JSON.parse(data.items)
                     : data.items;
 
-                // Add the datetime when the item was received.
                 var receivedAt = new Date();
-                items.map(function(item) {
-                  item["receivedAt"] = receivedAt;
-                  return item;
-                });
-
                 var prevProps = visualConsole.props;
-                // Update the data structure.
-                visualConsole.props = props;
-                // Update the items.
-                visualConsole.updateElements(items);
+                if (beforeUpdate) {
+                  beforeUpdate(items, visualConsole, props);
+                } else {
+                  // Add the datetime when the item was received.
+                  items.map(function(item) {
+                    item["receivedAt"] = receivedAt;
+                    return item;
+                  });
+
+                  // Update the data structure.
+                  visualConsole.props = props;
+                  // Update the items.
+                  visualConsole.updateElements(items);
+                }
+
                 // Emit the VC update event.
                 if (onUpdate) onUpdate(prevProps, visualConsole.props);
               } catch (ignored) {} // eslint-disable-line no-empty
@@ -619,7 +627,7 @@ function createVisualConsole(
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function loadVisualConsoleData(baseUrl, vcId, callback) {
+function loadVisualConsoleData(baseUrl, vcId, size, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var vcJqXHR = null;
@@ -695,6 +703,7 @@ function loadVisualConsoleData(baseUrl, vcId, callback) {
       {
         page: "include/rest-api/index",
         getVisualConsoleItems: 1,
+        size: size,
         visualConsoleId: vcId
       },
       "json"

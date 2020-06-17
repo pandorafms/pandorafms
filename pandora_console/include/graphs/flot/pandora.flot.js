@@ -458,10 +458,19 @@ function pandoraFlotHBars(
   // v, axis;
   function xFormatter(v) {
     var label = parseFloat(v);
+
+    const unit_prefixes = ["K", "M", "G"];
+    var unit_prefix = "";
+    var i = 0;
+
+    while (label >= 1000 && i < 3) {
+      label = label / 1000;
+      unit_prefix = unit_prefixes[i];
+      i++;
+    }
     var text = label.toLocaleString();
-    if (label >= 1000000) text = text.substring(0, 4) + "M";
-    else if (label >= 100000) text = text.substring(0, 3) + "K";
-    else if (label >= 1000) text = text.substring(0, 2) + "K";
+
+    text = text + unit_prefix;
 
     return (
       '<div style="font-size:' +
@@ -507,23 +516,45 @@ $.fn.HUseTooltip = function() {
     }
   });
 };
+
 $.fn.VUseTooltip = function() {
   $(this).bind("plothover", function(event, pos, item) {
     if (item) {
       if (
         previousLabel != item.series.label ||
-        previousPoint != item.seriesIndex
+        previousPoint != item.dataIndex
       ) {
-        previousPoint = item.seriesIndex;
+        previousPoint = item.dataIndex;
         previousLabel = item.series.label;
-
         $("#tooltip").remove();
 
-        // var x = item.datapoint[0];
+        var x = item.datapoint[0];
+
         var y = item.datapoint[1];
+        if (typeof y != "string") {
+          y = number_format(y, false, "", 2, 1000);
+        }
 
         var color = item.series.color;
-        showTooltip(pos.pageX, pos.pageY, color, "<strong>" + y + "</strong>");
+
+        //console.log(item.series.xaxis.ticks[x].label);
+
+        /*
+        "<strong>" +
+            item.series.label +
+            "</strong><br>" +
+            item.series.xaxis.ticks[x].label +
+            " : <strong>" +
+            y +
+            "</strong>"
+        */
+
+        showTooltip(
+          item.pageX,
+          item.pageY,
+          color,
+          "<strong>" + item.series.label + " : " + y + "</strong>"
+        );
       }
     } else {
       $("#tooltip").remove();
@@ -552,223 +583,143 @@ function showTooltip(x, y, color, contents) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function pandoraFlotVBars(
-  graph_id,
-  values,
-  labels,
-  labels_long,
-  legend,
-  colors,
-  maxvalue,
-  water_mark,
-  separator,
-  separator2,
-  font,
-  font_size,
-  from_ux,
-  from_wux,
-  background_color,
-  tick_color
-) {
-  values = values.split(separator2);
-  legend = legend.split(separator);
-  font = font
-    .split("/")
-    .pop()
-    .split(".")
-    .shift();
-  labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
-  colors = colors.length > 0 ? colors.split(separator) : [];
+function pandoraFlotVBars(settings) {
+  settings = JSON.parse(atob(settings));
 
-  var colors_data =
-    colors.length > 0
-      ? colors
-      : ["#FFA631", "#e63c52", "#f3b200", "#5BB6E5", "#F2919D", "#82b92e"];
-  var datas = new Array();
+  var unit = settings.generals.unit;
+  var divisor = settings.generals.divisor;
 
-  for (var i = 0; i < values.length; i++) {
-    var serie = values[i].split(separator);
-
-    var aux = new Array();
-    for (var j = 0; j < serie.length; j++) {
-      var aux2 = parseFloat(serie[j]);
-      aux.push([aux2, j]);
-      if (from_ux) {
-        datas.push({
-          data: [[j, aux2]],
-          color: colors_data[j]
-        });
-      } else {
-        datas.push({
-          data: [[j, aux2]],
-          color: colors_data[0]
-        });
+  var datas = [];
+  var ticks = [];
+  var labels = [];
+  settings.data.forEach(function(element, index) {
+    var color = element.color;
+    if (settings.generals.arrayColors) {
+      if (settings.generals.arrayColors[index] != undefined) {
+        color = settings.generals.arrayColors[index].color;
       }
     }
-  }
 
-  var labels_total = new Array();
-  labels = labels.split(separator);
-  i = 0;
-  for (i = 0; i < labels.length; i++) {
-    labels_total.push([i, labels[i]]);
+    datas.push({
+      label: element.tick,
+      color: color,
+      data: [[index, element.data]]
+    });
+
+    if (settings.generals.forceTicks === true) {
+      ticks.push([index, element.tick]);
+    } else {
+      ticks.push([element.tick]);
+    }
+
+    labels.push([index, element.tick]);
+  });
+
+  var formatterTicks = "";
+  if (settings.generals.forceTicks === true) {
+    formatterTicks = "";
+  } else {
+    var ticksformatter = ticks;
+    ticks = null;
+    formatterTicks = function(v) {
+      return ticksformatter[Math.round(v)];
+    };
   }
 
   var options = {
     series: {
       bars: {
-        show: true,
-        lineWidth: 1,
-        fill: 1,
-        align: "center",
-        barWidth: 1
+        show: settings.seriesBars.show,
+        lineWidth: settings.seriesBars.lineWidth,
+        fill: settings.seriesBars.fill,
+        fillColor: settings.seriesBars.fillColor
       }
+    },
+    bars: {
+      align: settings.bars.align,
+      barWidth: settings.bars.barWidth,
+      horizontal: settings.bars.horizontal
     },
     xaxis: {
-      color: tick_color,
+      axisLabel: settings.x.title.title,
       axisLabelUseCanvas: true,
-      axisLabelFontSizePixels: font_size,
-      axisLabelFontFamily: font + "Font",
-      axisLabelPadding: 0,
-      ticks: xFormatter,
-      labelWidth: 130,
-      labelHeight: 50
+      axisLabelFontSizePixels: settings.x.title.fontSize,
+      axisLabelFontFamily: settings.x.title.fontFamily,
+      axisLabelPadding: settings.x.title.padding,
+      font: {
+        size: settings.x.font.size,
+        lineHeight: settings.x.font.lineHeight,
+        style: settings.x.font.style,
+        weight: settings.x.font.weight,
+        family: settings.x.font.family,
+        variant: settings.x.font.variant,
+        color: settings.x.font.color
+      },
+      show: settings.x.show,
+      position: settings.x.position,
+      color: settings.x.color,
+      ticks: ticks,
+      tickFormatter: formatterTicks,
+      labelWidth: settings.x.labelWidth,
+      labelHeight: settings.x.labelHeight
     },
     yaxis: {
-      color: tick_color,
+      axisLabel: settings.y.title.title,
       axisLabelUseCanvas: true,
-      axisLabelFontSizePixels: font_size,
-      axisLabelFontFamily: font + "Font",
-      axisLabelPadding: 100,
-      autoscaleMargin: 0.02,
+      axisLabelFontSizePixels: settings.y.title.fontSize,
+      axisLabelFontFamily: settings.y.title.fontFamily,
+      axisLabelPadding: settings.y.title.padding,
+      font: {
+        size: settings.y.font.size,
+        lineHeight: settings.y.font.lineHeight,
+        style: settings.y.font.style,
+        weight: settings.y.font.weight,
+        family: settings.y.font.family,
+        variant: settings.y.font.variant,
+        color: settings.y.font.color
+      },
+      show: settings.y.show,
+      position: settings.y.position,
+      color: settings.y.color,
       tickFormatter: function(v) {
-        var label = parseFloat(v);
-        var text = label.toLocaleString();
-        if (label >= 1000000) text = text.substring(0, 4) + "M";
-        else if (label >= 100000) text = text.substring(0, 3) + "K";
-        else if (label >= 1000) text = text.substring(0, 2) + "K";
+        var formatted = v;
+        if (typeof formatted != "string") {
+          formatted = number_format(v, false, unit, 2, divisor);
+        }
 
-        return (
-          '<div style="font-size:' +
-          font_size +
-          'pt !important;">' +
-          text +
-          "</div>"
-        );
-      }
+        return formatted;
+      },
+      labelWidth: settings.y.labelWidth,
+      labelHeight: settings.y.labelHeight,
+      reserveSpace: true
     },
     legend: {
-      noColumns: 100,
-      labelBoxBorderColor: "",
-      margin: 100,
-      container: true,
-      sorted: false
+      // TODO: settings.
+      show: false
     },
     grid: {
-      hoverable: true,
-      borderWidth: 1,
-      tickColor: tick_color,
-      borderColor: "#C1C1C1",
-      backgroundColor: { colors: [background_color, background_color] }
+      show: settings.grid.show,
+      aboveData: settings.grid.aboveData,
+      color: settings.grid.color,
+      backgroundColor: settings.grid.backgroundColor,
+      margin: settings.grid.margin,
+      labelMargin: settings.grid.labelMargin,
+      axisMargin: settings.grid.axisMargin,
+      markings: settings.grid.markings,
+      borderWidth: settings.grid.borderWidth,
+      borderColor: settings.grid.borderColor,
+      minBorderMargin: settings.grid.minBorderMargin,
+      clickable: settings.grid.clickable,
+      hoverable: settings.grid.hoverable,
+      autoHighlight: settings.grid.autoHighlight,
+      mouseActiveRadius: settings.grid.mouseActiveRadius
     }
   };
 
-  if (from_wux) {
-    options.series.bars.barWidth = 0.5;
-    options.grid.aboveData = true;
-    options.grid.borderWidth = 0;
-    options.grid.markings = [
-      { xaxis: { from: -0.25, to: -0.25 }, color: "#000" },
-      { yaxis: { from: 0, to: 0 }, color: "#000" }
-    ];
-    options.grid.markingsLineWidth = 0.3;
+  $.plot($("#" + settings.graphId), datas, options);
 
-    options.xaxis.tickLength = 0;
-    options.yaxis.tickLength = 0;
-  }
-
-  if (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    )
-  )
-    options.xaxis.labelWidth = 100;
-
-  var plot = $.plot($("#" + graph_id), datas, options);
-  $("#" + graph_id).VUseTooltip();
-  $("#" + graph_id).css("margin-left", "auto");
-  $("#" + graph_id).css("margin-right", "auto");
-
-  if (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    )
-  )
-    $("#" + graph_id + " .xAxis .tickLabel")
-      .find("div")
-      .css("top", "+0px")
-      .css("left", "-20px");
-  // Format functions
-  function xFormatter() {
-    var format = new Array();
-    for (i = 0; i < labels_total.length; i++) {
-      var label = labels_total[i][1];
-      var shortLabel = reduceText(label, 28);
-      if (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-      )
-        shortLabel = reduceText(label, 18);
-      var title = "";
-      if (label !== shortLabel) {
-        title = label;
-        label = shortLabel;
-      }
-
-      format.push([
-        i,
-        '<div class="' +
-          font +
-          '" title="' +
-          title +
-          '" style="word-break: normal; overflow:hidden; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:' +
-          font_size +
-          'pt !important;">' +
-          label +
-          "</div>"
-      ]);
-    }
-    return format;
-  }
-
-  /*
-  function yFormatter(v) {
-    return (
-      '<div class="' +
-      font +
-      '" style="font-size:' +
-      font_size +
-      'pt !important;">' +
-      v +
-      "</div>"
-    );
-  }
-
-  function lFormatter(v, axis) {
-    return (
-      '<div style="font-size:' + font_size + 'pt !important;">' + v + "</div>"
-    );
-  }
-  */
-
-  if (water_mark) {
-    set_watermark(
-      graph_id,
-      plot,
-      $("#watermark_image_" + graph_id).attr("src")
-    );
-  }
+  // Hover in bars graph.
+  $("#" + settings.graphId).VUseTooltip();
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -786,7 +737,8 @@ function pandoraFlotSlicebar(
   full_legend,
   not_interactive,
   show_date,
-  datelimit
+  datelimit,
+  server_id
 ) {
   values = values.split(separator2);
   legend = legend.split(separator);
@@ -934,7 +886,9 @@ function pandoraFlotSlicebar(
           date_from: newdate,
           time_from: from + ":00",
           status: "-1",
-          group_rep: "1"
+          group_rep: "1",
+          from_event_graph: 1,
+          id_server_meta: server_id
         };
 
         if (full_legend != "") {
@@ -965,6 +919,11 @@ function pandoraFlotSlicebar(
 
   // Format functions
   function xFormatter(v) {
+    var ct = new Date();
+    var currentTime = ct.getTime();
+
+    var diffDates = (currentTime - 1000 * datelimit) / 1000;
+
     var d = new Date(1000 * (v + datelimit));
     var monthNames = [
       "Jan",
@@ -981,17 +940,27 @@ function pandoraFlotSlicebar(
       "Dec"
     ];
 
-    var date_format =
-      (d.getDate() < 10 ? "0" : "") +
-      d.getDate() +
-      " " +
-      monthNames[d.getMonth()] +
-      "<br>" +
-      (d.getHours() < 10 ? "0" : "") +
-      d.getHours() +
-      ":" +
-      (d.getMinutes() < 10 ? "0" : "") +
-      d.getMinutes();
+    var date_format = "";
+    if (diffDates > 86500) {
+      date_format =
+        (d.getDate() < 10 ? "0" : "") +
+        d.getDate() +
+        " " +
+        monthNames[d.getMonth()] +
+        "<br>" +
+        (d.getHours() < 10 ? "0" : "") +
+        d.getHours() +
+        ":" +
+        (d.getMinutes() < 10 ? "0" : "") +
+        d.getMinutes();
+    } else {
+      date_format =
+        (d.getHours() < 10 ? "0" : "") +
+        d.getHours() +
+        ":" +
+        (d.getMinutes() < 10 ? "0" : "") +
+        d.getMinutes();
+    }
     return date_format;
   }
 }
@@ -1027,13 +996,12 @@ function pandoraFlotArea(
   var type = parseInt(params.stacked);
   var show_legend = params.show_legend;
   var image_treshold = params.image_treshold;
-  var short_data = params.short_data;
+  var short_data = params.short_data != "" ? params.short_data : 3;
   var grid_color = params.grid_color;
   var background_color = params.backgroundColor;
   var legend_color = params.legend_color;
   var update_legend = {};
   var force_integer = 0;
-  // var title = params.title;
   var divisor = params.divisor;
 
   if (typeof divisor === "undefined") {
@@ -2085,23 +2053,6 @@ function pandoraFlotArea(
 
   var plot = $.plot($("#" + graph_id), datas, options);
 
-  // Re-calculate the graph height with the legend height
-  if (dashboard) {
-    var $acum = 0;
-    if (dashboard) $acum = 35;
-    var hDiff =
-      $("#" + graph_id).height() - $("#legend_" + graph_id).height() - $acum;
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      )
-    ) {
-      // not defined.???
-    } else {
-      $("#" + graph_id).css("height", hDiff);
-    }
-  }
-
   // Adjust the overview plot to the width and position of the main plot
   adjust_left_width_canvas(graph_id, "overview_" + graph_id);
   update_left_width_canvas(graph_id);
@@ -3055,9 +3006,10 @@ function check_adaptions(graph_id) {
 
 function number_format(number, force_integer, unit, short_data, divisor) {
   divisor = typeof divisor !== "undefined" ? divisor : 1000;
+  var decimals = 2;
 
   if (unit == "KB") {
-    return number + unit;
+    return Math.round(number * decimals) + unit;
   }
 
   // Set maximum decimal precision to 99 in case short_data is not set.
@@ -3086,6 +3038,12 @@ function number_format(number, force_integer, unit, short_data, divisor) {
 
   if (divisor) {
     number = Math.round(number * decimals) / decimals;
+  } else {
+    number = Math.round(number * decimals);
+  }
+
+  if (isNaN(number)) {
+    number = 0;
   }
 
   return number + " " + shorts[pos] + unit;

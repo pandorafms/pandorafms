@@ -917,13 +917,15 @@ if ($get_response) {
 if ($perform_event_response) {
     global $config;
 
-    $command = get_parameter('target', '');
-
     $response_id = get_parameter('response_id');
+    $event_id = (int) get_parameter('event_id');
+    $server_id = (int) get_parameter('server_id', 0);
+
+    $command = events_get_response_target($event_id, $response_id, $server_id);
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
-    $command_timeout = $event_response['command_timeout'];
+    $command_timeout = $event_response !== false ? $event_response['command_timeout'] : 90;
 
     if (enterprise_installed()) {
         if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
@@ -1017,6 +1019,7 @@ if ($dialogue_event_response) {
     $show_execute_again_btn = get_parameter('show_execute_again_btn');
     $out_iterator = get_parameter('out_iterator');
     $event_response = db_get_row('tevent_response', 'id', $response_id);
+    $server_id = get_parameter('server_id');
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
 
@@ -1067,7 +1070,8 @@ if ($dialogue_event_response) {
                 echo "<br><div id='response_out' style='text-align:left'></div>";
 
                 echo "<br><div id='re_exec_command' style='display:none;'>";
-                html_print_button(__('Execute again'), 'btn_str', false, 'perform_response(\''.$command.'\', '.$response_id.');', "class='sub next'");
+                html_print_button(__('Execute again'), 'btn_str', false, "perform_response({'target':'".$command."','event_id':".$event_id.",'server_id':".$server_id.'}, '.$response_id.');', "class='sub next'");
+
                 echo '</div>';
             }
         break;
@@ -1084,10 +1088,18 @@ if ($dialogue_event_response) {
 }
 
 if ($add_comment) {
+    $aviability_comment = true;
     $comment = get_parameter('comment');
+    if (preg_match('<script>', io_safe_output($comment))) {
+        $aviability_comment = false;
+        $return = false;
+    }
+
     $event_id = get_parameter('event_id');
 
-    $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
+    if ($aviability_comment !== false) {
+        $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
+    }
 
     if ($return) {
         echo 'comment_ok';

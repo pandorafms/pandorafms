@@ -245,8 +245,10 @@ final class Container extends Model
      *
      * @override Model::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter)
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ) {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
         $row = \db_get_row_filter('tlayout', $filter);
@@ -360,7 +362,8 @@ final class Container extends Model
      */
     public static function getItemsFromDB(
         int $layoutId,
-        array $groupsFilter=[]
+        array $groupsFilter=[],
+        ?float $ratio=0
     ): array {
         // Default filter.
         $filter = ['id_layout' => $layoutId];
@@ -411,7 +414,7 @@ final class Container extends Model
             $class = static::getItemClass((int) $data['type']);
 
             try {
-                array_push($items, $class::fromDB($data));
+                array_push($items, $class::fromDB($data, $ratio));
             } catch (\Throwable $e) {
                 error_log('VC[Container]: '.$e->getMessage());
             }

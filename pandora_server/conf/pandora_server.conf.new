@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.744
+# Version 7.0NG.746
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -628,6 +628,9 @@ wuxserver 0
 
 # Maximum timeout to connect to a target web site, also for communications with a Selenium Grid server.
 #wux_webagent_timeout 15
+
+# Force closing previous sessions on remote wux_host, only for Selenium Grid server 3.
+#clean_wux_sessions 1
 
 # Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 syslogserver 1

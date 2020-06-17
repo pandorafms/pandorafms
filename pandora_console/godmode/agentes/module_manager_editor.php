@@ -283,7 +283,6 @@ if ($id_agent_module) {
 
     // Security level Could be noAuthNoPriv | authNoPriv | authPriv.
     $snmp3_security_level = $module['custom_string_3'];
-
     $ip_target = $module['ip_target'];
     $disabled = $module['disabled'];
     $id_export = $module['id_export'];
@@ -297,6 +296,7 @@ if ($id_agent_module) {
     $custom_integer_2 = $module['custom_integer_2'];
     $custom_string_1 = $module['custom_string_1'];
     $custom_string_2 = $module['custom_string_2'];
+    $custom_string_3 = $module['custom_string_3'];
     $max_timeout = $module['max_timeout'];
     $max_retries = $module['max_retries'];
     $custom_id = $module['custom_id'];

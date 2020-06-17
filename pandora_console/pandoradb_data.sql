@@ -84,7 +84,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('netflow_nfdump', '/usr/bin/nfdump'),
 ('netflow_max_resolution', '50'),
 ('event_fields', 'mini_severity,evento,id_agente,estado,timestamp'),
-('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp'),
+('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,last_status_change,graph,warn,data,timestamp'),
 ('list_ACL_IPs_for_API', '127.0.0.1'),
 ('enable_pass_policy', 0),
 ('pass_size', 4),
@@ -109,10 +109,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 36),
+('MR', 38),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '744'),
+('current_package_enterprise', '746'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
@@ -300,6 +300,7 @@ INSERT INTO `ttipo_modulo` VALUES
 (35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
 (36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
 (37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
+(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','mod_web_data.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 --
@@ -1594,3 +1595,123 @@ VALUES
 	(254,6,848,943,0,0,'','white',19,3600,0,0,0,0,1,0,0,0,0,'line','down','','#FFFFFF',0,0,'default',0,0.000,0.000,0,0,'digital_1','time','Europe/Madrid',0,0),
 	(255,5,846,941,0,0,'','white',19,3600,0,0,0,0,1,0,0,0,0,'line','down','','#FFFFFF',0,0,'default',0,0.000,0.000,0,0,'digital_1','time','Europe/Madrid',0,0)
 ;
+
+-- 
+-- Dumping data for table `tpen`
+-- 
+
+INSERT INTO `tpen`
+VALUES
+	(9,'cisco','Cisco&#x20;System'),
+	(11,'hp','Hewlett&#x20;Packard'),
+	(2021,'general_snmp','U.C.&#x20;Davis,&#x20;ECE&#x20;Dept.&#x20;Tom'),
+	(2636,'juniper','Juniper&#x20;Networks'),
+	(3375,'f5','F5&#x20;Labs'),
+	(8072,'general_snmp','Net&#x20;SNMP'),
+	(12356,'fortinet','Fortinet')
+;
+
+-- 
+-- Dumping data for table `tnetwork_profile` and `tnetwork_profile_pen`
+-- 
+
+SET @template_name = 'Network&#x20;Management';
+SET @template_description = 'Basic network monitoring template';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Network Management')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Cisco&#x20;MIBS';
+SET @template_description = 'Cisco devices monitoring template (SNMP)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Cisco MIBS' OR g.name = 'Catalyst 2900')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+INSERT INTO tnetwork_profile_pen (pen, id_np) SELECT * FROM (SELECT p.pen pen, np.id_np id_np FROM tnetwork_profile np, tpen p WHERE np.name = @template_name AND (p.pen = 9)) AS tmp WHERE NOT EXISTS (SELECT pp.id_np FROM tnetwork_profile p, tnetwork_profile_pen pp WHERE p.id_np = pp.id_np AND p.name = @template_name);
+
+SET @template_name = 'Linux&#x20;System';
+SET @template_description = 'Linux system monitoring template (SNMP)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+
+SET @module_group = 'Linux';
+
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Linux' OR g.name = 'UCD Mibs (Linux, UCD-SNMP)')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+INSERT INTO tnetwork_profile_pen (pen, id_np) SELECT * FROM (SELECT p.pen pen, np.id_np id_np FROM tnetwork_profile np, tpen p WHERE np.name = @template_name AND (p.pen = 2021 OR p.pen = 2636)) AS tmp WHERE NOT EXISTS (SELECT pp.id_np FROM tnetwork_profile p, tnetwork_profile_pen pp WHERE p.id_np = pp.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;System';
+SET @template_description = 'Windows system monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Microsoft&#x20;Windows' OR g.name = 'Windows System')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Hardware';
+SET @template_description = 'Windows hardware monitoring templae (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows Hardware Layer')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Active&#x20;Directory';
+SET @template_description = 'Active directory monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows AD' OR g.name = 'AD&#x20;Counters')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;IIS';
+SET @template_description = 'IIS monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows IIS' OR g.name = 'IIS&#x20;services')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Exchange';
+SET @template_description = 'Exchange monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows Exchange' OR g.name = 'Exchange&#x20;Services' OR g.name = 'Exchange&#x20;TCP&#x20;Ports')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;LDAP';
+SET @template_description = 'LDAP monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows LDAP')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;MDSTC';
+SET @template_description = 'MDSTC monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows MSDTC')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Printers';
+SET @template_description = 'Windows printers monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows Printers')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;DNS';
+SET @template_description = 'Windows DNS monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows&#x20;DNS' OR g.name = 'DNS&#x20;Counters')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;MS&#x20;SQL&#x20;Server';
+SET @template_description = 'MS SQL Server monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'MS&#x20;SQL&#x20;Server')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Oracle';
+SET @template_description = 'Oracle monitoring template';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Oracle')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'MySQL';
+SET @template_description = 'MySQL monitoring template';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'MySQL')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Antivirus';
+SET @template_description = 'Windows antivirus monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Norton' OR g.name = 'Panda' OR g.name = 'McAfee' OR g.name = 'Bitdefender' OR g.name = 'BullGuard' OR g.name = 'AVG' OR g.name = 'Kaspersky')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);

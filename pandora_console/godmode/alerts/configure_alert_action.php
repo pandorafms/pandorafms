@@ -52,7 +52,7 @@ if ($al_action !== false) {
 
     $is_in_group = in_array($al_action['id_group'], $own_groups);
 
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -60,12 +60,12 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            'alert_config',
+            '',
             true
         );
     }
 } else {
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -73,7 +73,7 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            'alert_config',
+            '',
             true
         );
     }
@@ -305,7 +305,7 @@ $(document).ready (function () {
     var origicommand_descriptionnal_command;
 
     if (<?php echo (int) $id_command; ?>) {
-        original_command = "<?php echo addslashes(io_safe_output(alerts_get_alert_command_command($id_command))); ?>";
+        original_command = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_command($id_command)))); ?>";
         render_command_preview(original_command);
         command_description = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_description($id_command)))); ?>";
         

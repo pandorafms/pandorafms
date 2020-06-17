@@ -70,7 +70,7 @@ switch ($section) {
     case 'responses':
         $buttons['responses']['active'] = true;
         $subpage = ' - '.__('Responses');
-        $help_header = 'events_responses_tab';
+        $help_header = '';
     break;
 
     case 'view':

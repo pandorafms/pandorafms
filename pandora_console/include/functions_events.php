@@ -633,6 +633,14 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
             break;
 
             case EVENT_STATUS_VALIDATED:
+                events_change_owner(
+                    $id_evento,
+                    $config['id_user'],
+                    false,
+                    is_metaconsole() ? true : false,
+                    $history
+                );
+
                 $status_string = 'Validated';
             break;
 
@@ -1083,6 +1091,19 @@ function events_get_all(
         $tag_without = base64_decode($filter['tag_without']);
         $tags = json_decode($tag_without, true);
         if (is_array($tags) && !in_array('0', $tags)) {
+            if (!$user_is_admin) {
+                $user_tags = array_flip(tags_get_tags_for_module_search());
+                if ($user_tags != null) {
+                    foreach ($tags as $key_tag => $id_tag) {
+                        // User cannot filter with those tags.
+                        if (!array_search($id_tag, $user_tags)) {
+                            unset($tags[$key_tag]);
+                            continue;
+                        }
+                    }
+                }
+            }
+
             foreach ($tags as $id_tag) {
                 if (!isset($tags_names[$id_tag])) {
                     $tags_names[$id_tag] = tags_get_name($id_tag);
@@ -1855,6 +1876,16 @@ function events_change_status(
 
     if (($ret === false) || ($ret === 0)) {
         return false;
+    }
+
+    if ($new_status == EVENT_STATUS_VALIDATED) {
+        events_change_owner(
+            $id_event,
+            $config['id_user'],
+            false,
+            $meta,
+            $history
+        );
     }
 
     events_comment(
@@ -4797,7 +4828,7 @@ function events_page_comments($event, $ajax=false)
             __('Add comment'),
             'comment_button',
             false,
-            'event_comment();',
+            'event_comment(\''.base64_encode(json_encode($event)).'\');',
             'class="sub next"',
             true
         );

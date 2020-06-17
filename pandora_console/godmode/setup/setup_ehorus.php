@@ -88,21 +88,18 @@ $table_remote->data['ehorus_pass'] = $row;
 $row = [];
 $row['name'] = __('API Hostname');
 $row['control'] = html_print_input_text('ehorus_hostname', $config['ehorus_hostname'], '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Hostname of the eHorus API').'. '.__('Without protocol and port').'. '.__('e.g., portal.ehorus.com'), true);
 $table_remote->data['ehorus_hostname'] = $row;
 
 // Directory port.
 $row = [];
 $row['name'] = __('API Port');
 $row['control'] = html_print_input_text('ehorus_port', $config['ehorus_port'], '', 6, 100, true);
-$row['control'] .= ui_print_help_tip(__('e.g., 18080'), true);
 $table_remote->data['ehorus_port'] = $row;
 
 // Request timeout.
 $row = [];
 $row['name'] = __('Request timeout');
 $row['control'] = html_print_input_text('ehorus_req_timeout', $config['ehorus_req_timeout'], '', 3, 10, true);
-$row['control'] .= ui_print_help_tip(__('Time in seconds to set the maximum time of the requests to the eHorus API').'. '.__('0 to disable'), true);
 $table_remote->data['ehorus_req_timeout'] = $row;
 
 // Test.

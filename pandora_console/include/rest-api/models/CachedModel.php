@@ -72,17 +72,17 @@ abstract class CachedModel extends Model
      *
      * @overrides Model::fromDB.
      */
-    public static function fromDB(array $filter): Model
+    public static function fromDB(array $filter, ?float $ratio=0): Model
     {
         global $config;
         $save_cache = false;
-        if ($filter['cache_expiration'] > 0) {
+        if ($ratio == 0 && $filter['cache_expiration'] > 0) {
             $data = static::fetchCachedData($filter);
             $save_cache = true;
         }
 
         if (isset($data) === false) {
-            $data = static::fetchDataFromDB($filter);
+            $data = static::fetchDataFromDB($filter, $ratio);
         } else {
             // Retrieved from cache.
             $save_cache = false;

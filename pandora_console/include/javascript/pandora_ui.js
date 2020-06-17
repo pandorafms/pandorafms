@@ -300,6 +300,9 @@ function load_modal(settings) {
         } else {
           // No onsumbit configured. Directly close.
           $(this).dialog("close");
+          if (document.getElementById(settings.form) != undefined) {
+            document.getElementById(settings.form).submit();
+          }
         }
       },
       error: function(data) {
@@ -316,6 +319,21 @@ function load_modal(settings) {
     contentType: false,
     data: data,
     success: function(data) {
+      if (settings.onshow.parser) {
+        data = settings.onshow.parser(data);
+      } else {
+        data = (function(d) {
+          try {
+            d = JSON.parse(d);
+          } catch (e) {
+            // Not JSON
+            return d;
+          }
+          if (d.error) return d.error;
+
+          if (d.result) return d.result;
+        })(data);
+      }
       settings.target.html(data);
       if (settings.onload != undefined) {
         settings.onload(data);
@@ -335,6 +353,12 @@ function load_modal(settings) {
             ? settings.onshow.maxHeight
             : "auto",
         overlay: settings.modal.overlay,
+        position: {
+          my: "top+20%",
+          at: "top",
+          of: window,
+          collision: "fit"
+        },
         buttons: required_buttons,
         closeOnEscape: true,
         open: function() {
@@ -383,6 +407,7 @@ function confirmDialog(settings) {
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
           click: function() {
             $(this).dialog("close");
+            $(this).remove();
             if (typeof settings.onDeny == "function") settings.onDeny();
           }
         },
@@ -392,6 +417,7 @@ function confirmDialog(settings) {
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
           click: function() {
             $(this).dialog("close");
+            $(this).remove();
             if (typeof settings.onAccept == "function") settings.onAccept();
           }
         }

@@ -1740,6 +1740,19 @@ sub callback_stop {
 	Win32::Daemon::StopService();
 }
 
+
+################################################################################
+## SUB check_ssleay_version
+## Print a message if the installed version of Net::SSLeay may leak memory.
+################################################################################
+sub check_ssleay_version {
+	eval {
+		require Net::SSLeay;
+		return unless defined($Net::SSLeay::VERSION) && $Net::SSLeay::VERSION =~ m/^(\d+)\.(\d+)/ && $1 <= 1 && $2 < 88;
+		print_log ("Net::SSLeay version $Net::SSLeay::VERSION detected. Versions prior to 1.88 may leak memory. To upgrade it see: https://metacpan.org/pod/Net::SSLeay");
+	};
+}
+
 ################################################################################
 # Main
 ################################################################################
@@ -1758,6 +1771,8 @@ if ($#ARGV != -1) {
 	print_help ();
 	exit 1;
 }
+
+check_ssleay_version() if $t_ssl == 1;
 
 # Show IPv6 status
 if ($SOCKET_MODULE eq 'IO::Socket::INET') {

@@ -79,11 +79,13 @@ final class EventsHistory extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -119,12 +121,13 @@ final class EventsHistory extends Item
         $html = \graph_graphic_moduleevents(
             $agentId,
             $moduleId,
-            (int) $data['width'],
-            (int) $data['height'],
+            100,
+            ((int) $data['height'] - 20),
             static::extractMaxTime($data),
             '',
             true,
-            1
+            1,
+            $data['width']
         );
 
         $data['html'] = $html;

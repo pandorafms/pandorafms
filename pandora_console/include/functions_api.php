@@ -1506,6 +1506,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if ((int) $other['data'][3] == 0) {
+        $agent_creation_error = __('The agent could not be created, for security reasons use a group another than 0');
+        returnError('generic error', $agent_creation_error);
+        return;
+    }
+
     $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
     $direccion_agente          = io_safe_input($other['data'][1]);
     $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
@@ -1868,6 +1874,12 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
             }
         }
     } else {
+        // Delete only if the centralised mode is disabled.
+        if (is_central_policies_on_node()) {
+            returnError('centralized');
+            exit;
+        }
+
         if ($agent_by_alias) {
             $idsAgents = agents_get_agent_id_by_alias(io_safe_input($id));
         } else {
@@ -2042,31 +2054,31 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
                     // Filter by status
                     switch ($other['data'][2]) {
                         case 'warning':
-                            if ($status == 2) {
+                            if ($status == AGENT_MODULE_STATUS_WARNING || $status == AGENT_MODULE_STATUS_WARNING_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'critical':
-                            if ($status == 1) {
+                            if ($status == AGENT_MODULE_STATUS_CRITICAL_BAD || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'unknown':
-                            if ($status == 3) {
+                            if ($status == AGENT_MODULE_STATUS_UNKNOWN) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'normal':
-                            if ($status == 0) {
+                            if ($status == AGENT_MODULE_STATUS_NORMAL || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'alert_fired':
-                            if ($status == 4) {
+                            if ($status == AGENT_STATUS_ALERT_FIRED || $status == AGENT_MODULE_STATUS_WARNING_ALERT || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
@@ -8784,6 +8796,11 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
         }
     }
 
+    // Esto es extraño, hablar con Tati
+    /*
+        $filter['1'] = $filter['sql'];
+    unset($filter['sql']); */
+
     if (isset($other['data'][4]) && $other['data'][4] != '') {
         $idTemplate = db_get_value_filter('id', 'talert_templates', ['name' => $other['data'][4]]);
         if ($idTemplate !== false) {
@@ -10712,6 +10729,83 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     }
 
     return true;
+}
+
+
+/**
+ * Update an event
+ *
+ * @param string $id_event Id of the event for change.
+ * @param string $unused1  Without use.
+ * @param array  $params   Dictionary with field,value format with the data for update.
+ * @param string $unused2  Without use.
+ * @param string $unused3  Without use.
+ *
+ * @return void
+ */
+function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
+{
+    // Get the event
+    $event = events_get_event($id_event, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        return false;
+    }
+
+    $paramsSerialize = [];
+    // Serialize the data for update
+    if ($params['type'] === 'array') {
+        // Keys that is not available to change
+        $invalidKeys = [
+            'id_evento',
+            'id_agente',
+            'id_grupo',
+            'timestamp',
+            'utimestamp',
+            'id_agentmodule',
+            'ack_utimestamp',
+            'data',
+        ];
+
+        foreach ($params['data'] as $key_value) {
+            list($key, $value) = explode(',', $key_value, 2);
+            if (in_array($key, $invalidKeys) == false) {
+                $paramsSerialize[$key] = $value;
+            }
+        }
+    }
+
+    // In meta or node.
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
+    // TODO. Stablish security for prevent sql injection?
+    // Update the row
+    $result = db_process_sql_update(
+        $table,
+        $paramsSerialize,
+        [ 'id_evento' => $id_event ]
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'failed_event_update',
+            __('Failed event update')
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated']);
+    }
+
+    return;
 }
 
 
@@ -13535,6 +13629,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
     // 1 hour by default.
     $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
+    // Graph height when send email by alert
+    $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : null;
+
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
         // returnError('error_module_graph', __(''));
         return;
@@ -14285,7 +14382,7 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
  * @param $trash2
  * @param string $returnType
  *  Example:
- *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora&id=pandrora&id2=strict
+ *    api.php?op=get&op2=agents_id_name_by_alias&return_type=json&apipass=1234&user=admin&pass=pandora&id=pandorafms&id2=strict
  */
 function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
 {
@@ -14298,9 +14395,9 @@ function api_get_agents_id_name_by_alias($alias, $strict, $trash2, $returnType)
     }
 
     if (is_metaconsole()) {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente, id_tagente,id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE $where_clause");
+        $all_agents = db_get_all_rows_sql("SELECT alias, nombre, id_agente, id_tagente,id_tmetaconsole_setup as 'id_server', server_name FROM tmetaconsole_agent WHERE $where_clause");
     } else {
-        $all_agents = db_get_all_rows_sql("SELECT alias, id_agente from tagente WHERE $where_clause");
+        $all_agents = db_get_all_rows_sql("SELECT alias, nombre, id_agente from tagente WHERE $where_clause");
     }
 
     if ($all_agents !== false) {
@@ -15980,4 +16077,35 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access='A
     }
 
     return false;
+}
+
+
+/**
+ * Function for get event id and node id, then we get in return the Metaconsole event ID.
+ *
+ * @param [string] $server_id        id server (Node)
+ * @param [string] $console_event_id console Id node event in tmetaconsole_event
+ * @param [string] $trash2           don't use
+ * @param [string] $returnType
+ *
+ * Example
+ * api.php?op=get&op2=event_mcid&return_type=json&id=0&id2=0&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
+{
+    global $config;
+
+    if (is_metaconsole()) {
+        $mc_event_id = db_get_all_rows_sql("SELECT id_evento FROM tmetaconsole_event WHERE id_source_event = $console_event_id AND server_id = $server_id ");
+        if ($mc_event_id !== false) {
+            returnData($returnType, ['type' => 'string', 'data' => $mc_event_id]);
+        } else {
+            returnError('id_not_found', 'string');
+        }
+    } else {
+        returnError('forbidden', 'string');
+        return;
+    }
 }

@@ -1,144 +1,25 @@
-/*
- * ---------------------------------------------------------------------
- * - CLUSTER VIEW 													-
- * ---------------------------------------------------------------------
- */
-#main_cluster {
-  max-width: 1770px;
-  margin: 0 auto;
+.agent_details_col {
+  max-height: 340px;
+  overflow: hidden;
+  margin: 0.5em 0.5em;
 }
 
-.sub_cluster_1 {
-  width: 400px;
-  float: left;
-  margin-left: 30px;
-  margin-bottom: 25px;
-  vertical-align: top;
-  border: 1px solid #e7e9ea;
-  height: 150px;
+.agent_details_col_left {
+  min-width: 370px;
+  flex: 1 1 370px;
 }
 
-.sub_cluster_2 {
-  width: 833px;
-  float: left;
-  margin-left: 30px;
-  margin-bottom: 25px;
-  vertical-align: top;
-  border: 1px solid #e7e9ea;
-  height: 150px;
+.agent_details_col_right {
+  align-self: flex-end;
+  min-width: 500px;
+  flex: 3 3 500px;
 }
 
-.sub_cluster_header {
+.agent_details_col_right .cluster-map {
   width: 100%;
-  height: 30px;
-  background-color: #373737;
-  color: white;
-  text-align: center;
-  font-size: 9pt;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-}
-
-.sub_cluster_body {
-  width: 100%;
-  height: 120px;
-  background-color: #f9faf9;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-}
-
-.sub_cluster_body_3 {
-  width: 100%;
-  height: 120px;
-  background-color: #f9faf9;
-  overflow-y: scroll;
-}
-
-#simple_map {
-  border: 1px solid lightgray;
-  width: 900px;
-  height: 500px;
-  float: left;
-  margin-bottom: 30px;
-}
-
-#cluster_status_content {
-  width: 90%;
-  height: 30px;
-  margin: 0px auto;
-}
-
-#cluster_status_bar {
-  width: 85%;
   height: 100%;
-  float: left;
 }
 
-.status_animation {
-  width: 1%;
-  height: 100%;
-  left: 0%;
-  background-color: red;
-  position: relative;
-}
-
-#cluster_status_button {
-  float: left;
-  width: 10%;
-  margin-left: 5%;
-}
-
-#last_contact_content {
-  width: 90%;
-  height: 60px;
-  margin: 0px auto;
-}
-
-#last_contact_clock {
-  width: 15%;
-  height: 100%;
-  float: left;
-}
-
-#last_contact_date {
-  float: left;
-  height: 60px;
-  width: 80%;
-  margin-left: 5%;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-}
-
-#last_contact_date_text {
-  font-size: 14pt;
-}
-
-.balanced_module_item {
-  float: left;
-  margin-top: 11.5px;
-  margin-left: 5%;
-  height: 25px;
-  width: 90%;
-}
-
-.module_icon {
-  float: left;
-  width: 10%;
-}
-
-.modal_module_list {
-  float: left;
-  width: 90%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
+.w100p.modules {
+  min-width: 985px;
 }

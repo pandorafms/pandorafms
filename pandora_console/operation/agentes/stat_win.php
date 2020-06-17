@@ -176,7 +176,7 @@ $label       = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id)
 
 
         // Graph.
-        echo '<div style="padding-top: 60px;">';
+        echo '<div style="padding-top: 60px; padding-right: 30px;">';
         $width  = '90%';
         $height = '450';
 

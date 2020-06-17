@@ -749,10 +749,6 @@ if ($fields === false) {
 
 foreach ($fields as $field) {
     $data[0] = '<b>'.$field['name'].'</b>';
-    $data[0] .= ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
-        true
-    );
     $combo = [];
     $combo = $field['combo_values'];
     $combo = explode(',', $combo);

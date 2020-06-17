@@ -2,7 +2,11 @@
  * Discovery > Wizard css global style
  */
 
+#main > form.discovery.wizard > .white_box {
+  min-width: 1024px;
+}
 ul.wizard {
+  list-style-type: none;
 }
 
 ul.wizard li {
@@ -23,6 +27,104 @@ ul.wizard li > textarea {
   font-family: monospace;
 }
 
-.hidden {
+.wizard .hidden {
   display: none;
+}
+
+.wizard .indented {
+  margin-left: 1em;
+}
+
+.wizard .std_input {
+  display: flex;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.std_input.hidden {
+  display: none;
+}
+
+.wizard .std_input > .label_select {
+  flex: 1 1 100%;
+}
+.wizard .std_input > * {
+  flex: 1 1 auto;
+  align-self: baseline;
+}
+
+.wizard .inline_input.no-margin {
+  margin-bottom: 0px;
+}
+.wizard .inline_input {
+  display: flex;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.wizard .inline_input * {
+  flex: 1 1 auto;
+}
+
+.wizard .discovery_inline_input {
+  display: flex;
+  align-content: end;
+  flex: 0;
+  align-self: flex-start;
+}
+
+/* override tag-editor styles */
+.wizard .tag-editor.ui-sortable {
+  width: 450px;
+  display: inline-block;
+}
+
+.wizard .tag-editor .tag-editor-tag {
+  padding: 5px;
+  color: #fff;
+  background: #82b92e;
+}
+
+.wizard .tag-editor .tag-editor-delete i {
+  line-height: inherit;
+}
+.wizard .tag-editor .tag-editor-delete i:before {
+  color: #ccc;
+}
+.wizard .tag-editor .tag-editor-delete:hover i:before {
+  color: #fff;
+}
+
+.wizard .tag-editor .tag-editor-delete {
+  padding: 5px;
+  background: #e63c52;
+}
+
+.wizard .time_selection_container {
+  display: flex;
+  align-items: baseline;
+  justify-items: center;
+  align-content: space-between;
+  margin-top: 1em;
+}
+
+.wizard #interval_manual_container #interval_manual > * {
+  flex: 1 1 auto;
+}
+
+.wizard-column-levels {
+  float: left;
+  width: 33%;
+  text-align: center;
+}
+
+.action_button_list {
+  height: 60px;
+}
+
+.action_button_list li {
+  display: inline;
 }

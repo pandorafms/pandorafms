@@ -32,8 +32,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.744";
-my $pandora_build = "200317";
+my $pandora_version = "7.0NG.746";
+my $pandora_build = "200617";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -87,6 +87,7 @@ our @EXPORT = qw(
 	print_warning
 	print_stderror
 	read_configuration
+	read_file
 	simple_decode_json
 	snmp_data_switcher
 	snmp_get
@@ -1261,6 +1262,27 @@ sub read_configuration {
 	}
 
 	return $config;
+}
+
+################################################################################
+## Reads a file and returns entire content or undef if error.
+################################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<", $path) ) {
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
 }
 
 ################################################################################

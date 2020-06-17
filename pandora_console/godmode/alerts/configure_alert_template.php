@@ -58,11 +58,11 @@ if ($a_template !== false) {
         } else {
             $step = (int) get_parameter('step', 1);
             if ($step == 1) {
-                $help_header = 'configure_alert_template_step_1';
+                $help_header = '';
             } else if ($step == 2) {
                 $help_header = 'configure_alert_template_step_2';
             } else if ($step == 3) {
-                $help_header = 'configure_alert_template_step_3';
+                $help_header = '';
             }
 
             ui_print_page_header(
@@ -115,11 +115,11 @@ if ($a_template !== false) {
     } else {
         $step = (int) get_parameter('step', 1);
         if ($step == 1) {
-            $help_header = 'configure_alert_template_step_1';
+            $help_header = '';
         } else if ($step == 2) {
             $help_header = 'configure_alert_template_step_2';
         } else if ($step == 3) {
-            $help_header = 'configure_alert_template_step_3';
+            $help_header = '';
         }
 
         ui_print_page_header(
@@ -290,6 +290,7 @@ function update_template($step)
         $max_alerts = (int) get_parameter('max_alerts');
         $min_alerts = (int) get_parameter('min_alerts');
         $min_alerts_reset_counter = (int) get_parameter('min_alerts_reset_counter');
+        $disable_event = (int) get_parameter('disable_event');
         $type = (string) get_parameter('type');
         $value = (string) html_entity_decode(get_parameter('value'));
         $max = (float) get_parameter('max');
@@ -320,6 +321,7 @@ function update_template($step)
             'max_value'                => $max,
             'min_value'                => $min,
             'matches_value'            => $matches,
+            'disable_event'            => $disable_event,
         ];
 
         // Different datetimes format for oracle
@@ -532,6 +534,7 @@ if ($id && ! $create_template) {
     $max_alerts = $template['max_alerts'];
     $min_alerts = $template['min_alerts'];
     $min_alerts_reset_counter = $template['min_alerts_reset_counter'];
+    $disable_event = $template['disable_event'];
     $threshold = $template['time_threshold'];
     $fields = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
@@ -578,8 +581,7 @@ if ($step == 2) {
 
     // Firing conditions and events
     $table->colspan = [];
-    $table->colspan[4][1] = 3;
-
+    // $table->colspan[4][1] = 1;
     $table->data[0][0] = __('Days of week');
     $table->data[0][1] = __('Mon');
     $table->data[0][1] .= html_print_checkbox('monday', 1, $monday, true);
@@ -599,7 +601,7 @@ if ($step == 2) {
     $table->data[0][2] = __('Use special days list');
     $table->data[0][3] = html_print_checkbox('special_day', 1, $special_day, true);
 
-    $table->data[1][0] = __('Time from').' '.ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
+    $table->data[1][0] = __('Time from');
     $table->data[1][1] = html_print_input_text(
         'time_from',
         $time_from,
@@ -608,7 +610,7 @@ if ($step == 2) {
         8,
         true
     );
-    $table->data[1][2] = __('Time to').' '.ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
+    $table->data[1][2] = __('Time to');
     $table->data[1][3] = html_print_input_text(
         'time_to',
         $time_to,
@@ -652,6 +654,9 @@ if ($step == 2) {
         7,
         true
     );
+
+    $table->data[4][2] = __('Disable event');
+    $table->data[4][3] = html_print_checkbox('disable_event', 1, $disable_event, true);
 
     $table->data[5][0] = __('Default action');
     $usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
@@ -844,7 +849,7 @@ if ($step == 2) {
         }
 
         // $table->rowclass['field'.$i] = 'row_field';
-        $table->data['field'.$i][0] = sprintf(__('Field %s'), $i).ui_print_help_icon('alert_macros', true);
+        $table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
         // TinyMCE
         // triggering fields
             // basic

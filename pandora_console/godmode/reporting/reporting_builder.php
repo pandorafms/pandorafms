@@ -767,9 +767,14 @@ switch ($action) {
             )
         );
 
-
         if (count($reports)) {
+            $filters = [
+                'search'   => $search,
+                'id_group' => $id_group,
+            ];
+            $filtersStr = http_build_query($filters, '', '&amp;');
             $url = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
+            $url .= '&'.$filtersStr;
             ui_pagination($total_reports, $url, $offset, $pagination);
 
             $table = new stdClass();
@@ -3128,22 +3133,14 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
     // Print header.
     ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
 } else {
-    switch ($activeTab) {
-        case 'main':
-            $helpers = '';
-        break;
-
-        default:
-            $helpers = 'reporting_'.$activeTab.'_tab';
-        break;
-    }
+    $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
     if ($action !== 'update' && !is_metaconsole()) {
         ui_print_page_header(
             $textReportName,
             'images/op_reporting.png',
             false,
-            $helpers,
+            $tab_builder,
             false,
             $buttons,
             false,

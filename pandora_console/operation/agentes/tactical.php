@@ -54,7 +54,7 @@ ui_print_page_header(
     __('Tactical view'),
     '',
     false,
-    'tactical_view',
+    '',
     false,
     $updated_time
 );

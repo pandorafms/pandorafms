@@ -328,6 +328,8 @@ if (is_ajax()) {
                 $data = array_reduce(
                     $events,
                     function ($carry, $item) {
+                        global $config;
+
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
                         if (is_metaconsole()) {
@@ -360,7 +362,10 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric($tmp->data, 1);
+                        $tmp->data = format_numeric(
+                            $tmp->data,
+                            $config['graph_precision']
+                        );
 
                         $tmp->instructions = events_get_instructions($item);
 
@@ -417,7 +422,10 @@ $user_filter = db_get_row_sql(
         $config['id_user']
     )
 );
-if ($user_filter !== false) {
+
+// Do not load the user filter if we come from the 24h event graph
+$from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
+if ($user_filter !== false && $from_event_graph != 1) {
     $filter = events_get_event_filter($user_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];
@@ -1757,6 +1765,9 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
+    if(item.meta === true) {
+        evn += '<input id="hidden-server_id_'+item.id_evento+'" type="hidden" value="'+item.server_id+'">';
+    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;
@@ -1951,17 +1962,7 @@ function process_datatables_item(item) {
 
     /* Agent ID link */
     if (item.id_agente > 0) {
-        <?php
-        if (in_array('agent_name', $fields)) {
-            ?>
-            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
-            <?php
-        } else {
-            ?>
-            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
-            <?php
-        }
-        ?>
+        item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
     } else {
         item.id_agente = '';
     }

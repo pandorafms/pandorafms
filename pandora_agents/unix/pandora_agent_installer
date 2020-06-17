@@ -9,8 +9,8 @@
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.744"
-PI_BUILD="200317"
+PI_VERSION="7.0NG.746"
+PI_BUILD="200617"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -164,7 +164,7 @@ uninstall () {
 	rm -f  $DESTDIR/etc/logrotate.d/pandora_agent
 
 	# Remove systemd service if exists
-	if [ $(systemctl --v | grep systemd | wc -l) != 0 ]
+	if [ `systemctl --v 2> /dev/null | grep systemd | wc -l` != 0 ]
 	then
 		PANDORA_AGENT_SERVICE="/etc/systemd/system/pandora_agent_daemon.service"
 		rm -f $PANDORA_AGENT_SERVICE
@@ -480,7 +480,7 @@ install () {
 			fi
 
 			# Create systemd service
-			if [ $(systemctl --v | grep systemd | wc -l) != 0 ]
+			if [ `systemctl --v 2> /dev/null | grep systemd | wc -l` != 0 ]
 			then
 				echo "Creating systemd service for pandora_agent_daemon"
 

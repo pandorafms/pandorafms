@@ -606,10 +606,10 @@ function netflow_get_stats(
     }
 
     // Get the command to call nfdump.
-    $command = netflow_get_command($filter);
+    $options = "-o csv -q -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    $command .= " -o csv -q -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $string);
 
     if (! is_array($string)) {
@@ -694,10 +694,10 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
     }
 
     // Get the command to call nfdump.
-    $command = netflow_get_command($filter);
+    $options = '-o csv -n 1 -s srcip/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    $command .= ' -o csv -n 1 -s srcip/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $string);
 
     if (! is_array($string) || ! isset($string[5])) {
@@ -765,20 +765,11 @@ function netflow_get_relationships_raw_data(
     );
 
     // Get the command to call nfdump.
-    $command = sprintf(
-        '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
-        netflow_get_command($filter),
-        NETFLOW_MAX_DATA_CIRCULAR_MESH,
-        'record',
-        date($nfdump_date_format, $start_date),
-        date($nfdump_date_format, $end_date)
-    );
-
-    // Get the command to call nfdump.
-    $command = netflow_get_command($filter);
+    $options = ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    // $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {
@@ -877,7 +868,7 @@ function netflow_parse_relationships_for_circular_mesh(
  *
  * @return string Command to run.
  */
-function netflow_get_command($filter)
+function netflow_get_command($options, $filter)
 {
     global $config;
 
@@ -888,6 +879,9 @@ function netflow_get_command($filter)
     if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
         $command .= ' -R. -M '.$config['netflow_path'];
     }
+
+    // Add options.
+    $command .= ' '.$options;
 
     // Filter options.
     $command .= ' '.netflow_get_filter_arguments($filter);
@@ -1498,8 +1492,6 @@ function netflow_get_top_summary(
         return [];
     }
 
-    $command = netflow_get_command($netflow_filter);
-
     // Execute nfdump.
     $order_text = '';
     switch ($order) {
@@ -1517,7 +1509,8 @@ function netflow_get_top_summary(
         break;
     }
 
-    $command .= " -q -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $options = "-q -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $netflow_filter);
     exec($command, $result);
 
     if (! is_array($result)) {
@@ -1671,14 +1664,14 @@ function netflow_get_top_data(
     ];
 
     // Get the command to call nfdump.
-    $agg_command = sprintf(
-        '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
-        io_safe_output(netflow_get_command($filter)),
+    $options = sprintf(
+        '-q -o csv -n %s -s %s/bytes -t %s-%s',
         $max,
         $aggregate,
         date($nfdump_date_format, $start_date),
         date($nfdump_date_format, $end_date)
     );
+    $agg_command = netflow_get_command($options, $filter);
 
     // Call nfdump.
     exec($agg_command, $string);

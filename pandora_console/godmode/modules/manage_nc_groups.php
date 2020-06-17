@@ -40,7 +40,7 @@ if (defined('METACONSOLE')) {
         __('Module management').' &raquo; '.__('Component group management'),
         '',
         false,
-        'component_groups',
+        '',
         true
     );
     $sec = 'gmodules';
@@ -283,7 +283,6 @@ html_print_input_hidden('new', 1);
 html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
-hd('entra o que ase');
 enterprise_hook('close_meta_frame');
 
 ?>

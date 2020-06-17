@@ -698,13 +698,14 @@ if ($id_agente) {
         break;
     }
 
+    $helper = ($help_header === 'main_tab') ? 'main_tab' : '';
     $pure = get_parameter('pure', 0);
     if (!$pure) {
         ui_print_page_header(
             agents_get_alias($id_agente),
             'images/setup.png',
             false,
-            $help_header,
+            $helper,
             true,
             $onheader,
             false,
@@ -1901,12 +1902,6 @@ if ($enable_module) {
             'Fail to enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
         );
     }
-
-    ui_print_result_message(
-        $result,
-        __('Successfully enabled'),
-        __('Could not be enabled')
-    );
 }
 
 if ($disable_module) {
@@ -1942,12 +1937,6 @@ if ($disable_module) {
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
         );
     }
-
-    ui_print_result_message(
-        $result,
-        __('Successfully disabled'),
-        __('Could not be disabled')
-    );
 }
 
 // Fix to stop the module from being added to the agent's conf

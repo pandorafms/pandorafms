@@ -1543,21 +1543,19 @@ function Gauge(placeholderName, configuration, font) {
   this.configure(configuration);
 }
 
-function print_phases_donut(recipient, phases) {
+function print_phases_donut(recipient, phases, width, height) {
   var svg = d3
     .select(recipient)
     .append("svg")
-    .attr("width", 800)
-    .attr("height", 500)
+    .attr("width", width)
+    .attr("height", height)
     .append("g");
 
   svg.append("g").attr("class", "slices");
   svg.append("g").attr("class", "labels");
   svg.append("g").attr("class", "lines");
 
-  var width = 550,
-    height = 300,
-    radius = Math.min(width, height) / 2;
+  var radius = Math.min(width, height) / 2 - 50;
 
   var pie = d3.layout
     .pie()
@@ -1576,8 +1574,6 @@ function print_phases_donut(recipient, phases) {
     .innerRadius(radius * 0.9)
     .outerRadius(radius * 0.9);
 
-  width = 800;
-  height = 500;
   svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
   var key = function(d) {

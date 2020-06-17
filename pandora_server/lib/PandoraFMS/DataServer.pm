@@ -234,6 +234,7 @@ sub data_consumer ($$) {
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
+		# If 1 => uses timestamp from received XML #5763.
 		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '0' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists

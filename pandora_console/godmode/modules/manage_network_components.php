@@ -47,37 +47,6 @@ require_once $config['homedir'].'/include/functions_categories.php';
 enterprise_include_once('meta/include/functions_components_meta.php');
 require_once $config['homedir'].'/include/functions_component_groups.php';
 
-// Header.
-if (defined('METACONSOLE')) {
-    components_meta_print_header();
-    $sec = 'advanced';
-
-    $id_modulo = (int) get_parameter('id_component_type');
-    $new_component = (bool) get_parameter('new_component');
-} else {
-    $id_modulo = (int) get_parameter('id_component_type');
-    $new_component = (bool) get_parameter('new_component');
-    if ($id_modulo == 2 || $id_modulo == 4 || $id_modulo == 6) {
-        $help_header = 'local_module_tab';
-    } else if (!$new_component) {
-        $help_header = 'network_component_tab';
-    } else {
-        $help_header = 'network_component_tab';
-    }
-
-    ui_print_page_header(
-        __('Module management').' &raquo; '.__('Network component management'),
-        '',
-        false,
-        $help_header,
-        true,
-        '',
-        false,
-        'modulemodal'
-    );
-    $sec = 'gmodules';
-}
-
 $type = (int) get_parameter('type');
 $name = (string) get_parameter('name');
 $description = (string) get_parameter('description');
@@ -95,6 +64,8 @@ $plugin_user = (string) get_parameter('plugin_user');
 $plugin_pass = io_input_password((string) get_parameter('plugin_pass'));
 $plugin_parameter = (string) get_parameter('plugin_parameter');
 $macros = (string) get_parameter('macros');
+$id_modulo = (int) get_parameter('id_component_type');
+$new_component = (bool) get_parameter('new_component');
 
 if (!empty($macros)) {
     $macros = json_decode(base64_decode($macros), true);
@@ -212,6 +183,32 @@ if ($duplicate_network_component) {
 $custom_string_1 = '';
 $custom_string_2 = '';
 $custom_string_3 = '';
+
+// Header.
+if (defined('METACONSOLE')) {
+    components_meta_print_header();
+    $sec = 'advanced';
+} else {
+    if ($id_modulo == 2 || $id_modulo == 4 || $id_modulo == 6) {
+        $help_header = 'local_module_tab';
+    } else if ($new_component == false && $id == 0) {
+        $help_header = '';
+    } else {
+        $help_header = 'network_component_tab';
+    }
+
+    ui_print_page_header(
+        __('Module management').' &raquo; '.__('Remote component management'),
+        '',
+        false,
+        $help_header,
+        true,
+        '',
+        false,
+        'modulemodal'
+    );
+    $sec = 'gmodules';
+}
 
 if ($type >= 15 && $type <= 18) {
     // New support for snmp v3.

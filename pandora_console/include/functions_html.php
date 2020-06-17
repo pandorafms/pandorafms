@@ -605,22 +605,24 @@ function html_print_select(
 
     $output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
-    if ($nothing != '' || empty($fields)) {
-        if ($nothing == '') {
-            $nothing = __('None');
-        }
-
-        $output .= '<option value="'.$nothing_value.'"';
-
-        if ($nothing_value == $selected) {
-            $output .= ' selected="selected"';
-        } else if (is_array($selected)) {
-            if (in_array($nothing_value, $selected)) {
-                $output .= ' selected="selected"';
+    if ($nothing !== false) {
+        if ($nothing != '' || empty($fields)) {
+            if ($nothing == '') {
+                $nothing = __('None');
             }
-        }
 
-        $output .= '>'.$nothing.'</option>';
+            $output .= '<option value="'.$nothing_value.'"';
+
+            if ($nothing_value == $selected) {
+                $output .= ' selected="selected"';
+            } else if (is_array($selected)) {
+                if (in_array($nothing_value, $selected)) {
+                    $output .= ' selected="selected"';
+                }
+            }
+
+            $output .= '>'.$nothing.'</option>';
+        }
     }
 
     if (is_array($fields) && !empty($fields)) {
@@ -703,6 +705,364 @@ function html_print_select(
 
 
 /**
+ * Generates a multiselect component with filters.
+ *
+ * @param array   $available    Available.
+ * @param array   $selected     Selected.
+ * @param string  $name         Custom identifier (optional).
+ * @param string  $class        Custom class for main container (optional).
+ * @param boolean $return       Dump to output or only return.
+ * @param array   $group_filter Ajax information to reload content while
+ *                              using different group filter (if enabled). Uses:
+ *                                [
+ *                                  page => 'your/controller/php',
+ *                                  method => 'yourMethodName'
+ *                                ]
+ *                              Ensure you return data in json format as:
+ *                                {id:label,id2:label2...}
+ *                              Provided by caller.
+ * @param array   $texts        Texts.
+ * @param array   $sections     Enables or disables sub-components.
+ *
+ * @return string HTML code with component.
+ */
+function html_print_select_multiple_filtered(
+    array $available,
+    array $selected,
+    ?string $name=null,
+    string $class='',
+    bool $return=true,
+    array $group_filter=[],
+    array $texts=[],
+    array $sections=[]
+) {
+    ui_require_css_file('multiselect_filtered');
+    ui_require_javascript_file('multiselect_filtered');
+
+    if (empty($name) === true) {
+        $rid = uniqid();
+    } else {
+        $rid = $name;
+    }
+
+    if (empty($texts) === true) {
+        $texts = [];
+    }
+
+    if (empty($texts['filter-item']) === true) {
+        $texts['filter-item'] = 'Filter agent alias';
+    }
+
+    if (empty($texts['title-add']) === true) {
+        $texts['title-add'] = 'Add selected';
+    }
+
+    if (empty($texts['title-del']) === true) {
+        $texts['title-del'] = 'Remove selected';
+    }
+
+    if (empty($texts['title-left']) === true) {
+        $texts['title-left'] = 'Available items';
+    }
+
+    if (empty($texts['title-right']) === true) {
+        $texts['title-right'] = 'Selected items';
+    }
+
+    if (empty($sections) === true) {
+        $sections = [];
+    }
+
+    if (empty($sections['filters']) === true) {
+        $sections['filters'] = 1;
+    }
+
+    if (empty($sections['group-filter']) === true) {
+        $sections['group-filter'] = 1;
+    }
+
+    if (empty($sections['item-available-filter']) === true) {
+        $sections['item-available-filter'] = 1;
+    }
+
+    if (empty($sections['item-selected-filter']) === true) {
+        $sections['item-selected-filter'] = 1;
+    }
+
+    if (empty($group_filter) === true) {
+        $sections['group-filter'] = 0;
+    }
+
+    // Main container.
+    $output .= '<div class="multi-select flex-row-vcenter '.$class.'">';
+
+    // Left box.
+    $output .= '<div class="multi-select-container flex-column">';
+    $disable_filters = '';
+
+    // Filtering.
+    if (isset($sections['filters']) === true
+        && $sections['filters'] === 1
+    ) {
+        // Filtering.
+        if (isset($sections['group-filter']) === true
+            && $sections['group-filter'] === 1
+        ) {
+            $output .= '<div class="filter">';
+
+            $output .= '<div class="group-filter flex-row-vcenter">';
+
+            $reload_content = "reloadContent('".$rid."'";
+            $reload_content .= ", '".ui_get_full_url('ajax.php')."'";
+            $reload_content .= ", '".base64_encode(
+                json_encode($group_filter)
+            )."'";
+            $reload_content .= ", 'left'";
+            $reload_content .= ", '".__('None')."')";
+
+            $output .= html_print_input(
+                [
+                    'label'          => __('Filter group'),
+                    'name'           => 'id-group-available-select-'.$rid,
+                    'returnAllGroup' => true,
+                    'privilege'      => 'AR',
+                    'type'           => 'select_groups',
+                    'return'         => true,
+                    'script'         => $reload_content,
+                ]
+            );
+
+            $output .= html_print_input(
+                [
+                    'label'  => __('Group recursion'),
+                    'name'   => 'id-group-recursion-available-select-'.$rid,
+                    'type'   => 'checkbox',
+                    'script' => $reload_content,
+                    'return' => true,
+                ]
+            );
+
+            $output .= '</div>';
+
+            $output .= '</div>';
+            $disable_filters = "disableFilters('".$rid."')";
+        }
+
+        if (isset($sections['item-available-filter']) === true
+            && $sections['item-available-filter'] === 1
+        ) {
+            $output .= '<div class="item-filter flex-row-vcenter">';
+
+            $output .= html_print_input(
+                [
+                    'style'   => 'display:none;',
+                    'name'    => 'tmp-available-select-'.$rid,
+                    'type'    => 'select',
+                    'nothing' => false,
+                    'return'  => true,
+                ]
+            );
+
+            $f = "filterAvailableItems(this.value,'".$rid."','".__('None')."')";
+            $output .= html_print_input(
+                [
+                    'label'       => __($texts['filter-item']),
+                    'name'        => 'filter-item-available-'.$rid,
+                    'onKeyUp'     => $f,
+                    'input_class' => 'filter w100p',
+                    'size'        => 20,
+                    'type'        => 'text',
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+        }
+    }
+
+    $output .= '<span class="title">'.$texts['title-left'].'</span>';
+
+    // Selector boxes.
+    $output .= html_print_input(
+        [
+            'type'                    => 'select',
+            'fields'                  => $available,
+            'name'                    => 'available-select-'.$rid.'[]',
+            'selected'                => '',
+            'script'                  => $disable_filters,
+            'nothing'                 => '',
+            'nothing_value'           => 0,
+            'return'                  => true,
+            'multiple'                => true,
+            'sort'                    => true,
+            'class'                   => 'select-multiple',
+            'disabled'                => false,
+            'style'                   => false,
+            'option_style'            => false,
+            'size'                    => false,
+            'modal'                   => false,
+            'message'                 => '',
+            'select_all'              => false,
+            'simple_multiple_options' => false,
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Middle buttons actions.
+    $add = "addItems('".$rid."','".__('None')."'); return false";
+    $del = "removeItems('".$rid."','".__('None')."'); return false";
+
+    $output .= '<div class="arrows-container flex-column">';
+
+    $output .= html_print_input(
+        [
+            'type'    => 'image',
+            'src'     => 'images/darrowright.png',
+            'return'  => true,
+            'options' => [
+                'title'   => $texts['title-add'],
+                'onclick' => $add,
+            ],
+        ]
+    );
+
+    $output .= html_print_input(
+        [
+            'type'    => 'image',
+            'src'     => 'images/darrowleft.png',
+            'return'  => true,
+            'options' => [
+                'title'   => $texts['title-del'],
+                'onclick' => $del,
+            ],
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Left box.
+    $output .= '<div class="multi-select-container flex-column">';
+
+    // Filtering.
+    if (isset($sections['filters']) === true
+        && $sections['filters'] === 1
+    ) {
+        if (isset($sections['group-filter']) === true
+            && $sections['group-filter'] === 1
+        ) {
+            $output .= '<div class="filter">';
+
+            $output .= '<div class="group-filter flex-row-vcenter">';
+
+            $reload_content = "reloadContent('".$rid."'";
+            $reload_content .= ", '".ui_get_full_url('ajax.php')."'";
+            $reload_content .= ", '".base64_encode(
+                json_encode($group_filter)
+            )."'";
+            $reload_content .= ", 'right'";
+            $reload_content .= ", '".__('None')."')";
+
+            $output .= html_print_input(
+                [
+                    'label'          => __('Filter group'),
+                    'name'           => 'id-group-selected-select-'.$rid,
+                    'returnAllGroup' => true,
+                    'privilege'      => 'AR',
+                    'type'           => 'select_groups',
+                    'return'         => true,
+                    'script'         => $reload_content,
+                ]
+            );
+
+            $output .= html_print_input(
+                [
+                    'label'  => __('Group recursion'),
+                    'name'   => 'id-group-recursion-selected-select-'.$rid,
+                    'type'   => 'checkbox',
+                    'script' => $reload_content,
+                    'return' => true,
+                ]
+            );
+
+            $output .= '</div>';
+
+            $output .= '</div>';
+        }
+
+        // Filtering.
+        if (isset($sections['item-selected-filter']) === true
+            && $sections['item-selected-filter'] === 1
+        ) {
+            $output .= '<div class="item-filter flex-row-vcenter">';
+
+            $output .= html_print_input(
+                [
+                    'style'   => 'display:none;',
+                    'name'    => 'tmp-selected-select-'.$rid,
+                    'type'    => 'select',
+                    'nothing' => false,
+                    'return'  => true,
+                ]
+            );
+
+            $f = "filterSelectedItems(this.value,'".$rid."','".__('None')."')";
+            $output .= html_print_input(
+                [
+                    'label'       => __($texts['filter-item']),
+                    'name'        => 'filter-item-selected-'.$rid,
+                    'onKeyUp'     => $f,
+                    'input_class' => 'filter w100p',
+                    'size'        => 20,
+                    'type'        => 'text',
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+        }
+    }
+
+    $output .= '<span class="title">'.$texts['title-right'].'</span>';
+
+    $output .= html_print_input(
+        [
+            'type'                    => 'select',
+            'fields'                  => $selected,
+            'name'                    => 'selected-select-'.$rid.'[]',
+            'selected'                => '',
+            'script'                  => '',
+            'nothing'                 => '',
+            'nothing_value'           => 0,
+            'return'                  => true,
+            'multiple'                => true,
+            'sort'                    => true,
+            'class'                   => 'select-multiple',
+            'disabled'                => false,
+            'style'                   => false,
+            'option_style'            => false,
+            'size'                    => false,
+            'modal'                   => false,
+            'message'                 => '',
+            'select_all'              => true,
+            'simple_multiple_options' => false,
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Close main.
+    $output .= '</div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Prints an array of fields in a popup menu of a form based on a SQL query.
  * The first and second columns of the query will be used.
  *
@@ -722,6 +1082,7 @@ function html_print_select(
  * @param string  $style          The string of style.
  * @param mixed   $size           Max elements showed in select or default (size=10)
  * @param integer $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
+ * @param integer $class          Class to apply.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -738,7 +1099,8 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT
+    $trucate_size=GENERIC_SIZE_TEXT,
+    $class=''
 ) {
     global $config;
 
@@ -770,7 +1132,7 @@ function html_print_select_from_sql(
         $return,
         $multiple,
         $sort,
-        '',
+        $class,
         $disabled,
         $style,
         '',
@@ -1087,7 +1449,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:flex;align-items: baseline;">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1121,7 +1483,7 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:flex;">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1159,8 +1521,8 @@ function html_print_extended_select_for_time(
 			$('#text-".$uniq_name."_text').val(seconds);
 			adjustTextUnits('".$uniq_name."');
 			calculateSeconds('".$uniq_name."');
-			$('#".$uniq_name."_manual').show();
-			$('#".$uniq_name."_default').hide();
+			$('#".$uniq_name."_manual').css('display', 'flex');
+			$('#".$uniq_name."_default').css('display', 'none');
 		}
 	</script>";
     $returnString = ob_get_clean();
@@ -1270,8 +1632,21 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='', $autocomplete='off')
-{
+function html_print_input_text_extended(
+    $name,
+    $value,
+    $id,
+    $alt,
+    $size,
+    $maxlength,
+    $disabled,
+    $script,
+    $attributes,
+    $return=false,
+    $password=false,
+    $function='',
+    $autocomplete='off'
+) {
     static $idcounter = 0;
 
     if ($maxlength == 0) {
@@ -1288,6 +1663,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
 
     $valid_attrs = [
         'accept',
+        'autofocus',
         'disabled',
         'maxlength',
         'name',
@@ -1320,6 +1696,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         'onkeyup',
         'required',
         'autocomplete',
+        'form',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
@@ -1345,7 +1722,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         $output .= 'alt="'.$alt.'" ';
     }
 
-    // Attributes specified by function call
+    // Attributes specified by function call.
     $attrs = [
         'name'      => 'unnamed',
         'value'     => '',
@@ -1523,8 +1900,24 @@ function html_print_input_password(
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255, $return=false, $disabled=false, $required=false, $function='', $class='', $onChange='', $autocomplete='')
-{
+function html_print_input_text(
+    $name,
+    $value,
+    $alt='',
+    $size=50,
+    $maxlength=255,
+    $return=false,
+    $disabled=false,
+    $required=false,
+    $function='',
+    $class='',
+    $onChange='',
+    $autocomplete='',
+    $autofocus=false,
+    $onKeyDown='',
+    $formTo='',
+    $onKeyUp=''
+) {
     if ($maxlength == 0) {
         $maxlength = 255;
     }
@@ -1548,11 +1941,40 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
         $attr['onchange'] = $onChange;
     }
 
+    if ($onKeyDown != '') {
+        $attr['onkeydown'] = $onKeyDown;
+    }
+
+    if ($onKeyUp != '') {
+        $attr['onkeyup'] = $onKeyUp;
+    }
+
     if ($autocomplete !== '') {
         $attr['autocomplete'] = $autocomplete;
     }
 
-    return html_print_input_text_extended($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
+    if ($autofocus === true) {
+        $attr['autofocus'] = $autofocus;
+    }
+
+    if ($formTo != '') {
+        $attr['form'] = $formTo;
+    }
+
+    return html_print_input_text_extended(
+        $name,
+        $value,
+        'text-'.$name,
+        $alt,
+        $size,
+        $maxlength,
+        $disabled,
+        '',
+        $attr,
+        $return,
+        false,
+        $function
+    );
 }
 
 
@@ -1687,6 +2109,7 @@ function html_print_input_number(array $settings):string
         'autocomplete',
         'min',
         'max',
+        'step',
     ];
 
     $output = '';
@@ -1698,13 +2121,6 @@ function html_print_input_number(array $settings):string
             // Check Max length.
             if (isset($settings['maxlength']) === false) {
                 $settings['maxlength'] = 255;
-            }
-
-            // Check Size.
-            if (isset($settings['size']) === false
-                || $settings['size'] === 0
-            ) {
-                $settings['size'] = 255;
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -2030,10 +2446,10 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
+function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='', $disable=false)
 {
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'">';
-    // $output .= io_safe_input ($value);
+    $disabled = ($disable) ? 'disabled' : '';
+    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
     $output .= '</textarea>';
 
@@ -2118,6 +2534,10 @@ function html_print_table(&$table, $return=false)
 {
     $output = '';
     static $table_count = 0;
+
+    if (!isset($table)) {
+        $table = new StdClass();
+    }
 
     $table_count++;
     if (isset($table->align)) {
@@ -2464,8 +2884,14 @@ function html_print_radio_button_extended(
     $output .= ' '.$attributes;
     $output .= ' />';
 
-    if ($label != '') {
-        $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+    if (is_array($label)) {
+        if (!empty($label)) {
+            $output .= '<label for="'.$htmlid.'" title="'.$label['help_tip'].'">'.$label['label'].'</label>'."\n";
+        }
+    } else {
+        if ($label != '') {
+            $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+        }
     }
 
     if ($modal && !enterprise_installed()) {
@@ -3306,9 +3732,11 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
+    $disabled_class .= (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+
     return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
-			<span class='p-slider'></span>
+			<span class='p-slider".$disabled_class."'></span>
 		</label>";
 }
 
@@ -3406,7 +3834,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
+                ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : '')
             );
         break;
 
@@ -3450,23 +3882,6 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['required']) === true) ? $data['required'] : false),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off')
-            );
-        break;
-
-        case 'text':
-            $output .= html_print_input_text(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : ''),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
             );
         break;
 
@@ -3552,7 +3967,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['style']) === true) ? $data['style'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
             );
         break;
 
@@ -3727,6 +4143,16 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $params['add_none_module'] = $data['module_none'];
             }
 
+            if (isset($data['size']) === true) {
+                $params['size'] = $data['size'];
+            }
+
+            if (isset($data['from_wux']) === true
+                && $data['from_wux'] === true
+            ) {
+                $params['from_wux'] = 1;
+            }
+
             $params['use_hidden_input_idagent'] = true;
             $params['hidden_input_idagent_id'] = 'hidden-'.$data['name_agent_hidden'];
             if (is_metaconsole()) {
@@ -3764,6 +4190,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $string_filter .= '';
                 if ($data['get_only_string_modules'] === true) {
                     $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
+                }
+
+                if ($data['from_wux'] === true) {
+                    $string_filter = ' AND id_tipo_modulo = 25 ';
                 }
 
                 $sql = sprintf(
@@ -3827,6 +4257,19 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['modal']) === true) ? $data['modal'] : false),
                 ((isset($data['message']) === true) ? $data['message'] : ''),
                 ((isset($data['select_all']) === true) ? $data['select_all'] : false)
+            );
+        break;
+
+        case 'select_multiple_filtered':
+            $output .= html_print_select_multiple_filtered(
+                $data['available'],
+                $data['selected'],
+                ((isset($data['name']) === true) ? $data['name'] : null),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : true),
+                ((isset($data['group_filter']) === true) ? $data['group_filter'] : []),
+                ((isset($data['texts']) === true) ? $data['texts'] : []),
+                ((isset($data['sections']) === true) ? $data['sections'] : [])
             );
         break;
 

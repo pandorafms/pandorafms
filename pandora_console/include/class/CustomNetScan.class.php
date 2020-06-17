@@ -105,7 +105,7 @@ class CustomNetScan extends Wizard
         // from 'validation' page.
         if (isset($this->page) === true && $this->page === 1) {
             $task_id = get_parameter('task', null);
-            $taskname = get_parameter('taskname', '');
+            $taskname = io_safe_input(strip_tags(io_safe_output(get_parameter('taskname'))));
             $comment = get_parameter('comment', '');
             $server_id = get_parameter('id_recon_server', '');
             $id_group = get_parameter('id_group', '');

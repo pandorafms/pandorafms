@@ -1661,6 +1661,57 @@ function agents_get_alias($id_agent, $case='none')
 }
 
 
+/**
+ * Get alias of an agent in metaconsole (cached function).
+ *
+ * @param integer $id_agent  Agent id.
+ * @param string  $case      Case (upper, lower, none).
+ * @param integer $id_server server id.
+ *
+ * @return string Alias of the given agent.
+ */
+function agents_get_alias_metaconsole($id_agent, $case='none', $id_server=false)
+{
+    global $config;
+    // Prepare cache.
+    static $cache = [];
+    if (empty($case)) {
+        $case = 'none';
+    }
+
+    // Check cache.
+    if (isset($cache[$case][$id_server][$id_agent])) {
+        return $cache[$case][$id_server][$id_agent];
+    }
+
+    $alias = (string) db_get_value_filter(
+        'alias',
+        'tmetaconsole_agent',
+        [
+            'id_tagente'            => $id_agent,
+            'id_tmetaconsole_setup' => $id_server,
+        ]
+    );
+
+    switch ($case) {
+        case 'upper':
+            $alias = mb_strtoupper($alias, 'UTF-8');
+        break;
+
+        case 'lower':
+            $alias = mb_strtolower($alias, 'UTF-8');
+        break;
+
+        default:
+            // Not posible.
+        break;
+    }
+
+    $cache[$case][$id_server][$id_agent] = $alias;
+    return $alias;
+}
+
+
 function agents_get_alias_by_name($name, $case='none')
 {
     if (is_metaconsole()) {

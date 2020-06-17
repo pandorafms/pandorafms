@@ -633,6 +633,14 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
             break;
 
             case EVENT_STATUS_VALIDATED:
+                events_change_owner(
+                    $id_evento,
+                    $config['id_user'],
+                    false,
+                    is_metaconsole() ? true : false,
+                    $history
+                );
+
                 $status_string = 'Validated';
             break;
 
@@ -1868,6 +1876,16 @@ function events_change_status(
 
     if (($ret === false) || ($ret === 0)) {
         return false;
+    }
+
+    if ($new_status == EVENT_STATUS_VALIDATED) {
+        events_change_owner(
+            $id_event,
+            $config['id_user'],
+            false,
+            $meta,
+            $history
+        );
     }
 
     events_comment(

@@ -2123,13 +2123,6 @@ function html_print_input_number(array $settings):string
                 $settings['maxlength'] = 255;
             }
 
-            // Check Size.
-            if (isset($settings['size']) === false
-                || $settings['size'] === 0
-            ) {
-                $settings['size'] = 255;
-            }
-
             foreach ($settings as $attribute => $attr_value) {
                 // Check valid attribute.
                 if (in_array($attribute, $valid_attrs) === false) {

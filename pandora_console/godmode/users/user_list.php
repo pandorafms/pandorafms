@@ -367,11 +367,11 @@ if ($search) {
         $found = false;
 
         if (!empty($filter_search)) {
-            if (preg_match('/.*'.$filter_search.'.*/', $user_info['fullname']) != 0) {
+            if (preg_match('/.*'.strtolower($filter_search).'.*/', strtolower($user_info['fullname'])) != 0) {
                 $found = true;
             }
 
-            if (preg_match('/.*'.$filter_search.'.*/', $user_info['id_user']) != 0) {
+            if (preg_match('/.*'.strtolower($filter_search).'.*/', strtolower($user_info['id_user'])) != 0) {
                 $found = true;
             }
 

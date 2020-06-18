@@ -160,7 +160,7 @@ function reporting_make_reporting_data(
 
     $return = [];
     if (!empty($report)) {
-        $contents = $report['contents'];
+        $contents = io_safe_output($report['contents']);
     } else {
         $report = io_safe_output(db_get_row('treport', 'id_report', $id_report));
         $contents = io_safe_output(
@@ -2236,7 +2236,7 @@ function reporting_inventory($report, $content, $type)
     $es = json_decode($content['external_source'], true);
 
     $id_agent = $es['id_agents'];
-    $module_name = $es['inventory_modules'];
+    $module_name = io_safe_input($es['inventory_modules']);
     if (empty($module_name)) {
         $module_name = [0 => 0];
     }

@@ -1041,7 +1041,7 @@ var matches_not = <?php echo '"'.__("The alert would fire when the value doesn\'
 var is = <?php echo "'".__('The alert would fire when the value is <span id="value"></span>')."'"; ?>;
 var is_not = <?php echo "'".__('The alert would fire when the value is not <span id="value"></span>')."'"; ?>;
 var between = <?php echo "'".__('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>')."'"; ?>;
-var between_not = <?php echo '"'.__("The alert would fire when the value is not between <span id=\'min\'></span> and <span id=\'max\'></span>").'"'; ?>;
+var between_not = <?php echo '"'.__('The alert would fire when the value is not between <span id=min></span> and <span id=max></span>').'"'; ?>;
 var under = <?php echo "'".__('The alert would fire when the value is below <span id="min"></span>')."'"; ?>;
 var over = <?php echo "'".__('The alert would fire when the value is above <span id="max"></span>')."'"; ?>;
 var warning = <?php echo "'".__('The alert would fire when the module is in warning status')."'"; ?>;

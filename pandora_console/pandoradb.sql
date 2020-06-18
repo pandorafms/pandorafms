@@ -2724,6 +2724,7 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`id_service_child` int(10) unsigned NOT NULL default 0,
 	`id_server_meta` int(10)  unsigned NOT NULL default 0,
+	`rules` text,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 

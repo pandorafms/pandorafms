@@ -1527,6 +1527,13 @@ ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL defau
 ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `is_favourite` tinyint(1) NOT NULL default 0;
 UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
+-- ALl previous services are manual now.
+UPDATE `tservice` SET `auto_calculate` = 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tservice_element`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tservice_element` ADD COLUMN `rules` text;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`

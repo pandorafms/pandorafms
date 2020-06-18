@@ -1865,3 +1865,75 @@ function ajaxRequest(id, settings) {
     }
   });
 }
+
+var checkConnection = setInterval(handleConnection, 5000);
+
+window.addEventListener("online", handleConnection);
+window.addEventListener("offline", handleConnection);
+
+function handleConnection() {
+  var connected;
+  var msg = "online";
+
+  if (navigator.onLine) {
+    isReachable(getServerUrl())
+      .then(function(online) {
+        if (online) {
+          // handle online status
+          connected = true;
+          showConnectionMessage(connected, msg);
+        } else {
+          connected = false;
+          msg = "No connectivity with server";
+          showConnectionMessage(connected, msg);
+        }
+      })
+      .catch(function(err) {
+        connected = false;
+        msg = err;
+        showConnectionMessage(connected, msg);
+      });
+  } else {
+    // handle offline status
+    connected = false;
+    msg = "Connection offline";
+    showConnectionMessage(connected, msg);
+  }
+}
+
+function isReachable(url) {
+  /**
+   * Note: fetch() still "succeeds" for 404s on subdirectories,
+   * which is ok when only testing for domain reachability.
+   *
+   * Example:
+   *   https://google.com/noexist does not throw
+   *   https://noexist.com/noexist does throw
+   */
+  return fetch(url, { method: "HEAD", mode: "no-cors" })
+    .then(function(resp) {
+      return resp && (resp.ok || resp.type === "opaque");
+    })
+    .catch(function(error) {
+      console.warn("[conn test failure]:", error);
+    });
+}
+
+function getServerUrl() {
+  return $("#php_to_js_value_absolute_homeurl").val() || window.location.origin;
+}
+
+function showConnectionMessage(conn = true, msg = "") {
+  var data = {};
+  if (conn) {
+    $("div#msg_connection")
+      .closest(".ui-dialog-content")
+      .dialog("close");
+    $("div#msg_connection").remove();
+  } else {
+    data.title = "Connection with server has been lost";
+    data.text = "Connection status: " + msg;
+
+    infoMessage(data, "msg_connection");
+  }
+}

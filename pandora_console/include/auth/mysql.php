@@ -85,7 +85,7 @@ function process_user_login($login, $pass, $api=false)
         return process_user_login_local($login, $pass, $api);
     } else {
         $login_remote = process_user_login_remote($login, io_safe_output($pass), $api);
-        if ($login_remote == false) {
+        if ($login_remote == false && $config['fallback_local_auth']) {
             return process_user_login_local($login, $pass, $api);
         } else {
             return $login_remote;
@@ -258,27 +258,32 @@ function process_user_login_remote($login, $pass, $api=false)
             return false;
         }
 
-        if (($config['auth'] === 'ad')
-            && (isset($config['ad_advanced_config']) && $config['ad_advanced_config'])
-        ) {
-            $return = enterprise_hook(
-                'prepare_permissions_groups_of_user_ad',
-                [
-                    $login,
-                    $pass,
-                    false,
-                    true,
-                    defined('METACONSOLE'),
-                ]
-            );
+        if (($config['auth'] === 'ad')) {
+            // Check if autocreate  remote users is active.
+            if ($config['autocreate_remote_users'] == 1) {
+                change_local_user_pass_ldap($login, $pass);
+            }
 
-            if ($return === 'error_permissions') {
-                $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
-                return false;
-            } else {
-                if ($return === 'permissions_changed') {
-                    $config['auth_error'] = __('Your permissions have changed. Please, login again.');
+            if (isset($config['ad_advanced_config']) && $config['ad_advanced_config']) {
+                $return = enterprise_hook(
+                    'prepare_permissions_groups_of_user_ad',
+                    [
+                        $login,
+                        $pass,
+                        false,
+                        true,
+                        defined('METACONSOLE'),
+                    ]
+                );
+
+                if ($return === 'error_permissions') {
+                    $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
                     return false;
+                } else {
+                    if ($return === 'permissions_changed') {
+                        $config['auth_error'] = __('Your permissions have changed. Please, login again.');
+                        return false;
+                    }
                 }
             }
         } else if ($config['auth'] === 'ldap') {

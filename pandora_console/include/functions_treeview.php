@@ -123,7 +123,6 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['data'] = $module_group;
     $table->data['module_group'] = $row;
 
-    // Description.
     $row = [];
     $row['title'] = __('Description');
     $row['data'] = ui_print_truncate_text(
@@ -189,16 +188,16 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
             default:
                 // ~ if (is_numeric($last_data["datos"]))
-                    // ~ $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
+                // ~ $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
                 // ~ else
-                    // ~ $data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+                // ~ $data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
                 switch ($module['id_tipo_modulo']) {
                     case 15:
                         $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
                         if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                             $data = "<span title='".$last_data['datos']."' style='white-space: nowrap;'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                         } else if (is_numeric($last_data['datos'])) {
-                                $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -237,7 +236,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                     $data = "<span title='".human_milliseconds_to_string($last_data['datos'])."' style='white-space: nowrap;'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                 } else if (is_numeric($last_data['datos'])) {
-                        $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),

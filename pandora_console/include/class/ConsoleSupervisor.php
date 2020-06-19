@@ -472,7 +472,9 @@ class ConsoleSupervisor
           /*
            * Check if HA status.
            */
-        $this->checkHaStatus();
+        if (enterprise_installed()) {
+            $this->checkHaStatus();
+        }
 
         /*
          * Check if the audit log file

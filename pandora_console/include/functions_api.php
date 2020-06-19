@@ -1506,6 +1506,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if ((int) $other['data'][3] == 0) {
+        $agent_creation_error = __('The agent could not be created, for security reasons use a group another than 0');
+        returnError('generic error', $agent_creation_error);
+        return;
+    }
+
     $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
     $direccion_agente          = io_safe_input($other['data'][1]);
     $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
@@ -2048,31 +2054,31 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
                     // Filter by status
                     switch ($other['data'][2]) {
                         case 'warning':
-                            if ($status == 2) {
+                            if ($status == AGENT_MODULE_STATUS_WARNING || $status == AGENT_MODULE_STATUS_WARNING_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'critical':
-                            if ($status == 1) {
+                            if ($status == AGENT_MODULE_STATUS_CRITICAL_BAD || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'unknown':
-                            if ($status == 3) {
+                            if ($status == AGENT_MODULE_STATUS_UNKNOWN) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'normal':
-                            if ($status == 0) {
+                            if ($status == AGENT_MODULE_STATUS_NORMAL || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'alert_fired':
-                            if ($status == 4) {
+                            if ($status == AGENT_STATUS_ALERT_FIRED || $status == AGENT_MODULE_STATUS_WARNING_ALERT || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
@@ -8790,6 +8796,11 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
         }
     }
 
+    // Esto es extraño, hablar con Tati
+    /*
+        $filter['1'] = $filter['sql'];
+    unset($filter['sql']); */
+
     if (isset($other['data'][4]) && $other['data'][4] != '') {
         $idTemplate = db_get_value_filter('id', 'talert_templates', ['name' => $other['data'][4]]);
         if ($idTemplate !== false) {
@@ -10718,6 +10729,83 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     }
 
     return true;
+}
+
+
+/**
+ * Update an event
+ *
+ * @param string $id_event Id of the event for change.
+ * @param string $unused1  Without use.
+ * @param array  $params   Dictionary with field,value format with the data for update.
+ * @param string $unused2  Without use.
+ * @param string $unused3  Without use.
+ *
+ * @return void
+ */
+function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
+{
+    // Get the event
+    $event = events_get_event($id_event, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        return false;
+    }
+
+    $paramsSerialize = [];
+    // Serialize the data for update
+    if ($params['type'] === 'array') {
+        // Keys that is not available to change
+        $invalidKeys = [
+            'id_evento',
+            'id_agente',
+            'id_grupo',
+            'timestamp',
+            'utimestamp',
+            'id_agentmodule',
+            'ack_utimestamp',
+            'data',
+        ];
+
+        foreach ($params['data'] as $key_value) {
+            list($key, $value) = explode(',', $key_value, 2);
+            if (in_array($key, $invalidKeys) == false) {
+                $paramsSerialize[$key] = $value;
+            }
+        }
+    }
+
+    // In meta or node.
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
+    // TODO. Stablish security for prevent sql injection?
+    // Update the row
+    $result = db_process_sql_update(
+        $table,
+        $paramsSerialize,
+        [ 'id_evento' => $id_event ]
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'failed_event_update',
+            __('Failed event update')
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated']);
+    }
+
+    return;
 }
 
 

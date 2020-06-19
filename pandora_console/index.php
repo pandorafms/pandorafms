@@ -693,6 +693,11 @@ if (! isset($config['id_user'])) {
             unset($query_params_redirect['sec2']);
         }
 
+        // Dashboard do not want sec2.
+        if ($home_page == 'Dashboard') {
+            unset($query_params_redirect['sec2']);
+        }
+
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
             if ($key == 'login') {

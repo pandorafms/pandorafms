@@ -2684,6 +2684,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`critical` float(20,3) NOT NULL default 0,
 	`warning` float(20,3) NOT NULL default 0,
+	`unknown_as_critical` tinyint(1) NOT NULL default 0,
 	`service_interval` float(20,3) NOT NULL default 0,
 	`service_value` float(20,3) NOT NULL default 0,
 	`status` tinyint(3) NOT NULL default -1,

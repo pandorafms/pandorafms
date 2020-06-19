@@ -1866,11 +1866,33 @@ function ajaxRequest(id, settings) {
   });
 }
 
-var checkConnection = setInterval(handleConnection, 5000);
+/**
+ * -------------------------------------
+ *        Connection Check
+ * --------------------------------------
+ */
 
-window.addEventListener("online", handleConnection);
-window.addEventListener("offline", handleConnection);
+checkConnection(1);
 
+/**
+ * Performs connection tests every minutes and add connection listeners
+ * @param {integer} time in minutes
+ */
+
+function checkConnection(minutes) {
+  var cicle = minutes * 60 * 1000;
+  var checkConnection = setInterval(handleConnection, cicle);
+
+  // Connection listeters.
+  window.addEventListener("online", handleConnection);
+  window.addEventListener("offline", handleConnection);
+}
+
+/**
+ * Handle connection status test.
+ *
+ * Test conectivity with server and shows modal message.
+ */
 function handleConnection() {
   var connected;
   var msg = "online";
@@ -1901,6 +1923,13 @@ function handleConnection() {
   }
 }
 
+/**
+ * Test server reachibilty and get response.
+ *
+ * @param {String} url
+ *
+ * Return {promise}
+ */
 function isReachable(url) {
   /**
    * Note: fetch() still "succeeds" for 404s on subdirectories,
@@ -1919,21 +1948,29 @@ function isReachable(url) {
     });
 }
 
+/**
+ * Gets server origin url
+ */
 function getServerUrl() {
   return $("#php_to_js_value_absolute_homeurl").val() || window.location.origin;
 }
 
+/**
+ * Shows or hide connection infoMessage.
+ *
+ * @param {bool} conn
+ * @param {string} msg
+ */
 function showConnectionMessage(conn = true, msg = "") {
   var data = {};
   if (conn) {
-    $("div#msg_connection")
+    $("div#message_dialog_connection")
       .closest(".ui-dialog-content")
       .dialog("close");
-    $("div#msg_connection").remove();
   } else {
     data.title = "Connection with server has been lost";
     data.text = "Connection status: " + msg;
 
-    infoMessage(data, "msg_connection");
+    infoMessage(data, "message_dialog_connection");
   }
 }

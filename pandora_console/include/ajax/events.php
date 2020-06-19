@@ -1090,7 +1090,7 @@ if ($dialogue_event_response) {
 if ($add_comment) {
     $aviability_comment = true;
     $comment = get_parameter('comment');
-    if (preg_match('<script>', io_safe_output($comment))) {
+    if (preg_match('/script/i', io_safe_output($comment))) {
         $aviability_comment = false;
         $return = false;
     }

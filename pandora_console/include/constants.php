@@ -149,8 +149,8 @@ define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
 define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
-define('COL_INFORMATIONAL', '#E4E4E4');
-define('COL_MAINTENANCE', '#4a83f3');
+define('COL_INFORMATIONAL', '#4a83f3');
+define('COL_MAINTENANCE', '#E4E4E4');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');

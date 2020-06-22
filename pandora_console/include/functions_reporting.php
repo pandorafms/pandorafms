@@ -160,7 +160,7 @@ function reporting_make_reporting_data(
 
     $return = [];
     if (!empty($report)) {
-        $contents = $report['contents'];
+        $contents = io_safe_output($report['contents']);
     } else {
         $report = io_safe_output(db_get_row('treport', 'id_report', $id_report));
         $contents = io_safe_output(
@@ -2236,7 +2236,7 @@ function reporting_inventory($report, $content, $type)
     $es = json_decode($content['external_source'], true);
 
     $id_agent = $es['id_agents'];
-    $module_name = $es['inventory_modules'];
+    $module_name = io_safe_input($es['inventory_modules']);
     if (empty($module_name)) {
         $module_name = [0 => 0];
     }
@@ -6147,7 +6147,13 @@ function reporting_advanced_sla(
                             $time_total += $time_interval;
 
                             if ($time_interval > 0) {
-                                $total_checks++;
+                                if (isset($current_data['type']) === false
+                                    || ((int) $current_data['type'] === 0
+                                    && $i !== 0)
+                                ) {
+                                    $total_checks++;
+                                }
+
                                 if ((isset($current_data['datos']))
                                     && ($current_data['datos'] !== false)
                                 ) {
@@ -6159,7 +6165,7 @@ function reporting_advanced_sla(
                                             $match = preg_match('/'.$max_value.'/', $current_data['datos']);
                                         }
 
-                                        // Take notice of $inverse_interval value,
+                                        // Take notice of $inverse_interval value.
                                         if ($inverse_interval == 0) {
                                             $sla_check_value = $match;
                                         } else {
@@ -6176,19 +6182,41 @@ function reporting_advanced_sla(
 
                                     // Not unknown nor not init values.
                                     if ($sla_check_value) {
-                                        $ok_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $ok_checks++;
+                                        }
+
                                         $time_in_ok += $time_interval;
                                     } else {
-                                        $bad_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $bad_checks++;
+                                        }
+
                                         $time_in_error += $time_interval;
                                     }
                                 } else {
                                     if ($current_data['datos'] === null) {
                                         $time_in_unknown += $time_interval;
-                                        $unknown_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $unknown_checks++;
+                                        }
                                     } else if ($current_data['datos'] === false) {
                                         $time_in_not_init += $time_interval;
-                                        $not_init_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $not_init_checks++;
+                                        }
                                     }
                                 }
                             }

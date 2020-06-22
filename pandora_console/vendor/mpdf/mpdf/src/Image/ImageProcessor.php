@@ -133,6 +133,7 @@ class ImageProcessor implements \Psr\Log\LoggerAwareInterface
 
 	public function getImage(&$file, $firsttime = true, $allowvector = true, $orig_srcpath = false, $interpolation = false)
 	{
+		global $config;
 		// mPDF 6
 		// firsttime i.e. whether to add to this->images - use false when calling iteratively
 		// Image Data passed directly as var:varname
@@ -142,11 +143,14 @@ class ImageProcessor implements \Psr\Log\LoggerAwareInterface
 			}
 			$data = $this->mpdf->imageVars[$v[1]];
 			$file = md5($data);
+			
 		}
 
-		if (preg_match('/data:image\/(gif|jpeg|png);base64,(.*)/', $file, $v)) {
+		if (preg_match('~data:image/(gif|jpeg|png);base64,(.*)~', $file, $v)) {
 			$type = $v[1];
-			$data = base64_decode($v[2]);
+			$encoded = $v[2];
+			$decoded = "";
+			$data = base64_decode(html_entity_decode($encoded));
 			$file = md5($data);
 		}
 
@@ -212,6 +216,20 @@ class ImageProcessor implements \Psr\Log\LoggerAwareInterface
 				$this->mpdf->getFileContentsBySocket($file, $data); // needs full url?? even on local (never needed for local)
 				if ($data) {
 					$type = $this->guesser->guess($data);
+				}
+			}
+
+			if ((!$data || !$type) && !ini_get('allow_url_fopen') && preg_match('/data:image.*;base64/', $file)) {
+				$base_to_php = explode(',', $file);
+				$img_base64 = base64_decode($base_to_php[1]);
+				$filepath = $config['attachment_store']."/downloads/".uniqid().".jpg";
+				$result = file_put_contents($filepath, $img_base64);
+				if ($result !== false) {
+					$data = file_get_contents($filepath);
+					if ($data) {
+						$type = $this->guesser->guess($data);
+					}
+					unlink($filepath);
 				}
 			}
 		}

@@ -161,14 +161,15 @@ class CredentialStore extends Wizard
         if (! check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
                 'ACL Violation',
-                'Trying to access event viewer'
+                'Trying to access credential store'
             );
 
             if (is_ajax()) {
                 echo json_encode(['error' => 'noaccess']);
+            } else {
+                include 'general/noaccess.php';
             }
 
-            include 'general/noaccess.php';
             exit;
         }
 

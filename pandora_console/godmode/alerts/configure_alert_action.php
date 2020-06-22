@@ -52,7 +52,7 @@ if ($al_action !== false) {
 
     $is_in_group = in_array($al_action['id_group'], $own_groups);
 
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -60,12 +60,12 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            'alert_config',
+            '',
             true
         );
     }
 } else {
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -73,7 +73,7 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            'alert_config',
+            '',
             true
         );
     }

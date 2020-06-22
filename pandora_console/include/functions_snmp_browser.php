@@ -159,7 +159,7 @@ function snmp_browser_get_html_tree(
         $status = (!empty($checked) && isset($checked[$level]));
         $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
-            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
+            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
         }
 
         $output .= '</li>';
@@ -238,8 +238,17 @@ function snmp_browser_print_tree(
 /**
  * Build the SNMP tree for the given SNMP agent.
  *
- * @param target_ip string IP of the SNMP agent.
- * @param community string SNMP community to use.
+ * @param string      $target_ip               Target_ip.
+ * @param string      $community               Community.
+ * @param string      $starting_oid            Starting_oid.
+ * @param string      $version                 Version.
+ * @param string      $snmp3_auth_user         Snmp3_auth_user.
+ * @param string      $snmp3_security_level    Snmp3_security_level.
+ * @param string      $snmp3_auth_method       Snmp3_auth_method.
+ * @param string      $snmp3_auth_pass         Snmp3_auth_pass.
+ * @param string      $snmp3_privacy_method    Snmp3_privacy_method.
+ * @param string      $snmp3_privacy_pass      Snmp3_privacy_pass.
+ * @param string|null $snmp3_context_engine_id Snmp3_context_engine_id.
  *
  * @return array The SNMP tree.
  */
@@ -253,7 +262,8 @@ function snmp_browser_get_tree(
     $snmp3_auth_method='',
     $snmp3_auth_pass='',
     $snmp3_privacy_method='',
-    $snmp3_privacy_pass=''
+    $snmp3_privacy_pass='',
+    $snmp3_context_engine_id=null
 ) {
     global $config;
 
@@ -277,6 +287,7 @@ function snmp_browser_get_tree(
 
         default:
             $snmp_version = SNMP::VERSION_2c;
+        break;
     }
 
     $snmp_session = new SNMP($snmp_version, $target_ip, $community);
@@ -284,10 +295,34 @@ function snmp_browser_get_tree(
 
       // Set security if SNMP Version is 3.
     if ($snmp_version == SNMP::VERSION_3) {
-        $snmp_session->setSecurity($snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass);
+        $snmp_session->setSecurity(
+            $snmp3_security_level,
+            $snmp3_auth_method,
+            $snmp3_auth_pass,
+            $snmp3_privacy_method,
+            $snmp3_privacy_pass,
+            $community,
+            $snmp3_context_engine_id
+        );
     }
 
-    snmp_read_mib($config['homedir'].'/attachment/mibs');
+    $mibs_dir = $config['homedir'].'/attachment/mibs';
+    $_dir = opendir($mibs_dir);
+
+    // Future. Recomemended: Use a global config limit of MIBs loaded.
+    while (($mib_file = readdir($_dir)) !== false) {
+        if ($mib_file == '..' || $mib_file == '.') {
+            continue;
+        }
+
+        $rs = snmp_read_mib($mibs_dir.'/'.$mib_file);
+        if ($rs !== true) {
+            error_log('Failed while reading MIB file: '.$mib_file);
+        }
+    }
+
+    closedir($_dir);
+
     $output = $snmp_session->walk($starting_oid);
     if ($output == false) {
         $output = $snmp_session->getError();

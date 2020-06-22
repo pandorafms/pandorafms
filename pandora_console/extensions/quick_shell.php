@@ -318,15 +318,15 @@ function quickShellSettings()
         );
         $gotty_host = get_parameter(
             'gotty_host',
-            $config['gotty_host']
+            ''
         );
         $gotty_ssh_port = get_parameter(
             'gotty_ssh_port',
-            $config['gotty_ssh_port']
+            ''
         );
         $gotty_telnet_port = get_parameter(
             'gotty_telnet_port',
-            $config['gotty_telnet_port']
+            ''
         );
 
         $gotty_user = get_parameter(
@@ -449,10 +449,7 @@ function quickShellSettings()
     $hidden->data = [];
     $hidden->style[0] = 'font-weight: bold;width: 40%;';
 
-    $hidden->data[0][0] = __('Gotty user').ui_print_help_tip(
-        __('Optional, set a user to access gotty service'),
-        true
-    );
+    $hidden->data[0][0] = __('Gotty user');
     $hidden->data[0][1] = html_print_input_text(
         'gotty_user',
         $config['gotty_user'],
@@ -462,10 +459,7 @@ function quickShellSettings()
         true
     );
 
-    $hidden->data[1][0] = __('Gotty password').ui_print_help_tip(
-        __('Optional, set a password to access gotty service'),
-        true
-    );
+    $hidden->data[1][0] = __('Gotty password');
     $hidden->data[1][1] = html_print_input_password(
         'gotty_pass',
         io_output_password($config['gotty_pass']),

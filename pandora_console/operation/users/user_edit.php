@@ -387,7 +387,7 @@ if (!$meta) {
     $skin = '';
 }
 
-$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').': </p>';
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
 $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 // Double auth.
@@ -463,7 +463,7 @@ $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
-$autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'Cluster view';
+$autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
 if (enterprise_installed()) {
     $autorefresh_list_out['general/sap_view'] = 'SAP view';
 }

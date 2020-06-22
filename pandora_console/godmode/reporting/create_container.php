@@ -176,8 +176,15 @@ $buttons['graph_container'] = [
     'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graph container')]).'</a>',
 ];
 
-// Header
-ui_print_page_header(__('Create container'), '', false, '', false, $buttons);
+// Header.
+ui_print_page_header(
+    __('Create container'),
+    '',
+    false,
+    'create_container',
+    false,
+    $buttons
+);
 
 if ($add_container) {
     ui_print_result_message($id_container, __('Container stored successfully'), __('There was a problem storing container'));

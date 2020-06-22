@@ -136,7 +136,7 @@ if (!$delete_template) {
             __('Alerts').' &raquo; '.__('Alert templates'),
             'images/gm_alerts.png',
             false,
-            'alert_templates_tab',
+            '',
             true
         );
     }

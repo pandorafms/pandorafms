@@ -226,14 +226,13 @@ function flot_area_graph(
         $config['custom_graph_width'],
         true
     );
-    /*
-        $return .= "<div id='timestamp_$graph_id'
-                    class='timestamp_graph'
-                    style='    font-size:".$params['font_size']."pt;
-                            display:none; position:absolute;
-                            background:#fff; border: solid 1px #aaa;
-                            padding: 2px; z-index:1000;'></div>";
-    */
+    $return .= "<div id='timestamp_$graph_id'
+                     class='timestamp_graph'
+                     style='font-size:".$params['font_size']."pt;
+                        display:none; position:absolute;
+                        background:#fff; border: solid 1px #aaa;
+                        padding: 2px; z-index:1000;
+                '></div>";
     $return .= "<div id='$graph_id' class='";
 
     if ($params['type'] == 'area_simple') {

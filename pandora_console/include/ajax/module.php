@@ -372,7 +372,13 @@ if (check_login()) {
                     $data[] = date('d F Y h:i:s A', $row['utimestamp']);
                 } else if (is_snapshot_data($row[$attr[0]])) {
                     if ($config['command_snapshot']) {
-                        $data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+                        $imagetab = '<img style="width:100%" src="';
+                        $imagetab .= io_safe_input($row[$attr[0]]);
+                        $imagetab .= '">';
+                        $image = '<img style="width:300px" src="';
+                        $image .= io_safe_input($row[$attr[0]]);
+                        $image .= '">';
+                        $data[] = '<a style="cursor:pointer;" onclick="newTabjs(\''.base64_encode($imagetab).'\')">'.$image.'</a>';
                     } else {
                         $data[] = '<span>'.wordwrap(io_safe_input($row[$attr[0]]), 60, "<br>\n", true).'</span>';
                     }
@@ -1099,6 +1105,7 @@ if (check_login()) {
             $rowIndex++;
         }
 
+        ui_require_javascript_file('pandora.js');
         ?>
     <script type="text/javascript">
         /* <![CDATA[ */

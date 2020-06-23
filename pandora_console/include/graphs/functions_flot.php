@@ -226,14 +226,13 @@ function flot_area_graph(
         $config['custom_graph_width'],
         true
     );
-    /*
-        $return .= "<div id='timestamp_$graph_id'
-                    class='timestamp_graph'
-                    style='    font-size:".$params['font_size']."pt;
-                            display:none; position:absolute;
-                            background:#fff; border: solid 1px #aaa;
-                            padding: 2px; z-index:1000;'></div>";
-    */
+    $return .= "<div id='timestamp_$graph_id'
+                     class='timestamp_graph'
+                     style='font-size:".$params['font_size']."pt;
+                        display:none; position:absolute;
+                        background:#fff; border: solid 1px #aaa;
+                        padding: 2px; z-index:1000;
+                '></div>";
     $return .= "<div id='$graph_id' class='";
 
     if ($params['type'] == 'area_simple') {
@@ -699,6 +698,7 @@ function flot_slicesbar_graph(
             'show'               => $show,
             'return_img_base_64' => true,
             'date_to'            => $date_to,
+            'server_id'          => $server_id,
         ];
 
         $graph = '<img src="data:image/jpg;base64,';
@@ -738,7 +738,7 @@ function flot_slicesbar_graph(
 
     $maxticks = (int) 20;
     if ($sizeForTicks === false) {
-        $maxticks = (int) 20;
+        $maxticks = (int) 12;
     } else if ($sizeForTicks < 300) {
         $maxticks = (int) 3;
     } else if ($sizeForTicks < 600) {
@@ -808,7 +808,23 @@ function flot_slicesbar_graph(
     // Javascript code.
     $return .= "<script type='text/javascript'>";
     $return .= "//<![CDATA[\n";
-    $return .= "pandoraFlotSlicebar('$graph_id','$values','$datacolor','$legend',$intervaltick,'$fontpath',$fontsize,'$separator','$separator2',$id_agent,'$full_legend_date',$not_interactive, '$show', $datelimit, $server_id)";
+    $return .= "pandoraFlotSlicebar(
+        '$graph_id',
+        '$values',
+        '$datacolor',
+        '$legend',
+        $intervaltick,
+        '$fontpath',
+        $fontsize,
+        '$separator',
+        '$separator2',
+        $id_agent,
+        '$full_legend_date',
+        $not_interactive,
+        '$show',
+        $datelimit,
+        '$server_id'
+    )";
     $return .= "\n//]]>";
     $return .= '</script>';
 

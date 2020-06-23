@@ -2142,10 +2142,24 @@ function reporting_html_historical_data($table, $item, $pdf=0)
     $table1->data = [];
     foreach ($item['data'] as $data) {
         if (!is_numeric($data[__('Data')])) {
-            $row = [
-                $data[__('Date')],
-                $data[__('Data')],
-            ];
+            if (is_snapshot_data($data[__('Data')])) {
+                if ($config['command_snapshot']) {
+                    $row = [
+                        $data[__('Date')],
+                        '<img style="width:300px" src="'.io_safe_input($data[__('Data')]).'"></a>',
+                    ];
+                } else {
+                    $row = [
+                        $data[__('Date')],
+                        wordwrap(io_safe_input($data[__('Data')]), 60, "<br>\n", true),
+                    ];
+                }
+            } else {
+                $row = [
+                    $data[__('Date')],
+                    $data[__('Data')],
+                ];
+            }
         } else {
             $row = [
                 $data[__('Date')],
@@ -2191,6 +2205,8 @@ function reporting_html_historical_data($table, $item, $pdf=0)
  */
 function reporting_html_database_serialized($table, $item, $pdf=0)
 {
+    global $config;
+
     $table1 = new stdClass();
     $table1->width = '100%';
     $table1->head = [
@@ -2205,9 +2221,19 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
 
     $table1->data = [];
     foreach ($item['data'] as $data) {
-        foreach ($data['data'] as $data_unserialied) {
+        foreach ($data['data'] as $data_unserialized) {
             $row = [$data['date']];
-            $row = array_merge($row, $data_unserialied);
+            foreach ($data_unserialized as $key => $data_value) {
+                if (is_snapshot_data($data_unserialized[$key])) {
+                    if ($config['command_snapshot']) {
+                        $data_unserialized[$key] = '<img style="width:300px" src="'.io_safe_input($data_value).'"></a>';
+                    } else {
+                        $data_unserialized[$key] = wordwrap(io_safe_input($data_value), 60, "<br>\n", true);
+                    }
+                }
+            }
+
+            $row = array_merge($row, $data_unserialized);
             $table1->data[] = $row;
         }
     }

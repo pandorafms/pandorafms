@@ -685,6 +685,11 @@ if (! isset($config['id_user'])) {
             unset($query_params_redirect['sec2']);
         }
 
+        // Dashboard do not want sec2.
+        if ($home_page == 'Dashboard') {
+            unset($query_params_redirect['sec2']);
+        }
+
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
             if ($key == 'login') {
@@ -1161,7 +1166,7 @@ if ($searchPage) {
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
                     } else {
-                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc.'&refr=60';
+                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
 
                     parse_str($str, $res);

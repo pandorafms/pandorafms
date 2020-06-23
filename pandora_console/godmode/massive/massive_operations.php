@@ -30,7 +30,7 @@ require_once 'include/functions_modules.php';
 enterprise_include('godmode/massive/massive_operations.php');
 
 $tab = (string) get_parameter('tab', 'massive_agents');
-$option = (string) get_parameter('option', '');
+$option = (string) get_parameter('option');
 
 
 $options_alerts = [
@@ -108,8 +108,36 @@ if (in_array($option, array_keys($options_alerts))) {
     $tab = 'massive_satellite';
 } else if (in_array($option, array_keys($options_plugins))) {
     $tab = 'massive_plugins';
-} else {
-    $option = '';
+}
+
+if ($tab == 'massive_agents' && $option == '') {
+    $option = 'edit_agents';
+}
+
+if ($tab == 'massive_modules' && $option == '') {
+    $option = 'edit_modules';
+}
+
+if ($tab == 'massive_policies' && $option == '') {
+    $option = 'edit_policy_modules';
+}
+
+switch ($option) {
+    case 'edit_agents':
+        $help_header = 'massive_agents_tab';
+    break;
+
+    case 'edit_modules':
+        $help_header = 'massive_modules_tab';
+    break;
+
+    case 'edit_policy_modules':
+        $help_header = 'massive_policies_tab';
+    break;
+
+    default:
+        $help_header = '';
+    break;
 }
 
 switch ($tab) {
@@ -119,12 +147,10 @@ switch ($tab) {
 
     case 'massive_agents':
         $options = $options_agents;
-        $help_header = 'massive_agents_tab';
     break;
 
     case 'massive_modules':
         $options = $options_modules;
-        $help_header = 'massive_modules_tab';
     break;
 
     case 'massive_users':
@@ -133,7 +159,6 @@ switch ($tab) {
 
     case 'massive_policies':
         $options = $options_policies;
-        $help_header = 'massive_policies_tab';
     break;
 
     case 'massive_snmp':
@@ -246,7 +271,7 @@ ui_print_page_header(
     $help_header,
     true,
     $onheader,
-    true,
+    false,
     'massivemodal'
 );
 

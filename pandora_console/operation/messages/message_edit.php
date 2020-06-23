@@ -158,7 +158,7 @@ if ($read_message) {
     ).' '.$user_name.' '.__('wrote').":\n\n".$message['mensaje'];
 
 
-    echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
+    echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent='.$show_sent.'&amp;delete_message=1&amp;id='.$message_id.'">';
     echo '</form>';
 
     echo '<form id="reply_message" method="post" action="index.php?sec=message_list&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';

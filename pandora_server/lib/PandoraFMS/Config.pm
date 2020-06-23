@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.745";
-my $pandora_build = "200525";
+my $pandora_version = "7.0NG.746";
+my $pandora_build = "200623";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -399,7 +399,8 @@ sub pandora_load_config {
 	$pa_config->{'max_log_generation'} = 1;
 
 	# Ignore the timestamp in the XML and use the file timestamp instead
-	$pa_config->{'use_xml_timestamp'} = 0; 
+	# If 1 => uses timestamp from received XML #5763.
+	$pa_config->{'use_xml_timestamp'} = 1;
 
 	# Server restart delay in seconds
 	$pa_config->{'restart_delay'} = 60; 
@@ -522,6 +523,7 @@ sub pandora_load_config {
 	$pa_config->{"wux_port"} = 4444; # 7.0
 	$pa_config->{"wux_browser"} = "*firefox"; # 7.0
 	$pa_config->{"wux_webagent_timeout"} = 15; # 7.0
+	$pa_config->{"clean_wux_sessions"} = 1; # 7.0.746 (only selenium 3)
 
 	# Syslog Server
 	$pa_config->{"syslogserver"} = 1; # 7.0.716
@@ -1204,6 +1206,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^wux_webagent_timeout\s+([0-9]*)/i) {
 			$pa_config->{'wux_webagent_timeout'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^clean_wux_sessions\s+([0-9]*)/i) {
+			$pa_config->{'clean_wux_sessions'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^syslogserver\s+([0-1])/i) {
 			$pa_config->{'syslogserver'}= clean_blank($1);

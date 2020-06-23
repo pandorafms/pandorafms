@@ -44,7 +44,7 @@ switch ($action) {
             __('Create new map connection'),
             '',
             false,
-            '',
+            'map_connection_tab',
             true,
             $buttons
         );
@@ -71,7 +71,7 @@ switch ($action) {
             __('Edit map connection'),
             '',
             false,
-            '',
+            'map_connection_tab',
             true,
             $buttons
         );
@@ -200,20 +200,20 @@ switch ($action) {
 $table->width = '90%';
 
 $table->data = [];
-$table->data[0][0] = __('Connection Name').ui_print_help_tip(__('Descriptive name for the connection'), true).':';
+$table->data[0][0] = __('Connection Name');
 $table->data[0][1] = html_print_input_text('name', $mapConnection_name, '', 30, 60, true);
 
-$table->data[1][0] = __('Group').ui_print_help_tip(__('Group that owns the connection'), true).':';
+$table->data[1][0] = __('Group');
 $table->data[1][1] = html_print_select_groups(false, false, false, 'group', $mapConnection_group, '', __('All'), '0', true);
 
-$table->data[2][0] = __('Number of zoom levels').':';
+$table->data[2][0] = __('Number of zoom levels');
 $table->data[2][1] = html_print_input_text('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);
 
 
-$table->data[3][0] = __('Default zoom level').ui_print_help_tip(__('Zoom level used when the map is opened'), true).':';
+$table->data[3][0] = __('Default zoom level');
 $table->data[3][1] = html_print_input_text('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
 
-echo '<h4>'.__('Basic configuration').' '.ui_print_help_icon('gis_basic_configurations_tab', true).'</h4>';
+echo '<h4>'.__('Basic configuration').'</h4>';
 html_print_table($table);
 
 $table->width = '60%';
@@ -222,10 +222,10 @@ $types['OSM'] = __('Open Street Maps');
 $types['Gmap'] = __('Google Maps');
 $types['Static_Image'] = __('Static Image');
 $types['WMS'] = __('WMS Server');
-$table->data[0][0] = __('Type').':';
+$table->data[0][0] = __('Type');
 $table->data[0][1] = html_print_select($types, 'sel_type', $mapConnection_type, 'selMapConnectionType();', __('Please select the connection type'), 0, true);
 
-echo '<h4>'.__('Map connection type').' '.ui_print_help_icon('gis_map_connection_tab', true).'</h4>';
+echo '<h4>'.__('Map connection type').'</h4>';
 html_print_table($table);
 
 $optionsConnectionTypeTable = '';
@@ -284,7 +284,7 @@ $optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4"
 $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('Image URL').':</td>'.'<td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 45, 90, true).'</td>'.'</tr>'.'<tr class="row_1">'.'<td colspan="4"><strong>'.__('Corners of the area of the image').':</strong></td>'.'</tr>'.'<tr class="row_2">'.'<td>'.__('Left').':</td>'.'<td>'.html_print_input_text('bb_left', $bb_left, '', 25, 25, true).'</td>'.'<td>'.__('Bottom').':</td>'.'<td>'.html_print_input_text('bb_bottom', $bb_bottom, '', 25, 25, true).'</td>'.'</tr>'.'<tr class="row_3">'.'<td>'.__('Right').':</td>'.'<td>'.html_print_input_text('bb_right', $bb_right, '', 25, 25, true).'</td>'.'<td>'.__('Top').':</td>'.'<td>'.html_print_input_text('bb_top', $bb_top, '', 25, 25, true).'</td>'.'</tr>'.'<tr class="row_4">'.'<td colspan="4"><strong>'.__('Image Size').':</strong></td>'.'</tr>'.'<tr class="row_5">'.'<td>'.__('Width').':</td>'.'<td>'.html_print_input_text('image_width', $image_width, '', 25, 25, true).'</td>'.'<td>'.__('Height').':</td>'.'<td>'.html_print_input_text('image_height', $image_height, '', 25, 25, true).'</td>'.'</tr>'.'</table>';
 
 // WMS Server Connection.
-$optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('WMS Server URL').'</td>'.'<td>'.'<input id="type" type="hidden" name="type" value="WMS" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 90, 255, true).'</td>'.'</tr>'.'<tr class="row_1">'.'<td>'.__('Layers').ui_print_help_tip(__('Enter a single element or a comma separated list'), true).'</td>'.'<td>'.html_print_input_text('layers', $layers, '', 90, 255, true).'</td>'.'</tr>'.'</table>';
+$optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('WMS Server URL').'</td>'.'<td>'.'<input id="type" type="hidden" name="type" value="WMS" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 90, 255, true).'</td>'.'</tr>'.'<tr class="row_1">'.'<td>'.__('Layers').'</td>'.'<td>'.html_print_input_text('layers', $layers, '', 90, 255, true).'</td>'.'</tr>'.'</table>';
 
 if ($mapConnectionData != null) {
     switch ($mapConnection_type) {
@@ -322,22 +322,22 @@ $table->data = [];
 
 // $table->colspan[0][3] = 3;
 $table->data[0][0] = '';
-$table->data[0][1] = __('Map Center').ui_print_help_tip(__('Position to center the map when the map is opened'), true);
+$table->data[0][1] = __('Map Center');
 $table->data[0][2] = __('Default position for agents without GIS data');
 
-$table->data[1][0] = __('Change in the map').ui_print_help_tip(__('This selects what to change by clicking on the map'), true);
+$table->data[1][0] = __('Change in the map');
 $table->data[1][1] = html_print_radio_button_extended('radio_button', 1, '', 1, false, 'changeSetManualPosition(true, false)', '', true);
 $table->data[1][2] = html_print_radio_button_extended('radio_button', 2, '', 0, false, 'changeSetManualPosition(false, true)', '', true);
 
-$table->data[2][0] = __('Latitude').':';
+$table->data[2][0] = __('Latitude');
 $table->data[2][1] = html_print_input_text('center_latitude', $mapConnection_centerLatitude, '', 10, 10, true);
 $table->data[2][2] = html_print_input_text('default_latitude', $mapConnection_defaultLatitude, '', 10, 10, true);
 
-$table->data[3][0] = __('Longitude').':';
+$table->data[3][0] = __('Longitude');
 $table->data[3][1] = html_print_input_text('center_longitude', $mapConnection_centerLongitude, '', 10, 10, true);
 $table->data[3][2] = html_print_input_text('default_longitude', $mapConnection_defaultLongitude, '', 10, 10, true);
 
-$table->data[4][0] = __('Altitude').':';
+$table->data[4][0] = __('Altitude');
 $table->data[4][1] = html_print_input_text('center_altitude', $mapConnection_centerAltitude, '', 10, 10, true);
 $table->data[4][2] = html_print_input_text('default_altitude', $mapConnection_defaultAltitude, '', 10, 10, true);
 html_print_table($table);

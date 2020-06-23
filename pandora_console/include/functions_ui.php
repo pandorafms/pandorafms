@@ -2699,6 +2699,35 @@ function ui_print_status_image(
 
 
 /**
+ * Returns html code to print a shape for a module.
+ *
+ * @param integer $status Module status.
+ * @param boolean $return True or false.
+ * @param string  $class  Custom class or use defined.
+ *
+ * @return string HTML code for shape.
+ */
+function ui_print_module_status(
+    $status,
+    $return=false,
+    $class='status_rounded_rectangles'
+) {
+    $color = modules_get_color_status($status, true);
+    $title = modules_get_modules_status($status);
+
+    $output = '<div style="background: '.$color;
+    $output .= '" class="'.$class;
+    $output .= '" title="'.$title.'"></div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Get the shape of an image by assigning it a CSS class. Prints an image with CSS representing a status.
  *
  * @param string $type Module/Agent/Alert status.
@@ -3155,6 +3184,13 @@ function ui_print_datatable(array $parameters)
 
     if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
         throw new Exception('[ui_print_datatable]: You must define columns for datatable');
+    }
+
+    if (isset($parameters['column_names'])
+        && is_array($parameters['column_names'])
+        && count($parameters['columns']) != count($parameters['column_names'])
+    ) {
+        throw new Exception('[ui_print_datatable]: Columns and columns names must have same length');
     }
 
     if (!isset($parameters['ajax_url'])) {

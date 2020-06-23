@@ -48,17 +48,13 @@ if (defined('METACONSOLE')) {
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
-    $header_help = 'alerts_action';
-
-    if ($copy_action) {
-        $header_help = 'alerts_config';
-    }
-
-    if ($delete_action) {
-        $header_help = 'alerts_action';
-    }
-
-    ui_print_page_header(__('Alerts').' &raquo; '.__('Alert actions'), 'images/gm_alerts.png', false, $header_help, true);
+    ui_print_page_header(
+        __('Alerts').' &raquo; '.__('Alert actions'),
+        'images/gm_alerts.png',
+        false,
+        '',
+        true
+    );
 }
 
 if ($copy_action) {

@@ -659,7 +659,7 @@ if (empty($traps)) {
         __('SNMP Console'),
         'images/op_snmp.png',
         false,
-        '',
+        'snmp_console',
         false,
         [
             $list,

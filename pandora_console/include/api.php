@@ -261,6 +261,13 @@ if ($correctLogin) {
                         }
                     break;
 
+                    case 'event':
+                        // Preventive check for users if not available write events
+                        if (! check_acl($config['id_user'], $event['id_grupo'], 'EW')) {
+                            return false;
+                        }
+                    break;
+
                     default:
                         // Ignore.
                     break;

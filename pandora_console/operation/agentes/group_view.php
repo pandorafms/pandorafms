@@ -70,7 +70,7 @@ ui_print_page_header(
     __('Group view'),
     'images/group.png',
     false,
-    'group_view',
+    '',
     false,
     $updated_time
 );

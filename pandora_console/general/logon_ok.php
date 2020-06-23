@@ -153,7 +153,7 @@ $table->rowclass[] = '';
 $table->data[] = $tdata;
 
 // Users.
-if (users_is_admin()) {
+if (users_is_admin() || check_acl($config['id_user'], 0, 'UM')) {
     $tdata = [];
     $tdata[0] = reporting_get_stats_users($data);
     $table->rowclass[] = '';

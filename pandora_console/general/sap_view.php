@@ -38,6 +38,16 @@ enterprise_include_once('/include/class/SAPView.class.php');
 
 $ajaxPage = 'general/sap_view';
 
+// Header.
+ui_print_page_header(
+    __('SAP view'),
+    '',
+    false,
+    'sap_view',
+    false,
+    ''
+);
+
 // Control call flow.
 try {
     // User access and validation is being processed on class constructor.

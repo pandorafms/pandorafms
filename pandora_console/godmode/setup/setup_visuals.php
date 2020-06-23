@@ -97,7 +97,7 @@ $table_behaviour->data[$row][1] = html_print_input_text('render_proc_fail', $con
 $row++;
 
 // Daniel maya 02/06/2016 Display menu with click --INI
-$table_behaviour->data[$row][0] = __('Click to display lateral menus').ui_print_help_tip(__('When enabled, the lateral menus are shown when left clicking them, instead of hovering over them'), true);
+$table_behaviour->data[$row][0] = __('Click to display lateral menus');
 $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'click_display',
     1,
@@ -111,7 +111,7 @@ if (enterprise_installed()) {
     $table_behaviour->data[$row][1] = html_print_input_text('service_label_font_size', $config['service_label_font_size'], '', 5, 5, true);
     $row++;
 
-    $table_behaviour->data[$row][0] = __('Space between items in Service maps').ui_print_help_tip(__('It must be bigger than 80'), true);
+    $table_behaviour->data[$row][0] = __('Space between items in Service maps');
     $table_behaviour->data[$row][1] = html_print_input_text('service_item_padding_size', $config['service_item_padding_size'], '', 5, 5, true, false, false, 'onChange="change_servicetree_nodes_padding()"');
     $row++;
 }
@@ -159,7 +159,7 @@ $table_styles->data[$row][1] = html_print_select(
 $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'status_set_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
-// Divs to show icon status Colours (Default)
+// Divs to show icon status Colours (Default).
 $icon_unknown_ball = ui_print_status_image(STATUS_AGENT_UNKNOWN_BALL, '', true);
 $icon_unknown = ui_print_status_image(STATUS_AGENT_UNKNOWN, '', true);
 $icon_ok_ball = ui_print_status_image(STATUS_AGENT_OK_BALL, '', true);
@@ -168,8 +168,8 @@ $icon_warning_ball = ui_print_status_image(STATUS_AGENT_WARNING_BALL, '', true);
 $icon_warning = ui_print_status_image(STATUS_AGENT_WARNING, '', true);
 $icon_bad_ball = ui_print_status_image(STATUS_AGENT_CRITICAL_BALL, '', true);
 $icon_bad = ui_print_status_image(STATUS_AGENT_CRITICAL, '', true);
-// End - Divs to show icon status Colours (Default)
-$table_styles->data[$row][0] = __('Login background').ui_print_help_tip(__('You can place your custom images into the folder images/backgrounds/'), true);
+// End - Divs to show icon status Colours (Default).
+$table_styles->data[$row][0] = __('Login background');
 $backgrounds_list_jpg = list_files('images/backgrounds', 'jpg', 1, 0);
 $backgrounds_list_gif = list_files('images/backgrounds', 'gif', 1, 0);
 $backgrounds_list_png = list_files('images/backgrounds', 'png', 1, 0);
@@ -181,10 +181,9 @@ if (!enterprise_installed()) {
     $open = true;
 }
 
-// Custom favicon
+// Custom favicon.
 $files = list_files('images/custom_favicon', 'ico', 1, 0);
 $table_styles->data[$row][0] = __('Custom favicon');
-$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your favicon into the folder images/custom_favicon/. This file should be in .ico format with a size of 16x16.'), true);
 $table_styles->data[$row][1] = html_print_select(
     $files,
     'custom_favicon',
@@ -383,12 +382,11 @@ if (enterprise_installed()) {
 }
 
 if (enterprise_installed()) {
-    // Get all the custom logos
+    // Get all the custom logos.
     $files = list_files('enterprise/images/custom_general_logos', 'png', 1, 0);
 
-    // Custom docs icon
+    // Custom docs icon.
     $table_styles->data[$row][0] = __('Custom documentation logo');
-    $table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
 
     $table_styles->data[$row][1] = html_print_select(
         $files,
@@ -407,9 +405,8 @@ if (enterprise_installed()) {
     $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_docs_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
     $row++;
 
-    // Custom support icon
+    // Custom support icon.
     $table_styles->data[$row][0] = __('Custom support logo');
-    $table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
     $table_styles->data[$row][1] = html_print_select(
         $files,
         'custom_support_logo',
@@ -427,9 +424,8 @@ if (enterprise_installed()) {
     $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_support_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
     $row++;
 
-    // Custom center networkmap icon
+    // Custom center networkmap icon.
     $table_styles->data[$row][0] = __('Custom networkmap center logo');
-    $table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
     $table_styles->data[$row][1] = html_print_select(
         $files,
         'custom_network_center_logo',
@@ -447,9 +443,8 @@ if (enterprise_installed()) {
     $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_network_center_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
     $row++;
 
-    // Custom center mobile console icon
+    // Custom center mobile console icon.
     $table_styles->data[$row][0] = __('Custom mobile console icon');
-    $table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
     $table_styles->data[$row][1] = html_print_select(
         $files,
         'custom_mobile_console_logo',
@@ -589,7 +584,7 @@ $row++;
     $table_gis->size[0] = '50%';
     $table_gis->data = [];
 
-    $table_gis->data[$row][0] = __('GIS Labels').ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
+    $table_gis->data[$row][0] = __('GIS Labels');
     $table_gis->data[$row][1] = html_print_checkbox_switch(
         'gis_label',
         1,
@@ -604,7 +599,7 @@ $row++;
         $arraySelectIcon[$index] = $index;
     }
 
-    $table_gis->data[$row][0] = __('Default icon in GIS').ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
+    $table_gis->data[$row][0] = __('Default icon in GIS');
     $table_gis->data[$row][1] = html_print_select(
         $arraySelectIcon,
         'gis_default_icon',
@@ -693,21 +688,21 @@ $row++;
     );
     $row++;
 
-    $table_font->data[$row][0] = __('Agent size text').ui_print_help_tip(__('When the agent name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
+    $table_font->data[$row][0] = __('Agent size text');
     $table_font->data[$row][1] = __('Small:').html_print_input_text('agent_size_text_small', $config['agent_size_text_small'], '', 3, 3, true);
     $table_font->data[$row][1] .= ' '.__('Normal:').html_print_input_text('agent_size_text_medium', $config['agent_size_text_medium'], '', 3, 3, true);
     $row++;
 
-    $table_font->data[$row][0] = __('Module size text').ui_print_help_tip(__('When the module name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
+    $table_font->data[$row][0] = __('Module size text');
     $table_font->data[$row][1] = __('Small:').html_print_input_text('module_size_text_small', $config['module_size_text_small'], '', 3, 3, true);
     $table_font->data[$row][1] .= ' '.__('Normal:').html_print_input_text('module_size_text_medium', $config['module_size_text_medium'], '', 3, 3, true);
     $row++;
 
-    $table_font->data[$row][0] = __('Description size text').ui_print_help_tip(__('If the description name has a lot of characters, in some places in %s Console it is necessary to truncate it to N characters.', get_product_name()), true);
+    $table_font->data[$row][0] = __('Description size text');
     $table_font->data[$row][1] = html_print_input_text('description_size_text', $config['description_size_text'], '', 3, 3, true);
     $row++;
 
-    $table_font->data[$row][0] = __('Item title size text').ui_print_help_tip(__('When the item title name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console.', get_product_name()), true);
+    $table_font->data[$row][0] = __('Item title size text');
     $table_font->data[$row][1] = html_print_input_text(
         'item_title_size_text',
         $config['item_title_size_text'],
@@ -718,7 +713,7 @@ $row++;
     );
     $row++;
 
-    $table_font->data[$row][0] = __('Show unit along with value in reports').ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
+    $table_font->data[$row][0] = __('Show unit along with value in reports');
     $table_font->data[$row][1] = html_print_checkbox_switch(
         'simple_module_value',
         1,
@@ -792,7 +787,6 @@ $row++;
     }
 
     $table_chars->data[$row][0] = __('Data precision');
-    $table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. It must be a number between 0 and 5, except in graphs.'), true);
     $table_chars->data[$row][1] = html_print_input_text('graph_precision', $config['graph_precision'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
     $row++;
 
@@ -801,7 +795,6 @@ $row++;
     }
 
     $table_chars->data[$row][0] = __('Data precision in graphs');
-    $table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. If the field is empty, it will show all the decimals'), true);
     $table_chars->data[$row][1] = html_print_input_text('short_module_graph_data', $config['short_module_graph_data'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
     $row++;
 
@@ -860,12 +853,10 @@ $row++;
     $row++;
 
     $table_chars->data[$row][0] = __('Percentile');
-    $table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graphs'), true);
     $table_chars->data[$row][1] = html_print_input_text('percentil', $config['percentil'], '', 20, 20, true);
     $row++;
 
     $table_chars->data[$row][0] = __('Graph TIP view:');
-    $table_chars->data[$row][0] .= ui_print_help_tip(__('This option may cause performance issues'), true);
 
     $options_full_escale    = [];
     $options_full_escale[0] = __('None');
@@ -877,7 +868,6 @@ $row++;
 
 
     $table_chars->data[$row][0] = __('Show only average');
-    $table_chars->data[$row][0] .= ui_print_help_tip(__('If enabled, the module graphs will only show the average value, otherwise it will show three sets of data showing maximums, averages and minimums.'), true);
 
     $options_soft_graphs    = [];
     $options_soft_graphs[0] = __('Standard mode');
@@ -924,10 +914,6 @@ $row++;
 
     // Remove when the new view reaches rock solid stability.
     $table_vc->data[$row][0] = __('Legacy Visual Console View');
-    $table_vc->data[$row][0] .= ui_print_help_tip(
-        __('To use the old view when using the Visual Console visor'),
-        true
-    );
     $table_vc->data[$row][1] = html_print_checkbox_switch(
         'legacy_vc',
         1,
@@ -962,21 +948,21 @@ $row++;
     );
     $row++;
 
-    $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console').ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
+    $table_vc->data[$row][0] = __('Default interval for refresh on Visual Console');
     $table_vc->data[$row][1] = html_print_select($values, 'vc_refr', (int) $config['vc_refr'], '', 'N/A', 0, true, false, false);
     $row++;
 
     $vc_favourite_view_array[0] = __('Classic view');
     $vc_favourite_view_array[1] = __('View of favorites');
-    $table_vc->data[$row][0] = __('Type of view of visual consoles').ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
+    $table_vc->data[$row][0] = __('Type of view of visual consoles');
     $table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config['vc_favourite_view'], '', '', 0, true);
     $row++;
 
-    $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu').ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite consoles'), true);
+    $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu');
     $table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
     $row++;
 
-    $table_vc->data[$row][0] = __('Default line thickness for the Visual Console').ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
+    $table_vc->data[$row][0] = __('Default line thickness for the Visual Console');
     $table_vc->data[$row][1] = html_print_input_text('vc_line_thickness', (int) $config['vc_line_thickness'], '', 5, 5, true);
 
 
@@ -995,7 +981,7 @@ $row++;
     $table_ser->size[0] = '50%';
     $table_ser->data = [];
 
-    $table_ser->data['number'][0] = __('Number of favorite services to show in the menu').ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite services'), true);
+    $table_ser->data['number'][0] = __('Number of favorite services to show in the menu');
     $table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
 
     echo '<fieldset>';
@@ -1014,10 +1000,7 @@ $row++;
 
     $table_report->data = [];
 
-    $table_report->data[$row][0] = __('Show report info with description').ui_print_help_tip(
-        __('Custom report description info. It will be applied to all reports and templates by default.'),
-        true
-    );
+    $table_report->data[$row][0] = __('Show report info with description');
     $table_report->data[$row][1] = html_print_checkbox_switch(
         'custom_report_info',
         1,
@@ -1026,10 +1009,7 @@ $row++;
     );
     $row++;
 
-    $table_report->data[$row][0] = __('Custom report front page').ui_print_help_tip(
-        __('Custom report front page. It will be applied to all reports and templates by default.'),
-        true
-    );
+    $table_report->data[$row][0] = __('Custom report front page');
     $table_report->data[$row][1] = html_print_checkbox_switch(
         'custom_report_front',
         1,
@@ -1064,10 +1044,6 @@ $row++;
 
 
     $table_report->data[$row][0] = __('Graph image height for HTML reports');
-    $table_report->data[$row][0] .= ui_print_help_tip(
-        __('This is the height in pixels of the module graph or custom graph in the reports (only: HTML)'),
-        true
-    );
     $table_report->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
 
     $row++;
@@ -1077,10 +1053,6 @@ $row++;
         'tiny'  => 'Short',
     ];
     $table_report->data[$row][0] = __('Interval description');
-    $table_report->data[$row][0] .= ui_print_help_tip(
-        __('A long interval description is for example 10 hours, 20 minutes 33 seconds”, a short one is 10h 20m 33s'),
-        true
-    );
     $table_report->data[$row][1] = html_print_select($interval_description, 'interval_description', $config['interval_description'], '', '', '', true, false, false);
 
     $row++;
@@ -1098,6 +1070,7 @@ $row++;
         __("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."),
         true
     );
+
     $table_report->data['custom_report_front-logo'][1] = html_print_select(
         $customLogos,
         'custom_report_front_logo',
@@ -1165,7 +1138,7 @@ $row++;
     );
 
     echo '<fieldset>';
-    echo '<legend>'.__('Reports configuration').'</legend>';
+    echo '<legend>'.__('Reports configuration ').ui_print_help_icon('reports_configuration_tab', true).'</legend>';
     html_print_table($table_report);
     echo '</fieldset>';
 
@@ -1182,7 +1155,7 @@ $row++;
     $table_other->size[3] = '12%';
     $table_other->data = [];
 
-    $table_other->data[$row][0] = __('Custom graphviz directory').ui_print_help_tip(__('Custom directory where the graphviz binaries are stored.'), true);
+    $table_other->data[$row][0] = __('Custom graphviz directory');
     $table_other->data[$row][1] = html_print_input_text(
         'graphviz_bin_dir',
         $config['graphviz_bin_dir'],
@@ -1206,10 +1179,6 @@ $row++;
     $row++;
 
     $table_other->data[$row][0] = __('Show only the group name');
-    $table_other->data[$row][0] .= ui_print_help_tip(
-        __('Show the group name instead the group icon.'),
-        true
-    );
     $table_other->data[$row][1] = html_print_checkbox_switch(
         'show_group_name',
         1,

@@ -287,7 +287,7 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
-                    if (!config_update_value('server_log_dir', get_parameter('server_log_dir'))) {
+                    if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
 
@@ -353,18 +353,6 @@ function config_update_config()
 
                     if (!config_update_value('email_password', io_input_password(get_parameter('email_password')))) {
                         $error_update[] = __('Email password');
-                    }
-
-                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
-                        $error_update[] = __('WebSocket bind address');
-                    }
-
-                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
-                        $error_update[] = __('WebSocket port');
-                    }
-
-                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
-                        $error_update[] = __('WebSocket proxy url');
                     }
                 break;
 
@@ -1212,8 +1200,8 @@ function config_update_config()
                     // --------------------------------------------------
                     // CUSTOM VALUES POST PROCESS
                     // --------------------------------------------------
-                    $custom_value = get_parameter('custom_value');
-                    $custom_text = get_parameter('custom_text');
+                    $custom_value = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_value'))));
+                    $custom_text = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_text'))));
                     $custom_value_add = (bool) get_parameter('custom_value_add', 0);
                     $custom_value_to_delete = get_parameter('custom_value_to_delete', 0);
 
@@ -1284,8 +1272,8 @@ function config_update_config()
                     // --------------------------------------------------
                     // MODULE CUSTOM UNITS
                     // --------------------------------------------------
-                    $custom_unit = get_parameter('custom_module_unit');
-                    $custom_unit_to_delete = get_parameter('custom_module_unit_to_delete', '');
+                    $custom_unit = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_module_unit'))));
+                    $custom_unit_to_delete = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_module_unit_to_delete', ''))));
 
                     if (!empty($custom_unit)) {
                         if (!add_custom_module_unit(
@@ -1596,6 +1584,20 @@ function config_update_config()
                     $module_library_password = get_parameter('module_library_password');
                     if ($module_library_password == '' || !config_update_value('module_library_password', $module_library_password)) {
                         $error_update[] = __('Password');
+                    }
+                break;
+
+                case 'websocket_engine':
+                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
+                        $error_update[] = __('WebSocket bind address');
+                    }
+
+                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
+                        $error_update[] = __('WebSocket port');
+                    }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
                     }
                 break;
 

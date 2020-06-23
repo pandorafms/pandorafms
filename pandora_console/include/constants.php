@@ -149,8 +149,8 @@ define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
 define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
-define('COL_INFORMATIONAL', '#E4E4E4');
-define('COL_MAINTENANCE', '#4a83f3');
+define('COL_INFORMATIONAL', '#4a83f3');
+define('COL_MAINTENANCE', '#E4E4E4');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');
@@ -355,6 +355,9 @@ define('MODULE_PREDICTION_NETFLOW', 4);
 define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
+
+// Forced agent OS ID for cluster agents.
+define('CLUSTER_OS_ID', 100);
 
 // Type of Webserver Modules.
 define('MODULE_WEBSERVER_CHECK_LATENCY', 30);
@@ -598,6 +601,7 @@ define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
+define('DISCOVERY_APP_DB2', 11);
 
 
 // Force task build tmp results.

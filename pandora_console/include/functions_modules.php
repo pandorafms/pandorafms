@@ -2427,14 +2427,43 @@ function modules_get_modulegroup_name($modulegroup_id)
 /**
  * Returns target color to be used based on the status received.
  *
- * @param integer $status Source information.
+ * @param integer $status       Source information.
+ * @param boolean $force_module Use module constants only.
  *
  * @return string HTML tag for color.
  */
-function modules_get_color_status($status)
+function modules_get_color_status($status, $force_module=false)
 {
     if (isset($status) === false) {
         return COL_UNKNOWN;
+    }
+
+    if ($force_module === true) {
+        switch ($status) {
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            case AGENT_MODULE_STATUS_NOT_NORMAL:
+            return COL_CRITICAL;
+
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            return COL_ALERTFIRED;
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return COL_NOTINIT;
+
+            case AGENT_MODULE_STATUS_NORMAL:
+            return COL_NORMAL;
+
+            case AGENT_MODULE_STATUS_WARNING:
+            return COL_WARNING;
+
+            case AGENT_MODULE_STATUS_ALL:
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            default:
+            return COL_UNKNOWN;
+        }
     }
 
     switch ((string) $status) {

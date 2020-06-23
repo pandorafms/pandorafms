@@ -52,7 +52,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no cluster
         if (check_acl($config['id_user'], 0, 'AW')) {
             ?>
         
-        <form action="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&step=1" method="post">
+        <form action='index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&op=new' method="post">
             <input style="margin-bottom:20px;" type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
         </form>
         

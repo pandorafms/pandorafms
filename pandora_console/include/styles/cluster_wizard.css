@@ -1,0 +1,29 @@
+.wizard select {
+  min-width: 16em;
+}
+
+.wizard .multi-select.flex-row-vcenter.w80p.mw600px {
+  margin-top: 2em;
+}
+
+.flex-row.line.w100p {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: baseline;
+}
+
+.wizard .flex-row.line.w100p > label:not(.p-switch) {
+  width: auto;
+  margin: 0 0.2em;
+  font-weight: normal;
+}
+
+.wizard .flex-row.line.w100p > input {
+  max-width: 100px;
+  margin: 0 1em;
+}
+
+b.state {
+  font-weight: bolder;
+  font-size: 1.1em;
+}

@@ -104,6 +104,27 @@ class ServiceMapWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Cell ID.
+     *
+     * @var integer
+     */
+    protected $cellId;
+
+    /**
+     * Widget ID.
+     *
+     * @var integer
+     */
+    protected $widgetId;
+
+    /**
+     * Dashboard ID.
+     *
+     * @var integer
+     */
+    protected $dashboardId;
+
 
     /**
      * Construct.
@@ -144,6 +165,15 @@ class ServiceMapWidget extends Widget
 
         // Grid Width.
         $this->gridWidth = $gridWidth;
+
+        // Cell Id.
+        $this->cellId = $cellId;
+
+        // Widget ID.
+        $this->widgetId = $widgetId;
+
+        // Dashboard ID.
+        $this->dashboardId = $dashboardId;
 
         // Options.
         $this->values = $this->decoders($this->getOptionsWidget());
@@ -237,6 +267,14 @@ class ServiceMapWidget extends Widget
         }
 
         $inputs[] = [
+            'label' => \ui_print_info_message(
+                __('ZOOM functionality is only available when there is only one such widget in the dashboard'),
+                '',
+                true
+            ),
+        ];
+
+        $inputs[] = [
             'label'     => __('Service'),
             'arguments' => [
                 'type'          => 'select',
@@ -249,8 +287,10 @@ class ServiceMapWidget extends Widget
             ],
         ];
 
-        // Show legend.
-        $inputs[] = [
+        // TODO refactoriced services: Hidden legend.
+        /*
+            // Show legend.
+            $inputs[] = [
             'label'     => __('Show legend'),
             'arguments' => [
                 'name'  => 'showLegend',
@@ -258,7 +298,8 @@ class ServiceMapWidget extends Widget
                 'type'  => 'switch',
                 'value' => $values['showLegend'],
             ],
-        ];
+            ];
+        */
 
         return $inputs;
     }
@@ -275,8 +316,7 @@ class ServiceMapWidget extends Widget
         $values = parent::getPost();
 
         $values['serviceId'] = \get_parameter('serviceId', 0);
-        $values['showLegend'] = \get_parameter_switch('showLegend');
-
+        // $values['showLegend'] = \get_parameter_switch('showLegend');
         return $values;
     }
 
@@ -314,10 +354,14 @@ class ServiceMapWidget extends Widget
             return $output;
         }
 
-        $output .= "<div id='container_servicemap' style='position: relative; text-align: center;'>";
+        $containerId = 'container_servicemap_'.$this->values['serviceId'].'_'.$this->cellId;
+        $style = 'position: relative; text-align: center;';
+        $output .= "<div id='".$containerId."' style='".$style."'>";
 
-        if ($this->values['showLegend'] === 1) {
-            $output .= "<div id='container_servicemap_legend'>";
+        // TODO refactoriced services: Hidden legend.
+        /*
+            if ($this->values['showLegend'] === 1) {
+            $output .= "<div id='container_servicemap_legend".$this->values['serviceId'].'_'.$this->cellId."'>";
             $output .= '<table>';
             $output .= "<tr class='legend_servicemap_title'><td colspan='3' style='padding-bottom: 10px; min-width: 177px;'><b>".__('Legend').'</b></td>';
             $output .= "<td><img class='legend_servicemap_toggle' style='padding-bottom: 10px;' src='images/darrowup.png'></td></tr>";
@@ -347,6 +391,22 @@ class ServiceMapWidget extends Widget
             $output .= '</tr>';
             $output .= '</table>';
             $output .= '</div>';
+            }
+        */
+
+        // TODO: removed refactoriced services. Only 1 widget Zoom.
+        $sql = sprintf(
+            'SELECT COUNT(*)
+            FROM twidget_dashboard
+            WHERE id_dashboard = %s
+                AND id_widget = %s',
+            $this->dashboardId,
+            $this->widgetId
+        );
+        $countDashboardServices = \db_get_value_sql($sql);
+        $disableZoom = false;
+        if ($countDashboardServices > 1) {
+            $disableZoom = true;
         }
 
         $output .= html_print_input_hidden(
@@ -360,7 +420,9 @@ class ServiceMapWidget extends Widget
             $this->values['serviceId'],
             false,
             $size['width'],
-            $size['height']
+            $size['height'],
+            $this->cellId,
+            $disableZoom
         );
         $output .= ob_get_clean();
         $output .= '</div>';

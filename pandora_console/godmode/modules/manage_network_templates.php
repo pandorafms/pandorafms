@@ -39,7 +39,7 @@ ui_print_page_header(
     __('Module management').' &raquo; '.__('Module template management'),
     'images/gm_modules.png',
     false,
-    'module_template_tab',
+    '',
     true,
     '',
     true,

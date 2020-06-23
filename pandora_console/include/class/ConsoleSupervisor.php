@@ -221,6 +221,11 @@ class ConsoleSupervisor
          */
         $this->checkAllowOverrideEnabled();
 
+        /*
+         * Check if AllowOverride is None or All.
+         *  NOTIF.HAMASTER.MESSAGE
+         */
+        $this->checkHaStatus();
     }
 
 
@@ -451,6 +456,13 @@ class ConsoleSupervisor
          */
         $this->checkAllowOverrideEnabled();
 
+          /*
+           * Check if HA status.
+           */
+        if (enterprise_installed()) {
+            $this->checkHaStatus();
+        }
+
     }
 
 
@@ -618,6 +630,8 @@ class ConsoleSupervisor
             case 'NOTIF.UPDATEMANAGER.MESSAGES':
             case 'NOTIF.CRON.CONFIGURED':
             case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
+            case 'NOTIF.HAMASTER.MESSAGE':
+
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -2344,10 +2358,9 @@ class ConsoleSupervisor
             sprintf(
                 'SELECT `name`, `version` 
                 FROM tserver 
-                WHERE server_type NOT IN ( %d , %d )
+                WHERE server_type != %d
                 GROUP BY `version`',
-                SERVER_TYPE_ENTERPRISE_SATELLITE,
-                SERVER_TYPE_MAINFRAME
+                SERVER_TYPE_ENTERPRISE_SATELLITE
             )
         );
 
@@ -2432,6 +2445,43 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.ALLOWOVERRIDE.MESSAGE');
         }
 
+    }
+
+
+    /**
+     * Check if AllowOveride is None or All.
+     *
+     * @return void
+     */
+    public function checkHaStatus()
+    {
+        global $config;
+        enterprise_include_once('include/class/DatabaseHA.class.php');
+
+        $cluster = new DatabaseHA();
+        $nodes = $cluster->getNodes();
+
+        foreach ($nodes as $node) {
+            $cluster_master = $cluster->isClusterMaster($node);
+            $db_master = $cluster->isDBMaster($node);
+
+            $message = '<pre>The roles played by node '.$node['host'].' are out of sync:
+            Role in the cluster: Master
+            Role in the database: Slave Desynchronized operation in the node';
+
+            if ((int) $db_master !== (int) $cluster_master) {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.HAMASTER.MESSAGE',
+                        'title'   => __('Desynchronized operation on the node '.$node['host']),
+                        'message' => __($message),
+                        'url'     => ui_get_full_url('index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster'),
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
+            }
+        }
     }
 
 

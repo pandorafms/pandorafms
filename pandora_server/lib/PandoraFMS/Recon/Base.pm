@@ -40,6 +40,7 @@ use constant {
   DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
   DISCOVERY_DEPLOY_AGENTS => 9,
   DISCOVERY_APP_SAP => 10,
+  DISCOVERY_APP_DB2 => 11,
   DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,
@@ -1661,6 +1662,9 @@ sub database_scan($$$) {
     # Skip database scan in Oracle tasks
     next if defined($self->{'type'}) && $self->{'type'} == DISCOVERY_APP_ORACLE;
 
+    # Skip database scan in DB2 tasks
+    next if defined($self->{'type'}) && $self->{'type'} == DISCOVERY_APP_DB2;
+
     my $__data = $obj->scan_databases();
 
     if (ref($__data) eq "ARRAY") {
@@ -1705,6 +1709,8 @@ sub app_scan($) {
     $type = 'MySQL';
   } elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
     $type = 'Oracle';
+  } elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2) {
+    $type = 'DB2';
   } elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
     $type = 'SAP';
   } else {
@@ -1787,7 +1793,9 @@ sub app_scan($) {
 
         # Scan connected obj.
         if (   $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
-          || $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE) {
+          || $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
+          || $self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2
+        ) {
 
           # Database.
           $results = $self->database_scan($type, $obj, $global_percent, \@targets);
@@ -1894,6 +1902,7 @@ sub scan($) {
   if (defined($self->{'task_data'})) {
     if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
       ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
+      ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2
       ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
       # Application scan.
       $self->call('message', "Scanning application ...", 6);

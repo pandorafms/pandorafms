@@ -143,7 +143,7 @@ function mainAgentsAlerts()
         __('Agents/Alerts'),
         'images/op_alerts.png',
         false,
-        'agents_alerts_view',
+        '',
         false,
         $updated_time
     );

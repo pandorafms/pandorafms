@@ -1291,6 +1291,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
 	`citicity` INT(10) UNSIGNED DEFAULT '0',
 	`id_source` BIGINT(20) UNSIGNED NOT NULL,
 	`subtype` VARCHAR(255) DEFAULT '',
+	`hidden_sent` TINYINT(1) UNSIGNED DEFAULT 0,
 	PRIMARY KEY (`id_mensaje`),
 	UNIQUE KEY `id_mensaje` (`id_mensaje`),
 	KEY `tsource_fk` (`id_source`),
@@ -3777,4 +3778,15 @@ CREATE TABLE `tremote_command_target` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
     ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnode_relations`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnode_relations` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+    `gateway` VARCHAR(100) NOT NULL,
+	`imei` VARCHAR(100) NOT NULL,
+	`node_address` VARCHAR(60) NOT NULL,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

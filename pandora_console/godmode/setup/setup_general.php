@@ -117,10 +117,10 @@ $table->data[$i++][1] = html_print_select_from_sql(
     true
 );
 
-$table->data[$i][0] = __('Remote config directory').ui_print_help_tip(__('Directory where agent remote configuration is stored.'), true);
+$table->data[$i][0] = __('Remote config directory');
 $table->data[$i++][1] = html_print_input_text('remote_config', io_safe_output($config['remote_config']), '', 30, 100, true);
 
-$table->data[$i][0] = __('Phantomjs bin directory').ui_print_help_tip(__('Directory where phantomjs binary file exists and has execution grants.'), true);
+$table->data[$i][0] = __('Phantomjs bin directory');
 $table->data[$i++][1] = html_print_input_text('phantomjs_bin', io_safe_output($config['phantomjs_bin']), '', 30, 100, true);
 
 $table->data[$i][0] = __('Auto login (hash) password');
@@ -146,10 +146,10 @@ $table->data[$i++][1] = html_print_checkbox_switch_extended('use_cert', 1, $conf
 
 $table->rowstyle[$i] = 'display: none;';
 $table->rowid[$i] = 'ssl-path-tr';
-$table->data[$i][0] = __('Path of SSL Cert.').ui_print_help_tip(__('Path where you put your cert and name of this cert. Remember your cert only in .pem extension.'), true);
+$table->data[$i][0] = __('Path of SSL Cert.');
 $table->data[$i++][1] = html_print_input_text('cert_path', io_safe_output($config['cert_path']), '', 50, 255, true);
 
-$table->data[$i][0] = __('Attachment store').ui_print_help_tip(__('Directory where temporary data is stored.'), true);
+$table->data[$i][0] = __('Attachment store');
 $table->data[$i++][1] = html_print_input_text('attachment_store', io_safe_output($config['attachment_store']), '', 50, 255, true);
 
 $table->data[$i][0] = __('IP list with API access');
@@ -161,7 +161,7 @@ if (isset($_POST['list_ACL_IPs_for_API'])) {
 
 $table->data[$i++][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
-$table->data[$i][0] = __('API password').ui_print_help_tip(__('Please be careful if you put a password put https access.'), true);
+$table->data[$i][0] = __('API password');
 $table->data[$i++][1] = html_print_input_password('api_password', io_output_password($config['api_password']), '', 25, 255, true);
 
 $table->data[$i][0] = __('Enable GIS features');
@@ -171,7 +171,6 @@ $table->data[$i][0] = __('Enable Netflow');
 $rbt_disabled = false;
 if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
     $rbt_disabled = true;
-    $table->data[$i][0] .= ui_print_help_tip(__('Not supported in Windows systems'), true);
 }
 
 $table->data[$i++][1] = html_print_checkbox_switch_extended('activate_netflow', 1, $config['activate_netflow'], $rbt_disabled, '', '', true);
@@ -216,10 +215,7 @@ foreach ($timezones as $timezone) {
     }
 }
 
-$table->data[$i][0] = __('Timezone setup').' '.ui_print_help_tip(
-    __('Must have the same time zone as the system or database to avoid mismatches of time.'),
-    true
-);
+$table->data[$i][0] = __('Timezone setup');
 $table->data[$i][1] = html_print_input_text_extended(
     'timezone_text',
     $config['timezone'],
@@ -253,14 +249,9 @@ $table->data[$i][1] .= ' <a href="javascript: toggleButton(\'warning\');">'.html
 $table->data[$i++][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[$i][0] = __('Public URL');
-$table->data[$i][0] .= ui_print_help_tip(
-    __('Set this value when your %s across inverse proxy or for example with mod_proxy of Apache.', get_product_name()).' '.__('Without the index.php such as http://domain/console_url/'),
-    true
-);
 $table->data[$i++][1] = html_print_input_text('public_url', $config['public_url'], '', 40, 255, true);
 
 $table->data[$i][0] = __('Force use Public URL');
-$table->data[$i][0] .= ui_print_help_tip(__('Force using defined public URL).', get_product_name()), true);
 $table->data[$i++][1] = html_print_switch(
     [
         'name'  => 'force_public_url',
@@ -276,18 +267,16 @@ $table->data[$i][0] = __('Public URL host exclusions');
 $table->data[$i++][1] = html_print_textarea('public_url_exclusions', 2, 25, $config['public_url_exclusions'], 'style="height: 50px; width: 300px"', true);
 
 $table->data[$i][0] = __('Referer security');
-$table->data[$i][0] .= ui_print_help_tip(__("If enabled, actively checks if the user comes from %s's URL", get_product_name()), true);
 $table->data[$i++][1] = html_print_checkbox_switch('referer_security', 1, $config['referer_security'], true);
 
 $table->data[$i][0] = __('Event storm protection');
-$table->data[$i][0] .= ui_print_help_tip(__('If set to yes no events or alerts will be generated, but agents will continue receiving data.'), true);
 $table->data[$i++][1] = html_print_checkbox_switch('event_storm_protection', 1, $config['event_storm_protection'], true);
 
 
-$table->data[$i][0] = __('Command Snapshot').ui_print_help_tip(__('The string modules with several lines show as command output'), true);
+$table->data[$i][0] = __('Command Snapshot');
 $table->data[$i++][1] = html_print_checkbox_switch('command_snapshot', 1, $config['command_snapshot'], true);
 
-$table->data[$i][0] = __('Server logs directory').ui_print_help_tip(__('Directory where the server logs are stored.'), true);
+$table->data[$i][0] = __('Server logs directory');
 $table->data[$i++][1] = html_print_input_text(
     'server_log_dir',
     $config['server_log_dir'],
@@ -297,7 +286,7 @@ $table->data[$i++][1] = html_print_input_text(
     true
 );
 
-$table->data[$i][0] = __('Log size limit in system logs viewer extension').ui_print_help_tip(__('Max size (in bytes) for the logs to be shown.'), true);
+$table->data[$i][0] = __('Log size limit in system logs viewer extension');
 $table->data[$i++][1] = html_print_input_text(
     'max_log_size',
     $config['max_log_size'],
@@ -312,7 +301,7 @@ $modes_tutorial = [
     'on_demand' => __('On demand'),
     'expert'    => __('Expert'),
 ];
-$table->data[$i][0] = __('Tutorial mode').ui_print_help_tip(__("Configuration of our clippy, 'full mode' show the icon in the header and the contextual helps and it is noise, 'on demand' it is equal to full but it is not noise and 'expert' the icons in the header and the context is not."), true);
+$table->data[$i][0] = __('Tutorial mode');
 $table->data[$i++][1] = html_print_select(
     $modes_tutorial,
     'tutorial_mode',
@@ -324,10 +313,10 @@ $table->data[$i++][1] = html_print_select(
 );
 
 $config['past_planned_downtimes'] = isset($config['past_planned_downtimes']) ? $config['past_planned_downtimes'] : 1;
-$table->data[$i][0] = __('Allow create planned downtimes in the past').ui_print_help_tip(__('The planned downtimes created in the past will affect the SLA reports'), true);
+$table->data[$i][0] = __('Allow create planned downtimes in the past');
 $table->data[$i++][1] = html_print_checkbox_switch('past_planned_downtimes', 1, $config['past_planned_downtimes'], true);
 
-$table->data[$i][0] = __('Limit for bulk operations').ui_print_help_tip(__('Your PHP environment is set to 1000 max_input_vars. This parameter should have the same value or lower.', ini_get('max_input_vars')), true);
+$table->data[$i][0] = __('Limit for bulk operations');
 $table->data[$i++][1] = html_print_input_text(
     'limit_parameters_massive',
     $config['limit_parameters_massive'],
@@ -340,13 +329,13 @@ $table->data[$i++][1] = html_print_input_text(
 $table->data[$i][0] = __('Include agents manually disabled');
 $table->data[$i++][1] = html_print_checkbox_switch('include_agents', 1, $config['include_agents'], true);
 
-$table->data[$i][0] = __('Audit log directory').ui_print_help_tip(__('Directory where audit log is stored.'), true);
+$table->data[$i][0] = __('Audit log directory');
 $table->data[$i++][1] = html_print_input_text('auditdir', io_safe_output($config['auditdir']), '', 30, 100, true);
 
 $table->data[$i][0] = __('Set alias as name by default in agent creation');
 $table->data[$i++][1] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
 
-$table->data[$i][0] = __('Unique IP').ui_print_help_tip(__('Set the primary IP address as the unique IP, preventing the same primary IP address from being used in more than one agent'), true);
+$table->data[$i][0] = __('Unique IP');
 $table->data[$i++][1] = html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
@@ -392,7 +381,7 @@ $table_mail_conf->data[6][1] = html_print_input_password('email_password', io_ou
 
 $uniqid = uniqid();
 
-$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('$uniqid');", 'class="sub next"', true).ui_print_help_tip(__('Check the current saved email configuration by sending a test email to a desired account.'), true);
+$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('$uniqid');", 'class="sub next"', true);
 
 print_email_test_modal_window($uniqid);
 
@@ -420,7 +409,7 @@ function print_email_test_modal_window($id)
     $table_mail_test->style[0] = 'font-weight: bold';
     $table_mail_test->colspan[1][0] = 2;
 
-    $table_mail_test->data[0][0] = __('Address').ui_print_help_tip(__('Email address to which the test email will be sent. Please check your inbox after email is sent.'), true);
+    $table_mail_test->data[0][0] = __('Address');
     $table_mail_test->data[0][1] = html_print_input_text('email_test_address', '', '', 40, 100, true);
 
     $table_mail_test->data[1][0] = html_print_button(__('Send'), 'email_test', false, '', 'class="sub next"', true).'&nbsp&nbsp<span id="email_test_sent_message" style="display:none;">Email sent</span><span id="email_test_failure_message" style="display:none;">Email could not been sent</span>';

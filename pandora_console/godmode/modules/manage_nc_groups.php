@@ -40,7 +40,7 @@ if (defined('METACONSOLE')) {
         __('Module management').' &raquo; '.__('Component group management'),
         '',
         false,
-        'component_groups',
+        '',
         true
     );
     $sec = 'gmodules';

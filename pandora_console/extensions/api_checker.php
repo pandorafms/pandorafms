@@ -197,7 +197,7 @@ function extension_api_checker()
     echo '</fieldset>';
 
     echo '<fieldset>';
-    echo '<legend>'.__('Call parameters').'</legend>';
+    echo '<legend>'.__('Call parameters').' '.ui_print_help_tip(__('Action: get Operation: module_last_value id: 63'), true).'</legend>';
     html_print_table($table2);
     echo '</fieldset>';
     echo "<div style='text-align: right;'>";

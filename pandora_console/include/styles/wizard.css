@@ -70,9 +70,8 @@ ul.wizard li > textarea {
 }
 
 .wizard .discovery_inline_input {
-  display: flex;
+  display: inline;
   align-content: end;
-  flex: 0;
   align-self: flex-start;
 }
 

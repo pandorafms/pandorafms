@@ -38,7 +38,7 @@ ui_require_css_file('dashboards');
     __('Dashboards'),
     '',
     false,
-    'dashboards_tab',
+    '',
     false
 );
 

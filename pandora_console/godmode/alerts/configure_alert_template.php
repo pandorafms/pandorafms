@@ -58,11 +58,11 @@ if ($a_template !== false) {
         } else {
             $step = (int) get_parameter('step', 1);
             if ($step == 1) {
-                $help_header = 'configure_alert_template_step_1';
+                $help_header = '';
             } else if ($step == 2) {
                 $help_header = 'configure_alert_template_step_2';
             } else if ($step == 3) {
-                $help_header = 'configure_alert_template_step_3';
+                $help_header = '';
             }
 
             ui_print_page_header(
@@ -115,11 +115,11 @@ if ($a_template !== false) {
     } else {
         $step = (int) get_parameter('step', 1);
         if ($step == 1) {
-            $help_header = 'configure_alert_template_step_1';
+            $help_header = '';
         } else if ($step == 2) {
             $help_header = 'configure_alert_template_step_2';
         } else if ($step == 3) {
-            $help_header = 'configure_alert_template_step_3';
+            $help_header = '';
         }
 
         ui_print_page_header(
@@ -601,7 +601,7 @@ if ($step == 2) {
     $table->data[0][2] = __('Use special days list');
     $table->data[0][3] = html_print_checkbox('special_day', 1, $special_day, true);
 
-    $table->data[1][0] = __('Time from').' '.ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
+    $table->data[1][0] = __('Time from');
     $table->data[1][1] = html_print_input_text(
         'time_from',
         $time_from,
@@ -610,7 +610,7 @@ if ($step == 2) {
         8,
         true
     );
-    $table->data[1][2] = __('Time to').' '.ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
+    $table->data[1][2] = __('Time to');
     $table->data[1][3] = html_print_input_text(
         'time_to',
         $time_to,
@@ -849,7 +849,7 @@ if ($step == 2) {
         }
 
         // $table->rowclass['field'.$i] = 'row_field';
-        $table->data['field'.$i][0] = sprintf(__('Field %s'), $i).ui_print_help_icon('alert_macros', true);
+        $table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
         // TinyMCE
         // triggering fields
             // basic

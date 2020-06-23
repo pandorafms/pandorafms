@@ -692,9 +692,7 @@ class HostDevices extends Wizard
             if ($this->page == 1) {
                 $title = __(
                     '"%s" features',
-                    io_safe_output(
-                        $this->task['name']
-                    )
+                    $this->task['name']
                 );
             }
 

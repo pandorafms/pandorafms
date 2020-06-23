@@ -348,7 +348,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $propagate = (bool) get_parameter('propagate');
 
     $aviable_name = true;
-    if (preg_match('<script>', $name)) {
+    if (preg_match('/script/i', $name)) {
         $aviable_name = false;
     }
 
@@ -403,7 +403,7 @@ if ($update_group) {
     $other = (string) get_parameter('other');
 
     $aviable_name = true;
-    if (preg_match('<script>', $name)) {
+    if (preg_match('/script/i', $name)) {
         $aviable_name = false;
     }
 
@@ -724,8 +724,8 @@ if ($tab == 'tree') {
                     [
                         'style' => '',
                         'class' => 'bot',
-                        'alt'   => $group['nombre'],
-                        'title' => $group['nombre'],
+                        'alt'   => io_safe_input($group['nombre']),
+                        'title' => io_safe_input($group['nombre']),
                     ],
                     false,
                     false,

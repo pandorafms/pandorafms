@@ -291,7 +291,7 @@ function config_update_config()
                         $error_update[] = __('Use custom encoding');
                     }
 
-                    if (!config_update_value('server_log_dir', get_parameter('server_log_dir'))) {
+                    if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
 
@@ -1204,8 +1204,8 @@ function config_update_config()
                     // --------------------------------------------------
                     // CUSTOM VALUES POST PROCESS
                     // --------------------------------------------------
-                    $custom_value = get_parameter('custom_value');
-                    $custom_text = get_parameter('custom_text');
+                    $custom_value = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_value'))));
+                    $custom_text = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_text'))));
                     $custom_value_add = (bool) get_parameter('custom_value_add', 0);
                     $custom_value_to_delete = get_parameter('custom_value_to_delete', 0);
 
@@ -1276,8 +1276,8 @@ function config_update_config()
                     // --------------------------------------------------
                     // MODULE CUSTOM UNITS
                     // --------------------------------------------------
-                    $custom_unit = get_parameter('custom_module_unit');
-                    $custom_unit_to_delete = get_parameter('custom_module_unit_to_delete', '');
+                    $custom_unit = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_module_unit'))));
+                    $custom_unit_to_delete = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_module_unit_to_delete', ''))));
 
                     if (!empty($custom_unit)) {
                         if (!add_custom_module_unit(

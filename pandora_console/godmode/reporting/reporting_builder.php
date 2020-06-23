@@ -767,9 +767,14 @@ switch ($action) {
             )
         );
 
-
         if (count($reports)) {
+            $filters = [
+                'search'   => $search,
+                'id_group' => $id_group,
+            ];
+            $filtersStr = http_build_query($filters, '', '&amp;');
             $url = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
+            $url .= '&'.$filtersStr;
             ui_pagination($total_reports, $url, $offset, $pagination);
 
             $table = new stdClass();

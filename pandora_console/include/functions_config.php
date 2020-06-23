@@ -287,6 +287,10 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
+                    if (!config_update_value('use_custom_encoding', get_parameter('use_custom_encoding', 0))) {
+                        $error_update[] = __('Use custom encoding');
+                    }
+
                     if (!config_update_value('server_log_dir', get_parameter('server_log_dir'))) {
                         $error_update[] = __('Server logs directory');
                     }
@@ -2795,6 +2799,10 @@ function config_process_config()
 
     if (!isset($config['event_storm_protection'])) {
         config_update_value('event_storm_protection', 0);
+    }
+
+    if (!isset($config['use_custom_encoding'])) {
+        config_update_value('use_custom_encoding', 0);
     }
 
     if (!isset($config['server_log_dir'])) {

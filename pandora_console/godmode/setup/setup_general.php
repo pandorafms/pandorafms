@@ -276,6 +276,9 @@ $table->data[$i++][1] = html_print_checkbox_switch('event_storm_protection', 1, 
 $table->data[$i][0] = __('Command Snapshot');
 $table->data[$i++][1] = html_print_checkbox_switch('command_snapshot', 1, $config['command_snapshot'], true);
 
+$table->data[$i][0] = __('Change remote config encoding');
+$table->data[$i++][1] = html_print_checkbox_switch('use_custom_encoding', 1, $config['use_custom_encoding'], true);
+
 $table->data[$i][0] = __('Server logs directory');
 $table->data[$i++][1] = html_print_input_text(
     'server_log_dir',

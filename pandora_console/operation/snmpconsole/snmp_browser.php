@@ -248,6 +248,10 @@ function snmp_show_result_message(data) {
             modal: true,
             height: 300,
             width: 500,
+            close: function(e, ui) {
+              $("input[name=create_modules_network_component]").removeClass("sub spinn");
+              $("input[name=create_modules_network_component]").addClass("sub add");
+            },
             overlay: {
               opacity: 0.5,
               background: "black"

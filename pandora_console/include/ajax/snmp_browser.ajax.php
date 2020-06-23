@@ -13,6 +13,7 @@
 // GNU General Public License for more details.
 require_once $config['homedir'].'/include/functions_config.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
+require_once $config['homedir'].'/include/functions_snmp.php';
 require_once $config['homedir'].'/include/functions_network_components.php';
 
 

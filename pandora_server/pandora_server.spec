@@ -102,11 +102,20 @@ fi
 exit 0
 
 %post
-chkconfig pandora_server on 
-chkconfig tentacle_serverd on 
+if [ `command -v sysctl` ];
+then
+        cp /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+        chmod -x /usr/lib/systemd/system/tentacle_serverd.service
 
-# Enable the services on SystemD
-systemctl enable tentacle_serverd.service
+# Enable the service on SystemD
+        systemctl enable tentacle_serverd.service
+else
+        chkconfig tentacle_serverd on
+fi
+
+chkconfig pandora_server on
+
+# Enable the service on SystemD
 systemctl enable pandora_server.service
 
 

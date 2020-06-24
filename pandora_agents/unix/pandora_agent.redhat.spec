@@ -108,8 +108,18 @@ mkdir -p /var/spool/pandora/data_out
 if [ ! -d /var/log/pandora ]; then
 	mkdir -p /var/log/pandora
 fi
-/sbin/chkconfig --add pandora_agent_daemon
-/sbin/chkconfig pandora_agent_daemon on
+
+if [ `command -v sysctl` ];
+then
+    cp /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
+# Enable the services on SystemD
+    systemctl enable pandora_agent_daemon.service
+else
+	/sbin/chkconfig --add pandora_agent_daemon
+	/sbin/chkconfig pandora_agent_daemon on
+fi
+
 
 %preun
 

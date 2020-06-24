@@ -111,10 +111,21 @@ exit 0
 %post
 # Initial installation
 if [ "$1" = 1 ]; then
-   /sbin/chkconfig --add pandora_server
-   /sbin/chkconfig --add tentacle_serverd
-   /sbin/chkconfig pandora_server on 
-   /sbin/chkconfig tentacle_serverd on 
+        if [ `command -v sysctl` ];
+        then
+                cp /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+                chmod -x /usr/lib/systemd/system/tentacle_serverd.service
+        # Enable the services on SystemD
+                systemctl enable tentacle_serverd.service     
+        else
+                /sbin/chkconfig --add tentacle_serverd
+                /sbin/chkconfig tentacle_serverd on 
+        fi
+
+/sbin/chkconfig --add pandora_server
+/sbin/chkconfig pandora_server on 
+
+systemctl enable pandora_server.service
 
    echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
    echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"

@@ -98,11 +98,20 @@ fi
 
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 
-# Enable the service on SystemD
-systemctl enable pandora_agent_daemon.service
-
 mkdir -p /var/spool/pandora/data_out
-chkconfig pandora_agent_daemon on
+
+if [ `command -v sysctl` ];
+then
+    cp /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
+# Enable the services on SystemD
+    systemctl enable pandora_agent_daemon.service
+else
+	chkconfig pandora_agent_daemon on
+fi
+
+
+
 
 %preun
 

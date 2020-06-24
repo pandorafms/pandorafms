@@ -1647,7 +1647,6 @@ function html_print_input_range(
     }
 
     $output .= ' id="'.$id.'" ';
-    $output .= ' return="'.$return.'" ';
     $output .= ' min="'.$min.'" ';
     $output .= ' max="'.$max.'" ';
     $output .= ' step="'.$step.'" ';
@@ -4092,7 +4091,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'interval':
             $output .= html_print_extended_select_for_time(
                 $data['name'],
-                $data['value'],
+                ((isset($data['value']) === true) ? $data['value'] : $data['selected']),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
                 ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
                 ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),

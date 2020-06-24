@@ -168,6 +168,104 @@ class Module extends Entity
 
 
     /**
+     * Retrieve all alert templates (ids) assigned to current module.
+     *
+     * @return array Of ids.
+     */
+    public function alertTemplatesAssigned()
+    {
+        if ($this->id_agente_modulo() === null) {
+            // Need to be stored first.
+            return [];
+        }
+
+        $result = db_get_all_rows_filter(
+            'talert_template_modules',
+            ['id_agent_module' => $this->id_agente_modulo()],
+            'id_alert_template'
+        );
+
+        if ($result === false) {
+            return [];
+        }
+
+        return array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[] = $item['id_alert_template'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+
+    /**
+     * Remove a alert template assignment.
+     *
+     * @param integer $id_alert_template Target id.
+     *
+     * @return boolean Success or not.
+     */
+    public function unassignAlertTemplate(int $id_alert_template)
+    {
+        if ($this->id_agente_modulo() === null) {
+            // Need to be stored first.
+            return false;
+        }
+
+        if (is_numeric($id_alert_template) === false
+            || $id_alert_template <= 0
+        ) {
+            // Invalid alert template.
+            return false;
+        }
+
+        return (bool) \db_process_sql_delete(
+            'talert_template_modules',
+            [
+                'id_agent_module'   => $this->id_agente_modulo(),
+                'id_alert_template' => $id_alert_template,
+            ]
+        );
+
+    }
+
+
+    /**
+     * Add an alert template to this module.
+     *
+     * @param integer|null $id_alert_template Target alert template.
+     *
+     * @return boolean Status of adding process.
+     */
+    public function addAlertTemplate(?int $id_alert_template=null)
+    {
+        if ($this->id_agente_modulo() === null) {
+            // Need to be stored first.
+            return false;
+        }
+
+        if (is_numeric($id_alert_template) === false
+            || $id_alert_template <= 0
+        ) {
+            // Invalid alert template.
+            return false;
+        }
+
+        return (bool) \db_process_sql_insert(
+            'talert_template_modules',
+            [
+                'id_agent_module'   => $this->id_agente_modulo(),
+                'id_alert_template' => $id_alert_template,
+                'last_reference'    => time(),
+            ]
+        );
+
+    }
+
+
+    /**
      * Saves current definition to database.
      *
      * @return mixed Affected rows of false in case of error.
@@ -247,6 +345,51 @@ class Module extends Entity
 
         unset($this->fields);
         unset($this->status);
+    }
+
+
+    /**
+     * Transforms results from classic mode into modern exceptions.
+     *
+     * @param integer|boolean $result Result received from module management.
+     *
+     * @return integer Module id created or result.
+     * @throws \Exception On error.
+     */
+    public static function errorToException($result)
+    {
+        if ($result === ERR_INCOMPLETE) {
+            throw new \Exception(
+                __('Module name empty.')
+            );
+        }
+
+        if ($result === ERR_GENERIC) {
+            throw new \Exception(
+                __('Invalid characters in module name')
+            );
+        }
+
+        if ($result === ERR_EXIST) {
+            throw new \Exception(
+                __('Module already exists please select another name or agent.')
+            );
+        }
+
+        if ($result === false) {
+            throw new \Exception(
+                __('Insufficent permissions to perform this action')
+            );
+        }
+
+        if ($result === ERR_DB) {
+            global $config;
+            throw new \Exception(
+                __('Error while processing: %s', $config['dbconnection']->error)
+            );
+        }
+
+        return $result;
     }
 
 

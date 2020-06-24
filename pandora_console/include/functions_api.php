@@ -12284,12 +12284,29 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             return;
         }
 
+        if (!empty($other['data'][17]) && is_metaconsole()) {
+            $id_server = db_get_row_filter('tmetaconsole_setup', ['id' => $other['data'][17]]);
+            if ($id_server === false) {
+                returnError('error_create_event', __('Server id does not exist in database.'));
+                return;
+            }
+
+            $values['server_id'] = $other['data'][17];
+        } else {
+            $values['server_id'] = 0;
+        }
+
         $error_msg = '';
         if ($other['data'][2] != '') {
             $id_agent = $other['data'][2];
             if (is_metaconsole()) {
                 // On metaconsole, connect with the node to check the permissions
-                $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
+                if (empty($values['server_id'])) {
+                    $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
+                } else {
+                    $agent_cache = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $values['server_id']]);
+                }
+
                 if ($agent_cache === false) {
                     returnError('id_not_found', 'string');
                     return;
@@ -12416,12 +12433,6 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = $other['data'][16];
         } else {
             $values['custom_data'] = '';
-        }
-
-        if ($other['data'][17] != '') {
-            $values['server_id'] = $other['data'][17];
-        } else {
-            $values['server_id'] = 0;
         }
 
         if ($other['data'][18] != '') {

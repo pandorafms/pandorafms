@@ -625,6 +625,20 @@ function snmp_browser_create_modules(module_target, return_post = true) {
     );
     $("input[name=create_modules_" + module_target + "]").addClass("sub spinn");
 
+    $("#dialog_error").on("dialogclose", function(event) {
+      $("input[name=create_modules_" + module_target + "]").removeClass(
+        "sub spinn"
+      );
+      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+    });
+
+    $("#dialog_success").on("dialogclose", function(event) {
+      $("input[name=create_modules_" + module_target + "]").removeClass(
+        "sub spinn"
+      );
+      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+    });
+
     $.ajax({
       method: "post",
       url: "ajax.php",

@@ -59,7 +59,9 @@ class Agent extends Entity
      */
     public function __construct(?int $id_agent=null, ?bool $load_modules=false)
     {
-        if (is_numeric($id_agent) === true) {
+        if (is_numeric($id_agent) === true
+            && $id_agent > 0
+        ) {
             parent::__construct('tagente', ['id_agente' => $id_agent]);
             if ($load_modules === true) {
                 $rows = \db_get_all_rows_filter(

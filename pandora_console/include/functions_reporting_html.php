@@ -2159,10 +2159,19 @@ function reporting_html_historical_data($table, $item, $pdf=0)
                     ];
                 }
             } else {
-                $row = [
-                    $data[__('Date')],
-                    $data[__('Data')],
-                ];
+                // Command line snapshot.
+                if (is_text_to_black_string($data[__('Data')])) {
+                    $table1->style[1] = 'text-align: left; font-family: monospace, mono';
+                    $row = [
+                        $data[__('Date')],
+                        '<pre>'.$data[__('Data')].'</pre>',
+                    ];
+                } else {
+                    $row = [
+                        $data[__('Date')],
+                        $data[__('Data')],
+                    ];
+                }
             }
         } else {
             $row = [
@@ -2181,15 +2190,16 @@ function reporting_html_historical_data($table, $item, $pdf=0)
             $table1,
             true
         );
+
+        return html_print_table($table, true);
     } else {
         $table1->title = $item['title'];
         $table1->titleclass = 'title_table_pdf';
         $table1->titlestyle = 'text-align:left;';
-        return html_print_table(
-            $table1,
-            true
-        );
+
+        return html_print_table($table1, true);
     }
+
 }
 
 
@@ -2234,6 +2244,11 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
                     } else {
                         $data_unserialized[$key] = wordwrap(io_safe_input($data_value), 60, "<br>\n", true);
                     }
+                } else if (is_text_to_black_string($data_unserialized[$key])) {
+                    $table1->style[1] = 'white-space: pre-wrap;';
+                    $table1->style[1] .= 'font-family: monospace, mono; ';
+                    $table1->style[1] .= 'text-align: left';
+                    $data_unserialized[$key] = '<pre>'.$data_value.'</pre>';
                 }
             }
 

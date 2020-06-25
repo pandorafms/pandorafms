@@ -3357,7 +3357,7 @@ function reporting_database_serialized($report, $content)
     );
 
     // Adds string data if there is no numeric data.
-    if ((count($result) < 0) || (!$result)) {
+    if ($result === false) {
         // This query gets information from the default and the historic database.
         $result = db_get_all_rows_sql(
             'SELECT *

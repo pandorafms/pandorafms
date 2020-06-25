@@ -3621,15 +3621,20 @@ function html_print_timezone_select($name, $selected='')
  * Enclose a text into a result_div
  *
  * @param string Text to enclose
+ * @param boolean Return formatted text without html tags.
  *
  * @return string Text inside the result_div
  */
-function html_print_result_div($text)
+function html_print_result_div($text, $text_only)
 {
     $text = preg_replace('/</', '&lt;', $text);
     $text = preg_replace('/>/', '&gt;', $text);
     $text = preg_replace('/\n/i', '<br>', $text);
     $text = preg_replace('/\s/i', '&nbsp;', $text);
+
+    if ($text_only) {
+        return $text;
+    }
 
     $enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
     $enclose .= $text;

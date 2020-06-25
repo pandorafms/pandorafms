@@ -102,7 +102,7 @@ fi
 exit 0
 
 %post
-if [ `command -v sysctl` ];
+if [ `command -v systemctl` ];
 then
         cp /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
         chmod -x /usr/lib/systemd/system/tentacle_serverd.service

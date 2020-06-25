@@ -100,7 +100,7 @@ cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandor
 
 mkdir -p /var/spool/pandora/data_out
 
-if [ `command -v sysctl` ];
+if [ `command -v systemctl` ];
 then
     cp /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
 	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service

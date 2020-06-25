@@ -4011,7 +4011,7 @@ function generate_hash_to_api()
  * @param string Key to identify the profiler run.
  * @param string Way to display the result
  *         "link" (default): Click into word "Performance" to display the profilling info.
- *         "console": Display with a message in pandora_console.log.
+ *         "console": Display with a message in console.log.
  */
 function pandora_xhprof_display_result($key='', $method='link')
 {

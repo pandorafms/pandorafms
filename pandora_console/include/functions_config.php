@@ -319,8 +319,12 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
-                    if (!config_update_value('auditdir', get_parameter('auditdir'))) {
-                        $error_update[] = __('Audit log directory');
+                    if (!config_update_value('console_log_enabled', get_parameter('console_log_enabled'))) {
+                        $error_update[] = __('Console log enabled');
+                    }
+
+                    if (!config_update_value('audit_log_enabled', get_parameter('audit_log_enabled'))) {
+                        $error_update[] = __('Audit log enabled');
                     }
 
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
@@ -1926,14 +1930,12 @@ function config_process_config()
         config_update_value('alias_as_name', 0);
     }
 
-    if (!isset($config['auditdir'])) {
-        $auditdir = '/var/www/html/pandora_console';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $auditdir = $config['homedir'];
-        }
+    if (!isset($config['console_log_enabled'])) {
+        config_update_value('console_log_enabled', 0);
+    }
 
-        config_update_value('auditdir', $auditdir);
+    if (!isset($config['audit_log_enabled'])) {
+        config_update_value('audit_log_enabled', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {

@@ -1631,8 +1631,10 @@ function agents_get_alias($id_agent, $case='none')
     }
 
     // Check cache.
-    if (isset($cache[$case][$id_agent])) {
-        return $cache[$case][$id_agent];
+    if (!is_metaconsole()) {
+        if (isset($cache[$case][$id_agent])) {
+            return $cache[$case][$id_agent];
+        }
     }
 
     $alias = (string) db_get_value(
@@ -1656,7 +1658,10 @@ function agents_get_alias($id_agent, $case='none')
         break;
     }
 
-    $cache[$case][$id_agent] = $alias;
+    if (!is_metaconsole()) {
+        $cache[$case][$id_agent] = $alias;
+    }
+
     return $alias;
 }
 

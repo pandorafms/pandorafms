@@ -687,6 +687,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'last_value':
+                $report['contents'][] = reporting_last_value(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'group_report':
                 $report['contents'][] = reporting_group_report(
                     $report,
@@ -3425,6 +3432,77 @@ function reporting_database_serialized($report, $content)
     }
 
     $return['data'] = $data;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Show last value and state of module.
+ *
+ * @param array $report  Data report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
+function reporting_last_value($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'last_value';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Last Value');
+    }
+
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+        $server = metaconsole_get_connection_by_id($id_meta);
+        if (metaconsole_connect($server) != NOERR) {
+            $result = [];
+            return reporting_check_structure_content($result);
+        }
+    }
+
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $content['id_agent_module']
+    );
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['agent_name_db'] = agents_get_name($id_agent);
+    $return['agent_name'] = $agent_alias;
+    $return['module_name'] = $module_name;
+
+    $sql = sprintf(
+        'SELECT *
+        FROM tagente_estado
+        WHERE id_agente_modulo = %s',
+        $content['id_agent_module']
+    );
+
+    $result = db_get_row_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    $result['agent_name'] = $agent_alias;
+    $result['module_name'] = $module_name;
+
+    $return['data'] = $result;
+
+    if (is_metaconsole()) {
+        metaconsole_restore_db();
+    }
 
     return reporting_check_structure_content($return);
 }

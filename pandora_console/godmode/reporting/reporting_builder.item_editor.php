@@ -484,6 +484,16 @@ switch ($action) {
                     $period = $item['period'];
                 break;
 
+                case 'last_value':
+                    $description = $item['description'];
+                    $idAgentModule = $item['id_agent_module'];
+                    $idAgent = db_get_value_filter(
+                        'id_agente',
+                        'tagente_modulo',
+                        ['id_agente_modulo' => $idAgentModule]
+                    );
+                break;
+
                 case 'alert_report_module':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
@@ -744,6 +754,7 @@ switch ($action) {
                 case 'historical_data':
                 case 'sumatory':
                 case 'database_serialized':
+                case 'last_value':
                 case 'monitor_report':
                 case 'min_value':
                 case 'max_value':
@@ -3843,6 +3854,7 @@ $(document).ready (function () {
             case 'min_value':
             case 'monitor_report':
             case 'database_serialized':
+            case 'last_value':
             case 'sumatory':
             case 'historical_data':
             case 'agent_configuration':
@@ -3884,6 +3896,7 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'database_serialized':
+            case 'last_value':
             case 'sumatory':
             case 'historical_data':
             case 'increment':
@@ -3964,6 +3977,7 @@ $(document).ready (function () {
             case 'min_value':
             case 'monitor_report':
             case 'database_serialized':
+            case 'last_value':
             case 'sumatory':
             case 'historical_data':
             case 'agent_configuration':
@@ -4003,6 +4017,7 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'database_serialized':
+            case 'last_value':
             case 'sumatory':
             case 'historical_data':
             case 'increment':
@@ -5140,6 +5155,12 @@ function chooseType() {
             $("#row_line_separator").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            break;
+
+        case 'last_value':
+            $("#row_description").show();
+            $("#row_agent").show();
+            $("#row_module").show();
             break;
 
         case 'alert_report_module':

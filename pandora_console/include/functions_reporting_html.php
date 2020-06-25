@@ -335,6 +335,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_database_serialized($table, $item);
             break;
 
+            case 'last_value':
+                reporting_html_last_value($table, $item);
+            break;
+
             case 'group_report':
                 reporting_html_group_report($table, $item);
             break;
@@ -2253,6 +2257,159 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
             $table1,
             true
         );
+    }
+}
+
+
+/**
+ * Show last value and state of module.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return html
+ */
+function reporting_html_last_value($table, $item, $pdf=0)
+{
+    global $config;
+
+    if (empty($item['data']) === false) {
+        $table_data = new stdClass();
+        $table_data->width = '100%';
+        $table_data->headstyle = [];
+        $table_data->headstyle[0] = 'text-align: left;';
+        $table_data->style = [];
+        $table_data->style[0] = 'text-align: left;';
+        $table_data->head = [
+            __('Name'),
+            __('Date'),
+            __('Data'),
+            __('Status'),
+        ];
+
+        $table_data->data = [];
+        $table_data->data[1][0] = $item['data']['agent_name'];
+        $table_data->data[1][0] .= ' / ';
+        $table_data->data[1][0] .= $item['data']['module_name'];
+
+        $table_data->data[1][1] = date(
+            'Y-m-d H:i:s',
+            $item['data']['utimestamp']
+        );
+        $table_data->data[1][2] = remove_right_zeros(
+            number_format(
+                $item['data']['datos'],
+                $config['graph_precision']
+            )
+        );
+
+        switch ($item['data']['estado']) {
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                $img_status = ui_print_status_image(
+                    'module_critical.png',
+                    $item['data']['datos'],
+                    true,
+                    [
+                        'width'  => '50px',
+                        'height' => '20px',
+                        'style'  => 'border-radius:5px;',
+                    ],
+                    'images/status_sets/default/'
+                );
+            break;
+
+            case AGENT_MODULE_STATUS_WARNING:
+                $img_status = ui_print_status_image(
+                    'module_warning.png',
+                    $item['data']['datos'],
+                    true,
+                    [
+                        'width'  => '50px',
+                        'height' => '20px',
+                        'style'  => 'border-radius:5px;',
+                    ],
+                    'images/status_sets/default/'
+                );
+            break;
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+                $img_status = ui_print_status_image(
+                    'module_unknown.png',
+                    $item['data']['datos'],
+                    true,
+                    [
+                        'width'  => '50px',
+                        'height' => '20px',
+                        'style'  => 'border-radius:5px;',
+                    ],
+                    'images/status_sets/default/'
+                );
+            break;
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                $img_status = ui_print_status_image(
+                    'module_alertsfired.png',
+                    $item['data']['datos'],
+                    true,
+                    [
+                        'width'  => '50px',
+                        'height' => '20px',
+                        'style'  => 'border-radius:5px;',
+                    ],
+                    'images/status_sets/default/'
+                );
+            break;
+
+            case 4:
+                $img_status = ui_print_status_image(
+                    'module_no_data.png',
+                    $item['data']['datos'],
+                    true,
+                    [
+                        'width'  => '50px',
+                        'height' => '20px',
+                        'style'  => 'border-radius:5px;',
+                    ],
+                    'images/status_sets/default/'
+                );
+            break;
+
+            default:
+            case AGENT_MODULE_STATUS_NORMAL:
+                $img_status = ui_print_status_image(
+                    'module_ok.png',
+                    $item['data']['datos'],
+                    true,
+                    [
+                        'width'  => '50px',
+                        'height' => '20px',
+                        'style'  => 'border-radius:5px;',
+                    ],
+                    'images/status_sets/default/'
+                );
+            break;
+        }
+
+        $table_data->data[1][3] = $img_status;
+
+        if ($pdf === 0) {
+            $table->colspan['last_value']['cell'] = 3;
+            $table->cellstyle['last_value']['cell'] = 'text-align: center;';
+            $table->data['last_value']['cell'] = html_print_table(
+                $table_data,
+                true
+            );
+        } else {
+            return html_print_table(
+                $table_data,
+                true
+            );
+        }
+    } else {
+        // TODO:XXX
     }
 }
 

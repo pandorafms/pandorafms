@@ -10723,7 +10723,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $data['type'] = 'array';
     $data['data'] = $result;
 
-    // returnData($returnType, $data, $separator);
+    returnData($returnType, $data, $separator);
     if (empty($result)) {
         return false;
     }
@@ -10840,6 +10840,8 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
                 returnError('ERROR_API_PANDORAFMS', $returnType);
             }
         }
+
+        return;
     }
 
     if ($other['type'] == 'string') {

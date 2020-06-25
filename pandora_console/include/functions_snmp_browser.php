@@ -301,7 +301,7 @@ function snmp_browser_get_tree(
             $snmp3_auth_pass,
             $snmp3_privacy_method,
             $snmp3_privacy_pass,
-            $community,
+            '',
             $snmp3_context_engine_id
         );
     }

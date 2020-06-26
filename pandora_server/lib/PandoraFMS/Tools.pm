@@ -46,7 +46,6 @@ use constant MOD232 => 2**32;
 use constant POW232 => 2**32;
 
 # UTF-8 flags deletion from multibyte characters when files are opened.
-use open IN => ":utf8";
 use open OUT => ":utf8";
 use open ":std";
 

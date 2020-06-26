@@ -259,15 +259,24 @@ define('SERVICE_STATUS_NORMAL', 0);
 define('SERVICE_STATUS_CRITICAL', 1);
 define('SERVICE_STATUS_WARNING', 2);
 define('SERVICE_STATUS_ALERT', 4);
-// Default weights.
+// Default service weights.
 define('SERVICE_WEIGHT_CRITICAL', 1);
 define('SERVICE_WEIGHT_WARNING', 0.5);
 define('SERVICE_SMART_WEIGHT_CRITICAL', 50);
 define('SERVICE_SMART_WEIGHT_WARNING', 30);
+// Default service element weights.
 define('SERVICE_ELEMENT_WEIGHT_CRITICAL', 1);
 define('SERVICE_ELEMENT_WEIGHT_WARNING', 0.5);
 define('SERVICE_ELEMENT_WEIGHT_OK', 0);
 define('SERVICE_ELEMENT_WEIGHT_UNKNOWN', 0);
+define('SERVICE_ELEMENT_SMART_CRITICAL', 100);
+define('SERVICE_ELEMENT_SMART_WARNING', 50);
+// Service element types.
+define('SERVICE_ELEMENT_AGENT', 'agent');
+define('SERVICE_ELEMENT_MODULE', 'module');
+define('SERVICE_ELEMENT_SERVICE', 'service');
+define('SERVICE_ELEMENT_DYNAMIC', 'dynamic');
+
 // Modes.
 define('SERVICE_MODE_MANUAL', 0);
 define('SERVICE_MODE_SMART', 1);

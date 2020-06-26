@@ -43,7 +43,7 @@ var TreeController = {
           var $group = $("<ul></ul>");
 
           // First group
-          if (typeof rootGroup != "undefinded" && rootGroup == true) {
+          if (typeof rootGroup != "undefined" && rootGroup == true) {
             $group
               .addClass("tree-root")
               .hide()

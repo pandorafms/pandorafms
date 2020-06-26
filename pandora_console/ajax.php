@@ -27,6 +27,8 @@
  */
 
 // Begin.
+require 'vendor/autoload.php';
+
 define('AJAX', true);
 
 if (!defined('__PAN_XHPROF__')) {

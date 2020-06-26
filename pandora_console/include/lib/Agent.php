@@ -54,19 +54,38 @@ class Agent extends Entity
     /**
      * Builds a PandoraFMS\Agent object from a agent id.
      *
-     * @param integer $id_agent     Agent Id.
-     * @param boolean $load_modules Load all modules of this agent. Be careful.
+     * @param integer      $id_agent     Agent Id.
+     * @param boolean      $load_modules Load all modules of this agent.
+     * @param integer|null $id_node      Metaconsole only. ID node.
      */
-    public function __construct(?int $id_agent=null, ?bool $load_modules=false)
-    {
+    public function __construct(
+        ?int $id_agent=null,
+        ?bool $load_modules=false,
+        ?int $id_node=null
+    ) {
+        $table = 'tagente';
+        $filter = ['id_agente' => $id_agent];
+        if (is_metaconsole() === true
+            && $id_node !== null
+        ) {
+            $table = 'tmetaconsole_agent';
+            $filter = [
+                'id_agente'             => $id_agent,
+                'id_tmetaconsole_setup' => (int) $id_node,
+            ];
+
+            // Cannot load modules from metaconsole.
+            $load_modules = false;
+        }
+
         if (is_numeric($id_agent) === true
             && $id_agent > 0
         ) {
-            parent::__construct('tagente', ['id_agente' => $id_agent]);
+            parent::__construct($table, $filter);
             if ($load_modules === true) {
                 $rows = \db_get_all_rows_filter(
                     'tagente_modulo',
-                    ['id_agente' => $id_agent]
+                    $filter
                 );
 
                 if (is_array($rows) === true) {
@@ -79,7 +98,7 @@ class Agent extends Entity
             }
         } else {
             // Create empty skel.
-            parent::__construct('tagente');
+            parent::__construct($table);
 
             // New agent has no modules.
             $this->modulesLoaded = true;

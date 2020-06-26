@@ -30,6 +30,8 @@
 // Begin.
 namespace PandoraFMS;
 
+use PandoraFMS\Agent;
+
 /**
  * PandoraFMS agent entity.
  */
@@ -42,6 +44,20 @@ class Module extends Entity
      * @var PandoraFMS\ModuleStatus
      */
     private $status;
+
+    /**
+     * Agent where module is stored.
+     *
+     * @var PandoraFMS\Agent
+     */
+    private $linkedAgent;
+
+    /**
+     * Metaconsole setup id.
+     *
+     * @var integer
+     */
+    private $idNode;
 
 
     /**
@@ -131,10 +147,24 @@ class Module extends Entity
     /**
      * Builds a PandoraFMS\Module object from given id.
      *
-     * @param integer $id_agent_module Module id.
+     * @param integer|null $id_agent_module Module id.
+     * @param boolean      $link_agent      Link agent object.
+     * @param integer|null $id_node         Metaconsole only. ID node.
+     *
+     * @throws \Exception On error.
      */
-    public function __construct(?int $id_agent_module=null)
-    {
+    public function __construct(
+        ?int $id_agent_module=null,
+        bool $link_agent=false,
+        ?int $id_node=null
+    ) {
+        if ($id_node !== null) {
+            $this->idNode = $id_node;
+
+            enterprise_include_once('include/functions_metaconsole.php');
+            \metaconsole_connect(null, $this->idNode);
+        }
+
         if (is_numeric($id_agent_module) === true
             && $id_agent_module > 0
         ) {
@@ -142,17 +172,83 @@ class Module extends Entity
                 'tagente_modulo',
                 ['id_agente_modulo' => $id_agent_module]
             );
+
+            if ($this->nombre() === 'delete_pending') {
+                return null;
+            }
+
+            if ($link_agent === true) {
+                try {
+                    $this->linkedAgent = new Agent($this->id_agente());
+                } catch (\Exception $e) {
+                    if ($this->idNode !== null) {
+                        \metaconsole_restore_db();
+                    }
+
+                    // Unexistent agent.
+                    throw new \Exception(
+                        __METHOD__.__(
+                            ' error: Module has no agent assigned.'
+                        )
+                    );
+                }
+            }
         } else {
             // Create empty skel.
             parent::__construct('tagente_modulo');
         }
 
-        if ($this->nombre() === 'delete_pending') {
-            return null;
+        try {
+            // Customize certain fields.
+            $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
+        } catch (\Exception $e) {
+            $this->status = new Modulestatus();
+            if ($this->idNode !== null) {
+                \metaconsole_restore_db();
+            }
+        }
+    }
+
+
+    /**
+     * Return agent object where module is defined.
+     *
+     * @return PandoraFMS\Agent Where module is defined.
+     */
+    public function agent()
+    {
+        if ($this->linkedAgent === null) {
+            try {
+                $this->linkedAgent = new Agent($this->id_agente());
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                return null;
+            }
         }
 
-        // Customize certain fields.
-        $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
+        return $this->linkedAgent;
+    }
+
+
+    /**
+     * Return last value reported by the module.
+     *
+     * @return mixed Data depending on module type.
+     */
+    public function lastValue()
+    {
+        return $this->status->datos();
+    }
+
+
+    /**
+     * Return last status reported by the module.
+     *
+     * @return mixed Data depending on module type.
+     */
+    public function lastStatus()
+    {
+        return $this->status->estado();
     }
 
 
@@ -288,6 +384,10 @@ class Module extends Entity
         if ($this->fields['id_agente_modulo'] > 0) {
             // Update.
             $updates = $this->fields;
+            if ($this->idNode !== null) {
+                enterprise_include_once('include/functions_metaconsole.php');
+                \metaconsole_connect(null, $this->idNode);
+            }
 
             $rs = \db_process_sql_update(
                 'tagente_modulo',
@@ -295,10 +395,16 @@ class Module extends Entity
                 ['id_agente_modulo' => $this->fields['id_agente_modulo']]
             );
 
+            global $config;
+            $error = $config['dbconnection']->error;
+
+            if ($this->idNode !== null) {
+                \metaconsole_restore_db();
+            }
+
             if ($rs === false) {
-                global $config;
                 throw new \Exception(
-                    __METHOD__.' error: '.$config['dbconnection']->error
+                    __METHOD__.' error: '.$error
                 );
             }
         } else {
@@ -312,16 +418,27 @@ class Module extends Entity
                 }
             }
 
+            if ($this->idNode !== null) {
+                enterprise_include_once('include/functions_metaconsole.php');
+                \metaconsole_connect(null, $this->idNode);
+            }
+
             $rs = \modules_create_agent_module(
                 $this->fields['id_agente'],
                 $updates['nombre'],
                 $updates
             );
 
+            global $config;
+            $error = $config['dbconnection']->error;
+
+            if ($this->idNode !== null) {
+                \metaconsole_restore_db();
+            }
+
             if ($rs === false) {
-                global $config;
                 throw new \Exception(
-                    __METHOD__.' error: '.$config['dbconnection']->error
+                    __METHOD__.' error: '.$error
                 );
             }
 
@@ -339,9 +456,18 @@ class Module extends Entity
      */
     public function delete()
     {
+        if ($this->idNode !== null) {
+            enterprise_include_once('include/functions_metaconsole.php');
+            \metaconsole_connect(null, $this->idNode);
+        }
+
         \modules_delete_agent_module(
             $this->id_agente_modulo()
         );
+
+        if ($this->idNode !== null) {
+            \metaconsole_restore_db();
+        }
 
         unset($this->fields);
         unset($this->status);
@@ -390,6 +516,60 @@ class Module extends Entity
         }
 
         return $result;
+    }
+
+
+    /**
+     * Calculates CPS value and updates its content.
+     *
+     * @return integer CPS value set.
+     */
+    public function calculateCPS()
+    {
+        $cps = 0;
+
+        if (class_exists('\PandoraFMS\Enterprise\Service') === false) {
+            return 0;
+        }
+
+        // Check if is child of services in local console.
+        $service_parents = \db_get_all_rows_filter(
+            'tservice_element',
+            [ 'id_agente_modulo' => $this->id_agente_modulo() ],
+            'id_service'
+        );
+
+        if (is_array($service_parents) === true) {
+            foreach ($service_parents as $ref) {
+                $service = new \PandoraFMS\Enterprise\Service(
+                    $ref['id_service']
+                );
+                if (((bool) $service->cascade_protection()) === true) {
+                    $cps += $service->cps();
+                }
+            }
+        }
+
+        // Check if is child of services in metaconsole.
+        if (is_metaconsole() === false) {
+            global $config;
+
+            $nodo_connect = \metaconsole_load_external_db(
+                [
+                    'dbhost' => $config['replication_dbhost'],
+                    'dbuser' => $config['replication_dbuser'],
+                    'dbpass' => \io_output_password(
+                        $config['replication_dbpass']
+                    ),
+                    'dbname' => $config['replication_dbname'],
+                ]
+            );
+
+            \metaconsole_restore_db();
+        }
+
+        return $cps;
+
     }
 
 

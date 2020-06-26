@@ -31,6 +31,8 @@ if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
 
+require 'vendor/autoload.php';
+
 if (__PAN_XHPROF__ === 1) {
     if (function_exists('tideways_xhprof_enable')) {
         tideways_xhprof_enable();

@@ -2118,7 +2118,7 @@ function events_comment(
 
     switch ($comments_format) {
         case 'new':
-            $comment_for_json['comment'] = $comment;
+            $comment_for_json['comment'] = io_safe_input($comment);
             $comment_for_json['action'] = $action;
             $comment_for_json['id_user'] = $config['id_user'];
             $comment_for_json['utimestamp'] = time();
@@ -2141,7 +2141,7 @@ function events_comment(
             $comment = str_replace(["\r\n", "\r", "\n"], '<br>', $comment);
 
             if ($comment != '') {
-                $commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$comment.'</div>';
+                $commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.io_safe_input($comment).'</div>';
             } else {
                 $commentbox = '';
             }

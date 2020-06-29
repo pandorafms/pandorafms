@@ -1504,19 +1504,28 @@ function graphic_combined_module(
                         foreach ($value['data'] as $k => $v) {
                             if ($v[1] != false) {
                                 $array_data[$key]['data'][$k][1] = ($v[1] * $params_combined['weight_list'][$i]);
+                                $array_data[$key]['slice_data'][$v[0]]['avg'] *= $params_combined['weight_list'][$i];
+                                $array_data[$key]['slice_data'][$v[0]]['min'] *= $params_combined['weight_list'][$i];
+                                $array_data[$key]['slice_data'][$v[0]]['max'] *= $params_combined['weight_list'][$i];
                             }
                         }
+
+                        $array_data[$key]['max'] *= $params_combined['weight_list'][$i];
+                        $array_data[$key]['min'] *= $params_combined['weight_list'][$i];
+                        $array_data[$key]['avg'] *= $params_combined['weight_list'][$i];
+                        $array_data[$key]['weight'] = $params_combined['weight_list'][$i];
                     }
                 }
-
-                $max = $array_data['sum'.$i]['max'];
-                $min = $array_data['sum'.$i]['min'];
-                $avg = $array_data['sum'.$i]['avg'];
 
                 if ($config['fixed_graph'] == false) {
                     $water_mark = [
                         'file' => $config['homedir'].'/images/logo_vertical_water.png',
-                        'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+                        'url'  => ui_get_full_url(
+                            'images/logo_vertical_water.png',
+                            false,
+                            false,
+                            false
+                        ),
                     ];
                 }
 

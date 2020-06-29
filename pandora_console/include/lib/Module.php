@@ -162,7 +162,13 @@ class Module extends Entity
             $this->idNode = $id_node;
 
             enterprise_include_once('include/functions_metaconsole.php');
-            \metaconsole_connect(null, $this->idNode);
+            \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $this->idNode,
+                ]
+            );
         }
 
         if (is_numeric($id_agent_module) === true
@@ -182,7 +188,7 @@ class Module extends Entity
                     $this->linkedAgent = new Agent($this->id_agente());
                 } catch (\Exception $e) {
                     if ($this->idNode !== null) {
-                        \metaconsole_restore_db();
+                        \enterprise_hook('metaconsole_restore_db');
                     }
 
                     // Unexistent agent.
@@ -203,9 +209,10 @@ class Module extends Entity
             $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
         } catch (\Exception $e) {
             $this->status = new Modulestatus();
-            if ($this->idNode !== null) {
-                \metaconsole_restore_db();
-            }
+        }
+
+        if ($this->idNode !== null) {
+            \enterprise_hook('metaconsole_restore_db');
         }
     }
 
@@ -386,7 +393,13 @@ class Module extends Entity
             $updates = $this->fields;
             if ($this->idNode !== null) {
                 enterprise_include_once('include/functions_metaconsole.php');
-                \metaconsole_connect(null, $this->idNode);
+                \enterprise_hook(
+                    'metaconsole_connect',
+                    [
+                        null,
+                        $this->idNode,
+                    ]
+                );
             }
 
             $rs = \db_process_sql_update(
@@ -399,7 +412,7 @@ class Module extends Entity
             $error = $config['dbconnection']->error;
 
             if ($this->idNode !== null) {
-                \metaconsole_restore_db();
+                \enterprise_hook('metaconsole_restore_db');
             }
 
             if ($rs === false) {
@@ -420,7 +433,13 @@ class Module extends Entity
 
             if ($this->idNode !== null) {
                 enterprise_include_once('include/functions_metaconsole.php');
-                \metaconsole_connect(null, $this->idNode);
+                \enterprise_hook(
+                    'metaconsole_connect',
+                    [
+                        null,
+                        $this->idNode,
+                    ]
+                );
             }
 
             $rs = \modules_create_agent_module(
@@ -433,7 +452,7 @@ class Module extends Entity
             $error = $config['dbconnection']->error;
 
             if ($this->idNode !== null) {
-                \metaconsole_restore_db();
+                \enterprise_hook('metaconsole_restore_db');
             }
 
             if ($rs === false) {
@@ -458,7 +477,13 @@ class Module extends Entity
     {
         if ($this->idNode !== null) {
             enterprise_include_once('include/functions_metaconsole.php');
-            \metaconsole_connect(null, $this->idNode);
+            \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $this->idNode,
+                ]
+            );
         }
 
         \modules_delete_agent_module(
@@ -466,7 +491,7 @@ class Module extends Entity
         );
 
         if ($this->idNode !== null) {
-            \metaconsole_restore_db();
+            \enterprise_hook('metaconsole_restore_db');
         }
 
         unset($this->fields);
@@ -520,52 +545,82 @@ class Module extends Entity
 
 
     /**
-     * Calculates CPS value and updates its content.
+     * Calculates cascade protection service value for this service.
      *
-     * @return integer CPS value set.
+     * @return integer CPS value.
      */
     public function calculateCPS()
     {
-        $cps = 0;
-
-        if (class_exists('\PandoraFMS\Enterprise\Service') === false) {
-            return 0;
+        if ($this->cps() < 0) {
+            return $this->cps();
         }
 
-        // Check if is child of services in local console.
-        $service_parents = \db_get_all_rows_filter(
-            'tservice_element',
-            [ 'id_agente_modulo' => $this->id_agente_modulo() ],
-            'id_service'
+        // 1. check parents.
+        $direct_parents = db_get_all_rows_sql(
+            sprintf(
+                'SELECT id_service, cps, cascade_protection
+                 FROM `tservice_element` te
+                 INNER JOIN `tservice` t ON te.id_service = t.id
+                 WHERE te.id_agente_modulo = %d',
+                $this->id_agente_modulo()
+            )
         );
 
-        if (is_array($service_parents) === true) {
-            foreach ($service_parents as $ref) {
-                $service = new \PandoraFMS\Enterprise\Service(
-                    $ref['id_service']
-                );
-                if (((bool) $service->cascade_protection()) === true) {
-                    $cps += $service->cps();
-                }
-            }
-        }
-
-        // Check if is child of services in metaconsole.
-        if (is_metaconsole() === false) {
+        if (is_metaconsole() === false
+            && has_metaconsole() === true
+        ) {
+            $mc_parents = [];
             global $config;
-
-            $nodo_connect = \metaconsole_load_external_db(
+            $mc_db_conn = \enterprise_hook(
+                'metaconsole_load_external_db',
                 [
-                    'dbhost' => $config['replication_dbhost'],
-                    'dbuser' => $config['replication_dbuser'],
-                    'dbpass' => \io_output_password(
-                        $config['replication_dbpass']
-                    ),
-                    'dbname' => $config['replication_dbname'],
+                    [
+                        'dbhost' => $config['replication_dbhost'],
+                        'dbuser' => $config['replication_dbuser'],
+                        'dbpass' => io_output_password(
+                            $config['replication_dbpass']
+                        ),
+                        'dbname' => $config['replication_dbname'],
+                    ],
                 ]
             );
 
-            \metaconsole_restore_db();
+            if ($mc_db_conn === NOERR) {
+                $mc_parents = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT id_service,
+                                cps,
+                                cascade_protection
+                        FROM `tservice_element` te
+                        INNER JOIN `tservice` t ON te.id_service = t.id
+                        WHERE te.id_agente_modulo = %d',
+                        $this->id_agente_modulo()
+                    )
+                );
+            }
+
+            // Restore the default connection.
+            \enterprise_hook('metaconsole_restore_db');
+        }
+
+        $cps = 0;
+
+        if (is_array($direct_parents) === false) {
+            $direct_parents = [];
+        }
+
+        if (is_array($mc_parents) === false) {
+            $mc_parents = [];
+        }
+
+        // Merge all parents (node and meta).
+        $parents = array_merge($direct_parents, $mc_parents);
+
+        foreach ($parents as $parent) {
+            $cps += $parent['cps'];
+            if (((bool) $parent['cascade_protection']) === true) {
+                $cps++;
+            }
         }
 
         return $cps;

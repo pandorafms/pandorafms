@@ -6,6 +6,10 @@ ALTER TABLE `tservice` ADD COLUMN `unknown_as_critical` tinyint(1) NOT NULL defa
 
 UPDATE `tservice` SET `auto_calculate`=0;
 
+UPDATE `tservice` SET `cps`= `cps` - 1 WHERE `cps` > 0;
+UPDATE `tagente` SET `cps`= `cps` - 1 WHERE `cps` > 0;
+UPDATE `tagente_modulo` SET `cps`= `cps` - 1 WHERE `cps` > 0;
+
 ALTER TABLE `tmensajes` ADD COLUMN `hidden_sent` TINYINT(1) UNSIGNED DEFAULT 0;
 
 COMMIT;

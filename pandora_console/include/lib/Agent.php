@@ -212,6 +212,90 @@ class Agent extends Entity
 
 
     /**
+     * Calculates cascade protection service value for this service.
+     *
+     * @return integer CPS value.
+     */
+    public function calculateCPS()
+    {
+        if ($this->cps() < 0) {
+            return $this->cps();
+        }
+
+        // 1. check parents.
+        $direct_parents = db_get_all_rows_sql(
+            sprintf(
+                'SELECT id_service, cps, cascade_protection
+                 FROM `tservice_element` te
+                 INNER JOIN `tservice` t ON te.id_service = t.id
+                 WHERE te.id_agent = %d',
+                $this->id_agente()
+            )
+        );
+
+        if (is_metaconsole() === false
+            && has_metaconsole() === true
+        ) {
+            $mc_parents = [];
+            global $config;
+            $mc_db_conn = \enterprise_hook(
+                'metaconsole_load_external_db',
+                [
+                    [
+                        'dbhost' => $config['replication_dbhost'],
+                        'dbuser' => $config['replication_dbuser'],
+                        'dbpass' => io_output_password(
+                            $config['replication_dbpass']
+                        ),
+                        'dbname' => $config['replication_dbname'],
+                    ],
+                ]
+            );
+
+            if ($mc_db_conn === NOERR) {
+                $mc_parents = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT id_service,
+                                cps,
+                                cascade_protection
+                        FROM `tservice_element` te
+                        INNER JOIN `tservice` t ON te.id_service = t.id
+                        WHERE te.id_agent = %d',
+                        $this->id_agente()
+                    )
+                );
+            }
+
+            // Restore the default connection.
+            \enterprise_hook('metaconsole_restore_db');
+        }
+
+        $cps = 0;
+
+        if (is_array($direct_parents) === false) {
+            $direct_parents = [];
+        }
+
+        if (is_array($mc_parents) === false) {
+            $mc_parents = [];
+        }
+
+        // Merge all parents (node and meta).
+        $parents = array_merge($direct_parents, $mc_parents);
+
+        foreach ($parents as $parent) {
+            $cps += $parent['cps'];
+            if (((bool) $parent['cascade_protection']) === true) {
+                $cps++;
+            }
+        }
+
+        return $cps;
+
+    }
+
+
+    /**
      * Creates a module in current agent.
      *
      * @param array $params Module definition (each db field).

@@ -616,7 +616,7 @@ function grafico_modulo_sparse_data(
  *
  * @return string html Content graphs.
  */
-function grafico_modulo_sparse($params)
+function grafico_modulo_sparse($params, $server_name='')
 {
     global $config;
 
@@ -811,6 +811,12 @@ function grafico_modulo_sparse($params)
     $date_array['period']     = $params['period'];
     $date_array['final_date'] = $params['date'];
     $date_array['start_date'] = ($params['date'] - $params['period']);
+
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($server_name);
+        $server  = metaconsole_get_connection_by_id($id_meta);
+        metaconsole_connect($server);
+    }
 
     if ($agent_module_id) {
         $module_data = db_get_row_sql(
@@ -1020,6 +1026,10 @@ function grafico_modulo_sparse($params)
                 __('No data to display within the selected interval')
             );
         }
+    }
+
+    if (is_metaconsole()) {
+        metaconsole_restore_db();
     }
 
     return $return;

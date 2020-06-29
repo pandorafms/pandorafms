@@ -2079,7 +2079,7 @@ class Diagnostics extends Wizard
             ],
             'text'  => [
                 ui_print_error_message(__('Invalid cron task'), '', true),
-                ui_print_success_message(__('Cron task generated'), '', true),
+                ui_print_success_message(__('Sending of information has been processed'), '', true),
             ],
         ];
 

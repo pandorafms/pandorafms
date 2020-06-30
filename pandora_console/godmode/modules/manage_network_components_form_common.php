@@ -23,23 +23,6 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 
     return;
 }
 
-include_javascript_d3();
-
-
-function push_table_row($row, $id=false)
-{
-    global $table;
-
-    if ($id) {
-        $data = [$id => $row];
-    } else {
-        $data = [$row];
-    }
-
-    $table->data = array_merge($table->data, $data);
-}
-
-
 $table->id = 'network_component';
 $table->width = '100%';
 $table->class = 'databox';
@@ -323,7 +306,11 @@ $table->data[12][0] = __('Unknown instructions').ui_print_help_tip(__('Instructi
 $table->data[12][1] = html_print_textarea('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 $table->colspan[12][1] = 3;
 
-$next_row = 13;
+$table->data[13][0] = __('Description');
+$table->data[13][1] = html_print_textarea('description', 2, 65, $description, '', true);
+$table->colspan[13][1] = 3;
+
+$next_row = 14;
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $table->data[$next_row][0] = __('Category');

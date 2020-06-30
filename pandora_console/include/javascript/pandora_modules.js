@@ -1322,3 +1322,308 @@ function filterByText(selectbox, textbox, textNoData) {
     });
   });
 }
+
+// Manage network component oid field generation.
+function manageComponentFields(action, type) {
+  var fieldLines = $("tr[id*=network_component-" + type + "]").length;
+  var protocol = $("#module_protocol").val();
+  if (action === "add") {
+    let lineNumber = fieldLines + 1;
+    let textForAdd =
+      type === "oid-list-pluginRow-snmpRow"
+        ? "_oid_" + lineNumber + "_"
+        : lineNumber;
+
+    $("#network_component-manage-" + type).before(
+      $("#network_component-" + type + "-row-1")
+        .clone()
+        .attr("id", "network_component-" + type + "-row-" + lineNumber)
+    );
+
+    $("#network_component-" + type + "-row-" + lineNumber + " input")
+      .attr("name", "extra_field_" + protocol + "_" + lineNumber)
+      .attr("id", "extra_field_" + protocol + "_" + lineNumber);
+
+    $("#network_component-" + type + "-row-" + lineNumber + " td div").html(
+      textForAdd
+    );
+
+    $("#del_field_button")
+      .attr("style", "opacity: 1;")
+      .addClass("clickable");
+  } else if (action === "del") {
+    if (fieldLines >= 2) {
+      $("#network_component-" + type + "-row-" + fieldLines).remove();
+    }
+
+    if (fieldLines == 2) {
+      $("#del_field_button")
+        .attr("style", "opacity: 0.5;")
+        .removeClass("clickable");
+    }
+  }
+}
+
+// Change module type and show/hide the fields needed.
+function changeModuleType() {
+  var executionType = $("#execution_type").val();
+  var moduleSelected = $("#module_type").val();
+  var moduleProtocol = $("#module_protocol").val();
+  var typeField, toNone, toBlock;
+
+  switch (moduleSelected) {
+    case MODULE_TYPE_NUMERIC:
+      typeField =
+        executionType === EXECUTION_TYPE_PLUGIN || moduleProtocol === "wmi"
+          ? MODULE_TYPE_GENERIC_DATA
+          : MODULE_TYPE_REMOTE_SNMP;
+
+      toNone = "string_values";
+      toBlock = "minmax_values";
+
+      break;
+    case MODULE_TYPE_INCREMENTAL:
+      typeField =
+        executionType === EXECUTION_TYPE_PLUGIN || moduleProtocol === "wmi"
+          ? MODULE_TYPE_GENERIC_DATA_INC
+          : MODULE_TYPE_REMOTE_SNMP_INC;
+
+      toNone = "string_values";
+      toBlock = "minmax_values";
+      break;
+    case MODULE_TYPE_BOOLEAN:
+      typeField =
+        executionType === EXECUTION_TYPE_PLUGIN || moduleProtocol === "wmi"
+          ? MODULE_TYPE_GENERIC_PROC
+          : MODULE_TYPE_REMOTE_SNMP_PROC;
+
+      toNone = "string_values";
+      toBlock = "minmax_values";
+      break;
+    case MODULE_TYPE_ALPHANUMERIC:
+      typeField =
+        executionType === EXECUTION_TYPE_PLUGIN || moduleProtocol === "wmi"
+          ? MODULE_TYPE_GENERIC_DATA_STRING
+          : MODULE_TYPE_REMOTE_SNMP_STRING;
+
+      toNone = "minmax_values";
+      toBlock = "string_values";
+      break;
+    default:
+      typeField = "";
+      toNone = "string_values";
+      toBlock = "minmax_values";
+      break;
+  }
+
+  // Show and hide the proper fields.
+  $("." + toNone).css("display", "none");
+  $("." + toBlock).css("display", "block");
+  // Set value to module type.
+  $("#hidden-type").val(typeField);
+}
+
+// Manage of the visibility fields for various options
+// for remote components wizard
+function manageVisibleFields() {
+  var executionType = $("#execution_type").val();
+  var protocolSelected = $("#module_protocol").val();
+  var symbolName = $("#module_protocol_symbol")
+    .attr("src")
+    .split("/")
+    .pop();
+  var changePath = $("#module_protocol_symbol")
+    .attr("src")
+    .replace(symbolName, protocolSelected + ".png");
+  $("#module_protocol_symbol")
+    .attr("src", changePath)
+    .attr("data-title", protocolSelected.toUpperCase() + " protocol");
+  // Visibility of protocol type.
+  if (protocolSelected === "wmi") {
+    $("tr[id*=wmiRow]").css("display", "table-row");
+    $("tr[id*=snmpRow]").css("display", "none");
+  } else if (protocolSelected === "snmp") {
+    $("tr[id*=wmiRow]").css("display", "none");
+    $("tr[id*=snmpRow]").css("display", "table-row");
+  }
+  // Visibility of execution type.
+  if (executionType === EXECUTION_TYPE_NETWORK) {
+    $("tr[id*=networkRow-" + protocolSelected + "]").css(
+      "display",
+      "table-row"
+    );
+    $("tr[id*=pluginRow]").css("display", "none");
+  } else if (executionType === EXECUTION_TYPE_PLUGIN) {
+    $("tr[id*=networkRow]").css("display", "none");
+    $("tr[id*=pluginRow-" + protocolSelected + "]").css("display", "table-row");
+    // Only row WMI type execution plugin.
+    $("tr#network_component-query-filter-execution-wmiRow").css(
+      "display",
+      "none"
+    );
+  }
+  // Must update the module type.
+  changeModuleType();
+  // Must update the plugin macros.
+  changePlugin();
+}
+
+// Plugin managing for wizard components.
+function changePlugin() {
+  var moduleProtocol = $("#module_protocol").val();
+  var executionType = $("#execution_type").val();
+  var pluginSelected = $("#server_plugin_" + moduleProtocol).val();
+  var pluginAllData = JSON.parse(
+    $("#hidden-server_plugin_data_" + pluginSelected).val()
+  );
+
+  var pluginDescription = pluginAllData.description;
+  var pluginMacros = pluginAllData.macros;
+  console.log(pluginAllData.macrosElement);
+  var pluginMacrosElement = JSON.parse(atob(pluginAllData.macrosElement));
+  console.log(pluginMacrosElement);
+
+  var displayShow = "none";
+  if (executionType == EXECUTION_TYPE_NETWORK) {
+    displayShow = "none";
+  } else {
+    displayShow = "table-row";
+  }
+
+  var cntMacrosToGo = 4;
+  var cntMacrosLine = 0;
+  var thisIdLine = "";
+  // Clear older macros rows.
+  $("tr[id*=dynamicMacroRow-pluginRow-" + moduleProtocol + "Row-N-]").remove();
+  // Hide the template.
+  $(
+    "#network_component-plugin-" +
+      moduleProtocol +
+      "-fields-dynamicMacroRow-pluginRow-" +
+      moduleProtocol +
+      "Row-0"
+  ).attr("style", "display: none;");
+  // For each macro.
+  $.each(pluginMacros, function() {
+    let description = this.desc;
+    let macro = this.macro;
+    let value = this.value;
+
+    if (pluginMacrosElement["server_plugin"] == pluginSelected) {
+      if (pluginMacrosElement[macro + "_" + moduleProtocol + "_field"]) {
+        value = pluginMacrosElement[macro + "_" + moduleProtocol + "_field"];
+      }
+    }
+
+    if (
+      typeof description == "undefined" ||
+      description === null ||
+      description == ""
+    ) {
+      description = "unknown";
+    }
+
+    if (cntMacrosToGo == 4) {
+      cntMacrosToGo = 0;
+      cntMacrosLine++;
+      thisIdLine =
+        "network_component-plugin-" +
+        moduleProtocol +
+        "-fields-dynamicMacroRow-pluginRow-" +
+        moduleProtocol +
+        "Row-N-" +
+        cntMacrosLine;
+      $(
+        "#network_component-server-plugin-pluginRow-" + moduleProtocol + "Row"
+      ).after(
+        $(
+          "#network_component-plugin-" +
+            moduleProtocol +
+            "-fields-dynamicMacroRow-pluginRow-" +
+            moduleProtocol +
+            "Row-0"
+        )
+          .clone()
+          .attr("id", thisIdLine)
+          .css("display", displayShow)
+      );
+      // Clear the template.
+      $("#" + thisIdLine).empty();
+    }
+
+    $(
+      "#network_component-plugin-" +
+        moduleProtocol +
+        "-fields-dynamicMacroRow-pluginRow-" +
+        moduleProtocol +
+        "Row-0-0"
+    )
+      .clone()
+      .attr(
+        "id",
+        "network_component-plugin-" +
+          moduleProtocol +
+          "-fields-dynamicMacroRow-pluginRow-" +
+          moduleProtocol +
+          "Row-N-" +
+          cntMacrosLine +
+          "-" +
+          cntMacrosToGo
+      )
+      .html(description)
+      .appendTo("#" + thisIdLine);
+    cntMacrosToGo++;
+
+    $(
+      "#network_component-plugin-" +
+        moduleProtocol +
+        "-fields-dynamicMacroRow-pluginRow-" +
+        moduleProtocol +
+        "Row-0-1"
+    )
+      .clone()
+      .attr(
+        "id",
+        "network_component-plugin-" +
+          moduleProtocol +
+          "-fields-dynamicMacroRow-pluginRow-" +
+          moduleProtocol +
+          "Row-N-" +
+          cntMacrosLine +
+          "-" +
+          cntMacrosToGo
+      )
+      .appendTo("#" + thisIdLine);
+
+    $(
+      "#network_component-plugin-" +
+        moduleProtocol +
+        "-fields-dynamicMacroRow-pluginRow-" +
+        moduleProtocol +
+        "Row-N-" +
+        cntMacrosLine +
+        "-" +
+        cntMacrosToGo
+    )
+      .children("input")
+      .val(value);
+
+    $(
+      "#network_component-plugin-" +
+        moduleProtocol +
+        "-fields-dynamicMacroRow-pluginRow-" +
+        moduleProtocol +
+        "Row-N-" +
+        cntMacrosLine +
+        "-" +
+        cntMacrosToGo
+    )
+      .children("#field0_" + moduleProtocol + "_fields")
+      .attr("id", this.macro + "_" + moduleProtocol + "_fields")
+      .attr("name", this.macro + "_" + moduleProtocol + "_field");
+
+    cntMacrosToGo++;
+  });
+
+  $("#selected_plugin_description_" + moduleProtocol).html(pluginDescription);
+}

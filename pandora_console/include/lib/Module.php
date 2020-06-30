@@ -52,13 +52,6 @@ class Module extends Entity
      */
     private $linkedAgent;
 
-    /**
-     * Metaconsole setup id.
-     *
-     * @var integer
-     */
-    private $idNode;
-
 
     /**
      * Search a module in db.
@@ -149,28 +142,13 @@ class Module extends Entity
      *
      * @param integer|null $id_agent_module Module id.
      * @param boolean      $link_agent      Link agent object.
-     * @param integer|null $id_node         Metaconsole only. ID node.
      *
      * @throws \Exception On error.
      */
     public function __construct(
         ?int $id_agent_module=null,
-        bool $link_agent=false,
-        ?int $id_node=null
+        bool $link_agent=false
     ) {
-        if ($id_node !== null) {
-            $this->idNode = $id_node;
-
-            enterprise_include_once('include/functions_metaconsole.php');
-            \enterprise_hook(
-                'metaconsole_connect',
-                [
-                    null,
-                    $this->idNode,
-                ]
-            );
-        }
-
         if (is_numeric($id_agent_module) === true
             && $id_agent_module > 0
         ) {
@@ -187,10 +165,6 @@ class Module extends Entity
                 try {
                     $this->linkedAgent = new Agent($this->id_agente());
                 } catch (\Exception $e) {
-                    if ($this->idNode !== null) {
-                        \enterprise_hook('metaconsole_restore_db');
-                    }
-
                     // Unexistent agent.
                     throw new \Exception(
                         __METHOD__.__(
@@ -211,9 +185,6 @@ class Module extends Entity
             $this->status = new Modulestatus();
         }
 
-        if ($this->idNode !== null) {
-            \enterprise_hook('metaconsole_restore_db');
-        }
     }
 
 
@@ -267,6 +238,23 @@ class Module extends Entity
     public function getStatus()
     {
         return $this->status;
+    }
+
+
+    /**
+     * Alias for field 'nombre'.
+     *
+     * @param string|null $name Name or empty if get operation.
+     *
+     * @return string|null Name or empty if set operation.
+     */
+    public function name(?string $name=null)
+    {
+        if ($name === null) {
+            return $this->nombre();
+        }
+
+        $this->nombre($name);
     }
 
 
@@ -391,16 +379,6 @@ class Module extends Entity
         if ($this->fields['id_agente_modulo'] > 0) {
             // Update.
             $updates = $this->fields;
-            if ($this->idNode !== null) {
-                enterprise_include_once('include/functions_metaconsole.php');
-                \enterprise_hook(
-                    'metaconsole_connect',
-                    [
-                        null,
-                        $this->idNode,
-                    ]
-                );
-            }
 
             $rs = \db_process_sql_update(
                 'tagente_modulo',
@@ -408,16 +386,10 @@ class Module extends Entity
                 ['id_agente_modulo' => $this->fields['id_agente_modulo']]
             );
 
-            global $config;
-            $error = $config['dbconnection']->error;
-
-            if ($this->idNode !== null) {
-                \enterprise_hook('metaconsole_restore_db');
-            }
-
             if ($rs === false) {
+                global $config;
                 throw new \Exception(
-                    __METHOD__.' error: '.$error
+                    __METHOD__.' error: '.$config['dbconnection']->error
                 );
             }
         } else {
@@ -431,33 +403,16 @@ class Module extends Entity
                 }
             }
 
-            if ($this->idNode !== null) {
-                enterprise_include_once('include/functions_metaconsole.php');
-                \enterprise_hook(
-                    'metaconsole_connect',
-                    [
-                        null,
-                        $this->idNode,
-                    ]
-                );
-            }
-
             $rs = \modules_create_agent_module(
                 $this->fields['id_agente'],
                 $updates['nombre'],
                 $updates
             );
 
-            global $config;
-            $error = $config['dbconnection']->error;
-
-            if ($this->idNode !== null) {
-                \enterprise_hook('metaconsole_restore_db');
-            }
-
             if ($rs === false) {
+                global $config;
                 throw new \Exception(
-                    __METHOD__.' error: '.$error
+                    __METHOD__.' error: '.$config['dbconnection']->error
                 );
             }
 
@@ -475,24 +430,9 @@ class Module extends Entity
      */
     public function delete()
     {
-        if ($this->idNode !== null) {
-            enterprise_include_once('include/functions_metaconsole.php');
-            \enterprise_hook(
-                'metaconsole_connect',
-                [
-                    null,
-                    $this->idNode,
-                ]
-            );
-        }
-
         \modules_delete_agent_module(
             $this->id_agente_modulo()
         );
-
-        if ($this->idNode !== null) {
-            \enterprise_hook('metaconsole_restore_db');
-        }
 
         unset($this->fields);
         unset($this->status);
@@ -547,9 +487,12 @@ class Module extends Entity
     /**
      * Calculates cascade protection service value for this service.
      *
+     * @param integer|null $id_node Meta searching node will use this field.
+     *
      * @return integer CPS value.
+     * @throws \Exception On error.
      */
-    public function calculateCPS()
+    public function calculateCPS(?int $id_node=null)
     {
         if ($this->cps() < 0) {
             return $this->cps();
@@ -558,7 +501,7 @@ class Module extends Entity
         // 1. check parents.
         $direct_parents = db_get_all_rows_sql(
             sprintf(
-                'SELECT id_service, cps, cascade_protection
+                'SELECT id_service, cps, cascade_protection, name
                  FROM `tservice_element` te
                  INNER JOIN `tservice` t ON te.id_service = t.id
                  WHERE te.id_agente_modulo = %d',
@@ -566,9 +509,14 @@ class Module extends Entity
             )
         );
 
-        if (is_metaconsole() === false
+        // Here could happen 2 things.
+        // 1. Metaconsole service is using this method impersonating node DB.
+        // 2. Node service is trying to find parents into metaconsole.
+        if (empty($id_node) === true
+            && is_metaconsole() === false
             && has_metaconsole() === true
         ) {
+            // Node searching metaconsole.
             $mc_parents = [];
             global $config;
             $mc_db_conn = \enterprise_hook(
@@ -590,17 +538,52 @@ class Module extends Entity
                     sprintf(
                         'SELECT id_service,
                                 cps,
-                                cascade_protection
+                                cascade_protection,
+                                name
                         FROM `tservice_element` te
                         INNER JOIN `tservice` t ON te.id_service = t.id
                         WHERE te.id_agente_modulo = %d',
                         $this->id_agente_modulo()
-                    )
+                    ),
+                    false,
+                    false
                 );
             }
 
             // Restore the default connection.
             \enterprise_hook('metaconsole_restore_db');
+        } else if ($id_node > 0) {
+            // Impersonated node.
+            \enterprise_hook('metaconsole_restore_db');
+
+            $mc_parents = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT id_service,
+                            cps,
+                            cascade_protection,
+                            name
+                    FROM `tservice_element` te
+                    INNER JOIN `tservice` t ON te.id_service = t.id
+                    WHERE te.id_agente_modulo = %d',
+                    $this->id_agente_modulo()
+                ),
+                false,
+                false
+            );
+
+            // Restore impersonation.
+            \enterprise_include_once('include/functions_metaconsole.php');
+            $r = \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $id_node,
+                ]
+            );
+
+            if ($r !== NOERR) {
+                throw new \Exception(__('Cannot connect to node %d', $r));
+            }
         }
 
         $cps = 0;

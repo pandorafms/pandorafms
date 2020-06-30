@@ -97,6 +97,30 @@ class Agent extends Entity
 
 
     /**
+     * Return last value (status) of the agent.
+     *
+     * @return integer Status of the agent.
+     */
+    public function lastStatus()
+    {
+        return \agents_get_status_from_counts(
+            $this->toArray()
+        );
+    }
+
+
+    /**
+     * Return last value (status) of the agent.
+     *
+     * @return integer Status of the agent.
+     */
+    public function lastValue()
+    {
+        return $this->lastStatus();
+    }
+
+
+    /**
      * Overrides Entity method.
      *
      * @param integer $id_group Target group Id.

@@ -47,6 +47,40 @@ require_once $config['homedir'].'/include/functions_categories.php';
 enterprise_include_once('meta/include/functions_components_meta.php');
 require_once $config['homedir'].'/include/functions_component_groups.php';
 
+// Header.
+if (defined('METACONSOLE')) {
+    components_meta_print_header();
+    $sec = 'advanced';
+
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
+} else {
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
+    if ($id_modulo == COMPONENT_TYPE_NETWORK || $id_modulo == COMPONENT_TYPE_PLUGIN || $id_modulo == COMPONENT_TYPE_WMI || $id_modulo == COMPONENT_TYPE_WIZARD) {
+        $help_header = 'local_module_tab';
+    } else if (!$new_component) {
+        $help_header = 'network_component_tab';
+    } else {
+        $help_header = 'network_component_tab';
+    }
+
+    ui_print_page_header(
+        __('Remote components'),
+        '',
+        false,
+        $help_header,
+        true,
+        '',
+        false,
+        'modulemodal',
+        GENERIC_SIZE_TEXT,
+        '',
+        __('Configuration').'&nbsp;/&nbsp;'.__('Templates').'&nbsp;/&nbsp;'.__('Remote components')
+    );
+    $sec = 'gmodules';
+}
+
 $type = (int) get_parameter('type');
 $name = (string) get_parameter('name');
 $description = (string) get_parameter('description');
@@ -180,6 +214,68 @@ if ($duplicate_network_component) {
     $id = 0;
 }
 
+// Wizard Common.
+$module_enabled   = get_parameter_switch('module_enabled');
+$module_protocol  = get_parameter('module_protocol', 'snmp');
+$scan_type        = (int) get_parameter('scan_type', SCAN_TYPE_FIXED);
+$execution_type   = (int) get_parameter('execution_type', EXECUTION_TYPE_NETWORK);
+// Wizard SNMP.
+$manufacturer_id  = get_parameter('manufacturer_id');
+$name_oid         = get_parameter('name_oid');
+$value            = get_parameter('value_oid');
+// Other Wizard WMI fields.
+$query_filter     = '';
+$wmi_class        = get_parameter('wmi_class');
+$query_key_field  = get_parameter('query_key_field');
+// Enabled Module.
+$enabled          = get_parameter_switch('enabled');
+
+if ($id_modulo === COMPONENT_TYPE_WIZARD) {
+    // Wizard Common extra fields.
+    $macros = [];
+
+    $macros['satellite_execution']  = get_parameter('satellite_execution_'.$module_protocol);
+    $macros['value_operation']      = get_parameter('value_operation_'.$module_protocol);
+    $macros['server_plugin']        = get_parameter('server_plugin_'.$module_protocol);
+
+    if ($module_protocol === 'snmp') {
+        // If not select any manufacturer_id, there is 'all'.
+        if (empty($manufacturer_id) === true) {
+            $manufacturer_id = 'all';
+        }
+    } else if ($module_protocol === 'wmi') {
+        // Wizard WMI Query filters.
+        $query_filter                   = [];
+        $query_filter['scan']           = get_parameter('query_filter_scan');
+        $query_filter['execution']      = get_parameter('query_filter_execution');
+        $query_filter['field']          = get_parameter('field_value_filter');
+        $query_filter['key_string']         = get_parameter('key_string_filter');
+        $query_filter                   = json_encode($query_filter);
+    }
+
+    // Default extra field.
+    $extra_fields = [ 'extra_field_1' => '' ];
+    // If Plugin execution is selected.
+    if ($execution_type === EXECUTION_TYPE_PLUGIN || $module_protocol === 'wmi') {
+        // Search all parameters received with extra_fields.
+        foreach ($_REQUEST as $parameter => $thisValue) {
+            // Extra fields (OIDs Macros or WMI Extra fields)
+            if (preg_match('/extra_field_'.$module_protocol.'_/', $parameter) !== 0) {
+                $tmpParameter = explode('_', $parameter);
+                $extra_fields['extra_field_'.$tmpParameter[3]] = get_parameter($parameter);
+            }
+
+            // The plugin macros.
+            if (preg_match('/'.$module_protocol.'_field/', $parameter) !== 0) {
+                $macros[$parameter] = io_safe_input($thisValue);
+            }
+        }
+
+        // All of macros saved in the same array.
+        $macros = json_encode(array_merge($extra_fields, $macros));
+    }
+}
+
 $custom_string_1 = '';
 $custom_string_2 = '';
 $custom_string_3 = '';
@@ -210,7 +306,7 @@ if (defined('METACONSOLE')) {
     $sec = 'gmodules';
 }
 
-if ($type >= 15 && $type <= 18) {
+if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
     // New support for snmp v3.
     $tcp_send = $snmp_version;
     $plugin_user = $snmp3_auth_user;
@@ -219,7 +315,7 @@ if ($type >= 15 && $type <= 18) {
     $custom_string_1 = $snmp3_privacy_method;
     $custom_string_2 = $snmp3_privacy_pass;
     $custom_string_3 = $snmp3_security_level;
-} else if ($type >= 34 && $type <= 37) {
+} else if ($type >= MODULE_TYPE_REMOTE_CMD && $type <= MODULE_TYPE_REMOTE_CMD_INC) {
     $tcp_send = $command_text;
     $custom_string_1 = $command_credential_identifier;
     $custom_string_2 = $command_os;
@@ -275,7 +371,6 @@ if ($create_component) {
                 'post_process'          => $post_process,
                 'unit'                  => $unit,
                 'wizard_level'          => $wizard_level,
-                'macros'                => $macros,
                 'critical_instructions' => $critical_instructions,
                 'warning_instructions'  => $warning_instructions,
                 'unknown_instructions'  => $unknown_instructions,
@@ -289,6 +384,17 @@ if ($create_component) {
                 'min_ff_event_critical' => $ff_event_critical,
                 'ff_type'               => $ff_type,
                 'each_ff'               => $each_ff,
+                'manufacturer_id'       => $manufacturer_id,
+                'protocol'              => $module_protocol,
+                'scan_type'             => $scan_type,
+                'execution_type'        => $execution_type,
+                'value'                 => $value,
+                'query_class'           => $wmi_class,
+                'query_key_field'       => $query_key_field,
+                'query_filters'         => $query_filter,
+                'name_oid'              => $name_oid,
+                'module_enabled'        => $module_enabled,
+                'enabled'               => $enabled,
             ]
         );
     } else {
@@ -298,9 +404,17 @@ if ($create_component) {
     if ($id === false || !$id) {
         db_pandora_audit(
             'Module management',
-            'Fail try to create network component'
+            'Fail try to create remote component'
         );
-        ui_print_error_message(__('Could not be created'));
+
+        if ($name_check !== false) {
+            // If name exists, advice about it.
+            ui_print_error_message(__('Could not be created because the component exists'));
+        } else {
+            // Other cases.
+            ui_print_error_message(__('Could not be created'));
+        }
+
         include_once 'godmode/modules/manage_network_components_form.php';
         return;
     }
@@ -356,7 +470,6 @@ if ($update_component) {
                 'post_process'          => $post_process,
                 'unit'                  => $unit,
                 'wizard_level'          => $wizard_level,
-                'macros'                => $macros,
                 'critical_instructions' => $critical_instructions,
                 'warning_instructions'  => $warning_instructions,
                 'unknown_instructions'  => $unknown_instructions,
@@ -370,6 +483,17 @@ if ($update_component) {
                 'min_ff_event_critical' => $ff_event_critical,
                 'ff_type'               => $ff_type,
                 'each_ff'               => $each_ff,
+                'manufacturer_id'       => $manufacturer_id,
+                'protocol'              => $module_protocol,
+                'scan_type'             => $scan_type,
+                'execution_type'        => $execution_type,
+                'value'                 => $value,
+                'query_class'           => $wmi_class,
+                'query_key_field'       => $query_key_field,
+                'query_filters'         => $query_filter,
+                'name_oid'              => $name_oid,
+                'module_enabled'        => $module_enabled,
+                'enabled'               => $enabled,
             ]
         );
     } else {
@@ -559,11 +683,6 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
             );
         }
     }
-
-    // Only show component groups with local components.
-    if ($num_components == 0 && $num_components_childs == 0) {
-        unset($component_groups[$component_group_key]);
-    }
 }
 
 $table->data[0][1] = html_print_select(
@@ -665,14 +784,16 @@ $table->head['checkbox'] = html_print_checkbox(
     false
 );
 $table->head[0] = __('Module name');
-$table->head[1] = __('Type');
+$table->head[1] = __('Server');
+$table->head[2] = __('Type');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
 $table->head[6] = __('Action');
 $table->size = [];
 $table->size['checkbox'] = '20px';
-$table->size[1] = '75px';
+$table->size[1] = '40px';
+$table->size[2] = '50px';
 $table->size[6] = '80px';
 $table->align[6] = 'left';
 $table->data = [];
@@ -698,7 +819,6 @@ foreach ($components as $component) {
     $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
     $data[0] .= io_safe_output($component['name']);
     $data[0] .= '</a>';
-    $data[1] = ui_print_moduletype_icon($component['type'], true);
     switch ($component['id_modulo']) {
         case MODULE_NETWORK:
             $data[1] .= html_print_image(
@@ -724,11 +844,20 @@ foreach ($components as $component) {
             );
         break;
 
+        case MODULE_WIZARD:
+            $data[1] .= html_print_image(
+                'images/wand.png',
+                true,
+                ['title' => __('Wizard module')]
+            );
+        break;
+
         default:
             // Not possible.
         break;
     }
 
+    $data[2] = ui_print_moduletype_icon($component['type'], true);
     $data[3] = "<span style='font-size: 8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
     $data[4] = network_components_get_group_name($component['id_group']);
     $data[5] = $component['max'].' / '.$component['min'];
@@ -777,9 +906,10 @@ echo '<div class="" style="float:right;">';
 html_print_input_hidden('new_component', 1);
 html_print_select(
     [
-        2 => __('Create a new network component'),
-        4 => __('Create a new plugin component'),
-        6 => __('Create a new WMI component'),
+        COMPONENT_TYPE_NETWORK => __('Create a new network component'),
+        COMPONENT_TYPE_PLUGIN  => __('Create a new plugin component'),
+        COMPONENT_TYPE_WMI     => __('Create a new WMI component'),
+        COMPONENT_TYPE_WIZARD  => __('Create a new wizard component'),
     ],
     'id_component_type',
     '',

@@ -187,8 +187,21 @@ $data[1] = html_print_extended_select_for_post_process(
     false,
     true
 );
-$data[2] = '';
-$data[3] = '';
+
+$data[2] = __('Name OID').'&nbsp;'.ui_print_help_icon('xxx', true);
+$data[3] = html_print_input_text_extended(
+    'name_oid',
+    $name_oid,
+    'name_oid',
+    '',
+    30,
+    10000,
+    '',
+    '',
+    '',
+    true
+);
+
 push_table_row($data, 'field_process');
 
 // Advanced stuff.

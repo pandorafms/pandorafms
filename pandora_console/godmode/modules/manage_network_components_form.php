@@ -110,56 +110,69 @@ if ($create_network_from_module) {
 if (isset($id)) {
     $component = network_components_get_network_component((int) $id);
     if ($component !== false) {
-        $id_component_type = $component['id_modulo'];
-        $name = $component['name'];
-        $type = $component['type'];
-        $description = $component['description'];
-        $max = $component['max'];
-        $min = $component['min'];
-        $module_interval = $component['module_interval'];
-        $tcp_port = $component['tcp_port'];
-        $tcp_rcv = $component['tcp_rcv'];
-        $tcp_send = $component['tcp_send'];
-        $snmp_community = $component['snmp_community'];
-        $snmp_oid = $component['snmp_oid'];
-        $id_module_group = $component['id_module_group'];
-        $id_group = $component['id_group'];
-        $id_plugin = $component['id_plugin'];
-        $plugin_user = $component['plugin_user'];
-        $plugin_pass = io_output_password($component['plugin_pass']);
-        $plugin_parameter = $component['plugin_parameter'];
-        $macros = $component['macros'];
-        $max_timeout = $component['max_timeout'];
-        $max_retries = $component['max_retries'];
-        $dynamic_interval = $component['dynamic_interval'];
-        $dynamic_max = $component['dynamic_max'];
-        $dynamic_min = $component['dynamic_min'];
-        $dynamic_two_tailed = $component['dynamic_two_tailed'];
-        $min_warning = $component['min_warning'];
-        $max_warning = $component['max_warning'];
-        $str_warning = $component['str_warning'];
-        $max_critical = $component['max_critical'];
-        $min_critical = $component['min_critical'];
-        $str_critical = $component['str_critical'];
-        $ff_event = $component['min_ff_event'];
-        $history_data = $component['history_data'];
-        $post_process = $component['post_process'];
-        $unit = $component['unit'];
-        $wizard_level = $component['wizard_level'];
-        $critical_instructions = $component['critical_instructions'];
-        $warning_instructions = $component['warning_instructions'];
-        $unknown_instructions = $component['unknown_instructions'];
-        $critical_inverse = $component['critical_inverse'];
-        $warning_inverse = $component['warning_inverse'];
-        $id_category = $component['id_category'];
-        $tags = $component['tags'];
-        $ff_event_normal = $component['min_ff_event_normal'];
-        $ff_event_warning = $component['min_ff_event_warning'];
-        $ff_event_critical = $component['min_ff_event_critical'];
-        $ff_type = $component['ff_type'];
-        $each_ff = $component['each_ff'];
+        $id_component_type       = $component['id_modulo'];
+        $name                    = $component['name'];
+        $type                    = $component['type'];
+        $description             = $component['description'];
+        $max                     = $component['max'];
+        $min                     = $component['min'];
+        $module_interval         = $component['module_interval'];
+        $tcp_port                = $component['tcp_port'];
+        $tcp_rcv                 = $component['tcp_rcv'];
+        $tcp_send                = $component['tcp_send'];
+        $snmp_community          = $component['snmp_community'];
+        $snmp_oid                = $component['snmp_oid'];
+        $id_module_group         = $component['id_module_group'];
+        $id_group                = $component['id_group'];
+        $id_plugin               = $component['id_plugin'];
+        $plugin_user             = $component['plugin_user'];
+        $plugin_pass             = io_output_password($component['plugin_pass']);
+        $plugin_parameter        = $component['plugin_parameter'];
+        $macros                  = $component['macros'];
+        $max_timeout             = $component['max_timeout'];
+        $max_retries             = $component['max_retries'];
+        $dynamic_interval        = $component['dynamic_interval'];
+        $dynamic_max             = $component['dynamic_max'];
+        $dynamic_min             = $component['dynamic_min'];
+        $dynamic_two_tailed      = $component['dynamic_two_tailed'];
+        $min_warning             = $component['min_warning'];
+        $max_warning             = $component['max_warning'];
+        $str_warning             = $component['str_warning'];
+        $max_critical            = $component['max_critical'];
+        $min_critical            = $component['min_critical'];
+        $str_critical            = $component['str_critical'];
+        $ff_event                = $component['min_ff_event'];
+        $history_data            = $component['history_data'];
+        $post_process            = $component['post_process'];
+        $unit                    = $component['unit'];
+        $wizard_level            = $component['wizard_level'];
+        $critical_instructions   = $component['critical_instructions'];
+        $warning_instructions    = $component['warning_instructions'];
+        $unknown_instructions    = $component['unknown_instructions'];
+        $critical_inverse        = $component['critical_inverse'];
+        $warning_inverse         = $component['warning_inverse'];
+        $id_category             = $component['id_category'];
+        $tags                    = $component['tags'];
+        $ff_event_normal         = $component['min_ff_event_normal'];
+        $ff_event_warning        = $component['min_ff_event_warning'];
+        $ff_event_critical       = $component['min_ff_event_critical'];
+        $ff_type                 = $component['ff_type'];
+        $each_ff                 = $component['each_ff'];
+        $manufacturer_id         = $component['manufacturer_id'];
+        $module_protocol         = $component['protocol'];
+        $scan_type               = $component['scan_type'];
+        $execution_type          = $component['execution_type'];
+        $value                   = $component['value'];
+        $wmi_class               = $component['query_class'];
+        $query_key_field         = $component['query_key_field'];
+        $query_Key_wmi           = $component['key_string'];
+        $name_oid                = $component['name_oid'];
+        $value_oid               = $component['value_oid'];
+        $query_filter            = $component['query_filters'];
+        $module_enabled          = $component['module_enabled'];
+        $enabled                 = $component['enabled'];
 
-        if ($type >= 15 && $type <= 18) {
+        if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
             // New support for snmp v3.
             $snmp_version = $component['tcp_send'];
             $snmp3_auth_user = $component['plugin_user'];
@@ -170,7 +183,7 @@ if (isset($id)) {
                 $component['custom_string_2']
             );
             $snmp3_security_level = $component['custom_string_3'];
-        } else if ($type >= 34 && $type <= 37) {
+        } else if ($type >= MODULE_TYPE_REMOTE_CMD && $type <= MODULE_TYPE_REMOTE_CMD_INC) {
             $command_text = $component['tcp_send'];
             $command_credential_identifier = $component['custom_string_1'];
             $command_os = $component['custom_string_2'];
@@ -192,7 +205,7 @@ if (isset($id)) {
         $tcp_send = '';
         $snmp_community = '';
         $id_module_group = '';
-        if ($id_component_type == 6) {
+        if ($id_component_type == COMPONENT_TYPE_WMI) {
             $id_group = 14;
         } else {
             $id_group = '';
@@ -238,28 +251,67 @@ if (isset($id)) {
         $command_text = '';
         $command_os = 'inherited';
         $command_credential_identifier = '';
+
+        $macros            = '';
+        $manufacturer_id   = '';
+        $module_protocol   = 'snmp';
+        $scan_type         = SCAN_TYPE_FIXED;
+        $execution_type    = EXECUTION_TYPE_NETWORK;
+        $value             = '';
+        $wmi_class         = '';
+        $query_key_field   = '';
+        $query_Key_wmi     = '';
+        $name_oid          = '';
+        $value_oid         = '';
+        $query_filter      = '';
+        $module_enabled    = true;
+        $enabled           = true;
     }
 }
 
 $table = new stdClass();
 
-if ($id_component_type == 6) {
+
+/**
+ * Common function for adding rows to main table
+ *
+ * @param array $row Array with the data for add.
+ * @param mixed $id  If added, the DOM id for this block.
+ *
+ * @return void
+ */
+function push_table_row($row, $id=false)
+{
+    global $table;
+
+    if ($id) {
+        $data = [$id => $row];
+    } else {
+        $data = [$row];
+    }
+
+    $table->data = array_merge($table->data, $data);
+}
+
+
+$remote_components_path = $config['homedir'].'/godmode/modules/';
+if ($id_component_type == COMPONENT_TYPE_WMI) {
     $categories = [
         0,
         1,
         2,
     ];
-    include $config['homedir'].'/godmode/modules/manage_network_components_form_common.php';
-    include $config['homedir'].'/godmode/modules/manage_network_components_form_wmi.php';
-} else if ($id_component_type == 4) {
+    include $remote_components_path.'manage_network_components_form_common.php';
+    include $remote_components_path.'manage_network_components_form_wmi.php';
+} else if ($id_component_type == COMPONENT_TYPE_PLUGIN) {
     $categories = [
         0,
         1,
         2,
     ];
-    include $config['homedir'].'/godmode/modules/manage_network_components_form_common.php';
-    include $config['homedir'].'/godmode/modules/manage_network_components_form_plugin.php';
-} else if ($id_component_type == 2 || $create_network_from_module) {
+    include $remote_components_path.'manage_network_components_form_common.php';
+    include $remote_components_path.'manage_network_components_form_plugin.php';
+} else if ($id_component_type == COMPONENT_TYPE_WIZARD) {
     $categories = [
         3,
         4,
@@ -269,8 +321,19 @@ if ($id_component_type == 6) {
         $categories[] = 10;
     }
 
-    include $config['homedir'].'/godmode/modules/manage_network_components_form_common.php';
-    include $config['homedir'].'/godmode/modules/manage_network_components_form_network.php';
+    include $remote_components_path.'manage_network_components_form_wizard.php';
+} else if ($id_component_type == COMPONENT_TYPE_NETWORK || $create_network_from_module) {
+    $categories = [
+        3,
+        4,
+        5,
+    ];
+    if (enterprise_installed()) {
+        $categories[] = 10;
+    }
+
+    include $remote_components_path.'manage_network_components_form_common.php';
+    include $remote_components_path.'manage_network_components_form_network.php';
 } else {
     return;
 }
@@ -291,15 +354,10 @@ if (defined('METACONSOLE')) {
     $table->headstyle[0] = 'text-align: center';
 }
 
-$table->colspan['description'][1] = 3;
-$data = [];
-$data[0] = __('Description');
-$data[1] = html_print_textarea('description', 2, 65, $description, '', true);
-push_table_row($data, 'description');
-
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
+html_print_button(__('Go back'), 'go_back', false, 'history.go(-1);', 'class="sub cancel"');
 html_print_input_hidden('id_component_type', $id_component_type);
 if ($id) {
     html_print_input_hidden('update_component', 1);

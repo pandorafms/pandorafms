@@ -746,6 +746,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Increment'),
     ];
+    $types['last_value'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Last value'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),

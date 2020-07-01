@@ -251,10 +251,8 @@ function db_pandora_audit($accion, $descripcion, $user_id=false, $ip=true, $info
 
     $valor = ''.$values['fecha'].' - '.io_safe_output($id).' - '.io_safe_output($accion).' - '.$ip.' - '.io_safe_output($descripcion)."\n";
 
-    if (empty($config['auditdir'])) {
-        file_put_contents($config['homedir'].'/audit.log', $valor, FILE_APPEND);
-    } else {
-        file_put_contents($config['auditdir'].'/audit.log', $valor, FILE_APPEND);
+    if ($config['audit_log_enabled']) {
+        file_put_contents($config['homedir'].'/log/audit.log', $valor, FILE_APPEND);
     }
 
     enterprise_include_once('include/functions_audit.php');

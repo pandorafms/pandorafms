@@ -1797,6 +1797,7 @@ function html_print_div($options, $return=false)
         'id',
         'style',
         'class',
+        'title',
     ];
 
     if (isset($options['hidden'])) {
@@ -2224,19 +2225,34 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
  *
  * The element will have an id like: "hidden-$name"
  *
- * @param string  $name   Input name.
- * @param string  $value  Input value.
- * @param boolean $return Whether to return an output string or echo now (optional, echo by default).
- * @param string  $class  Set the class of input.
+ * @param string  $name       Input name.
+ * @param string  $value      Input value.
+ * @param boolean $return     Whether to return an output string or echo now
+ * (optional, echo by default).
+ * @param string  $class      Set the class of input.
+ * @param string  $attributes String with the needed attributes to add.
+ * @param string  $id         Specific id.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_hidden($name, $value, $return=false, $class=false)
-{
+function html_print_input_hidden(
+    $name,
+    $value,
+    $return=false,
+    $class=false,
+    $attributes=false,
+    $id=''
+) {
     if ($class !== false) {
         $classText = 'class="'.$class.'"';
     } else {
         $classText = '';
+    }
+
+    if ($attributes !== false) {
+        $otherAttributes = $attributes;
+    } else {
+        $otherAttributes = '';
     }
 
     $separator = '"';
@@ -2247,7 +2263,12 @@ function html_print_input_hidden($name, $value, $return=false, $class=false)
         }
     }
 
-    $output = '<input id="hidden-'.$name.'" '.'name="'.$name.'" '.'type="hidden" '.$classText.' '.'value='.$separator.$value.$separator.' />';
+    $idInput = 'hidden-'.$name;
+    if (empty($id) === false) {
+        $idInput = $id;
+    }
+
+    $output = '<input id="'.$idInput.'" name="'.$name.'" type="hidden" '.$classText.' value='.$separator.$value.$separator.' '.$otherAttributes.'/>';
 
     if ($return) {
         return $output;
@@ -3042,34 +3063,53 @@ function html_print_checkbox(
 
 
 /**
- * Render a checkbox button input switch type. Extended version, use html_print_checkbox_switch() to simplify.
+ * Render a checkbox button input switch type.
+ * Extended version, use html_print_checkbox_switch() to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button  (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $name        Input name.
+ * @param integer $value       Input value.
+ * @param integer $checked     Input checked.
+ * @param boolean $disabled    Disable the button (optional,
+ *       button enabled by default).
+ * @param string  $script      Script to execute when onClick event
+ *       is triggered (optional).
+ * @param string  $attributes  Optional HTML attributes.
+ *   It's a free string which will be.
+ * @param boolean $return      Whether to return an output string or echo now
+ *      (optional, echo by default).
+ * @param string  $id          Input id.
+ * @param string  $classParent Class for label.
  *
- * @return string HTML code if return parameter is true.
+ * @return string Input html.
  */
-
-
-function html_print_checkbox_switch_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
-{
+function html_print_checkbox_switch_extended(
+    $name,
+    $value,
+    $checked,
+    $disabled=false,
+    $script='',
+    $attributes='',
+    $return=false,
+    $id='',
+    $classParent=''
+) {
     static $idcounter = [];
 
-    // If duplicate names exist, it will start numbering. Otherwise it won't
+    // If duplicate names exist, it will start numbering. Otherwise it won't.
     if (isset($idcounter[$name])) {
         $idcounter[$name]++;
     } else {
         $idcounter[$name] = 0;
     }
 
-    $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+    $id_aux = preg_replace(
+        '/[^a-z0-9\:\;\-\_]/i',
+        '',
+        $name.($idcounter[$name] ? $idcounter[$name] : '')
+    );
 
-    $output = '<label class="p-switch"><input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
+    $output = '<label class="p-switch '.$classParent.'">';
+    $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
@@ -3621,15 +3661,20 @@ function html_print_timezone_select($name, $selected='')
  * Enclose a text into a result_div
  *
  * @param string Text to enclose
+ * @param boolean Return formatted text without html tags.
  *
  * @return string Text inside the result_div
  */
-function html_print_result_div($text)
+function html_print_result_div($text, $text_only)
 {
     $text = preg_replace('/</', '&lt;', $text);
     $text = preg_replace('/>/', '&gt;', $text);
     $text = preg_replace('/\n/i', '<br>', $text);
     $text = preg_replace('/\s/i', '&nbsp;', $text);
+
+    if ($text_only) {
+        return $text;
+    }
 
     $enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
     $enclose .= $text;
@@ -3898,7 +3943,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $data['name'],
                 $data['value'],
                 ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : false)
+                ((isset($data['class']) === true) ? $data['class'] : false),
+                false,
+                ((isset($data['id']) === true) ? $data['id'] : '')
             );
         break;
 
@@ -3998,6 +4045,21 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
             );
         break;
+
+        case 'select_for_unit':
+            $output .= html_print_extended_select_for_unit(
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['select_style']) === true) ? $data['select_style'] : false),
+                ((isset($data['unique_name']) === true) ? $data['unique_name'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : 0)
+            );
 
         case 'submit':
             $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';

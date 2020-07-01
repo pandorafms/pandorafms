@@ -20,7 +20,7 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC200623';
+$build_version = 'PC200701';
 $pandora_version = 'v7.0NG.746';
 
 // Do not overwrite default timezone set if defined.
@@ -51,8 +51,6 @@ if ($develop_bypass != 1) {
     }
 
     ini_set('display_errors', 0);
-    ini_set('log_errors', 1);
-    ini_set('error_log', $config['homedir'].'/pandora_console.log');
 } else {
     // Develop mode, show all notices and errors on Console (and log it)
     if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -62,8 +60,6 @@ if ($develop_bypass != 1) {
     }
 
     ini_set('display_errors', 1);
-    ini_set('log_errors', 1);
-    ini_set('error_log', $config['homedir'].'/pandora_console.log');
 }
 
 // Check if mysqli is available

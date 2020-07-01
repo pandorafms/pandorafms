@@ -332,14 +332,17 @@ $table->data[$i++][1] = html_print_input_text(
 $table->data[$i][0] = __('Include agents manually disabled');
 $table->data[$i++][1] = html_print_checkbox_switch('include_agents', 1, $config['include_agents'], true);
 
-$table->data[$i][0] = __('Audit log directory');
-$table->data[$i++][1] = html_print_input_text('auditdir', io_safe_output($config['auditdir']), '', 30, 100, true);
-
 $table->data[$i][0] = __('Set alias as name by default in agent creation');
 $table->data[$i++][1] = html_print_checkbox_switch('alias_as_name', 1, $config['alias_as_name'], true);
 
 $table->data[$i][0] = __('Unique IP');
 $table->data[$i++][1] = html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
+
+$table->data[$i][0] = __('Enable console log').ui_print_help_tip(__('Log location').': pandora_console/log/console.log', true);
+$table->data[$i++][1] = html_print_checkbox_switch('console_log_enabled', 1, $config['console_log_enabled'], true);
+
+$table->data[$i][0] = __('Enable audit log').ui_print_help_tip(__('Log location').': pandora_console/log/audit.log', true);
+$table->data[$i++][1] = html_print_checkbox_switch('audit_log_enabled', 1, $config['audit_log_enabled'], true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

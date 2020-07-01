@@ -24,6 +24,7 @@ use Encode;
 use Encode::Locale;
 use Getopt::Long;
 use Net::SNMP;
+use Net::SNMP::Security::USM;
 
 my $HELP=<<EO_HELP;
 

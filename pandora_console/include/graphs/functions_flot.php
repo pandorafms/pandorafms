@@ -139,7 +139,13 @@ function flot_area_graph(
     }
 
     // Parent layer.
-    $return = "<div class='parent_graph' style='width: ".$params['width'].'px;'.$background_style."'>";
+    if (strpos($params['width'], '%') === false) {
+        $width = 'width: '.$params['width'].'px;';
+    } else {
+        $width = 'width: '.$params['width'].';';
+    }
+
+    $return = "<div class='parent_graph' style='".$width.$background_style."'>";
 
     if ($params['title'] === true && empty($params['title']) === false) {
         $return .= '<p style="text-align:center;">'.$params['title'].'</p>';

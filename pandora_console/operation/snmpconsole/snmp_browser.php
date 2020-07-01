@@ -241,20 +241,41 @@ function snmp_show_result_message(data) {
     if (dato.length !== 0) {
       $("#error_text").text("");
 
-      dato.forEach(function (valor, indice, array) {
-        $("#error_text").append("<br/>" + valor);
-      });
-      $("#dialog_error").dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        height: 300,
-        width: 500,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        }
-      });
+      if (dato[0] === -1) {
+          $("#dialog_no_agents_selected").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            height: 300,
+            width: 500,
+            close: function(e, ui) {
+              $("input[name=create_modules_network_component]").removeClass("sub spinn");
+              $("input[name=create_modules_network_component]").addClass("sub add");
+            },
+            overlay: {
+              opacity: 0.5,
+              background: "black"
+            }
+          });
+      } else {
+          $("#error_text").text("");
+
+          dato.forEach(function (valor, indice, array) {
+            $("#error_text").append("<br/>" + valor);
+          });
+          $("#dialog_error").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            height: 300,
+            width: 500,
+            overlay: {
+              opacity: 0.5,
+              background: "black"
+            }
+          });
+      }
+
     } else {
       $("#dialog_success").dialog({
         resizable: true,

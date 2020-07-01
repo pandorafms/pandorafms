@@ -769,7 +769,7 @@ function netflow_get_relationships_raw_data(
     $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    #$command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    // $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {

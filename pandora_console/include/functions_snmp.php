@@ -455,3 +455,61 @@ function print_snmp_tags_active_filters($filter_resume=[])
         ui_print_tags_view($title, $tags_set);
     }
 }
+
+
+/**
+ * Retunr module type for snmp data type
+ *
+ * @param  [type] $snmp_data_type
+ * @return void
+ */
+function snmp_module_get_type(string $snmp_data_type)
+{
+    if (preg_match('/INTEGER/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Integer32/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/octect string/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/bits/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/object identifier/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/IpAddress/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/Counter/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/Counter32/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/Gauge/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Gauge32/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Gauge64/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Unsigned32/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/TimeTicks/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Opaque/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/Counter64/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/UInteger32/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/BIT STRING/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/STRING/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else {
+        $type = 'remote_snmp_string';
+    }
+
+    if (!$type) {
+        $type = 'remote_snmp';
+    }
+
+    $type_id = modules_get_type_id($type);
+
+    return $type_id;
+}

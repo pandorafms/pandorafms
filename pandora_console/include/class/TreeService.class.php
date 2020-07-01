@@ -14,6 +14,8 @@ global $config;
 
 require_once $config['homedir'].'/include/class/Tree.class.php';
 
+use PandoraFMS\Enterprise\Service;
+
 class TreeService extends Tree
 {
 
@@ -21,12 +23,35 @@ class TreeService extends Tree
 
     protected $displayAllGroups = false;
 
+    private $metaID = 0;
 
-    public function __construct($type, $rootType='', $id=-1, $rootID=-1, $serverID=false, $childrenMethod='on_demand', $access='AR')
-    {
+
+    public function __construct(
+        $type,
+        $rootType='',
+        $id=-1,
+        $rootID=-1,
+        $serverID=false,
+        $childrenMethod='on_demand',
+        $access='AR',
+        $id_server_meta=0
+    ) {
         global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+        if ($id_server_meta > 0) {
+            $this->metaID = $id_server_meta;
+        }
+
+        parent::__construct(
+            $type,
+            $rootType,
+            $id,
+            $rootID,
+            $serverID,
+            $childrenMethod,
+            $access,
+            $id_server_meta
+        );
 
         $this->L1fieldName = 'id_group';
         $this->L1extraFields = [
@@ -60,12 +85,29 @@ class TreeService extends Tree
 
     protected function getData()
     {
+        if (is_metaconsole() === true && $this->metaID > 0) {
+            // Impersonate node.
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $this->metaID,
+                ]
+            );
+        }
+
         if ($this->id == -1) {
             $this->getFirstLevel();
         } else if ($this->type == 'services') {
             $this->getSecondLevel();
         } else if ($this->type == 'agent') {
             $this->getThirdLevel();
+        }
+
+        if (is_metaconsole() === true && $this->metaID > 0) {
+            // Restore connection.
+            \enterprise_hook('metaconsole_restore_db');
         }
     }
 
@@ -120,8 +162,6 @@ class TreeService extends Tree
 
     protected function getProcessedServices()
     {
-        $fields = $this->getFirstLevelFields();
-
         $is_favourite = $this->getServiceFavouriteFilter();
 
         if (users_can_manage_group_all('AR')) {
@@ -131,29 +171,31 @@ class TreeService extends Tree
         }
 
         $sql = sprintf(
-            "SELECT t1.* 
-						FROM tservice_element tss
-						RIGHT JOIN
-						(SELECT ts.id, ts.id_agent_module, ts.name, ts.name AS `alias`, ts.id AS `rootID`,
-						'services' AS rootType, 'services' AS type,
-						0 AS quiet,
-						SUM(if((tse.id_agent<>0), 1, 0)) AS `total_agents`,
-						SUM(if((tse.id_agente_modulo<>0), 1, 0)) AS `total_modules`,
-						SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`
-					FROM tservice ts
-					LEFT JOIN tservice_element tse
-						ON ts.id=tse.id_service
-                    WHERE
-                        1=1
-                        %s
-                        %s
-					    GROUP BY id
-					) as t1  
-					ON tss.id_service_child = t1.id
-					WHERE tss.id_service_child IS NULL
-					",
-            $groups_acl,
-            $is_favourite
+            'SELECT 
+                ts.id,
+                ts.id_agent_module,
+                ts.name,
+                ts.name as `alias`,
+                ts.id as `rootID`,
+                "services" as `rootType`,
+                "services" as `type`,
+                ts.quiet,
+                SUM(if((tse.id_agent<>0), 1, 0)) AS `total_agents`,
+                SUM(if((tse.id_agente_modulo<>0), 1, 0)) AS `total_modules`,
+                SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`
+            FROM tservice ts
+            LEFT JOIN tservice_element tse
+                ON tse.id_service = ts.id
+            WHERE ts.id NOT IN (
+                    SELECT DISTINCT id_service_child
+                    FROM tservice_element
+                    WHERE id_server_meta = 0
+                )
+                %s
+                %s
+            GROUP BY ts.id',
+            $is_favourite,
+            $groups_acl
         );
 
         $stats = db_get_all_rows_sql($sql);
@@ -259,6 +301,63 @@ class TreeService extends Tree
         $sql = $this->getSecondLevelServicesSql();
         $data_services = db_process_sql($sql);
 
+        $data_services = array_reduce(
+            $data_services,
+            function ($carry, $item) {
+                if ($item['id_server_meta'] > 0
+                    && is_metaconsole() === true
+                ) {
+                    // Impersonate node.
+                    \enterprise_include_once('include/functions_metaconsole.php');
+                    $r = \enterprise_hook(
+                        'metaconsole_connect',
+                        [
+                            null,
+                            $item['id_server_meta'],
+                        ]
+                    );
+
+                    if ($r === NOERR) {
+                        $item = db_get_row_sql(
+                            sprintf(
+                                'SELECT 
+                                    ts.id,
+                                    ts.id_agent_module,
+                                    ts.name,
+                                    ts.name as `alias`,
+                                    %d as `rootID`,
+                                    "services" as `rootType`,
+                                    "services" as `type`,
+                                    ts.quiet,
+                                    %d as id_server_meta,
+                                    SUM(if((tse.id_agent<>0), 1, 0)) AS `total_agents`,
+                                    SUM(if((tse.id_agente_modulo<>0), 1, 0)) AS `total_modules`,
+                                    SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`
+                                FROM tservice ts
+                                LEFT JOIN tservice_element tse
+                                    ON tse.id_service = ts.id
+                                WHERE ts.id = %d
+                                GROUP BY ts.id',
+                                $item['id_server_meta'],
+                                $item['rootID'],
+                                $item['id']
+                            )
+                        );
+                        $item['obj'] = new Service($item['id']);
+                    }
+
+                    // Restore connection.
+                    \enterprise_hook('metaconsole_restore_db');
+                } else {
+                    $item['obj'] = new Service($item['id']);
+                }
+
+                $carry[] = $item;
+                return $carry;
+            },
+            []
+        );
+
         $service_stats = [];
 
         foreach ($data_services as $service) {
@@ -272,6 +371,12 @@ class TreeService extends Tree
             }
 
             $service_stats[$service['id']]['rootID'] = $service['rootID'];
+            if ($this->metaID > 0) {
+                $service_stats[$service['id']]['metaID'] = $this->metaID;
+            } else {
+                $service_stats[$service['id']]['metaID'] = $service['id_server_meta'];
+            }
+
             $service_stats[$service['id']]['rootType'] = $service['rootType'];
             $service_stats[$service['id']]['type'] = 'services';
             $service_stats[$service['id']]['children'] = [];
@@ -281,41 +386,23 @@ class TreeService extends Tree
                 'total_agents'   => $service['total_agents'],
                 'total_modules'  => $service['total_modules'],
             ];
-        }
 
-        $own_info = get_user_info($config['id_user']);
-
-        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-            $display_all_services = true;
-        } else {
-            $display_all_services = false;
-        }
-
-        $services = services_get_services($filter, false, $display_all_services);
-
-        foreach ($services as $row) {
-            if (!array_key_exists($row['id'], $service_stats)) {
-                continue;
-            }
-
-            $status = services_get_status($row, true);
-
-            switch ($status) {
+            switch ($service['obj']->status()) {
                 case SERVICE_STATUS_NORMAL:
-                    $service_stats[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
                 break;
 
                 case SERVICE_STATUS_CRITICAL:
-                    $service_stats[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
                 break;
 
                 case SERVICE_STATUS_WARNING:
-                    $service_stats[$row['id']][$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
                 break;
 
                 case SERVICE_STATUS_UNKNOWN:
                 default:
-                    $service_stats[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
                 break;
             }
         }
@@ -337,13 +424,30 @@ class TreeService extends Tree
     {
         $group_acl = $this->getGroupAclCondition();
 
-        $sql = "SELECT ts.id, ts.name, tse1.id_service AS `rootID`, 'services' AS rootType, 'services' AS type, 0 AS quiet, SUM(if((tse2.id_agent<>0), 1, 0)) AS `total_agents`, SUM(if((tse2.id_agente_modulo<>0), 1, 0)) AS `total_modules`, SUM(if((tse2.id_service_child<>0), 1, 0)) AS `total_services`, 0 AS fired_count, 0 AS normal_count, 0 AS warning_count, 0 AS critical_count, 0 AS unknown_count, 0 AS notinit_count, 0 AS state_critical, 0 AS state_warning, 0 AS state_unknown, 0 AS state_notinit, 0 AS state_normal, 0 AS state_total, '' AS statusImageHTML, '' AS alertImageHTML
-		FROM tservice_element tse1
-		LEFT JOIN tservice_element tse2 ON tse1.id_service_child=tse2.id_service
-		LEFT JOIN tservice ts ON tse1.id_service_child=ts.id
-		WHERE tse1.id_service=$this->id AND tse1.id_service_child<>0
-		GROUP BY tse1.id_service_child
-		";
+        $sql = sprintf(
+            'SELECT 
+                ts.id,
+                ts.id_agent_module,
+                ts.name,
+                ts.name as `alias`,
+                tse.id_service as `rootID`,
+                "services" as `rootType`,
+                "services" as `type`,
+                ts.quiet,
+                tse.id_server_meta,
+                SUM(if((tse.id_agent<>0), 1, 0)) AS `total_agents`,
+                SUM(if((tse.id_agente_modulo<>0), 1, 0)) AS `total_modules`,
+                SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`
+            FROM tservice ts
+            INNER JOIN tservice_element tse
+                ON tse.id_service_child = ts.id
+            WHERE 
+                tse.id_service = %d
+                %s
+            GROUP BY ts.id',
+            $this->id,
+            $group_acl
+        );
 
         return $sql;
     }

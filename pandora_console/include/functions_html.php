@@ -4251,6 +4251,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             }
 
             $params = [];
+            $params['disabled'] = $data['disabled'];
             $params['return'] = $data['return'];
             $params['show_helptip'] = false;
             $params['input_name'] = $data['name'];

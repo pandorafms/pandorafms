@@ -1008,6 +1008,7 @@ var TreeController = {
                       rootID: element.rootID,
                       serverID: element.serverID,
                       rootType: element.rootType,
+                      metaID: element.metaID,
                       filter: controller.filter,
                       hash: public_hash,
                       id_user: public_user

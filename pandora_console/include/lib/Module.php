@@ -394,6 +394,99 @@ class Module extends Entity
 
 
     /**
+     * Retrieves last status in text format.
+     *
+     * @return string Status in text format.
+     */
+    public function lastStatusText()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return 'critical';
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return 'warning';
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return 'unknown';
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return 'not_init';
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return 'ok';
+        }
+    }
+
+
+    /**
+     * Return path to image representing last status.
+     *
+     * @return string Relative URL to image.
+     */
+    public function lastStatusImage()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return STATUS_MODULE_CRITICAL_BALL;
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return STATUS_MODULE_WARNING_BALL;
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return STATUS_MODULE_UNKNOWN_BALL;
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return STATUS_MODULE_NO_DATA_BALL;
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return STATUS_MODULE_OK_BALL;
+        }
+    }
+
+
+    /**
+     * Return translated string representing last status of the module.
+     *
+     * @return string Title.
+     */
+    public function lastStatusTitle()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return __('CRITICAL');
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return __('WARNING');
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return __('UNKNOWN');
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return __('NO DATA');
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return __('NORMAL');
+        }
+    }
+
+
+    /**
      * Sets or retrieves value of id_tipo_modulo (complex).
      *
      * @param integer|null $id_tipo_modulo Id module type.

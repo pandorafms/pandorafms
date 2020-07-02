@@ -1,31 +1,85 @@
 <?php
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Service tree view.
+ *
+ * @category   Class
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/class/Tree.class.php';
 
 use PandoraFMS\Enterprise\Service;
 
+/**
+ * Class to handle service tree view.
+ */
 class TreeService extends Tree
 {
 
+    /**
+     * Some definitions.
+     *
+     * @var boolean
+     */
     protected $propagateCounters = true;
 
+    /**
+     * Some definitions.
+     *
+     * @var boolean
+     */
     protected $displayAllGroups = false;
 
-    private $metaID = 0;
+    /**
+     * If element is stored on remote node, this value will be greater than 0.
+     *
+     * @var integer
+     */
+    public $metaID = 0;
+
+    /**
+     * Flag to avoid double connection to node.
+     *
+     * @var boolean
+     */
+    private $connectedToNode = false;
 
 
+    /**
+     * Builder.
+     *
+     * @param mixed   $type           Type.
+     * @param string  $rootType       RootType.
+     * @param integer $id             Id.
+     * @param integer $rootID         RootID.
+     * @param boolean $serverID       ServerID.
+     * @param string  $childrenMethod ChildrenMethod.
+     * @param string  $access         Access.
+     * @param integer $id_server_meta Id_server_meta.
+     */
     public function __construct(
         $type,
         $rootType='',
@@ -40,6 +94,7 @@ class TreeService extends Tree
 
         if ($id_server_meta > 0) {
             $this->metaID = $id_server_meta;
+            $this->serverID = $id_server_meta;
         }
 
         parent::__construct(
@@ -66,23 +121,45 @@ class TreeService extends Tree
         $this->L2inner = 'LEFT JOIN tservice_element tse
 									ON tse.id_agent = ta.id_agente';
 
-        $this->L2condition = 'AND tse.id_service='.$this->id;
+        $this->L2condition = sprintf(
+            ' AND tse.id_service=%d AND tse.id_server_meta=0 ',
+            $this->id
+        );
 
     }
 
 
+    /**
+     * Setter (propagate counters).
+     *
+     * @param boolean $value Set.
+     *
+     * @return void
+     */
     public function setPropagateCounters($value)
     {
         $this->propagateCounters = (bool) $value;
     }
 
 
+    /**
+     * Set display all groups.
+     *
+     * @param boolean $value Set.
+     *
+     * @return void
+     */
     public function setDisplayAllGroups($value)
     {
         $this->displayAllGroups = (bool) $value;
     }
 
 
+    /**
+     * Generates tree data.
+     *
+     * @return void
+     */
     protected function getData()
     {
         if (is_metaconsole() === true && $this->metaID > 0) {
@@ -95,6 +172,7 @@ class TreeService extends Tree
                     $this->metaID,
                 ]
             );
+            $this->connectedToNode = true;
         }
 
         if ($this->id == -1) {
@@ -112,6 +190,11 @@ class TreeService extends Tree
     }
 
 
+    /**
+     * Generates first level data.
+     *
+     * @return void
+     */
     protected function getFirstLevel()
     {
         global $config;
@@ -160,6 +243,11 @@ class TreeService extends Tree
     }
 
 
+    /**
+     * Retrieve root services.
+     *
+     * @return array Of root services.
+     */
     protected function getProcessedServices()
     {
         $is_favourite = $this->getServiceFavouriteFilter();
@@ -224,6 +312,13 @@ class TreeService extends Tree
     }
 
 
+    /**
+     * Retrieve first level fields.
+     *
+     * @deprecated 746.
+     *
+     * @return string With a first level fields.
+     */
     protected function getFirstLevelFields()
     {
         $fields = [];
@@ -232,194 +327,310 @@ class TreeService extends Tree
     }
 
 
+    /**
+     * Retrieves elements (second level) from selected rootID.
+     *
+     * @return void
+     */
     protected function getSecondLevel()
     {
-        $data = [];
-        $data_agents = [];
-        $data_modules = [];
-        $data_services = [];
+        $service = new Service($this->id, true);
 
-        $sql = $this->getSecondLevelSql();
-        $data_agents = db_process_sql($sql);
+        $output = [];
+        foreach ($service->children() as $item) {
+            $tmp = [];
 
-        if (empty($data_agents)) {
-            $data_agents = [];
-        }
-
-        $this->processAgents($data_agents);
-
-        foreach ($data_agents as $key => $agent) {
-                        $data_agents[$key]['showEventsBtn'] = 1;
-            $data_agents[$key]['eventAgent'] = $agent['id'];
-        }
-
-        $sql = $this->getSecondLevelModulesSql();
-        $data_modules = db_process_sql($sql);
-
-        if (empty($data_modules)) {
-            $data_modules = [];
-        } else {
-            foreach ($data_modules as $key => $module) {
-                switch ($module['estado']) {
-                    case '0':
-                        $module_status = 'ok';
-                        $module_title = 'NORMAL';
-                    break;
-
-                    case '1':
-                        $module_status = 'critical';
-                        $module_title = 'CRITICAL';
-                    break;
-
-                    case '2':
-                        $module_status = 'warning';
-                        $module_title = 'WARNING';
-                    break;
-
-                    case '3':
-                        $module_status = 'down';
-                        $module_title = 'UNKNOWN';
-                    break;
-
-                    case '4':
-                        $module_status = 'no_data';
-                        $module_title = 'NOT INITIALIZED';
-                    break;
-
-                    default:
-                        $module_status = 'down';
-                        $module_title = 'UNKNOWN';
-                    break;
-                }
-
-                $data_modules[$key]['statusImageHTML'] = '<img src="images/status_sets/default/agent_'.$module_status.'_ball.png" data-title="'.$module_title.' status." data-use_title_for_force_title="1" class="forced_title" alt="'.$module_title.' status." />';
-                $data_modules[$key]['showEventsBtn'] = 1;
-                $data_modules[$key]['eventModule'] = $module['id_agente_modulo'];
+            if ($this->metaID > 0) {
+                $tmp['metaID'] = $this->metaID;
+            } else if ($item->id_server_meta() !== 0) {
+                $tmp['metaID'] = $item->id_server_meta();
             }
-        }
 
-        $sql = $this->getSecondLevelServicesSql();
-        $data_services = db_process_sql($sql);
+            $tmp['serverID'] = $tmp['metaID'];
 
-        $data_services = array_reduce(
-            $data_services,
-            function ($carry, $item) {
-                if ($item['id_server_meta'] > 0
-                    && is_metaconsole() === true
-                ) {
-                    // Impersonate node.
-                    \enterprise_include_once('include/functions_metaconsole.php');
-                    $r = \enterprise_hook(
-                        'metaconsole_connect',
-                        [
-                            null,
-                            $item['id_server_meta'],
-                        ]
-                    );
-
-                    if ($r === NOERR) {
-                        $item = db_get_row_sql(
-                            sprintf(
-                                'SELECT 
-                                    ts.id,
-                                    ts.id_agent_module,
-                                    ts.name,
-                                    ts.name as `alias`,
-                                    %d as `rootID`,
-                                    "services" as `rootType`,
-                                    "services" as `type`,
-                                    ts.quiet,
-                                    %d as id_server_meta,
-                                    SUM(if((tse.id_agent<>0), 1, 0)) AS `total_agents`,
-                                    SUM(if((tse.id_agente_modulo<>0), 1, 0)) AS `total_modules`,
-                                    SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`
-                                FROM tservice ts
-                                LEFT JOIN tservice_element tse
-                                    ON tse.id_service = ts.id
-                                WHERE ts.id = %d
-                                GROUP BY ts.id',
-                                $item['id_server_meta'],
-                                $item['rootID'],
-                                $item['id']
-                            )
-                        );
-                        $item['obj'] = new Service($item['id']);
+            switch ($item->type()) {
+                case SERVICE_ELEMENT_AGENT:
+                    if ($item->agent() === null) {
+                        // Skip item.
+                        continue 2;
                     }
 
-                    // Restore connection.
-                    \enterprise_hook('metaconsole_restore_db');
-                } else {
-                    $item['obj'] = new Service($item['id']);
-                }
+                    $tmp['id'] = $item->agent()->id_agente();
+                    $tmp['name'] = $item->agent()->nombre();
+                    $tmp['alias'] = $item->agent()->alias();
+                    $tmp['fired_count'] = $item->agent()->fired_count();
+                    $tmp['normal_count'] = $item->agent()->normal_count();
+                    $tmp['warning_count'] = $item->agent()->warning_count();
+                    $tmp['critical_count'] = $item->agent()->critical_count();
+                    $tmp['unknown_count'] = $item->agent()->unknown_count();
+                    $tmp['notinit_count'] = $item->agent()->notinit_count();
+                    $tmp['total_count'] = $item->agent()->total_count();
 
-                $carry[] = $item;
-                return $carry;
-            },
-            []
-        );
+                    if ($item->agent()->quiet() > 0
+                        || $item->agent()->cps() > 0
+                    ) {
+                        $tmp['quiet'] = 1;
+                    } else {
+                        $tmp['quiet'] = 0;
+                    }
 
-        $service_stats = [];
+                    $tmp['state_critical'] = $tmp['critical_count'];
+                    $tmp['state_warning'] = $tmp['warning_count'];
+                    $tmp['state_unknown'] = $tmp['unknown_count'];
+                    $tmp['state_notinit'] = $tmp['notinit_count'];
+                    $tmp['state_normal'] = $tmp['normal_count'];
+                    $tmp['state_total'] = $tmp['total_count'];
+                    $tmp['type'] = SERVICE_ELEMENT_AGENT;
+                    $tmp['rootID'] = $this->rootID;
+                    $tmp['rootType'] = $this->rootType;
+                    $tmp['counters'] = [
+                        'alerts'   => $item->agent()->fired_count(),
+                        'ok'       => $item->agent()->normal_count(),
+                        'warning'  => $item->agent()->warning_count(),
+                        'critical' => $item->agent()->critical_count(),
+                        'unknown'  => $item->agent()->unknown_count(),
+                        'not_init' => $item->agent()->notinit_count(),
+                        'total'    => $item->agent()->total_count(),
+                    ];
 
-        foreach ($data_services as $service) {
-            $service_stats[$service['id']]['id'] = (int) $service['id'];
-            $service_stats[$service['id']]['name'] = $service['name'];
-            $service_stats[$service['id']]['alias'] = $service['name'];
-            if (($service['total_services'] + $service['total_agents'] + $service['total_modules']) > 0) {
-                $service_stats[$service['id']]['searchChildren'] = 1;
-            } else {
-                $services[$service['id']]['searchChildren'] = 0;
-            }
+                    switch ($item->agent()->lastStatus()) {
+                        case AGENT_STATUS_NORMAL:
+                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                        break;
 
-            $service_stats[$service['id']]['rootID'] = $service['rootID'];
-            if ($this->metaID > 0) {
-                $service_stats[$service['id']]['metaID'] = $this->metaID;
-            } else {
-                $service_stats[$service['id']]['metaID'] = $service['id_server_meta'];
-            }
+                        case AGENT_STATUS_CRITICAL:
+                        case AGENT_STATUS_ALERT_FIRED:
+                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                        break;
 
-            $service_stats[$service['id']]['rootType'] = $service['rootType'];
-            $service_stats[$service['id']]['type'] = 'services';
-            $service_stats[$service['id']]['children'] = [];
-            $service_stats[$service['id']]['serviceDetail'] = 'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int) $service['id'];
-            $service_stats[$service['id']]['counters'] = [
-                'total_services' => $service['total_services'],
-                'total_agents'   => $service['total_agents'],
-                'total_modules'  => $service['total_modules'],
-            ];
+                        case AGENT_STATUS_WARNING:
+                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                        break;
 
-            switch ($service['obj']->status()) {
-                case SERVICE_STATUS_NORMAL:
-                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                        case AGENT_STATUS_UNKNOWN:
+                        default:
+                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                        break;
+                    }
+
+                    $tmp['children'] = [];
+                    $tmp['searchChildren'] = 1;
+                    $tmp['showEventsBtn'] = 1;
+                    $tmp['eventAgent'] = $item->agent()->id_agente();
                 break;
 
-                case SERVICE_STATUS_CRITICAL:
-                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                case SERVICE_ELEMENT_MODULE:
+                    if ($item->module() === null) {
+                        // Skip item.
+                        continue 2;
+                    }
+
+                    $tmp['id'] = $item->module()->id_agente_modulo();
+                    $tmp['name'] = $item->module()->nombre();
+                    $tmp['id_tipo_modulo'] = $item->module()->id_tipo_modulo();
+                    $tmp['id_modulo'] = $item->module()->id_modulo();
+                    $tmp['estado'] = $item->module()->lastStatus();
+                    $tmp['datos'] = $item->module()->lastValue();
+                    $tmp['parent'] = $item->module()->parent_module_id();
+                    $alerts = alerts_get_alerts_module_name(
+                        $item->module()->id_agente_modulo()
+                    );
+                    if ($alerts !== false) {
+                        // Seems to be used as 'flag'.
+                        $tmp['alerts'] = $alerts[0]['id'];
+                    }
+
+                    $tmp['unit'] = $item->module()->unit();
+                    $tmp['type'] = SERVICE_ELEMENT_MODULE;
+                    $tmp['id_module_type'] = $item->module()->id_tipo_modulo();
+                    $tmp['server_type'] = $tmp['id_module_type'];
+                    $tmp['status'] = $item->module()->lastStatus();
+                    $tmp['value'] = modules_get_agentmodule_data_for_humans(
+                        array_merge(
+                            $item->module()->toArray(),
+                            [ 'datos' => $item->module()->lastValue() ]
+                        )
+                    );
+
+                    $title = $item->module()->lastStatusTitle();
+
+                    if (is_numeric($item->module()->lastValue())) {
+                        $divisor = get_data_multiplier($item->module()->unit());
+                        $title .= ' : '.format_for_graph(
+                            $item->module()->lastValue(),
+                            1,
+                            '.',
+                            ',',
+                            $divisor
+                        );
+                    } else {
+                        $title .= ' : '.substr(
+                            io_safe_output(
+                                $item->module()->lastValue()
+                            ),
+                            0,
+                            42
+                        );
+                    }
+
+                    $tmp['serverName'] = $item->module()->agent()->server_name();
+                    $tmp['serverID'] = $tmp['metaID'];
+                    $tmp['statusText'] = $item->module()->lastStatusText();
+                    $tmp['showGraphs'] = 1;
+                    $tmp['showEventsBtn'] = 1;
+                    $tmp['eventAgent'] = $item->module()->id_agente();
+
+                    $html = '<img src="';
+                    $html .= ui_get_full_url(
+                        '/images/status_sets/default/'.$item->module()->lastStatusImage()
+                    );
+                    $html .= '" data-title="'.$title;
+                    $html .= '" data-use_title_for_force_title="1" ';
+                    $html .= 'class="forced_title" alt="';
+                    $html .= $item->module()->lastStatusTitle().'" />';
+                    $tmp['statusImageHTML'] = $html;
+                    $tmp = array_merge(
+                        $tmp,
+                        $this->getModuleGraphLinks(
+                            $tmp
+                        )
+                    );
                 break;
 
-                case SERVICE_STATUS_WARNING:
-                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                case SERVICE_ELEMENT_SERVICE:
+                    if ($item->service() === null) {
+                        // Skip item.
+                        continue 2;
+                    }
+
+                    $tmp['id'] = (int) $item->service()->id();
+                    $tmp['name'] = $item->service()->name();
+                    $tmp['alias'] = $item->service()->name();
+
+                    if ($this->connectedToNode === false
+                        && is_metaconsole() === true
+                        && $tmp['metaID'] > 0
+                    ) {
+                        // Impersonate node.
+                        \enterprise_include_once('include/functions_metaconsole.php');
+                        \enterprise_hook(
+                            'metaconsole_connect',
+                            [
+                                null,
+                                $tmp['metaID'],
+                            ]
+                        );
+                    }
+
+                    $grandchildren = $item->service()->children();
+
+                    if ($this->connectedToNode === false
+                        && is_metaconsole() === true
+                        && $tmp['metaID'] > 0
+                    ) {
+                        // Restore connection.
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
+
+                    $counters = [
+                        'total_modules'  => 0,
+                        'total_agents'   => 0,
+                        'total_services' => 0,
+                        'total_dynamic'  => 0,
+                        'total'          => 0,
+                    ];
+
+                    if (is_array($grandchildren) === true) {
+                        $counters = array_reduce(
+                            $grandchildren,
+                            function ($carry, $item) {
+                                if ($item->type() === SERVICE_ELEMENT_MODULE) {
+                                    $carry['total_modules']++;
+                                } else if ($item->type() === SERVICE_ELEMENT_AGENT) {
+                                    $carry['total_agents']++;
+                                } else if ($item->type() === SERVICE_ELEMENT_SERVICE) {
+                                    $carry['total_services']++;
+                                } else if ($item->type() === SERVICE_ELEMENT_DYNAMIC) {
+                                    $carry['total_dynamic']++;
+                                }
+
+                                $carry['total']++;
+
+                                return $carry;
+                            },
+                            $counters
+                        );
+                    }
+
+                    if ($counters['total'] > 0) {
+                        $tmp['searchChildren'] = 1;
+                    }
+
+                    $tmp['type'] = 'services';
+                    $tmp['rootType'] = 'services';
+                    $tmp['children'] = [];
+                    $tmp['serviceDetail'] = ui_get_full_url(
+                        'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.$item->service()->id()
+                    );
+                    $tmp['counters'] = $counters;
+                    $tmp['rootID'] = $this->rootID;
+                    switch ($item->service()->lastStatus()) {
+                        case SERVICE_STATUS_NORMAL:
+                            $tmp['statusImageHTML'] = '<img src="';
+                            $tmp['statusImageHTML'] .= ui_get_full_url(
+                                'images/status_sets/default/agent_ok_ball.png'
+                            );
+                            $tmp['statusImageHTML'] .= '" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                        break;
+
+                        case SERVICE_STATUS_CRITICAL:
+                            $tmp['statusImageHTML'] = '<img src="';
+                            $tmp['statusImageHTML'] .= ui_get_full_url(
+                                'images/status_sets/default/agent_critical_ball.png'
+                            );
+                            $tmp['statusImageHTML'] .= '" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                        break;
+
+                        case SERVICE_STATUS_WARNING:
+                            $tmp['statusImageHTML'] = '<img src="';
+                            $tmp['statusImageHTML'] .= ui_get_full_url(
+                                'images/status_sets/default/agent_warning_ball.png'
+                            );
+                            $tmp['statusImageHTML'] .= '" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                        break;
+
+                        case SERVICE_STATUS_UNKNOWN:
+                        default:
+                            $tmp['statusImageHTML'] = '<img src="';
+                            $tmp['statusImageHTML'] .= ui_get_full_url(
+                                'images/status_sets/default/agent_no_data_ball.png'
+                            );
+                            $tmp['statusImageHTML'] .= '" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                        break;
+                    }
                 break;
 
-                case SERVICE_STATUS_UNKNOWN:
+                case SERVICE_ELEMENT_DYNAMIC:
+                    // TODO.
+                continue 2;
+
                 default:
-                    $service_stats[$service['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
-                break;
+                    // Unknown type.
+                continue 2;
             }
+
+            $output[] = $tmp;
         }
 
-        $data_services = array_values($service_stats);
-
-        $data = array_merge($data_services, $data_agents, $data_modules);
-
-        if (empty($data)) {
-            $this->tree = [];
-            return;
-        }
-
-        $this->tree = $data;
+        $this->tree = $output;
     }
 
 
+    /**
+     * SQL query to retrieve second level items.
+     *
+     * @return string SQL.
+     */
     protected function getSecondLevelServicesSql()
     {
         $group_acl = $this->getGroupAclCondition();
@@ -453,31 +664,85 @@ class TreeService extends Tree
     }
 
 
-    protected function getSecondLevelModulesSql()
+    /**
+     * Retrieve SQL filter for current filte.r
+     *
+     * @return string SQL filter.
+     */
+    protected function getServiceFavouriteFilter()
     {
-        $sql = "SELECT tse.id_agente_modulo, nombre AS `name`, nombre AS `alias`, tse.id_service AS `rootID`, 'services' AS `rootType`, 'modules' AS `type`, estado
-				FROM tservice_element tse
-				INNER JOIN tagente_modulo tam ON tse.id_agente_modulo=tam.id_agente_modulo
-				INNER JOIN tagente_estado tae ON tam.id_agente_modulo=tae.id_agente_estado
-				WHERE tse.id_service=$this->id AND tse.id_agente_modulo<>0
-		";
+        if (isset($this->filter['is_favourite']) === true
+            && empty($this->filter['is_favourite']) === false
+        ) {
+            return ' AND is_favourite = 1';
+        }
 
-        return $sql;
-    }
-
-
-    protected function getAgentStatusFilter($status=self::TV_DEFAULT_AGENT_STATUS)
-    {
         return '';
     }
 
 
-    protected function getServiceFavouriteFilter()
+    /**
+     * Overwrites partial functionality of general Tree.class.
+     *
+     * @param array $module Data of given module.
+     *
+     * @return array Complementary information.
+     */
+    protected function getModuleGraphLinks(array $module)
     {
-        if (isset($this->filter['is_favourite']) && !empty($this->filter['is_favourite'])) {
-            return ' AND is_favourite = 1';
+        $graphType = return_graphtype($module['id_module_type']);
+        $url = ui_get_full_url(
+            'operation/agentes/stat_win.php',
+            false,
+            false,
+            false
+        );
+        $winHandle = dechex(crc32($module['id'].$module['name']));
+
+        $graph_params = [
+            'type'    => $graphType,
+            'period'  => SECONDS_1DAY,
+            'id'      => $module['id'],
+            'refresh' => SECONDS_10MINUTES,
+        ];
+
+        if (is_metaconsole() === true) {
+            // Set the server id.
+            $graph_params['server'] = $module['serverID'];
         }
 
+        $graph_params_str = http_build_query($graph_params);
+        $moduleGraphURL = $url.'?'.$graph_params_str;
+
+        return [
+            'moduleGraph' => [
+                'url'    => $moduleGraphURL,
+                'handle' => $winHandle,
+            ],
+            'snapshot'    => ui_get_snapshot_link(
+                [
+                    'id_module'   => $module['id'],
+                    'interval'    => $module['current_interval'],
+                    'module_name' => $module['name'],
+                    'id_node'     => (($module['serverID'] > 0) ? $module['serverID'] : 0),
+                ],
+                true
+            ),
+        ];
+
+    }
+
+
+    /**
+     * Needs to be defined to maintain Tree view functionality.
+     *
+     * @param integer $status Status.
+     *
+     * @return string Fixed string.
+     */
+    protected function getAgentStatusFilter(
+        $status=self::TV_DEFAULT_AGENT_STATUS
+    ) {
         return '';
     }
 

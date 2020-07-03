@@ -4106,6 +4106,25 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'select_metaconsole_nodes':
+            $output .= html_print_select_from_sql(
+                'SELECT `id`, `server_name` FROM `tmetaconsole_setup`',
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+        break;
+
         case 'select_for_unit':
             $output .= html_print_extended_select_for_unit(
                 $data['name'],
@@ -4118,7 +4137,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['select_style']) === true) ? $data['select_style'] : false),
                 ((isset($data['unique_name']) === true) ? $data['unique_name'] : true),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : 0)
+                ((isset($data['no_change']) === true) ? $data['no_change'] : 0)
             );
 
         case 'submit':

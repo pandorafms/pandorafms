@@ -29,6 +29,9 @@
 // Begin.
 namespace PandoraFMS;
 
+global $config;
+require_once $config['homedir'].'/include/functions_groups.php';
+
 /**
  * PandoraFMS Group entity.
  */
@@ -59,6 +62,38 @@ class Group extends Entity
             // Empty skel.
             parent::__construct('tgrupo');
         }
+
+    }
+
+
+    /**
+     * Return an array of ids with all children
+     *
+     * @param boolean $ids_only               Return an array of id_groups or
+     *                                        entire rows.
+     * @param boolean $ignorePropagationState Search all children ignoring or
+     *                                        depending on propagate_acl flag.
+     *
+     * @return array With all children.
+     */
+    public function getChildren(
+        bool $ids_only=false,
+        bool $ignorePropagationState=false
+    ) {
+        $available_groups = \groups_get_children(
+            $this->id_grupo(),
+            $ignorePropagationState
+        );
+
+        if (is_array($available_groups) === false) {
+            return [];
+        }
+
+        if ($ids_only === true) {
+            return array_keys($available_groups);
+        }
+
+        return $available_groups;
 
     }
 

@@ -270,7 +270,8 @@ class TreeService extends Tree
                 ts.quiet,
                 SUM(if((tse.id_agent<>0), 1, 0)) AS `total_agents`,
                 SUM(if((tse.id_agente_modulo<>0), 1, 0)) AS `total_modules`,
-                SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`
+                SUM(if((tse.id_service_child<>0), 1, 0)) AS `total_services`,
+                SUM(if((tse.rules != ""), 1, 0)) AS `total_dynamic`
             FROM tservice ts
             LEFT JOIN tservice_element tse
                 ON tse.id_service = ts.id
@@ -291,8 +292,13 @@ class TreeService extends Tree
         $services = [];
 
         foreach ($stats as $service) {
-            $services[$service['id']] = $this->getProcessedItem($services[$service['id']]);
-            if (($service['total_services'] + $service['total_agents'] + $service['total_modules']) > 0) {
+            $services[$service['id']] = $this->getProcessedItem(
+                $services[$service['id']]
+            );
+            $n_items = ($service['total_services'] + $service['total_agents']);
+            $n_items += ($service['total_modules'] + $service['total_dynamic']);
+
+            if ($n_items > 0) {
                 $services[$service['id']]['searchChildren'] = 1;
             } else {
                 $services[$service['id']]['searchChildren'] = 0;
@@ -609,10 +615,6 @@ class TreeService extends Tree
                         break;
                     }
                 break;
-
-                case SERVICE_ELEMENT_DYNAMIC:
-                    // TODO.
-                continue 2;
 
                 default:
                     // Unknown type.

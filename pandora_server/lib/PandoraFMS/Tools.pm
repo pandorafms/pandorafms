@@ -375,13 +375,25 @@ our $THRRUN :shared = 1;
 ################################################################################
 ## Reads a file and returns entire content or undef if error.
 ################################################################################
-sub read_file {
-	my $path = shift;
+sub read_file($;$) {
+	my ($path, $enc) = @_;
 
 	my $_FILE;
-	if( !open($_FILE, "<", $path) ) {
-		# failed to open, return undef
-		return undef;
+
+	if (!defined($enc)) {
+		if( !open($_FILE, "<", $path) ) {
+			# failed to open, return undef
+			return undef;
+		}
+	} else {
+		if ( $enc eq '' ) {
+			$enc = 'utf8';
+		}
+
+		if( !open($_FILE, "<:encoding($enc)", $path) ) {
+			# failed to open, return undef
+			return undef;
+		}		
 	}
 
 	# Slurp configuration file content.

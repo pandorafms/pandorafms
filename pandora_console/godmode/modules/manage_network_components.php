@@ -49,7 +49,6 @@ require_once $config['homedir'].'/include/functions_component_groups.php';
 
 // Header.
 if (defined('METACONSOLE')) {
-    components_meta_print_header();
     $sec = 'advanced';
 
     $id_modulo = (int) get_parameter('id_component_type');

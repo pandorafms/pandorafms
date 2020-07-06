@@ -4571,6 +4571,7 @@ div#dialog_messages table th:last-child {
   display: inline-block;
   width: 30px;
   height: 17px;
+  margin-right: 1em;
 }
 
 .p-switch input {
@@ -6089,4 +6090,30 @@ div.text_message_dialog p {
   margin: 0px;
   font-size: 10.3pt;
   line-height: 14pt;
+}
+
+form#form-filter-interfaces {
+  margin-left: -30px;
+}
+
+form#form-filter-interfaces ul {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+form#form-filter-interfaces ul li {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-width: 35%;
+}
+
+form#form-filter-interfaces ul li.select-interfaces {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
 }

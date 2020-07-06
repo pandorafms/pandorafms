@@ -1,5 +1,7 @@
 # DEBIAN / UBUNTU 
-/var/www/pandora_console/pandora_console.log {
+/var/www/pandora_console/log/audit.log
+/var/www/pandora_console/log/cron.log
+/var/www/pandora_console/log/console.log {
 	weekly
         missingok
         size 100000

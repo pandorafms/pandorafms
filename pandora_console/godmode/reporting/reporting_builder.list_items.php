@@ -471,7 +471,7 @@ foreach ($items as $item) {
             if ($is_inventory_item) {
                 $external_source = json_decode($item['external_source'], true);
                 $agents = $external_source['id_agents'];
-                $modules = $external_source['inventory_modules'];
+                $modules = io_safe_output($external_source['inventory_modules']);
 
                 $agent_name_db = [];
                 foreach ($agents as $a) {

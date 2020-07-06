@@ -287,6 +287,10 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
+                    if (!config_update_value('use_custom_encoding', get_parameter('use_custom_encoding', 0))) {
+                        $error_update[] = __('Use custom encoding');
+                    }
+
                     if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
@@ -319,8 +323,12 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
-                    if (!config_update_value('auditdir', get_parameter('auditdir'))) {
-                        $error_update[] = __('Audit log directory');
+                    if (!config_update_value('console_log_enabled', get_parameter('console_log_enabled'))) {
+                        $error_update[] = __('Console log enabled');
+                    }
+
+                    if (!config_update_value('audit_log_enabled', get_parameter('audit_log_enabled'))) {
+                        $error_update[] = __('Audit log enabled');
                     }
 
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
@@ -1926,14 +1934,12 @@ function config_process_config()
         config_update_value('alias_as_name', 0);
     }
 
-    if (!isset($config['auditdir'])) {
-        $auditdir = '/var/www/html/pandora_console';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $auditdir = $config['homedir'];
-        }
+    if (!isset($config['console_log_enabled'])) {
+        config_update_value('console_log_enabled', 0);
+    }
 
-        config_update_value('auditdir', $auditdir);
+    if (!isset($config['audit_log_enabled'])) {
+        config_update_value('audit_log_enabled', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -2795,6 +2801,10 @@ function config_process_config()
 
     if (!isset($config['event_storm_protection'])) {
         config_update_value('event_storm_protection', 0);
+    }
+
+    if (!isset($config['use_custom_encoding'])) {
+        config_update_value('use_custom_encoding', 0);
     }
 
     if (!isset($config['server_log_dir'])) {

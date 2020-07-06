@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.746 PS200616";
+my $version = "7.0NG.747 PS200706";
 
 # Pandora server configuration
 my %conf;
@@ -478,7 +478,7 @@ sub pandora_compactdb ($$) {
 		$limit_utime  = $conf->{'_last_compact'};
 	}
 	
-	if ($start_utime <= $limit_utime) {
+	if ($start_utime <= $limit_utime || ( defined ($conf->{'_last_compact'}) && (($conf->{'_last_compact'} + 24 * 60 * 60) > $start_utime))) {
 		log_message ('COMPACT', "Data already compacted.");
 		return;
 	}
@@ -512,7 +512,7 @@ sub pandora_compactdb ($$) {
 					next unless defined ($module_type);
 
 					# Mark proc modules.
-					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {
+					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31 || $module_type == 35 || $module_type == 100) {
 						$module_proc_hash{$id_module} = 1;
 					}
 					else {
@@ -537,7 +537,9 @@ sub pandora_compactdb ($$) {
 			}
 
 			# Delete interval from the database
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE utimestamp < ? AND utimestamp >= ?', $start_utime, $stop_utime);
+			db_do ($dbh, 'DELETE ad FROM tagente_datos ad
+				INNER JOIN tagente_modulo am ON ad.id_agente_modulo = am.id_agente_modulo AND am.id_tipo_modulo NOT IN (2,6,9,18,21,31,35,100)
+				WHERE ad.utimestamp < ? AND ad.utimestamp >= ?', $start_utime, $stop_utime);
 
 			# Insert interval average value
 			foreach my $key (keys(%value_hash)) {

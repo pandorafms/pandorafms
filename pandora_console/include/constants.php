@@ -50,7 +50,9 @@ define('EVENT_NO_VALIDATED', 3);
 define('AGENT_ENABLED', 0);
 define('AGENT_DISABLED', 1);
 
-
+// Module disabled status.
+define('MODULE_ENABLED', 0);
+define('MODULE_DISABLED', 1);
 
 // Error report codes.
 define('NOERR', 11111);
@@ -149,8 +151,8 @@ define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
 define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
-define('COL_INFORMATIONAL', '#E4E4E4');
-define('COL_MAINTENANCE', '#4a83f3');
+define('COL_INFORMATIONAL', '#4a83f3');
+define('COL_MAINTENANCE', '#E4E4E4');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');
@@ -347,6 +349,7 @@ define('MODULE_PREDICTION', 5);
 define('MODULE_WMI', 6);
 define('MODULE_WEB', 7);
 define('MODULE_WUX', 8);
+define('MODULE_WIZARD', 9);
 
 // Type of Modules of Prediction.
 define('MODULE_PREDICTION_SERVICE', 2);
@@ -601,6 +604,7 @@ define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
+define('DISCOVERY_APP_DB2', 11);
 
 
 // Force task build tmp results.
@@ -673,3 +677,54 @@ define('W_CREATE_MODULE', 3);
 define('W_CREATE_ALERT', 4);
 define('W_CREATE_TASK', 5);
 define('WELCOME_FINISHED', -1);
+
+// Fixed tnetwork_component values.
+define('MODULE_TYPE_NUMERIC', 1);
+define('MODULE_TYPE_INCREMENTAL', 2);
+define('MODULE_TYPE_BOOLEAN', 3);
+define('MODULE_TYPE_ALPHANUMERIC', 4);
+define('SCAN_TYPE_FIXED', 1);
+define('SCAN_TYPE_DYNAMIC', 2);
+define('EXECUTION_TYPE_NETWORK', 1);
+define('EXECUTION_TYPE_PLUGIN', 2);
+
+// Id of component type.
+define('COMPONENT_TYPE_NETWORK', 2);
+define('COMPONENT_TYPE_PLUGIN', 4);
+define('COMPONENT_TYPE_WMI', 6);
+define('COMPONENT_TYPE_WIZARD', 9);
+
+// Wizard Internal Plugins.
+define('PLUGIN_WIZARD_SNMP_MODULE', 1);
+define('PLUGIN_WIZARD_SNMP_PROCESS', 2);
+define('PLUGIN_WIZARD_WMI_MODULE', 3);
+
+// Module Types.
+define('MODULE_TYPE_GENERIC_DATA', 1);
+define('MODULE_TYPE_GENERIC_PROC', 2);
+define('MODULE_TYPE_GENERIC_DATA_STRING', 3);
+define('MODULE_TYPE_GENERIC_DATA_INC', 4);
+define('MODULE_TYPE_GENERIC_DATA_INC_ABS', 5);
+define('MODULE_TYPE_REMOTE_ICMP_PROC', 6);
+define('MODULE_TYPE_REMOTE_ICMP', 7);
+define('MODULE_TYPE_REMOTE_TCP', 8);
+define('MODULE_TYPE_REMOTE_TCP_PROC', 9);
+define('MODULE_TYPE_REMOTE_TCP_STRING', 10);
+define('MODULE_TYPE_REMOTE_TCP_INC', 11);
+define('MODULE_TYPE_REMOTE_SNMP', 15);
+define('MODULE_TYPE_REMOTE_SNMP_INC', 16);
+define('MODULE_TYPE_REMOTE_SNMP_STRING', 17);
+define('MODULE_TYPE_REMOTE_SNMP_PROC', 18);
+define('MODULE_TYPE_ASYNC_PROC', 21);
+define('MODULE_TYPE_ASYNC_DATA', 22);
+define('MODULE_TYPE_ASYNC_STRING', 23);
+define('MODULE_TYPE_WEB_ANALYSIS', 25);
+define('MODULE_TYPE_WEB_DATA', 30);
+define('MODULE_TYPE_WEB_PROC', 31);
+define('MODULE_TYPE_WEB_CONTENT_DATA', 32);
+define('MODULE_TYPE_WEB_CONTENT_STRING', 33);
+define('MODULE_TYPE_REMOTE_CMD', 34);
+define('MODULE_TYPE_REMOTE_CMD_PROC', 35);
+define('MODULE_TYPE_REMOTE_CMD_STRING', 36);
+define('MODULE_TYPE_REMOTE_CMD_INC', 37);
+define('MODULE_TYPE_KEEP_ALIVE', 100);

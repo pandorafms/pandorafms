@@ -160,7 +160,7 @@ function reporting_make_reporting_data(
 
     $return = [];
     if (!empty($report)) {
-        $contents = $report['contents'];
+        $contents = io_safe_output($report['contents']);
     } else {
         $report = io_safe_output(db_get_row('treport', 'id_report', $id_report));
         $contents = io_safe_output(
@@ -682,6 +682,13 @@ function reporting_make_reporting_data(
 
             case 'database_serialized':
                 $report['contents'][] = reporting_database_serialized(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'last_value':
+                $report['contents'][] = reporting_last_value(
                     $report,
                     $content
                 );
@@ -2236,7 +2243,7 @@ function reporting_inventory($report, $content, $type)
     $es = json_decode($content['external_source'], true);
 
     $id_agent = $es['id_agents'];
-    $module_name = $es['inventory_modules'];
+    $module_name = io_safe_input($es['inventory_modules']);
     if (empty($module_name)) {
         $module_name = [0 => 0];
     }
@@ -3350,7 +3357,7 @@ function reporting_database_serialized($report, $content)
     );
 
     // Adds string data if there is no numeric data.
-    if ((count($result) < 0) || (!$result)) {
+    if ($result === false) {
         // This query gets information from the default and the historic database.
         $result = db_get_all_rows_sql(
             'SELECT *
@@ -3425,6 +3432,77 @@ function reporting_database_serialized($report, $content)
     }
 
     $return['data'] = $data;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Show last value and state of module.
+ *
+ * @param array $report  Data report.
+ * @param array $content Content report.
+ *
+ * @return array
+ */
+function reporting_last_value($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'last_value';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Last Value');
+    }
+
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($content['server_name']);
+        $server = metaconsole_get_connection_by_id($id_meta);
+        if (metaconsole_connect($server) != NOERR) {
+            $result = [];
+            return reporting_check_structure_content($result);
+        }
+    }
+
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $content['id_agent_module']
+    );
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = $agent_alias.' - '.$module_name;
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['agent_name_db'] = agents_get_name($id_agent);
+    $return['agent_name'] = $agent_alias;
+    $return['module_name'] = $module_name;
+
+    $sql = sprintf(
+        'SELECT *
+        FROM tagente_estado
+        WHERE id_agente_modulo = %s',
+        $content['id_agent_module']
+    );
+
+    $result = db_get_row_sql($sql);
+
+    if ($result === false) {
+        $result = [];
+    }
+
+    $result['agent_name'] = $agent_alias;
+    $result['module_name'] = $module_name;
+
+    $return['data'] = $result;
+
+    if (is_metaconsole()) {
+        metaconsole_restore_db();
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -6147,7 +6225,13 @@ function reporting_advanced_sla(
                             $time_total += $time_interval;
 
                             if ($time_interval > 0) {
-                                $total_checks++;
+                                if (isset($current_data['type']) === false
+                                    || ((int) $current_data['type'] === 0
+                                    && $i !== 0)
+                                ) {
+                                    $total_checks++;
+                                }
+
                                 if ((isset($current_data['datos']))
                                     && ($current_data['datos'] !== false)
                                 ) {
@@ -6159,7 +6243,7 @@ function reporting_advanced_sla(
                                             $match = preg_match('/'.$max_value.'/', $current_data['datos']);
                                         }
 
-                                        // Take notice of $inverse_interval value,
+                                        // Take notice of $inverse_interval value.
                                         if ($inverse_interval == 0) {
                                             $sla_check_value = $match;
                                         } else {
@@ -6176,19 +6260,41 @@ function reporting_advanced_sla(
 
                                     // Not unknown nor not init values.
                                     if ($sla_check_value) {
-                                        $ok_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $ok_checks++;
+                                        }
+
                                         $time_in_ok += $time_interval;
                                     } else {
-                                        $bad_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $bad_checks++;
+                                        }
+
                                         $time_in_error += $time_interval;
                                     }
                                 } else {
                                     if ($current_data['datos'] === null) {
                                         $time_in_unknown += $time_interval;
-                                        $unknown_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $unknown_checks++;
+                                        }
                                     } else if ($current_data['datos'] === false) {
                                         $time_in_not_init += $time_interval;
-                                        $not_init_checks++;
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $not_init_checks++;
+                                        }
                                     }
                                 }
                             }

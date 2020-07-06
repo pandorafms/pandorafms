@@ -141,6 +141,14 @@ if ((! file_exists('include/config.php'))
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
 
+if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+    ini_set('log_errors', 1);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', 0);
+    ini_set('error_log', 0);
+}
+
 if (isset($config['error'])) {
     $login_screen = $config['error'];
     include 'general/error_screen.php';
@@ -1166,7 +1174,7 @@ if ($searchPage) {
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
                     } else {
-                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc.'&refr=60';
+                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
 
                     parse_str($str, $res);

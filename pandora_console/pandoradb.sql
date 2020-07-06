@@ -923,6 +923,20 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`dynamic_min` int(4) default '0',
 	`dynamic_next` bigint(20) NOT NULL default '0',
 	`dynamic_two_tailed` tinyint(1) unsigned default '0',
+	`module_type` tinyint(1) unsigned NOT NULL DEFAULT 1,
+	`protocol` tinytext NOT NULL,
+	`manufacturer_id` varchar(200) NOT NULL,
+	`execution_type` tinyint(1) unsigned NOT NULL DEFAULT 1,
+	`scan_type` tinyint(1) unsigned NOT NULL DEFAULT 1,
+	`value` text NOT NULL,
+	`value_operations` text NOT NULL,
+	`module_enabled` tinyint(1) unsigned DEFAULT 0,
+	`name_oid` varchar(255) NOT NULL,
+	`query_class` varchar(200) NOT NULL,
+	`query_key_field` varchar(200) NOT NULL,
+	`scan_filters` text NOT NULL,
+	`query_filters` text NOT NULL,
+	`enabled` tinyint(1) UNSIGNED DEFAULT 1,
 	PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1291,6 +1305,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
 	`citicity` INT(10) UNSIGNED DEFAULT '0',
 	`id_source` BIGINT(20) UNSIGNED NOT NULL,
 	`subtype` VARCHAR(255) DEFAULT '',
+	`hidden_sent` TINYINT(1) UNSIGNED DEFAULT 0,
 	PRIMARY KEY (`id_mensaje`),
 	UNIQUE KEY `id_mensaje` (`id_mensaje`),
 	KEY `tsource_fk` (`id_source`),

@@ -768,7 +768,13 @@ var TreeController = {
                 }
 
                 // Data pop-up
-                if (typeof element.id != "undefined" && !isNaN(element.id)) {
+                if (
+                  element.metaID != "undefined" &&
+                  !isNaN(element.metaID) &&
+                  element.metaID <= 0 &&
+                  typeof element.id != "undefined" &&
+                  !isNaN(element.id)
+                ) {
                   var $dataImage = $(
                     '<img src="' +
                       (controller.baseURL.length > 0

@@ -1126,8 +1126,13 @@ sub cli_create_agent() {
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+	my $agent_id = pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
 		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
+
+	# Create address for this agent in taddress.
+  if (defined($address)) {
+      pandora_add_agent_address($conf, $agent_id, $agent_name, $address, $dbh);
+  }
 }
 
 ##############################################################################

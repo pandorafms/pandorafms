@@ -794,7 +794,7 @@ function html_print_select_multiple_filtered(
     }
 
     // Main container.
-    $output .= '<div class="multi-select flex-row-vcenter '.$class.'">';
+    $output = '<div class="multi-select flex-row-vcenter '.$class.'">';
 
     // Left box.
     $output .= '<div class="multi-select-container flex-column">';
@@ -941,7 +941,7 @@ function html_print_select_multiple_filtered(
 
     $output .= '</div>';
 
-    // Left box.
+    // Right box.
     $output .= '<div class="multi-select-container flex-column">';
 
     // Filtering.
@@ -1055,6 +1055,151 @@ function html_print_select_multiple_filtered(
     $output .= '</div>';
 
     if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Form multiple inputs for slect groups.
+ *
+ * @param array $data Data inputs.
+ *
+ * @return string Html output.
+ */
+function html_print_select_multiple_modules_filtered(array $data):string
+{
+    if (is_ajax() === true) {
+        ui_require_javascript_file(
+            'multiselect_filtered',
+            'include/javascript/',
+            true
+        );
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
+
+    $uniqId = $data['uniqId'];
+
+    // Group.
+    $output = '<div>';
+    $output .= html_print_input(
+        [
+            'label'          => __('Group'),
+            'name'           => 'filtered-module-group-'.$uniqId,
+            'returnAllGroup' => true,
+            'privilege'      => 'AR',
+            'type'           => 'select_groups',
+            'return'         => true,
+            'script'         => 'fmAgentChange(\''.$uniqId.'\')',
+            'selected'       => $data['mGroup'],
+        ]
+    );
+
+    // Recursion.
+    $output .= html_print_input(
+        [
+            'label'    => __('Recursion'),
+            'type'     => 'switch',
+            'name'     => 'filtered-module-recursion-'.$uniqId,
+            'value'    => (empty($data['mRecursion']) === true) ? false : true,
+            'checked'  => (empty($data['mRecursion']) === true) ? false : true,
+            'return'   => true,
+            'id'       => 'filtered-module-recursion-'.$uniqId,
+            'onchange' => 'fmAgentChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    // Groups module.
+    $module_groups = db_get_all_rows_sql(
+        'SELECT * FROM tmodule_group ORDER BY name'
+    );
+    $module_groups = array_reduce(
+        $module_groups,
+        function ($carry, $item) {
+            $carry[$item['id_mg']] = $item['name'];
+            return $carry;
+        }
+    );
+
+    $output .= html_print_input(
+        [
+            'label'         => __('Module group'),
+            'type'          => 'select',
+            'fields'        => $module_groups,
+            'name'          => 'filtered-module-module-group-'.$uniqId,
+            'selected'      => $data['mModuleGroup'],
+            'return'        => true,
+            'nothing'       => __('All'),
+            'nothing_value' => 0,
+            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+    $output .= '</div>';
+
+    $output .= '<div>';
+    // Agent.
+    $agents = agents_get_group_agents($data['mGroup']);
+    if ((empty($agents)) === true || $agents == -1) {
+        $agents = [];
+    }
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Agents'),
+            'type'     => 'select',
+            'fields'   => $agents,
+            'name'     => 'filtered-module-agents-'.$uniqId,
+            'selected' => explode(',', $data['mAgents']),
+            'return'   => true,
+            'multiple' => true,
+            'style'    => 'min-width: 200px;max-width:200px;',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    // Show common modules.
+    $selection = [
+        0 => __('Show common modules'),
+        1 => __('Show all modules'),
+    ];
+    $output .= html_print_input(
+        [
+            'label'    => __('Show common modules'),
+            'type'     => 'select',
+            'fields'   => $selection,
+            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
+            'selected' => $data['mShowCommonModules'],
+            'return'   => true,
+            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    $all_modules = select_modules_for_agent_group(
+        $data['mModuleGroup'],
+        explode(',', $data['mAgents']),
+        $data['mShowCommonModules'],
+        false
+    );
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Modules'),
+            'type'     => 'select',
+            'fields'   => $all_modules,
+            'name'     => 'filtered-module-modules-'.$uniqId,
+            'selected' => explode(',', $data['mModules']),
+            'return'   => true,
+            'multiple' => true,
+            'style'    => 'min-width: 200px;max-width:200px;',
+        ]
+    );
+
+    $output .= '</div>';
+
+    if ($data['return'] === false) {
         echo $output;
     }
 
@@ -4339,7 +4484,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0 => __('Select an Agent first'),
                 ];
             } else {
-                $string_filter .= '';
+                $string_filter = '';
                 if ($data['get_only_string_modules'] === true) {
                     $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
                 }
@@ -4423,6 +4568,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['texts']) === true) ? $data['texts'] : []),
                 ((isset($data['sections']) === true) ? $data['sections'] : [])
             );
+        break;
+
+        case 'select_multiple_modules_filtered':
+            $output .= html_print_select_multiple_modules_filtered($data);
         break;
 
         default:

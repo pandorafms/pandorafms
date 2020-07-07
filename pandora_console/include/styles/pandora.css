@@ -716,6 +716,23 @@ p.center {
   text-align: center;
 }
 
+.center {
+  text-align: center;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.margin-bottom-10 {
+  margin-bottom: 10px;
+}
+
+.margin-tb-10 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .img_help {
   cursor: help;
 }

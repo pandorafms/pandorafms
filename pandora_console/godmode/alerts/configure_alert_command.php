@@ -83,6 +83,10 @@ if ($update_command) {
     $values['command'] = $command;
     $values['description'] = $description;
     $values['id_group'] = $id_group;
+    // Only for Metaconsole. Save the previous name for synchronizing.
+    if (is_metaconsole()) {
+        $values['previous_name'] = db_get_value('name', 'talert_commands', 'id', $id);
+    }
 
     // Check it the new name is used in the other command.
     $id_check = db_get_value('id', 'talert_commands', 'name', $name);

@@ -34,6 +34,9 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
 $duplicate_template = (bool) get_parameter('duplicate_template');
 $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
+$step = (int) get_parameter('step', 1);
+// We set here the number of steps.
+define('LAST_STEP', 3);
 
 // If user tries to duplicate/edit a template with group=ALL then must have "PM" access privileges
 if ($duplicate_template) {
@@ -56,7 +59,6 @@ if ($a_template !== false) {
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
         } else {
-            $step = (int) get_parameter('step', 1);
             if ($step == 1) {
                 $help_header = '';
             } else if ($step == 2) {
@@ -113,7 +115,6 @@ if ($a_template !== false) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        $step = (int) get_parameter('step', 1);
         if ($step == 1) {
             $help_header = '';
         } else if ($step == 2) {
@@ -252,24 +253,20 @@ function update_template($step)
         $wizard_level = (string) get_parameter('wizard_level');
         $priority = (int) get_parameter('priority');
         $id_group = get_parameter('id_group');
-
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $name_check = db_get_value('name', 'talert_templates', 'name', $name);
-            break;
-
-            case 'oracle':
-                $name_check = db_get_value('name', 'talert_templates', 'to_char(name)', $name);
-            break;
+        // Only for Metaconsole. Save the previous name for synchronizing.
+        if (is_metaconsole()) {
+            $previous_name = db_get_value('name', 'talert_templates', 'id', $id);
+        } else {
+            $previous_name = '';
         }
 
         $values = [
-            'name'         => $name,
-            'description'  => $description,
-            'id_group'     => $id_group,
-            'priority'     => $priority,
-            'wizard_level' => $wizard_level,
+            'name'          => $name,
+            'description'   => $description,
+            'id_group'      => $id_group,
+            'priority'      => $priority,
+            'wizard_level'  => $wizard_level,
+            'previous_name' => $previous_name,
         ];
 
         $result = alerts_update_alert_template($id, $values);
@@ -362,11 +359,6 @@ function update_template($step)
     return $result;
 }
 
-
-// We set here the number of steps
-define('LAST_STEP', 3);
-
-$step = (int) get_parameter('step', 1);
 
 $create_alert = (bool) get_parameter('create_alert');
 $create_template = (bool) get_parameter('create_template');

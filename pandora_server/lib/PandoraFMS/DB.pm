@@ -301,7 +301,7 @@ sub get_group_children ($$$;$) {
 	my ($dbh, $parent, $ignorePropagate, $href_groups) = @_;
 
 	if (is_empty($href_groups)) {
-		my @groups = get_db_rows($dbh, 'tgrupo');
+		my @groups = get_db_rows($dbh, 'SELECT * FROM tgrupo');
 
 		my $href_groups = map {
 			$_->{'id_grupo'} => $_

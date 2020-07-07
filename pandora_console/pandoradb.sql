@@ -374,6 +374,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
+	`previous_name` text,
 	`command` text,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`description` text,
@@ -390,6 +391,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` text,
+	`previous_name` text,
 	`id_alert_command` int(10) unsigned NULL default 0,
 	`field1` text NOT NULL,
 	`field2` text NOT NULL,
@@ -434,6 +436,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` text,
+	`previous_name` text,
 	`description` mediumtext,
 	`id_alert_action` int(10) unsigned NULL,
 	`field1` text NOT NULL,
@@ -583,6 +586,7 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
 	`icon_name` varchar(100) default '',
+	`previous_name` text default '', 
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -303,10 +303,11 @@ sub get_group_children ($$$;$) {
 	if (is_empty($href_groups)) {
 		my @groups = get_db_rows($dbh, 'SELECT * FROM tgrupo');
 
-		my $href_groups = map {
+		my %groups = map {
 			$_->{'id_grupo'} => $_
-		} @groups
+		} @groups;
 
+		$href_groups = \%groups;
 	}
 
 	my $return = {};

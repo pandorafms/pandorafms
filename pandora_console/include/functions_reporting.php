@@ -7766,18 +7766,6 @@ function reporting_custom_graph(
 
     include_once $config['homedir'].'/include/functions_graph.php';
 
-    if ($type_report == 'custom_graph') {
-        if (is_metaconsole()) {
-            $id_meta = metaconsole_get_id_server($content['server_name']);
-            $server  = metaconsole_get_connection_by_id($id_meta);
-            if (metaconsole_connect($server) != NOERR) {
-                return false;
-            }
-        }
-    }
-
-    $graph = db_get_row('tgraph', 'id_graph', $content['id_gs']);
-
     $return = [];
     $return['type'] = 'custom_graph';
 
@@ -7791,10 +7779,47 @@ function reporting_custom_graph(
         }
     }
 
+    $id_meta = 0;
     if ($type_report == 'custom_graph') {
-        $graphs = db_get_all_rows_field_filter('tgraph', 'id_graph', $content['id_gs']);
         $id_graph = $content['id_gs'];
+        if (is_metaconsole()) {
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server  = metaconsole_get_connection_by_id($id_meta);
+            if (metaconsole_connect($server) != NOERR) {
+                return false;
+            }
+        }
+
+        $graphs = db_get_all_rows_field_filter(
+            'tgraph',
+            'id_graph',
+            $content['id_gs']
+        );
+
+        $module_source = db_get_all_rows_sql(
+            'SELECT id_agent_module
+             FROM tgraph_source
+             WHERE id_graph = '.$content['id_gs']
+        );
+
+        if (isset($module_source) && is_array($module_source)) {
+            $modules = [];
+            foreach ($module_source as $key => $value) {
+                $modules[$key]['module'] = $value['id_agent_module'];
+                $modules[$key]['server'] = $id_meta;
+            }
+        }
+
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
     } else if ($type_report == 'automatic_graph') {
+        $graphs = db_get_all_rows_field_filter(
+            'tgraph',
+            'id_graph',
+            $content['id_gs']
+        );
+
         $graphs[0]['stacked'] = '';
         $graphs[0]['summatory_series'] = '';
         $graphs[0]['average_series'] = '';
@@ -7805,8 +7830,8 @@ function reporting_custom_graph(
         if (is_metaconsole()) {
             $module_source = db_get_all_rows_sql(
                 'SELECT id_agent_module, id_server
-            FROM tgraph_source
-            WHERE id_graph = '.$content['id_gs']
+                FROM tgraph_source
+                WHERE id_graph = '.$content['id_gs']
             );
 
             if (isset($module_source) && is_array($module_source)) {
@@ -7821,21 +7846,6 @@ function reporting_custom_graph(
         $id_graph = 0;
     } else {
         $content['name'] = __('Simple graph');
-    }
-
-    if ($type_report != 'automatic_graph') {
-        $module_source = db_get_all_rows_sql(
-            'SELECT id_agent_module
-             FROM tgraph_source
-             WHERE id_graph = '.$content['id_gs']
-        );
-
-        if (isset($module_source) && is_array($module_source)) {
-            $modules = [];
-            foreach ($module_source as $key => $value) {
-                $modules[$key] = $value['id_agent_module'];
-            }
-        }
     }
 
     $agent_description = agents_get_description($id_agent);
@@ -7853,7 +7863,7 @@ function reporting_custom_graph(
     $return['title'] = $content['name'];
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
-    $return['subtitle'] = $graph['name'];
+    $return['subtitle'] = $graphs[0]['name'];
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $content['description'];
@@ -7931,12 +7941,6 @@ function reporting_custom_graph(
 
             $return['chart'] = $data;
         break;
-    }
-
-    if ($type_report == 'custom_graph') {
-        if (is_metaconsole()) {
-            metaconsole_restore_db();
-        }
     }
 
     return reporting_check_structure_content($return);

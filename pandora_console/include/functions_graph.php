@@ -1275,9 +1275,22 @@ function graphic_combined_module(
         }
 
         if ($count_modules > 0) {
-            $sources = true;
+            foreach ($module_list as $key => $value) {
+                $sources[$key]['id_server'] = $value['server'];
+                $sources[$key]['id_agent_module'] = $value['module'];
+                $sources[$key]['weight'] = $weights[$key];
+                $sources[$key]['label'] = $params_combined['labels'];
+            }
         }
     } else {
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+            $server  = metaconsole_get_connection_by_id($params['server_id']);
+            if (metaconsole_connect($server) != NOERR) {
+                return false;
+            }
+        }
+
         $sources = db_get_all_rows_field_filter(
             'tgraph_source',
             'id_graph',
@@ -1285,8 +1298,18 @@ function graphic_combined_module(
             'field_order'
         );
 
+        if (is_metaconsole()) {
+            if (isset($sources) && is_array($sources)) {
+                foreach ($sources as $key => $value) {
+                    $sources[$key]['id_server'] = $params['server_id'];
+                }
+            }
+        }
+
         $series = db_get_all_rows_sql(
-            'SELECT summatory_series,average_series, modules_series
+            'SELECT summatory_series,
+                average_series,
+                modules_series
             FROM tgraph
             WHERE id_graph = '.$params_combined['id_graph']
         );
@@ -1295,44 +1318,75 @@ function graphic_combined_module(
         $average        = $series[0]['average_series'];
         $modules_series = $series[0]['modules_series'];
 
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+    }
+
+    if (isset($sources) && is_array($sources)) {
         $weights = [];
         $labels  = [];
         $modules = [];
-
-        if (isset($sources) && is_array($sources)) {
-            foreach ($sources as $source) {
-                array_push($modules, $source['id_agent_module']);
-                array_push($weights, $source['weight']);
-                if ($source['label'] != '' || $params_combined['labels']) {
-                    $id_agent = agents_get_module_id(
-                        $source['id_agent_module']
-                    );
-                    $agent_description = agents_get_description($id_agent);
-                    $agent_group = agents_get_agent_group($id_agent);
-                    $agent_address = agents_get_address($id_agent);
-                    $agent_alias = agents_get_alias($id_agent);
-                    $module_name = modules_get_agentmodule_name(
-                        $source['id_agent_module']
-                    );
-
-                    $module_description = modules_get_agentmodule_descripcion(
-                        $source['id_agent_module']
-                    );
-
-                    $items_label = [
-                        'type'               => 'custom_graph',
-                        'id_agent'           => $id_agent,
-                        'id_agent_module'    => $source['id_agent_module'],
-                        'agent_description'  => $agent_description,
-                        'agent_group'        => $agent_group,
-                        'agent_address'      => $agent_address,
-                        'agent_alias'        => $agent_alias,
-                        'module_name'        => $module_name,
-                        'module_description' => $module_description,
-                    ];
-
-                    $labels[$source['id_agent_module']] = ($source['label'] != '') ? reporting_label_macro($items_label, $source['label']) : reporting_label_macro($item, $params_combined['labels']);
+        foreach ($sources as $source) {
+            if (is_metaconsole() === true) {
+                $server = metaconsole_get_connection_by_id($source['id_server']);
+                if (metaconsole_connect($server) != NOERR) {
+                    continue;
                 }
+            }
+
+            $modulepush = [
+                'server' => (isset($source['id_server']) === true) ? $source['id_server'] : 0,
+                'module' => $source['id_agent_module'],
+            ];
+
+            array_push($modules, $modulepush);
+            array_push($weights, $source['weight']);
+            if ($source['label'] != '' || $params_combined['labels']) {
+                $id_agent = agents_get_module_id(
+                    $source['id_agent_module']
+                );
+                $agent_description = agents_get_description($id_agent);
+                $agent_group = agents_get_agent_group($id_agent);
+                $agent_address = agents_get_address($id_agent);
+                $agent_alias = agents_get_alias($id_agent);
+                $module_name = modules_get_agentmodule_name(
+                    $source['id_agent_module']
+                );
+
+                $module_description = modules_get_agentmodule_descripcion(
+                    $source['id_agent_module']
+                );
+
+                $items_label = [
+                    'type'               => 'custom_graph',
+                    'id_agent'           => $id_agent,
+                    'id_agent_module'    => $source['id_agent_module'],
+                    'agent_description'  => $agent_description,
+                    'agent_group'        => $agent_group,
+                    'agent_address'      => $agent_address,
+                    'agent_alias'        => $agent_alias,
+                    'module_name'        => $module_name,
+                    'module_description' => $module_description,
+                ];
+
+                if ($source['label'] != '') {
+                    $lab = reporting_label_macro(
+                        $items_label,
+                        $source['label']
+                    );
+                } else {
+                    $lab = reporting_label_macro(
+                        $items_label,
+                        $params_combined['labels']
+                    );
+                }
+
+                $labels[$source['id_agent_module']] = $lab;
+            }
+
+            if (is_metaconsole() === true) {
+                metaconsole_restore_db();
             }
         }
     }
@@ -1429,14 +1483,16 @@ function graphic_combined_module(
                     continue;
                 }
 
-                if (is_metaconsole() && $params_combined['type_report'] == 'automatic_graph') {
-                    $server = metaconsole_get_connection_by_id($agent_module_id['server']);
+                if (is_metaconsole()) {
+                    $server = metaconsole_get_connection_by_id(
+                        $agent_module_id['server']
+                    );
                     if (metaconsole_connect($server) != NOERR) {
                         continue;
                     }
-
-                    $agent_module_id = $agent_module_id['module'];
                 }
+
+                $agent_module_id = $agent_module_id['module'];
 
                 $module_data = db_get_row_sql(
                     'SELECT * FROM tagente_modulo
@@ -1516,7 +1572,12 @@ function graphic_combined_module(
                 if ($config['fixed_graph'] == false) {
                     $water_mark = [
                         'file' => $config['homedir'].'/images/logo_vertical_water.png',
-                        'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+                        'url'  => ui_get_full_url(
+                            'images/logo_vertical_water.png',
+                            false,
+                            false,
+                            false
+                        ),
                     ];
                 }
 
@@ -1525,9 +1586,7 @@ function graphic_combined_module(
 
                 $i++;
 
-                if (is_metaconsole()
-                    && $params_combined['type_report'] == 'automatic_graph'
-                ) {
+                if (is_metaconsole()) {
                     metaconsole_restore_db();
                 }
             }

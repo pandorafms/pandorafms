@@ -1646,6 +1646,7 @@ function html_print_input_range(
         $output .= ' value="'.$value.'" ';
     }
 
+    $output .= ' name="'.$name.'" ';
     $output .= ' id="'.$id.'" ';
     $output .= ' min="'.$min.'" ';
     $output .= ' max="'.$max.'" ';
@@ -1654,6 +1655,10 @@ function html_print_input_range(
     $output .= ' oninput="'.$oninput.'" ';
 
     $output .= ' />';
+
+    if ($return === false) {
+        echo $return;
+    }
 
     return $output;
 }

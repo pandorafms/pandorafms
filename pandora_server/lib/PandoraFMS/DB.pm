@@ -96,6 +96,7 @@ our @EXPORT = qw(
 		get_user_disabled
 		get_user_exists
 		get_user_profile_id
+		get_group_children
 		is_agent_address
 		is_group_disabled
 		get_agent_status
@@ -290,6 +291,47 @@ sub get_group_id ($$) {
 
 	my $rc = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE ' . db_text ('nombre') . ' = ?', safe_input($group_name));
 	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+# Return a array of groups, children of given parent.
+########################################################################
+sub get_group_children ($$$;$);
+sub get_group_children ($$$;$) {
+	my ($dbh, $parent, $ignorePropagate, $href_groups) = @_;
+
+	if (is_empty($href_groups)) {
+		my @groups = get_db_rows($dbh, 'SELECT * FROM tgrupo');
+
+		my %groups = map {
+			$_->{'id_grupo'} => $_
+		} @groups;
+
+		$href_groups = \%groups;
+	}
+
+	my $return = {};
+	foreach my $id_grupo (keys %{$href_groups}) {
+		if ($id_grupo eq 0) {
+			next;
+		}
+
+		my $g = $href_groups->{$id_grupo};
+
+		if ($ignorePropagate || $parent eq 0 || $href_groups->{$parent}{'propagate'}) {
+			if ($g->{'parent'} eq $parent) {
+				$return->{$g->{'id_grupo'}} = $g;
+				if ($g->{'propagate'} || $ignorePropagate) {
+					$return = add_hashes(
+						$return,
+						get_group_children($dbh, $g->{'id_grupo'}, $ignorePropagate, $href_groups)
+					);
+				}
+			}
+		}
+	}
+
+	return $return;
 }
 
 ########################################################################

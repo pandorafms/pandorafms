@@ -13123,6 +13123,9 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
     $quiet = $other['data'][11];
     $cascade_protection = $other['data'][12];
     $evaluate_sla = $other['data'][13];
+    $is_favourite = $other['data'][14];
+    $unknown_as_critical = $other['data'][15];
+    $server_name = $other['data'][16];
 
     if (empty($name)) {
         returnError('error_create_service', __('Error in creation service. No name'));
@@ -13189,24 +13192,39 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
         $evaluate_sla = 0;
     }
 
-    $result = services_create_service(
-        $name,
-        $description,
-        $id_group,
-        $critical,
-        $warning,
-        SECONDS_5MINUTES,
-        $mode,
-        $id_agent,
-        $sla_interval,
-        $sla_limit,
-        $id_warning_module_template,
-        $id_critical_module_template,
-        $id_unknown_module_template,
-        $id_critical_module_sla,
-        $quiet,
-        $cascade_protection,
-        $evaluate_sla
+    if (empty($is_favourite)) {
+        $is_favourite = false;
+    }
+
+    if (empty($unknown_as_critical)) {
+        $unknown_as_critical = false;
+    }
+
+    if (empty($server_name)) {
+        $server_name = null;
+    }
+
+    $result = enterprise_hook(
+        'services_create_service',
+        [
+            $name,
+            $description,
+            $id_group,
+            $critical,
+            $warning,
+            SECONDS_5MINUTES,
+            $mode,
+            $id_agent,
+            $sla_interval,
+            $sla_limit,
+            $id_warning_module_template,
+            $id_critical_module_template,
+            $id_unknown_module_template,
+            $id_critical_module_sla,
+            $quiet,
+            $cascade_protection,
+            $evaluate_sla,
+        ]
     );
 
     if ($result) {
@@ -13225,7 +13243,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
  * @param array              $other it's array, $other as param is <name>;<description>;<id_group>;<critical>;
  *              <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
  *              <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;<quiet>;
- *              <cascade_protection>;<evaluate_sla>;
+ *              <cascade_protection>;<evaluate_sla>;<is_favourite>;<unknown_as_critical>;<server_name>;
  *              in this order and separator char (after text ; ) and separator
  *              (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
@@ -13342,25 +13360,46 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3)
         $evaluate_sla = $service['evaluate_sla'];
     }
 
-    $result = services_update_service(
-        $id_service,
-        $name,
-        $description,
-        $id_group,
-        $critical,
-        $warning,
-        SECONDS_5MINUTES,
-        $mode,
-        $id_agent,
-        $sla_interval,
-        $sla_limit,
-        $id_warning_module_template,
-        $id_critical_module_template,
-        $id_unknown_module_template,
-        $id_critical_module_sla,
-        $quiet,
-        $cascade_protection,
-        $evaluate_sla
+    $is_favourite = $other['data'][14];
+    if (empty($is_favourite)) {
+        $is_favourite = $service['is_favourite'];
+    }
+
+    $unknown_as_critical = $other['data'][15];
+    if (empty($unknown_as_critical)) {
+        $unknown_as_critical = $service['unknown_as_critical'];
+    }
+
+    $server_name = $other['data'][16];
+    if (empty($server_name)) {
+        $server_name = $service['server_name'];
+    }
+
+    $result = enterprise_hook(
+        'services_update_service',
+        [
+            $id_service,
+            $name,
+            $description,
+            $id_group,
+            $critical,
+            $warning,
+            SECONDS_5MINUTES,
+            $mode,
+            $id_agent,
+            $sla_interval,
+            $sla_limit,
+            $id_warning_module_template,
+            $id_critical_module_template,
+            $id_unknown_module_template,
+            $id_critical_module_sla,
+            $quiet,
+            $cascade_protection,
+            $evaluate_sla,
+            $is_favourite,
+            $unknown_as_critical,
+            $server_name,
+        ]
     );
 
     if ($result) {

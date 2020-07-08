@@ -1616,6 +1616,55 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
 
 
 /**
+ * Prints an input slide.
+ *
+ * @param string  $name    Name.
+ * @param integer $value   Value.
+ * @param string  $id      Id.
+ * @param boolean $return  Return.
+ * @param integer $min     Min.
+ * @param integer $max     Max.
+ * @param integer $step    Step.
+ * @param string  $class   Class.
+ * @param string  $oninput Oninput.
+ *
+ * @return string HTML code for input.
+ */
+function html_print_input_range(
+    $name,
+    $value,
+    $id='',
+    $return=true,
+    $min=0,
+    $max=100,
+    $step=1,
+    $class='',
+    $oninput=''
+) {
+    $output = '<input type="range" ';
+    if (isset($value) === true) {
+        $output .= ' value="'.$value.'" ';
+    }
+
+    $output .= ' name="'.$name.'" ';
+    $output .= ' id="'.$id.'" ';
+    $output .= ' min="'.$min.'" ';
+    $output .= ' max="'.$max.'" ';
+    $output .= ' step="'.$step.'" ';
+    $output .= ' class="'.$class.'" ';
+    $output .= ' oninput="'.$oninput.'" ';
+
+    $output .= ' />';
+
+    if ($return === false) {
+        echo $return;
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input text element. Extended version, use html_print_input_text() to simplify.
  *
  * @param string  $name       Input name.
@@ -3746,6 +3795,8 @@ function html_print_csrf_error()
  * disabled: Disabled. Cannot be pressed.
  * id: Optional id for the switch.
  * class: Additional classes (string).
+ * value: Check or not (boolean).
+ * disabled: Enabled or disabled (boolean).
  *
  * @return string with HTML of button.
  */
@@ -3884,6 +3935,20 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : '')
+            );
+        break;
+
+        case 'range':
+            $output .= html_print_input_range(
+                $data['name'],
+                $data['value'],
+                (isset($data['id']) ? $data['id'] : ''),
+                (isset($data['return']) ? $data['return'] : true),
+                (isset($data['min']) ? $data['min'] : 0),
+                (isset($data['max']) ? $data['max'] : 100),
+                (isset($data['step']) ? $data['step'] : 1),
+                (isset($data['class']) ? $data['class'] : ''),
+                (isset($data['oninput']) ? $data['oninput'] : '')
             );
         break;
 
@@ -4046,6 +4111,25 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'select_metaconsole_nodes':
+            $output .= html_print_select_from_sql(
+                'SELECT `id`, `server_name` FROM `tmetaconsole_setup`',
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+        break;
+
         case 'select_for_unit':
             $output .= html_print_extended_select_for_unit(
                 $data['name'],
@@ -4058,7 +4142,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['select_style']) === true) ? $data['select_style'] : false),
                 ((isset($data['unique_name']) === true) ? $data['unique_name'] : true),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : 0)
+                ((isset($data['no_change']) === true) ? $data['no_change'] : 0)
             );
 
         case 'submit':
@@ -4093,7 +4177,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'interval':
             $output .= html_print_extended_select_for_time(
                 $data['name'],
-                $data['value'],
+                ((isset($data['value']) === true) ? $data['value'] : $data['selected']),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
                 ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
                 ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
@@ -4154,6 +4238,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_multicheck($data);
         break;
 
+        case 'agent_autocomplete':
+            // Direct assignment of parameters.
+            $output .= ui_print_agent_autocomplete_input($data);
+        break;
+
         case 'autocomplete_agent':
             $agent_name = '';
             if (isset($data['id_agent_hidden']) === true
@@ -4186,6 +4275,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             }
 
             $params = [];
+            $params['disabled'] = $data['disabled'];
             $params['return'] = $data['return'];
             $params['show_helptip'] = false;
             $params['input_name'] = $data['name'];

@@ -117,6 +117,7 @@ our @EXPORT = qw(
 	is_offline
 	is_empty
 	is_in_array
+	add_hashes
 	to_number
 	clean_blank
 	credential_store_get_key
@@ -693,6 +694,30 @@ sub is_in_array {
 		return 1;
 	}
 	return 0;
+}
+
+################################################################################
+# Mix hashses
+################################################################################
+sub add_hashes {
+	my $_h1 = shift;
+	my $_h2 = shift;
+
+	if (ref($_h1) ne "HASH") {
+		return \%{$_h2} if (ref($_h2) eq "HASH");
+	}
+
+	if (ref($_h2) ne "HASH") {
+		return \%{$_h1} if (ref($_h1) eq "HASH");
+	}
+
+	if ((ref($_h1) ne "HASH") && (ref($_h2) ne "HASH")) {
+		return {};
+	}
+
+	my %ret = (%{$_h1}, %{$_h2});
+
+	return \%ret;
 }
 
 ################################################################################

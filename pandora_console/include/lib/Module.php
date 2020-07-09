@@ -285,6 +285,11 @@ class Module extends Entity
             return $this->{$methodName}($params);
         }
 
+        if (is_array($this->fields) === false) {
+            // Element deleted.
+            return null;
+        }
+
         if (array_key_exists($methodName, $this->fields) === true) {
             if (empty($params) === false) {
                 if ($this->is_local() === true) {

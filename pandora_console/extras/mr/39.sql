@@ -1,15 +1,5 @@
 START TRANSACTION;
 
-
-ALTER TABLE `tservice_element` ADD COLUMN `rules` text;
-ALTER TABLE `tservice` ADD COLUMN `unknown_as_critical` tinyint(1) NOT NULL default 0 AFTER `warning`;
-
-UPDATE `tservice` SET `auto_calculate`=0;
-
-UPDATE `tservice` SET `cps`= `cps` - 1 WHERE `cps` > 0;
-UPDATE `tagente` SET `cps`= `cps` - 1 WHERE `cps` > 0;
-UPDATE `tagente_modulo` SET `cps`= `cps` - 1 WHERE `cps` > 0;
-
 ALTER TABLE `tnetwork_component` ADD COLUMN `manufacturer_id` varchar(200) NOT NULL;
 ALTER TABLE `tnetwork_component` ADD COLUMN `protocol` tinytext NOT NULL;
 ALTER TABLE `tnetwork_component` ADD COLUMN `module_type` tinyint(1) UNSIGNED NOT NULL DEFAULT 1;

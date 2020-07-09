@@ -13212,6 +13212,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
             $id_group,
             $critical,
             $warning,
+            false,
             SECONDS_5MINUTES,
             $mode,
             $id_agent,

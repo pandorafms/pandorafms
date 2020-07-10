@@ -27,6 +27,8 @@
  */
 
 // Begin.
+require 'vendor/autoload.php';
+
 define('AJAX', true);
 
 if (!defined('__PAN_XHPROF__')) {
@@ -49,6 +51,15 @@ require_once 'include/config.php';
 require_once 'include/functions.php';
 require_once 'include/functions_db.php';
 require_once 'include/auth/mysql.php';
+
+if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+    ini_set('log_errors', 1);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', 0);
+    ini_set('error_log', 0);
+}
+
 
 // Hash login process
 if (isset($_GET['loginhash'])) {

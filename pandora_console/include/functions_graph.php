@@ -1483,6 +1483,11 @@ function graphic_combined_module(
                     continue;
                 }
 
+                // Only 10 item for chart.
+                if ($i > 9) {
+                    break;
+                }
+
                 if (is_metaconsole()) {
                     $server = metaconsole_get_connection_by_id(
                         $agent_module_id['server']
@@ -1839,15 +1844,12 @@ function graphic_combined_module(
                     }
                 }
 
-                if ($automatic_custom_graph_meta) {
-                    $module = $module_item['module'];
-                } else {
-                    $module = $module_item;
-                }
-
+                $module = $module_item['module'];
                 $search_in_history_db = db_search_in_history_db($datelimit);
 
-                $temp[$module] = io_safe_output(modules_get_agentmodule($module));
+                $temp[$module] = io_safe_output(
+                    modules_get_agentmodule($module)
+                );
                 $query_last_value = sprintf(
                     '
                     SELECT datos
@@ -1975,12 +1977,7 @@ function graphic_combined_module(
                     }
                 }
 
-                if ($automatic_custom_graph_meta) {
-                    $module = $module_item['module'];
-                } else {
-                    $module = $module_item;
-                }
-
+                $module = $module_item['module'];
                 $temp[$module] = modules_get_agentmodule($module);
                 $query_last_value = sprintf(
                     '
@@ -2102,12 +2099,7 @@ function graphic_combined_module(
                     }
                 }
 
-                if ($automatic_custom_graph_meta === true) {
-                    $module = $module_item['module'];
-                } else {
-                    $module = $module_item;
-                }
-
+                $module = $module_item['module'];
                 $module_data = modules_get_agentmodule($module);
                 $query_last_value = sprintf(
                     'SELECT datos
@@ -2243,16 +2235,10 @@ function graphic_combined_module(
                     }
                 }
 
-                if ($automatic_custom_graph_meta) {
-                    $module = $module_item['module'];
-                } else {
-                    $module = $module_item;
-                }
-
+                $module = $module_item['module'];
                 $data_module = modules_get_agentmodule($module);
                 $query_last_value = sprintf(
-                    '
-                    SELECT datos
+                    'SELECT datos
                     FROM tagente_datos
                     WHERE id_agente_modulo = %d
                         AND utimestamp > %d

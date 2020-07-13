@@ -1841,17 +1841,14 @@ function graphic_combined_module(
             }
 
             foreach ($module_list as $module_item) {
-                $automatic_custom_graph_meta = false;
-                if ($config['metaconsole']) {
+                if (is_metaconsole() === true) {
                     // Automatic custom graph from the report
                     // template in metaconsole.
-                    if (is_array($module_list[$i])) {
-                        $server = metaconsole_get_connection_by_id(
-                            $module_item['server']
-                        );
-                        metaconsole_connect($server);
-                        $automatic_custom_graph_meta = true;
-                    }
+                    $server = metaconsole_get_connection_by_id(
+                        $module_item['server']
+                    );
+
+                    metaconsole_connect($server);
                 }
 
                 $module = $module_item['module'];
@@ -1860,6 +1857,7 @@ function graphic_combined_module(
                 $temp[$module] = io_safe_output(
                     modules_get_agentmodule($module)
                 );
+
                 $query_last_value = sprintf(
                     '
                     SELECT datos
@@ -1924,12 +1922,8 @@ function graphic_combined_module(
 
                 $temp[$module]['min'] = ($temp_min === false) ? 0 : $temp_min;
 
-                if ($config['metaconsole']) {
-                    // Automatic custom graph from the
-                    // report template in metaconsole.
-                    if (is_array($module_list[0])) {
-                        metaconsole_restore_db();
-                    }
+                if (is_metaconsole() === true) {
+                    metaconsole_restore_db();
                 }
             }
 
@@ -1974,17 +1968,12 @@ function graphic_combined_module(
             $i = 0;
             $number_elements = count($module_list);
             foreach ($module_list as $module_item) {
-                $automatic_custom_graph_meta = false;
-                if ($config['metaconsole']) {
-                    // Automatic custom graph from
-                    // the report template in metaconsole.
-                    if (is_array($module_list[$i])) {
-                        $server = metaconsole_get_connection_by_id(
-                            $module_item['server']
-                        );
-                        metaconsole_connect($server);
-                        $automatic_custom_graph_meta = true;
-                    }
+                if (is_metaconsole() === true) {
+                    $server = metaconsole_get_connection_by_id(
+                        $module_item['server']
+                    );
+
+                    metaconsole_connect($server);
                 }
 
                 $module = $module_item['module'];
@@ -2043,12 +2032,8 @@ function graphic_combined_module(
 
                 $temp[$module]['gauge'] = uniqid('gauge_');
 
-                if ($config['metaconsole']) {
-                    // Automatic custom graph from the report
-                    // template in metaconsole.
-                    if (is_array($module_list[0])) {
-                        metaconsole_restore_db();
-                    }
+                if (is_metaconsole() === true) {
+                    metaconsole_restore_db();
                 }
 
                 $i++;
@@ -2096,17 +2081,12 @@ function graphic_combined_module(
         case CUSTOM_GRAPH_VBARS:
             $label = '';
             foreach ($module_list as $module_item) {
-                $automatic_custom_graph_meta = false;
                 if (is_metaconsole() === true) {
-                    // Automatic custom graph from the report
-                    // template in metaconsole.
-                    if (is_array($module_list[$i]) === true) {
-                        $server = metaconsole_get_connection_by_id(
-                            $module_item['server']
-                        );
-                        metaconsole_connect($server);
-                        $automatic_custom_graph_meta = true;
-                    }
+                    $server = metaconsole_get_connection_by_id(
+                        $module_item['server']
+                    );
+
+                    metaconsole_connect($server);
                 }
 
                 $module = $module_item['module'];
@@ -2158,11 +2138,7 @@ function graphic_combined_module(
                 }
 
                 if (is_metaconsole() === true) {
-                    // Automatic custom graph from the report
-                    // template in metaconsole.
-                    if (is_array($module_list[0]) === true) {
-                        metaconsole_restore_db();
-                    }
+                    metaconsole_restore_db();
                 }
             }
 
@@ -2232,17 +2208,12 @@ function graphic_combined_module(
         case CUSTOM_GRAPH_PIE:
             $total_modules = 0;
             foreach ($module_list as $module_item) {
-                $automatic_custom_graph_meta = false;
-                if ($config['metaconsole']) {
-                    // Automatic custom graph from the report
-                    // template in metaconsole.
-                    if (is_array($module_list[$i])) {
-                        $server = metaconsole_get_connection_by_id(
-                            $module_item['server']
-                        );
-                        metaconsole_connect($server);
-                        $automatic_custom_graph_meta = true;
-                    }
+                if (is_metaconsole() === true) {
+                    $server = metaconsole_get_connection_by_id(
+                        $module_item['server']
+                    );
+
+                    metaconsole_connect($server);
                 }
 
                 $module = $module_item['module'];
@@ -2293,12 +2264,9 @@ function graphic_combined_module(
                     'value' => $value,
                     'unit'  => $data_module['unit'],
                 ];
-                if ($config['metaconsole']) {
-                    // Automatic custom graph from the report
-                    // template in metaconsole.
-                    if (is_array($module_list[0])) {
-                        metaconsole_restore_db();
-                    }
+
+                if (is_metaconsole() === true) {
+                    metaconsole_restore_db();
                 }
             }
 

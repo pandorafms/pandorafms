@@ -61,9 +61,9 @@ abstract class Entity
     /**
      * Defines a generic constructor to extract information of the object.
      *
-     * @param string      $table      Table.
-     * @param array|null  $filters    Filters, for instance ['id' => $id].
-     * @param string|null $enterprise Enterprise class name.
+     * @param string      $table            Table.
+     * @param array|null  $filters          Filters, for instance ['id' => $id].
+     * @param string|null $enterprise_class Enterprise class name.
      *
      * @throws \Exception On error.
      */

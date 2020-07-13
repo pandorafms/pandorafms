@@ -728,7 +728,7 @@ function notifications_print_source_select_box(
         "
         <div class='global-config-notification-single-selector'>
             <div>
-                <h4>%s</h4>
+                <h5>%s</h5>
                 %s
             </div>
             <div class='global-notifications-icons'>

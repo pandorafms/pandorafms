@@ -4664,7 +4664,7 @@ function reporting_prediction_date($report, $content)
     $max_interval = $intervals_text[0];
     $min_interval = $intervals_text[1];
 
-    $value = forecast_prediction_date($content['id_agent_module'], $content['period'], $max_interval, $min_interval);
+    $value = forecast_prediction_date($content['id_agent_module'], $content['period'], $max_interval, $min_interval, $content['server_name']);
 
     if ($value === false) {
         $return['data']['value'] = __('Unknown');

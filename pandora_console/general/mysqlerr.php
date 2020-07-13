@@ -106,7 +106,7 @@ img.modalclose {
         <span class='modalheadertex'>
             <?php echo __('Database error'); ?>
         </span>
-        <img class='modalclose' src='<?php echo $config['homeurl']; ?>images/icono_cerrar.png'>  
+        <img class='modalclose' src='<?php echo $config['homeurl']; ?>/images/icono_cerrar.png'>  
     </div>
 
     <div class='modalconten'>

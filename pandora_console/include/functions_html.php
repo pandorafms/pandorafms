@@ -1833,13 +1833,14 @@ function html_print_input_text_extended(
     $alt,
     $size,
     $maxlength,
-    $disabled,
+    $readonly,
     $script,
     $attributes,
     $return=false,
     $password=false,
     $function='',
-    $autocomplete='off'
+    $autocomplete='off',
+    $disabled=false
 ) {
     static $idcounter = 0;
 
@@ -1895,8 +1896,12 @@ function html_print_input_text_extended(
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
 
-    if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
+    if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
         $output .= 'readonly="readonly" ';
+    }
+
+    if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
+        $output .= 'disabled="disabled" ';
     }
 
     if (is_array($attributes)) {
@@ -2102,7 +2107,7 @@ function html_print_input_text(
     $size=50,
     $maxlength=255,
     $return=false,
-    $disabled=false,
+    $readonly=false,
     $required=false,
     $function='',
     $class='',
@@ -2111,7 +2116,8 @@ function html_print_input_text(
     $autofocus=false,
     $onKeyDown='',
     $formTo='',
-    $onKeyUp=''
+    $onKeyUp='',
+    $disabled=false
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2163,12 +2169,14 @@ function html_print_input_text(
         $alt,
         $size,
         $maxlength,
-        $disabled,
+        $readonly,
         '',
         $attr,
         $return,
         false,
-        $function
+        $function,
+        'off',
+        $disabled
     );
 }
 
@@ -2661,8 +2669,16 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='', $disable=false)
-{
+function html_print_textarea(
+    $name,
+    $rows,
+    $columns,
+    $value='',
+    $attributes='',
+    $return=false,
+    $class='',
+    $disable=false
+) {
     $disabled = ($disable) ? 'disabled' : '';
     $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);

@@ -83,9 +83,9 @@ foreach ($osList as $os) {
 }
 
 if (isset($data)) {
-    ui_pagination($count_osList, false, $offset);
+    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset);
     html_print_table($table);
-    ui_pagination($count_osList, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined operating systems') ]);
 }

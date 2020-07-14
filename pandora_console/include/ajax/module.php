@@ -372,7 +372,13 @@ if (check_login()) {
                     $data[] = date('d F Y h:i:s A', $row['utimestamp']);
                 } else if (is_snapshot_data($row[$attr[0]])) {
                     if ($config['command_snapshot']) {
-                        $data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+                        $imagetab = '<img style="width:100%" src="';
+                        $imagetab .= io_safe_input($row[$attr[0]]);
+                        $imagetab .= '">';
+                        $image = '<img style="width:300px" src="';
+                        $image .= io_safe_input($row[$attr[0]]);
+                        $image .= '">';
+                        $data[] = '<a style="cursor:pointer;" onclick="newTabjs(\''.base64_encode($imagetab).'\')">'.$image.'</a>';
                     } else {
                         $data[] = '<span>'.wordwrap(io_safe_input($row[$attr[0]]), 60, "<br>\n", true).'</span>';
                     }
@@ -859,16 +865,16 @@ if (check_login()) {
         $table->align[8] = 'center';
         $table->align[9] = 'right';
 
-        $table->headstyle[2] = 'min-width: 85px';
-        $table->headstyle[3] = 'min-width: 130px';
-        $table->size[3] = '30%';
+        $table->headstyle[2] = 'min-width: 65px';
+        $table->headstyle[3] = 'min-width: 80px';
+        $table->size[3] = '25%';
         $table->style[3] = 'max-width: 28em;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;';
-        $table->size[4] = '30%';
-        $table->headstyle[5] = 'min-width: 85px';
-        $table->headstyle[6] = 'min-width: 125px; text-align: center;';
-        $table->headstyle[7] = 'min-width: 125px;';
-        $table->headstyle[8] = 'min-width: 100px; text-align: center;';
-        $table->headstyle[9] = 'min-width: 120px; text-align: right;';
+        $table->size[4] = '25%';
+        $table->headstyle[5] = 'min-width: 65px';
+        $table->headstyle[6] = 'min-width: 80px; text-align: center;';
+        $table->headstyle[7] = 'min-width: 80px;';
+        $table->headstyle[8] = 'min-width: 70px; text-align: center;';
+        $table->headstyle[9] = 'min-width: 100px; text-align: right;';
 
         $last_modulegroup = 0;
         $rowIndex = 0;
@@ -1013,9 +1019,7 @@ if (check_login()) {
                 $data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
-
             $data[4] = ui_print_string_substr($module['descripcion'], 60, true, 8);
-
 
             if ($module['datos'] != strip_tags($module['datos'])) {
                 $module_value = io_safe_input($module['datos']);
@@ -1101,6 +1105,7 @@ if (check_login()) {
             $rowIndex++;
         }
 
+        ui_require_javascript_file('pandora.js');
         ?>
     <script type="text/javascript">
         /* <![CDATA[ */

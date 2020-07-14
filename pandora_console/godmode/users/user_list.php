@@ -367,11 +367,11 @@ if ($search) {
         $found = false;
 
         if (!empty($filter_search)) {
-            if (preg_match('/.*'.$filter_search.'.*/', $user_info['fullname']) != 0) {
+            if (preg_match('/.*'.strtolower($filter_search).'.*/', strtolower($user_info['fullname'])) != 0) {
                 $found = true;
             }
 
-            if (preg_match('/.*'.$filter_search.'.*/', $user_info['id_user']) != 0) {
+            if (preg_match('/.*'.strtolower($filter_search).'.*/', strtolower($user_info['id_user'])) != 0) {
                 $found = true;
             }
 
@@ -419,7 +419,7 @@ else {
         $result = array_intersect($g, $own_groups);
 
         // Show users without profile too.
-        if (!$usr['is_admin'] && !empty($result) || (!$usr['is_admin'] && db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $usr['id_user']) === false)) {
+        if (!empty($result) || (db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $usr['id_user']) === false)) {
             $info[$key] = $usr;
         }
 

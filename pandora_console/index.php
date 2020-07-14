@@ -31,6 +31,8 @@ if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
 
+require 'vendor/autoload.php';
+
 if (__PAN_XHPROF__ === 1) {
     if (function_exists('tideways_xhprof_enable')) {
         tideways_xhprof_enable();
@@ -140,6 +142,14 @@ if ((! file_exists('include/config.php'))
 
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
+
+if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+    ini_set('log_errors', 1);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', 0);
+    ini_set('error_log', 0);
+}
 
 if (isset($config['error'])) {
     $login_screen = $config['error'];
@@ -685,6 +695,11 @@ if (! isset($config['id_user'])) {
             unset($query_params_redirect['sec2']);
         }
 
+        // Dashboard do not want sec2.
+        if ($home_page == 'Dashboard') {
+            unset($query_params_redirect['sec2']);
+        }
+
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
             if ($key == 'login') {
@@ -1161,7 +1176,7 @@ if ($searchPage) {
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
                     } else {
-                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc.'&refr=60';
+                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
 
                     parse_str($str, $res);

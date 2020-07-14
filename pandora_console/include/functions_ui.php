@@ -321,7 +321,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
-			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">'.html_print_image($icon_image, true, false, false, false, false).'</td>
+			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px; vertical-align: top;">'.html_print_image($icon_image, true, false, false, false, false).'</td>
 			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>'.$text_title.'</b></td>
 			<td class="icon" style="text-align: right; padding-right: 3px;">';
     if (!$no_close_bool) {
@@ -3408,6 +3408,14 @@ function ui_print_datatable(array $parameters)
         $js .= $parameters['drawCallback'];
     }
 
+    for ($i = 1; $i <= (count($parameters['columns']) - 3); $i++) {
+        if ($i != (count($parameters['columns']) - 3)) {
+            $columns .= $i.',';
+        } else {
+            $columns .= $i;
+        }
+    }
+
     $js .= '
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
@@ -3438,7 +3446,8 @@ function ui_print_datatable(array $parameters)
                             order : "current",
                             page : "All",
                             search : "applied"
-                        }
+                        },
+                        columns: [1,'.$columns.']
                     }
                 }
             ],
@@ -3749,13 +3758,27 @@ function ui_toggle(
     $main_class='box-shadow white_table_graph',
     $img_a='images/arrow_down_green.png',
     $img_b='images/arrow_right_green.png',
-    $clean=false
+    $clean=false,
+    $reverseImg=false,
+    $switch=false,
+    $attributes_switch=''
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
 
-    $image_a = html_print_image($img_a, true, [ 'style' => 'object-fit: contain;' ], true);
-    $image_b = html_print_image($img_b, true, [ 'style' => 'object-fit: contain;' ], true);
+    $image_a = html_print_image(
+        $img_a,
+        true,
+        [ 'style' => 'object-fit: contain;' ],
+        true
+    );
+    $image_b = html_print_image(
+        $img_b,
+        true,
+        [ 'style' => 'object-fit: contain;' ],
+        true
+    );
+
     // Options.
     if ($hidden_default) {
         $style = 'display:none';
@@ -3775,18 +3798,71 @@ function ui_toggle(
 
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'">';
-    $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">'.html_print_image(
-        $original,
-        true,
-        [
-            'style' => 'object-fit: contain;',
-            'title' => $title,
-            'id'    => 'image_'.$uniqid,
-        ]
-    ).'&nbsp;&nbsp;<b>'.$name.'</b></div>';
-    // $output .= '<br />';
-    // if (!defined("METACONSOLE"))
-        // $output .= '<br />';
+    $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
+    if ($reverseImg === false) {
+        if ($switch === true) {
+            $output .= html_print_div(
+                [
+                    'class'   => 'float-left',
+                    'content' => html_print_checkbox_switch_extended(
+                        'box_enable_toggle'.$uniqid,
+                        1,
+                        ($hidden_default === true) ? 0 : 1,
+                        false,
+                        '',
+                        $attributes_switch,
+                        true
+                    ),
+                ],
+                true
+            );
+        } else {
+            $output .= html_print_image(
+                $original,
+                true,
+                [
+                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'title' => $title,
+                    'id'    => 'image_'.$uniqid,
+                ]
+            );
+        }
+
+        $output .= '&nbsp;&nbsp';
+        $output .= '<b>'.$name.'</b>';
+    } else {
+        $output .= $name;
+        if ($switch === true) {
+            $output .= html_print_div(
+                [
+                    'class'   => 'float-left',
+                    'content' => html_print_checkbox_switch_extended(
+                        'box_enable_toggle'.$uniqid,
+                        1,
+                        ($hidden_default === true) ? 0 : 1,
+                        false,
+                        '',
+                        '',
+                        true
+                    ),
+                ],
+                true
+            );
+        } else {
+            $output .= html_print_image(
+                $original,
+                true,
+                [
+                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'title' => $title,
+                    'id'    => 'image_'.$uniqid,
+                ]
+            );
+        }
+    }
+
+    $output .= '</div>';
+
     // Code into a div
     $output .= "<div id='tgl_div_".$uniqid."' style='".$style.";margin-top: -1px;' class='".$toggle_class."'>\n";
     $output .= '<div class="'.$container_class.'">';
@@ -3799,16 +3875,28 @@ function ui_toggle(
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
+    $output .= "		$('#checkbox-box_enable_toggle".$uniqid."').click(function() {\n";
+    $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
+    $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
+    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			}\n";
+    $output .= "			else {\n";
+    $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
+    $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
+    $output .= "			}\n";
+    $output .= "		});\n";
     $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
     $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
+    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
+    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', false);\n";
     $output .= "			}\n";
     $output .= "		});\n";
     $output .= "	});\n";

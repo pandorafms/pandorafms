@@ -477,7 +477,8 @@ function set_user_language()
 
 
 /**
- * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
+ * INTERNAL (use ui_print_timestamp for output):
+ * Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.
  *
  * @param integer $seconds Seconds elapsed time
@@ -488,17 +489,11 @@ function set_user_language()
  */
 function human_time_description_raw($seconds, $exactly=false, $units='large')
 {
-    switch ($units) {
-        case 'large':
-            $secondsString = __('seconds');
-            $daysString = __('days');
-            $monthsString = __('months');
-            $yearsString = __('years');
-            $minutesString = __('minutes');
-            $hoursString = __('hours');
-            $nowString = __('Now');
-        break;
+    if (isset($units) === false || empty($units) === true) {
+        $units = 'large';
+    }
 
+    switch ($units) {
         case 'tiny':
             $secondsString = __('s');
             $daysString = __('d');
@@ -507,6 +502,17 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
             $minutesString = __('m');
             $hoursString = __('h');
             $nowString = __('N');
+        break;
+
+        default:
+        case 'large':
+            $secondsString = __('seconds');
+            $daysString = __('days');
+            $monthsString = __('months');
+            $yearsString = __('years');
+            $minutesString = __('minutes');
+            $hoursString = __('hours');
+            $nowString = __('Now');
         break;
     }
 
@@ -2136,7 +2142,7 @@ function check_sql($sql)
 {
     // We remove "*" to avoid things like SELECT * FROM tusuario
     // Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
-    if (preg_match('/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i', $sql)) {
+    if (preg_match('/([ ]*(delete|drop|alter|modify|password|pass|insert|update)\b[ \\]+)/i', $sql)) {
         return '';
     }
 
@@ -3718,6 +3724,21 @@ function series_type_graph_array($data, $show_elements_graph)
                     }
                 }
 
+                if (isset($value['weight']) === true
+                    && empty($value['weight']) === false
+                ) {
+                    $name_legend .= ' ('.__('Weight').' * '.$value['weight'].') ';
+                    $data_return['legend'][$key] .= ' ('.__('Weight').' * '.$value['weight'].') ';
+                }
+
+                if ((int) $value['min'] === PHP_INT_MAX) {
+                    $value['min'] = 0;
+                }
+
+                if ((int) $value['max'] === (-PHP_INT_MAX)) {
+                    $value['max'] = 0;
+                }
+
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
                     number_format(
                         $value['min'],
@@ -3997,7 +4018,7 @@ function generate_hash_to_api()
  * @param string Key to identify the profiler run.
  * @param string Way to display the result
  *         "link" (default): Click into word "Performance" to display the profilling info.
- *         "console": Display with a message in pandora_console.log.
+ *         "console": Display with a message in console.log.
  */
 function pandora_xhprof_display_result($key='', $method='link')
 {

@@ -29,7 +29,7 @@
 // Begin.
 require_once 'config.php';
 require_once 'functions_api.php';
-
+require '../vendor/autoload.php';
 global $config;
 
 define('DEBUG', 0);

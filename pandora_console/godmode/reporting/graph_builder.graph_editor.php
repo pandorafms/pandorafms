@@ -190,8 +190,20 @@ if ($editGraph) {
     $weights = implode(',', $weight_array);
 }
 
+
+
+$count_module_array = count($module_array);
+if ($count_module_array > 10) {
+    ui_print_warning_message(
+        __(
+            'The maximum number of items in a chart is 10. You have %s elements, only first 10 will be displayed.',
+            $count_module_array
+        )
+    );
+}
+
 // Modules table.
-if (count($module_array) > 0) {
+if ($count_module_array > 0) {
     echo "<table width='100%' cellpadding=4 cellpadding=4 class='databox filters'>";
     echo '<tr>
 	<th>'.__('P.').'</th>
@@ -202,7 +214,7 @@ if (count($module_array) > 0) {
 	<th>'.__('Delete').'</th>
 	<th>'.__('Sort').'</th>';
     $color = 0;
-    for ($a = 0; $a < count($module_array); $a++) {
+    for ($a = 0; $a < $count_module_array; $a++) {
         // Calculate table line color.
         if ($color == 1) {
             $tdcolor = 'datos';

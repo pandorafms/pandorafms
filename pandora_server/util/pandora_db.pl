@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.746 PS200701";
+my $version = "7.0NG.747 PS200715";
 
 # Pandora server configuration
 my %conf;
@@ -1053,6 +1053,9 @@ sub pandoradb_main ($$$) {
 
 	# Recalculating dynamic intervals.
 	enterprise_hook("update_min_max", [$dbh, $conf]);
+
+	# Metaconsole database cleanup.
+	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

@@ -1005,7 +1005,8 @@ function createGauge(
   critical_inverse,
   font_size,
   height,
-  font
+  font,
+  transitionDuration
 ) {
   var gauges;
 
@@ -1014,7 +1015,8 @@ function createGauge(
     label: etiqueta,
     min: undefined != min ? min : 0,
     max: undefined != max ? max : 100,
-    font_size: font_size
+    font_size: font_size,
+    transitionDuration: transitionDuration
   };
 
   if (value == null) {
@@ -1128,7 +1130,7 @@ function createGauge(
 
   gauges = new Gauge(name, config, font);
   gauges.render();
-  gauges.redraw(value);
+  gauges.redraw(value, config.transitionDuration);
   $(".gauge>text").each(function() {
     label = $(this).text();
 
@@ -1155,12 +1157,17 @@ function createGauge(
       $(this).text(text);
     }
   });
-  config = false;
-  max_warning2 = false;
-  min_warning2 = false;
 }
 
-function createGauges(data, width, height, font_size, no_data_image, font) {
+function createGauges(
+  data,
+  width,
+  height,
+  font_size,
+  no_data_image,
+  font,
+  transitionDuration
+) {
   var nombre,
     label,
     minimun_warning,
@@ -1211,7 +1218,8 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
       critical_inverse,
       font_size,
       height,
-      font
+      font,
+      transitionDuration
     );
   }
 }
@@ -1247,7 +1255,7 @@ function Gauge(placeholderName, configuration, font) {
     this.config.yellowColor = configuration.yellowColor || "#FF9900";
     this.config.redColor = configuration.redColor || "#DC3912";
 
-    this.config.transitionDuration = configuration.transitionDuration || 500;
+    this.config.transitionDuration = configuration.transitionDuration;
   };
 
   this.render = function() {
@@ -1481,11 +1489,7 @@ function Gauge(placeholderName, configuration, font) {
     var pointer = pointerContainer.selectAll("path");
     pointer
       .transition()
-      .duration(
-        undefined != transitionDuration
-          ? transitionDuration
-          : this.config.transitionDuration
-      )
+      .duration(undefined != transitionDuration ? transitionDuration : 0)
       //.delay(0)
       //.ease("linear")
       //.attr("transform", function(d)

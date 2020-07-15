@@ -30,7 +30,7 @@
 // Begin.
 namespace PandoraFMS;
 
-
+use PandoraFMS\Agent;
 use PandoraFMS\ModuleType;
 
 /**
@@ -45,6 +45,13 @@ class Module extends Entity
      * @var PandoraFMS\ModuleStatus
      */
     private $status;
+
+    /**
+     * Agent where module is stored.
+     *
+     * @var PandoraFMS\Agent
+     */
+    private $linkedAgent;
 
     /**
      * Module type matching id_tipo_modulo.
@@ -174,10 +181,15 @@ class Module extends Entity
     /**
      * Builds a PandoraFMS\Module object from given id.
      *
-     * @param integer $id_agent_module Module id.
+     * @param integer|null $id_agent_module Module id.
+     * @param boolean      $link_agent      Link agent object.
+     *
+     * @throws \Exception On error.
      */
-    public function __construct(?int $id_agent_module=null)
-    {
+    public function __construct(
+        ?int $id_agent_module=null,
+        bool $link_agent=false
+    ) {
         if (is_numeric($id_agent_module) === true
             && $id_agent_module > 0
         ) {
@@ -185,13 +197,33 @@ class Module extends Entity
                 'tagente_modulo',
                 ['id_agente_modulo' => $id_agent_module]
             );
+
+            if ($this->nombre() === 'delete_pending') {
+                return null;
+            }
+
+            if ($link_agent === true) {
+                try {
+                    $this->linkedAgent = new Agent($this->id_agente());
+                } catch (\Exception $e) {
+                    // Unexistent agent.
+                    throw new \Exception(
+                        __METHOD__.__(
+                            ' error: Module has no agent assigned.'
+                        )
+                    );
+                }
+            }
         } else {
             // Create empty skel.
             parent::__construct('tagente_modulo');
         }
 
-        if ($this->nombre() === 'delete_pending') {
-            return null;
+        try {
+            // Customize certain fields.
+            $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
+        } catch (\Exception $e) {
+            $this->status = new Modulestatus();
         }
 
         // Customize certain fields.
@@ -218,6 +250,26 @@ class Module extends Entity
 
 
     /**
+     * Return agent object where module is defined.
+     *
+     * @return PandoraFMS\Agent Where module is defined.
+     */
+    public function agent()
+    {
+        if ($this->linkedAgent === null) {
+            try {
+                $this->linkedAgent = new Agent($this->id_agente());
+            } catch (\Exception $e) {
+                // Unexistent agent.
+                return null;
+            }
+        }
+
+        return $this->linkedAgent;
+    }
+
+
+    /**
      * Dynamically call methods in this object.
      *
      * @param string $methodName Name of target method or attribute.
@@ -231,6 +283,11 @@ class Module extends Entity
         // Prioritize written methods over dynamic ones.
         if (method_exists($this, $methodName) === true) {
             return $this->{$methodName}($params);
+        }
+
+        if (is_array($this->fields) === false) {
+            // Element deleted.
+            return null;
         }
 
         if (array_key_exists($methodName, $this->fields) === true) {
@@ -297,6 +354,17 @@ class Module extends Entity
 
 
     /**
+     * Return last value reported by the module.
+     *
+     * @return mixed Data depending on module type.
+     */
+    public function lastValue()
+    {
+        return $this->status->datos();
+    }
+
+
+    /**
      * Sets or retrieves value of id_tipo_modulo (complex).
      *
      * @param integer|null $id_tipo_modulo Id module type.
@@ -315,6 +383,110 @@ class Module extends Entity
             $this->fields['id_tipo_modulo'] = $this->moduleType->id_tipo();
         } else {
             throw new \Exception('Invalid id_tipo_modulo '.$id_tipo_modulo);
+        }
+    }
+
+
+    /**
+     * Return last status reported by the module.
+     *
+     * @return mixed Data depending on module type.
+     */
+    public function lastStatus()
+    {
+        return $this->status->estado();
+    }
+
+
+    /**
+     * Retrieves last status in text format.
+     *
+     * @return string Status in text format.
+     */
+    public function lastStatusText()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return 'critical';
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return 'warning';
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return 'unknown';
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return 'not_init';
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return 'ok';
+        }
+    }
+
+
+    /**
+     * Return path to image representing last status.
+     *
+     * @return string Relative URL to image.
+     */
+    public function lastStatusImage()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return STATUS_MODULE_CRITICAL_BALL;
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return STATUS_MODULE_WARNING_BALL;
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return STATUS_MODULE_UNKNOWN_BALL;
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return STATUS_MODULE_NO_DATA_BALL;
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return STATUS_MODULE_OK_BALL;
+        }
+    }
+
+
+    /**
+     * Return translated string representing last status of the module.
+     *
+     * @return string Title.
+     */
+    public function lastStatusTitle()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return __('CRITICAL');
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return __('WARNING');
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return __('UNKNOWN');
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return __('NO DATA');
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return __('NORMAL');
         }
     }
 
@@ -345,6 +517,121 @@ class Module extends Entity
     public function getStatus()
     {
         return $this->status;
+    }
+
+
+    /**
+     * Alias for field 'nombre'.
+     *
+     * @param string|null $name Name or empty if get operation.
+     *
+     * @return string|null Name or empty if set operation.
+     */
+    public function name(?string $name=null)
+    {
+        if ($name === null) {
+            return $this->nombre();
+        }
+
+        $this->nombre($name);
+    }
+
+
+    /**
+     * Retrieve all alert templates (ids) assigned to current module.
+     *
+     * @return array Of ids.
+     */
+    public function alertTemplatesAssigned()
+    {
+        if ($this->id_agente_modulo() === null) {
+            // Need to be stored first.
+            return [];
+        }
+
+        $result = db_get_all_rows_filter(
+            'talert_template_modules',
+            ['id_agent_module' => $this->id_agente_modulo()],
+            'id_alert_template'
+        );
+
+        if ($result === false) {
+            return [];
+        }
+
+        return array_reduce(
+            $result,
+            function ($carry, $item) {
+                $carry[] = $item['id_alert_template'];
+                return $carry;
+            },
+            []
+        );
+    }
+
+
+    /**
+     * Remove a alert template assignment.
+     *
+     * @param integer $id_alert_template Target id.
+     *
+     * @return boolean Success or not.
+     */
+    public function unassignAlertTemplate(int $id_alert_template)
+    {
+        if ($this->id_agente_modulo() === null) {
+            // Need to be stored first.
+            return false;
+        }
+
+        if (is_numeric($id_alert_template) === false
+            || $id_alert_template <= 0
+        ) {
+            // Invalid alert template.
+            return false;
+        }
+
+        return (bool) \db_process_sql_delete(
+            'talert_template_modules',
+            [
+                'id_agent_module'   => $this->id_agente_modulo(),
+                'id_alert_template' => $id_alert_template,
+            ]
+        );
+
+    }
+
+
+    /**
+     * Add an alert template to this module.
+     *
+     * @param integer|null $id_alert_template Target alert template.
+     *
+     * @return boolean Status of adding process.
+     */
+    public function addAlertTemplate(?int $id_alert_template=null)
+    {
+        if ($this->id_agente_modulo() === null) {
+            // Need to be stored first.
+            return false;
+        }
+
+        if (is_numeric($id_alert_template) === false
+            || $id_alert_template <= 0
+        ) {
+            // Invalid alert template.
+            return false;
+        }
+
+        return (bool) \db_process_sql_insert(
+            'talert_template_modules',
+            [
+                'id_agent_module'   => $this->id_agente_modulo(),
+                'id_alert_template' => $id_alert_template,
+                'last_reference'    => time(),
+            ]
+        );
+
     }
 
 
@@ -561,6 +848,178 @@ class Module extends Entity
 
         unset($this->fields);
         unset($this->status);
+    }
+
+
+    /**
+     * Transforms results from classic mode into modern exceptions.
+     *
+     * @param integer|boolean $result Result received from module management.
+     *
+     * @return integer Module id created or result.
+     * @throws \Exception On error.
+     */
+    public static function errorToException($result)
+    {
+        if ($result === ERR_INCOMPLETE) {
+            throw new \Exception(
+                __('Module name empty.')
+            );
+        }
+
+        if ($result === ERR_GENERIC) {
+            throw new \Exception(
+                __('Invalid characters in module name')
+            );
+        }
+
+        if ($result === ERR_EXIST) {
+            throw new \Exception(
+                __('Module already exists please select another name or agent.')
+            );
+        }
+
+        if ($result === false) {
+            throw new \Exception(
+                __('Insufficent permissions to perform this action')
+            );
+        }
+
+        if ($result === ERR_DB) {
+            global $config;
+            throw new \Exception(
+                __('Error while processing: %s', $config['dbconnection']->error)
+            );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Calculates cascade protection service value for this service.
+     *
+     * @param integer|null $id_node Meta searching node will use this field.
+     *
+     * @return integer CPS value.
+     * @throws \Exception On error.
+     */
+    public function calculateCPS(?int $id_node=null)
+    {
+        if ($this->cps() < 0) {
+            return $this->cps();
+        }
+
+        // 1. check parents.
+        $direct_parents = db_get_all_rows_sql(
+            sprintf(
+                'SELECT id_service, cps, cascade_protection, name
+                 FROM `tservice_element` te
+                 INNER JOIN `tservice` t ON te.id_service = t.id
+                 WHERE te.id_agente_modulo = %d',
+                $this->id_agente_modulo()
+            )
+        );
+
+        // Here could happen 2 things.
+        // 1. Metaconsole service is using this method impersonating node DB.
+        // 2. Node service is trying to find parents into metaconsole.
+        if (empty($id_node) === true
+            && is_metaconsole() === false
+            && has_metaconsole() === true
+        ) {
+            // Node searching metaconsole.
+            $mc_parents = [];
+            global $config;
+            $mc_db_conn = \enterprise_hook(
+                'metaconsole_load_external_db',
+                [
+                    [
+                        'dbhost' => $config['replication_dbhost'],
+                        'dbuser' => $config['replication_dbuser'],
+                        'dbpass' => io_output_password(
+                            $config['replication_dbpass']
+                        ),
+                        'dbname' => $config['replication_dbname'],
+                    ],
+                ]
+            );
+
+            if ($mc_db_conn === NOERR) {
+                $mc_parents = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT id_service,
+                                cps,
+                                cascade_protection,
+                                name
+                        FROM `tservice_element` te
+                        INNER JOIN `tservice` t ON te.id_service = t.id
+                        WHERE te.id_agente_modulo = %d',
+                        $this->id_agente_modulo()
+                    ),
+                    false,
+                    false
+                );
+            }
+
+            // Restore the default connection.
+            \enterprise_hook('metaconsole_restore_db');
+        } else if ($id_node > 0) {
+            // Impersonated node.
+            \enterprise_hook('metaconsole_restore_db');
+
+            $mc_parents = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT id_service,
+                            cps,
+                            cascade_protection,
+                            name
+                    FROM `tservice_element` te
+                    INNER JOIN `tservice` t ON te.id_service = t.id
+                    WHERE te.id_agente_modulo = %d',
+                    $this->id_agente_modulo()
+                ),
+                false,
+                false
+            );
+
+            // Restore impersonation.
+            \enterprise_include_once('include/functions_metaconsole.php');
+            $r = \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $id_node,
+                ]
+            );
+
+            if ($r !== NOERR) {
+                throw new \Exception(__('Cannot connect to node %d', $r));
+            }
+        }
+
+        $cps = 0;
+
+        if (is_array($direct_parents) === false) {
+            $direct_parents = [];
+        }
+
+        if (is_array($mc_parents) === false) {
+            $mc_parents = [];
+        }
+
+        // Merge all parents (node and meta).
+        $parents = array_merge($direct_parents, $mc_parents);
+
+        foreach ($parents as $parent) {
+            $cps += $parent['cps'];
+            if (((bool) $parent['cascade_protection']) === true) {
+                $cps++;
+            }
+        }
+
+        return $cps;
+
     }
 
 

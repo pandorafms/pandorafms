@@ -3408,6 +3408,14 @@ function ui_print_datatable(array $parameters)
         $js .= $parameters['drawCallback'];
     }
 
+    for ($i = 1; $i <= (count($parameters['columns']) - 3); $i++) {
+        if ($i != (count($parameters['columns']) - 3)) {
+            $columns .= $i.',';
+        } else {
+            $columns .= $i;
+        }
+    }
+
     $js .= '
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
@@ -3438,7 +3446,8 @@ function ui_print_datatable(array $parameters)
                             order : "current",
                             page : "All",
                             search : "applied"
-                        }
+                        },
+                        columns: [1,'.$columns.']
                     }
                 }
             ],
@@ -6088,4 +6097,27 @@ function ui_get_full_external_url(string $url)
     }
 
         return $url;
+}
+
+
+function ui_print_message_dialog($title, $text, $id='', $img='', $text_button='', $hidden=true)
+{
+    if ($hidden == true) {
+        $style = 'display:none';
+    }
+
+    echo '<div id="message_dialog_'.$id.'" title="'.$title.'" style="'.$style.'">';
+        echo '<div class="content_dialog">';
+            echo '<div class="icon_message_dialog">';
+                echo html_print_image($img, true, ['alt' => $title, 'border' => 0]);
+            echo '</div>';
+            echo '<div class="content_message_dialog">';
+                echo '<div class="text_message_dialog">';
+                    echo '<h1>'.$title.'</h1>';
+                    echo '<p>'.$text.'</p>';
+                    echo '<div id="err_msg"></div>';
+                echo '</div>';
+            echo '</div>';
+        echo '</div>';
+    echo '</div>';
 }

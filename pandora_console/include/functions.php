@@ -3724,6 +3724,13 @@ function series_type_graph_array($data, $show_elements_graph)
                     }
                 }
 
+                if (isset($value['weight']) === true
+                    && empty($value['weight']) === false
+                ) {
+                    $name_legend .= ' ('.__('Weight').' * '.$value['weight'].') ';
+                    $data_return['legend'][$key] .= ' ('.__('Weight').' * '.$value['weight'].') ';
+                }
+
                 if ((int) $value['min'] === PHP_INT_MAX) {
                     $value['min'] = 0;
                 }

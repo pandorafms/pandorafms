@@ -16168,28 +16168,21 @@ function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
 function api_set_event_in_progress($event_id, $trash2, $returnType)
 {
     global $config;
-
     if (is_metaconsole()) {
-        $event = db_process_sql_update(
-            'tmetaconsole_event',
-            ['estado' => 2],
-            ['id_evento' => $event_id]
-        );
-        if ($event !== false) {
-            returnData($returnType, ['type' => 'string', 'data' => $event]);
-        } else {
-            returnError('id_not_found', 'string');
-        }
+        $table = 'tmetaconsole_event';
     } else {
-        $event = db_process_sql_update(
-            'tevento',
-            ['estado' => 2],
-            ['id_evento' => $event_id]
-        );
-        if ($event !== false) {
-            returnData($returnType, ['type' => 'string', 'data' => $event]);
-        } else {
-            returnError('id_not_found', 'string');
-        }
+        $table = 'tevento';
+    }
+
+    $event = db_process_sql_update(
+        $table,
+        ['estado' => 2],
+        ['id_evento' => $event_id]
+    );
+
+    if ($event !== false) {
+        returnData($returnType, ['type' => 'string', 'data' => $event]);
+    } else {
+        returnError('id_not_found', 'string');
     }
 }

@@ -245,7 +245,7 @@ sub help_screen{
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
 	print "\nEVENTS\n\n" unless $param ne '';
-	help_screen_line('--event_in_progress', '<id_event> <id_node>', 'Set event in progress');
+	help_screen_line('--event_in_progress', '<id_event> ', 'Set event in progress');
 
 	print "\n";
 	exit;
@@ -7714,7 +7714,7 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1, 0);
 			cli_reset_agent_counts();
 		}elsif ($param eq '--event_in_progress') {
-			param_check($ltotal, 2, 0);
+			param_check($ltotal, 1, 0);
 			cli_event_in_progress();
 		}
 		else {
@@ -8373,11 +8373,11 @@ sub cli_reset_agent_counts() {
 ##############################################################################
 
 sub cli_event_in_progress() {
-	my ($event_id, $server_id) = @ARGV[2..3];
+	my $event_id = @ARGV[2];
 
 	# Call the API.
 	my $result = api_call(
-		$conf, 'set', 'event_in_progress', $event_id, $server_id
+		$conf, 'set', 'event_in_progress', $event_id
 	);
 
 	print "\n$result\n";

@@ -2058,6 +2058,12 @@ function graphic_combined_module(
                 }
             }
 
+            if (isset($params['pdf']) === true && $params['pdf'] === true) {
+                $transitionDuration = 0;
+            } else {
+                $transitionDuration = 500;
+            }
+
             $output = stacked_gauge(
                 $graph_values,
                 $new_width,
@@ -2073,7 +2079,8 @@ function graphic_combined_module(
                 $config['fontpath'],
                 $fixed_font_size,
                 '',
-                $homeurl
+                $homeurl,
+                $transitionDuration
             );
         break;
 

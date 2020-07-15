@@ -413,11 +413,12 @@ class Agent extends Entity
     /**
      * Search for modules into this agent.
      *
-     * @param array $filter Filters.
+     * @param array   $filter Filters.
+     * @param integer $limit  Limit search results.
      *
      * @return PandoraFMS\Module Module found.
      */
-    public function searchModules(array $filter)
+    public function searchModules(array $filter, int $limit=0)
     {
         $filter['id_agente'] = $this->id_agente();
 
@@ -428,7 +429,7 @@ class Agent extends Entity
             foreach ($this->modules as $module) {
                 $found = true;
                 foreach ($filter as $field => $value) {
-                    if ($module->{$field}() !== $value) {
+                    if ($module->{$field}() != $value) {
                         $found = false;
                         break;
                     }
@@ -442,7 +443,7 @@ class Agent extends Entity
             return $results;
         } else {
             // Search in db.
-            return Module::search($filter);
+            return Module::search($filter, $limit);
         }
 
     }

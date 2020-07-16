@@ -16181,7 +16181,7 @@ function api_set_event_in_progress($event_id, $trash2, $returnType)
     );
 
     if ($event !== false) {
-        returnData($returnType, ['type' => 'string', 'data' => $event]);
+            returnData('string', ['data' => $event]);
     } else {
         returnError('id_not_found', 'string');
     }

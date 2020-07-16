@@ -16151,3 +16151,38 @@ function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
         return;
     }
 }
+
+
+/**
+ * Function to set events in progress status.
+ *
+ * @param [int]    $event_id   Id event (Node or Meta).
+ * @param [string] $trash2     don't use.
+ * @param [string] $returnType
+ *
+ * Example
+ * http://127.0.0.1/pandora_console/include/api.php?op=set&op2=event_in_progress&return_type=json&id=0&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+function api_set_event_in_progress($event_id, $trash2, $returnType)
+{
+    global $config;
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
+    $event = db_process_sql_update(
+        $table,
+        ['estado' => 2],
+        ['id_evento' => $event_id]
+    );
+
+    if ($event !== false) {
+            returnData('string', ['data' => $event]);
+    } else {
+        returnError('id_not_found', 'string');
+    }
+}

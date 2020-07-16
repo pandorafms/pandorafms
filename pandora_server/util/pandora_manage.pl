@@ -244,6 +244,8 @@ sub help_screen{
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
+	print "\nEVENTS\n\n" unless $param ne '';
+	help_screen_line('--event_in_progress', '<id_event> ', 'Set event in progress');
 
 	print "\n";
 	exit;
@@ -255,7 +257,7 @@ sub help_screen{
 sub api_call($$$;$$$$) {
 	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
-	
+ 
 	eval {
 		# Set the parameters for the POST request.
 		my $params = {};
@@ -7711,6 +7713,9 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--reset_agent_counts') {
 			param_check($ltotal, 1, 0);
 			cli_reset_agent_counts();
+		}elsif ($param eq '--event_in_progress') {
+			param_check($ltotal, 1, 0);
+			cli_event_in_progress();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -8359,4 +8364,21 @@ sub cli_reset_agent_counts() {
 	my $result = api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
 	print "$result \n\n ";
 
+}
+
+
+##############################################################################
+# Set an event in progress.
+# Related option: --event_in_progress
+##############################################################################
+
+sub cli_event_in_progress() {
+	my $event_id = @ARGV[2];
+
+	# Call the API.
+	my $result = api_call(
+		$conf, 'set', 'event_in_progress', $event_id
+	);
+
+	print "\n$result\n";
 }

@@ -3209,7 +3209,7 @@ function get_refresh_time_array()
 }
 
 
-function date2strftime_format($date_format)
+function date2strftime_format($date_format, $timestamp=null)
 {
     $replaces_list = [
         'D' => '%a',
@@ -3232,11 +3232,14 @@ function date2strftime_format($date_format)
         'A' => '%p',
         'i' => '%M',
         's' => '%S',
-        'u' => '%s',
         'O' => '%z',
         'T' => '%Z',
         '%' => '%%',
         'G' => '%k',
+        'z' => '%j',
+        'U' => '%s',
+        'c' => '%FT%T%z',
+        'r' => '%d %b %Y %H:%M:%S %z',
     ];
 
     $return = '';
@@ -3249,7 +3252,30 @@ function date2strftime_format($date_format)
         if (isset($replaces_list[$c])) {
             $return .= $replaces_list[$c];
         } else {
-            $return .= $c;
+            // Check extra formats.
+            switch ($date_format) {
+                default: $return .= date($date_format, $timestamp);
+                break;
+
+                case 'n':
+                    if (stristr(PHP_OS, 'win')) {
+                        $return .= '%#m';
+                    } else {
+                        $return .= '%-m';
+                    }
+
+                case 'u':
+                    if (preg_match('/^[0-9]*\\.([0-9]+)$/', $timestamp, $reg)) {
+                        $decimal = substr(str_pad($reg[1], 6, '0'), 0, 6);
+                    } else {
+                        $decimal = '000000';
+                    }
+
+                    $return .= $decimal;
+                break;
+
+                break;
+            }
         }
     }
 

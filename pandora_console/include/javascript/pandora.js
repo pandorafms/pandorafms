@@ -1865,3 +1865,112 @@ function ajaxRequest(id, settings) {
     }
   });
 }
+
+/**
+ * -------------------------------------
+ *        Connection Check
+ * --------------------------------------
+ */
+
+checkConnection(1);
+
+/**
+ * Performs connection tests every minutes and add connection listeners
+ * @param {integer} time in minutes
+ */
+
+function checkConnection(minutes) {
+  var cicle = minutes * 60 * 1000;
+  var checkConnection = setInterval(handleConnection, cicle);
+
+  // Connection listeters.
+  window.addEventListener("online", handleConnection);
+  window.addEventListener("offline", handleConnection);
+}
+
+/**
+ * Handle connection status test.
+ *
+ * Test conectivity with server and shows modal message.
+ */
+function handleConnection() {
+  var connected;
+  var msg = "online";
+
+  if (navigator.onLine) {
+    isReachable(getServerUrl())
+      .then(function(online) {
+        if (online) {
+          // handle online status
+          connected = true;
+          showConnectionMessage(connected, msg);
+        } else {
+          connected = false;
+          msg = "No connectivity with server";
+          showConnectionMessage(connected, msg);
+        }
+      })
+      .catch(function(err) {
+        connected = false;
+        msg = err;
+        showConnectionMessage(connected, msg);
+      });
+  } else {
+    // handle offline status
+    connected = false;
+    msg = "Connection offline";
+    showConnectionMessage(connected, msg);
+  }
+}
+
+/**
+ * Test server reachibilty and get response.
+ *
+ * @param {String} url
+ *
+ * Return {promise}
+ */
+function isReachable(url) {
+  /**
+   * Note: fetch() still "succeeds" for 404s on subdirectories,
+   * which is ok when only testing for domain reachability.
+   *
+   * Example:
+   *   https://google.com/noexist does not throw
+   *   https://noexist.com/noexist does throw
+   */
+  return fetch(url, { method: "HEAD", mode: "no-cors" })
+    .then(function(resp) {
+      return resp && (resp.ok || resp.type === "opaque");
+    })
+    .catch(function(error) {
+      console.warn("[conn test failure]:", error);
+    });
+}
+
+/**
+ * Gets server origin url
+ */
+function getServerUrl() {
+  return $("#php_to_js_value_absolute_homeurl").val() || window.location.origin;
+}
+
+/**
+ * Shows or hide connection infoMessage.
+ *
+ * @param {bool} conn
+ * @param {string} msg
+ */
+function showConnectionMessage(conn = true, msg = "") {
+  var data = {};
+  if (conn) {
+    $("div#message_dialog_connection")
+      .closest(".ui-dialog-content")
+      .dialog("close");
+  } else {
+    data.title = "Connection with server has been lost";
+    data.text = "Connection status: " + msg;
+
+    infoMessage(data, "message_dialog_connection");
+  }
+}

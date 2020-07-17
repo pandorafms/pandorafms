@@ -737,7 +737,11 @@ function html_print_select_multiple_filtered(
     array $sections=[]
 ) {
     ui_require_css_file('multiselect_filtered');
-    ui_require_javascript_file('multiselect_filtered');
+    if (is_ajax() === true) {
+        ui_require_javascript_file('multiselect_filtered', 'include/javascript/', true);
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
 
     if (empty($name) === true) {
         $rid = uniqid();

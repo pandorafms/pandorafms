@@ -373,7 +373,7 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: 450,
+        width: widgetId == 14 ? 750 : 450,
         maxHeight: 600,
         minHeight: 400
       },

@@ -143,11 +143,14 @@ class ImageProcessor implements \Psr\Log\LoggerAwareInterface
 			}
 			$data = $this->mpdf->imageVars[$v[1]];
 			$file = md5($data);
+			
 		}
 
-		if (preg_match('/data:image\/(gif|jpeg|png);base64,(.*)/', $file, $v)) {
+		if (preg_match('~data:image/(gif|jpeg|png);base64,(.*)~', $file, $v)) {
 			$type = $v[1];
-			$data = base64_decode($v[2]);
+			$encoded = $v[2];
+			$decoded = "";
+			$data = base64_decode(html_entity_decode($encoded));
 			$file = md5($data);
 		}
 

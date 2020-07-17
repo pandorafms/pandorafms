@@ -43,7 +43,7 @@ var TreeController = {
           var $group = $("<ul></ul>");
 
           // First group
-          if (typeof rootGroup != "undefinded" && rootGroup == true) {
+          if (typeof rootGroup != "undefined" && rootGroup == true) {
             $group
               .addClass("tree-root")
               .hide()
@@ -769,34 +769,38 @@ var TreeController = {
 
                 // Data pop-up
                 if (typeof element.id != "undefined" && !isNaN(element.id)) {
-                  var $dataImage = $(
-                    '<img src="' +
-                      (controller.baseURL.length > 0
-                        ? controller.baseURL
-                        : "") +
-                      'images/binary.png" /> '
-                  );
-                  $dataImage.addClass("module-data").click(function(e) {
-                    e.stopPropagation();
+                  if (isNaN(element.metaID)) {
+                    var $dataImage = $(
+                      '<img src="' +
+                        (controller.baseURL.length > 0
+                          ? controller.baseURL
+                          : "") +
+                        'images/binary.png" /> '
+                    );
+                    $dataImage.addClass("module-data").click(function(e) {
+                      e.stopPropagation();
 
-                    try {
-                      var serverName =
-                        element.serverName.length > 0 ? element.serverName : "";
-                      if ($("#module_details_window").length > 0)
-                        show_module_detail_dialog(
-                          element.id,
-                          "",
-                          serverName,
-                          0,
-                          86400,
-                          element.name.replace(/&#x20;/g, " ")
-                        );
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  });
+                      try {
+                        var serverName =
+                          element.serverName.length > 0
+                            ? element.serverName
+                            : "";
+                        if ($("#module_details_window").length > 0)
+                          show_module_detail_dialog(
+                            element.id,
+                            "",
+                            serverName,
+                            0,
+                            86400,
+                            element.name.replace(/&#x20;/g, " ")
+                          );
+                      } catch (error) {
+                        // console.log(error);
+                      }
+                    });
 
-                  $content.append($dataImage);
+                    $content.append($dataImage);
+                  }
                 }
               }
 
@@ -1008,6 +1012,7 @@ var TreeController = {
                       rootID: element.rootID,
                       serverID: element.serverID,
                       rootType: element.rootType,
+                      metaID: element.metaID,
                       filter: controller.filter,
                       hash: public_hash,
                       id_user: public_user

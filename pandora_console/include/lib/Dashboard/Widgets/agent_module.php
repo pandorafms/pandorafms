@@ -28,11 +28,6 @@
 
 namespace PandoraFMS\Dashboard;
 
-global $config;
-
-require_once $config['homedir'].'/include/functions_agents.php';
-require_once $config['homedir'].'/include/functions_modules.php';
-
 /**
  * Agent module Widgets.
  */
@@ -109,6 +104,13 @@ class AgentModuleWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Cell ID.
+     *
+     * @var integer
+     */
+    protected $cellId;
+
 
     /**
      * Construct.
@@ -130,6 +132,9 @@ class AgentModuleWidget extends Widget
     ) {
         global $config;
 
+        include_once $config['homedir'].'/include/functions_agents.php';
+        include_once $config['homedir'].'/include/functions_modules.php';
+
         // WARNING: Do not edit. This chunk must be in the constructor.
         parent::__construct(
             $cellId,
@@ -146,8 +151,11 @@ class AgentModuleWidget extends Widget
         // Grid Width.
         $this->gridWidth = $gridWidth;
 
+        // Cell Id.
+        $this->cellId = $cellId;
+
         // Options.
-        $this->values = $this->getOptionsWidget();
+        $this->values = $this->decoders($this->getOptionsWidget());
 
         // Positions.
         $this->position = $this->getPositionWidget();
@@ -169,8 +177,52 @@ class AgentModuleWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
+        if (isset($this->values['mModules']) === false) {
+            $this->configurationRequired = true;
+        }
 
         $this->overflow_scrollbars = false;
+    }
+
+
+    /**
+     * Decoders hack for retrocompability.
+     *
+     * @param array $decoder Values.
+     *
+     * @return array Returns the values ​​with the correct key.
+     */
+    public function decoders(array $decoder): array
+    {
+        $values = [];
+        // Retrieve global - common inputs.
+        $values = parent::decoders($decoder);
+
+        if (isset($decoder['mGroup']) === true) {
+            $values['mGroup'] = $decoder['mGroup'];
+        }
+
+        if (isset($decoder['mRecursion']) === true) {
+            $values['mRecursion'] = $decoder['mRecursion'];
+        }
+
+        if (isset($decoder['mModuleGroup']) === true) {
+            $values['mModuleGroup'] = $decoder['mModuleGroup'];
+        }
+
+        if (isset($decoder['mAgents']) === true) {
+            $values['mAgents'] = $decoder['mAgents'];
+        }
+
+        if (isset($decoder['mShowCommonModules']) === true) {
+            $values['mShowCommonModules'] = $decoder['mShowCommonModules'];
+        }
+
+        if (isset($decoder['mModules']) === true) {
+            $values['mModules'] = $decoder['mModules'];
+        }
+
+        return $values;
     }
 
 
@@ -189,11 +241,22 @@ class AgentModuleWidget extends Widget
         $inputs = parent::getFormInputs();
 
         $inputs[] = [
-            'label' => \ui_print_error_message(
-                __('This widget has been removed'),
-                '',
-                true
-            ),
+            'label' => __('Filter modules'),
+        ];
+
+        $inputs[] = [
+            'class'     => 'flex flex-row',
+            'id'        => 'select_multiple_modules_filtered',
+            'arguments' => [
+                'type'               => 'select_multiple_modules_filtered',
+                'uniqId'             => $this->cellId,
+                'mGroup'             => $this->values['mGroup'],
+                'mRecursion'         => $this->values['mRecursion'],
+                'mModuleGroup'       => $this->values['mModuleGroup'],
+                'mAgents'            => $this->values['mAgents'],
+                'mShowCommonModules' => $this->values['mShowCommonModules'],
+                'mModules'           => $this->values['mModules'],
+            ],
         ];
 
         return $inputs;
@@ -210,7 +273,302 @@ class AgentModuleWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::getPost();
 
+        $values['mGroup'] = \get_parameter(
+            'filtered-module-group-'.$this->cellId
+        );
+        $values['mRecursion'] = \get_parameter_switch(
+            'filtered-module-recursion-'.$this->cellId
+        );
+        $values['mModuleGroup'] = \get_parameter(
+            'filtered-module-module-group-'.$this->cellId
+        );
+        $values['mAgents'] = \get_parameter(
+            'filtered-module-agents-'.$this->cellId
+        );
+        $values['mShowCommonModules'] = \get_parameter(
+            'filtered-module-show-common-modules-'.$this->cellId
+        );
+        $values['mModules'] = \get_parameter(
+            'filtered-module-modules-'.$this->cellId
+        );
+
         return $values;
+    }
+
+
+    /**
+     * Data for draw table Agent/Modules.
+     *
+     * @param array $agents      Agents.
+     * @param array $all_modules Modules.
+     *
+     * @return array
+     */
+    private function generateDataAgentModule(
+        array $agents,
+        array $all_modules
+    ):array {
+        $return = [];
+        $cont = 0;
+        $name = '';
+
+        foreach ($all_modules as $key => $module) {
+            if ($module == $name) {
+                $modules_by_name[($cont - 1)]['id'][] = $key;
+            } else {
+                $name = $module;
+                $modules_by_name[$cont]['name'] = $name;
+                $modules_by_name[$cont]['id'][] = $key;
+                $cont ++;
+            }
+        }
+
+        foreach ($agents as $agent) {
+            if (!users_access_to_agent($agent['id_agente'])) {
+                continue;
+            }
+
+            $row = [];
+            $row['agent_status'] = agents_get_status(
+                $agent['id_agente'],
+                true
+            );
+            $row['agent_name'] = $agent['nombre'];
+            $row['agent_alias'] = $agent['alias'];
+            $agent_modules = agents_get_modules(
+                $agent['id_agente']
+            );
+
+            $row['modules'] = [];
+            foreach ($modules_by_name as $module) {
+                $row['modules'][$module['name']] = null;
+                foreach ($module['id'] as $module_id) {
+                    if (array_key_exists($module_id, $agent_modules)) {
+                        $row['modules'][$module['name']] = modules_get_agentmodule_status($module_id);
+                        break;
+                    }
+                }
+            }
+
+            $return[] = $row;
+        }
+
+        return $return;
+    }
+
+
+    /**
+     * Draw table Agent/Module.
+     *
+     * @param array $visualData Data for draw.
+     *
+     * @return string Html output.
+     */
+    private function generateViewAgentModule(array $visualData):string
+    {
+        $table_data = '<div style="display:flex; width:100%; height:100%; margin: 10px;">';
+        $table_data .= '<table class="widget_agent_module" cellpadding="1" cellspacing="0" border="0" style="background-color: transparent; margin: 0 auto;">';
+
+        if (empty($visualData) === false) {
+            $table_data .= '<th>'.__('Agents').' / '.__('Modules').'</th>';
+
+            $array_names = [];
+
+            foreach ($visualData as $data) {
+                foreach ($data['modules'] as $module_name => $module) {
+                    if ($module === null
+                        || in_array($module_name, $array_names)
+                    ) {
+                        continue;
+                    } else {
+                        $array_names[] = $module_name;
+                    }
+                }
+            }
+
+            natcasesort($array_names);
+            foreach ($array_names as $module_name) {
+                $file_name = ui_print_truncate_text(
+                    $module_name,
+                    'module_small',
+                    false,
+                    true,
+                    false,
+                    '...'
+                );
+                $table_data .= '<th style="padding: 10px;">'.$file_name.'</th>';
+            }
+
+            foreach ($visualData as $row) {
+                $table_data .= "<tr style='height: 35px;'>";
+                switch ($row['agent_status']) {
+                    case AGENT_STATUS_ALERT_FIRED:
+                        $rowcolor = COL_ALERTFIRED;
+                        $textcolor = '#000';
+                    break;
+
+                    case AGENT_STATUS_CRITICAL:
+                        $rowcolor = COL_CRITICAL;
+                        $textcolor = '#FFF';
+                    break;
+
+                    case AGENT_STATUS_WARNING:
+                        $rowcolor = COL_WARNING;
+                        $textcolor = '#000';
+                    break;
+
+                    case AGENT_STATUS_NORMAL:
+                        $rowcolor = COL_NORMAL;
+                        $textcolor = '#FFF';
+                    break;
+
+                    case AGENT_STATUS_UNKNOWN:
+                    case AGENT_STATUS_ALL:
+                    default:
+                        $rowcolor = COL_UNKNOWN;
+                        $textcolor = '#FFF';
+                    break;
+                }
+
+                $file_name = \ui_print_truncate_text(
+                    $row['agent_alias'],
+                    'agent_small',
+                    false,
+                    true,
+                    false,
+                    '...'
+                );
+                $table_data .= "<td style='background-color: ".$rowcolor.";'>";
+                $table_data .= $file_name;
+                $table_data .= '</td>';
+
+                foreach ($row['modules'] as $module_name => $module) {
+                    if ($module === null) {
+                        if (in_array($module_name, $array_names)) {
+                            $table_data .= "<td style='background-color: transparent;'>";
+                            $table_data .= '</td>';
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        $table_data .= "<td style='text-align: center; background-color: transparent;'>";
+                        switch ($module) {
+                            case AGENT_STATUS_NORMAL:
+                                $table_data .= \ui_print_status_image(
+                                    'module_ok.png',
+                                    __(
+                                        '%s in %s : NORMAL',
+                                        $module_name,
+                                        $row['agent_alias']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ]
+                                );
+                            break;
+
+                            case AGENT_STATUS_CRITICAL:
+                                $table_data .= \ui_print_status_image(
+                                    'module_critical.png',
+                                    __(
+                                        '%s in %s : CRITICAL',
+                                        $module_name,
+                                        $row['agent_alias']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ]
+                                );
+                            break;
+
+                            case AGENT_STATUS_WARNING:
+                                $table_data .= \ui_print_status_image(
+                                    'module_warning.png',
+                                    __(
+                                        '%s in %s : WARNING',
+                                        $module_name,
+                                        $row['agent_alias']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ]
+                                );
+                            break;
+
+                            case AGENT_STATUS_UNKNOWN:
+                                $table_data .= \ui_print_status_image(
+                                    'module_unknown.png',
+                                    __(
+                                        '%s in %s : UNKNOWN',
+                                        $module_name,
+                                        $row['agent_alias']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ]
+                                );
+                            break;
+
+                            case 4:
+                                $table_data .= \ui_print_status_image(
+                                    'module_no_data.png',
+                                    __(
+                                        '%s in %s : Not initialize',
+                                        $module_name,
+                                        $row['agent_alias']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ]
+                                );
+                            break;
+
+                            case AGENT_STATUS_ALERT_FIRED:
+                            default:
+                                $table_data .= \ui_print_status_image(
+                                    'module_alertsfired.png',
+                                    __(
+                                        '%s in %s : ALERTS FIRED',
+                                        $module_name,
+                                        $row['agent_alias']
+                                    ),
+                                    true,
+                                    [
+                                        'width'  => '20px',
+                                        'height' => '20px',
+                                    ]
+                                );
+                            break;
+                        }
+
+                        $table_data .= '</td>';
+                    }
+                }
+
+                $table_data .= '</tr>';
+            }
+        } else {
+            $table_data .= '<tr><td>';
+            $table_data .= __(
+                'Please configure this widget before usage'
+            );
+            $table_data .= '</td></tr>';
+        }
+
+        $table_data .= '</table>';
+        $table_data .= '</div>';
+
+        return $table_data;
     }
 
 
@@ -223,13 +581,82 @@ class AgentModuleWidget extends Widget
     {
         global $config;
 
-        $output .= '<div class="container-center">';
-        $output .= \ui_print_error_message(
-            __('This widget has been removed'),
-            '',
-            true
-        );
-        $output .= '</div>';
+        if (check_acl($config['id_user'], 0, 'AR') === 0) {
+            $output .= '<div class="container-center">';
+            $output .= ui_print_error_message(
+                __('You don\'t have access'),
+                '',
+                true
+            );
+            $output .= '</div>';
+            return $output;
+        }
+
+        if (isset($this->values['mAgents']) === true
+            && empty($this->values['mAgents']) === false
+        ) {
+            $sql = sprintf(
+                'SELECT id_agente,nombre,alias
+				FROM tagente
+				WHERE id_agente IN (%s)
+                ORDER BY id_agente',
+                $this->values['mAgents']
+            );
+            $agents = db_get_all_rows_sql($sql);
+            if ($agents === false) {
+                $agents = [];
+            }
+
+            $modules = false;
+            if (isset($this->values['mModules']) === true
+                && empty($this->values['mModules']) === false
+            ) {
+                $sql = sprintf(
+                    'SELECT nombre
+                    FROM tagente_modulo
+                    WHERE id_agente_modulo IN (%s)',
+                    $this->values['mModules']
+                );
+
+                $arrayNames = db_get_all_rows_sql($sql);
+                $names = array_reduce(
+                    $arrayNames,
+                    function ($carry, $item) {
+                        $carry[] = $item['nombre'];
+                        return $carry;
+                    }
+                );
+
+                $sql = sprintf(
+                    'SELECT id_agente_modulo,nombre
+                    FROM tagente_modulo
+                    WHERE id_agente IN (%s)
+                    AND nombre IN ("%s")
+                    AND delete_pending = 0
+                    ORDER BY nombre',
+                    $this->values['mAgents'],
+                    implode('","', $names)
+                );
+
+                $modules = index_array(
+                    db_get_all_rows_sql($sql),
+                    'id_agente_modulo',
+                    'nombre'
+                );
+            }
+
+            if ($modules === false) {
+                $modules = [];
+            }
+        } else {
+            $agents = [];
+            $modules = [];
+        }
+
+        $visualData = $this->generateDataAgentModule($agents, $modules);
+
+        $output = $this->generateViewAgentModule($visualData);
+
         return $output;
     }
 
@@ -257,5 +684,3 @@ class AgentModuleWidget extends Widget
 
 
 }
-
-$instance = new AgentModuleWidget(false);

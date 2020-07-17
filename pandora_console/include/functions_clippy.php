@@ -285,7 +285,7 @@ function clippy_context_help($help=null)
 
     $return = '';
 
-    include_once 'include/help/clippy/'.$help.'.php';
+    include_once $config['homedir'].'/include/help/clippy/'.$help.'.php';
 
     ob_start();
     $function = 'clippy_'.$help;

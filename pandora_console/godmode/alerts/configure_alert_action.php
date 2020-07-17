@@ -80,12 +80,20 @@ if ($al_action !== false) {
 }
 
 
+$is_central_policies_on_node = is_central_policies_on_node();
+
+if ($is_central_policies_on_node === true) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+    );
+}
+
+
 $name = '';
 $id_command = '';
 $group = 0;
-// All group is 0
 $action_threshold = 0;
-// All group is 0
+// All group is 0.
 if ($id) {
     $action = alerts_get_alert_action($id);
     $name = $action['name'];
@@ -95,7 +103,7 @@ if ($id) {
     $action_threshold = $action['action_threshold'];
 }
 
-// Hidden div with help hint to fill with javascript
+// Hidden div with help hint to fill with javascript.
 html_print_div(
     [
         'id'      => 'help_alert_macros_hint',
@@ -126,7 +134,26 @@ $table->size = [];
 $table->size[0] = '20%';
 $table->data = [];
 $table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text('name', $name, '', 35, 255, true);
+$table->data[0][1] = html_print_input_text(
+    'name',
+    $name,
+    '',
+    35,
+    255,
+    true,
+    false,
+    false,
+    '',
+    '',
+    '',
+    '',
+    false,
+    '',
+    '',
+    '',
+    $is_central_policies_on_node
+);
+
 if (io_safe_output($name) == 'Monitoring Event') {
     $table->data[0][1] .= '&nbsp;&nbsp;'.ui_print_help_tip(
         __('This action may stop working, if you change its name.'),
@@ -141,7 +168,21 @@ $table->data[1][0] = __('Group');
 
 $own_info = get_user_info($config['id_user']);
 
-$table->data[1][1] = html_print_select_groups(false, 'LW', true, 'group', $group, '', '', 0, true);
+$table->data[1][1] = html_print_select_groups(
+    false,
+    'LW',
+    true,
+    'group',
+    $group,
+    '',
+    '',
+    0,
+    true,
+    false,
+    true,
+    '',
+    $is_central_policies_on_node
+);
 $table->colspan[1][1] = 2;
 
 $table->data[2][0] = __('Command');
@@ -163,10 +204,15 @@ $table->data[2][1] = html_print_select_from_sql(
     '',
     __('None'),
     0,
-    true
+    true,
+    false,
+    false,
+    $is_central_policies_on_node
 );
 $table->data[2][1] .= ' ';
-if (check_acl($config['id_user'], 0, 'PM')) {
+if ($is_central_policies_on_node === false
+    && check_acl($config['id_user'], 0, 'PM')
+) {
     $table->data[2][1] .= __('Create Command');
     $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     $table->data[2][1] .= html_print_image('images/add.png', true);
@@ -188,7 +234,7 @@ $table->data[3][1] = html_print_extended_select_for_time(
     false,
     true,
     '',
-    false,
+    $is_central_policies_on_node,
     false,
     '',
     false,
@@ -251,46 +297,44 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 echo '<form method="post" action="'.'index.php?sec='.$sec.'&'.'sec2=godmode/alerts/alert_actions&'.'pure='.$pure.'">';
 $table_html = html_print_table($table, true);
 
-//
-// Hack to hook the bubble dialog of clippy in any place, the intro.js
-// fails with new elements in the dom from javascript code
-// ----------------------------------------------------------------------
-/*
-    $table_html = str_replace(
-    "</table>",
-    "</div>",
-    $table_html);
-    $table_html = str_replace(
-    '<tr id="table_macros-field1" style="" class="datos2">',
-    "</tbody></table>
-    <div id=\"clippy_fields\">
-    <table>
-    <tbody>
-    <tr id=\"table_macros-field1\" class=\"datos\">",
-    $table_html);
-*/
-//
 echo $table_html;
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if ($id) {
-    html_print_input_hidden('id', $id);
-    if ($al_action['id_group'] == 0) {
-        // then must have "PM" access privileges
-        if (check_acl($config['id_user'], 0, 'PM')) {
+if ($is_central_policies_on_node === false) {
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    if ($id) {
+        html_print_input_hidden('id', $id);
+        if ($al_action['id_group'] == 0) {
+            // Then must have "PM" access privileges.
+            if (check_acl($config['id_user'], 0, 'PM')) {
+                html_print_input_hidden('update_action', 1);
+                html_print_submit_button(
+                    __('Update'),
+                    'create',
+                    false,
+                    'class="sub upd"'
+                );
+            }
+        } else {
             html_print_input_hidden('update_action', 1);
-            html_print_submit_button(__('Update'), 'create', false, 'class="sub upd"');
+            html_print_submit_button(
+                __('Update'),
+                'create',
+                false,
+                'class="sub upd"'
+            );
         }
     } else {
-        html_print_input_hidden('update_action', 1);
-        html_print_submit_button(__('Update'), 'create', false, 'class="sub upd"');
+        html_print_input_hidden('create_action', 1);
+        html_print_submit_button(
+            __('Create'),
+            'create',
+            false,
+            'class="sub wand"'
+        );
     }
-} else {
-    html_print_input_hidden('create_action', 1);
-    html_print_submit_button(__('Create'), 'create', false, 'class="sub wand"');
+
+    echo '</div>';
 }
 
-echo '</div>';
 echo '</form>';
 
 enterprise_hook('close_meta_frame');

@@ -29,7 +29,7 @@
 // Begin.
 require_once 'config.php';
 require_once 'functions_api.php';
-
+require '../vendor/autoload.php';
 global $config;
 
 define('DEBUG', 0);
@@ -257,6 +257,13 @@ if ($correctLogin) {
                                 'not_allowed_operation_cluster',
                                 $returnType
                             );
+                            return false;
+                        }
+                    break;
+
+                    case 'event':
+                        // Preventive check for users if not available write events
+                        if (! check_acl($config['id_user'], $event['id_grupo'], 'EW')) {
                             return false;
                         }
                     break;

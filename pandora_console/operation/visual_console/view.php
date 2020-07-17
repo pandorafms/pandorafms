@@ -373,7 +373,6 @@ if ($pure === true) {
     body.pure {
         min-height: 100px;
         margin: 0px;
-        overflow: hidden;
         height: 100%;
         background-color: <?php echo $visualConsoleData['backgroundColor']; ?>;
     }

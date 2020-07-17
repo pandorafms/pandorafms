@@ -43,7 +43,47 @@ if (empty($update_module_id)) {
 
 $data = [];
 $data[0] = __('Target IP').' '.ui_print_help_icon('wmi_module_tab', true);
-$data[1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
+
+if ($page == 'enterprise/godmode/policies/policy_modules') {
+    if ($ip_target != 'auto' && $ip_target != '') {
+        $custom_ip_target = $ip_target;
+        $ip_target = 'custom';
+    } else if ($ip_target == '') {
+        $ip_target = 'force_pri';
+        $custom_ip_target = '';
+    } else {
+        $custom_ip_target = '';
+    }
+
+    $target_ip_values = [];
+    $target_ip_values['auto']      = __('Auto');
+    $target_ip_values['force_pri'] = __('Force primary key');
+    $target_ip_values['custom']    = __('Custom');
+
+    $data[1] = html_print_select(
+        $target_ip_values,
+        'ip_target',
+        $ip_target,
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width:200px;'
+    );
+
+    $data[1] .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 15, 60, true);
+} else {
+    if ($ip_target == 'auto') {
+        $ip_target = agents_get_address($id_agente);
+    }
+
+    $data[1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
+}
+
 $data[2] = __('Namespace').ui_print_help_tip(__('Optional. WMI namespace. If unsure leave blank.'), true);
 $data[3] = html_print_input_text(
     'tcp_send',
@@ -136,3 +176,21 @@ $data[3] = html_print_input_text(
 );
 
 push_table_simple($data, 'key_field');
+?>
+<script type="text/javascript">
+$(document).ready (function () {
+    var custom_ip_target = "<?php echo $custom_ip_target; ?>";
+    if(custom_ip_target == ''){
+        $("#text-custom_ip_target").hide();
+    }
+    $('#ip_target').change(function() {
+        if($(this).val() == 'custom') {
+            $("#text-custom_ip_target").show();
+        }
+        else{
+            $("#text-custom_ip_target").hide();
+        }
+    });
+});
+
+</script>

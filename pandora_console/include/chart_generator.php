@@ -189,6 +189,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         echo '<div>';
     switch ($type_graph_pdf) {
         case 'combined':
+            $params['pdf'] = true;
             echo graphic_combined_module(
                 $module_list,
                 $params,
@@ -277,7 +278,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['ttl'],
                 $params['sizeForTicks'],
                 $params['show'],
-                $params['date_to']
+                $params['date_to'],
+                $params['server_id']
             );
         break;
 

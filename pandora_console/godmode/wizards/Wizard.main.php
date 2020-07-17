@@ -832,7 +832,7 @@ class Wizard
                     $first_block_printed = true;
                 }
 
-                $output .= '<div class="edit_discovery_info '.$row['class'].'" style="'.$row['style'].'">';
+                $row_output = '<div class="edit_discovery_info '.$row['class'].'" style="'.$row['style'].'">';
 
                 foreach ($row['columns'] as $column) {
                     $width = isset($column['width']) ? 'width: '.$column['width'].';' : 'width: 100%;';
@@ -841,23 +841,36 @@ class Wizard
                     $extra_styles = isset($column['style']) ? $column['style'] : '';
                     $class = isset($column['class']) ? $column['class'] : '';
 
-                    $output .= '<div class="'.$class.'" ';
-                    $output .= ' style="'.$width.$padding_left.$padding_right;
-                    $output .= $extra_styles.'">';
+                    $row_output .= '<div class="'.$class.'" ';
+                    $row_output .= ' style="'.$width.$padding_left.$padding_right;
+                    $row_output .= $extra_styles.'">';
 
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
                             if ($input['arguments']['type'] != 'submit') {
-                                $output .= $this->printBlockAsGrid($input, true);
+                                $row_output .= $this->printBlockAsGrid($input, true);
                             } else {
                                 $output_submit .= $this->printBlockAsGrid($input, true);
                             }
                         } else {
-                            $output .= $input;
+                            $row_output .= $input;
                         }
                     }
 
-                    $output .= '</div>';
+                    $row_output .= '</div>';
+                }
+
+                if (isset($row['toggle'])) {
+                    $output .= ui_print_toggle(
+                        [
+                            'content'        => $row_output,
+                            'name'           => $row['toggle_label'],
+                            'hidden_default' => ! (bool) $row['toggle'],
+                            'return'         => true,
+                        ]
+                    );
+                } else {
+                    $output .= $row_output;
                 }
 
                 $output .= '</div>';

@@ -33,9 +33,8 @@ table.header_table {
 }
 
 table.header_table thead tr th,
-table.header_table tbody tr td {
+table.header_table tr td {
   padding: 10px;
-  background-color: #acacac;
 }
 
 table thead tr th {
@@ -91,7 +90,7 @@ table.table_agent_module tr td {
   padding: 5px;
 }
 
-table.header_table tbody tr td {
+table.header_table tbody tr {
   background-color: #fafafa;
 }
 

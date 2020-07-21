@@ -4750,7 +4750,7 @@ function events_page_comments($event, $ajax=false)
                     foreach ($comm as $c) {
                         $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
                         $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
-                        $data[1] = '<p style="word-break: break-word;">'.strip_tags($c['comment'], '<br>').'</p>';
+                        $data[1] = '<p style="word-break: break-word;">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
                         $table_comments->data[] = $data;
                     }
                 break;

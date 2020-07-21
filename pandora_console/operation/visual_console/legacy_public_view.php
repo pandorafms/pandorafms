@@ -64,7 +64,7 @@ if ($myhash != $hash) {
     exit;
 }
 
-$refr = (int) get_parameter('refr', 0);
+$refr = (int) get_parameter('refr', $config['refr']);
 $layout = db_get_row('tlayout', 'id', $id_layout);
 
 if (! $layout) {

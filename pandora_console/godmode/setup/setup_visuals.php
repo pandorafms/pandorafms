@@ -870,8 +870,8 @@ $row++;
     $table_chars->data[$row][0] = __('Show only average');
 
     $options_soft_graphs    = [];
-    $options_soft_graphs[0] = __('Standard mode');
-    $options_soft_graphs[1] = __('Classic mode');
+    $options_soft_graphs[0] = __('Show only average by default');
+    $options_soft_graphs[1] = __('Show MAX/AVG/MIN by default');
 
     $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
     $row++;

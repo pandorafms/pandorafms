@@ -1708,9 +1708,8 @@ function ui_process_page_head($string, $bitfield)
 		<meta name="author" content="'.get_copyright_notice().'" />
 		<meta name="copyright" content="(c) '.get_copyright_notice().'" />
 		<meta name="robots" content="index, follow" />';
-        $output .= '<link rel="icon" href="'.ui_get_favicon().'" type="image/ico" />';
-        $output .= '	
-		<link rel="shortcut icon" href="'.ui_get_favicon().'" type="image/x-icon" />
+        $output .= '<link rel="icon" href="'.ui_get_full_url('/').ui_get_favicon().'" type="image/ico" />';
+        $output .= '<link rel="shortcut icon" href="'.ui_get_full_url('/').ui_get_favicon().'" type="image/x-icon" />
 		<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 
     if ($config['language'] != 'en') {

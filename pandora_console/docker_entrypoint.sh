@@ -35,7 +35,6 @@ if [ -z "$PANDORA_DB_PASSWORD" ]; then
 	exit 1
 fi
 
-mv -f /tmp/pandorafms/pandora_console /var/www/html
 cd /var/www/html/pandora_console/include
 cat > config.php <<- 'EOF'
 <?php
@@ -54,8 +53,8 @@ echo "\$config[\"dbhost\"]=\"$PANDORA_DB_HOST\";" >> config.php
 echo "include (\$ownDir . \"config_process.php\");" >> config.php
 echo "?>" >> config.php
 
-echo "Granting apache permissions to the console directory"
-chown -R apache:apache /var/www/html/pandora_console
+echo "Changing owner and permissions on config.php"
+chown apache:apache /var/www/html/pandora_console/include/config.php
 chmod 600 /var/www/html/pandora_console/include/config.php
 
 # Customize php.iniA
@@ -71,10 +70,6 @@ cd /var/www/html/pandora_console && mv -f install.php install.php.done
 
 #Create the pandora user
 /usr/sbin/useradd -d /home/pandora -s /bin/false -M -g 0 pandora
-
-#Rock n' roll!
-/etc/init.d/crond start &
-/etc/init.d/ntpd start &
 
 rm -rf /run/httpd/*
 exec /usr/sbin/apachectl -D FOREGROUND

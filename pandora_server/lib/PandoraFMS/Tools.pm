@@ -1139,7 +1139,7 @@ sub disk_free ($) {
 		return;
 	}
 	# Try to use df command with Posix parameters... 
-	my $command = "df -k -P ".$target." | tail -1 | awk '{ print \$4/1024}'";
+	my $command = "df -k -P ".$target." | tail -1 | awk '{printf \"%.2f\",\$4/1024}'";
 	my $output = `$command`;
 	return $output;
 }

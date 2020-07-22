@@ -1,15 +1,19 @@
-FROM mysql:5.5
-MAINTAINER Pandora FMS Team <info@pandorafms.com>
+FROM mysql:5.7
+LABEL maintainer="Pandora FMS Team <info@pandorafms.com>"
 
 WORKDIR /pandorafms/pandora_console
 
 ADD pandoradb.sql /docker-entrypoint-initdb.d
 ADD pandoradb_data.sql /docker-entrypoint-initdb.d
-RUN chown mysql /docker-entrypoint-initdb.d
+
+RUN chown -R mysql:mysql /docker-entrypoint-initdb.d
 
 ENV MYSQL_DATABASE=pandora
 
 RUN echo " \n\
-sed -i \"1iUSE \$MYSQL_DATABASE\" /docker-entrypoint-initdb.d/pandoradb.sql \n\
-sed -i \"1iUSE \$MYSQL_DATABASE\" /docker-entrypoint-initdb.d/pandoradb_data.sql \n\
+cp /docker-entrypoint-initdb.d/pandoradb.sql /tmp/ee && sed -i \"1iUSE \$MYSQL_DATABASE\" /tmp/ee && cat /tmp/ee > /docker-entrypoint-initdb.d/pandoradb.sql \n\
+cp /docker-entrypoint-initdb.d/pandoradb_data.sql /tmp/ee && sed -i \"1iUSE \$MYSQL_DATABASE\" /tmp/ee && cat /tmp/ee > /docker-entrypoint-initdb.d/pandoradb_data.sql \n\
 " >> /docker-entrypoint-initdb.d/create_pandoradb.sh
+
+# Fix compatibility issues with latest MySQL version
+RUN echo "\nsql_mode = NO_ENGINE_SUBSTITUTION\n" >> /etc/mysql/mysql.conf.d/mysqld.cnf

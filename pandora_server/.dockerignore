@@ -1,0 +1,3 @@
+# exclude all contents because source is directy fetched from Git Repo, except shells at this directory
+**/*
+!*.sh

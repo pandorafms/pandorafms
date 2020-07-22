@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+UPDATE `talert_commands` SET name='Monitoring&#x20;Event' WHERE name='Pandora FMS Event';
+
 ALTER TABLE `tservice_element` ADD COLUMN `rules` text;
 ALTER TABLE `tservice` ADD COLUMN `unknown_as_critical` tinyint(1) NOT NULL default 0 AFTER `warning`;
 

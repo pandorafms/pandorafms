@@ -1342,6 +1342,15 @@ $row++;
 
     $row++;
 
+    $decimal_separator = [
+        '.' => '.',
+        ',' => ',',
+    ];
+    $table_other->data[$row][0] = __('CSV decimal separator').ui_print_help_tip(__('Only for csv reports'), true);
+    $table_other->data[$row][1] = html_print_select($decimal_separator, 'csv_decimal_separator', $config['csv_decimal_separator'], '', '', '', true, false, false);
+
+    $row++;
+
     $table_other->data[$row][0] = __('Data multiplier to use in graphs/data');
     $options_data_multiplier = [];
     $options_data_multiplier[0] = __('Use 1024 when module unit are bytes');

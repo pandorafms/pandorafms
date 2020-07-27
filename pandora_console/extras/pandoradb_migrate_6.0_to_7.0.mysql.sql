@@ -1271,6 +1271,7 @@ ALTER TABLE talert_snmp_action ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
 -- ----------------------------------------------------------------------
 ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 ALTER TABLE `tserver` MODIFY COLUMN `server_keepalive` int(11) NOT NULL DEFAULT '0';
+ALTER TABLE `tserver` MODIFY COLUMN `version` varchar(25) NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`

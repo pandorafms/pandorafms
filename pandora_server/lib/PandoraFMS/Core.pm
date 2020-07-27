@@ -1190,7 +1190,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", $module->{'id_policy_module'}) : '',
+				_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", get_db_value ($dbh, "SELECT id_policy FROM tpolicy_modules WHERE id = ?", $module->{'id_policy_module'})) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				_email_tag_ => undef,
 				_phone_tag_ => undef,

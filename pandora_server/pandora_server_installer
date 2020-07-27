@@ -229,21 +229,15 @@ install () {
 			echo " "
 			echo "For FreeBSD do : "
 			echo " "
-			echo "  Install perl5.8 or later from ports with thread enabled."
-			echo "  (perl-5.8.x.pkg can not be used.)"
-			echo "  # cd /usr/ports/lang/perl5.8"
-			echo "  # make config"
-			echo "    -> Enable THREADS."
-			echo "  # make"
-			echo "  # make install"
-			echo " "
-			echo "  Install following tools from ports. Don't use packages."
+			echo "  Install following tools from ports or packages."
 			echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-XML-Twig p5-HTML-Parser p5-DBD-mysql p5-Socket6 p5-IO-Socket-INET6 p5-JSON"
 			echo "  Optional: nmap xprobe"
 			echo " "
-			echo "To get it from source through CPAN do"
+			echo "  And install Geo::IP manually."
 			echo " "
-			echo "	$ cpan Time::Local DBI Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6 JSON"
+			echo "To get them from source through CPAN do"
+			echo " "
+			echo "	$ cpan Time::Local DBI Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6 JSON Geo::IP"
 			echo " "
 			rm output
 			exit 1
@@ -392,6 +386,23 @@ install () {
 	mkdir -p $DESTDIR$PANDORA_HOME 2> /dev/null
 	cp -R util $DESTDIR$PANDORA_HOME
 	find $DESTDIR$PANDORA_HOME -type l -delete
+	case $DISTRO in
+	FreeBSD)
+		# adjust shebang
+		for pl_script in `find $DESTDIR$PANDORA_HOME/util -name "*.pl"`
+		do
+			cat $pl_script | sed 's/^#!\/usr\/bin\/perl/#!\/usr\/local\/bin\/perl/g' > ${pl_script}.new 
+			mv ${pl_script}.new $pl_script
+			chmod a+x $pl_script
+		done
+		for sh_script in `find $DESTDIR$PANDORA_HOME/util -name "*.sh"`
+		do
+			cat $sh_script | sed 's/^#!\/bin\/bash/#!\/usr\/local\/bin\/bash/g' > ${sh_script}.new
+			mv ${sh_script}.new $sh_script
+			chmod a+x $sh_script
+		done
+		;;
+	esac
 
 	# install cron job
 	if [ -d /etc/cron.hourly ]

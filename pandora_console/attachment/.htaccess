@@ -7,5 +7,3 @@
 Deny from all
 Allow from localhost
 </FilesMatch>
-php_flag engine off
-

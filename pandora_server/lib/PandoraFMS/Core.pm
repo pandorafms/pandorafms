@@ -4346,6 +4346,12 @@ sub check_min_max ($$$$) {
 
 	# Out of bounds
 	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
+		if($module->{'max'} < $module->{'min'}) {
+			# Compare if there is only setted min or max.
+			return 1 unless (($module->{'max'} == 0 && $data < $module->{'min'}) || ($module->{'min'} == 0 && $data > $module->{'max'}));
+			
+		}  
+
 		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		return 0;
 	}

@@ -1290,7 +1290,7 @@ ui_require_jquery_file('json');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-    var disabledBecauseInPolicy = '<?php echo $disabledBecauseInPolicy; ?>';
+    var disabledBecauseInPolicy = <?php echo '\''.(empty($disabledBecauseInPolicy) === true ? '0' : '1').'\''; ?>;
     $("#right").click (function () {
         jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
             tag_name = $(value).html();
@@ -1551,7 +1551,10 @@ $(document).ready (function () {
 
 //readonly and add class input
 function disabled_status (disabledBecauseInPolicy) {
-    if($('#dynamic_interval_select').val() != 0 && $('#dynamic_interval').val() != 0){
+    var dynamic_interval_select_value = $('#dynamic_interval_select').val();
+    var dynamic_interval_value = $('#dynamic_interval_select').val();
+    if(typeof dynamic_interval_select_value != "undefined" && typeof dynamic_interval_value != "undefined"
+        && dynamic_interval_select_value != 0 && dynamic_interval_value != 0){
         $('#text-min_warning').prop('readonly', true);
         $('#text-min_warning').addClass('readonly');
         $('#text-max_warning').prop('readonly', true);

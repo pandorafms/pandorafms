@@ -1077,7 +1077,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`checksum` tinyint(3) unsigned NOT NULL default '0',
 	`description` varchar(255) default NULL,
 	`recon_server` tinyint(3) unsigned NOT NULL default '0',
-	`version` varchar(20) NOT NULL default '',
+	`version` varchar(25) NOT NULL default '',
 	`plugin_server` tinyint(3) unsigned NOT NULL default '0',
 	`prediction_server` tinyint(3) unsigned NOT NULL default '0',
 	`wmi_server` tinyint(3) unsigned NOT NULL default '0',

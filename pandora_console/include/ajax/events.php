@@ -871,6 +871,11 @@ if ($get_response_description) {
 }
 
 if ($get_response_params) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $params = db_get_value('params', 'tevent_response', 'id', $response_id);
@@ -885,6 +890,11 @@ if ($get_response_params) {
 }
 
 if ($get_response_target) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = (int) get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id');
@@ -901,6 +911,11 @@ if ($get_response_target) {
 }
 
 if ($get_response) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
@@ -916,6 +931,11 @@ if ($get_response) {
 
 if ($perform_event_response) {
     global $config;
+
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
 
     $response_id = get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
@@ -1010,6 +1030,11 @@ if ($perform_event_response) {
 
 if ($dialogue_event_response) {
     global $config;
+
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
 
     $event_id = get_parameter('event_id');
     $response_id = get_parameter('response_id');

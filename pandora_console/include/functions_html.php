@@ -737,7 +737,11 @@ function html_print_select_multiple_filtered(
     array $sections=[]
 ) {
     ui_require_css_file('multiselect_filtered');
-    ui_require_javascript_file('multiselect_filtered');
+    if (is_ajax() === true) {
+        ui_require_javascript_file('multiselect_filtered', 'include/javascript/', true);
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
 
     if (empty($name) === true) {
         $rid = uniqid();
@@ -1833,13 +1837,14 @@ function html_print_input_text_extended(
     $alt,
     $size,
     $maxlength,
-    $disabled,
+    $readonly,
     $script,
     $attributes,
     $return=false,
     $password=false,
     $function='',
-    $autocomplete='off'
+    $autocomplete='off',
+    $disabled=false
 ) {
     static $idcounter = 0;
 
@@ -1895,8 +1900,12 @@ function html_print_input_text_extended(
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
 
-    if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
+    if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
         $output .= 'readonly="readonly" ';
+    }
+
+    if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
+        $output .= 'disabled="disabled" ';
     }
 
     if (is_array($attributes)) {
@@ -2102,7 +2111,7 @@ function html_print_input_text(
     $size=50,
     $maxlength=255,
     $return=false,
-    $disabled=false,
+    $readonly=false,
     $required=false,
     $function='',
     $class='',
@@ -2111,7 +2120,8 @@ function html_print_input_text(
     $autofocus=false,
     $onKeyDown='',
     $formTo='',
-    $onKeyUp=''
+    $onKeyUp='',
+    $disabled=false
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2163,12 +2173,14 @@ function html_print_input_text(
         $alt,
         $size,
         $maxlength,
-        $disabled,
+        $readonly,
         '',
         $attr,
         $return,
         false,
-        $function
+        $function,
+        'off',
+        $disabled
     );
 }
 
@@ -2661,8 +2673,16 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='', $disable=false)
-{
+function html_print_textarea(
+    $name,
+    $rows,
+    $columns,
+    $value='',
+    $attributes='',
+    $return=false,
+    $class='',
+    $disable=false
+) {
     $disabled = ($disable) ? 'disabled' : '';
     $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
@@ -3023,7 +3043,11 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                if ($class === 'datos5' && $key === 1) {
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                } else {
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                }
             }
 
             $output .= '</tr>'."\n";
@@ -3855,20 +3879,15 @@ function html_print_timezone_select($name, $selected='')
  * Enclose a text into a result_div
  *
  * @param string Text to enclose
- * @param boolean Return formatted text without html tags.
  *
  * @return string Text inside the result_div
  */
-function html_print_result_div($text, $text_only)
+function html_print_result_div($text)
 {
     $text = preg_replace('/</', '&lt;', $text);
     $text = preg_replace('/>/', '&gt;', $text);
     $text = preg_replace('/\n/i', '<br>', $text);
     $text = preg_replace('/\s/i', '&nbsp;', $text);
-
-    if ($text_only) {
-        return $text;
-    }
 
     $enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
     $enclose .= $text;

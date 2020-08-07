@@ -71,12 +71,6 @@ if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
         'active' => false,
         'text'   => '<a href="'.$url_visual_console_template_wizard.'">'.html_print_image('images/wand.png', true, ['title' => __('Visual Console Template Wizard')]).'</a>',
     ];
-    if ($is_metaconsole) {
-        $buttons['visual_console_manager'] = [
-            'active' => false,
-            'text'   => '<a href="'.$url_visual_console_manager.'">'.html_print_image('images/builder.png', true, ['title' => __('Visual Console Manager')]).'</a>',
-        ];
-    }
 }
 
 if (!$is_metaconsole) {

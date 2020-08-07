@@ -12286,12 +12286,29 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             return;
         }
 
+        if (!empty($other['data'][17]) && is_metaconsole()) {
+            $id_server = db_get_row_filter('tmetaconsole_setup', ['id' => $other['data'][17]]);
+            if ($id_server === false) {
+                returnError('error_create_event', __('Server id does not exist in database.'));
+                return;
+            }
+
+            $values['server_id'] = $other['data'][17];
+        } else {
+            $values['server_id'] = 0;
+        }
+
         $error_msg = '';
         if ($other['data'][2] != '') {
             $id_agent = $other['data'][2];
             if (is_metaconsole()) {
                 // On metaconsole, connect with the node to check the permissions
-                $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
+                if (empty($values['server_id'])) {
+                    $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
+                } else {
+                    $agent_cache = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $values['server_id']]);
+                }
+
                 if ($agent_cache === false) {
                     returnError('id_not_found', 'string');
                     return;
@@ -12418,12 +12435,6 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = $other['data'][16];
         } else {
             $values['custom_data'] = '';
-        }
-
-        if ($other['data'][17] != '') {
-            $values['server_id'] = $other['data'][17];
-        } else {
-            $values['server_id'] = 0;
         }
 
         if ($other['data'][18] != '') {
@@ -16149,5 +16160,40 @@ function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
     } else {
         returnError('forbidden', 'string');
         return;
+    }
+}
+
+
+/**
+ * Function to set events in progress status.
+ *
+ * @param [int]    $event_id   Id event (Node or Meta).
+ * @param [string] $trash2     don't use.
+ * @param [string] $returnType
+ *
+ * Example
+ * http://127.0.0.1/pandora_console/include/api.php?op=set&op2=event_in_progress&return_type=json&id=0&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+function api_set_event_in_progress($event_id, $trash2, $returnType)
+{
+    global $config;
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
+    $event = db_process_sql_update(
+        $table,
+        ['estado' => 2],
+        ['id_evento' => $event_id]
+    );
+
+    if ($event !== false) {
+            returnData('string', ['data' => $event]);
+    } else {
+        returnError('id_not_found', 'string');
     }
 }

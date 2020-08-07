@@ -35,6 +35,10 @@ if ($delete != 0 && is_metaconsole()) {
     open_meta_frame();
 }
 
+if ($tag_name != '' && is_metaconsole()) {
+    open_meta_frame();
+}
+
 // Metaconsole nodes
 $servers = false;
 if (is_metaconsole()) {
@@ -182,7 +186,7 @@ $row[] = $filter_button;
 
 $table->data[] = $row;
 
-$filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+$filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tag_name="'.$tag_name.'>';
 $filter_form .= html_print_table($table, true);
 $filter_form .= '</form>';
 // End of filter form

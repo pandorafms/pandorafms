@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.747 PS200710";
+my $version = "7.0NG.748 PS200807";
 
 # Pandora server configuration
 my %conf;
@@ -140,29 +140,6 @@ sub pandora_purgedb ($$) {
 		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
-		
-		#
-		# Now the log4x data
-		#
-		$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC', 1);
-		if (defined ($first_mark)) {
-			$total_time = $ulimit_timestamp - $first_mark;
-			$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-			if ($purge_steps > 0) {
-				for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-					db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-					log_message ('PURGE', "Log4x data deletion progress %$ax\r");
-					# Do a nanosleep here for 0,01 sec
-					usleep (10000);
-				}
-				log_message ('', "\n");
-			} else {
-				log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
-			}
-		}
-		else {
-			log_message ('PURGE', 'No data in tagente_datos_log4x.');
-		}
 	}
 	else {
 		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');

@@ -638,7 +638,8 @@ function stacked_gauge(
     $font='',
     $font_size='',
     $unit='',
-    $homeurl=''
+    $homeurl='',
+    $transitionDuration=500
 ) {
     include_once 'functions_d3.php';
 
@@ -656,7 +657,8 @@ function stacked_gauge(
         $unit,
         $font,
         ($font_size + 2),
-        $no_data_image
+        $no_data_image,
+        $transitionDuration
     );
 }
 

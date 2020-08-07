@@ -1271,6 +1271,7 @@ ALTER TABLE talert_snmp_action ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
 -- ----------------------------------------------------------------------
 ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 ALTER TABLE `tserver` MODIFY COLUMN `server_keepalive` int(11) NOT NULL DEFAULT '0';
+ALTER TABLE `tserver` MODIFY COLUMN `version` varchar(25) NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`
@@ -1350,13 +1351,13 @@ ALTER TABLE `ttag` ADD COLUMN `previous_name` text default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 39);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 40);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '747');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '748');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1550,7 +1551,16 @@ ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `is_favourite` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `unknown_as_critical` tinyint(1) NOT NULL default 0 AFTER `warning`;
+
 UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
+-- ALl previous services are manual now.
+UPDATE `tservice` SET `auto_calculate` = 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tservice_element`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tservice_element` ADD COLUMN `rules` text;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`

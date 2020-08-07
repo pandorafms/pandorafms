@@ -1077,7 +1077,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`checksum` tinyint(3) unsigned NOT NULL default '0',
 	`description` varchar(255) default NULL,
 	`recon_server` tinyint(3) unsigned NOT NULL default '0',
-	`version` varchar(20) NOT NULL default '',
+	`version` varchar(25) NOT NULL default '',
 	`plugin_server` tinyint(3) unsigned NOT NULL default '0',
 	`prediction_server` tinyint(3) unsigned NOT NULL default '0',
 	`wmi_server` tinyint(3) unsigned NOT NULL default '0',
@@ -2704,6 +2704,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`critical` float(20,3) NOT NULL default 0,
 	`warning` float(20,3) NOT NULL default 0,
+	`unknown_as_critical` tinyint(1) NOT NULL default 0,
 	`service_interval` float(20,3) NOT NULL default 0,
 	`service_value` float(20,3) NOT NULL default 0,
 	`status` tinyint(3) NOT NULL default -1,
@@ -2744,6 +2745,7 @@ CREATE TABLE IF NOT EXISTS `tservice_element` (
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`id_service_child` int(10) unsigned NOT NULL default 0,
 	`id_server_meta` int(10)  unsigned NOT NULL default 0,
+	`rules` text,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define the modules and the weights of the modules that define a service' 

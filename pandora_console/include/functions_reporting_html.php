@@ -2884,7 +2884,7 @@ function reporting_html_agent_configuration(
             $row['description'] = $module['description'];
             $row['interval'] = $module['interval'];
             $row['unit'] = $module['unit'];
-            $row['status'] = $module['status_icon'];
+            $row['status'] = ($pdf === 0) ? $module['status_icon'] : explode(':', $module['status'])[0];
             $row['tags'] = implode(',', $module['tags']);
 
             $table1->data[] = $row;
@@ -3928,10 +3928,10 @@ function reporting_html_general($table, $item, $pdf=0)
                             $table1->data[] = [
                                 agents_get_alias($id_agent),
                                 modules_get_agentmodule_name($id_module),
-                                $row2['Rate'],
-                                $row2['Maximum'],
-                                $row2['Minimum'],
-                                $row2['Summatory'],
+                                $row2['all'][0],
+                                $row2['all'][1],
+                                $row2['all'][2],
+                                $row2['all'][3],
                             ];
                         }
                     }
@@ -4014,7 +4014,7 @@ function reporting_html_general($table, $item, $pdf=0)
 
         $table_summary->data[0][0] = $item['min']['agent'].' - '.$item['min']['module'].str_repeat('&nbsp;', 20).$item['min']['formated_value'];
         $table_summary->data[0][1] = '';
-        $table_summary->data[0][2] = format_for_graph($item['avg_value'], 2);
+        $table_summary->data[0][2] = $item['avg_value'];
         $table_summary->data[0][3] = $item['max']['agent'].' - '.$item['max']['module'].str_repeat('&nbsp;', 20).$item['max']['formated_value'];
         $table_summary->data[0][4] = '';
 

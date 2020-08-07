@@ -1340,6 +1340,10 @@ function config_update_config()
                         $error_update[] = __('CSV divider');
                     }
 
+                    if (!config_update_value('csv_decimal_separator', (string) get_parameter('csv_decimal_separator', '.'))) {
+                        $error_update[] = __('CSV decimal separator');
+                    }
+
                     if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
                         $error_update[] = __('Use data multiplier');
                     }
@@ -2873,6 +2877,10 @@ function config_process_config()
 
     if (!isset($config['csv_divider'])) {
         config_update_value('csv_divider', ';');
+    }
+
+    if (!isset($config['csv_decimal_separator'])) {
+        config_update_value('csv_decimal_separator', '.');
     }
 
     if (!isset($config['use_data_multiplier'])) {

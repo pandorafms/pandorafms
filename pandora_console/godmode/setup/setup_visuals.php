@@ -870,8 +870,8 @@ $row++;
     $table_chars->data[$row][0] = __('Show only average');
 
     $options_soft_graphs    = [];
-    $options_soft_graphs[0] = __('Standard mode');
-    $options_soft_graphs[1] = __('Classic mode');
+    $options_soft_graphs[0] = __('Show only average by default');
+    $options_soft_graphs[1] = __('Show MAX/AVG/MIN by default');
 
     $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
     $row++;
@@ -1339,6 +1339,15 @@ $row++;
         $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
         $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
     }
+
+    $row++;
+
+    $decimal_separator = [
+        '.' => '.',
+        ',' => ',',
+    ];
+    $table_other->data[$row][0] = __('CSV decimal separator').ui_print_help_tip(__('Only for csv reports'), true);
+    $table_other->data[$row][1] = html_print_select($decimal_separator, 'csv_decimal_separator', $config['csv_decimal_separator'], '', '', '', true, false, false);
 
     $row++;
 

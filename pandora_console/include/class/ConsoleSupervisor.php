@@ -1221,6 +1221,9 @@ class ConsoleSupervisor
             // At this point there's no servers with issues.
             $this->cleanNotifications('NOTIF.SERVER.STATUS%');
             return;
+        } else {
+            // Clean notifications. Only show notif for down servers.
+            $this->cleanNotifications('NOTIF.SERVER.STATUS%');
         }
 
         foreach ($servers as $server) {

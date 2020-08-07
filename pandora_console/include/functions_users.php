@@ -668,3 +668,106 @@ function get_name_admin():string
 
     return $mail;
 }
+
+
+/**
+ * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_groups_UM($id_user)
+{
+    $sql = sprintf(
+        "SELECT id_grupo, user_management FROM tusuario_perfil
+        LEFT JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+        WHERE id_usuario like '%s' AND user_management = 1  ORDER BY id_grupo",
+        $id_user
+    );
+
+    $groups = db_get_all_rows_sql($sql);
+    $return = [];
+    foreach ($groups as $key => $group) {
+        if (!isset($return[$group['id_grupo']]) || (isset($return[$group['id_grupo']]) && $group['user_management'] != 0)) {
+            $return[$group['id_grupo']] = $group['user_management'];
+        }
+    }
+
+    return $return;
+}
+
+
+/**
+ * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_users_by_group($id_group, $um=false)
+{
+    $sql = sprintf(
+        "SELECT tusuario.* FROM tusuario 
+        INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user 
+        AND tusuario_perfil.id_grupo = '%s'",
+        $id_group
+    );
+
+    $users = db_get_all_rows_sql($sql);
+    $return = [];
+    foreach ($users as $key => $user) {
+        $return[$user['id_user']] = $user;
+        $return[$user['id_user']]['edit'] = $um;
+    }
+
+    return $return;
+}
+
+
+function users_has_profile_without_UM($id_user, $id_groups)
+{
+    $sql = sprintf(
+        "SELECT id_usuario, tperfil.user_management FROM tusuario_perfil
+        INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil AND tperfil.user_management = 0
+        WHERE tusuario_perfil.id_usuario like '%s' AND tusuario_perfil.id_grupo IN (%s)
+        ORDER BY tperfil.user_management DESC",
+        $id_user,
+        $id_groups
+    );
+
+    $without_um = db_get_all_rows_sql($sql);
+
+    if (isset($without_um[0])) {
+        $sql = sprintf(
+            "SELECT id_grupo, tperfil.* FROM tusuario_perfil
+            INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+            WHERE tusuario_perfil.id_usuario like '%s'
+            ORDER BY tperfil.user_management DESC",
+            $id_user
+        );
+
+        $um = db_get_all_rows_sql($sql);
+        return 1;
+    } else {
+        return 0;
+    }
+
+}
+
+
+function users_get_user_profile($id_user)
+{
+    $sql = sprintf(
+        "SELECT * FROM tusuario_perfil
+        INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+        WHERE tusuario_perfil.id_usuario like '%s'",
+        $id_user
+    );
+
+    $aux = db_get_all_rows_sql($sql);
+    $user_profiles = [];
+    foreach ($aux as $key => $value) {
+        $user_profiles[$value['id_grupo']] = $value;
+    }
+
+    return $user_profiles;
+}

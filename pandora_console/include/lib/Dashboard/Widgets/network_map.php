@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Dashboard\Manager;
+
 /**
  * Network map Widgets.
  */
@@ -389,8 +391,8 @@ class NetworkMapWidget extends Widget
                 'y_offset'      => $y_offset,
                 'zoom_dash'     => $zoom_dash,
                 'id_user'       => $config['id_user'],
-                'hash'          => $hash,
-
+                'auth_class'    => 'PandoraFMS\Dashboard\Manager',
+                'auth_hash'     => Manager::generatePublicHash(),
             ]
         );
 

@@ -434,8 +434,11 @@ sub sendmail {
         socket_write("STARTTLS$CRLF") || return fail("send STARTTLS error");
         socket_read()
             || return fail('STARTTLS error');
-        IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
-            || return fail("start_SSL failed");
+        {
+            local $SIG{__DIE__};
+            IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
+                || return fail("start_SSL failed");
+        };
 
         # The client SHOULD send an EHLO command as the
         # first command after a successful TLS negotiation.

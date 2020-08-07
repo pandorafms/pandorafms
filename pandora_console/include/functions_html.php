@@ -737,7 +737,11 @@ function html_print_select_multiple_filtered(
     array $sections=[]
 ) {
     ui_require_css_file('multiselect_filtered');
-    ui_require_javascript_file('multiselect_filtered');
+    if (is_ajax() === true) {
+        ui_require_javascript_file('multiselect_filtered', 'include/javascript/', true);
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
 
     if (empty($name) === true) {
         $rid = uniqid();
@@ -794,7 +798,7 @@ function html_print_select_multiple_filtered(
     }
 
     // Main container.
-    $output .= '<div class="multi-select flex-row-vcenter '.$class.'">';
+    $output = '<div class="multi-select flex-row-vcenter '.$class.'">';
 
     // Left box.
     $output .= '<div class="multi-select-container flex-column">';
@@ -941,7 +945,7 @@ function html_print_select_multiple_filtered(
 
     $output .= '</div>';
 
-    // Left box.
+    // Right box.
     $output .= '<div class="multi-select-container flex-column">';
 
     // Filtering.
@@ -1055,6 +1059,151 @@ function html_print_select_multiple_filtered(
     $output .= '</div>';
 
     if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Form multiple inputs for slect groups.
+ *
+ * @param array $data Data inputs.
+ *
+ * @return string Html output.
+ */
+function html_print_select_multiple_modules_filtered(array $data):string
+{
+    if (is_ajax() === true) {
+        ui_require_javascript_file(
+            'multiselect_filtered',
+            'include/javascript/',
+            true
+        );
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
+
+    $uniqId = $data['uniqId'];
+
+    // Group.
+    $output = '<div>';
+    $output .= html_print_input(
+        [
+            'label'          => __('Group'),
+            'name'           => 'filtered-module-group-'.$uniqId,
+            'returnAllGroup' => true,
+            'privilege'      => 'AR',
+            'type'           => 'select_groups',
+            'return'         => true,
+            'script'         => 'fmAgentChange(\''.$uniqId.'\')',
+            'selected'       => $data['mGroup'],
+        ]
+    );
+
+    // Recursion.
+    $output .= html_print_input(
+        [
+            'label'    => __('Recursion'),
+            'type'     => 'switch',
+            'name'     => 'filtered-module-recursion-'.$uniqId,
+            'value'    => (empty($data['mRecursion']) === true) ? false : true,
+            'checked'  => (empty($data['mRecursion']) === true) ? false : true,
+            'return'   => true,
+            'id'       => 'filtered-module-recursion-'.$uniqId,
+            'onchange' => 'fmAgentChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    // Groups module.
+    $module_groups = db_get_all_rows_sql(
+        'SELECT * FROM tmodule_group ORDER BY name'
+    );
+    $module_groups = array_reduce(
+        $module_groups,
+        function ($carry, $item) {
+            $carry[$item['id_mg']] = $item['name'];
+            return $carry;
+        }
+    );
+
+    $output .= html_print_input(
+        [
+            'label'         => __('Module group'),
+            'type'          => 'select',
+            'fields'        => $module_groups,
+            'name'          => 'filtered-module-module-group-'.$uniqId,
+            'selected'      => $data['mModuleGroup'],
+            'return'        => true,
+            'nothing'       => __('All'),
+            'nothing_value' => 0,
+            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+    $output .= '</div>';
+
+    $output .= '<div>';
+    // Agent.
+    $agents = agents_get_group_agents($data['mGroup']);
+    if ((empty($agents)) === true || $agents == -1) {
+        $agents = [];
+    }
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Agents'),
+            'type'     => 'select',
+            'fields'   => $agents,
+            'name'     => 'filtered-module-agents-'.$uniqId,
+            'selected' => explode(',', $data['mAgents']),
+            'return'   => true,
+            'multiple' => true,
+            'style'    => 'min-width: 200px;max-width:200px;',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    // Show common modules.
+    $selection = [
+        0 => __('Show common modules'),
+        1 => __('Show all modules'),
+    ];
+    $output .= html_print_input(
+        [
+            'label'    => __('Show common modules'),
+            'type'     => 'select',
+            'fields'   => $selection,
+            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
+            'selected' => $data['mShowCommonModules'],
+            'return'   => true,
+            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    $all_modules = select_modules_for_agent_group(
+        $data['mModuleGroup'],
+        explode(',', $data['mAgents']),
+        $data['mShowCommonModules'],
+        false
+    );
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Modules'),
+            'type'     => 'select',
+            'fields'   => $all_modules,
+            'name'     => 'filtered-module-modules-'.$uniqId,
+            'selected' => explode(',', $data['mModules']),
+            'return'   => true,
+            'multiple' => true,
+            'style'    => 'min-width: 200px;max-width:200px;',
+        ]
+    );
+
+    $output .= '</div>';
+
+    if ($data['return'] === false) {
         echo $output;
     }
 
@@ -1616,6 +1765,55 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
 
 
 /**
+ * Prints an input slide.
+ *
+ * @param string  $name    Name.
+ * @param integer $value   Value.
+ * @param string  $id      Id.
+ * @param boolean $return  Return.
+ * @param integer $min     Min.
+ * @param integer $max     Max.
+ * @param integer $step    Step.
+ * @param string  $class   Class.
+ * @param string  $oninput Oninput.
+ *
+ * @return string HTML code for input.
+ */
+function html_print_input_range(
+    $name,
+    $value,
+    $id='',
+    $return=true,
+    $min=0,
+    $max=100,
+    $step=1,
+    $class='',
+    $oninput=''
+) {
+    $output = '<input type="range" ';
+    if (isset($value) === true) {
+        $output .= ' value="'.$value.'" ';
+    }
+
+    $output .= ' name="'.$name.'" ';
+    $output .= ' id="'.$id.'" ';
+    $output .= ' min="'.$min.'" ';
+    $output .= ' max="'.$max.'" ';
+    $output .= ' step="'.$step.'" ';
+    $output .= ' class="'.$class.'" ';
+    $output .= ' oninput="'.$oninput.'" ';
+
+    $output .= ' />';
+
+    if ($return === false) {
+        echo $return;
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input text element. Extended version, use html_print_input_text() to simplify.
  *
  * @param string  $name       Input name.
@@ -1639,13 +1837,14 @@ function html_print_input_text_extended(
     $alt,
     $size,
     $maxlength,
-    $disabled,
+    $readonly,
     $script,
     $attributes,
     $return=false,
     $password=false,
     $function='',
-    $autocomplete='off'
+    $autocomplete='off',
+    $disabled=false
 ) {
     static $idcounter = 0;
 
@@ -1701,8 +1900,12 @@ function html_print_input_text_extended(
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
 
-    if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
+    if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
         $output .= 'readonly="readonly" ';
+    }
+
+    if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
+        $output .= 'disabled="disabled" ';
     }
 
     if (is_array($attributes)) {
@@ -1908,7 +2111,7 @@ function html_print_input_text(
     $size=50,
     $maxlength=255,
     $return=false,
-    $disabled=false,
+    $readonly=false,
     $required=false,
     $function='',
     $class='',
@@ -1917,7 +2120,8 @@ function html_print_input_text(
     $autofocus=false,
     $onKeyDown='',
     $formTo='',
-    $onKeyUp=''
+    $onKeyUp='',
+    $disabled=false
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -1969,12 +2173,14 @@ function html_print_input_text(
         $alt,
         $size,
         $maxlength,
-        $disabled,
+        $readonly,
         '',
         $attr,
         $return,
         false,
-        $function
+        $function,
+        'off',
+        $disabled
     );
 }
 
@@ -2467,8 +2673,16 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='', $disable=false)
-{
+function html_print_textarea(
+    $name,
+    $rows,
+    $columns,
+    $value='',
+    $attributes='',
+    $return=false,
+    $class='',
+    $disable=false
+) {
     $disabled = ($disable) ? 'disabled' : '';
     $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
@@ -2829,7 +3043,11 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                if ($class === 'datos5' && $key === 1) {
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                } else {
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                }
             }
 
             $output .= '</tr>'."\n";
@@ -3661,20 +3879,15 @@ function html_print_timezone_select($name, $selected='')
  * Enclose a text into a result_div
  *
  * @param string Text to enclose
- * @param boolean Return formatted text without html tags.
  *
  * @return string Text inside the result_div
  */
-function html_print_result_div($text, $text_only)
+function html_print_result_div($text)
 {
     $text = preg_replace('/</', '&lt;', $text);
     $text = preg_replace('/>/', '&gt;', $text);
     $text = preg_replace('/\n/i', '<br>', $text);
     $text = preg_replace('/\s/i', '&nbsp;', $text);
-
-    if ($text_only) {
-        return $text;
-    }
 
     $enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
     $enclose .= $text;
@@ -3746,6 +3959,8 @@ function html_print_csrf_error()
  * disabled: Disabled. Cannot be pressed.
  * id: Optional id for the switch.
  * class: Additional classes (string).
+ * value: Check or not (boolean).
+ * disabled: Enabled or disabled (boolean).
  *
  * @return string with HTML of button.
  */
@@ -3884,6 +4099,20 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : '')
+            );
+        break;
+
+        case 'range':
+            $output .= html_print_input_range(
+                $data['name'],
+                $data['value'],
+                (isset($data['id']) ? $data['id'] : ''),
+                (isset($data['return']) ? $data['return'] : true),
+                (isset($data['min']) ? $data['min'] : 0),
+                (isset($data['max']) ? $data['max'] : 100),
+                (isset($data['step']) ? $data['step'] : 1),
+                (isset($data['class']) ? $data['class'] : ''),
+                (isset($data['oninput']) ? $data['oninput'] : '')
             );
         break;
 
@@ -4046,6 +4275,25 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'select_metaconsole_nodes':
+            $output .= html_print_select_from_sql(
+                'SELECT `id`, `server_name` FROM `tmetaconsole_setup`',
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+        break;
+
         case 'select_for_unit':
             $output .= html_print_extended_select_for_unit(
                 $data['name'],
@@ -4058,7 +4306,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['select_style']) === true) ? $data['select_style'] : false),
                 ((isset($data['unique_name']) === true) ? $data['unique_name'] : true),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : 0)
+                ((isset($data['no_change']) === true) ? $data['no_change'] : 0)
             );
 
         case 'submit':
@@ -4093,7 +4341,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'interval':
             $output .= html_print_extended_select_for_time(
                 $data['name'],
-                $data['value'],
+                ((isset($data['value']) === true) ? $data['value'] : $data['selected']),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
                 ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
                 ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
@@ -4154,6 +4402,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_multicheck($data);
         break;
 
+        case 'agent_autocomplete':
+            // Direct assignment of parameters.
+            $output .= ui_print_agent_autocomplete_input($data);
+        break;
+
         case 'autocomplete_agent':
             $agent_name = '';
             if (isset($data['id_agent_hidden']) === true
@@ -4186,6 +4439,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             }
 
             $params = [];
+            $params['disabled'] = $data['disabled'];
             $params['return'] = $data['return'];
             $params['show_helptip'] = false;
             $params['input_name'] = $data['name'];
@@ -4249,7 +4503,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0 => __('Select an Agent first'),
                 ];
             } else {
-                $string_filter .= '';
+                $string_filter = '';
                 if ($data['get_only_string_modules'] === true) {
                     $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
                 }
@@ -4333,6 +4587,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['texts']) === true) ? $data['texts'] : []),
                 ((isset($data['sections']) === true) ? $data['sections'] : [])
             );
+        break;
+
+        case 'select_multiple_modules_filtered':
+            $output .= html_print_select_multiple_modules_filtered($data);
         break;
 
         default:

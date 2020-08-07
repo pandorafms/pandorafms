@@ -101,12 +101,35 @@ $slides['text'] .= html_print_image(
 );
 $slides['text'] .= '</a>';
 
-// Refresh selector time dashboards.
-$queryRefresh = [
+// Public Url.
+$queryPublic = [
     'dashboardId' => $dashboardId,
+    'hash'        => $hash,
+    'id_user'     => $config['id_user'],
     'pure'        => 1,
 ];
-$urlRefresh = $url.'&'.http_build_query($queryRefresh);
+$publicUrl = ui_get_full_url(
+    'operation/dashboard/public_dashboard.php?'.http_build_query($queryPublic)
+);
+$publiclink['text'] = '<a id="public_link" href="'.$publicUrl.'" target="_blank">';
+$publiclink['text'] .= html_print_image(
+    'images/camera_mc.png',
+    true,
+    ['title' => __('Show link to public dashboard')]
+);
+$publiclink['text'] .= '</a>';
+
+// Refresh selector time dashboards.
+if ($config['public_dashboard'] === true) {
+    $urlRefresh = $publicUrl;
+} else {
+    $queryRefresh = [
+        'dashboardId' => $dashboardId,
+        'pure'        => 1,
+    ];
+    $urlRefresh = $url.'&'.http_build_query($queryRefresh);
+}
+
 $comboRefresh['text'] = '<div class="dashboard-countdown" style="display: inline;"></div>';
 $comboRefresh['text'] .= '<form id="refr-form" method="post" action="'.$urlRefresh.'">';
 $comboRefresh['text'] .= __('Refresh').':';
@@ -165,7 +188,12 @@ $newWidget['text'] .= html_print_image(
 );
 $newWidget['text'] .= '</a>';
 
-if ($config['pure']) {
+if ($config['public_dashboard'] === true) {
+    $buttons = [
+        'combo_refresh_one_dashboard' => $comboRefresh,
+        // 'slides'                      => $slides,
+    ];
+} else if ($config['pure']) {
     $buttons = [
         'back_to_dashboard_list'      => $back_to_dashboard_list,
         'save_layout'                 => $save_layout_dashboard,
@@ -180,6 +208,7 @@ if ($config['pure']) {
         'back_to_dashboard_list' => $back_to_dashboard_list,
         'fullscreen'             => $fullscreen,
         'slides'                 => $slides,
+        'public_link'            => $publiclink,
         'combo_dashboard'        => $combo_dashboard,
         'options'                => $options,
         'newWidget'              => $newWidget,

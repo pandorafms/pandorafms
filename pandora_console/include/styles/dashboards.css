@@ -503,3 +503,30 @@ div#main_pure {
 .content-widget .databox.filters > tbody > tr > td {
   padding-right: 30px;
 }
+
+#select_multiple_modules_filtered {
+  border: 1px solid #c1c1c1;
+  border-radius: 10px;
+}
+
+#select_multiple_modules_filtered > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 5px;
+  flex-wrap: wrap;
+  flex: 1 1 320px;
+}
+
+#select_multiple_modules_filtered > div > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#select_multiple_modules_filtered > div > div > * {
+  flex: auto;
+}

@@ -171,6 +171,11 @@ if ($delete_action) {
     );
 }
 
+if (is_central_policies_on_node() === true) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+    );
+}
 
 $search_string = (string) get_parameter('search_string', '');
 $group = (int) get_parameter('group', 0);
@@ -224,8 +229,11 @@ $table->data = [];
 $table->head = [];
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
-$table->head[2] = __('Copy');
-$table->head[3] = __('Delete');
+if (is_central_policies_on_node() === false) {
+    $table->head[2] = __('Copy');
+    $table->head[3] = __('Delete');
+}
+
 $table->style = [];
 $table->style[0] = 'font-weight: bold';
 $table->size = [];
@@ -292,7 +300,9 @@ foreach ($actions as $action) {
         );
     }
 
-    if (check_acl($config['id_user'], $action['id_group'], 'LM')) {
+    if (is_central_policies_on_node() === false
+        && check_acl($config['id_user'], $action['id_group'], 'LM')
+    ) {
         $table->cellclass[] = [
             2 => 'action_buttons',
             3 => 'action_buttons',
@@ -318,12 +328,14 @@ if (isset($data)) {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert actions configured') ]);
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
-html_print_input_hidden('create_alert', 1);
-echo '</form>';
-echo '</div>';
+if (is_central_policies_on_node() === false) {
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
+    html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+    html_print_input_hidden('create_alert', 1);
+    echo '</form>';
+    echo '</div>';
+}
 
 enterprise_hook('close_meta_frame');
 ?>

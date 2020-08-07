@@ -33,13 +33,12 @@ table.header_table {
 }
 
 table.header_table thead tr th,
-table.header_table tbody tr td {
+table.header_table tr td {
   padding: 10px;
-  background-color: #acacac;
 }
 
 table thead tr th {
-  background-color: #acacac;
+  background-color: #919191;
 }
 
 table thead tr th.title_table_pdf {
@@ -91,7 +90,7 @@ table.table_agent_module tr td {
   padding: 5px;
 }
 
-table.header_table tbody tr td {
+table.header_table tbody tr {
   background-color: #fafafa;
 }
 
@@ -153,4 +152,64 @@ span.mpdf_toc_t_level_2 {
 
 span.mpdf_toc_p_level_2 {
   /* Page no. level 2 - may be inside <a> */
+}
+
+table tbody td.cellCritical {
+  background: #f85858;
+  color: #fff;
+}
+
+table tbody td.cellBold {
+  font-weight: bold;
+}
+
+table tbody td.cellRight {
+  text-align: right;
+}
+
+table tbody td.cellCenter {
+  text-align: center;
+}
+
+table tbody td.cellWhite {
+  background: #fff;
+  color: #111;
+}
+
+table tbody td.cellNormal {
+  background: #6eb432;
+  color: #fff;
+}
+
+table tbody td.cellCritical {
+  background: #f85858;
+  color: #fff;
+}
+
+table tbody td.cellWarning {
+  background: #ffea59;
+  color: #111;
+}
+
+table tbody td.cellUnknown {
+  background: #aaaaaa;
+  color: #ffffff;
+}
+
+table tbody td.cellNotInit {
+  background: #4a83f3;
+  color: #ffffff;
+}
+
+table tbody td.cellAlert {
+  background: #ff8800;
+  color: #111;
+}
+
+table tbody td.cellBorder1 {
+  border: 1px solid #666;
+}
+
+table tbody td.cellBig {
+  font-size: 18px;
 }

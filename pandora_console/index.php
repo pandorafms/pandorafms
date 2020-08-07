@@ -31,6 +31,8 @@ if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
 
+require 'vendor/autoload.php';
+
 if (__PAN_XHPROF__ === 1) {
     if (function_exists('tideways_xhprof_enable')) {
         tideways_xhprof_enable();
@@ -1246,6 +1248,12 @@ echo '</div>';
 
 echo '<div id="um_msg_receiver">';
 echo '</div>';
+
+
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 
 if ($config['pure'] == 0) {
     echo '</div>';

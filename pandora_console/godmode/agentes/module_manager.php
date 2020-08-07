@@ -55,7 +55,6 @@ echo __('Search').' '.html_print_input_text(
     true
 );
 html_print_input_hidden('search', 1);
-echo '</form>';
 // Search string filter form.
 if (($policy_page) || (isset($agent))) {
     echo '<form id="" method="post" action="">';

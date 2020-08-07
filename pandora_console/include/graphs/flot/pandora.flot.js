@@ -2432,7 +2432,7 @@ function pandoraFlotArea(
             if (!value[x]) {
               x = x + 1;
             }
-            if (value[x].min) {
+            if (typeof value[x].min !== "undefined" && value[x].min) {
               min_y_array = format_unit_yaxes(value[x].min);
               min_y = min_y_array["y"];
               min_bigger = min_y_array["unit"];
@@ -2441,7 +2441,7 @@ function pandoraFlotArea(
               min_bigger = "";
             }
 
-            if (value[x].max) {
+            if (typeof value[x].max !== "undefined" && value[x].max) {
               max_y_array = format_unit_yaxes(value[x].max);
               max_y = max_y_array["y"];
               max_bigger = max_y_array["unit"];
@@ -2450,7 +2450,7 @@ function pandoraFlotArea(
               max_bigger = "";
             }
 
-            if (value[x].avg) {
+            if (typeof value[x].avg !== "undefined" && value[x].avg) {
               avg_y_array = format_unit_yaxes(value[x].avg);
               avg_y = avg_y_array["y"];
               avg_bigger = avg_y_array["unit"];

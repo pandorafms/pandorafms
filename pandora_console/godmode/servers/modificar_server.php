@@ -140,8 +140,8 @@ if (isset($_GET['server'])) {
             ui_print_error_message(__('There was a problem deleting the server'));
         }
     } else if (isset($_GET['update'])) {
-        $address = get_parameter_post('address');
-        $description = get_parameter_post('description');
+        $address = trim(get_parameter_post('address'), '&#x20;');
+        $description = trim(get_parameter_post('description'), '&#x20;');
         $id_server = get_parameter_post('server');
         $exec_proxy = get_parameter_post('exec_proxy');
         $port = get_parameter_post('port');

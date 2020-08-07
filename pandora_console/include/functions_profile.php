@@ -188,6 +188,7 @@ function profile_print_profile_table($id)
     $title = __('Profiles/Groups assigned to this user');
 
     $table = new stdClass();
+    $table->id = 'table_profiles';
     $table->width = '100%';
     $table->class = 'info_table';
     if (defined('METACONSOLE')) {
@@ -216,10 +217,30 @@ function profile_print_profile_table($id)
     $table->head['actions'] = __('Action');
     $table->align['actions'] = 'center';
 
-    $result = db_get_all_rows_filter(
-        'tusuario_perfil',
-        ['id_usuario' => $id]
-    );
+    if (users_is_admin()) {
+        $result = db_get_all_rows_filter(
+            'tusuario_perfil',
+            ['id_usuario' => $id]
+        );
+    } else {
+        // Only profiles that can be viewed by the user.
+        $group_um = users_get_groups_UM($config['id_user']);
+        if (isset($group_um[0])) {
+            $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
+        } else {
+            $group_um_string = implode(',', array_keys($group_um));
+        }
+
+        $sql = sprintf(
+            "SELECT tusuario_perfil.* FROM tusuario_perfil
+            INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+            WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
+            $id,
+            $group_um_string
+        );
+
+        $result = db_get_all_rows_sql($sql);
+    }
 
     if ($result === false) {
         $result = [];
@@ -285,6 +306,7 @@ function profile_print_profile_table($id)
                 [
                     'pandora_management' => '<> 1',
                     'db_management'      => '<> 1',
+                    'user_management'    => '<> 1',
                 ]
             ),
             'assign_profile',

@@ -60,7 +60,7 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            '',
+            'alert_config',
             true
         );
     }
@@ -73,7 +73,7 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            '',
+            'alert_config',
             true
         );
     }

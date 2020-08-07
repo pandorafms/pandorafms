@@ -2042,9 +2042,10 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 	`id_tag` integer(10) unsigned NOT NULL auto_increment, 
 	`name` varchar(100) NOT NULL default '', 
 	`description` text NOT NULL, 
-	`url` mediumtext NOT NULL, 
+	`url` mediumtext NOT NULL,
 	`email` text NULL,
 	`phone` text NULL,
+	`previous_name` text default '',
 	PRIMARY KEY  (`id_tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 

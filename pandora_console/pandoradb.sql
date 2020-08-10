@@ -586,7 +586,6 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
 	`icon_name` varchar(100) default '',
-	`previous_name` text default '', 
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2045,7 +2044,7 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 	`url` mediumtext NOT NULL,
 	`email` text NULL,
 	`phone` text NULL,
-	`previous_name` text default '',
+	`previous_name` text NULL,
 	PRIMARY KEY  (`id_tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 

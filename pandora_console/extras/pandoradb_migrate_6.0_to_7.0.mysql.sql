@@ -1343,7 +1343,7 @@ ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 -- ---------------------------------------------------------------------
 -- Table `ttag`
 -- ---------------------------------------------------------------------
-ALTER TABLE `ttag` ADD COLUMN `previous_name` text default '';
+ALTER TABLE `ttag` ADD COLUMN `previous_name` text NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`
@@ -1389,9 +1389,9 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
 -- Table `tconfig_os`
 -- ---------------------------------------------------------------------
 
-ALTER TABLE `tconfig_os` ADD COLUMN `previous_name` text default '';
+ALTER TABLE `tconfig_os` ADD COLUMN `previous_name` text NULL;
 
-INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
 	
 UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
 

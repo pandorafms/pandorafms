@@ -374,7 +374,6 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
-	`previous_name` text,
 	`command` text,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`description` text,
@@ -382,6 +381,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`fields_descriptions` TEXT,
 	`fields_values` TEXT,
 	`fields_hidden` TEXT,
+	`previous_name` text,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -391,7 +391,6 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` text,
-	`previous_name` text,
 	`id_alert_command` int(10) unsigned NULL default 0,
 	`field1` text NOT NULL,
 	`field2` text NOT NULL,
@@ -425,6 +424,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field13_recovery` text NOT NULL,
 	`field14_recovery` text NOT NULL,
 	`field15_recovery` text NOT NULL,
+	`previous_name` text,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -436,7 +436,6 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` text,
-	`previous_name` text,
 	`description` mediumtext,
 	`id_alert_action` int(10) unsigned NULL,
 	`field1` text NOT NULL,
@@ -493,6 +492,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`min_alerts_reset_counter` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
+	`previous_name` text,
 	PRIMARY KEY  (`id`),
 	KEY `idx_template_action` (`id_alert_action`),
 	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -586,6 +586,7 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
 	`icon_name` varchar(100) default '',
+	`previous_name` text NULL,
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

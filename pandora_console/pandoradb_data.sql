@@ -150,27 +150,27 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES 
-(1,'Linux','Linux: All versions','so_linux.png'),
-(2,'Solaris','Sun Solaris','so_solaris.png'),
-(3,'AIX','IBM AIX','so_aix.png'),
-(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png'),
-(5,'HP-UX','HP-UX Unix OS','so_hpux.png'),
-(7,'Cisco','CISCO IOS','so_cisco.png'),
-(8,'MacOS','MAC OS','so_mac.png'),
-(9,'Windows','Microsoft Windows OS','so_win.png'),
-(10,'Other','Other SO','so_other.png'),
-(11,'Network','Network Agent','network.png'),
-(12,'Web Server','Web Server/Application','network.png'),
-(13,'Sensor','Hardware Agent (Sensor)','network.png'),
-(14,'Embedded','Embedded device running an agent','embedded.png'),
-(15,'Android','Android agent','android.png'),
-(16, 'VMware', 'VMware Architecture', 'so_vmware.png'),
-(17, 'Router', 'Generic router', 'so_router.png'),
-(18, 'Switch', 'Generic switch', 'so_switch.png'),
-(19, 'Satellite', 'Satellite agent', 'satellite.png'),
-(20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png'),
-(100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`, `previous_name`) VALUES 
+(1,'Linux','Linux: All versions','so_linux.png', ''),
+(2,'Solaris','Sun Solaris','so_solaris.png', ''),
+(3,'AIX','IBM AIX','so_aix.png', ''),
+(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png', ''),
+(5,'HP-UX','HP-UX Unix OS','so_hpux.png', ''),
+(7,'Cisco','CISCO IOS','so_cisco.png', ''),
+(8,'MacOS','MAC OS','so_mac.png', ''),
+(9,'Windows','Microsoft Windows OS','so_win.png', ''),
+(10,'Other','Other SO','so_other.png', ''),
+(11,'Network','Network Agent','network.png', ''),
+(12,'Web Server','Web Server/Application','network.png', ''),
+(13,'Sensor','Hardware Agent (Sensor)','network.png', ''),
+(14,'Embedded','Embedded device running an agent','embedded.png', ''),
+(15,'Android','Android agent','android.png', ''),
+(16, 'VMware', 'VMware Architecture', 'so_vmware.png', ''),
+(17, 'Router', 'Generic router', 'so_router.png', ''),
+(18, 'Switch', 'Generic switch', 'so_switch.png', ''),
+(19, 'Satellite', 'Satellite agent', 'satellite.png', ''),
+(20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png', ''),
+(100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
 UNLOCK TABLES;
 
 

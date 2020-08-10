@@ -541,8 +541,9 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         pandora_setlocale();
 
         $title = human_time_comparation($unixtime);
+        $strf_format = date2strftime_format($config['date_format'], $unixtime);
         $data = strftime(
-            date2strftime_format($config['date_format']),
+            $strf_format,
             $unixtime
         );
     } else if ($prominent == 'compact') {

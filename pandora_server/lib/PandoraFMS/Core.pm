@@ -1190,7 +1190,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => undef,
+				_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", get_db_value ($dbh, "SELECT id_policy FROM tpolicy_modules WHERE id = ?", $module->{'id_policy_module'})) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
@@ -4346,6 +4346,12 @@ sub check_min_max ($$$$) {
 
 	# Out of bounds
 	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
+		if($module->{'max'} < $module->{'min'}) {
+			# Compare if there is only setted min or max.
+			return 1 unless (($module->{'max'} == 0 && $data < $module->{'min'}) || ($module->{'min'} == 0 && $data > $module->{'max'}));
+			
+		}  
+
 		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		return 0;
 	}

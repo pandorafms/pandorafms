@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.747 PS200727";
+my $version = "7.0NG.748 PS200810";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1129,8 +1129,13 @@ sub cli_create_agent() {
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+	my $agent_id = pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
 		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
+
+	# Create address for this agent in taddress.
+  if (defined($address)) {
+      pandora_add_agent_address($conf, $agent_id, $agent_name, $address, $dbh);
+  }
 }
 
 ##############################################################################

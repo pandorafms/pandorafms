@@ -1952,7 +1952,15 @@ function isReachable(url) {
  * Gets server origin url
  */
 function getServerUrl() {
-  return $("#php_to_js_value_absolute_homeurl").val() || window.location.origin;
+  var server_url;
+
+  try {
+    server_url = get_php_value("homeurl");
+  } catch (SyntaxError) {
+    console.warn("Pandora homeurl cannot be found.");
+    server_url = window.location.origin + "/pandora_console";
+  }
+  return server_url;
 }
 
 /**

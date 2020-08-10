@@ -183,7 +183,9 @@ class SystemGroupStatusWidget extends Widget
         $values = parent::decoders($decoder);
 
         if (isset($decoder['status']) === true) {
-            if (is_array($decoder['status']) === true) {
+            if (is_array($decoder['status']) === true
+                && count($decoder['status']) > 1
+            ) {
                 $compatibilityStatus = [];
                 foreach ($decoder['status'] as $key => $value) {
                     switch ((int) $value) {

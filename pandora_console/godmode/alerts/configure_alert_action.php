@@ -60,7 +60,7 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            '',
+            'alert_config',
             true
         );
     }
@@ -73,7 +73,7 @@ if ($al_action !== false) {
             __('Alerts').' &raquo; '.__('Configure alert action'),
             'images/gm_alerts.png',
             false,
-            '',
+            'alert_config',
             true
         );
     }
@@ -283,12 +283,12 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     // Store the value in a hidden to keep it on first execution
     $table->data['field'.$i][1] .= html_print_input_hidden(
         'field'.$i.'_value',
-        !empty($action['field'.$i]) ? $action['field'.$i] : '',
+        (!empty($action['field'.$i]) || $action['field'.$i] == 0) ? $action['field'.$i] : '',
         true
     );
     $table->data['field'.$i][2] .= html_print_input_hidden(
         'field'.$i.'_recovery_value',
-        !empty($action['field'.$i.'_recovery']) ? $action['field'.$i.'_recovery'] : '',
+        (!empty($action['field'.$i.'_recovery']) || $action['field'.$i] == 0) ? $action['field'.$i.'_recovery'] : '',
         true
     );
 }

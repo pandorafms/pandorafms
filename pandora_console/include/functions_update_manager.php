@@ -53,6 +53,23 @@ function update_manager_verify_registration()
     return false;
 }
 
+/**
+ * Check if a trial license is in use.
+ *
+ * @return boolean true if a trial license is in use, false otherwise.
+ */
+function update_manager_verify_trial()
+{
+    global $config;
+
+    if (isset($config['license_licensed_to'])
+        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== FALSE
+    ) {
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * Parses responses from configuration wizard.
@@ -439,6 +456,11 @@ function registration_wiz_modal(
 ) {
     global $config;
     $output = '';
+
+    // Do not show the wizard for trial licenses.
+    if (update_manager_verify_trial()) {
+        return '';
+    }
 
     $product_name = get_product_name();
 

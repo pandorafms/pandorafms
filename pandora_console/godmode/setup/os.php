@@ -88,7 +88,6 @@ switch ($action) {
         } else {
             header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
         }
-
     break;
 
     case 'update':

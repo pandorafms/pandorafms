@@ -1008,7 +1008,7 @@ class Diagnostics extends Wizard
         $pathErrLogs = '/var/log/pandora/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
-        $pathConsoleLogs = $config['homedir'].'/pandora_console.log';
+        $pathConsoleLogs = $config['homedir'].'/log/console.log';
         $console = $this->getLogInfo($pathConsoleLogs);
 
         $result = [
@@ -2079,7 +2079,7 @@ class Diagnostics extends Wizard
             ],
             'text'  => [
                 ui_print_error_message(__('Invalid cron task'), '', true),
-                ui_print_success_message(__('Cron task generated'), '', true),
+                ui_print_success_message(__('Sending of information has been processed'), '', true),
             ],
         ];
 

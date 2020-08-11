@@ -25,7 +25,7 @@ if (is_ajax()) {
     $method = (string) get_parameter('method', '');
     $action = (string) get_parameter('action', '');
     $target_ip = (string) get_parameter('target_ip', '');
-    $community = (string) get_parameter('community', '');
+    $community = (string) io_safe_output((get_parameter('community', '')));
     $snmp_version = (string) get_parameter('snmp_browser_version', '');
     $snmp3_auth_user = io_safe_output(get_parameter('snmp3_browser_auth_user'));
     $snmp3_security_level = get_parameter('snmp3_browser_security_level');

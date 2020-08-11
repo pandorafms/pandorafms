@@ -294,7 +294,8 @@ function d3_gauges(
     $unit,
     $font,
     $font_size,
-    $no_data_image
+    $no_data_image,
+    $transitionDuration
 ) {
     global $config;
 
@@ -310,7 +311,7 @@ function d3_gauges(
 
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
 					var data = $data;
-					createGauges(data, '$width', '$height','$font_size','$no_data_image','$font');
+					createGauges(data, '$width', '$height','$font_size','$no_data_image','$font', '$transitionDuration');
 				</script>";
 
     return $output;

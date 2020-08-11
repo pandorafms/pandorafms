@@ -86,11 +86,14 @@ function initialiceLayout(data) {
       data: {
         page: data.page,
         method: "getCellsLayout",
-        dashboardId: data.dashboardId
+        dashboardId: data.dashboardId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "json",
-      success: function(data) {
-        loadLayout(data);
+      success: function(d) {
+        loadLayout(d);
       },
       error: function(error) {
         console.error(error);
@@ -136,7 +139,8 @@ function initialiceLayout(data) {
         position.maxWidth,
         position.minHeight,
         position.maxHeight,
-        widgetId
+        widgetId,
+        false
       );
     });
     // Commit.
@@ -167,7 +171,10 @@ function initialiceLayout(data) {
         dashboardId: data.dashboardId,
         cellId: id,
         widgetId: widgetId,
-        gridWidth: gridWidth
+        gridWidth: gridWidth,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(cellData) {
@@ -205,7 +212,10 @@ function initialiceLayout(data) {
             widgetId: widgetId,
             newWidth: newWidth,
             newHeight: newHeight,
-            gridWidth: gridWidth
+            gridWidth: gridWidth,
+            auth_class: data.auth.class,
+            auth_hash: data.auth.hash,
+            id_user: data.auth.user
           },
           dataType: "html",
           success: function(widgetData) {
@@ -291,7 +301,10 @@ function initialiceLayout(data) {
         page: data.page,
         method: "saveLayout",
         dashboardId: data.dashboardId,
-        items: items
+        items: items,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(data) {
@@ -313,11 +326,14 @@ function initialiceLayout(data) {
         page: data.page,
         dashboardId: data.dashboardId,
         method: "deleteCell",
-        cellId: cellId
+        cellId: cellId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "json",
       success: function(data) {
-        // For defect x and y = 0
+        // By default x and y = 0
         // width and height = 4
         // position auto = true.
         if (data.result !== 0) {
@@ -338,11 +354,14 @@ function initialiceLayout(data) {
       data: {
         page: data.page,
         method: "insertCellLayout",
-        dashboardId: data.dashboardId
+        dashboardId: data.dashboardId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "json",
       success: function(data) {
-        // For defect x and y = 0
+        // By default x and y = 0
         // width and height = 4
         // position auto = true.
         if (data.cellId !== 0) {
@@ -373,7 +392,7 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: 450,
+        width: widgetId == 14 ? 750 : 450,
         maxHeight: 600,
         minHeight: 400
       },
@@ -536,7 +555,10 @@ function initialiceLayout(data) {
         method: "drawAddWidget",
         cellId: cellId,
         offset: offset,
-        search: search
+        search: search,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(data) {
@@ -606,7 +628,10 @@ function initialiceLayout(data) {
         cellId: cellId,
         widgetId: widgetId,
         gridWidth: gridWidth,
-        redraw: true
+        redraw: true,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(cellData) {
@@ -633,7 +658,10 @@ function initialiceLayout(data) {
             newWidth: newWidth,
             newHeight: newHeight,
             gridWidth: gridWidth,
-            widgetId: widgetId
+            widgetId: widgetId,
+            auth_class: data.auth.class,
+            auth_hash: data.auth.hash,
+            id_user: data.auth.user
           },
           dataType: "html",
           success: function(dataWidget) {
@@ -755,8 +783,9 @@ function dashboardLoadNetworkMap(settings) {
       x_offset: settings.x_offset,
       y_offset: settings.y_offset,
       zoom_dash: settings.zoom_dash,
-      id_user: settings.id_user,
-      hash: settings.hash
+      auth_class: settings.auth_class,
+      auth_hash: settings.auth_hash,
+      id_user: settings.id_user
     },
     dataType: "html",
     success: function(data) {
@@ -784,6 +813,8 @@ function dashboardLoadWuxStats(settings) {
       id_agent: settings.id_agent,
       transaction: settings.transaction,
       view_all_stats: settings.view_all_stats,
+      auth_class: settings.auth_class,
+      auth_hash: settings.auth_hash,
       id_user: settings.id_user
     },
     dataType: "html",
@@ -821,9 +852,10 @@ function processTreeSearch(settings) {
     data: {
       getChildren: 1,
       page: settings.page,
-      id_user: settings.user,
-      hash: settings.hash,
       type: settings.type,
+      auth_class: settings.auth_class,
+      auth_hash: settings.auth_hash,
+      id_user: settings.id_user,
       filter: filters
     },
     success: function(data) {
@@ -858,8 +890,11 @@ function processTreeSearch(settings) {
           emptyMessage: settings.translate.emptyMessage,
           foundMessage: settings.translate.foundMessage,
           tree: data.tree,
-          baseURL: settings.baseURL,
+          auth_hash: settings.auth_hash,
+          auth_class: settings.auth_class,
+          id_user: settings.id_user,
           ajaxURL: settings.ajaxUrl,
+          baseURL: settings.baseUrl,
           filter: filters,
           counterTitles: {
             total: {

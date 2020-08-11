@@ -47,6 +47,7 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
     if ($parse_sec2_query[0] === 'sec2') {
         switch ($parse_sec2_query[1]) {
             case $main_file_manager:
+            case 'operation/snmpconsole/snmp_mib_uploader':
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/'.$file;
             break;
 

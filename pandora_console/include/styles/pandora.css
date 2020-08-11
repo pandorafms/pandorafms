@@ -716,6 +716,23 @@ p.center {
   text-align: center;
 }
 
+.center {
+  text-align: center;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.margin-bottom-10 {
+  margin-bottom: 10px;
+}
+
+.margin-tb-10 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .img_help {
   cursor: help;
 }
@@ -4571,6 +4588,7 @@ div#dialog_messages table th:last-child {
   display: inline-block;
   width: 30px;
   height: 17px;
+  margin-right: 1em;
 }
 
 .p-switch input {
@@ -6039,4 +6057,80 @@ form#modal_form_feedback ul.wizard li > textarea {
 
 #controls_table > tbody > tr > td input {
   margin-left: 3px;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - ERROR CONNECTION
+ * ---------------------------------------------------------------------
+ */
+
+/*background dim */
+
+.ui-widget-overlay.error-modal-opened {
+  background: rgb(0, 0, 0);
+  opacity: 0.5;
+  filter: Alpha(Opacity=50);
+}
+
+/* --- Login page - modal windows --- */
+div.content_dialog {
+  width: 98%;
+  margin-top: 20px;
+}
+
+div.icon_message_dialog {
+  float: left;
+  width: 25%;
+  text-align: center;
+}
+
+div.icon_message_dialog img {
+  width: 85px;
+}
+
+div.content_message_dialog {
+  width: 75%;
+  float: right;
+}
+
+div.text_message_dialog {
+  width: 100%;
+  margin-top: 10px;
+}
+
+div.text_message_dialog h1 {
+  margin: 0px;
+}
+
+div.text_message_dialog p {
+  margin: 0px;
+  font-size: 10.3pt;
+  line-height: 14pt;
+}
+
+form#form-filter-interfaces {
+  margin-left: -30px;
+}
+
+form#form-filter-interfaces ul {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+form#form-filter-interfaces ul li {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-width: 35%;
+}
+
+form#form-filter-interfaces ul li.select-interfaces {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
 }

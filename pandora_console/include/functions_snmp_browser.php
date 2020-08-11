@@ -273,7 +273,7 @@ function snmp_browser_get_tree(
         break;
 
         case '2':
-            $snmp_version = SNMP::VERSION_2c;
+            $snmp_version = SNMP::VERSION_2C;
         break;
 
         case '2c':
@@ -286,7 +286,7 @@ function snmp_browser_get_tree(
         break;
 
         default:
-            $snmp_version = SNMP::VERSION_2c;
+            $snmp_version = SNMP::VERSION_2C;
         break;
     }
 
@@ -301,7 +301,7 @@ function snmp_browser_get_tree(
             $snmp3_auth_pass,
             $snmp3_privacy_method,
             $snmp3_privacy_pass,
-            $community,
+            '',
             $snmp3_context_engine_id
         );
     }
@@ -419,6 +419,10 @@ function snmp_browser_get_oid(
 
     if ($target_oid == '') {
         return;
+    }
+
+    if ($version == '2') {
+        $version = '2c';
     }
 
     $output = get_snmpwalk(

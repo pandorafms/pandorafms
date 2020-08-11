@@ -165,7 +165,12 @@ if (check_login()) {
         break;
 
         case 'monitorcheckmodal':
-                echo __('This system has too many modules per agent. OpenSource version could manage thousands of modules, but is not recommended to have more than 40 modules per agent. This configuration has B/A modules per agent. Checkout the Enterprise Version for a professional supported system.');
+                // Get agent/module average.
+                $agentCount = db_get_value_sql('SELECT count(*) FROM tagente');
+                $modulesCount = db_get_value_sql('SELECT count(*) FROM tagente_modulo');
+                $average = ($modulesCount / $agentCount);
+
+                echo __('This system has too many modules per agent. OpenSource version could manage thousands of modules, but is not recommended to have more than 100 modules per agent. This configuration has %d modules per agent. Checkout the Enterprise Version for a professional supported system.', $average);
         break;
 
         case 'remotemodulesmodal':

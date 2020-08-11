@@ -287,6 +287,10 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
+                    if (!config_update_value('use_custom_encoding', get_parameter('use_custom_encoding', 0))) {
+                        $error_update[] = __('Use custom encoding');
+                    }
+
                     if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
@@ -1334,6 +1338,10 @@ function config_update_config()
 
                     if (!config_update_value('csv_divider', (string) get_parameter('csv_divider', ';'))) {
                         $error_update[] = __('CSV divider');
+                    }
+
+                    if (!config_update_value('csv_decimal_separator', (string) get_parameter('csv_decimal_separator', '.'))) {
+                        $error_update[] = __('CSV decimal separator');
                     }
 
                     if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
@@ -2799,6 +2807,10 @@ function config_process_config()
         config_update_value('event_storm_protection', 0);
     }
 
+    if (!isset($config['use_custom_encoding'])) {
+        config_update_value('use_custom_encoding', 0);
+    }
+
     if (!isset($config['server_log_dir'])) {
         config_update_value('server_log_dir', '');
     }
@@ -2865,6 +2877,10 @@ function config_process_config()
 
     if (!isset($config['csv_divider'])) {
         config_update_value('csv_divider', ';');
+    }
+
+    if (!isset($config['csv_decimal_separator'])) {
+        config_update_value('csv_decimal_separator', '.');
     }
 
     if (!isset($config['use_data_multiplier'])) {

@@ -764,8 +764,10 @@ class HTML
             $output_head .= $data['pre-content'];
         }
 
-        $output_head .= '<form id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output_head .= '" '.$form['extra'].'>';
+        if (isset($data['form']) === true) {
+            $output_head .= '<form name="'.$form['name'].'" id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+            $output_head .= '" '.$form['extra'].'>';
+        }
 
         if ($return === false) {
             echo $output_head;

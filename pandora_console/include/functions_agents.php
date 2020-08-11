@@ -1666,6 +1666,57 @@ function agents_get_alias($id_agent, $case='none')
 }
 
 
+/**
+ * Get alias of an agent in metaconsole (cached function).
+ *
+ * @param integer $id_agent  Agent id.
+ * @param string  $case      Case (upper, lower, none).
+ * @param integer $id_server server id.
+ *
+ * @return string Alias of the given agent.
+ */
+function agents_get_alias_metaconsole($id_agent, $case='none', $id_server=false)
+{
+    global $config;
+    // Prepare cache.
+    static $cache = [];
+    if (empty($case)) {
+        $case = 'none';
+    }
+
+    // Check cache.
+    if (isset($cache[$case][$id_server][$id_agent])) {
+        return $cache[$case][$id_server][$id_agent];
+    }
+
+    $alias = (string) db_get_value_filter(
+        'alias',
+        'tmetaconsole_agent',
+        [
+            'id_tagente'            => $id_agent,
+            'id_tmetaconsole_setup' => $id_server,
+        ]
+    );
+
+    switch ($case) {
+        case 'upper':
+            $alias = mb_strtoupper($alias, 'UTF-8');
+        break;
+
+        case 'lower':
+            $alias = mb_strtolower($alias, 'UTF-8');
+        break;
+
+        default:
+            // Not posible.
+        break;
+    }
+
+    $cache[$case][$id_server][$id_agent] = $alias;
+    return $alias;
+}
+
+
 function agents_get_alias_by_name($name, $case='none')
 {
     if (is_metaconsole()) {
@@ -2016,36 +2067,33 @@ function agents_get_addresses($id_agent)
 function agents_get_status_from_counts($agent)
 {
     // Check if in the data there are all the necessary values
-    if (!isset($agent['normal_count'])
-        && !isset($agent['warning_count'])
-        && !isset($agent['critical_count'])
-        && !isset($agent['unknown_count'])
-        && !isset($agent['notinit_count'])
-        && !isset($agent['total_count'])
+    if (isset($agent['normal_count']) === false
+        && isset($agent['warning_count']) === false
+        && isset($agent['critical_count']) === false
+        && isset($agent['unknown_count']) === false
+        && isset($agent['notinit_count']) === false
+        && isset($agent['total_count']) === false
     ) {
         return -1;
     }
 
-    // Juanma (05/05/2014) Fix:  This status is not init! 0 modules or all not init
+    // Juanma (05/05/2014) Fix:  This status is not init! 0 modules or all not init.
     if ($agent['notinit_count'] == $agent['total_count']) {
-        return AGENT_MODULE_STATUS_NOT_INIT;
+        return AGENT_STATUS_NOT_INIT;
     }
 
     if ($agent['critical_count'] > 0) {
-        return AGENT_MODULE_STATUS_CRITICAL_BAD;
+        return AGENT_STATUS_CRITICAL;
     } else if ($agent['warning_count'] > 0) {
-        return AGENT_MODULE_STATUS_WARNING;
+        return AGENT_STATUS_WARNING;
     } else if ($agent['unknown_count'] > 0) {
-        return AGENT_MODULE_STATUS_UNKNOWN;
+        return AGENT_STATUS_UNKNOWN;
     } else if ($agent['normal_count'] == $agent['total_count']) {
-        return AGENT_MODULE_STATUS_NORMAL;
+        return AGENT_STATUS_NORMAL;
     } else if (($agent['normal_count'] + $agent['notinit_count']) == $agent['total_count']) {
-        return AGENT_MODULE_STATUS_NORMAL;
+        return AGENT_STATUS_NORMAL;
     }
 
-    // ~ else if($agent['notinit_count'] == $agent['total_count']) {
-        // ~ return AGENT_MODULE_STATUS_NORMAL;
-    // ~ }
     return -1;
 }
 

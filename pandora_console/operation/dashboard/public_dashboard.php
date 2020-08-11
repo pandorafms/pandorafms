@@ -1,10 +1,10 @@
 <?php
 /**
- * Wizard for SNMP / WMI discover.
+ * Public access to dashboard.
  *
- * @category   Agent Wizard
+ * @category   Dashboards
  * @package    Pandora FMS
- * @subpackage Opensource
+ * @subpackage Community
  * @version    1.0.0
  * @license    See below
  *
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,41 +27,40 @@
  */
 
 // Begin.
+require_once __DIR__.'/../../include/config.php';
+
 global $config;
-// Require needed class.
-require_once $config['homedir'].'/include/class/AgentWizard.class.php';
-// This page.
-$ajaxPage = 'godmode/agentes/agent_wizard';
-$pageName = '[AgentWizard]';
-// Control call flow.
-try {
-    // User access and validation is being processed on class constructor.
-    $obj = new AgentWizard($ajaxPage);
-} catch (Exception $e) {
-    if (is_ajax()) {
-        echo json_encode(['error' => $pageName.$e->getMessage() ]);
-        exit;
-    } else {
-        echo $pageName.$e->getMessage();
+
+chdir($config['homedir']);
+ob_start('ui_process_page_head');
+ob_start();
+
+// Fullscreen by default.
+$config['pure'] = get_parameter('pure', 1);
+
+require_once 'dashboard.php';
+
+// Clean session to avoid direct access.
+if ($config['force_instant_logout'] === true) {
+    // Force user logout.
+    $iduser = $_SESSION['id_usuario'];
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
     }
 
-    // Stop this execution, but continue 'globally'.
-    return;
+    $_SESSION = [];
+    session_destroy();
+    header_remove('Set-Cookie');
+    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+
+    if ($config['auth'] == 'saml') {
+        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
+        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+        $as->logout();
+    }
 }
 
-// AJAX controller.
-if (is_ajax()) {
-    $method = get_parameter('method');
-
-    if (method_exists($obj, $method) === true) {
-        $obj->{$method}();
-    } else {
-        $obj->error('Method not found. ['.$method.']');
-    }
-
-    // Stop any execution.
-    exit;
-} else {
-    // Run.
-    $obj->run();
+while (@ob_end_flush()) {
+    // Dumping...
+    continue;
 }

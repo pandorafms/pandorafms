@@ -23,7 +23,7 @@ $searchUsers = check_acl($config['id_user'], 0, 'UM');
 $searchPolicies = check_acl($config['id_user'], 0, 'AW');
 $searchHelps = true;
 
-echo '<br><div style="margin:auto; width:90%; padding: 10px;">';
+echo '<br><div style="margin:auto; padding: 10px;">';
 
 $anyfound = false;
 

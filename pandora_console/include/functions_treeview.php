@@ -19,7 +19,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
         $server_name = '';
         $server_id = '';
         $url_hash = '';
-        $console_url = '';
+        $console_url = ui_get_full_url('/');
     } else {
         $server_name = $server_data['server_name'];
         $server_id = $server_data['id'];
@@ -500,7 +500,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $server_name = '';
         $server_id = '';
         $url_hash = '';
-        $console_url = '';
+        $console_url = ui_get_full_url('/');
     } else {
         $server_name = $server_data['server_name'];
         $server_id = $server_data['id'];
@@ -567,7 +567,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->head = [];
     $table->data = [];
 
-    // Agent name
+    // Agent name.
     if ($agent['disabled']) {
         $cellName = '<em>';
     } else {
@@ -576,10 +576,10 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     if (is_metaconsole()) {
         $pwd = $server_data['auth_token'];
-        // Create HASH login info
+        // Create HASH login info.
         $user = $config['id_user'];
 
-        // Extract auth token from serialized field
+        // Extract auth token from serialized field.
         $pwd_deserialiced = json_decode($pwd, true);
         $hashdata = $user.$pwd_deserialiced['auth_token'];
 
@@ -588,7 +588,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
         $cellName .= '<a href="'.$url.'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
     } else {
-        $cellName .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente'].'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+        $url = ui_get_full_url(
+            'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente']
+        );
+        $cellName .= '<a href="'.$url.'">';
+        $cellName .= '<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
     }
 
     if ($agent['disabled']) {
@@ -600,7 +604,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = $cellName;
     $table->data['name'] = $row;
 
-    // Addresses
+    // Addresses.
     $ips = [];
     $addresses = agents_get_addresses($id_agente);
     $address = agents_get_address($id_agente);
@@ -611,8 +615,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    if (!empty($addresses)) {
-        $address .= ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>', $addresses), true);
+    if (empty($addresses) === false) {
+        $address .= ui_print_help_tip(
+            __('Other IP addresses').': <br>'.implode('<br>', $addresses),
+            true
+        );
     }
 
     $row = [];
@@ -620,25 +627,27 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = $address;
     $table->data['address'] = $row;
 
-    // Agent Interval
+    // Agent Interval.
     $row = [];
     $row['title'] = __('Interval');
     $row['data'] = human_time_description_raw($agent['intervalo']);
     $table->data['interval'] = $row;
 
-    // Comments
+    // Comments.
     $row = [];
     $row['title'] = __('Description');
     $row['data'] = $agent['comentarios'];
     $table->data['description'] = $row;
 
-    // Last contact
+    // Last contact.
     $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true);
 
     if ($agent['ultimo_contacto_remoto'] == '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
     } else {
-        $last_remote_contact = date_w_fixed_tz($agent['ultimo_contacto_remoto']);
+        $last_remote_contact = date_w_fixed_tz(
+            $agent['ultimo_contacto_remoto']
+        );
     }
 
     $row = [];
@@ -646,7 +655,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = "$last_contact / $last_remote_contact";
     $table->data['contact'] = $row;
 
-    // Next contact (agent)
+    // Next contact (agent).
     $progress = agents_get_next_contact($id_agente);
 
     $row = [];
@@ -660,7 +669,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     );
     $table->data['next_contact'] = $row;
 
-    // End of table
+    // End of table.
     $agent_table = html_print_table($table, true);
 
     if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {

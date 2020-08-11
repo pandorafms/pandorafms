@@ -40,6 +40,7 @@ if (is_ajax()) {
         $id = get_parameter('id', -1);
         $rootID = get_parameter('rootID', -1);
         $serverID = get_parameter('serverID', false);
+        $metaID = (int) get_parameter('metaID', 0);
         $childrenMethod = get_parameter('childrenMethod', 'on_demand');
 
         $default_filters = [
@@ -98,7 +99,16 @@ if (is_ajax()) {
             break;
 
             case 'services':
-                $tree = new TreeService($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeService(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access,
+                    $metaID
+                );
             break;
 
             default:

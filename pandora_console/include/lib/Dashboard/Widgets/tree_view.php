@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Dashboard\Manager;
+
 /**
  * Tree view Widgets.
  */
@@ -547,12 +549,7 @@ class TreeViewWidget extends Widget
             true
         );
 
-        $base_url = \ui_get_full_url(
-            false,
-            false,
-            false,
-            \is_metaconsole()
-        );
+        $base_url = \ui_get_full_url('/');
 
         // Spinner.
         $output .= \html_print_image(
@@ -585,8 +582,9 @@ class TreeViewWidget extends Widget
 
         $settings = [
             'page'         => 'include/ajax/tree.ajax',
-            'user'         => $config['id_user'],
-            'hash'         => $hash,
+            'id_user'      => $config['id_user'],
+            'auth_class'   => 'PandoraFMS\Dashboard\Manager',
+            'auth_hash'    => Manager::generatePublicHash(),
             'type'         => $tab,
             'cellId'       => $id_cell,
             'ajaxUrl'      => ui_get_full_url('ajax.php', false, false, false),

@@ -3001,6 +3001,8 @@ class AgentWizard extends HTML
                             $module['name']
                         );
 
+                        $newModule['name_oid'] = str_replace('"', '', $tmpSecond[3]);
+
                         // Add this new module to the module list.
                         $moduleBlocks[] = $newModule;
                     }

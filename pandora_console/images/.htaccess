@@ -1,5 +1,4 @@
 #pandora disable phpexec
-<Files *.php>
+<FilesMatch "\.(php)$">
 Deny from all
-</Files>
-php_flag engine off
+</FilesMatch>

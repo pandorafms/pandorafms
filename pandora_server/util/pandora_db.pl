@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.746 PS200604";
+my $version = "7.0NG.748 PS200804";
 
 # Pandora server configuration
 my %conf;
@@ -140,29 +140,6 @@ sub pandora_purgedb ($$) {
 		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
-		
-		#
-		# Now the log4x data
-		#
-		$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC', 1);
-		if (defined ($first_mark)) {
-			$total_time = $ulimit_timestamp - $first_mark;
-			$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-			if ($purge_steps > 0) {
-				for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-					db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-					log_message ('PURGE', "Log4x data deletion progress %$ax\r");
-					# Do a nanosleep here for 0,01 sec
-					usleep (10000);
-				}
-				log_message ('', "\n");
-			} else {
-				log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
-			}
-		}
-		else {
-			log_message ('PURGE', 'No data in tagente_datos_log4x.');
-		}
 	}
 	else {
 		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
@@ -478,7 +455,7 @@ sub pandora_compactdb ($$) {
 		$limit_utime  = $conf->{'_last_compact'};
 	}
 	
-	if ($start_utime <= $limit_utime) {
+	if ($start_utime <= $limit_utime || ( defined ($conf->{'_last_compact'}) && (($conf->{'_last_compact'} + 24 * 60 * 60) > $start_utime))) {
 		log_message ('COMPACT', "Data already compacted.");
 		return;
 	}
@@ -512,7 +489,7 @@ sub pandora_compactdb ($$) {
 					next unless defined ($module_type);
 
 					# Mark proc modules.
-					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {
+					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31 || $module_type == 35 || $module_type == 100) {
 						$module_proc_hash{$id_module} = 1;
 					}
 					else {
@@ -537,7 +514,9 @@ sub pandora_compactdb ($$) {
 			}
 
 			# Delete interval from the database
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE utimestamp < ? AND utimestamp >= ?', $start_utime, $stop_utime);
+			db_do ($dbh, 'DELETE ad FROM tagente_datos ad
+				INNER JOIN tagente_modulo am ON ad.id_agente_modulo = am.id_agente_modulo AND am.id_tipo_modulo NOT IN (2,6,9,18,21,31,35,100)
+				WHERE ad.utimestamp < ? AND ad.utimestamp >= ?', $start_utime, $stop_utime);
 
 			# Insert interval average value
 			foreach my $key (keys(%value_hash)) {
@@ -1051,6 +1030,9 @@ sub pandoradb_main ($$$) {
 
 	# Recalculating dynamic intervals.
 	enterprise_hook("update_min_max", [$dbh, $conf]);
+
+	# Metaconsole database cleanup.
+	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

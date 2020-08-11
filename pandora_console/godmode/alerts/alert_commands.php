@@ -46,6 +46,8 @@ if (is_ajax()) {
         $id = (int) get_parameter('id', 0);
         $get_recovery_fields = (int) get_parameter('get_recovery_fields', 1);
 
+        $is_central_policies_on_node = is_central_policies_on_node();
+
         // If command ID is not provided, check for action id.
         if ($id == 0) {
             $id_action = (int) get_parameter('id_action');
@@ -124,40 +126,142 @@ if (is_ajax()) {
                 // HTML type.
                 if (preg_match('/^_html_editor_$/i', $field_value)) {
                     $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
-                    $editor_type_chkbx .= __('Basic').ui_print_help_tip(__('For sending emails, text must be HTML format, if you want to use plain text, type it between the following labels: <pre></pre>'), true);
-                    $editor_type_chkbx .= html_print_radio_button_extended('editor_type_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_value')", '', true);
+                    $editor_type_chkbx .= __('Basic');
+                    $editor_type_chkbx .= ui_print_help_tip(
+                        __('For sending emails, text must be HTML format, if you want to use plain text, type it between the following labels: <pre></pre>'),
+                        true
+                    );
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'editor_type_value_'.$i,
+                        0,
+                        '',
+                        false,
+                        $is_central_policies_on_node,
+                        "removeTinyMCE('textarea_field".$i."_value')",
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                     $editor_type_chkbx .= __('Advanced').'&nbsp;&nbsp;';
-                    $editor_type_chkbx .= html_print_radio_button_extended('editor_type_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."_value')", '', true);
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'editor_type_value_'.$i,
+                        0,
+                        '',
+                        true,
+                        $is_central_policies_on_node,
+                        "addTinyMCE('textarea_field".$i."_value')",
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '</small></b></div>';
                     $ffield = $editor_type_chkbx;
-                    $ffield .= html_print_textarea('field'.$i.'_value', 1, 1, '', 'class="fields"', true);
+                    $ffield .= html_print_textarea(
+                        'field'.$i.'_value',
+                        1,
+                        1,
+                        '',
+                        'class="fields"',
+                        true,
+                        '',
+                        $is_central_policies_on_node
+                    );
 
                     $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
                     $editor_type_chkbx .= __('Basic').'&nbsp;&nbsp;';
-                    $editor_type_chkbx .= html_print_radio_button_extended('editor_type_recovery_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_recovery_value')", '', true);
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'editor_type_recovery_value_'.$i,
+                        0,
+                        '',
+                        false,
+                        $is_central_policies_on_node,
+                        "removeTinyMCE('textarea_field".$i."_recovery_value')",
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                     $editor_type_chkbx .= __('Advanced').'&nbsp;&nbsp;';
-                    $editor_type_chkbx .= html_print_radio_button_extended('editor_type_recovery_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."_recovery_value')", '', true);
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'editor_type_recovery_value_'.$i,
+                        0,
+                        '',
+                        true,
+                        $is_central_policies_on_node,
+                        "addTinyMCE('textarea_field".$i."_recovery_value')",
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '</small></b></div>';
                     $rfield = $editor_type_chkbx;
-                    $rfield .= html_print_textarea('field'.$i.'_recovery_value', 1, 1, '', 'class="fields_recovery"', true);
+                    $rfield .= html_print_textarea(
+                        'field'.$i.'_recovery_value',
+                        1,
+                        1,
+                        '',
+                        'class="fields_recovery"',
+                        true,
+                        '',
+                        $is_central_policies_on_node
+                    );
                 } else if (preg_match('/^_content_type_$/i', $field_value)) {
                     $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
-                    $editor_type_chkbx .= __('Text/plain').ui_print_help_tip(__('For sending emails only text plain'), true);
-                    $editor_type_chkbx .= html_print_radio_button_extended('field'.$i.'_value', 'text/plain', '', '', false, '', '', true);
+                    $editor_type_chkbx .= __('Text/plain');
+                    $editor_type_chkbx .= ui_print_help_tip(
+                        __('For sending emails only text plain'),
+                        true
+                    );
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'field'.$i.'_value',
+                        'text/plain',
+                        '',
+                        '',
+                        $is_central_policies_on_node,
+                        '',
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                     $editor_type_chkbx .= __('Text/html').'&nbsp;&nbsp;';
-                    $editor_type_chkbx .= html_print_radio_button_extended('field'.$i.'_value', 'text/html', '', 'text/html', false, '', '', true);
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'field'.$i.'_value',
+                        'text/html',
+                        '',
+                        'text/html',
+                        $is_central_policies_on_node,
+                        '',
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '</small></b></div>';
                     $ffield = $editor_type_chkbx;
 
                     $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
-                    $editor_type_chkbx .= __('Text/plain').ui_print_help_tip(__('For sending emails only text plain'), true);
-                    $editor_type_chkbx .= html_print_radio_button_extended('field'.$i.'_recovery_value', 'text/plain', '', '', false, '', '', true);
+                    $editor_type_chkbx .= __('Text/plain');
+                    $editor_type_chkbx .= ui_print_help_tip(
+                        __('For sending emails only text plain'),
+                        true
+                    );
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'field'.$i.'_recovery_value',
+                        'text/plain',
+                        '',
+                        '',
+                        $is_central_policies_on_node,
+                        '',
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                     $editor_type_chkbx .= __('Text/html').'&nbsp;&nbsp;';
-                    $editor_type_chkbx .= html_print_radio_button_extended('field'.$i.'_recovery_value', 'text/html', '', 'text/html', false, '', '', true);
+                    $editor_type_chkbx .= html_print_radio_button_extended(
+                        'field'.$i.'_recovery_value',
+                        'text/html',
+                        '',
+                        'text/html',
+                        $is_central_policies_on_node,
+                        '',
+                        '',
+                        true
+                    );
                     $editor_type_chkbx .= '</small></b></div>';
                     $rfield = $editor_type_chkbx;
                     // Select type.
@@ -192,7 +296,8 @@ if (is_ajax()) {
                             true,
                             false,
                             false,
-                            'fields'
+                            'fields',
+                            $is_central_policies_on_node
                         );
                         $rfield = html_print_select(
                             $fields_value_select,
@@ -204,7 +309,8 @@ if (is_ajax()) {
                             true,
                             false,
                             false,
-                            'fields_recovery'
+                            'fields_recovery',
+                            $is_central_policies_on_node
                         );
                     } else {
                         $ffield = html_print_textarea(
@@ -213,7 +319,9 @@ if (is_ajax()) {
                             1,
                             $fv[0],
                             'style="min-height:40px; '.$style.'" class="fields"',
-                            true
+                            true,
+                            '',
+                            $is_central_policies_on_node
                         );
                         $rfield = html_print_textarea(
                             'field'.$i.'_recovery_value',
@@ -221,7 +329,9 @@ if (is_ajax()) {
                             1,
                             $fv[0],
                             'style="min-height:40px; '.$style.'" class="fields_recovery',
-                            true
+                            true,
+                            '',
+                            $is_central_policies_on_node
                         );
                     }
                 }
@@ -232,7 +342,9 @@ if (is_ajax()) {
                     1,
                     '',
                     'style="min-height:40px; '.$style.'" class="fields"',
-                    true
+                    true,
+                    '',
+                    $is_central_policies_on_node
                 );
                 $rfield = html_print_textarea(
                     'field'.$i.'_recovery_value',
@@ -240,7 +352,9 @@ if (is_ajax()) {
                     1,
                     '',
                     'style="min-height:40px; '.$style.'" class="fields_recovery"',
-                    true
+                    true,
+                    '',
+                    $is_central_policies_on_node
                 );
             }
 
@@ -404,6 +518,15 @@ if ($copy_command) {
     }
 }
 
+$is_central_policies_on_node = is_central_policies_on_node();
+
+if ($is_central_policies_on_node === true) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+    );
+}
+
+$table = new stdClass;
 $table->width = '100%';
 $table->class = 'info_table';
 
@@ -457,7 +580,7 @@ foreach ($commands as $command) {
     );
     $data['action'] = '';
     $table->cellclass[]['action'] = 'action_buttons';
-    if (! $command['internal']) {
+    if ($is_central_policies_on_node === false && !$command['internal']) {
         $data['action'] = '<span style="display: inline-flex">';
         $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true).'</a>';
@@ -475,11 +598,13 @@ if (count($table->data) > 0) {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert commands configured') ]);
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
-html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
-html_print_input_hidden('create_alert', 1);
-echo '</form>';
-echo '</div>';
+if ($is_central_policies_on_node === false) {
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+    html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+    html_print_input_hidden('create_alert', 1);
+    echo '</form>';
+    echo '</div>';
+}
 
 enterprise_hook('close_meta_frame');

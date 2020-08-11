@@ -28,6 +28,8 @@
 
 namespace PandoraFMS\Dashboard;
 
+use PandoraFMS\Dashboard\Manager;
+
 /**
  * Wux transaction stats Widgets.
  */
@@ -342,6 +344,8 @@ class WuxStatsWidget extends Widget
                 'transaction'    => $transaction,
                 'view_all_stats' => $view_all_stats,
                 'id_user'        => $config['id_user'],
+                'auth_class'     => 'PandoraFMS\Dashboard\Manager',
+                'auth_hash'      => Manager::generatePublicHash(),
                 'cellId'         => $this->cellId,
             ]
         );

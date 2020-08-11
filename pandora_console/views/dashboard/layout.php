@@ -63,7 +63,12 @@ echo $output;
         initialiceLayout({
             page: '<?php echo $ajaxController; ?>',
             url: '<?php echo $url; ?>',
-            dashboardId: '<?php echo $dashboardId; ?>'
+            dashboardId: '<?php echo $dashboardId; ?>',
+            auth: {
+                class: '<?php echo $class; ?>',
+                hash: '<?php echo $hash; ?>',
+                user: '<?php echo $config['id_user']; ?>'
+            }
         });
 
         // Mode for create new dashboard.

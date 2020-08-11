@@ -633,6 +633,14 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
             break;
 
             case EVENT_STATUS_VALIDATED:
+                events_change_owner(
+                    $id_evento,
+                    $config['id_user'],
+                    false,
+                    is_metaconsole() ? true : false,
+                    $history
+                );
+
                 $status_string = 'Validated';
             break;
 
@@ -1870,6 +1878,16 @@ function events_change_status(
         return false;
     }
 
+    if ($new_status == EVENT_STATUS_VALIDATED) {
+        events_change_owner(
+            $id_event,
+            $config['id_user'],
+            false,
+            $meta,
+            $history
+        );
+    }
+
     events_comment(
         $id_event,
         '',
@@ -2100,7 +2118,7 @@ function events_comment(
 
     switch ($comments_format) {
         case 'new':
-            $comment_for_json['comment'] = $comment;
+            $comment_for_json['comment'] = io_safe_input($comment);
             $comment_for_json['action'] = $action;
             $comment_for_json['id_user'] = $config['id_user'];
             $comment_for_json['utimestamp'] = time();
@@ -2123,7 +2141,7 @@ function events_comment(
             $comment = str_replace(["\r\n", "\r", "\n"], '<br>', $comment);
 
             if ($comment != '') {
-                $commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$comment.'</div>';
+                $commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.io_safe_input($comment).'</div>';
             } else {
                 $commentbox = '';
             }
@@ -3359,7 +3377,7 @@ function events_page_responses($event, $childrens_ids=[])
         );
         if ($strict_user) {
             $user_name = db_get_value(
-                'fullname',
+                'id_user',
                 'tusuario',
                 'id_user',
                 $config['id_user']
@@ -3377,14 +3395,14 @@ function events_page_responses($event, $childrens_ids=[])
         }
 
         foreach ($users as $u) {
-            $owners[$u['id_user']] = $u['fullname'];
+            $owners[$u['id_user']] = $u['id_user'];
         }
 
         if ($event['owner_user'] == '') {
             $owner_name = __('None');
         } else {
             $owner_name = db_get_value(
-                'fullname',
+                'id_user',
                 'tusuario',
                 'id_user',
                 $event['owner_user']
@@ -3406,7 +3424,7 @@ function events_page_responses($event, $childrens_ids=[])
             'owner_button',
             false,
             'event_change_owner();',
-            'class="sub next"',
+            'class="sub next w70p"',
             true
         );
 
@@ -3486,7 +3504,7 @@ function events_page_responses($event, $childrens_ids=[])
             'status_button',
             false,
             'event_change_status(\''.$event['similar_ids'].'\');',
-            'class="sub next"',
+            'class="sub next w70p"',
             true
         );
     }
@@ -3502,7 +3520,7 @@ function events_page_responses($event, $childrens_ids=[])
         'comment_button',
         false,
         '$(\'#link_comments\').trigger(\'click\');',
-        'class="sub next"',
+        'class="sub next w70p"',
         true
     );
 
@@ -3526,7 +3544,7 @@ function events_page_responses($event, $childrens_ids=[])
             'delete_button',
             false,
             'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();',
-            'class="sub cancel"',
+            'class="sub cancel w70p"',
             true
         );
         $data[2] .= html_print_input_hidden('delete', 1, true);
@@ -3581,7 +3599,7 @@ function events_page_responses($event, $childrens_ids=[])
             'custom_response_button',
             false,
             'execute_response('.$event['id_evento'].','.$server_id.')',
-            "class='sub next'",
+            "class='sub next w70p'",
             true
         );
     }

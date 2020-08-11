@@ -117,7 +117,7 @@ if ($save_alert || $modify_alert) {
     $al_field7 = (string) get_parameter_post('field7_value');
     $al_field8 = (string) get_parameter_post('field8_value');
     $al_field9 = (string) get_parameter_post('field9_value');
-    $al_field10 = (string) get_parameter_post('al_field10');
+    $al_field10 = (string) get_parameter_post('field10_value');
     $al_field11 = (string) get_parameter_post('field11_value');
     $al_field12 = (string) get_parameter_post('field12_value');
     $al_field13 = (string) get_parameter_post('field13_value');

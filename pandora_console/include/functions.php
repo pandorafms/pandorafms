@@ -477,7 +477,8 @@ function set_user_language()
 
 
 /**
- * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
+ * INTERNAL (use ui_print_timestamp for output):
+ * Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.
  *
  * @param integer $seconds Seconds elapsed time
@@ -488,17 +489,11 @@ function set_user_language()
  */
 function human_time_description_raw($seconds, $exactly=false, $units='large')
 {
-    switch ($units) {
-        case 'large':
-            $secondsString = __('seconds');
-            $daysString = __('days');
-            $monthsString = __('months');
-            $yearsString = __('years');
-            $minutesString = __('minutes');
-            $hoursString = __('hours');
-            $nowString = __('Now');
-        break;
+    if (isset($units) === false || empty($units) === true) {
+        $units = 'large';
+    }
 
+    switch ($units) {
         case 'tiny':
             $secondsString = __('s');
             $daysString = __('d');
@@ -507,6 +502,17 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
             $minutesString = __('m');
             $hoursString = __('h');
             $nowString = __('N');
+        break;
+
+        default:
+        case 'large':
+            $secondsString = __('seconds');
+            $daysString = __('days');
+            $monthsString = __('months');
+            $yearsString = __('years');
+            $minutesString = __('minutes');
+            $hoursString = __('hours');
+            $nowString = __('Now');
         break;
     }
 
@@ -2136,7 +2142,7 @@ function check_sql($sql)
 {
     // We remove "*" to avoid things like SELECT * FROM tusuario
     // Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
-    if (preg_match('/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i', $sql)) {
+    if (preg_match('/([ ]*(delete|drop|alter|modify|password|pass|insert|update)\b[ \\]+)/i', $sql)) {
         return '';
     }
 
@@ -3617,6 +3623,14 @@ function color_graph_array()
 }
 
 
+/**
+ * Label graph Sparse.
+ *
+ * @param array $data                Data chart.
+ * @param array $show_elements_graph Data visual styles chart.
+ *
+ * @return array Array label.
+ */
 function series_type_graph_array($data, $show_elements_graph)
 {
     global $config;
@@ -3639,7 +3653,13 @@ function series_type_graph_array($data, $show_elements_graph)
     $color_series = color_graph_array();
 
     if ($show_elements_graph['id_widget_dashboard']) {
-        $opcion = unserialize(db_get_value_filter('options', 'twidget_dashboard', ['id' => $show_elements_graph['id_widget_dashboard']]));
+        $opcion = unserialize(
+            db_get_value_filter(
+                'options',
+                'twidget_dashboard',
+                ['id' => $show_elements_graph['id_widget_dashboard']]
+            )
+        );
         if ($show_elements_graph['graph_combined']) {
             foreach ($show_elements_graph['modules_id'] as $key => $value) {
                 $color_series[$key] = [
@@ -3668,13 +3688,15 @@ function series_type_graph_array($data, $show_elements_graph)
 
             if (strpos($key, 'summatory') !== false) {
                 $data_return['series_type'][$key] = $type_graph;
-                $data_return['legend'][$key]      = __('Summatory series').' '.$str;
-                $data_return['color'][$key]       = $color_series['summatory'];
+                $data_return['legend'][$key] = __('Summatory series').' '.$str;
+                $data_return['color'][$key] = $color_series['summatory'];
             } else if (strpos($key, 'average') !== false) {
                 $data_return['series_type'][$key] = $type_graph;
-                $data_return['legend'][$key]      = __('Average series').' '.$str;
-                $data_return['color'][$key]       = $color_series['average'];
-            } else if (strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false) {
+                $data_return['legend'][$key] = __('Average series').' '.$str;
+                $data_return['color'][$key] = $color_series['average'];
+            } else if (strpos($key, 'sum') !== false
+                || strpos($key, 'baseline') !== false
+            ) {
                 switch ($value['id_module_type']) {
                     case 21:
                     case 2:
@@ -3696,26 +3718,62 @@ function series_type_graph_array($data, $show_elements_graph)
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
-                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']];
+                        $name_legend .= ' / ';
+                        $name_legend .= __('Unit ').' ';
+                        $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
                         $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
-                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].': ';
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
                         if ($value['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
+                            $name_legend = $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'];
+                            $name_legend .= ' / ';
+                            $name_legend .= __('Unit ').' ';
+                            $name_legend .= $value['unit'].'Baseline ';
                         } else {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
+                            $name_legend = $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'].'Baseline ';
                         }
                     } else {
+                        $name_legend = '';
+                        if ((int) $config['type_mode_graph'] === 1) {
+                            $name_legend .= 'Avg: ';
+                        }
+
                         if ($value['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
+                            $name_legend .= $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'];
+                            $name_legend .= ' / ';
+                            $name_legend .= __('Unit ').' ';
+                            $name_legend .= $value['unit'].': ';
                         } else {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                            $name_legend .= $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'].': ';
                         }
                     }
+                }
+
+                if (isset($value['weight']) === true
+                    && empty($value['weight']) === false
+                ) {
+                    $name_legend .= ' ('.__('Weight');
+                    $name_legend .= ' * '.$value['weight'].') ';
+                }
+
+                $data_return['legend'][$key] = $name_legend;
+                if ((int) $value['min'] === PHP_INT_MAX) {
+                    $value['min'] = 0;
+                }
+
+                if ((int) $value['max'] === (-PHP_INT_MAX)) {
+                    $value['max'] = 0;
                 }
 
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
@@ -3735,36 +3793,63 @@ function series_type_graph_array($data, $show_elements_graph)
                     )
                 ).' '.$str;
 
-                if ($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2') {
+                if ($show_elements_graph['compare'] == 'overlapped'
+                    && $key == 'sum2'
+                ) {
                     $data_return['color'][$key] = $color_series['overlapped'];
                 } else {
                     $data_return['color'][$key] = $color_series[$i];
                     $i++;
                 }
-            } else if (!$show_elements_graph['fullscale'] && strpos($key, 'min') !== false
-                || !$show_elements_graph['fullscale'] && strpos($key, 'max') !== false
+            } else if (!$show_elements_graph['fullscale']
+                && strpos($key, 'min') !== false
+                || !$show_elements_graph['fullscale']
+                && strpos($key, 'max') !== false
             ) {
                 $data_return['series_type'][$key] = $type_graph;
 
+                $name_legend = '';
+                if ((int) $config['type_mode_graph'] === 1) {
+                    if (strpos($key, 'min') !== false) {
+                        $name_legend .= 'Min: ';
+                    }
+
+                    if (strpos($key, 'max') !== false) {
+                        $name_legend .= 'Max: ';
+                    }
+                }
+
                 if ($show_elements_graph['unit']) {
-                    $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                    $name_legend .= $value['agent_alias'];
+                    $name_legend .= ' / ';
+                    $name_legend .= $value['module_name'];
+                    $name_legend .= ' / ';
+                    $name_legend .= __('Unit ').' ';
+                    $name_legend .= $show_elements_graph['unit'].': ';
                 } else {
-                    $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                    $name_legend .= $value['agent_alias'];
+                    $name_legend .= ' / ';
+                    $name_legend .= $value['module_name'].': ';
                 }
 
                 $data_return['legend'][$key] = $name_legend;
                 if ($show_elements_graph['type_mode_graph']) {
-                    $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
+                    $data_return['legend'][$key] .= __('Min:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
                             $config['graph_precision']
                         )
-                    ).' '.__('Max:').remove_right_zeros(
+                    );
+                    $data_return['legend'][$key] .= ' '.__('Max:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
                             $config['graph_precision']
                         )
-                    ).' '._('Avg:').remove_right_zeros(
+                    );
+                    $data_return['legend'][$key] .= ' '._('Avg:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
                             $config['graph_precision']
@@ -3772,7 +3857,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     ).' '.$str;
                 }
 
-                if ($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2') {
+                if ($show_elements_graph['compare'] == 'overlapped'
+                    && $key == 'sum2'
+                ) {
                     $data_return['color'][$key] = $color_series['overlapped'];
                 } else {
                     $data_return['color'][$key] = $color_series[$i];
@@ -3997,7 +4084,7 @@ function generate_hash_to_api()
  * @param string Key to identify the profiler run.
  * @param string Way to display the result
  *         "link" (default): Click into word "Performance" to display the profilling info.
- *         "console": Display with a message in pandora_console.log.
+ *         "console": Display with a message in console.log.
  */
 function pandora_xhprof_display_result($key='', $method='link')
 {

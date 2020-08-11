@@ -3220,13 +3220,9 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
         switch ($status) {
             case 1:
-                // Critical (BAD).
-                $img .= '_bad.png';
-            break;
-
             case 4:
-                // Critical (ALERT).
-                $img = '4'.$img.'_bad.png';
+                // Critical or critical alert (BAD).
+                $img .= '_bad.png';
             break;
 
             case 0:
@@ -3235,13 +3231,9 @@ function visual_map_get_image_status_element($layoutData, $status=false)
             break;
 
             case 2:
-                // Warning.
-                $img .= '_warning.png';
-            break;
-
             case 10:
-                // Warning (ALERT).
-                $img = '4'.$img.'_warning.png';
+                // Warning or warning alert.
+                $img .= '_warning.png';
             break;
 
             case 3:
@@ -3596,11 +3588,7 @@ function visual_map_print_visual_map(
         $proportion_width = ($mapWidth / $layout['width']);
 
         if ($layout['background'] != 'None.png') {
-            if (is_metaconsole()) {
-                $backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size='.$mapWidth.'x'.$mapHeight.'&file='.$config['homeurl'].'images/console/background/'.$layout['background'];
-            } else {
                 $backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size='.$mapWidth.'x'.$mapHeight.'&file='.$config['homedir'].'/images/console/background/'.($layout['background']);
-            }
         }
     } else {
         $mapWidth = $layout['width'];
@@ -4079,6 +4067,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         case 'default':
             $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
             $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
             $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
             $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
@@ -4086,6 +4075,8 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
                 return VISUAL_MAP_STATUS_CRITICAL_ALERT;
             } else if ($num_items_critical > 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
+            } else if ($num_items_warning_alert > 0) {
+                return VISUAL_MAP_STATUS_WARNING_ALERT;
             } else if ($num_items_warning > 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else if ($num_items_unknown > 0) {
@@ -4099,17 +4090,18 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             $num_items = count($valid_layout_items);
             $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
             $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
             $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
             $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if ($num_items_critical > 0
+            if (($num_items_critical > 0 || $num_items_critical_alert > 0)
                 && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
             ) {
                 return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($num_items_warning > 0
-                && (($num_items_warning * 100) / $num_items) >= $weight
+            } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
+                && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
             ) {
-                return VISUAL_MAP_STATUS_WARNING;
+                return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
             } else if ($num_items_unknown > 0
                 && (($num_items_unknown * 100) / $num_items) >= $weight
             ) {
@@ -4123,9 +4115,12 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
             $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
 
-            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical']) {
+            $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
+            $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
+
+            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning']) {
+            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else {
                 return VISUAL_MAP_STATUS_NORMAL;

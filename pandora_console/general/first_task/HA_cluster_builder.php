@@ -53,8 +53,8 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clus
         
         <?php
         if (check_acl($config['id_user'], 0, 'PM')) {
-            echo "<div id='create_master_window'></div>";
-            echo "<div id='msg'></div>";
+            echo "<div id='create_master_window' style='display:none;'></div>";
+            echo "<div id='msg' style='display:none;'></div>";
             ?>
             <input style="margin-bottom:20px;" onclick="show_create_ha_cluster();" type="submit" class="button_task" value="<?php echo __('Add new node'); ?>" />
             <?php

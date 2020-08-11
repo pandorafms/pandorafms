@@ -21,7 +21,7 @@ BuildArch:          noarch
 Requires(pre):      shadow-utils
 Requires(post):     chkconfig /bin/ln
 Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
-Requires:           fileutils textutils unzip
+Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
 Requires:           perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)

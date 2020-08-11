@@ -5,4 +5,3 @@ Options -Indexes
 Order Allow,Deny
 Deny from All
 </Files>
-

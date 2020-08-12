@@ -20,7 +20,7 @@ BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 #PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 Requires(pre,preun):/usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
+Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip)
 AutoReq:            0
 Provides:           %{name}-%{version}
 

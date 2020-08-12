@@ -511,34 +511,38 @@ foreach ($info as $user_id => $user_info) {
 
     $data[4] = '';
     if ($user_profiles !== false) {
-        if (defined('METACONSOLE')) {
-            $data[4] .= "<div width='100%'>";
-            foreach ($user_profiles as $row) {
+        $total_profile = 0;
+
+            $data[4] .= '<div style="text-align: end;">';
+        foreach ($user_profiles as $row) {
+            if ($total_profile <= 5) {
                 $data[4] .= "<div style='float:left;'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / </div>';
                 $data[4] .= "<div style='float:left; padding-left:5px;'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
+
+                if ($total_profile == 0 && count($user_profiles) >= 5) {
+                    $data[4] .= '<span onclick="showGroups()" style="padding-left: 15px;">
+                    '.html_print_image('images/input_zoom_gray.png', true, ['title' => __('Show')]).'</span>';
+                }
+
                 $data[4] .= '<br />';
                 $data[4] .= '<br />';
+                $data[4] .= '</div>';
+            } else {
+                $data[4] .= "<div id='groups_list' style='display:none;'>";
+                $data[4] .= '<div >';
+                $data[4] .= profile_get_name($row['id_perfil']);
+                $data[4] .= ' / '.groups_get_name($row['id_grupo'], true).'</div>';
+                $data[4] .= '<br/>';
             }
+
+            $total_profile++;
+        }
 
             $data[4] .= '</div>';
-        } else {
-            $data[4] .= "<table width='100%'>";
-            foreach ($user_profiles as $row) {
-                $data[4] .= '<tr>';
-                $data[4] .= '<td>';
-                $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= ' / ';
-                $data[4] .= groups_get_name($row['id_grupo'], true);
-                $data[4] .= '</td>';
-                $data[4] .= '</tr>';
-            }
-
-            $data[4] .= '</table>';
-        }
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');
     }
@@ -588,3 +592,17 @@ if ($config['admin_can_add_user'] !== false) {
 echo '</div>';
 
 enterprise_hook('close_meta_frame');
+
+echo '<script type="text/javascript">
+function showGroups(){
+    var groups_list = document.getElementById("groups_list");
+
+    if(groups_list.style.display == "none"){
+        document.querySelectorAll("[id=groups_list]").forEach(element=> 
+        element.style.display = "block");
+    }else{
+        document.querySelectorAll("[id=groups_list]").forEach(element=> 
+        element.style.display = "none");
+    };
+}
+</script>';

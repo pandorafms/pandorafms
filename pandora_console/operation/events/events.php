@@ -317,7 +317,12 @@ if (is_ajax()) {
             );
             $count = events_get_all(
                 'count',
-                $filter
+                $filter,
+                null,
+                null,
+                null,
+                null,
+                $history
             );
 
             if ($count !== false) {

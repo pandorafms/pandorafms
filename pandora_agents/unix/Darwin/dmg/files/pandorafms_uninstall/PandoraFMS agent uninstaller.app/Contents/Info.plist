@@ -7,7 +7,7 @@
 
     <key>CFBundleVersion</key>            <string>7.0NG.748</string>
     <key>CFBundleGetInfoString</key>      <string>7.0NG.748 Pandora FMS Agent uninstaller for MacOS by Artica ST on Aug 2020</string>
-    <key>CFBundleShortVersionString</key> <string>748</string>
+    <key>CFBundleShortVersionString</key> <string>7.0NG.748</string>
 	
     <key>NSPrincipalClass</key><string>NSApplication</string>
     <key>NSMainNibFile</key><string>MainMenu</string>

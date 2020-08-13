@@ -78,6 +78,9 @@ $PANDHOME_ENT/pandora_plugins/Informix/informix.pl \
 $PANDHOME_ENT/pandora_plugins/Docker/docker_services.pl \
 $PANDHOME_ENT/pandora_plugins/Docker/docker_stats.pl \
 $PANDHOME_ENT/pandora_plugins/Ruckus/ruckus.pl "
+AGENT_DARWIN_BUILDER="$CODEHOME/pandora_agents/unix/Darwin/dmg/build_darwin_dmg.sh"
+AGENT_DARWIN_DISTR="$CODEHOME/pandora_agents/unix/Darwin/dmg/extras/distribution.xml"
+AGENT_DARWIN_PLIST="$CODEHOME/pandora_agents/unix/Darwin/dmg/files/pandorafms_uninstall/PandoraFMS agent uninstaller.app/Contents/Info.plist"
 PLUGIN_LIB_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/PluginTools.pm"
 
 # Update version in spec files
@@ -138,6 +141,14 @@ for file in $INSTALLER_FILES; do
 	update_installer_version $file
 done
 
+# Darwin dmg installer files
+echo "Updating DARWIN DMG files..."
+sed -i -e "/VERSION/s/=.*/=\"$VERSION\"/" "$AGENT_DARWIN_BUILDER"
+sed -i -r "s/(version=\").*(\"\s+onConclusion=)/\1$VERSION\2/g"  "$AGENT_DARWIN_DISTR"
+sed -i -r "s/(CFBundleVersion<\/key>\s*<string>).*(<\/string>)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
+sed -i -r "s/(CFBundleShortVersionString<\/key>\s*<string>).*(<\/string>)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
+sed -i -r "s/(CFBundleGetInfoString<\/key>\s*<string>).*( Pandora FMS)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
+
 # Perl plugins files
 for file in $PERL_PLUGIN_FILES; do
 	echo "Updating plugin file $file..."
@@ -155,7 +166,7 @@ sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SE
 sed -i -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE"
 sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_OPEN_FILE"
 sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_ENT_FILE"
-echo "Updateing Pandora PluginTools version..."
+echo "Updating Pandora PluginTools version..."
 sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$PLUGIN_LIB_FILE"
 sed -i -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$PLUGIN_LIB_FILE"
 

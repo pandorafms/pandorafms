@@ -15,8 +15,6 @@ if (! isset($config['id_user'])) {
     return;
 }
 
-require 'vendor/autoload.php';
-
 use PandoraFMS\Dashboard\Manager;
 
 require_once 'include/functions_menu.php';

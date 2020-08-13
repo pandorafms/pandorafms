@@ -349,16 +349,6 @@ switch ($action) {
                 $agent = new Agent();
                 $agent->show();
             break;
-
-            case 'visualmaps':
-                $visualmaps = new Visualmaps();
-                $visualmaps->show();
-            break;
-
-            case 'visualmap':
-                $visualmap = new Visualmap();
-                $visualmap->show();
-            break;
         }
     break;
 }

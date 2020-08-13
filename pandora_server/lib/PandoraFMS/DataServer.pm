@@ -117,7 +117,7 @@ sub run ($) {
 ###############################################################################
 sub data_producer ($) {
 	my $self = shift;
-	my $pa_config = $self->getConfig ();
+	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 
 	my @tasks;
 	my @files;
@@ -162,7 +162,7 @@ sub data_producer ($) {
 		next if ($file !~ /^(.*)[\._]\d+\.data$/);
 		my $agent_name = $1;
 
-		next if (agent_lock($pa_config, $agent_name) == 0);
+		next if (agent_lock($pa_config, $dbh, $agent_name) == 0);
 			
 		push (@tasks, $file);
 	}
@@ -234,6 +234,7 @@ sub data_consumer ($$) {
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
+		# If 1 => uses timestamp from received XML #5763.
 		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '0' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists
@@ -1063,9 +1064,16 @@ sub process_xml_matrix_network {
 # Get a lock on the given agent. Return 1 on success, 0 otherwise.
 ##########################################################################
 sub agent_lock {
-	my ($pa_config, $agent_name) = @_;
+	my ($pa_config, $dbh, $agent_name) = @_;
 
-	return 1 if ($pa_config->{'dataserver_lifo'} == 1);
+	# Do not lock on LIFO mode if the agent already exist.
+	# get_agent_id will be called again from process_xml_data,
+	# so the should be no race conditions if the agent does
+	# not exist.
+	if ($pa_config->{'dataserver_lifo'} == 1 &&
+		get_agent_id ($dbh, $agent_name) > 0) {
+		return 1;
+	}
 
 	$AgentSem->down ();
 	if (defined ($Agents{$agent_name})) {

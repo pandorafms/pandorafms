@@ -112,14 +112,88 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
     return;
 }
 
-/*
- * Disabled at the moment.
-    if (!check_referer()) {
-    require ("general/noaccess.php");
+if (is_ajax()) {
+    $delete_profile = (bool) get_parameter('delete_profile');
+    if ($delete_profile) {
+        $id2 = (string) get_parameter('id_user');
+        $id_up = (int) get_parameter('id_user_profile');
 
-    return;
+        $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
+        $id_perfil = $perfilUser['id_perfil'];
+        $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
+
+        db_pandora_audit(
+            'User management',
+            'Deleted profile for user '.io_safe_input($id2),
+            false,
+            false,
+            'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
+        );
+
+        $return = profile_delete_user_profile($id2, $id_up);
+        ui_print_result_message(
+            $return,
+            __('Successfully deleted'),
+            __('Could not be deleted')
+        );
+
+
+        $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
+        if ($has_profile == false) {
+            $result = delete_user($id2);
+
+            if ($result) {
+                db_pandora_audit(
+                    'User management',
+                    __('Deleted user %s', io_safe_input($id_user))
+                );
+            }
+
+            ui_print_result_message(
+                $result,
+                __('Successfully deleted'),
+                __('There was a problem deleting the user')
+            );
+
+            // Delete the user in all the consoles
+            if (defined('METACONSOLE')) {
+                $servers = metaconsole_get_servers();
+                foreach ($servers as $server) {
+                    // Connect to the remote console
+                    metaconsole_connect($server);
+
+                    // Delete the user
+                    $result = delete_user($id_user);
+                    if ($result) {
+                        db_pandora_audit(
+                            'User management',
+                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                        );
+                    }
+
+                    // Restore the db connection
+                    metaconsole_restore_db();
+
+                    // Log to the metaconsole too
+                    if ($result) {
+                        db_pandora_audit(
+                            'User management',
+                            __('Deleted user %s from %s', io_safe_input($id_user), io_safe_input($server['server_name']))
+                        );
+                    }
+
+                    ui_print_result_message(
+                        $result,
+                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
+                    );
+                }
+            }
+        }
+
+        return;
     }
- */
+}
 
 $tab = get_parameter('tab', 'user');
 
@@ -168,9 +242,9 @@ if ($config['user_can_update_info']) {
 $new_user = (bool) get_parameter('new_user');
 $create_user = (bool) get_parameter('create_user');
 $add_profile = (bool) get_parameter('add_profile');
-$delete_profile = (bool) get_parameter('delete_profile');
 $update_user = (bool) get_parameter('update_user');
 $status = get_parameter('status', -1);
+$json_profile = get_parameter('json_profile', '');
 
 // Reset status var if current action is not update_user
 if ($new_user || $create_user || $add_profile
@@ -372,6 +446,41 @@ if ($create_user) {
 
             $user_info = get_user_info($id);
             $new_user = false;
+
+            if (!empty($json_profile)) {
+                $json_profile = json_decode(io_safe_output($json_profile), true);
+                foreach ($json_profile as $key => $profile) {
+                    if (!empty($profile)) {
+                        $group2 = $profile['group'];
+                        $profile2 = $profile['profile'];
+                        $tags = $profile['tags'];
+                        foreach ($tags as $k => $tag) {
+                            if (empty($tag)) {
+                                unset($tags[$k]);
+                            }
+                        }
+
+                        $tags = implode(',', $tags);
+                        $no_hierarchy = $profile['hierarchy'];
+
+                        db_pandora_audit(
+                            'User management',
+                            'Added profile for user '.io_safe_input($id2),
+                            false,
+                            false,
+                            'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
+                        );
+
+                        $result_profile = profile_create_user_profile($id, $profile2, $group2, false, $tags, $no_hierarchy);
+
+                        ui_print_result_message(
+                            $result_profile,
+                            __('Profile added successfully'),
+                            __('Profile cannot be added')
+                        );
+                    }
+                }
+            }
         } else {
             $user_info = $values;
             $new_user = true;
@@ -598,7 +707,7 @@ if ($status != -1) {
     );
 }
 
-if ($add_profile) {
+if ($add_profile && empty($json_profile)) {
     $id2 = (string) get_parameter('id');
     $group2 = (int) get_parameter('assign_group');
     $profile2 = (int) get_parameter('assign_profile');
@@ -628,32 +737,36 @@ if ($add_profile) {
     );
 }
 
-if ($delete_profile) {
-    $id2 = (string) get_parameter('id_user');
-    $id_up = (int) get_parameter('id_user_profile');
-
-    $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
-    $id_perfil = $perfilUser['id_perfil'];
-    $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-
-    db_pandora_audit(
-        'User management',
-        'Deleted profile for user '.io_safe_input($id2),
-        false,
-        false,
-        'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
-    );
-
-    $return = profile_delete_user_profile($id2, $id_up);
-    ui_print_result_message(
-        $return,
-        __('Successfully deleted'),
-        __('Could not be deleted')
-    );
-}
-
 if ($values) {
     $user_info = $values;
+}
+
+if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
+    $group_um = users_get_groups_UM($config['id_user']);
+    if (isset($group_um[0])) {
+        $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
+    } else {
+        $group_um_string = implode(',', array_keys($group_um));
+    }
+
+    $sql = sprintf(
+        "SELECT tusuario_perfil.* FROM tusuario_perfil
+        INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+        WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
+        $id,
+        $group_um_string
+    );
+
+    $result = db_get_all_rows_sql($sql);
+    if ($result == false || $user_info['is_admin']) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access User Management'
+        );
+        include 'general/noaccess.php';
+
+        return;
+    }
 }
 
 if (defined('METACONSOLE')) {
@@ -762,19 +875,22 @@ if ($config['user_can_update_password']) {
 $own_info = get_user_info($config['id_user']);
 $global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" style="margin:0;">'.__('Global Profile').'</span>';
 $global_profile .= '<div class="switch_radio_button">';
-$global_profile .= html_print_radio_button_extended(
-    'is_admin',
-    1,
-    [
-        'label'    => __('Administrator'),
-        'help_tip' => __('This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL.'),
-    ],
-    $user_info['is_admin'],
-    false,
-    '',
-    '',
-    true
-);
+if (users_is_admin()) {
+    $global_profile .= html_print_radio_button_extended(
+        'is_admin',
+        1,
+        [
+            'label'    => __('Administrator'),
+            'help_tip' => __('This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL.'),
+        ],
+        $user_info['is_admin'],
+        false,
+        '',
+        '',
+        true
+    );
+}
+
 $global_profile .= html_print_radio_button_extended(
     'is_admin',
     0,
@@ -1027,7 +1143,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true).'</div>';
 }
 
-echo '<form method="post" autocomplete="off">';
+echo '<form id="user_profile_form" method="post" autocomplete="off">';
 
 
 if (!$id) {
@@ -1067,14 +1183,19 @@ if (!is_metaconsole()) {
     echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_assigned_server.$metaconsole_access_node;
 }
 
-    echo '</div>
-</div> 
+echo '</div>
+</div>
 
 <div class="user_edit_third_row white_box">
     <div class="edit_user_comments">'.$comments.'</div>
-</div>  
-<div class="user_edit_third_row white_box">'.$ehorus.'</div>  
 </div>';
+if (!empty($ehorus)) {
+    echo '<div class="user_edit_third_row white_box">'.$ehorus.'</div>';
+}
+
+echo '</div>';
+
+profile_print_profile_table($id);
 
 echo '<div style="width: 100%" class="action-buttons">';
 if ($config['admin_can_add_user']) {
@@ -1088,16 +1209,15 @@ if ($config['admin_can_add_user']) {
     }
 }
 
+html_print_input_hidden('json_profile', '');
+
 echo '</div>';
 echo '</form>';
 echo '<br />';
 
-// Don't show anything else if we're creating an user
-if (!empty($id) && !$new_user) {
-    profile_print_profile_table($id);
-}
-
 enterprise_hook('close_meta_frame');
+$delete_image = html_print_input_image('del', 'images/cross.png', 1, '', true, ['onclick' => 'delete_profile(event, this)']);
+
 
 if (!is_metaconsole()) {
     ?>
@@ -1132,13 +1252,14 @@ if (!is_metaconsole()) {
 ?>
 
 <script type="text/javascript">
+var json_profile = $('#hidden-json_profile');
 /* <![CDATA[ */
 $(document).ready (function () {
     $('input:radio[name="is_admin"]').change(function() {
         if($('#radiobtn0002').prop('checked')) {     
             $('#metaconsole_agents_manager_div').show();
             $('#metaconsole_access_node_div').show();
-            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {       
+            if($('#checkbox-metaconsole_agents_manager').prop('checked')) {
                 $('#metaconsole_assigned_server_div').show();
             }
         }
@@ -1167,7 +1288,104 @@ $(document).ready (function () {
     });
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
 
+    var img_delete = '<?php echo $delete_image; ?>';
+    var id_user = '<?php echo $id; ?>';
+    var data = [];
+
+    $('input:image[name="add"]').click(function (e) {
+        e.preventDefault();
+        var profile = $('#assign_profile').val();
+        var profile_text = $('#assign_profile option:selected').text();
+        var group = $('#assign_group').val();
+        var group_text = $('#assign_group option:selected').text();
+        var tags = $('#assign_tags').val();
+        var tags_text = $('#assign_tags option:selected').toArray().map(item => item.text).join();
+        if ( $('#checkbox-no_hierarchy').is(':checked')) {
+            var hierarchy = 1;
+            var hierarchy_text = '<?php echo __('yes'); ?>';
+        } else {
+            var hierarchy = 0;
+            var hierarchy_text = '<?php echo __('no'); ?>';
+        }
+
+        if (profile === '0' || group === '-1') {
+            alert('<?php echo __('please select profile and group'); ?>');
+            return;
+        }
+
+        if (id_user === '') {
+            let new_json = `{"profile":${profile},"group":${group},"tags":[${tags}],"hierarchy":${hierarchy}}`;
+            data.push(new_json);
+            json_profile.val('['+data+']');
+            $('#table_profiles tr:last').before(
+                `<tr>
+                    <td>${profile_text}</td>
+                    <td>${group_text}</td>
+                    <td>${tags_text}</td>
+                    <td>${hierarchy_text}</td>
+                    <td>${img_delete}</td>
+                </tr>`
+            );
+        } else {
+            this.form.submit();
+        }
+    });
+
+    $('input:image[name="del"]').click(function (e) {
+        e.preventDefault();
+        var rows = $("#table_profiles tr").length;
+        if (rows <= 3) {
+            if (!confirm('<?php echo __('Deleting last profile'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
+                return;
+            }
+        }
+
+        var id_user_profile = $(this).siblings();
+        id_user_profile = id_user_profile[1].value;
+        var row = $(this).closest('tr');
+
+        var params = [];
+        params.push("delete_profile=1");
+        params.push("id_user=" + id_user);
+        params.push("id_user_profile=" + id_user_profile);
+        params.push("page=godmode/users/configure_user");
+        jQuery.ajax ({
+            data: params.join ("&"),
+            type: 'POST',
+            url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            success: function (data) {
+                row.remove();
+                var rows = $("#table_profiles tr").length;
+                if (rows <= 2) {
+                    window.location.replace("<?php echo ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0', false, false, false); ?>");
+                }
+            }
+        });
+    });
+
+    $('#submit-crtbutton').click(function (e) {
+        e.preventDefault();
+        var rows = $("#table_profiles tr").length;
+        if (rows <= 2) {
+            alert('<?php echo __('please add a profile'); ?>');
+        } else {
+            this.form.submit();
+        }
+    });
 });
+
+function delete_profile(event, btn) {
+    event.preventDefault();
+    var row = btn.parentNode.parentNode;
+    var position = row.rowIndex;
+    row.parentNode.removeChild(row);
+
+    var json = json_profile.val();
+    var test = JSON.parse(json);
+    delete test[position-1];
+    json_profile.val(JSON.stringify(test));
+
+}
 
 function show_data_section () {
     section = $("#section").val();

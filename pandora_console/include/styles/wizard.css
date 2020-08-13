@@ -1,7 +1,6 @@
 /*
  * Discovery > Wizard css global style
  */
-
 #main > form.discovery.wizard > .white_box {
   min-width: 1024px;
 }
@@ -70,9 +69,8 @@ ul.wizard li > textarea {
 }
 
 .wizard .discovery_inline_input {
-  display: flex;
+  display: inline;
   align-content: end;
-  flex: 0;
   align-self: flex-start;
 }
 

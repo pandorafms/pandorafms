@@ -170,6 +170,7 @@ if ($schedule_report != '') {
     $parameters[4] = get_parameter('report_type', '');
     $parameters['first_execution'] = strtotime($date.' '.$time);
 
+
     $values = [
         'id_usuario'   => $config['id_user'],
         'id_user_task' => $id_user_task,
@@ -180,9 +181,11 @@ if ($schedule_report != '') {
 
     $result = db_process_sql_insert('tuser_task_scheduled', $values);
 
+    $report_type = $parameters[4];
+
     ui_print_result_message(
         $result,
-        __('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
+        __('Your report has been planned, and the system will email you a '.$report_type.' file with the report as soon as its finished'),
         __('An error has ocurred')
     );
     echo '<br>';
@@ -767,9 +770,14 @@ switch ($action) {
             )
         );
 
-
         if (count($reports)) {
+            $filters = [
+                'search'   => $search,
+                'id_group' => $id_group,
+            ];
+            $filtersStr = http_build_query($filters, '', '&amp;');
             $url = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
+            $url .= '&'.$filtersStr;
             ui_pagination($total_reports, $url, $offset, $pagination);
 
             $table = new stdClass();

@@ -870,8 +870,8 @@ $row++;
     $table_chars->data[$row][0] = __('Show only average');
 
     $options_soft_graphs    = [];
-    $options_soft_graphs[0] = __('Standard mode');
-    $options_soft_graphs[1] = __('Classic mode');
+    $options_soft_graphs[0] = __('Show only average by default');
+    $options_soft_graphs[1] = __('Show MAX/AVG/MIN by default');
 
     $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
     $row++;
@@ -1065,8 +1065,12 @@ $row++;
         }
     }
 
-    // Logo
-    $table_report->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo');
+    // Logo.
+    $table_report->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo').ui_print_help_tip(
+        __("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."),
+        true
+    );
+
     $table_report->data['custom_report_front-logo'][1] = html_print_select(
         $customLogos,
         'custom_report_front_logo',
@@ -1076,7 +1080,7 @@ $row++;
         '',
         true
     );
-    // Preview
+    // Preview.
     $table_report->data['custom_report_front-preview'][0] = __('Custom report front').' - '.'Preview';
     if (empty($config['custom_report_front_logo'])) {
         $config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
@@ -1084,23 +1088,32 @@ $row++;
 
     $table_report->data['custom_report_front-preview'][1] = '<span id="preview_image">'.html_print_image($config['custom_report_front_logo'], true).'</span>';
 
-    // Header
+    // Header.
     $table_report->data['custom_report_front-header'][0] = __('Custom report front').' - '.__('Header');
+
+    // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
     $table_report->data['custom_report_front-header'][1] = html_print_textarea(
         'custom_report_front_header',
         5,
         15,
-        $config['custom_report_front_header'],
+        io_safe_output($config['custom_report_front_header']),
         'style="width: 38em;"',
         true
     );
 
-    // First page
+    // First page.
+    // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
+    if ($config['custom_report_front']) {
+        $firstpage_content = $config['custom_report_front_firstpage'];
+    } else {
+        $firstpage_content = io_safe_output($config['custom_report_front_firstpage']);
+    }
+
     $table_report->data['custom_report_front-first_page'][0] = __('Custom report front').' - '.__('First page');
     $custom_report_front_firstpage = str_replace(
         '(_URLIMAGE_)',
         ui_get_full_url(false, true, false, false),
-        $config['custom_report_front_firstpage']
+        io_safe_output($firstpage_content)
     );
     $table_report->data['custom_report_front-first_page'][1] = html_print_textarea(
         'custom_report_front_firstpage',
@@ -1111,13 +1124,15 @@ $row++;
         true
     );
 
-    // Footer
+    // Footer.
     $table_report->data['custom_report_front-footer'][0] = __('Custom report front').' - '.__('Footer');
+
+    // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
     $table_report->data['custom_report_front-footer'][1] = html_print_textarea(
         'custom_report_front_footer',
         5,
         15,
-        $config['custom_report_front_footer'],
+        io_safe_output($config['custom_report_front_footer']),
         'style="width: 38em;"',
         true
     );
@@ -1324,6 +1339,15 @@ $row++;
         $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
         $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
     }
+
+    $row++;
+
+    $decimal_separator = [
+        '.' => '.',
+        ',' => ',',
+    ];
+    $table_other->data[$row][0] = __('CSV decimal separator').ui_print_help_tip(__('Only for csv reports'), true);
+    $table_other->data[$row][1] = html_print_select($decimal_separator, 'csv_decimal_separator', $config['csv_decimal_separator'], '', '', '', true, false, false);
 
     $row++;
 

@@ -464,6 +464,8 @@ $data[1] = html_print_select(
     $disabledBecauseInPolicy
 );
 
+$data[1] .= '<br> <br><a class="info_cell" href="'.ui_get_full_url('index.php?sec=gagente&sec2=godmode/groups/group_list&tab=credbox').'">'.__('Manage credentials').'</a>';
+
 $array_os = [
     'inherited' => __('Inherited'),
     'linux'     => __('SSH'),

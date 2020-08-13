@@ -69,7 +69,11 @@ function pandoralogs_extension_main()
 
     $logs_directory = (!empty($config['server_log_dir'])) ? io_safe_output($config['server_log_dir']) : '/var/log/pandora';
 
-    view_logfile($config['homedir'].'/pandora_console.log');
+    // Do not attempt to show console log if disabled.
+    if ($config['console_log_enabled']) {
+        view_logfile($config['homedir'].'/log/console.log');
+    }
+
     view_logfile($logs_directory.'/pandora_server.log');
     view_logfile($logs_directory.'/pandora_server.error');
 }

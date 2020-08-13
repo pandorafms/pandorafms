@@ -356,10 +356,23 @@ if (!defined('METACONSOLE')) {
     $table->valign[6] = 'top';
 }
 
+$group_um = users_get_groups_UM($config['id_user']);
+if (isset($group_um[0])) {
+    $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
+} else {
+    $group_um_string = implode(',', array_keys($group_um));
+}
+
 
 $info1 = [];
-
-$info1 = get_users($order);
+// Is admin or has group permissions all.
+if (users_is_admin() || isset($group_um[0])) {
+    $info1 = get_users($order);
+} else {
+    foreach ($group_um as $group => $value) {
+        $info1 = array_merge($info1, users_get_users_by_group($group, $value));
+    }
+}
 
 // Filter the users
 if ($search) {
@@ -367,11 +380,11 @@ if ($search) {
         $found = false;
 
         if (!empty($filter_search)) {
-            if (preg_match('/.*'.$filter_search.'.*/', $user_info['fullname']) != 0) {
+            if (preg_match('/.*'.strtolower($filter_search).'.*/', strtolower($user_info['fullname'])) != 0) {
                 $found = true;
             }
 
-            if (preg_match('/.*'.$filter_search.'.*/', $user_info['id_user']) != 0) {
+            if (preg_match('/.*'.strtolower($filter_search).'.*/', strtolower($user_info['id_user'])) != 0) {
                 $found = true;
             }
 
@@ -400,33 +413,7 @@ if ($search) {
     }
 }
 
-// ~
-// ~ $filter_group
-// ~ $filter_search
-// ~
-$info = [];
-$own_info = get_user_info($config['id_user']);
-$own_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin']);
-
-if ($own_info['is_admin']) {
-    $info = $info1;
-}
-// If user is not admin then don't display admin users and user of others groups.
-else {
-    foreach ($info1 as $key => $usr) {
-        $u = get_user_info($key);
-        $g = users_get_groups($key, false, $u['is_admin']);
-        $result = array_intersect($g, $own_groups);
-
-        // Show users without profile too.
-        if (!$usr['is_admin'] && !empty($result) || (!$usr['is_admin'] && db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $usr['id_user']) === false)) {
-            $info[$key] = $usr;
-        }
-
-        unset($u);
-        unset($g);
-    }
-}
+$info = $info1;
 
 // Prepare pagination
 ui_pagination(count($info));
@@ -438,9 +425,41 @@ $rowPair = true;
 $iterator = 0;
 $cont = 0;
 foreach ($info as $user_id => $user_info) {
+    if (!users_is_admin() && $user_info['is_admin']) {
+        // If user is not admin then don't display admin users.
+        continue;
+    }
+
+    // User profiles.
+    if (users_is_admin() || $user_id == $config['id_user']) {
+        $user_profiles = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $user_id);
+    } else {
+        $user_profiles_aux = users_get_user_profile($user_id);
+        $user_profiles = [];
+        foreach ($group_um as $key => $value) {
+            if (isset($user_profiles_aux[$key])) {
+                $user_profiles[$key] = $user_profiles_aux[$key];
+                if ($user_profiles_aux[$key]['user_management'] == 1) {
+                    $user_info['edit'] = 0;
+                } else {
+                    $user_info['edit'] = 1;
+                }
+
+                unset($user_profiles_aux[$key]);
+            }
+        }
+
+        if (!empty($user_profiles_aux)) {
+            $user_info['not_delete'] = 1;
+        }
+
+        if ($user_profiles == false) {
+            continue;
+        }
+    }
+
     $cont++;
 
-    //
     // Manual pagination due the complicated process of the ACL data
     if ($cont <= $offset) {
         continue;
@@ -464,12 +483,14 @@ foreach ($info as $user_id => $user_info) {
 
     $iterator++;
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
+    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
+        $data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
+    } else {
+        $data[0] = $user_id;
+    }
+
     $data[1] = '<ul style="margin-top: 0 !important; margin-left: auto !important; padding-left: 10px !important; list-style-type: none !important;">';
     $data[1] .= '<li>'.$user_info['fullname'].'</li>';
-    /*
-        $data[1] .= '<li><b>' . __('First name') . ':</b> ' . $user_info["firstname"] . '</li>';
-    $data[1] .= '<li><b>' . __('Last name') . ':</b> ' . $user_info["lastname"] . '</li>';*/
     $data[1] .= '<li>'.$user_info['phone'].'</li>';
     $data[1] .= '<li>'.$user_info['email'].'</li>';
     $data[1] .= '</ul>';
@@ -485,45 +506,43 @@ foreach ($info as $user_id => $user_info) {
             ]
         ).'&nbsp;';
     } else {
-        /*
-            $data[3] = html_print_image ("images/user_green.png", true,
-            array ("alt" => __('User'),
-                "title" => __('Standard User'))) . '&nbsp;';
-        */
         $data[3] = '';
     }
 
     $data[4] = '';
-    $result = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $user_id);
-    if ($result !== false) {
-        if (defined('METACONSOLE')) {
-            $data[4] .= "<div width='100%'>";
-            foreach ($result as $row) {
+    if ($user_profiles !== false) {
+        $total_profile = 0;
+
+            $data[4] .= '<div style="text-align: end;">';
+        foreach ($user_profiles as $row) {
+            if ($total_profile <= 5) {
                 $data[4] .= "<div style='float:left;'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / </div>';
                 $data[4] .= "<div style='float:left; padding-left:5px;'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
+
+                if ($total_profile == 0 && count($user_profiles) >= 5) {
+                    $data[4] .= '<span onclick="showGroups()" style="padding-left: 15px;">
+                    '.html_print_image('images/input_zoom_gray.png', true, ['title' => __('Show')]).'</span>';
+                }
+
                 $data[4] .= '<br />';
                 $data[4] .= '<br />';
+                $data[4] .= '</div>';
+            } else {
+                $data[4] .= "<div id='groups_list' style='display:none;'>";
+                $data[4] .= '<div >';
+                $data[4] .= profile_get_name($row['id_perfil']);
+                $data[4] .= ' / '.groups_get_name($row['id_grupo'], true).'</div>';
+                $data[4] .= '<br/>';
             }
+
+            $total_profile++;
+        }
 
             $data[4] .= '</div>';
-        } else {
-            $data[4] .= "<table width='100%'>";
-            foreach ($result as $row) {
-                $data[4] .= '<tr>';
-                $data[4] .= '<td>';
-                $data[4] .= profile_get_name($row['id_perfil']);
-                $data[4] .= ' / ';
-                $data[4] .= groups_get_name($row['id_grupo'], true);
-                $data[4] .= '</td>';
-                $data[4] .= '</tr>';
-            }
-
-            $data[4] .= '</table>';
-        }
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');
     }
@@ -531,21 +550,26 @@ foreach ($info as $user_id => $user_info) {
     $data[5] = ui_print_string_substr($user_info['comments'], 24, true);
 
     $table->cellclass[][6] = 'action_buttons';
-    if ($user_info['disabled'] == 0) {
-        $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable')]).'</a>';
-    } else {
-        $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, ['title' => __('Enable')]).'</a>';
-    }
-
-    $data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
-    if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user']) {
-        $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'onclick' => "if (! confirm ('".__('Deleting User').' '.$user_info['id_user'].'. '.__('Are you sure?')."')) return false"]).'</a>';
-        if (defined('METACONSOLE')) {
-            $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, ['title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('".__('Deleting User %s from all consoles', $user_info['id_user']).'. '.__('Are you sure?')."')) return false"]).'</a>';
+    $data[6] = '';
+    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
+        if (!isset($user_info['not_delete'])) {
+            if ($user_info['disabled'] == 0) {
+                $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable')]).'</a>';
+            } else {
+                $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, ['title' => __('Enable')]).'</a>';
+            }
         }
-    } else {
-        $data[6] .= '';
-        // Delete button not in this mode
+
+        $data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
+        if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user'] && !isset($user_info['not_delete'])) {
+            $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'onclick' => "if (! confirm ('".__('Deleting User').' '.$user_info['id_user'].'. '.__('Are you sure?')."')) return false"]).'</a>';
+            if (defined('METACONSOLE')) {
+                $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, ['title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('".__('Deleting User %s from all consoles', $user_info['id_user']).'. '.__('Are you sure?')."')) return false"]).'</a>';
+            }
+        } else {
+            $data[6] .= '';
+            // Delete button not in this mode
+        }
     }
 
     array_push($table->data, $data);
@@ -568,3 +592,17 @@ if ($config['admin_can_add_user'] !== false) {
 echo '</div>';
 
 enterprise_hook('close_meta_frame');
+
+echo '<script type="text/javascript">
+function showGroups(){
+    var groups_list = document.getElementById("groups_list");
+
+    if(groups_list.style.display == "none"){
+        document.querySelectorAll("[id=groups_list]").forEach(element=> 
+        element.style.display = "block");
+    }else{
+        document.querySelectorAll("[id=groups_list]").forEach(element=> 
+        element.style.display = "none");
+    };
+}
+</script>';

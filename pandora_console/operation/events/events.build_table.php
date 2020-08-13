@@ -982,24 +982,26 @@ if ($group_rep == 2) {
                 $array_events_actions[$val['id']] = $val['name'];
             }
 
-            if ($config['event_replication'] != 1) {
-                echo '<div style="width:100%;text-align:right;">';
-                echo '<form method="post" id="form_event_response">';
-                html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
-                echo '&nbsp&nbsp';
-                html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
-                echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
-                echo '</form>';
-                echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
-                echo __(
-                    'A maximum of %s event custom responses can be selected',
-                    $config['max_execution_event_response']
-                ).'</span>';
-                echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
-                echo __(
-                    'Please, select an event'
-                ).'</span>';
-                echo '</div>';
+            if (check_acl($config['id_user'], 0, 'EW')) {
+                if ($config['event_replication'] != 1) {
+                    echo '<div style="width:100%;text-align:right;">';
+                    echo '<form method="post" id="form_event_response">';
+                    html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+                    echo '&nbsp&nbsp';
+                    html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
+                    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+                    echo '</form>';
+                    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+                    echo __(
+                        'A maximum of %s event custom responses can be selected',
+                        $config['max_execution_event_response']
+                    ).'</span>';
+                    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+                    echo __(
+                        'Please, select an event'
+                    ).'</span>';
+                    echo '</div>';
+                }
             }
         }
 

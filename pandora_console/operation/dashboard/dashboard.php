@@ -42,7 +42,6 @@ try {
 } catch (Exception $e) {
     if (is_ajax() === true) {
         echo json_encode(['error' => '[Dashboards]'.$e->getMessage() ]);
-        exit;
     } else {
         echo '[Dashboards]'.$e->getMessage();
     }
@@ -64,9 +63,6 @@ if (is_ajax() === true) {
     } else {
         $cs->error('Method not found. ['.$method.']');
     }
-
-    // Stop any execution.
-    exit;
 } else {
     // Run.
     $cs->run();

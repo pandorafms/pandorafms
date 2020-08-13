@@ -13,6 +13,7 @@
 // GNU General Public License for more details.
 require_once $config['homedir'].'/include/functions_config.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
+require_once $config['homedir'].'/include/functions_snmp.php';
 require_once $config['homedir'].'/include/functions_network_components.php';
 
 
@@ -24,7 +25,7 @@ if (is_ajax()) {
     $method = (string) get_parameter('method', '');
     $action = (string) get_parameter('action', '');
     $target_ip = (string) get_parameter('target_ip', '');
-    $community = (string) get_parameter('community', '');
+    $community = (string) io_safe_output((get_parameter('community', '')));
     $snmp_version = (string) get_parameter('snmp_browser_version', '');
     $snmp3_auth_user = io_safe_output(get_parameter('snmp3_browser_auth_user'));
     $snmp3_security_level = get_parameter('snmp3_browser_security_level');
@@ -112,6 +113,17 @@ if (is_ajax()) {
             $output .= '</div>';
             $output .= '</div>';
 
+            // Dialog no agent selected.
+            $output .= '<div id="dialog_no_agents_selected" style="display:none" title="'.__('SNMP modules').'">';
+            $output .= '<div>';
+            $output .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+            $output .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+            $output .= "<p style='font-family:Verdana; font-size:12pt;margin-bottom: 0px'>".__('Module must be applied to an agent or a policy').'</p>';
+            $output .= "<p id='error_text' style='font-family:Verdana; font-size:12pt;'></p>";
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
+
             echo $output;
         }
 
@@ -156,6 +168,11 @@ if (is_ajax()) {
         $id_items = get_parameter('id_item2', null);
         if (!is_null($id_items)) {
             $id_target = explode(',', $id_items[0]);
+        }
+
+        if (empty($id_items[0])) {
+            echo json_encode([0 => -1]);
+            exit;
         }
 
         $snmp_extradata = get_parameter('snmp_extradata', '');

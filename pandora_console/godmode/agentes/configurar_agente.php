@@ -1378,8 +1378,8 @@ if ($update_module || $create_module) {
     $ip_target = (string) get_parameter('ip_target');
     // No autofill if the module is a webserver module.
     if ($ip_target == ''
-        && $id_module_type < MODULE_WEBSERVER_CHECK_LATENCY
-        && $id_module_type > MODULE_WEBSERVER_RETRIEVE_STRING_DATA
+        && $id_module_type < MODULE_TYPE_WEB_DATA
+        && $id_module_type > MODULE_TYPE_WEB_CONTENT_STRING
     ) {
         $ip_target = 'auto';
     }

@@ -31,11 +31,10 @@ $id_tag = (int) get_parameter('id_tag', 0);
 $update_tag = (int) get_parameter('update_tag', 0);
 $create_tag = (int) get_parameter('create_tag', 0);
 $name_tag = (string) get_parameter('name_tag', '');
-$description_tag = (string) get_parameter('description_tag', '');
-$description_tag = io_safe_input(strip_tags(io_safe_output($description_tag)));
+$description_tag = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description_tag'))));
 $url_tag = (string) get_parameter('url_tag', '');
-$email_tag = (string) get_parameter('email_tag', '');
-$phone_tag = (string) get_parameter('phone_tag', '');
+$email_tag = io_safe_input(strip_tags(io_safe_output(((string) get_parameter('email_tag')))));
+$phone_tag = io_safe_input(strip_tags(io_safe_output(((string) get_parameter('phone_tag')))));
 $tab = (string) get_parameter('tab', 'list');
 
 if (defined('METACONSOLE')) {

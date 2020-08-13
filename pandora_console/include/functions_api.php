@@ -1506,6 +1506,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if ((int) $other['data'][3] == 0) {
+        $agent_creation_error = __('The agent could not be created, for security reasons use a group another than 0');
+        returnError('generic error', $agent_creation_error);
+        return;
+    }
+
     $alias                     = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $other['data'][0])));
     $direccion_agente          = io_safe_input($other['data'][1]);
     $nombre_agente             = hash('sha256', $direccion_agente.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
@@ -2048,31 +2054,31 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
                     // Filter by status
                     switch ($other['data'][2]) {
                         case 'warning':
-                            if ($status == 2) {
+                            if ($status == AGENT_MODULE_STATUS_WARNING || $status == AGENT_MODULE_STATUS_WARNING_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'critical':
-                            if ($status == 1) {
+                            if ($status == AGENT_MODULE_STATUS_CRITICAL_BAD || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'unknown':
-                            if ($status == 3) {
+                            if ($status == AGENT_MODULE_STATUS_UNKNOWN) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'normal':
-                            if ($status == 0) {
+                            if ($status == AGENT_MODULE_STATUS_NORMAL || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
 
                         case 'alert_fired':
-                            if ($status == 4) {
+                            if ($status == AGENT_STATUS_ALERT_FIRED || $status == AGENT_MODULE_STATUS_WARNING_ALERT || $status == AGENT_MODULE_STATUS_CRITICAL_ALERT || $status == AGENT_MODULE_STATUS_NORMAL_ALERT) {
                                 $result_agents[] = $agent;
                             }
                         break;
@@ -8790,6 +8796,11 @@ function otherParameter2Filter($other, $return_as_array=false, $use_agent_name=f
         }
     }
 
+    // Esto es extraño, hablar con Tati
+    /*
+        $filter['1'] = $filter['sql'];
+    unset($filter['sql']); */
+
     if (isset($other['data'][4]) && $other['data'][4] != '') {
         $idTemplate = db_get_value_filter('id', 'talert_templates', ['name' => $other['data'][4]]);
         if ($idTemplate !== false) {
@@ -10712,12 +10723,89 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
     $data['type'] = 'array';
     $data['data'] = $result;
 
-    // returnData($returnType, $data, $separator);
+    returnData($returnType, $data, $separator);
     if (empty($result)) {
         return false;
     }
 
     return true;
+}
+
+
+/**
+ * Update an event
+ *
+ * @param string $id_event Id of the event for change.
+ * @param string $unused1  Without use.
+ * @param array  $params   Dictionary with field,value format with the data for update.
+ * @param string $unused2  Without use.
+ * @param string $unused3  Without use.
+ *
+ * @return void
+ */
+function api_set_event($id_event, $unused1, $params, $unused2, $unused3)
+{
+    // Get the event
+    $event = events_get_event($id_event, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        return false;
+    }
+
+    $paramsSerialize = [];
+    // Serialize the data for update
+    if ($params['type'] === 'array') {
+        // Keys that is not available to change
+        $invalidKeys = [
+            'id_evento',
+            'id_agente',
+            'id_grupo',
+            'timestamp',
+            'utimestamp',
+            'id_agentmodule',
+            'ack_utimestamp',
+            'data',
+        ];
+
+        foreach ($params['data'] as $key_value) {
+            list($key, $value) = explode(',', $key_value, 2);
+            if (in_array($key, $invalidKeys) == false) {
+                $paramsSerialize[$key] = $value;
+            }
+        }
+    }
+
+    // In meta or node.
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
+    // TODO. Stablish security for prevent sql injection?
+    // Update the row
+    $result = db_process_sql_update(
+        $table,
+        $paramsSerialize,
+        [ 'id_evento' => $id_event ]
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'failed_event_update',
+            __('Failed event update')
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated']);
+    }
+
+    return;
 }
 
 
@@ -10752,6 +10840,8 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db=null)
                 returnError('ERROR_API_PANDORAFMS', $returnType);
             }
         }
+
+        return;
     }
 
     if ($other['type'] == 'string') {
@@ -12196,12 +12286,29 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             return;
         }
 
+        if (!empty($other['data'][17]) && is_metaconsole()) {
+            $id_server = db_get_row_filter('tmetaconsole_setup', ['id' => $other['data'][17]]);
+            if ($id_server === false) {
+                returnError('error_create_event', __('Server id does not exist in database.'));
+                return;
+            }
+
+            $values['server_id'] = $other['data'][17];
+        } else {
+            $values['server_id'] = 0;
+        }
+
         $error_msg = '';
         if ($other['data'][2] != '') {
             $id_agent = $other['data'][2];
             if (is_metaconsole()) {
                 // On metaconsole, connect with the node to check the permissions
-                $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
+                if (empty($values['server_id'])) {
+                    $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
+                } else {
+                    $agent_cache = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $values['server_id']]);
+                }
+
                 if ($agent_cache === false) {
                     returnError('id_not_found', 'string');
                     return;
@@ -12328,12 +12435,6 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = $other['data'][16];
         } else {
             $values['custom_data'] = '';
-        }
-
-        if ($other['data'][17] != '') {
-            $values['server_id'] = $other['data'][17];
-        } else {
-            $values['server_id'] = 0;
         }
 
         if ($other['data'][18] != '') {
@@ -13033,6 +13134,9 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
     $quiet = $other['data'][11];
     $cascade_protection = $other['data'][12];
     $evaluate_sla = $other['data'][13];
+    $is_favourite = $other['data'][14];
+    $unknown_as_critical = $other['data'][15];
+    $server_name = $other['data'][16];
 
     if (empty($name)) {
         returnError('error_create_service', __('Error in creation service. No name'));
@@ -13099,24 +13203,40 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
         $evaluate_sla = 0;
     }
 
-    $result = services_create_service(
-        $name,
-        $description,
-        $id_group,
-        $critical,
-        $warning,
-        SECONDS_5MINUTES,
-        $mode,
-        $id_agent,
-        $sla_interval,
-        $sla_limit,
-        $id_warning_module_template,
-        $id_critical_module_template,
-        $id_unknown_module_template,
-        $id_critical_module_sla,
-        $quiet,
-        $cascade_protection,
-        $evaluate_sla
+    if (empty($is_favourite)) {
+        $is_favourite = false;
+    }
+
+    if (empty($unknown_as_critical)) {
+        $unknown_as_critical = false;
+    }
+
+    if (empty($server_name)) {
+        $server_name = null;
+    }
+
+    $result = enterprise_hook(
+        'services_create_service',
+        [
+            $name,
+            $description,
+            $id_group,
+            $critical,
+            $warning,
+            false,
+            SECONDS_5MINUTES,
+            $mode,
+            $id_agent,
+            $sla_interval,
+            $sla_limit,
+            $id_warning_module_template,
+            $id_critical_module_template,
+            $id_unknown_module_template,
+            $id_critical_module_sla,
+            $quiet,
+            $cascade_protection,
+            $evaluate_sla,
+        ]
     );
 
     if ($result) {
@@ -13135,7 +13255,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3)
  * @param array              $other it's array, $other as param is <name>;<description>;<id_group>;<critical>;
  *              <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
  *              <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;<quiet>;
- *              <cascade_protection>;<evaluate_sla>;
+ *              <cascade_protection>;<evaluate_sla>;<is_favourite>;<unknown_as_critical>;<server_name>;
  *              in this order and separator char (after text ; ) and separator
  *              (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
@@ -13252,25 +13372,46 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3)
         $evaluate_sla = $service['evaluate_sla'];
     }
 
-    $result = services_update_service(
-        $id_service,
-        $name,
-        $description,
-        $id_group,
-        $critical,
-        $warning,
-        SECONDS_5MINUTES,
-        $mode,
-        $id_agent,
-        $sla_interval,
-        $sla_limit,
-        $id_warning_module_template,
-        $id_critical_module_template,
-        $id_unknown_module_template,
-        $id_critical_module_sla,
-        $quiet,
-        $cascade_protection,
-        $evaluate_sla
+    $is_favourite = $other['data'][14];
+    if (empty($is_favourite)) {
+        $is_favourite = $service['is_favourite'];
+    }
+
+    $unknown_as_critical = $other['data'][15];
+    if (empty($unknown_as_critical)) {
+        $unknown_as_critical = $service['unknown_as_critical'];
+    }
+
+    $server_name = $other['data'][16];
+    if (empty($server_name)) {
+        $server_name = $service['server_name'];
+    }
+
+    $result = enterprise_hook(
+        'services_update_service',
+        [
+            $id_service,
+            $name,
+            $description,
+            $id_group,
+            $critical,
+            $warning,
+            SECONDS_5MINUTES,
+            $mode,
+            $id_agent,
+            $sla_interval,
+            $sla_limit,
+            $id_warning_module_template,
+            $id_critical_module_template,
+            $id_unknown_module_template,
+            $id_critical_module_sla,
+            $quiet,
+            $cascade_protection,
+            $evaluate_sla,
+            $is_favourite,
+            $unknown_as_critical,
+            $server_name,
+        ]
     );
 
     if ($result) {
@@ -16019,5 +16160,40 @@ function api_get_event_mcid($server_id, $console_event_id, $trash2, $returnType)
     } else {
         returnError('forbidden', 'string');
         return;
+    }
+}
+
+
+/**
+ * Function to set events in progress status.
+ *
+ * @param [int]    $event_id   Id event (Node or Meta).
+ * @param [string] $trash2     don't use.
+ * @param [string] $returnType
+ *
+ * Example
+ * http://127.0.0.1/pandora_console/include/api.php?op=set&op2=event_in_progress&return_type=json&id=0&apipass=1234&user=admin&pass=pandora
+ *
+ * @return void
+ */
+function api_set_event_in_progress($event_id, $trash2, $returnType)
+{
+    global $config;
+    if (is_metaconsole()) {
+        $table = 'tmetaconsole_event';
+    } else {
+        $table = 'tevento';
+    }
+
+    $event = db_process_sql_update(
+        $table,
+        ['estado' => 2],
+        ['id_evento' => $event_id]
+    );
+
+    if ($event !== false) {
+            returnData('string', ['data' => $event]);
+    } else {
+        returnError('id_not_found', 'string');
     }
 }

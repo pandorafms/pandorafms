@@ -137,11 +137,11 @@ if (isset($_GET['id'])) {
     }
 
     // Upload file
-    if ((check_acl($config['id_user'], $id_grupo, 'IW') == 1) and isset($_GET['upload_file']) and ($_FILES['userfile']['name'] != '')) {
+    if ((check_acl($config['id_user'], $id_grupo, 'IW') == 1) && isset($_GET['upload_file']) && ($_FILES['userfile']['name'] != '')) {
         $description = get_parameter('file_description', __('No description available'));
 
         // Insert into database
-        $filename = io_safe_input($_FILES['userfile']['name']);
+        $filename = strip_tags(io_safe_input($_FILES['userfile']['name']), '<br>');
         $filesize = io_safe_input($_FILES['userfile']['size']);
 
         // The following is if you have clamavlib installed

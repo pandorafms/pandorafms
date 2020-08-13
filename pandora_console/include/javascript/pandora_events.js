@@ -367,7 +367,7 @@ function get_response_target(
 
         if (
           response_params[i].startsWith("_") &&
-          response_params[i].startsWith("_")
+          response_params[i].endsWith("_")
         ) {
           response_param = response_params[i];
         }

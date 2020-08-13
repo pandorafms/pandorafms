@@ -363,8 +363,17 @@ function get_response_target(
   if (response_params.length > 1 || response_params[0] != "") {
     for (var i = 0; i < response_params.length; i++) {
       if (!response_command) {
+        var response_param = "_" + response_params[i] + "_";
+
+        if (
+          response_params[i].startsWith("_") &&
+          response_params[i].startsWith("_")
+        ) {
+          response_param = response_params[i];
+        }
+
         target = target.replace(
-          "_" + response_params[i] + "_",
+          response_param,
           $("#" + response_params[i]).val()
         );
       } else {

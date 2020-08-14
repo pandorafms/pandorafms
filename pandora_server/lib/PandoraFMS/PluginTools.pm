@@ -672,6 +672,24 @@ sub print_module {
 	if (! (empty ($data->{warning_inverse}))) {
 		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{warning_inverse} . "]]></warning_inverse>\n";
 	}
+	if (! (empty($data->{min_warning})) ) {
+		$xml_module .= "\t<min_warning_forced><![CDATA[" . $data->{min_warning_forced} . "]]></min_warning_forced>\n";
+	}
+	if (! (empty($data->{max_warning})) ) {
+		$xml_module .= "\t<max_warning_forced><![CDATA[" . $data->{max_warning_forced} . "]]></max_warning_forced>\n";
+	}
+	if (! (empty ($data->{min_critical})) ) {
+		$xml_module .= "\t<min_critical_forced><![CDATA[" . $data->{min_critical_forced} . "]]></min_critical_forced>\n";
+	}
+	if (! (empty ($data->{max_critical})) ){
+		$xml_module .= "\t<max_critical_forced><![CDATA[" . $data->{max_critical_forced} . "]]></max_critical_forced>\n";
+	}
+	if (! (empty ($data->{str_warning}))) {
+		$xml_module .= "\t<str_warning_forced><![CDATA[" . $data->{str_warning_forced} . "]]></str_warning_forced>\n";
+	}
+	if (! (empty ($data->{str_critical}))) {
+		$xml_module .= "\t<str_critical_forced><![CDATA[" . $data->{str_critical_forced} . "]]></str_critical_forced>\n";
+	}
 	if (! (empty ($data->{max}))) {
 		$xml_module .= "\t<max><![CDATA[" . $data->{max} . "]]></max>\n";
 	}

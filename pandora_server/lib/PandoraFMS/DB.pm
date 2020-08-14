@@ -52,8 +52,10 @@ our @EXPORT = qw(
 		db_string
 		db_text
 		db_update
+		db_update_hash
 		db_update_get_values
 		set_update_agent
+		set_update_agentmodule
 		get_action_id
 		get_addr_id
 		get_agent_addr_id
@@ -912,17 +914,21 @@ sub get_db_rows_limit ($$$;@) {
 }
 
 ##########################################################################
-## Updates agent fields using field => value
-##  Be careful, no filter is done.
+## Updates using hashed data.
+##   $dbh       database connector (active)
+##   $tablename table name
+##   $id        hashref as { 'primary_key_id' => "value" }
+##   $data      hashref as { 'field1' => "value", 'field2' => "value"}
 ##########################################################################
-sub set_update_agent {
-	my ($dbh, $agent_id, $data) = @_;
+sub db_update_hash {
+	my ($dbh, $tablename, $id, $data) = @_;
 
-	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (defined($tablename) && $tablename ne "");
+	
 	return undef unless (ref($data) eq "HASH");
 
 	# Build update query
-	my $query = 'UPDATE tagente SET ';
+	my $query = 'UPDATE `'.$tablename.'` SET ';
 
 	my @values;
 	foreach my $field (keys %{$data}) {
@@ -933,12 +939,50 @@ sub set_update_agent {
 
 	chop($query);
 
-	$query .= ' WHERE id_agente = ? ';
-	push @values, $agent_id;
+	my @keys = keys %{$id};
+	my $k = shift @keys;
+
+	$query .= ' WHERE '.$k.' = ? ';
+	push @values, $id->{$k};
 
 	return db_update($dbh, $query, @values);
 }
 
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agent {
+	my ($dbh, $agent_id, $data) = @_;
+
+	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	return db_update_hash(
+		$dbh,
+		'tagente',
+		{ 'id_agente' => $agent_id },
+		$data
+	);
+}
+
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agentmodule {
+	my ($dbh, $agentmodule_id, $data) = @_;
+
+	return undef unless (defined($agentmodule_id) && $agentmodule_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	return db_update_hash(
+		$dbh,
+		'tagente_modulo',
+		{ 'id_agente_modulo' => $agentmodule_id },
+		$data
+	);
+}
 
 ##########################################################################
 ## SQL delete with a LIMIT clause.

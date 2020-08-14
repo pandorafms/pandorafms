@@ -1678,7 +1678,7 @@ sub execute_command_timeout {
 		};
 
 		my $result = ($?>>8);
-		print $result;
+		return $result;
 
 		# Exit child.
 		# Child finishes.
@@ -1753,7 +1753,7 @@ sub execute_command_block {
 				);
 
 				# Do not retry if success.
-				last if looks_like_number($err_level) && $err_level == 0;
+				$retries = 0 if looks_like_number($err_level) && $err_level == 0;
 
 			} while ((--$retries) > 0);
 

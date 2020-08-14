@@ -111,7 +111,7 @@ if (isset($id)) {
     $component = network_components_get_network_component((int) $id);
     if ($component !== false) {
         $id_component_type       = $component['id_modulo'];
-        $name                    = $component['name'];
+        $name                    = io_safe_output($component['name']);
         $type                    = $component['type'];
         $description             = $component['description'];
         $max                     = $component['max'];

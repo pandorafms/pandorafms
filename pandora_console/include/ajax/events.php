@@ -937,11 +937,16 @@ if ($perform_event_response) {
         return;
     }
 
+    $target = get_parameter('target', '');
     $response_id = get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id', 0);
 
-    $command = events_get_response_target($event_id, $response_id, $server_id);
+    if (empty($target)) {
+        $command = events_get_response_target($event_id, $response_id, $server_id);
+    } else {
+        $command = $target;
+    }
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 

@@ -135,7 +135,7 @@ function show_response_dialog(response_id, response) {
   params.push("dialogue_event_response=1");
   params.push("massive=0");
   params.push("event_id=" + response["event_id"]);
-  params.push("target=" + response["target"]);
+  params.push("target=" + encodeURIComponent(response["target"]));
   params.push("response_id=" + response_id);
   params.push("server_id=" + response["server_id"]);
 
@@ -397,7 +397,7 @@ function perform_response(response, response_id) {
   var params = [];
   params.push("page=include/ajax/events");
   params.push("perform_event_response=1");
-  params.push("target=" + response["target"]);
+  params.push("target=" + encodeURIComponent(response["target"]));
   params.push("response_id=" + response_id);
   params.push("event_id=" + response["event_id"]);
   params.push("server_id=" + response["server_id"]);

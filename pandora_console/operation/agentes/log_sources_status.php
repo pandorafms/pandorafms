@@ -45,7 +45,7 @@ $logs = mysql_db_get_all_rows_sql($sql);
 
 foreach ($logs as $log) {
     $row['source'] = $log['source'];
-    $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Force remote checks'), 'alt' => '', 'onclick' => "send_form('".$log['source'].'-'.$agent_id."')"]).'</a>';
+    $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Review in log viewer'), 'alt' => '', 'onclick' => "send_form('".$log['source'].'-'.$agent_id."')"]).'</a>';
     $row['last_contact'] = human_time_comparation($log['last_contact']);
 
     $table->data[] = $row;

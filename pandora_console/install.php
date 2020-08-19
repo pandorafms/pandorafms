@@ -129,7 +129,7 @@
         <div style='height: 10px'>
             <?php
             $version = '7.0NG.748';
-            $build = '200819';
+            $build = '200820';
             $banner = "v$version Build $build";
 
             error_reporting(0);

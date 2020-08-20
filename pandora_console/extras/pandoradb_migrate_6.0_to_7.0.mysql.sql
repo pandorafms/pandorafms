@@ -1312,6 +1312,8 @@ ALTER TABLE talert_actions ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "
 ALTER TABLE talert_actions ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_actions` ADD COLUMN `previous_name` text;
+
 ALTER TABLE `talert_actions` MODIFY COLUMN `field11` text NOT NULL,
 	MODIFY COLUMN `field12` text NOT NULL,
 	MODIFY COLUMN `field13` text NOT NULL,
@@ -1325,6 +1327,7 @@ UPDATE `talert_commands` SET `fields_descriptions` = '[\"Integria&#x20;IMS&#x20;
 UPDATE `talert_commands` SET `description` = 'This&#x20;alert&#x20;send&#x20;an&#x20;email&#x20;using&#x20;internal&#x20;Pandora&#x20;FMS&#x20;Server&#x20;SMTP&#x20;capabilities&#x20;&#40;defined&#x20;in&#x20;each&#x20;server,&#x20;using:&#x0d;&#x0a;_field1_&#x20;as&#x20;destination&#x20;email&#x20;address,&#x20;and&#x0d;&#x0a;_field2_&#x20;as&#x20;subject&#x20;for&#x20;message.&#x20;&#x0d;&#x0a;_field3_&#x20;as&#x20;text&#x20;of&#x20;message.&#x20;&#x0d;&#x0a;_field4_&#x20;as&#x20;content&#x20;type&#x20;&#40;text/plain&#x20;or&#x20;html/text&#41;.', `fields_descriptions` = '[\"Destination&#x20;address\",\"Subject\",\"Text\",\"Content&#x20;Type\",\"\",\"\",\"\",\"\",\"\",\"\"]', `fields_values` = '[\"\",\"\",\"_html_editor_\",\"_content_type_\",\"\",\"\",\"\",\"\",\"\",\"\"]' WHERE id=1;
 ALTER TABLE `talert_commands` ADD COLUMN `id_group` mediumint(8) unsigned NULL default 0;
 ALTER TABLE `talert_commands` ADD COLUMN `fields_hidden` text;
+ALTER TABLE `talert_commands` ADD COLUMN `previous_name` text;
 
 UPDATE `talert_actions` SET `field4` = 'text/html', `field4_recovery` = 'text/html' WHERE id = 1;
 
@@ -1336,6 +1339,11 @@ ALTER TABLE `talert_commands` MODIFY COLUMN `id_group` mediumint(8) unsigned NUL
 -- Table `tmap`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
+
+-- ---------------------------------------------------------------------
+-- Table `ttag`
+-- ---------------------------------------------------------------------
+ALTER TABLE `ttag` ADD COLUMN `previous_name` text NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`
@@ -1381,7 +1389,9 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
 -- Table `tconfig_os`
 -- ---------------------------------------------------------------------
 
-INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+ALTER TABLE `tconfig_os` ADD COLUMN `previous_name` text NULL;
+
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
 	
 UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
 
@@ -2460,6 +2470,8 @@ INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES
 -- ----------------------------------------------------------------------
 -- Alter table `talert_templates`
 -- ----------------------------------------------------------------------
+
+ALTER TABLE `talert_templates` ADD COLUMN `previous_name` text;
 
  ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown','always','not_normal');
 

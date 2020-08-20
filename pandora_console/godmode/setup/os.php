@@ -98,6 +98,10 @@ switch ($action) {
         $values = [];
         $values['name'] = $name;
         $values['description'] = $description;
+        // Only for Metaconsole. Save the previous name for synchronizing.
+        if (is_metaconsole()) {
+            $values['previous_name'] = db_get_value('name', 'tconfig_os', 'id_os', $idOS);
+        }
 
         if (($icon !== 0) && ($icon != '')) {
             $values['icon_name'] = $icon;

@@ -79,6 +79,10 @@ if ($update_tag && $id_tag != 0) {
     $values['url'] = $url_tag;
     $values['email'] = $email_tag;
     $values['phone'] = $phone_tag;
+    // Only for Metaconsole. Save the previous name for synchronizing.
+    if (is_metaconsole()) {
+        $values['previous_name'] = db_get_value('name', 'ttag', 'id_tag', $id_tag);
+    }
 
     $result = false;
     if ($values['name'] != '') {

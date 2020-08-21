@@ -1861,13 +1861,13 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
         foreach ($servers as $server) {
             if (metaconsole_connect($server) == NOERR) {
                 if ($other['data'][0] === '1') {
-                    $idAgent[0] = agents_get_agent_id_by_alias($id);
+                    $idAgent = agents_get_agent_id_by_alias($id);
                 } else {
                     $idAgent[0] = agents_get_agent_id($id, true);
                 }
 
-                if ($idAgent[0]) {
-                    $result = agents_delete_agent($idAgent, true);
+                if (!empty($idAgent)) {
+                    $result = agents_delete_agent($idAgent[0], true);
                 }
 
                 metaconsole_restore_db();

@@ -292,7 +292,7 @@ if (is_ajax()) {
                             '',
                             '',
                             __('None'),
-                            '_field'.$i.'_',
+                            '',
                             true,
                             false,
                             false,

@@ -3198,11 +3198,7 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'scan_filters'};
 	delete $parameters->{'query_key_field'};
 	delete $parameters->{'name_oid'};
-
-	if (defined $parameters->{'module_type'}) {
-		$parameters->{'id_tipo_modulo'} = $parameters->{'module_type'};
-		delete $parameters->{'module_type'};
-	}
+	delete $parameters->{'module_type'};
 
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};

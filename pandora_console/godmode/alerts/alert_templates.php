@@ -362,6 +362,7 @@ $templates = alerts_get_alert_templates(
         'description',
         'type',
         'id_group',
+        'previous_name',
     ]
 );
 if ($templates === false) {

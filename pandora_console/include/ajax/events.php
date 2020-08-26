@@ -1093,7 +1093,8 @@ if ($dialogue_event_response) {
                 }
             } else {
                 echo "<div style='text-align:left'>";
-                echo $prompt.sprintf(__('Executing command: %s', $command));
+
+                echo $prompt."Executing command: $command";
                 echo '</div><br>';
 
                 echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';

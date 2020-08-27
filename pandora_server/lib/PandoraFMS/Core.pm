@@ -3185,6 +3185,21 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'type'};
 	delete $parameters->{'datalist'};
 	delete $parameters->{'status'};
+	delete $parameters->{'manufacturer_id'};
+	delete $parameters->{'enabled'};
+	delete $parameters->{'scan_type'};
+	delete $parameters->{'execution_type'};
+	delete $parameters->{'query_filters'};
+	delete $parameters->{'query_class'};
+	delete $parameters->{'protocol'};
+	delete $parameters->{'value_operations'};
+	delete $parameters->{'value'};
+	delete $parameters->{'module_enabled'};
+	delete $parameters->{'scan_filters'};
+	delete $parameters->{'query_key_field'};
+	delete $parameters->{'name_oid'};
+	delete $parameters->{'module_type'};
+
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};
 	}

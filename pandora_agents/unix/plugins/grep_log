@@ -56,6 +56,8 @@ my $Reg_exp = '';
 # Flag to show or not summary module
 my $summary_flag = 0;
 
+my $nodatalist_flag = 0;
+
 # Number of coincidences found
 my $coincidences = 0;
 
@@ -120,7 +122,15 @@ sub error_msg ($) {
 # Print a help message.
 ###############################################################################
 sub print_help () {
-	print "Usage: $0 <log_file> <module_name> <pattern> <up_lines_extra> <bot_lines_extra> [--summary]\n";
+	print "Usage: $0 <log_file> <module_name> <pattern> <up_lines_extra> <bot_lines_extra> [--summary] [--nodatalist]\n\n";
+	print "Options:\n";
+	print "\t<log_file>\t\tPath to the log file to be monitored\n";
+	print "\t<module_name>\t\tName of the module that will be created\n";
+	print "\t<pattern>\t\tRegex string to be matched in log file\n";
+	print "\t<up_lines_extra>\tShows NUM lines before matching lines to provide context\n";
+	print "\t<bot_lines_extra>\tShows NUM lines after matching lines to provide context\n";
+	print "\t--summary\t\tCreates a module with the total number of matches\n";
+	print "\t--nodatalist\t\tInserts all coincidences in a single data output instead of a data per line\n";
 }
 
 ###############################################################################
@@ -317,6 +327,7 @@ sub print_log ($) {
 	if ($#kdata < 0) {
 		print_summary() if ($summary_flag == 1);
 		return;
+
 	}
 
 	# Log module
@@ -341,6 +352,18 @@ sub print_log ($) {
 		$output = "<module>\n";
 		$output .= "<name><![CDATA[" . $Module_name . "]]></name>\n";
 		$output .= "<type><![CDATA[async_string]]></type>\n";
+			if ($nodatalist_flag == 1){
+				$output .= "<data><![CDATA[";
+                		foreach my $line (@kdata) {
+                        		foreach my $content (@{$data->{$line}}) {
+                                		my $processed_line = $content;
+						$processed_line =~ "\n";
+                                		$output .= $processed_line;
+                        		}
+                		}
+			$output .= "]]></data>\n";
+			}
+			else {	
 		$output .= "<datalist>\n";
 		foreach my $line (@kdata) {
 			$output .= "<data><value><![CDATA[";
@@ -352,10 +375,12 @@ sub print_log ($) {
 			$output .= "]]></value></data>\n";
 		}
 		$output .= "</datalist>\n";
+			}
 		$output .= "</module>\n";
 
 		print stdout $output;
 	}
+
 }
 
 ###############################################################################
@@ -376,12 +401,18 @@ $Reg_exp      = trim($ARGV[2]);
 my $up_lines  = trim($ARGV[3]);
 my $bot_lines = trim($ARGV[4]);
 my $sum_flag  = trim($ARGV[5]);
+my $nodatalist = trim($ARGV[6]);
 
-if (   ( defined($up_lines)  && ($up_lines  eq "--summary"))
-    || ( defined($bot_lines) && ($bot_lines eq "--summary"))
-    || ( defined($sum_flag)  && ($sum_flag  eq "--summary")) ) {
-	$summary_flag = 1;
+if ( grep { /--summary/ } @ARGV )
+{
+        $summary_flag = 1;
 }
+
+if ( grep { /--nodatalist/ } @ARGV )
+{
+        $nodatalist_flag = 1;
+}
+
 # Create index file storage directory
 if ( ! -d $Idx_dir) {
 	mkdir($Idx_dir) || error_msg("Error creating directory $Idx_dir: "

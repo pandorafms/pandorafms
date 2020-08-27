@@ -1018,9 +1018,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne ""  ? $action->{'field15'} : $alert->{'field15'};
 	}
 	else {
-		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}   ne "" ? $alert->{'field1'}   : $action->{'field1'};
-		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}   ne "" ? $alert->{'field2'}   : $action->{'field2'};
-		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}   ne "" ? $alert->{'field3'}   : $action->{'field3'};
+		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne "" ? $action->{'field1'}  : $alert->{'field1'};
+		$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne "" ? $action->{'field2'}  : $alert->{'field2'};
+		$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne "" ? $action->{'field3'}  : $alert->{'field3'};
 		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne "" ? $action->{'field4'}  : $alert->{'field4'};
 		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne "" ? $action->{'field5'}  : $alert->{'field5'};
 		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne "" ? $action->{'field6'}  : $alert->{'field6'};

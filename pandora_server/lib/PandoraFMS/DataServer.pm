@@ -632,6 +632,9 @@ sub process_module_data ($$$$$$$$$$) {
 
 	# Get module parameters, matching column names in tagente_modulo
 	my $module_conf;
+
+	# Extra usable fields but not supported at DB level.
+	my $extra = {};
 	
 	# Supported tags
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
@@ -642,7 +645,9 @@ sub process_module_data ($$$$$$$$$$) {
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
 				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0,
-				'module_parent_unlink' => 0, 'cron_interval' => 0, 'ff_type' => 0};
+				'module_parent_unlink' => 0, 'cron_interval' => 0, 'ff_type' => 0, 'min_warning_forced' => 0, 'max_warning_forced' => 0,
+				'min_critical_forced' => 0, 'max_critical_forced' => 0, 'str_warning_forced' => 0, 'str_critical_forced' => 0
+			};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -692,7 +697,15 @@ sub process_module_data ($$$$$$$$$$) {
 	$module_conf->{'unknown_instructions'} = '' unless defined ($module_conf->{'unknown_instructions'});
 	$module_conf->{'disabled_types_event'} = '' unless defined ($module_conf->{'disabled_types_event'});
 	$module_conf->{'module_macros'} = '' unless defined ($module_conf->{'module_macros'});
-	
+
+	# Extract extra fields.
+	foreach my $pk (keys %{$module_conf}) {
+		if ($pk =~ /_forced$/) {
+			$extra->{$pk} = $module_conf->{$pk};
+			delete $module_conf->{$pk};
+		}
+	}
+
 	# Get module data or create it if it does not exist
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
@@ -825,7 +838,13 @@ sub process_module_data ($$$$$$$$$$) {
 	
 	# Update module configuration if in learning mode and not a policy module
 	if ((($agent->{'modo'} eq '1') || ($agent->{'modo'} eq '2')) && $policy_linked == 0) {
-		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
+		update_module_configuration(
+			$pa_config,
+			$dbh,
+			$module,
+			$module_conf,
+			$extra
+		);
 	}
 	
 	# Module disabled!
@@ -898,8 +917,8 @@ sub get_macros_for_data($$){
 ##########################################################################
 # Update module configuration in tagente_modulo if necessary.
 ##########################################################################
-sub update_module_configuration ($$$$) {
-	my ($pa_config, $dbh, $module, $module_conf) = @_;
+sub update_module_configuration ($$$$$) {
+	my ($pa_config, $dbh, $module, $module_conf, $extra) = @_;
 
 	# Update if at least one of the configuration tokens has changed
 	foreach my $conf_token ('descripcion', 'extended_info', 'module_interval') {
@@ -917,6 +936,9 @@ sub update_module_configuration ($$$$) {
 	$module->{'extended_info'} = $module_conf->{'extended_info'} if (defined($module_conf->{'extended_info'})) ;
 	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 	$module->{'module_interval'} = ($module_conf->{'module_interval'} eq '') ? $module->{'module_interval'} : $module_conf->{'module_interval'};
+
+	# Enterprise updates.
+	enterprise_hook('update_module_fields', [$dbh, $pa_config, $module, $extra]);
 }
 
 ###############################################################################

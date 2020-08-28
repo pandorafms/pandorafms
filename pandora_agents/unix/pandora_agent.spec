@@ -102,7 +102,8 @@ mkdir -p /var/spool/pandora/data_out
 
 if [ `command -v systemctl` ];
 then
-    cp /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+    echo "Copying new version of pandora_agent_daemon service"
+    cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
 	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
 # Enable the services on SystemD
     systemctl enable pandora_agent_daemon.service

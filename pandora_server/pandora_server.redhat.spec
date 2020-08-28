@@ -113,7 +113,8 @@ exit 0
 if [ "$1" = 1 ]; then
         if [ `command -v systemctl` ];
         then
-                cp /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+                echo "Copying new version for tentacle_serverd service"
+                cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
                 chmod -x /usr/lib/systemd/system/tentacle_serverd.service
         # Enable the services on SystemD
                 systemctl enable tentacle_serverd.service     

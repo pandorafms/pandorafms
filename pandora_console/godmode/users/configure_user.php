@@ -124,7 +124,7 @@ if (is_ajax()) {
 
         db_pandora_audit(
             'User management',
-            'Deleted profile for user '.io_safe_input($id2),
+            'Deleted profile for user '.io_safe_output($id2),
             false,
             false,
             'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
@@ -145,7 +145,7 @@ if (is_ajax()) {
             if ($result) {
                 db_pandora_audit(
                     'User management',
-                    __('Deleted user %s', io_safe_input($id_user))
+                    __('Deleted user %s', io_safe_output($id_user))
                 );
             }
 
@@ -167,7 +167,7 @@ if (is_ajax()) {
                     if ($result) {
                         db_pandora_audit(
                             'User management',
-                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
                         );
                     }
 
@@ -422,7 +422,7 @@ if ($create_user) {
 
         db_pandora_audit(
             'User management',
-            'Created user '.io_safe_input($id),
+            'Created user '.io_safe_output($id),
             false,
             false,
             $info
@@ -465,7 +465,7 @@ if ($create_user) {
 
                         db_pandora_audit(
                             'User management',
-                            'Added profile for user '.io_safe_input($id2),
+                            'Added profile for user '.io_safe_output($id2),
                             false,
                             false,
                             'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
@@ -656,7 +656,7 @@ if ($update_user) {
 
             db_pandora_audit(
                 'User management',
-                'Updated user '.io_safe_input($id),
+                'Updated user '.io_safe_output($id),
                 false,
                 false,
                 $info
@@ -724,7 +724,7 @@ if ($add_profile && empty($json_profile)) {
 
     db_pandora_audit(
         'User management',
-        'Added profile for user '.io_safe_input($id2),
+        'Added profile for user '.io_safe_output($id2),
         false,
         false,
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags

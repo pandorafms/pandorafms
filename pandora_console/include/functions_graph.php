@@ -1507,7 +1507,9 @@ function graphic_combined_module(
                     }
                 }
 
-                $agent_module_id = $agent_module_id['module'];
+                if (is_array($agent_module_id)) {
+                     $agent_module_id = $agent_module_id['module'];
+                }
 
                 $module_data = db_get_row_sql(
                     'SELECT * FROM tagente_modulo

@@ -53,6 +53,7 @@ function update_manager_verify_registration()
     return false;
 }
 
+
 /**
  * Check if a trial license is in use.
  *
@@ -63,13 +64,14 @@ function update_manager_verify_trial()
     global $config;
 
     if (isset($config['license_licensed_to'])
-        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== FALSE
+        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== false
     ) {
         return true;
     }
 
     return false;
 }
+
 
 /**
  * Parses responses from configuration wizard.

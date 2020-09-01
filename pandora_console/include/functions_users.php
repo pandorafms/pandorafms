@@ -690,6 +690,9 @@ function users_get_groups_UM($id_user)
     foreach ($groups as $key => $group) {
         if (!isset($return[$group['id_grupo']]) || (isset($return[$group['id_grupo']]) && $group['user_management'] != 0)) {
             $return[$group['id_grupo']] = $group['user_management'];
+            if ($group['id_grupo'] == '0') {
+                $return['group_all'] = $group['id_grupo'];
+            }
         }
     }
 

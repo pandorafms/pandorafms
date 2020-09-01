@@ -1882,7 +1882,7 @@ class Diagnostics extends Wizard
         $inputs = [];
 
         $inputs[] = [
-            'label'     => __('What happened').'?',
+            'label'     => __('What happened?'),
             'id'        => 'div-what-happened',
             'class'     => 'flex-row',
             'arguments' => [

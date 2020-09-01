@@ -53,6 +53,7 @@ function update_manager_verify_registration()
     return false;
 }
 
+
 /**
  * Check if a trial license is in use.
  *
@@ -63,13 +64,14 @@ function update_manager_verify_trial()
     global $config;
 
     if (isset($config['license_licensed_to'])
-        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== FALSE
+        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== false
     ) {
         return true;
     }
 
     return false;
 }
+
 
 /**
  * Parses responses from configuration wizard.
@@ -1841,9 +1843,15 @@ function update_manager_recurse_copy($src, $dst, $black_list)
     while (false !== ( $file = readdir($dir))) {
         if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) {
             if (is_dir($src.'/'.$file)) {
+                $dir_dst = $dst;
+
+                if ($file != 'pandora_console') {
+                    $dir_dst .= '/'.$file;
+                }
+
                 if (!update_manager_recurse_copy(
                     $src.'/'.$file,
-                    $dst.'/'.$file,
+                    $dir_dst,
                     $black_list
                 )
                 ) {

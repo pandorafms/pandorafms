@@ -3361,6 +3361,10 @@ function get_number_of_mr($package, $ent, $offline)
                 $sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
 
                 foreach ($sqlfiles_num as $num) {
+                    if ($num <= $config['MR']) {
+                        continue;
+                    }
+
                     $mr_size[] = $num;
                 }
             }

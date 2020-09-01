@@ -124,6 +124,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 if (check_acl($config['id_user'], 0, 'UM')) {
     $sub['godmode/users/user_list']['text'] = __('Users management');
     $sub['godmode/users/user_list']['id'] = 'Users management';
+}
+
+if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/users/profile_list']['text'] = __('Profile management');
     $sub['godmode/users/profile_list']['id'] = 'Profile management';
 }

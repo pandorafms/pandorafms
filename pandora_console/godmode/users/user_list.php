@@ -129,16 +129,25 @@ if (defined('METACONSOLE')) {
     user_meta_print_header();
     $sec = 'advanced';
 } else {
-    $buttons = [
-        'user'    => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
-        ],
-        'profile' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
-        ],
-    ];
+    if (check_acl($config['id_user'], 0, 'PM')) {
+        $buttons = [
+            'user'    => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            ],
+            'profile' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+            ],
+        ];
+    } else {
+        $buttons = [
+            'user' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            ],
+        ];
+    }
 
     $buttons[$tab]['active'] = true;
 
@@ -431,7 +440,7 @@ foreach ($info as $user_id => $user_info) {
     }
 
     // User profiles.
-    if (users_is_admin() || $user_id == $config['id_user']) {
+    if (users_is_admin() || $user_id == $config['id_user'] || isset($group_um[0])) {
         $user_profiles = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $user_id);
     } else {
         $user_profiles_aux = users_get_user_profile($user_id);
@@ -483,7 +492,7 @@ foreach ($info as $user_id => $user_info) {
 
     $iterator++;
 
-    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
+    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || isset($group_um[0]) || (isset($user_info['edit']) && $user_info['edit'])))) {
         $data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
     } else {
         $data[0] = $user_id;
@@ -551,7 +560,7 @@ foreach ($info as $user_id => $user_info) {
 
     $table->cellclass[][6] = 'action_buttons';
     $data[6] = '';
-    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
+    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || isset($group_um[0]) || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
         if (!isset($user_info['not_delete'])) {
             if ($user_info['disabled'] == 0) {
                 $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable')]).'</a>';

@@ -1114,8 +1114,6 @@ sub agent_lock {
 sub agent_unlock {
 	my ($pa_config, $agent_name) = @_;
 
-	return if ($pa_config->{'dataserver_lifo'} == 1);
-
 	$AgentSem->down ();
 	delete ($Agents{$agent_name});
 	$AgentSem->up ();

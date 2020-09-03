@@ -1717,9 +1717,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
 	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
 	my $mark_for_update = 0;
-
+	
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
-	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});      
+	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
 	$agent_status->{'datos'} = "" unless defined($agent_status->{'datos'});
 	
 	# Do we have to save module data?
@@ -1732,24 +1732,13 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_try = ($1 == 0) ? 0 : strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
-
+	
 	# Received stale data. Save module data if needed and return.
 	if ($pa_config->{'dataserver_lifo'} == 1 && $utimestamp <= $agent_status->{'utimestamp'}) {
 		logger($pa_config, "Received stale data from agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-
+		
 		# Save module data. Async and log4x modules are not compressed.
 		if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
-
-			# If previous timestamp data changes, save the last one to avoid errors on SLA or graphs.
-			if($last_data_value ne $processed_data) { 
-
-				my $last_data_timestamp =  $agent_status->{'utimestamp'};
-				my $last_data_object;
-				
-				$last_data_object->{'data'} = $last_data_value;
-
-				save_module_data ($last_data_object, $module, $module_type, $last_data_timestamp, $dbh);
-			} 
 			save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
 		}
 

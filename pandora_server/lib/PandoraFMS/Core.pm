@@ -1737,8 +1737,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	if ($pa_config->{'dataserver_lifo'} == 1 && $utimestamp <= $agent_status->{'utimestamp'}) {
 		logger($pa_config, "Received stale data from agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 		
-		# Save module data. Async and log4x modules are not compressed.
-		if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
+		# Save module data. Compression does not work for stale data.
+		if ($module->{'history_data'} == 1) {
 			save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
 		}
 

@@ -110,8 +110,10 @@ exit 0
 
 %post
 # Initial installation
-if [ "$1" = 1 ]; then
-        if [ `command -v systemctl` ];
+# Run when not uninstalling
+if [ "$1" -ge 1 ]
+then
+        if [ `command -v systemctl` ]
         then
                 echo "Copying new version for tentacle_serverd service"
                 cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
@@ -123,19 +125,19 @@ if [ "$1" = 1 ]; then
                 /sbin/chkconfig tentacle_serverd on 
         fi
 
-/sbin/chkconfig --add pandora_server
-/sbin/chkconfig pandora_server on 
+        /sbin/chkconfig --add pandora_server
+        /sbin/chkconfig pandora_server on 
 
-systemctl enable pandora_server.service
+        systemctl enable pandora_server.service
 
-   echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
-   echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
-   echo "The manual can be reached at: man pandora or man pandora_server"
-   echo "Pandora FMS Documentation is in: http://pandorafms.org"
-   echo " "
+        echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
+        echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
+        echo "The manual can be reached at: man pandora or man pandora_server"
+        echo "Pandora FMS Documentation is in: http://pandorafms.org"
+        echo " "
 fi
 
-# This will avoid confi files overwritting on UPGRADES.
+# This will avoid config files overwritting on UPGRADES.
 # Main configuration file
 if [ ! -e "/etc/pandora/pandora_server.conf" ]
 then

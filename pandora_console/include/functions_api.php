@@ -1566,7 +1566,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
         }
 
-        if (!$exists_alias && !$exists_ip) {
+        if (!$exists_alias) {
             $id_agente = db_process_sql_insert(
                 'tagente',
                 [

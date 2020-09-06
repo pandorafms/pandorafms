@@ -1967,9 +1967,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             }
 
             $ag_groups = implode(',', (array) $ag_groups);
+            $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
         }
 
-        $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
     }
 
     if (isset($other['data'][3])) {

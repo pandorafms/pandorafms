@@ -471,16 +471,16 @@ $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
 foreach ($tags as $id_tag => $tag) {
-    if ((array_search($id_tag, $tag_with) === false)
-        || (array_search($id_tag, $tag_with) === null)
+    if (is_array($tag_with) === true
+        && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
         $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {
         $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
     }
 
-    if ((array_search($id_tag, $tag_without) === false)
-        || (array_search($id_tag, $tag_without) === null)
+    if (is_array($tag_without) === true
+        && ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null))
     ) {
         $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {

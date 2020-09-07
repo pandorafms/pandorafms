@@ -267,6 +267,10 @@ function isInACL($ip)
 {
     global $config;
 
+    if (! is_array($config['list_ACL_IPs_for_API'])) {
+        $config['list_ACL_IPs_for_API'] = explode(';', $config['list_ACL_IPs_for_API']);
+    }
+
     if (in_array($ip, $config['list_ACL_IPs_for_API'])) {
         return true;
     }

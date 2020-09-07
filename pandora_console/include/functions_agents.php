@@ -2985,6 +2985,11 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
             $accepted_module_types[] = $generic_proc;
         }
 
+        $remote_snmp = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_snmp');
+        if ($remote_snmp) {
+            $accepted_module_types[] = $remote_snmp;
+        }
+
         if (empty($accepted_module_types)) {
             $accepted_module_types[] = 0;
             // No modules will be returned

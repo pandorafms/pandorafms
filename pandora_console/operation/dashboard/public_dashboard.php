@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Public access to dashboard.
  *
  * @category   Dashboards
  * @package    Pandora FMS
@@ -27,43 +26,41 @@
  * ============================================================================
  */
 
+// Begin.
+require_once __DIR__.'/../../include/config.php';
+
 global $config;
 
-require 'vendor/autoload.php';
+chdir($config['homedir']);
+ob_start('ui_process_page_head');
+ob_start();
 
-use PandoraFMS\Dashboard\Manager;
+// Fullscreen by default.
+$config['pure'] = get_parameter('pure', 1);
 
-$ajaxPage = 'operation/dashboard/dashboard';
+require_once 'dashboard.php';
 
-// Control call flow.
-try {
-    // User access and validation is being processed on class constructor.
-    $cs = new Manager($ajaxPage);
-} catch (Exception $e) {
-    if (is_ajax() === true) {
-        echo json_encode(['error' => '[Dashboards]'.$e->getMessage() ]);
-    } else {
-        echo '[Dashboards]'.$e->getMessage();
+// Clean session to avoid direct access.
+if ($config['force_instant_logout'] === true) {
+    // Force user logout.
+    $iduser = $_SESSION['id_usuario'];
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
     }
 
-    // Stop this execution, but continue 'globally'.
-    return;
+    $_SESSION = [];
+    session_destroy();
+    header_remove('Set-Cookie');
+    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+
+    if ($config['auth'] == 'saml') {
+        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
+        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
+        $as->logout();
+    }
 }
 
-// AJAX controller.
-if (is_ajax() === true) {
-    $method = get_parameter('method');
-
-    if (method_exists($cs, $method) === true) {
-        if ($cs->ajaxMethod($method) === true) {
-            $cs->{$method}();
-        } else {
-            $cs->error('Unavailable method.');
-        }
-    } else {
-        $cs->error('Method not found. ['.$method.']');
-    }
-} else {
-    // Run.
-    $cs->run();
+while (@ob_end_flush()) {
+    // Dumping...
+    continue;
 }

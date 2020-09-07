@@ -381,6 +381,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 	`fields_descriptions` TEXT,
 	`fields_values` TEXT,
 	`fields_hidden` TEXT,
+	`previous_name` text,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -423,6 +424,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field13_recovery` text NOT NULL,
 	`field14_recovery` text NOT NULL,
 	`field15_recovery` text NOT NULL,
+	`previous_name` text,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -490,6 +492,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`min_alerts_reset_counter` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
+	`previous_name` text,
 	PRIMARY KEY  (`id`),
 	KEY `idx_template_action` (`id_alert_action`),
 	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -583,6 +586,7 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	`name` varchar(100) NOT NULL default '',
 	`description` varchar(250) default '',
 	`icon_name` varchar(100) default '',
+	`previous_name` text NULL,
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1073,7 +1077,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`checksum` tinyint(3) unsigned NOT NULL default '0',
 	`description` varchar(255) default NULL,
 	`recon_server` tinyint(3) unsigned NOT NULL default '0',
-	`version` varchar(20) NOT NULL default '',
+	`version` varchar(25) NOT NULL default '',
 	`plugin_server` tinyint(3) unsigned NOT NULL default '0',
 	`prediction_server` tinyint(3) unsigned NOT NULL default '0',
 	`wmi_server` tinyint(3) unsigned NOT NULL default '0',
@@ -1529,6 +1533,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`uncompressed_module` TINYINT DEFAULT '0',
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
+	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2038,9 +2043,10 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 	`id_tag` integer(10) unsigned NOT NULL auto_increment, 
 	`name` varchar(100) NOT NULL default '', 
 	`description` text NOT NULL, 
-	`url` mediumtext NOT NULL, 
+	`url` mediumtext NOT NULL,
 	`email` text NULL,
 	`phone` text NULL,
+	`previous_name` text NULL,
 	PRIMARY KEY  (`id_tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
@@ -3106,6 +3112,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`uncompressed_module` TINYINT DEFAULT '0',
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
+	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

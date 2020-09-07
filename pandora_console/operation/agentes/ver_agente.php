@@ -1576,6 +1576,12 @@ switch ($tab) {
         include 'estado_monitores.php';
         echo "<a name='alerts'></a>";
         include 'alerts_status.php';
+
+        if ($config['log_collector']) {
+            echo "<a name='log_sources'></a>";
+            include 'log_sources_status.php';
+        }
+
         // Check permissions to read events
         if (check_acl($config['id_user'], 0, 'ER')) {
             echo "<a name='events'></a>";

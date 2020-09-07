@@ -187,11 +187,11 @@ unless ($host){
 #-----------------------------------------------------------------------
 my $command_line_parameters;
 if ($version == "3") {
-		if ($security_level eq 'authNoPriv') {
-			$command_line_parameters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
+		if (lc($security_level) eq lc('authNoPriv')) {
+			$command_line_parameters = "-v $version -u $user -a $auth_method -A '$pass' -l $security_level $host";
 		}
-		elsif ($security_level eq "AuthPriv") {
-			$command_line_parameters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
+		elsif (lc($security_level) eq lc("AuthPriv")) {
+			$command_line_parameters = "-v $version -u $user -a $auth_method -A '$pass' -l $security_level -x $privacy_method -X '$privacy_pass' $host";
 		}
 		else {
 			$command_line_parameters = "-v $version -u $user -l $security_level $host";

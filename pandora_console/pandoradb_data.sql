@@ -109,10 +109,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 40),
+('MR', 41),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '748'),
+('current_package_enterprise', '749'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
@@ -150,27 +150,27 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES 
-(1,'Linux','Linux: All versions','so_linux.png'),
-(2,'Solaris','Sun Solaris','so_solaris.png'),
-(3,'AIX','IBM AIX','so_aix.png'),
-(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png'),
-(5,'HP-UX','HP-UX Unix OS','so_hpux.png'),
-(7,'Cisco','CISCO IOS','so_cisco.png'),
-(8,'MacOS','MAC OS','so_mac.png'),
-(9,'Windows','Microsoft Windows OS','so_win.png'),
-(10,'Other','Other SO','so_other.png'),
-(11,'Network','Network Agent','network.png'),
-(12,'Web Server','Web Server/Application','network.png'),
-(13,'Sensor','Hardware Agent (Sensor)','network.png'),
-(14,'Embedded','Embedded device running an agent','embedded.png'),
-(15,'Android','Android agent','android.png'),
-(16, 'VMware', 'VMware Architecture', 'so_vmware.png'),
-(17, 'Router', 'Generic router', 'so_router.png'),
-(18, 'Switch', 'Generic switch', 'so_switch.png'),
-(19, 'Satellite', 'Satellite agent', 'satellite.png'),
-(20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png'),
-(100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`, `previous_name`) VALUES 
+(1,'Linux','Linux: All versions','so_linux.png', ''),
+(2,'Solaris','Sun Solaris','so_solaris.png', ''),
+(3,'AIX','IBM AIX','so_aix.png', ''),
+(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png', ''),
+(5,'HP-UX','HP-UX Unix OS','so_hpux.png', ''),
+(7,'Cisco','CISCO IOS','so_cisco.png', ''),
+(8,'MacOS','MAC OS','so_mac.png', ''),
+(9,'Windows','Microsoft Windows OS','so_win.png', ''),
+(10,'Other','Other SO','so_other.png', ''),
+(11,'Network','Network Agent','network.png', ''),
+(12,'Web Server','Web Server/Application','network.png', ''),
+(13,'Sensor','Hardware Agent (Sensor)','network.png', ''),
+(14,'Embedded','Embedded device running an agent','embedded.png', ''),
+(15,'Android','Android agent','android.png', ''),
+(16, 'VMware', 'VMware Architecture', 'so_vmware.png', ''),
+(17, 'Router', 'Generic router', 'so_router.png', ''),
+(18, 'Switch', 'Generic switch', 'so_switch.png', ''),
+(19, 'Satellite', 'Satellite agent', 'satellite.png', ''),
+(20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png', ''),
+(100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
 UNLOCK TABLES;
 
 
@@ -1187,7 +1187,7 @@ INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`
 
 INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0,0,''),(2,'Department',0,0,''),(3,'Additional&#x20;ID',0,0,''),(4,'eHorusID',0,0,'');
 
-INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es','',''),(2,'critical','Critical&#x20;modules','','',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone','','',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules','','',''),(5,'configuration','','','','');
+INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es','','',''),(2,'critical','Critical&#x20;modules','','','',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone','','','',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules','','','',''),(5,'configuration','','','','','');
 
 INSERT INTO `tevent_response` VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x20;the&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_agent_address_','command',0,620,500,0,'',0,90),(3,'Create&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;the&#x20;standard&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS','index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event=_event_id_','url',0,0,0,1,'',0,90),(5,'Restart&#x20;agent','Restart&#x20;the&#x20;agent&#x20;with&#x20;using&#x20;UDP&#x20;protocol.&#x0d;&#x0a;&#x0d;&#x0a;To&#x20;use&#x20;this&#x20;response&#x20;is&#x20;necessary&#x20;to&#x20;have&#x20;installed&#x20;Pandora&#x20;FMS&#x20;server&#x20;and&#x20;console&#x20;in&#x20;the&#x20;same&#x20;machine.','/usr/share/pandora_server/util/udp_client.pl&#x20;_agent_address_&#x20;41122&#x20;&quot;REFRESH&#x20;AGENT&quot;','command',0,620,500,0,'',0,90),(6,'Ping&#x20;to&#x20;module&#x20;agent&#x20;host','Ping&#x20;to&#x20;the&#x20;module&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_module_address_','command',0,620,500,0,'',0,90);
 

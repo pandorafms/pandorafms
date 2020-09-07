@@ -128,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-            $version = '7.0NG.747';
-            $build = '200715';
+            $version = '7.0NG.748';
+            $build = '200907';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -965,8 +965,11 @@ function install_step4()
 
                     $step5 = mysqli_query(
                         $connection,
-                        "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
-								IDENTIFIED BY '".$random_password."'"
+                        "CREATE USER pandora@$host IDENTIFIED BY '".$random_password."'"
+                    );
+                    $step5 |= mysqli_query(
+                        $connection,
+                        "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host"
                     );
                     mysqli_query($connection, 'FLUSH PRIVILEGES');
                     check_generic($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");

@@ -170,6 +170,7 @@ if ($schedule_report != '') {
     $parameters[4] = get_parameter('report_type', '');
     $parameters['first_execution'] = strtotime($date.' '.$time);
 
+
     $values = [
         'id_usuario'   => $config['id_user'],
         'id_user_task' => $id_user_task,
@@ -180,9 +181,11 @@ if ($schedule_report != '') {
 
     $result = db_process_sql_insert('tuser_task_scheduled', $values);
 
+    $report_type = $parameters[4];
+
     ui_print_result_message(
         $result,
-        __('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
+        __('Your report has been planned, and the system will email you a '.$report_type.' file with the report as soon as its finished'),
         __('An error has ocurred')
     );
     echo '<br>';
@@ -1379,7 +1382,10 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
-                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+                        $values['show_extended_events'] = get_parameter(
+                            'include_extended_events',
+                            null
+                        );
 
                         $label = get_parameter('label', '');
 
@@ -1707,6 +1713,10 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['compare_work_time'] = get_parameter(
+                            'compare_work_time',
+                            0
+                        );
                         $values['total_time'] = get_parameter('total_time', 0);
                         $values['time_failed'] = get_parameter(
                             'time_failed',
@@ -2336,7 +2346,6 @@ switch ($action) {
                             'checkbox_only_display_wrong',
                             0
                         );
-
                         $values['monday'] = get_parameter('monday', 0);
                         $values['tuesday'] = get_parameter('tuesday', 0);
                         $values['wednesday'] = get_parameter('wednesday', 0);
@@ -2344,6 +2353,10 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['compare_work_time'] = get_parameter(
+                            'compare_work_time',
+                            0
+                        );
                         $values['total_time'] = get_parameter('total_time', 0);
                         $values['time_failed'] = get_parameter(
                             'time_failed',

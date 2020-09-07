@@ -863,6 +863,17 @@ function reporting_make_reporting_data(
 }
 
 
+/**
+ * Report SLA.
+ *
+ * @param array        $report             Data report.
+ * @param array        $content            Content for report.
+ * @param null|string  $type               Type report.
+ * @param null|integer $force_width_chart  Size.
+ * @param null|integer $force_height_chart Size.
+ *
+ * @return array Return array for draw report SLA.
+ */
 function reporting_SLA(
     $report,
     $content,
@@ -926,7 +937,7 @@ function reporting_SLA(
         include_once $config['homedir'].'/include/functions_planned_downtimes.php';
         $metaconsole_on = is_metaconsole();
 
-        // checking if needed to show graph or table.
+        // Checking if needed to show graph or table.
         if ($content['show_graph'] == 0 || $content['show_graph'] == 1) {
             $show_table = 1;
         } else {
@@ -946,6 +957,18 @@ function reporting_SLA(
         $total_result_SLA = 'ok';
         $sla_showed = [];
         $sla_showed_values = [];
+
+        if ((bool) $content['compare_work_time'] === true) {
+            $slas_compare = [];
+            foreach ($slas as $sla) {
+                $sla['compare'] = 1;
+                $slas_compare[] = $sla;
+                $sla['compare'] = 0;
+                $slas_compare[] = $sla;
+            }
+
+            $slas = $slas_compare;
+        }
 
         foreach ($slas as $sla) {
             $server_name = $sla['server_name'];
@@ -1000,26 +1023,51 @@ function reporting_SLA(
 
             // Call functions sla.
             $sla_array = [];
-            $sla_array = reporting_advanced_sla(
-                $sla['id_agent_module'],
-                ($report['datetime'] - $content['period']),
-                $report['datetime'],
-                $sla['sla_min'],
-                $sla['sla_max'],
-                $inverse_interval,
-                [
-                    '1' => $content['sunday'],
-                    '2' => $content['monday'],
-                    '3' => $content['tuesday'],
-                    '4' => $content['wednesday'],
-                    '5' => $content['thursday'],
-                    '6' => $content['friday'],
-                    '7' => $content['saturday'],
-                ],
-                $content['time_from'],
-                $content['time_to'],
-                $slice
-            );
+            if (isset($sla['compare']) === false
+                || empty($sla['compare']) === true
+            ) {
+                $sla_array = reporting_advanced_sla(
+                    $sla['id_agent_module'],
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    $sla['sla_min'],
+                    $sla['sla_max'],
+                    $inverse_interval,
+                    [
+                        '1' => $content['sunday'],
+                        '2' => $content['monday'],
+                        '3' => $content['tuesday'],
+                        '4' => $content['wednesday'],
+                        '5' => $content['thursday'],
+                        '6' => $content['friday'],
+                        '7' => $content['saturday'],
+                    ],
+                    $content['time_from'],
+                    $content['time_to'],
+                    $slice
+                );
+            } else {
+                $sla_array = reporting_advanced_sla(
+                    $sla['id_agent_module'],
+                    ($report['datetime'] - $content['period']),
+                    $report['datetime'],
+                    $sla['sla_min'],
+                    $sla['sla_max'],
+                    $inverse_interval,
+                    [
+                        '1' => 1,
+                        '2' => 1,
+                        '3' => 1,
+                        '4' => 1,
+                        '5' => 1,
+                        '6' => 1,
+                        '7' => 1,
+                    ],
+                    '00:00:00',
+                    '00:00:00',
+                    $slice
+                );
+            }
 
             if ($metaconsole_on) {
                 // Restore db connection.
@@ -1092,6 +1140,14 @@ function reporting_SLA(
             $data['min']          = $sla['sla_min'];
             $data['sla_limit']    = $sla['sla_limit'];
             $data['dinamic_text'] = $dinamic_text;
+
+            if (isset($sla['compare']) === false
+                || empty($sla['compare']) === true
+            ) {
+                $data['compare'] = false;
+            } else {
+                $data['compare'] = true;
+            }
 
             if (isset($sla_array[0])) {
                 $data['time_total']      = 0;
@@ -1246,6 +1302,15 @@ function reporting_SLA(
                         $sla['id_agent_module']
                     )
                 );
+
+                if (isset($sla['compare']) === false
+                    || empty($sla['compare']) === true
+                ) {
+                    $dataslice['compare'] = false;
+                } else {
+                    $dataslice['compare'] = true;
+                }
+
                 $dataslice['sla_value'] = $data['sla_value'];
                 $dataslice['order'] = $data['sla_value'];
 
@@ -1259,7 +1324,7 @@ function reporting_SLA(
                     $content['time_from'],
                     $content['time_to'],
                     100,
-                    70,
+                    ((bool) $dataslice['compare'] === true) ? 50 : 80,
                     $urlImage,
                     $ttl,
                     $array_result,
@@ -6372,9 +6437,14 @@ function reporting_advanced_sla(
 
 
 /**
- * reporting_availability
+ * Report Availability.
  *
- *  Generates a structure the report.
+ * @param array        $report  Data report.
+ * @param array        $content Content for report.
+ * @param null|string  $date    Date.
+ * @param null|integer $time    Time.
+ *
+ * @return array Return array for draw report Availability.
  */
 function reporting_availability($report, $content, $date=false, $time=false)
 {
@@ -6417,7 +6487,12 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $count = 0;
 
     if ($content['failover_mode']) {
-        $availability_graph_data = reporting_availability_graph($report, $content, false, true);
+        $availability_graph_data = reporting_availability_graph(
+            $report,
+            $content,
+            false,
+            true
+        );
         $data = $availability_graph_data['data'];
 
         foreach ($data as $key => $item_data) {
@@ -6428,7 +6503,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                 $data[$key]['availability_item'] = $item_data['module'];
                 $text = $item_data['agent'].' ('.$item_data['module'].')';
                 $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
-                if (is_null($min)) {
+                if (isset($min) === false) {
                     $min = $percent_ok;
                     $min_text = $text;
                 } else {
@@ -6438,7 +6513,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                     }
                 }
 
-                if (is_null($max)) {
+                if (isset($max) === false) {
                     $max = $percent_ok;
                     $max_text = $text;
                 } else {
@@ -6461,9 +6536,10 @@ function reporting_availability($report, $content, $date=false, $time=false)
             }
 
             $sql = sprintf(
-                '
-                SELECT id_agent_module, id_agent_module_failover,
-                    server_name, operation
+                'SELECT id_agent_module,
+                    id_agent_module_failover,
+                    server_name,
+                    operation
                 FROM treport_content_item
                 WHERE id_report_content = %d',
                 $content['id_rc']
@@ -6481,8 +6557,16 @@ function reporting_availability($report, $content, $date=false, $time=false)
             $aux_id_agents = $agents;
             $i = 0;
             foreach ($items as $item) {
-                $utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
-                if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))) {
+                $utimestamp = db_get_value(
+                    'utimestamp',
+                    'tagente_datos',
+                    'id_agente_modulo',
+                    $item['id_agent_module'],
+                    true
+                );
+                if (($utimestamp === false)
+                    || (intval($utimestamp) > intval($datetime_to))
+                ) {
                     unset($items[$i]);
                 }
 
@@ -6490,14 +6574,29 @@ function reporting_availability($report, $content, $date=false, $time=false)
             }
         }
 
-        if (!empty($items)) {
+        if (empty($items) === false
+            && (bool) $content['compare_work_time'] === true
+        ) {
+            $items_compare = [];
             foreach ($items as $item) {
-                // aaMetaconsole connection
+                $item['compare'] = 1;
+                $items_compare[] = $item;
+                $item['compare'] = 0;
+                $items_compare[] = $item;
+            }
+
+            $items = $items_compare;
+        }
+
+        if (empty($items) === false) {
+            foreach ($items as $item) {
+                // Metaconsole connection.
                 $server_name = $item['server_name'];
-                if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                if (($config['metaconsole'] == 1)
+                    && $server_name != '' && is_metaconsole()
+                ) {
                     $connection = metaconsole_get_connection($server_name);
                     if (metaconsole_load_external_db($connection) != NOERR) {
-                        // ui_print_error_message ("Error connecting to ".$server_name);
                         continue;
                     }
                 }
@@ -6505,8 +6604,10 @@ function reporting_availability($report, $content, $date=false, $time=false)
                 if (modules_is_disable_agent($item['id_agent_module'])
                     || modules_is_not_init($item['id_agent_module'])
                 ) {
-                    // Restore dbconnection
-                    if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                    // Restore dbconnection.
+                    if (($config['metaconsole'] == 1)
+                        && $server_name != '' && is_metaconsole()
+                    ) {
                         metaconsole_restore_db();
                     }
 
@@ -6517,62 +6618,83 @@ function reporting_availability($report, $content, $date=false, $time=false)
 
                 $text = '';
 
-                $row['data'] = reporting_advanced_sla(
-                    $item['id_agent_module'],
-                    ($report['datetime'] - $content['period']),
-                    $report['datetime'],
-                    null,
-                    // min_value -> dynamic
-                    null,
-                    // max_value -> dynamic
-                    null,
-                    // inverse_interval -> dynamic
-                    [
-                        '1' => $content['sunday'],
-                        '2' => $content['monday'],
-                        '3' => $content['tuesday'],
-                        '4' => $content['wednesday'],
-                        '5' => $content['thursday'],
-                        '6' => $content['friday'],
-                        '7' => $content['saturday'],
-                    ],
-                    $content['time_from'],
-                    $content['time_to']
-                );
+                if (isset($item['compare']) === true
+                    && empty($item['compare']) === true
+                ) {
+                    // Intervals is dinamic.
+                    $row['data'] = reporting_advanced_sla(
+                        $item['id_agent_module'],
+                        ($report['datetime'] - $content['period']),
+                        $report['datetime'],
+                        null,
+                        null,
+                        null,
+                        [
+                            '1' => $content['sunday'],
+                            '2' => $content['monday'],
+                            '3' => $content['tuesday'],
+                            '4' => $content['wednesday'],
+                            '5' => $content['thursday'],
+                            '6' => $content['friday'],
+                            '7' => $content['saturday'],
+                        ],
+                        $content['time_from'],
+                        $content['time_to']
+                    );
+                } else {
+                    // Intervals is dinamic.
+                    $row['data'] = reporting_advanced_sla(
+                        $item['id_agent_module'],
+                        ($report['datetime'] - $content['period']),
+                        $report['datetime']
+                    );
+                }
 
                 // HACK it is saved in show_graph field.
-                // Show interfaces instead the modules
+                // Show interfaces instead the modules.
                 if ($content['show_graph']) {
-                    $text = $row['data']['availability_item'] = agents_get_address(
+                    $row['data']['availability_item'] = agents_get_address(
                         modules_get_agentmodule_agent($item['id_agent_module'])
                     );
 
                     if (empty($text)) {
-                        $text = $row['data']['availability_item'] = __('No Address');
+                        $row['data']['availability_item'] = __('No Address');
                     }
                 } else {
-                    $text = $row['data']['availability_item'] = modules_get_agentmodule_name(
+                    $row['data']['availability_item'] = modules_get_agentmodule_name(
                         $item['id_agent_module']
                     );
                 }
+
+                $text = $row['data']['availability_item'];
 
                 $row['data']['agent'] = modules_get_agentmodule_agent_alias(
                     $item['id_agent_module']
                 );
 
+                if (isset($item['compare']) === true
+                    && empty($item['compare']) === true
+                ) {
+                    $row['data']['compare'] = false;
+                } else {
+                    $row['data']['compare'] = true;
+                }
+
                 $text = $row['data']['agent'].' ('.$text.')';
 
-                // Restore dbconnection
-                if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                // Restore dbconnection.
+                if (($config['metaconsole'] == 1)
+                    && $server_name != '' && is_metaconsole()
+                ) {
                     metaconsole_restore_db();
                 }
 
-                // find order
+                // Find order.
                 $row['data']['order'] = $row['data']['SLA'];
 
                 $percent_ok = $row['data']['SLA'];
                 $avg = ((($avg * $count) + $percent_ok) / ($count + 1));
-                if (is_null($min)) {
+                if (isset($min) === false) {
                     $min = $percent_ok;
                     $min_text = $text;
                 } else {
@@ -6582,7 +6704,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                     }
                 }
 
-                if (is_null($max)) {
+                if (isset($max) === false) {
                     $max = $percent_ok;
                     $max_text = $text;
                 } else {
@@ -6650,6 +6772,10 @@ function reporting_availability($report, $content, $date=false, $time=false)
 
                     $data = $temp;
                 break;
+
+                default:
+                    // Not possible.
+                break;
             }
         }
     }
@@ -6680,17 +6806,22 @@ function reporting_availability($report, $content, $date=false, $time=false)
 }
 
 
- /**
-  * Reporting_availability_graph.
-  *
-  * @param array   $report  Info report.
-  * @param array   $content Content data.
-  * @param boolean $pdf     Output type PDF.
-  *
-  * @return array Generates a structure the report.
-  */
-function reporting_availability_graph($report, $content, $pdf=false, $failover=false)
-{
+/**
+ * Reporting_availability_graph.
+ *
+ * @param array        $report   Info report.
+ * @param array        $content  Content data.
+ * @param null|boolean $pdf      Output type PDF.
+ * @param null|boolean $failover Failover mode.
+ *
+ * @return array Generates a structure the report.
+ */
+function reporting_availability_graph(
+    $report,
+    $content,
+    $pdf=false,
+    $failover=false
+) {
     global $config;
     $return = [];
     $return['type'] = 'availability_graph';
@@ -6756,6 +6887,20 @@ function reporting_availability_graph($report, $content, $pdf=false, $failover=f
 
         $priority_mode = $content['style']['priority_mode'];
 
+        if (empty($slas) === false && empty($content['failover_mode']) === true
+            && (bool) $content['compare_work_time'] === true
+        ) {
+            $sla_compare = [];
+            foreach ($slas as $sla) {
+                $sla['compare'] = 1;
+                $sla_compare[] = $sla;
+                $sla['compare'] = 0;
+                $sla_compare[] = $sla;
+            }
+
+            $slas = $sla_compare;
+        }
+
         foreach ($slas as $sla) {
             $server_name = $sla['server_name'];
 
@@ -6799,15 +6944,27 @@ function reporting_availability_graph($report, $content, $pdf=false, $failover=f
                 $slice = ($content['period'] / $module_interval);
                 $data_combined = [];
 
-                foreach ($sla_failover as $k_sla => $v_sla) {
-                    $sla_array = data_db_uncompress_module(
-                        $v_sla,
-                        $content,
-                        $report['datetime'],
-                        $slice
-                    );
+                if ((bool) $content['compare_work_time'] === true) {
+                    $sla_compare = [];
+                    foreach ($sla_failover as $k_sla => $sla) {
+                        $sla['compare'] = 1;
+                        $sla_compare[$k_sla.'_compare'] = $sla;
+                        $sla['compare'] = 0;
+                        $sla_compare[$k_sla] = $sla;
+                    }
 
+                    $sla_failover = $sla_compare;
+                }
+
+                foreach ($sla_failover as $k_sla => $v_sla) {
                     if ($content['failover_type'] == REPORT_FAILOVER_TYPE_NORMAL) {
+                        $sla_array = data_compare_24x7(
+                            $v_sla,
+                            $content,
+                            $report['datetime'],
+                            $slice
+                        );
+
                         $return = prepare_data_for_paint(
                             $v_sla,
                             $sla_array,
@@ -6819,53 +6976,37 @@ function reporting_availability_graph($report, $content, $pdf=false, $failover=f
                         );
                     }
 
-                    $data_combined[] = $sla_array;
+                    if (isset($v_sla['compare']) === true
+                        && empty($v_sla['compare']) === false
+                    ) {
+                        $data_combined_compare[] = $sla_array;
+                    } else {
+                        $data_combined[] = $sla_array;
+                    }
+                }
+
+                if (isset($data_combined_compare) === true
+                    && is_array($data_combined_compare) === true
+                    && count($data_combined_compare) > 0
+                ) {
+                    $return = prepare_data_for_paint(
+                        $sla,
+                        data_combined_failover($data_combined_compare),
+                        $content,
+                        $report['datetime'],
+                        $return,
+                        'result_compare',
+                        $pdf
+                    );
                 }
 
                 if (isset($data_combined) === true
                     && is_array($data_combined) === true
                     && count($data_combined) > 0
                 ) {
-                    $count_failover = count($data_combined);
-
-                    $data_a = $data_combined[0];
-                    for ($i = 1; $count_failover > $i; $i++) {
-                        $data_a = array_map(
-                            function ($primary, $failover) {
-                                $return_map = [];
-                                if ($primary['date_from'] === $failover['date_from']
-                                    && $primary['date_to'] === $failover['date_to']
-                                ) {
-                                    if ($primary['time_ok'] < $failover['time_ok']) {
-                                        $primary['time_total'] = $failover['time_total'];
-                                        $primary['time_ok'] = $failover['time_ok'];
-                                        $primary['time_error'] = $failover['time_error'];
-                                        $primary['time_unknown'] = $failover['time_unknown'];
-                                        $primary['time_not_init'] = $failover['time_not_init'];
-                                        $primary['time_downtime'] = $failover['time_downtime'];
-                                        $primary['time_out'] = $failover['time_out'];
-                                        $primary['checks_total'] = $failover['checks_total'];
-                                        $primary['checks_ok'] = $failover['checks_ok'];
-                                        $primary['checks_error'] = $failover['checks_error'];
-                                        $primary['checks_unknown'] = $failover['checks_unknown'];
-                                        $primary['checks_not_init'] = $failover['checks_not_init'];
-                                        $primary['SLA'] = $failover['SLA'];
-                                        $primary['sla_fixed'] = $failover['sla_fixed'];
-                                    }
-
-                                    $return_map = $primary;
-                                }
-
-                                return $return_map;
-                            },
-                            $data_a,
-                            $data_combined[($i)]
-                        );
-                    }
-
                     $return = prepare_data_for_paint(
                         $sla,
-                        $data_a,
+                        data_combined_failover($data_combined),
                         $content,
                         $report['datetime'],
                         $return,
@@ -6874,10 +7015,11 @@ function reporting_availability_graph($report, $content, $pdf=false, $failover=f
                     );
                 }
             } else {
-                $sla_array = data_db_uncompress_module(
+                $sla_array = data_compare_24x7(
                     $sla,
                     $content,
-                    $report['datetime']
+                    $report['datetime'],
+                    0
                 );
 
                 $return = prepare_data_for_paint(
@@ -6988,6 +7130,97 @@ function reporting_availability_graph($report, $content, $pdf=false, $failover=f
     }
 
     return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Combined data modules failover.
+ *
+ * @param array $data Data.
+ *
+ * @return array
+ */
+function data_combined_failover(array $data)
+{
+    $count_failover = count($data);
+
+    $result = $data[0];
+    for ($i = 1; $count_failover > $i; $i++) {
+        $result = array_map(
+            function ($primary, $failover) {
+                $return_map = [];
+                if ($primary['date_from'] === $failover['date_from']
+                    && $primary['date_to'] === $failover['date_to']
+                ) {
+                    if ($primary['time_ok'] < $failover['time_ok']) {
+                        $primary['time_total'] = $failover['time_total'];
+                        $primary['time_ok'] = $failover['time_ok'];
+                        $primary['time_error'] = $failover['time_error'];
+                        $primary['time_unknown'] = $failover['time_unknown'];
+                        $primary['time_not_init'] = $failover['time_not_init'];
+                        $primary['time_downtime'] = $failover['time_downtime'];
+                        $primary['time_out'] = $failover['time_out'];
+                        $primary['checks_total'] = $failover['checks_total'];
+                        $primary['checks_ok'] = $failover['checks_ok'];
+                        $primary['checks_error'] = $failover['checks_error'];
+                        $primary['checks_unknown'] = $failover['checks_unknown'];
+                        $primary['checks_not_init'] = $failover['checks_not_init'];
+                        $primary['SLA'] = $failover['SLA'];
+                        $primary['sla_fixed'] = $failover['sla_fixed'];
+                    }
+
+                    $return_map = $primary;
+                }
+
+                return $return_map;
+            },
+            $result,
+            $data[($i)]
+        );
+    }
+
+    return $result;
+}
+
+
+/**
+ * Prepare data compare option.
+ *
+ * @param array        $value    Value data.
+ * @param array        $content  Content report.
+ * @param string       $datetime Time.
+ * @param integer|null $slice    Number slices.
+ *
+ * @return array
+ */
+function data_compare_24x7(
+    array $value,
+    array $content,
+    string $datetime,
+    ?int $slice=0
+) {
+    if (isset($value['compare']) === true
+        && empty($value['compare']) === false
+    ) {
+        $content['sunday'] = 1;
+        $content['monday'] = 1;
+        $content['tuesday'] = 1;
+        $content['wednesday'] = 1;
+        $content['thursday'] = 1;
+        $content['friday'] = 1;
+        $content['saturday'] = 1;
+        $content['time_from'] = '00:00';
+        $content['time_to'] = '23:59';
+    }
+
+    $sla_array = data_db_uncompress_module(
+        $value,
+        $content,
+        $datetime,
+        $slice
+    );
+
+    return $sla_array;
 }
 
 
@@ -7220,6 +7453,15 @@ function prepare_data_for_paint(
         $data['sla_value']       = $sla_array['SLA'];
     }
 
+    $data['compare'] = 0;
+    if (isset($sla['compare']) === true) {
+        if ((bool) $sla['compare'] === true) {
+            $data['compare'] = 1;
+        } else {
+            $data['compare'] = 2;
+        }
+    }
+
     // Checks whether or not it meets the SLA.
     if ($data['sla_value'] >= $sla['sla_limit']) {
         $data['sla_status'] = 1;
@@ -7281,8 +7523,16 @@ function prepare_data_for_paint(
     $dataslice['sla_value'] = $data['sla_value'];
 
     $height = 80;
-    if ($failover !== '' && $failover !== 'result') {
+    if (($failover !== ''
+        && $failover !== 'result')
+        || (bool) $sla['compare'] === true
+    ) {
         $height = 50;
+        if ($failover !== '' && (bool) $sla['compare'] === true
+            || $failover === 'result_compare'
+        ) {
+            $height = 40;
+        }
     }
 
     $dataslice['chart'] = graph_sla_slicebar(
@@ -11739,7 +11989,6 @@ function reporting_get_stats_servers()
     $table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 
     $tdata = [];
-    '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
     $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules')]);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['total_modules_rate'], 2).'</span>';
@@ -11846,12 +12095,6 @@ function reporting_get_stats_servers()
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
 
-        /*
-            Hello there! :)
-            We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
-            You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
-        */
-
     if ($system_events > 50000 && !enterprise_installed()) {
         $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     } else {
@@ -11865,7 +12108,7 @@ function reporting_get_stats_servers()
     $output = '<fieldset class="databox tactical_set">
                 <legend>'.__('Server performance').'</legend>'.html_print_table($table_srv, true).'</fieldset>';
 
-    $public_hash = get_parameter('hash', false);
+    $public_hash = get_parameter('auth_hash', false);
     if ($public_hash === false) {
         $output .= '<script type="text/javascript">';
             $output .= '$(document).ready(function () {';

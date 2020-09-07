@@ -107,6 +107,7 @@ $saturday = true;
 $sunday = true;
 $time_from = '00:00:00';
 $time_to = '00:00:00';
+$compare_work_time = false;
 $show_graph = 0;
 $sla_sorted_by = 0;
 $id_agents = '';
@@ -315,6 +316,7 @@ switch ($action) {
                     $sunday = $item['sunday'];
                     $time_from = $item['time_from'];
                     $time_to = $item['time_to'];
+                    $compare_work_time = $item['compare_work_time'];
                     $show_graph = $item['show_graph'];
                     $priority_mode = isset($style['priority_mode']) ? $style['priority_mode'] : REPORT_PRIORITY_MODE_OK;
                     // 'top_n' filed will be reused for SLA sort option.
@@ -622,6 +624,7 @@ switch ($action) {
                     $sunday = $item['sunday'];
                     $time_from = $item['time_from'];
                     $time_to = $item['time_to'];
+                    $compare_work_time = $item['compare_work_time'];
                     $total_time = $item['total_time'];
                     $time_failed = $item['time_failed'];
                     $time_in_ok_status = $item['time_in_ok_status'];
@@ -1209,6 +1212,22 @@ $class = 'databox filters';
                             '',
                             7,
                             8
+                        );
+                        ?>
+                        </td>
+                    </tr>
+                    <tr id="row_working_time_compare">
+                        <td>
+                            <?php
+                            echo __('Show 24x7 item');
+                            ?>
+                        </td>
+                        <td colspan="6">
+                        <?php
+                        html_print_checkbox(
+                            'compare_work_time',
+                            1,
+                            $compare_work_time
                         );
                         ?>
                         </td>
@@ -4830,9 +4849,9 @@ function chooseType() {
     $("#row_failover_mode").hide();
     $("#row_failover_type").hide();
     $("#row_working_time").hide();
+    $("#row_working_time_compare").hide();
     $("#row_only_display_wrong").hide();
     $("#row_combo_module").hide();
-    $("#row_only_display_wrong").hide();
     $("#row_group_by_agent").hide();
     $("#general_list").hide();
     $("#row_order_uptodown").hide();
@@ -4988,6 +5007,7 @@ function chooseType() {
             $("#row_period").show();
             $("#sla_list").show();
             $("#row_working_time").show();
+            $("#row_working_time_compare").show();
             $("#row_only_display_wrong").show();
             $("#row_show_graph").show();
             $("#row_sort").show();
@@ -5000,6 +5020,7 @@ function chooseType() {
             $("#row_period").show();
             $("#sla_list").show();
             $("#row_working_time").show();
+            $("#row_working_time_compare").show();
             $("#row_historical_db_check").hide();
             $("#row_priority_mode").show();
             $("#row_failover_mode").show();
@@ -5278,6 +5299,7 @@ function chooseType() {
             $("#row_show_address_agent").show();
             $("#row_show_resume").show();
             $("#row_working_time").show();
+            $("#row_working_time_compare").show();
             $('#row_hide_notinit_agents').show();
             $('#row_select_fields').show();
              if($("#checkbox-checkbox_show_resume").is(":checked")){

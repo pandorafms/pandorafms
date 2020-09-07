@@ -3001,6 +3001,8 @@ class AgentWizard extends HTML
                             $module['name']
                         );
 
+                        $newModule['name_oid'] = str_replace('"', '', $tmpSecond[3]);
+
                         // Add this new module to the module list.
                         $moduleBlocks[] = $newModule;
                     }
@@ -4749,6 +4751,7 @@ class AgentWizard extends HTML
              */
             function switchBlockControl(e) {
                 var switchId = e.target.id.split("_");
+                var switchName = e.target.name.split("_");
                 var type = switchId[1];
                 var blockNumber = switchId[2];
                 var moduleNumber = switchId[3];
@@ -4756,14 +4759,15 @@ class AgentWizard extends HTML
                 var imageInfoModules = $("#image-info-modules-" + blockNumber);
                 var totalCount = 0;
                 var markedCount = 0;
-
+                var hidden_input  = document.getElementById("hidden-module-active-"+switchName[2]+"_0-0"); 
+                var id_input = hidden_input.id.split("_");
                 if (type == 'block') {
                     selectedBlock
                             .parent()
                             .removeClass("alpha50");
                     if (selectedBlock.prop("checked")) {
                         // Set to active the values of fields.
-                        $("[id*=hidden-module-active-"+blockNumber+"]")
+                        $("[id*='"+id_input[0]+"']")
                         .each(function(){
                             $(this).val('1');
                         });
@@ -4775,8 +4779,8 @@ class AgentWizard extends HTML
                         imageInfoModules.removeClass('hidden');
                     } else {
                         // Set to inactive the values of fields.
-                        $("[id*=hidden-module-active-"+blockNumber+"]")
-                        .each(function(){
+                        $("[id*='"+id_input[0]+"']")
+                         .each(function(){
                             $(this).val('0');
                         });
                         // Set unchecked.
@@ -4788,13 +4792,13 @@ class AgentWizard extends HTML
                     }
                 } else if (type == 'module') {
                     // Getting the element.
-                    var thisModuleHidden = $("#hidden-module-active-"+blockNumber+"_"+moduleNumber);
+                    var thisModuleHidden  = document.getElementById("hidden-module-active-"+switchName[2]+"_"+moduleNumber); 
                     var thisModule = $("#checkbox-sel_module_"+blockNumber+"_"+moduleNumber);
                     // Setting the individual field
                     if (thisModule.prop('checked')) {
-                        thisModuleHidden.val('1');
+                        thisModuleHidden.value = '1';
                     } else {
-                        thisModuleHidden.val('0');
+                        thisModuleHidden.value = '0';
                     }
 
                     // Get the list of selected modules.

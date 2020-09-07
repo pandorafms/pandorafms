@@ -14,7 +14,7 @@
 global $config;
 
 
-function include_javascript_dependencies_flot_graph($return=false)
+function include_javascript_dependencies_flot_graph($return=false, $mobile=false)
 {
     global $config;
 
@@ -28,8 +28,16 @@ function include_javascript_dependencies_flot_graph($return=false)
             $metaconsole_hack = '../../';
         }
 
+        $output = '';
+
+        if ($mobile === true) {
+            $output .= '
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.js').'"></script>
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.3.1.js').'"></script>';
+        }
+
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
-        $output = '
+        $output .= '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/excanvas.js').'"></script><![endif]-->
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.min.js').'"></script>

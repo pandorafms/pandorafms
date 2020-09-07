@@ -3424,7 +3424,7 @@ function events_page_responses($event, $childrens_ids=[])
             'owner_button',
             false,
             'event_change_owner();',
-            'class="sub next"',
+            'class="sub next w70p"',
             true
         );
 
@@ -3504,7 +3504,7 @@ function events_page_responses($event, $childrens_ids=[])
             'status_button',
             false,
             'event_change_status(\''.$event['similar_ids'].'\');',
-            'class="sub next"',
+            'class="sub next w70p"',
             true
         );
     }
@@ -3520,7 +3520,7 @@ function events_page_responses($event, $childrens_ids=[])
         'comment_button',
         false,
         '$(\'#link_comments\').trigger(\'click\');',
-        'class="sub next"',
+        'class="sub next w70p"',
         true
     );
 
@@ -3544,7 +3544,7 @@ function events_page_responses($event, $childrens_ids=[])
             'delete_button',
             false,
             'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();',
-            'class="sub cancel"',
+            'class="sub cancel w70p"',
             true
         );
         $data[2] .= html_print_input_hidden('delete', 1, true);
@@ -3599,7 +3599,7 @@ function events_page_responses($event, $childrens_ids=[])
             'custom_response_button',
             false,
             'execute_response('.$event['id_evento'].','.$server_id.')',
-            "class='sub next'",
+            "class='sub next w70p'",
             true
         );
     }

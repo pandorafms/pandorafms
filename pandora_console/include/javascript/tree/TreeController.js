@@ -450,7 +450,10 @@ var TreeController = {
             var postData = {
               page: controller.ajaxPage,
               getDetail: 1,
-              type: type
+              type: type,
+              auth_class: controller.auth_class,
+              id_user: controller.id_user,
+              auth_hash: controller.auth_hash
             };
 
             if (typeof id !== "undefined") postData.id = id;
@@ -970,11 +973,6 @@ var TreeController = {
               });
             }
           }
-          // Get hash and user.
-          var public_hash = $("#hidden-publi_dash_tree_view_hash").val();
-          if (typeof public_hash === "undefined") public_hash = 0;
-          var public_user = $("#hidden-publi_dash_tree_view_id_user").val();
-          if (typeof public_user === "undefined") public_user = 0;
 
           if (
             typeof element.searchChildren != "undefined" &&
@@ -1014,8 +1012,9 @@ var TreeController = {
                       rootType: element.rootType,
                       metaID: element.metaID,
                       filter: controller.filter,
-                      hash: public_hash,
-                      id_user: public_user
+                      auth_class: controller.auth_class,
+                      id_user: controller.id_user,
+                      auth_hash: controller.auth_hash
                     },
                     complete: function(xhr, textStatus) {
                       $node.removeClass("leaf-loading");
@@ -1148,6 +1147,16 @@ var TreeController = {
         }
         if (typeof data.filter !== "undefined") {
           this.filter = data.filter;
+        }
+
+        if (typeof data.auth_class !== "undefined") {
+          this.auth_class = data.auth_class;
+        }
+        if (typeof data.id_user !== "undefined") {
+          this.id_user = data.id_user;
+        }
+        if (typeof data.auth_hash !== "undefined") {
+          this.auth_hash = data.auth_hash;
         }
 
         this.load();

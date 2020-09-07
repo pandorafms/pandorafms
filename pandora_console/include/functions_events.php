@@ -1042,7 +1042,13 @@ function events_get_all(
         $tags = json_decode($tag_with, true);
         if (is_array($tags) && !in_array('0', $tags)) {
             if (!$user_is_admin) {
-                $user_tags = array_flip(tags_get_tags_for_module_search());
+                $getUserTags = tags_get_tags_for_module_search();
+                // Prevent false value for array_flip
+                if ($getUserTags === false) {
+                    $getUserTags = [];
+                }
+
+                $user_tags = array_flip($getUserTags);
                 if ($user_tags != null) {
                     foreach ($tags as $id_tag) {
                         // User cannot filter with those tags.

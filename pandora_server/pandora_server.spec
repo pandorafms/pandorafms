@@ -149,6 +149,14 @@ fi
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
 
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Tentacle Server daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 exit 0
 
 %preun

@@ -121,6 +121,14 @@ else
 	/sbin/chkconfig pandora_agent_daemon on
 fi
 
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Pandora Agent daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 
 %preun
 

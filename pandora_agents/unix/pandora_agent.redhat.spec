@@ -108,8 +108,27 @@ mkdir -p /var/spool/pandora/data_out
 if [ ! -d /var/log/pandora ]; then
 	mkdir -p /var/log/pandora
 fi
-/sbin/chkconfig --add pandora_agent_daemon
-/sbin/chkconfig pandora_agent_daemon on
+
+if [ `command -v systemctl` ];
+then
+    echo "Copying new version of pandora_agent_daemon service"
+    cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
+# Enable the services on SystemD
+    systemctl enable pandora_agent_daemon.service
+else
+	/sbin/chkconfig --add pandora_agent_daemon
+	/sbin/chkconfig pandora_agent_daemon on
+fi
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Pandora Agent daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 
 %preun
 

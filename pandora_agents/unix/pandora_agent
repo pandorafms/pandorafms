@@ -54,7 +54,7 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.748';
+use constant AGENT_VERSION => '7.0NG.749';
 use constant AGENT_BUILD => '200908';
 
 # Agent log default file size maximum and instances

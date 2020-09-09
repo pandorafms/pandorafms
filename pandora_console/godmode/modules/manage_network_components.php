@@ -81,8 +81,8 @@ if (defined('METACONSOLE')) {
 }
 
 $type = (int) get_parameter('type');
-$name = (string) get_parameter('name');
-$description = (string) get_parameter('description');
+$name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+$description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
 $max = (int) get_parameter('max');
 $min = (int) get_parameter('min');
 $tcp_send = (string) get_parameter('tcp_send');

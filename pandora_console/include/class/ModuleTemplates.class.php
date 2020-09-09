@@ -303,8 +303,8 @@ class ModuleTemplates extends HTML
         if (!empty($this->action)) {
             // Success variable.
             $success     = false;
-            $this->name             = get_parameter('name', '');
-            $this->description      = get_parameter('description', '');
+            $this->name             = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+            $this->description      = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
             $this->pen              = get_parameter('pen', '');
 
             switch ($this->action) {

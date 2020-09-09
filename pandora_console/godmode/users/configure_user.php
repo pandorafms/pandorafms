@@ -101,6 +101,7 @@ $id = get_parameter('id', get_parameter('id_user', ''));
 $pure = get_parameter('pure', 0);
 
 $user_info = get_user_info($id);
+$is_err = false;
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
@@ -370,23 +371,27 @@ if ($create_user) {
 
     if ($id == '') {
         ui_print_error_message(__('User ID cannot be empty'));
+        $is_err = true;
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
     } else if (preg_match('/^\s+|\s+$/', io_safe_output($id))) {
         ui_print_error_message(__('Invalid user ID: leading or trailing blank spaces not allowed'));
+        $is_err = true;
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
     } else if ($password_new == '') {
+        $is_err = true;
         ui_print_error_message(__('Passwords cannot be empty'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
     } else if ($password_new != $password_confirm) {
+        $is_err = true;
         ui_print_error_message(__('Passwords didn\'t match'));
         $user_info = $values;
         $password_new = '';
@@ -1160,13 +1165,17 @@ if (is_metaconsole()) {
     $access_or_pagination = $size_pagination;
 }
 
+if ($id != '' && !$is_err) {
+    $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
+    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+} else {
+    $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
+    <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+}
 
 echo '<div id="user_form">
 <div class="user_edit_first_row">
-    <div class="edit_user_info white_box">
-        <div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-        <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>
-    </div>  
+    <div class="edit_user_info white_box">'.$div_user_info.'</div>  
     <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">

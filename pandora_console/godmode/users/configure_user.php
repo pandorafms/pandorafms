@@ -313,7 +313,7 @@ if ($create_user) {
     $password_confirm = (string) get_parameter('password_confirm', '');
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
-    $values['comments'] = (string) get_parameter('comments');
+    $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
     $values['is_admin'] = $user_is_admin;
     $values['language'] = get_parameter('language', 'default');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -500,7 +500,7 @@ if ($update_user) {
     $values['lastname'] = (string) get_parameter('lastname');
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
-    $values['comments'] = (string) get_parameter('comments');
+    $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
     $values['is_admin'] = get_parameter('is_admin', 0);
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');

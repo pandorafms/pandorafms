@@ -37,8 +37,8 @@ if ($idOS) {
     $description = $os['description'];
     $icon = $os['icon_name'];
 } else {
-    $name = get_parameter('name', '');
-    $description = get_parameter('description', '');
+    $name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+    $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
     $icon = get_parameter('icon', 0);
 }
 

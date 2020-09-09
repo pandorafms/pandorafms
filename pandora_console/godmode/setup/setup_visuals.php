@@ -996,7 +996,7 @@ $row++;
     $table_report->width = '100%';
     $table_report->class = 'databox filters';
     $table_report->style[0] = 'font-weight: bold;';
-    $table_report->size[0] = '50%';
+    $table_report->size[0] = '20%';
 
     $table_report->data = [];
 
@@ -1097,7 +1097,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_header']),
-        'style="width: 38em;"',
+        'style="width: 90%; height: 300px !important;"',
         true
     );
 
@@ -1120,7 +1120,7 @@ $row++;
         15,
         15,
         $custom_report_front_firstpage,
-        'style="width: 38em; height: 20em;"',
+        'style="width: 90%; height: 300px !important;"',
         true
     );
 
@@ -1133,7 +1133,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_footer']),
-        'style="width: 38em;"',
+        'style="width: 90%; height: 300px !important;"',
         true
     );
 

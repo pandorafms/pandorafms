@@ -317,7 +317,7 @@ class Group extends Entity
         // Pagination over effective groups retrieved.
         // Calculation is faster than transference.
         $count = count($return);
-        if (is_numeric($offset) === true && $offset >= 0 && $offset < $count) {
+        if (is_numeric($offset) === true && $offset >= 0) {
             if (is_numeric($limit) === true && $limit > 0) {
                 $return = array_splice($return, $offset, $limit);
             }

@@ -406,7 +406,8 @@ $table->data['form_modules_2'][1] = html_print_select(
     true,
     true,
     true
-);
+).' '.__('Select all modules').' '.html_print_checkbox('select_all_modules', 1, false, true, false, '', false, "class='static'");
+
 $table->data['form_modules_2'][2] = __('When select modules');
 $table->data['form_modules_2'][2] .= '<br>';
 $table->data['form_modules_2'][2] .= html_print_select(
@@ -491,7 +492,7 @@ $table->data['form_agents_3'][1] = html_print_select(
     true,
     true,
     false
-);
+).' '.__('Select all agents').' '.html_print_checkbox('select_all_agents', 1, false, true, false, '', false, "class='static'");
 
 $table->data['form_agents_3'][2] = __('When select agents');
 $table->data['form_agents_3'][2] .= '<br>';
@@ -1212,7 +1213,45 @@ $(document).ready (function () {
             return false;
         }
     });
-    
+
+    $("#checkbox-select_all_modules").change(function() {
+        if( $('#checkbox-select_all_modules').prop('checked')) {
+            $("#module_name option").prop('selected', 'selected');
+            $("#module_name").trigger('change');
+        } else {
+            $("#module_name option").prop('selected', false);
+            $("#module_name").trigger('change');
+        }
+    });
+
+    $("#module_name").change(function() {
+        var options_length = $("#module_name option").length;
+        var options_selected_length = $("#module_name option:selected").length;
+
+        if (options_selected_length < options_length) {
+            $('#checkbox-select_all_modules').prop("checked", false);
+        }
+    });
+
+    $("#checkbox-select_all_agents").change(function() {
+        if( $('#checkbox-select_all_agents').prop('checked')) {
+            $("#id_agents option").prop('selected', 'selected');
+            $("#id_agents").trigger('change');
+        } else {
+            $("#id_agents option").prop('selected', false);
+            $("#id_agents").trigger('change');
+        }
+    });
+
+    $("#id_agents").change(function() {
+        var options_length = $("#id_agents option").length;
+        var options_selected_length = $("#id_agents option:selected").length;
+
+        if (options_selected_length < options_length) {
+            $('#checkbox-select_all_agents').prop("checked", false);
+        }
+    });
+
     $("#text-custom_ip_target").hide();
     
     $("#id_agents").change(agent_changed_by_multiple_agents);
@@ -1463,7 +1502,7 @@ $(document).ready (function () {
         $('#groups_select').val(-1);
     }
     
-    $('input[type=checkbox]').change (
+    $('input[type=checkbox]').not(".static").change (
         function () {
             if (this.id == "checkbox-force_type") {
                 if (this.checked) {

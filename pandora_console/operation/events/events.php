@@ -871,10 +871,11 @@ if (is_metaconsole() !== true) {
 $data = html_print_input(
     [
         'name'           => 'id_group_filter',
-        'returnAllGroup' => false,
+        'returnAllGroup' => true,
         'privilege'      => 'AR',
         'type'           => 'select_groups',
-        'selected'       => $id_group_filter,
+        'selected'       => (defined($id_group_filter) ? $id_group_filter : 0),
+        'nothing'        => false,
         'return'         => true,
         'size'           => '80%',
     ]

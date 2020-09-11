@@ -270,7 +270,7 @@ class Group extends Entity
         $id_group = get_parameter('id_group', false);
         $keys_field = get_parameter('keys_field', 'id_grupo');
         $search = get_parameter('search', '');
-        $step = get_parameter('step', 0);
+        $step = get_parameter('step', 1);
         $limit = get_parameter('limit', false);
         $exclusions = get_parameter('exclusions', '[]');
         $inclusions = get_parameter('inclusions', '[]');
@@ -312,7 +312,7 @@ class Group extends Entity
         // Use global block size configuration.
         global $config;
         $limit = $config['block_size'];
-        $offset = ($step * $limit);
+        $offset = (($step - 1) * $limit);
 
         // Pagination over effective groups retrieved.
         // Calculation is faster than transference.

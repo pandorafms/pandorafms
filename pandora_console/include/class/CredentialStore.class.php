@@ -760,17 +760,16 @@ class CredentialStore extends Wizard
                     'form'                => [
                         'inputs' => [
                             [
-                                'label'   => __('Group'),
-                                'type'    => 'select',
-                                'id'      => 'filter_id_group',
-                                'name'    => 'filter_id_group',
-                                'options' => users_get_groups_for_select(
-                                    $config['id_user'],
-                                    'AR',
-                                    true,
-                                    true,
-                                    false
-                                ),
+                                'label'          => __('Group'),
+                                'type'           => 'select_groups',
+                                'id'             => 'filter_id_group',
+                                'name'           => 'filter_id_group',
+                                'returnAllGroup' => false,
+                                'privilege'      => 'AR',
+                                'type'           => 'select_groups',
+                                'selected'       => $id_group_filter,
+                                'return'         => true,
+                                'size'           => '80%',
                             ],
                             [
                                 'label' => __('Free search'),

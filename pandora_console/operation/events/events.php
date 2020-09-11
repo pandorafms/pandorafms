@@ -868,14 +868,6 @@ if (is_metaconsole() !== true) {
  */
 
 // Group.
-$user_groups_array = users_get_groups_for_select(
-    $config['id_user'],
-    $access,
-    true,
-    true,
-    false
-);
-
 $data = html_print_input(
     [
         'name'           => 'id_group_filter',

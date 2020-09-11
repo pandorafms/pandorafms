@@ -326,7 +326,9 @@ class Group extends Entity
         echo json_encode(
             [
                 'results'    => $return,
-                'pagination' => ['more' => count($return) < $count],
+                'pagination' => [
+                    'more' => (count($return) + (($step - 2) * $limit)) < $count,
+                ],
             ]
         );
     }

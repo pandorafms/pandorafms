@@ -934,7 +934,6 @@ class HostDevices extends Wizard
                         'selected'                => $this->task['id_group'],
                         'return'                  => true,
                         'class'                   => 'discovery_list_input',
-                        'size'                    => 9,
                         'simple_multiple_options' => true,
                     ]
                 );

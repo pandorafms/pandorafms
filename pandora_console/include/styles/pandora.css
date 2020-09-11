@@ -6134,3 +6134,7 @@ form#form-filter-interfaces ul li.select-interfaces {
   flex-direction: row-reverse;
   justify-content: flex-end;
 }
+
+li .select2 {
+  max-width: 400px !important;
+}

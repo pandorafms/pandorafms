@@ -424,44 +424,66 @@ if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
     $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').'</p></div>';
     $adv_secondary_groups_left = html_print_select_groups(
-        false,
+        // Id_user.
         // Use the current user to select the groups.
-        'AR',
-        // ACL permission.
         false,
+        // Privilege.
+        // ACL permission.
+        'AR',
+        // ReturnAllGroup.
         // Not all group.
-        'secondary_groups',
+        false,
+        // Name.
         // HTML id.
-        '',
+        'secondary_groups',
+        // Selected.
         // No select any by default.
         '',
+        // Script.
         // Javascript onChange code.
         '',
+        // Nothing.
         // Do not user no selected value.
-        0,
+        false,
+        // Nothing_value.
         // Do not use no selected value.
-        true,
+        0,
+        // Return.
         // Return HTML (not echo).
         true,
+        // Multiple.
         // Multiple selection.
         true,
+        // Sort.
         // Sorting by default.
-        '',
+        true,
+        // Class.
         // CSS classnames (default).
-        false,
+        '',
+        // Disabled.
         // Not disabled (default).
-        'min-width:170px;',
-        // Inline styles (default).
         false,
+        // Style.
+        // Inline styles (default).
+        'min-width:170px;',
+        // Option_style.
         // Option style select (default).
         false,
+        // Id_group.
         // Do not truncate the users tree (default).
-        'id_grupo',
-        // Key to get as value (default).
         false,
+        // Keys_field.
+        // Key to get as value (default).
+        'id_grupo',
+        // Strict_user.
         // Not strict user (default).
-        $secondary_groups_selected['plain']
+        false,
+        // Delete_groups.
         // Do not show the primary group in this selection.
+        array_merge($secondary_groups_selected['plain'], [$agent['id_grupo']])
+        // Include_groups.
+        // Size.
+        // Simple_multiple_options.
     );
 
     $adv_secondary_groups_arrows = html_print_input_image(
@@ -489,30 +511,30 @@ if (enterprise_installed()) {
     );
 
     $adv_secondary_groups_right .= html_print_select(
-        $secondary_groups_selected['for_select'],
         // Values.
-        'secondary_groups_selected',
+        $secondary_groups_selected['for_select'],
         // HTML id.
-        '',
+        'secondary_groups_selected',
         // Selected.
         '',
         // Javascript onChange code.
         '',
         // Nothing selected.
-        0,
+        false,
         // Nothing selected.
-        true,
+        0,
         // Return HTML (not echo).
         true,
         // Multiple selection.
         true,
         // Sort.
-        '',
+        true,
         // Class.
-        false,
+        '',
         // Disabled.
-        'min-width:170px;'
+        false,
         // Style.
+        'min-width:170px;'
     );
 
     // Safe operation mode.

@@ -504,6 +504,7 @@ class CustomNetScan extends Wizard
                         'type'           => 'select_groups',
                         'selected'       => $this->task['id_group'],
                         'return'         => true,
+                        'size'           => '400px',
                     ],
                 ];
 

@@ -341,7 +341,7 @@ function groups_get_children($parent, $ignorePropagate=false)
 
 
 /**
- * XXX: This is not working. Expects 'propagate' on CHILD not on PARENT!!!
+ * @deprecated This is not working. Expects 'propagate' on CHILD not on PARENT!!!
  *
  * Return a array of id_group of childrens (to branches down)
  *
@@ -575,14 +575,18 @@ function groups_get_id_recursive($id_parent, $all=false)
 
 function groups_flatten_tree_groups($tree, $deep)
 {
-    foreach ($tree as $key => $group) {
-        $return[$key] = $group;
-        unset($return[$key]['branch']);
-        $return[$key]['deep'] = $deep;
+    if (is_array($tree) === true) {
+        foreach ($tree as $key => $group) {
+            $return[$key] = $group;
+            unset($return[$key]['branch']);
+            $return[$key]['deep'] = $deep;
 
-        if (!empty($group['branch'])) {
-            $return = ($return + groups_flatten_tree_groups($group['branch'], ($deep + 1)));
+            if (empty($group['branch']) === false) {
+                $return = ($return + groups_flatten_tree_groups($group['branch'], ($deep + 1)));
+            }
         }
+    } else {
+        $return = [];
     }
 
     return $return;
@@ -618,7 +622,7 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
         $tree[$group['parent']]['branch'][$key] = &$tree[$key];
     }
 
-    // Depends on the All group we give different format
+    // Depends on the All group we give different format.
     if (isset($groups[0])) {
         $tree = [$tree[0]];
     } else {

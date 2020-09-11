@@ -323,11 +323,19 @@ class Group extends Entity
             }
         }
 
+        if ($step > 2) {
+            $processed = (($step - 2) * $limit);
+        } else {
+            $processed = 0;
+        }
+
+        $current_ammount = (count($return) + $processed);
+
         echo json_encode(
             [
                 'results'    => $return,
                 'pagination' => [
-                    'more' => (count($return) + (($step - 2) * $limit)) < $count,
+                    'more' => $current_ammount < $count,
                 ],
             ]
         );

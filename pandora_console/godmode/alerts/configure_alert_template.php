@@ -741,7 +741,10 @@ if ($step == 2) {
         1,
         $min_alerts_reset_counter,
         true,
-        $is_central_policies_on_node
+        $is_central_policies_on_node,
+        '',
+        false,
+        $create_template == 1 ? 'checked=checked' : ''
     );
 
     $table->data[4][0] = __('Max. number of alerts');

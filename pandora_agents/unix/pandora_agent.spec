@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.748
-%define release     200907
+%define version     7.0NG.749
+%define release     200914
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -98,11 +98,27 @@ fi
 
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 
-# Enable the service on SystemD
-systemctl enable pandora_agent_daemon.service
-
 mkdir -p /var/spool/pandora/data_out
-chkconfig pandora_agent_daemon on
+
+if [ `command -v systemctl` ];
+then
+    echo "Copying new version of pandora_agent_daemon service"
+    cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
+# Enable the services on SystemD
+    systemctl enable pandora_agent_daemon.service
+else
+	chkconfig pandora_agent_daemon on
+fi
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Pandora Agent daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 
 %preun
 

@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.748
-%define release     200907
+%define version     7.0NG.749
+%define release     200914
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -102,11 +102,21 @@ fi
 exit 0
 
 %post
-chkconfig pandora_server on 
-chkconfig tentacle_serverd on 
+if [ `command -v systemctl` ];
+then
+        echo "Copying new version for tentacle_serverd service"
+        cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+        chmod -x /usr/lib/systemd/system/tentacle_serverd.service
 
-# Enable the services on SystemD
-systemctl enable tentacle_serverd.service
+# Enable the service on SystemD
+        systemctl enable tentacle_serverd.service
+else
+        chkconfig tentacle_serverd on
+fi
+
+chkconfig pandora_server on
+
+# Enable the service on SystemD
 systemctl enable pandora_server.service
 
 
@@ -138,6 +148,14 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Tentacle Server daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
 
 exit 0
 

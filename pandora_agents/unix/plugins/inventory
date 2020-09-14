@@ -460,15 +460,19 @@ close (FILE);
 $Mode = 'LSHW';
 $Separator = '\s+\*\-';
 my @hwinfo;
+my $lshwpath = $0 =~ s/inventory/lshw/r ;
 if (is_enabled $AIX) {
     $Separator = '^\s*$';
     @hwinfo=`prtconf 2>/dev/null`;
 } else {
     @hwinfo = `lshw 2>/dev/null`;
     if ($? != 0) {
-    	$Mode = 'HWINFO';
-    	$Separator = 'Hardware Class:';
-    	@hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+        @hwinfo = `$lshwpath 2>/dev/null`;
+        if ($? != 0) {
+                $Mode = 'HWINFO';
+                $Separator = 'Hardware Class:';
+                @hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+        }
     }
 }
 

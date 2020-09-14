@@ -543,11 +543,7 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         $title = human_time_comparation($unixtime);
         $date = new DateTime();
         $date->setTimestamp($unixtime);
-        $strf_format = $date->format($config['date_format']);
-        $data = strftime(
-            $strf_format,
-            $unixtime
-        );
+        $data = $date->format($config['date_format']);
     } else if ($prominent == 'compact') {
         $units = 'tiny';
         $title = date($config['date_format'], $unixtime);

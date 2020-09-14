@@ -1195,10 +1195,6 @@ if (!empty($ehorus)) {
 
 echo '</div>';
 
-echo '</form>';
-
-profile_print_profile_table($id);
-
 echo '<div style="width: 100%" class="action-buttons">';
 if ($config['admin_can_add_user']) {
     html_print_csrf_hidden();
@@ -1213,8 +1209,12 @@ if ($config['admin_can_add_user']) {
 
 html_print_input_hidden('json_profile', '');
 
-echo '</div>';
 echo '</form>';
+
+
+profile_print_profile_table($id);
+echo '</div>';
+
 echo '<br />';
 
 enterprise_hook('close_meta_frame');

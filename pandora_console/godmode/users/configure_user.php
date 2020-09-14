@@ -1143,7 +1143,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true).'</div>';
 }
 
-echo '<form id="user_profile_form" method="post" autocomplete="off">';
+echo '<form id="user_profile_form" method="post" autocomplete="off" action="#">';
 
 
 if (!$id) {
@@ -1195,6 +1195,8 @@ if (!empty($ehorus)) {
 
 echo '</div>';
 
+echo '</form>';
+
 profile_print_profile_table($id);
 
 echo '<div style="width: 100%" class="action-buttons">';
@@ -1217,7 +1219,6 @@ echo '<br />';
 
 enterprise_hook('close_meta_frame');
 $delete_image = html_print_input_image('del', 'images/cross.png', 1, '', true, ['onclick' => 'delete_profile(event, this)']);
-
 
 if (!is_metaconsole()) {
     ?>
@@ -1335,7 +1336,7 @@ $(document).ready (function () {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
         if (rows <= 3) {
-            if (!confirm('<?php echo __('Deleting last profile'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
+            if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
                 return;
             }
         }

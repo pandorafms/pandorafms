@@ -541,7 +541,9 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         pandora_setlocale();
 
         $title = human_time_comparation($unixtime);
-        $strf_format = date2strftime_format($config['date_format'], $unixtime);
+        $date = new DateTime();
+        $date->setTimestamp($unixtime);
+        $strf_format = $date->format($config['date_format']);
         $data = strftime(
             $strf_format,
             $unixtime

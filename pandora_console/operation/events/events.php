@@ -136,8 +136,8 @@ $id_agent = get_parameter(
     $filter['id_agent']
 );
 $text_module = get_parameter(
-    'filter[text_module]',
-    $filter['text_module']
+    'filter[module_search]',
+    $filter['module_search']
 );
 $id_agent_module = get_parameter(
     'filter[id_agent_module]',
@@ -470,6 +470,10 @@ $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
+$tag_with = json_decode(base64_decode($tag_with), true);
+$tag_without = json_decode(base64_decode($tag_without), true);
+
+
 foreach ($tags as $id_tag => $tag) {
     if ((array_search($id_tag, $tag_with) === false)
         || (array_search($id_tag, $tag_with) === null)

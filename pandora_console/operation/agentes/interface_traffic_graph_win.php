@@ -154,6 +154,10 @@ if ($date > $now) {
             'zoom'      => $zoom,
         ];
 
+        if (is_metaconsole()) {
+            $params['id_server'] = $server_id;
+        }
+
         if ($config['type_interface_charts'] == 'line') {
             $stacked = CUSTOM_GRAPH_LINE;
         } else {

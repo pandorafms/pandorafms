@@ -1903,7 +1903,7 @@ $class = 'databox filters';
                 250
             );
             ?>
-                <span id="url_warning_text" class="error" style="display: none; font-weight: bold;"><?php echo __('Protocol must be specified in URL (i.e.: "https://")'); ?></span>
+                <span id="url_warning_text" class="error" style="display: none; font-weight: bold;"><?php echo __('Protocol must be specified in URL (e.g.: "https://")'); ?></span>
                 </td>
         </tr>
         <tr id="row_field_separator" style="" class="datos">
@@ -3653,7 +3653,7 @@ $(document).ready (function () {
             $("#inventory_modules").html('');
     })
 
-    $("#text-url").blur (
+    $("#text-url").keyup (
         function () {
             const user_typed_url = $(this).val();
 

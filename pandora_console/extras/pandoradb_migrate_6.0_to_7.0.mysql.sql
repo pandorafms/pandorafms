@@ -978,10 +978,10 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
-ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`) ALGORITHM DEFAULT LOCK DEFAULT;
-ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`) ALGORITHM DEFAULT LOCK DEFAULT;
-ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`) ALGORITHM DEFAULT LOCK DEFAULT;
-ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`) ALGORITHM DEFAULT LOCK DEFAULT;
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1030,8 +1030,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `module_status` int(4) NOT NULL default '0';
-ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_estado_idx` (`estado`) ALGORITHM DEFAULT LOCK DEFAULT;
-ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_timestamp_idx` (`timestamp`) ALGORITHM DEFAULT LOCK DEFAULT;
+ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_estado_idx` (`estado`);
+ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
 -- ---------------------------------------------------------------------
@@ -1126,8 +1126,8 @@ ALTER TABLE `tmetaconsole_agent` ADD COLUMN `remote` tinyint(1) NOT NULL DEFAULT
 	MODIFY COLUMN `update_secondary_groups` tinyint(1) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0',
 	ADD INDEX `id_tagente_idx` (`id_tagente`),
-	ADD INDEX `tma_id_os_idx` (`id_os`) ALGORITHM DEFAULT LOCK DEFAULT,
-    ADD INDEX `tma_server_name_idx` (`server_name`) ALGORITHM DEFAULT LOCK DEFAULT;
+	ADD INDEX `tma_id_os_idx` (`id_os`),
+    ADD INDEX `tma_server_name_idx` (`server_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`

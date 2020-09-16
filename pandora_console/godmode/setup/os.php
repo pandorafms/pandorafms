@@ -15,7 +15,7 @@
 global $config;
 
 check_login();
-
+hd($_REQUEST);
 if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
     db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
     include 'general/noaccess.php';
@@ -91,8 +91,8 @@ switch ($action) {
     break;
 
     case 'update':
-        $name = get_parameter('name', '');
-        $description = get_parameter('description', '');
+        $name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+        $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
         $icon = get_parameter('icon', 0);
 
         $values = [];

@@ -907,6 +907,11 @@ class Manager
     {
         global $config;
 
+        if (check_acl($config['id_user'], 0, 'RW') === 0) {
+            include 'general/noaccess.php';
+            return;
+        }
+
         $name = \get_parameter('name', '');
         $private = \get_parameter_switch('private');
         $id_group = \get_parameter('id_group');

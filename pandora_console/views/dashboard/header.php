@@ -194,25 +194,45 @@ if ($config['public_dashboard'] === true) {
         // 'slides'                      => $slides,
     ];
 } else if ($config['pure']) {
-    $buttons = [
-        'back_to_dashboard_list'      => $back_to_dashboard_list,
-        'save_layout'                 => $save_layout_dashboard,
-        'normalscreen'                => $normalscreen,
-        'combo_refresh_one_dashboard' => $comboRefresh,
-        'slides'                      => $slides,
-        'options'                     => $options,
-    ];
+    if (check_acl($config['id_user'], 0, 'RW') === 0) {
+        $buttons = [
+            'back_to_dashboard_list'      => $back_to_dashboard_list,
+            'normalscreen'                => $normalscreen,
+            'combo_refresh_one_dashboard' => $comboRefresh,
+            'slides'                      => $slides,
+        ];
+    } else {
+        $buttons = [
+            'back_to_dashboard_list'      => $back_to_dashboard_list,
+            'save_layout'                 => $save_layout_dashboard,
+            'normalscreen'                => $normalscreen,
+            'combo_refresh_one_dashboard' => $comboRefresh,
+            'slides'                      => $slides,
+            'options'                     => $options,
+        ];
+    }
 } else {
-    $buttons = [
-        'enable_disable'         => $enable_disable,
-        'back_to_dashboard_list' => $back_to_dashboard_list,
-        'fullscreen'             => $fullscreen,
-        'slides'                 => $slides,
-        'public_link'            => $publiclink,
-        'combo_dashboard'        => $combo_dashboard,
-        'options'                => $options,
-        'newWidget'              => $newWidget,
-    ];
+    if (check_acl($config['id_user'], 0, 'RW') === 0) {
+        $buttons = [
+            'back_to_dashboard_list' => $back_to_dashboard_list,
+            'fullscreen'             => $fullscreen,
+            'slides'                 => $slides,
+            'public_link'            => $publiclink,
+            'combo_dashboard'        => $combo_dashboard,
+            'newWidget'              => $newWidget,
+        ];
+    } else {
+        $buttons = [
+            'enable_disable'         => $enable_disable,
+            'back_to_dashboard_list' => $back_to_dashboard_list,
+            'fullscreen'             => $fullscreen,
+            'slides'                 => $slides,
+            'public_link'            => $publiclink,
+            'combo_dashboard'        => $combo_dashboard,
+            'options'                => $options,
+            'newWidget'              => $newWidget,
+        ];
+    }
 }
 
 ui_print_page_header(

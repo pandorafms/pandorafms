@@ -3227,10 +3227,10 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
-CREATE INDEX `tmetaconsole_event_timestamp_idx` ON tmetaconsole_event (`timestamp`) ALGORITHM DEFAULT LOCK DEFAULT;
-CREATE INDEX `tmetaconsole_event_module_status_idx` ON tmetaconsole_event (`module_status`) ALGORITHM DEFAULT LOCK DEFAULT;
-CREATE INDEX `tmetaconsole_event_criticity_idx` ON tmetaconsole_event (`criticity`) ALGORITHM DEFAULT LOCK DEFAULT;
-CREATE INDEX `tmetaconsole_event_agent_name_idx` ON tmetaconsole_event (`agent_name`) ALGORITHM DEFAULT LOCK DEFAULT;
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_timestamp_idx` (`timestamp`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_module_status_idx` (`module_status`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_criticity_idx` (`criticity`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_agent_name_idx` (`agent_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -3279,8 +3279,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
-CREATE INDEX `tmetaconsole_event_history_estado_idx` ON tmetaconsole_event_history (`estado`) ALGORITHM DEFAULT LOCK DEFAULT;
-CREATE INDEX `tmetaconsole_event_history_timestamp_idx` ON tmetaconsole_event_history (`timestamp`) ALGORITHM DEFAULT LOCK DEFAULT;
+ALTER TABLE tmetaconsole_event_history ADD INDEX `tmeh_estado_idx` (`estado`);
+ALTER TABLE tmetaconsole_event_history ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
 
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
@@ -3369,8 +3369,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE INDEX `tmetaconsole_agent_id_os_idx` ON tmetaconsole_agent (`id_os`) ALGORITHM DEFAULT LOCK DEFAULT;
-CREATE INDEX `tmetaconsole_agent_server_name_idx` ON tmetaconsole_agent (`server_name`) ALGORITHM DEFAULT LOCK DEFAULT;
+ALTER TABLE tmetaconsole_agent ADD INDEX `tma_id_os_idx` (`id_os`);
+ALTER TABLE tmetaconsole_agent ADD INDEX `tma_server_name_idx` (`server_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`

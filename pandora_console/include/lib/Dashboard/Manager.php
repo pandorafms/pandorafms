@@ -219,7 +219,7 @@ class Manager
         $this->stringGroups = \io_safe_output(
             implode(
                 ', ',
-                array_keys($this->groups)
+                array_values($this->groups)
             )
         );
 

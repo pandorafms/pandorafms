@@ -1922,6 +1922,7 @@ $class = 'databox filters';
                 250
             );
             ?>
+                <span id="url_warning_text" class="error" style="display: none; font-weight: bold;"><?php echo __('Protocol must be specified in URL (e.g.: "https://")'); ?></span>
                 </td>
         </tr>
         <tr id="row_field_separator" style="" class="datos">
@@ -3670,6 +3671,18 @@ $(document).ready (function () {
             $("#module").html('');
             $("#inventory_modules").html('');
     })
+
+    $("#text-url").keyup (
+        function () {
+            const user_typed_url = $(this).val();
+
+            if (user_typed_url.match('^.+:\/\/')) {
+                $("#url_warning_text").hide();
+            } else {
+                $("#url_warning_text").show();
+            }
+        }
+    );
 
     $("#combo_group").change (
         function () {

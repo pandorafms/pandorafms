@@ -1474,30 +1474,17 @@ function change_servicetree_nodes_padding () {
     }
 }
 
-tinyMCE.init({
-    mode : "exact",
-    elements: "textarea_custom_report_front_header, textarea_custom_report_front_footer",
-    theme : "advanced",
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    theme_advanced_statusbar_location : "none"
-});
+var added_config1 = {
+        "elements":"textarea_custom_report_front_header, textarea_custom_report_front_footer",
+    }
 
-tinyMCE.init({
-    mode : "exact",
-    elements: "textarea_custom_report_front_firstpage",
-    theme : "advanced",
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    convert_urls : false,
-    theme_advanced_statusbar_location : "none"
-});
+    defineTinyMCE(added_config1);
+
+    var added_config2 = {
+        "elements":"textarea_custom_report_front_firstpage",
+    }
+
+    defineTinyMCE(added_config2);
 
 $(document).ready (function () {
 

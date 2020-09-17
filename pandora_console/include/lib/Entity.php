@@ -50,17 +50,28 @@ abstract class Entity
      */
     protected $table = '';
 
+    /**
+     * Enterprise capabilities object.
+     *
+     * @var object
+     */
+    private $enterprise;
+
 
     /**
      * Defines a generic constructor to extract information of the object.
      *
-     * @param string $table   Table.
-     * @param array  $filters Filters, for instance ['id' => $id].
+     * @param string      $table            Table.
+     * @param array|null  $filters          Filters, for instance ['id' => $id].
+     * @param string|null $enterprise_class Enterprise class name.
      *
      * @throws \Exception On error.
      */
-    public function __construct(string $table, ?array $filters=null)
-    {
+    public function __construct(
+        string $table,
+        ?array $filters=null,
+        ?string $enterprise_class=null
+    ) {
         if (empty($table) === true) {
             throw new \Exception(
                 get_class($this).' error, table name is not defined'
@@ -96,6 +107,12 @@ abstract class Entity
                 $this->fields[$row['Field']] = null;
             }
         }
+
+        if (\enterprise_installed() === true
+            && $enterprise_class !== null
+        ) {
+            $this->enterprise = new $enterprise_class($this);
+        }
     }
 
 
@@ -113,6 +130,20 @@ abstract class Entity
         // Prioritize written methods over dynamic ones.
         if (method_exists($this, $methodName) === true) {
             return $this->{$methodName}($params);
+        }
+
+        // Enterprise capabilities.
+        if (\enterprise_installed() === true
+            && $this->enterprise !== null
+            && method_exists($this->enterprise, $methodName) === true
+        ) {
+            return call_user_func_array(
+                [
+                    $this->enterprise,
+                    $methodName,
+                ],
+                $params
+            );
         }
 
         if (array_key_exists($methodName, $this->fields) === true) {

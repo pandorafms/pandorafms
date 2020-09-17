@@ -4682,6 +4682,16 @@ function events_page_general($event)
 
     $table_general->data[] = $data;
 
+    $data = [];
+    $data[0] = __('Module custom ID');
+    if ($event['module_custom_id'] != '') {
+        $data[1] = $event['module_custom_id'];
+    } else {
+        $data[1] = '<i>'.__('N/A').'</i>';
+    }
+
+    $table_general->data[] = $data;
+
     $table_data = $table_general->data;
     if (is_array($table_data)) {
         $table_data_total = count($table_data);

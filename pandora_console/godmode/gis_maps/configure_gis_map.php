@@ -420,7 +420,7 @@ $table->class = 'databox filters';
 
 $table->data = [];
 
-$table->data[0][0] = __('Map Name').ui_print_help_tip(__('Descriptive name for the map'), true).':';
+$table->data[0][0] = __('Map Name');
 $table->data[0][1] = html_print_input_text('map_name', $map_name, '', 30, 60, true);
 $table->rowspan[0][2] = 9;
 
@@ -439,7 +439,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
     }
 }
 
-$table->data[1][0] = __('Add Map connection').ui_print_help_tip(__('At least one map connection must be defined, it will be possible to change between the connections in the map'), true).': '.$iconError;
+$table->data[1][0] = __('Add Map connection').$iconError;
 $table->data[1][1] = "<table style='padding:0px;' class='no-class' border='0' id='map_connection'>
 	<tr>
 		<td style='padding:0px;' >
@@ -459,10 +459,10 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'MM')) {
     $display_all_group = false;
 }
 
-$table->data[2][0] = __('Group').ui_print_help_tip(__('Group that owns the map'), true).':';
+$table->data[2][0] = __('Group');
 $table->data[2][1] = html_print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
 
-$table->data[3][0] = __('Default zoom').ui_print_help_tip(__('Default zoom level when opening the map'), true).':';
+$table->data[3][0] = __('Default zoom');
 $table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
 
 $table->data[4][0] = __('Center Latitude').':';
@@ -485,7 +485,7 @@ $table->data[9][1] = html_print_input_text('map_default_altitude', $map_default_
 
 html_print_table($table);
 
-echo '<h3>'.__('Layers').ui_print_help_tip(__('Each layer can show agents from one group or the agents added to that layer or both.'), true).'</h3>';
+echo '<h3>'.__('Layers').'</h3>';
 
 $table->width = '100%';
 $table->class = 'databox filters';
@@ -494,7 +494,7 @@ $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 $table->data = [];
 
-$table->data[0][0] = '<h4>'.__('List of layers').ui_print_help_tip(__('It is possible to edit, delete and reorder the layers.'), true).'</h4>';
+$table->data[0][0] = '<h4>'.__('List of layers').'</h4>';
 $table->data[0][1] = '<div style="text-align: right;">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true).'</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers"></table>';

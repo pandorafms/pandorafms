@@ -67,6 +67,7 @@ $searchFlag = get_parameter('search', 0);
 $enabledisable = get_parameter('enabledisable', '');
 $standby = get_parameter('standby', '');
 $pure = get_parameter('pure', 0);
+$ag_group = get_parameter('ag_group', 0);
 $messageAction = '';
 
 if ($update_alert) {
@@ -229,16 +230,6 @@ if ($delete_alert) {
         '',
         true
     );
-
-    $id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
-
-    if ($id_cluster) {
-        if ($id_cluster[0]['cluster_type'] == 'AA') {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_delete_alert='.$result);
-        } else {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_delete_alert='.$result);
-        }
-    }
 }
 
 if ($add_action) {
@@ -327,16 +318,6 @@ if ($delete_action) {
         '',
         true
     );
-
-    $id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
-
-    if ($id_cluster) {
-        if ($id_cluster[0]['cluster_type'] == 'AA') {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_delete_action='.$result);
-        } else {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_delete_action='.$result);
-        }
-    }
 }
 
 if ($enable_alert) {
@@ -358,16 +339,6 @@ if ($enable_alert) {
         '',
         true
     );
-
-    $id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
-
-    if ($id_cluster) {
-        if ($id_cluster[0]['cluster_type'] == 'AA') {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_enable_alert='.$result);
-        } else {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_enable_alert='.$result);
-        }
-    }
 }
 
 if ($disable_alert) {
@@ -389,16 +360,6 @@ if ($disable_alert) {
         '',
         true
     );
-
-    $id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
-
-    if ($id_cluster) {
-        if ($id_cluster[0]['cluster_type'] == 'AA') {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_disable_alert='.$result);
-        } else {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_disable_alert='.$result);
-        }
-    }
 }
 
 if ($standbyon_alert) {
@@ -420,16 +381,6 @@ if ($standbyon_alert) {
         '',
         true
     );
-
-    $id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
-
-    if ($id_cluster) {
-        if ($id_cluster[0]['cluster_type'] == 'AA') {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_standbyon='.$result);
-        } else {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_standbyon='.$result);
-        }
-    }
 }
 
 if ($standbyoff_alert) {
@@ -451,16 +402,6 @@ if ($standbyoff_alert) {
         '',
         true
     );
-
-    $id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
-
-    if ($id_cluster) {
-        if ($id_cluster[0]['cluster_type'] == 'AA') {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_standbyoff='.$result);
-        } else {
-            header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_standbyoff='.$result);
-        }
-    }
 }
 
 if ($id_agente) {
@@ -503,9 +444,9 @@ if ($id_agente) {
         }
 
         if ($tab == 'list') {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('List'), 'images/gm_alerts.png', false, 'alerts_config', true, $buttons);
+            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('List'), 'images/gm_alerts.png', false, '', true, $buttons);
         } else {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('Create'), 'images/gm_alerts.png', false, 'manage_alert_list', true, $buttons);
+            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('Create'), 'images/gm_alerts.png', false, '', true, $buttons);
         }
     } else {
         alerts_meta_print_header();

@@ -685,7 +685,7 @@ if (is_ajax()) {
         );
 
         if ($get_only_string_modules) {
-            $filter['tagente_modulo.id_tipo_modulo IN'] = '(17,23,3,10,33)';
+            $filter['tagente_modulo.id_tipo_modulo IN'] = '(17,23,3,10,33,36)';
         }
 
         // Status selector.
@@ -1532,25 +1532,28 @@ switch ($tab) {
     break;
 }
 
-ui_print_page_header(
-    agents_get_alias($id_agente),
-    $icon,
-    false,
-    $help_header,
-    false,
-    $onheader,
-    false,
-    '',
-    $config['item_title_size_text'],
-    '',
-    ui_print_breadcrums(
-        [
-            __('Monitoring'),
-            __('View'),
-            '<span class="breadcrumb_active">'.$tab_name.'</span>',
-        ]
-    )
-);
+if (!$config['pure']) {
+    ui_print_page_header(
+        agents_get_alias($id_agente),
+        $icon,
+        false,
+        '',
+        false,
+        $onheader,
+        false,
+        '',
+        $config['item_title_size_text'],
+        '',
+        ui_print_breadcrums(
+            [
+                __('Monitoring'),
+                __('View'),
+                '<span class="breadcrumb_active">'.$tab_name.'</span>',
+            ]
+        )
+    );
+}
+
 
 
 switch ($tab) {
@@ -1573,6 +1576,12 @@ switch ($tab) {
         include 'estado_monitores.php';
         echo "<a name='alerts'></a>";
         include 'alerts_status.php';
+
+        if ($config['log_collector']) {
+            echo "<a name='log_sources'></a>";
+            include 'log_sources_status.php';
+        }
+
         // Check permissions to read events
         if (check_acl($config['id_user'], 0, 'ER')) {
             echo "<a name='events'></a>";

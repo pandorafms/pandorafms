@@ -317,7 +317,7 @@ $data[1] = ui_progress(
     1.8,
     '#BBB',
     true,
-    floor(($agent['intervalo'] * (100 - $progress) / 100)).' s',
+    ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto']))).' s',
     [
         'page'     => 'operation/agentes/ver_agente',
         'interval' => (100 / $agent['intervalo']),
@@ -367,6 +367,14 @@ if (enterprise_installed()) {
 
     $table_contact->data[] = $data;
 }
+
+$data = [];
+$data[0] = '<b>'.__('Last status change').'</b>';
+$last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+$time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
+$data[1] = $time_elapsed;
+
+$table_contact->data[] = $data;
 
 /*
  * END: TABLE CONTACT BUILD
@@ -516,20 +524,24 @@ $access_agent = db_get_value_sql(
 );
 
 if ($config['agentaccess'] && $access_agent > 0) {
-    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">
-                            <div class="white_table_graph_header">'.html_print_image(
+    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">';
+    $table_access_rate .= '<div class="white_table_graph_header">';
+    $table_access_rate .= html_print_image(
         'images/arrow_down_green.png',
         true
-    ).'<span>'.__('Agent access rate (24h)').'</span></div>
-    <div class="white_table_graph_content h80p">
-'.graphic_agentaccess(
+    );
+    $table_access_rate .= '<span>';
+    $table_access_rate .= __('Agent access rate (Last 24h)');
+    $table_access_rate .= '</span>';
+    $table_access_rate .= '</div>';
+    $table_access_rate .= '<div class="white_table_graph_content white-table-graph-content">';
+    $table_access_rate .= graphic_agentaccess(
         $id_agente,
-        '95%',
-        100,
         SECONDS_1DAY,
         true
-    ).'</div>
-</div>';
+    );
+    $table_access_rate .= '</div>';
+    $table_access_rate .= '</div>';
 }
 
 /*
@@ -791,33 +803,32 @@ if (!empty($network_interfaces)) {
                     $(id).find(".white_table_graph_content").hide();
                 }
             }
-            
         });
     </script>
 <?php
-// EVENTS.
-if ($config['agentaccess'] && $access_agent > 0) {
-    $extra_class = 'h80p';
-} else {
-    $extra_class = '';
-}
-
-$table_events = '<div class="white_table_graph" id="table_events">
-            <div class="white_table_graph_header">'.html_print_image(
+$table_events = '<div class="white_table_graph" id="table_events">';
+$table_events .= '<div class="white_table_graph_header">';
+$table_events .= html_print_image(
     'images/arrow_down_green.png',
     true
-).'<span>'.__('Events (24h)').'</span></div>
-            <div class="white_table_graph_content '.$extra_class.'">
-'.graph_graphic_agentevents(
+);
+$table_events .= '<span>';
+$table_events .= __('Events (Last 24h)');
+$table_events .= '</span>';
+$table_events .= '</div>';
+$table_events .= '<div class="white_table_graph_content white-table-graph-content">';
+$table_events .= graph_graphic_agentevents(
     $id_agente,
-    100,
-    45,
+    95,
+    70,
     SECONDS_1DAY,
     '',
     true,
-    true
-).'</div>
-        </div>';
+    true,
+    500
+);
+$table_events .= '</div>';
+$table_events .= '</div>';
 
 /*
  * EVENTS TABLE END.

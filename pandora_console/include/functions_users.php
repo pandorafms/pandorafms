@@ -497,508 +497,6 @@ function users_get_user_by_id($id_user)
 }
 
 
-define('MAX_TIMES', 10);
-
-//
-// WEBCHAT FUNCTIONS/////////////////////////////////
-//
-function users_get_last_messages($last_time=false)
-{
-    $file_global_counter_chat = $config['attachment_store'].'/pandora_chat.global_counter.txt';
-
-    // First lock the file
-    $fp_global_counter = @fopen($file_global_counter_chat, 'a+');
-    if ($fp_global_counter === false) {
-        echo json_encode($return);
-
-        return;
-    }
-
-    // Try to look MAX_TIMES times
-    $tries = 0;
-    while (!flock($fp_global_counter, LOCK_EX)) {
-        $tries++;
-        if ($tries > MAX_TIMES) {
-            echo json_encode($return);
-
-            return;
-        }
-
-        sleep(1);
-    }
-
-    fscanf($fp_global_counter, '%d', $global_counter_file);
-    if (empty($global_counter_file)) {
-        $global_counter_file = 0;
-    }
-
-    $timestamp = time();
-    if ($last_time === false) {
-        $last_time = (24 * 60 * 60);
-    }
-
-    $from = ($timestamp - $last_time);
-
-    $log_chat_file = $config['attachment_store'].'/pandora_chat.log.json.txt';
-
-    $return = [
-        'correct' => false,
-        'log'     => [],
-    ];
-
-    if (!file_exists($log_chat_file)) {
-        touch($log_chat_file);
-    }
-
-    $text_encode = @file_get_contents($log_chat_file);
-    $log = json_decode($text_encode, true);
-
-    if ($log !== false) {
-        if ($log === null) {
-            $log = [];
-        }
-
-        $log_last_time = [];
-        foreach ($log as $message) {
-            if ($message['timestamp'] >= $from) {
-                $log_last_time[] = $message;
-            }
-        }
-
-        $return['correct'] = true;
-        $return['log'] = $log_last_time;
-        $return['global_counter'] = $global_counter_file;
-    }
-
-    echo json_encode($return);
-
-    fclose($fp_global_counter);
-
-    return;
-}
-
-
-function users_save_login()
-{
-    global $config;
-
-    $file_global_user_list = $config['attachment_store'].'/pandora_chat.user_list.json.txt';
-
-    $user = db_get_row_filter(
-        'tusuario',
-        ['id_user' => $config['id_user']]
-    );
-
-    $message = sprintf(
-        __('User %s login at %s'),
-        $user['fullname'],
-        date($config['date_format'])
-    );
-    users_save_text_message($message, 'notification');
-
-    // First lock the file
-    $fp_user_list = @fopen($file_global_user_list, 'a+');
-    if ($fp_user_list === false) {
-        return;
-    }
-
-    // Try to look MAX_TIMES times
-    $tries = 0;
-    while (!flock($fp_user_list, LOCK_EX)) {
-        $tries++;
-        if ($tries > MAX_TIMES) {
-            return;
-        }
-
-        sleep(1);
-    }
-
-    @fscanf($fp_user_list, "%[^\n]", $user_list_json);
-
-    $user_list = json_decode($user_list_json, true);
-    if (empty($user_list)) {
-        $user_list[$config['id_user']] = [
-            'name'  => $user['fullname'],
-            'count' => 1,
-        ];
-    } else if (isset($user_list[$config['id_user']])) {
-        $user_list[$config['id_user']] = [
-            'name'  => $user['fullname'],
-            'count' => $user_list[$config['id_user']]['count'],
-        ];
-    } else {
-        $users_count = count($user_list);
-        $user_list[$config['id_user']] = [
-            'name'  => $user['fullname'],
-            'count' => ++$users_count,
-        ];
-    }
-
-    // Clean the file
-    ftruncate($fp_user_list, 0);
-
-    $status = fwrite($fp_user_list, json_encode($user_list));
-
-    if ($status === false) {
-        fclose($fp_user_list);
-
-        return;
-    }
-
-    fclose($fp_user_list);
-}
-
-
-function users_save_logout($user=false, $delete=false)
-{
-    global $config;
-
-    $return = [
-        'correct' => false,
-        'users'   => [],
-    ];
-
-    $file_global_user_list = $config['attachment_store'].'/pandora_chat.user_list.json.txt';
-
-    if (empty($user)) {
-        $user = db_get_row_filter(
-            'tusuario',
-            ['id_user' => $config['id_user']]
-        );
-    }
-
-    if ($delete) {
-        $no_json_output = true;
-        $message = sprintf(
-            __('User %s was deleted in the DB at %s'),
-            $user['fullname'],
-            date($config['date_format'])
-        );
-    } else {
-        $no_json_output = false;
-        $message = sprintf(
-            __('User %s logout at %s'),
-            $user['fullname'],
-            date($config['date_format'])
-        );
-    }
-
-    users_save_text_message($message, 'notification', $no_json_output);
-
-    // First lock the file
-    $fp_user_list = @fopen($file_global_user_list, 'a+');
-    if ($fp_user_list === false) {
-        return;
-    }
-
-    // Try to look MAX_TIMES times
-    $tries = 0;
-    while (!flock($fp_user_list, LOCK_EX)) {
-        $tries++;
-        if ($tries > MAX_TIMES) {
-            return;
-        }
-
-        sleep(1);
-    }
-
-    @fscanf($fp_user_list, "%[^\n]", $user_list_json);
-
-    $user_list = json_decode($user_list_json, true);
-    if (empty($user_list)) {
-        $user_list = [];
-    }
-
-    unset($user_list[$user['id_user']]);
-
-    // Clean the file
-    ftruncate($fp_user_list, 0);
-
-    $status = fwrite($fp_user_list, json_encode($user_list));
-
-    if ($status === false) {
-        fclose($fp_user_list);
-
-        return;
-    }
-
-    fclose($fp_user_list);
-}
-
-
-function users_save_text_message($message=false, $type='message', $no_json_output=false)
-{
-    global $config;
-
-    $file_global_counter_chat = $config['attachment_store'].'/pandora_chat.global_counter.txt';
-    $log_chat_file = $config['attachment_store'].'/pandora_chat.log.json.txt';
-
-    $return = ['correct' => false];
-
-    $id_user = $config['id_user'];
-    $user = db_get_row_filter(
-        'tusuario',
-        ['id_user' => $id_user]
-    );
-
-    $message_data = [];
-    $message_data['type'] = $type;
-    $message_data['id_user'] = $id_user;
-    $message_data['user_name'] = $user['fullname'];
-    $message_data['text'] = io_safe_input_html($message);
-    // The $message_data['timestamp'] set when adquire the files to save.
-    // First lock the file
-    $fp_global_counter = @fopen($file_global_counter_chat, 'a+');
-    if ($fp_global_counter === false) {
-        if (!$no_json_output) {
-            echo json_encode($return);
-        }
-
-        return;
-    }
-
-    // Try to look MAX_TIMES times
-    $tries = 0;
-    while (!flock($fp_global_counter, LOCK_EX)) {
-        $tries++;
-        if ($tries > MAX_TIMES) {
-            if (!$no_json_output) {
-                echo json_encode($return);
-            }
-
-            return;
-        }
-
-        sleep(1);
-    }
-
-    @fscanf($fp_global_counter, '%d', $global_counter_file);
-    if (empty($global_counter_file)) {
-        $global_counter_file = 0;
-    }
-
-    // Clean the file
-    ftruncate($fp_global_counter, 0);
-
-    $message_data['timestamp'] = time();
-    $message_data['human_time'] = date($config['date_format'], $message_data['timestamp']);
-
-    $global_counter = ($global_counter_file + 1);
-
-    $status = fwrite($fp_global_counter, $global_counter);
-
-    if ($status === false) {
-        fclose($fp_global_counter);
-
-        if (!$no_json_output) {
-            echo json_encode($return);
-        }
-
-        return;
-    } else {
-        $text_encode = @file_get_contents($log_chat_file);
-        $log = json_decode($text_encode, true);
-        $log[$global_counter] = $message_data;
-        $status = file_put_contents($log_chat_file, json_encode($log));
-
-        fclose($fp_global_counter);
-
-        $return['correct'] = true;
-        if (!$no_json_output) {
-            echo json_encode($return);
-        }
-    }
-
-    return;
-}
-
-
-function users_long_polling_check_messages($global_counter)
-{
-    global $config;
-
-    $file_global_counter_chat = $config['attachment_store'].'/pandora_chat.global_counter.txt';
-    $log_chat_file = $config['attachment_store'].'/pandora_chat.log.json.txt';
-
-    $changes = false;
-
-    $tries_general = 0;
-
-    $error = false;
-
-    while (!$changes) {
-        // First lock the file
-        $fp_global_counter = @fopen($file_global_counter_chat, 'a+');
-        if ($fp_global_counter) {
-            // Try to look MAX_TIMES times
-            $tries = 0;
-            $lock = true;
-            while (!flock($fp_global_counter, LOCK_EX)) {
-                $tries++;
-                if ($tries > MAX_TIMES) {
-                    $lock = false;
-                    $error = true;
-                    break;
-                }
-
-                sleep(1);
-            }
-
-            if ($lock) {
-                @fscanf($fp_global_counter, '%d', $global_counter_file);
-                if (empty($global_counter_file)) {
-                    $global_counter_file = 0;
-                }
-
-                if ($global_counter_file > $global_counter) {
-                    // TODO Optimize slice the array.
-                    $text_encode = @file_get_contents($log_chat_file);
-                    $log = json_decode($text_encode, true);
-
-                    $return_log = [];
-                    foreach ($log as $key => $message) {
-                        if ($key <= $global_counter) {
-                            continue;
-                        }
-
-                        $return_log[] = $message;
-                    }
-
-                    $return = [
-                        'correct'        => true,
-                        'global_counter' => $global_counter_file,
-                        'log'            => $return_log,
-                    ];
-
-                    echo json_encode($return);
-
-                    fclose($fp_global_counter);
-
-                    return;
-                }
-            }
-
-            fclose($fp_global_counter);
-        }
-
-        sleep(3);
-        $tries_general = ($tries_general + 3);
-
-        if ($tries_general > MAX_TIMES) {
-            break;
-        }
-    }
-
-    // Because maybe the exit of loop for exaust.
-    echo json_encode(['correct' => false, 'error' => $error]);
-
-    return;
-}
-
-
-/**
- * Get the last global counter for chat.
- *
- * @param string $mode There are two modes 'json', 'return' and 'session'. And json is by default.
- */
-function users_get_last_global_counter($mode='json')
-{
-    global $config;
-
-    $file_global_counter_chat = $config['attachment_store'].'/pandora_chat.global_counter.txt';
-
-    $global_counter_file = 0;
-
-    $fp_global_counter = @fopen($file_global_counter_chat, 'a+');
-    if ($fp_global_counter) {
-        $tries = 0;
-        $lock = true;
-        while (!flock($fp_global_counter, LOCK_EX)) {
-            $tries++;
-            if ($tries > MAX_TIMES) {
-                $lock = false;
-                break;
-            }
-
-            sleep(1);
-        }
-
-        if ($lock) {
-            @fscanf($fp_global_counter, '%d', $global_counter_file);
-            if (empty($global_counter_file)) {
-                $global_counter_file = 0;
-            }
-
-            fclose($fp_global_counter);
-        }
-    }
-
-    switch ($mode) {
-        case 'json':
-            echo json_encode(['correct' => true, 'global_counter' => $global_counter_file]);
-        break;
-
-        case 'return':
-        return $global_counter_file;
-
-            break;
-        case 'session':
-            $_SESSION['global_counter_chat'] = $global_counter_file;
-        break;
-    }
-}
-
-
-/**
- * Get the last global counter for chat.
- *
- * @param string $mode There are two modes 'json', 'return' and 'session'. And json is by default.
- */
-function users_get_last_type_message()
-{
-    global $config;
-
-    $return = 'false';
-
-    $file_global_counter_chat = $config['attachment_store'].'/pandora_chat.global_counter.txt';
-    $log_chat_file = $config['attachment_store'].'/pandora_chat.log.json.txt';
-
-    $global_counter_file = 0;
-
-    $fp_global_counter = @fopen($file_global_counter_chat, 'a+');
-    if ($fp_global_counter) {
-        $tries = 0;
-        $lock = true;
-        while (!flock($fp_global_counter, LOCK_EX)) {
-            $tries++;
-            if ($tries > MAX_TIMES) {
-                $lock = false;
-                break;
-            }
-
-            sleep(1);
-        }
-
-        if ($lock) {
-            $text_encode = @file_get_contents($log_chat_file);
-            $log = json_decode($text_encode, true);
-
-            // Prevent from error when chat file log doesn't exists
-            if (empty($log)) {
-                $return = false;
-            } else {
-                $last = end($log);
-                $return = $last['type'];
-            }
-
-            fclose($fp_global_counter);
-        }
-    }
-
-    return $return;
-}
-
-
 function users_is_admin($id_user=false)
 {
     global $config;
@@ -1023,98 +521,6 @@ function users_is_admin($id_user=false)
     );
 
     return $config['is_admin'][$id_user];
-}
-
-
-function users_is_last_system_message()
-{
-    $type = users_get_last_type_message();
-
-    if ($type != 'message') {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
-function users_check_users()
-{
-    global $config;
-
-    $return = [
-        'correct' => false,
-        'users'   => '',
-    ];
-
-    $users_with_session = db_get_all_rows_sql('SELECT tsessions_php.data FROM pandora.tsessions_php;');
-    $users_logged_now = [];
-    foreach ($users_with_session as $user_with_session) {
-        $tmp_id_user = explode('"', $user_with_session['data']);
-        array_push($users_logged_now, $tmp_id_user[1]);
-    }
-
-    $file_global_user_list = $config['attachment_store'].'/pandora_chat.user_list.json.txt';
-
-    // First lock the file
-    $fp_user_list = @fopen($file_global_user_list, 'a+');
-    if ($fp_user_list === false) {
-        echo json_encode($return);
-
-        return;
-    }
-
-    // Try to look MAX_TIMES times
-    $tries = 0;
-    while (!flock($fp_user_list, LOCK_EX)) {
-        $tries++;
-        if ($tries > MAX_TIMES) {
-            echo json_encode($return);
-
-            return;
-        }
-
-        sleep(1);
-    }
-
-    @fscanf($fp_user_list, "%[^\n]", $user_list_json);
-
-    $user_list = json_decode($user_list_json, true);
-    if (empty($user_list)) {
-        $user_list = [];
-    }
-
-    // Compare both user list. Meanwhile the user from chat file have an active
-    // session, his continue in the list of active chat users
-    $user_name_list = [];
-    foreach ($user_list as $key => $user) {
-        if (in_array($key, $users_logged_now)) {
-            array_push($user_name_list, $user['name']);
-        } else {
-            unset($user_list[$key]);
-        }
-    }
-
-    // Clean the file
-    ftruncate($fp_user_list, 0);
-
-    // Update the file with the correct list of users
-    $status = fwrite($fp_user_list, json_encode($user_list));
-
-    /*
-        if ($status === false) {
-        fclose($fp_user_list);
-
-        return;
-    } */
-    // Closing the resource
-    fclose($fp_user_list);
-
-    $return['correct'] = true;
-    $return['users'] = implode('<br />', $user_name_list);
-    echo json_encode($return);
-
-    return;
 }
 
 
@@ -1261,4 +667,110 @@ function get_name_admin():string
     $mail = db_get_value('fullname', 'tusuario', 'is_admin', 1);
 
     return $mail;
+}
+
+
+/**
+ * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_groups_UM($id_user)
+{
+    $sql = sprintf(
+        "SELECT id_grupo, user_management FROM tusuario_perfil
+        LEFT JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+        WHERE id_usuario like '%s' AND user_management = 1  ORDER BY id_grupo",
+        $id_user
+    );
+
+    $groups = db_get_all_rows_sql($sql);
+    $return = [];
+    foreach ($groups as $key => $group) {
+        if (!isset($return[$group['id_grupo']]) || (isset($return[$group['id_grupo']]) && $group['user_management'] != 0)) {
+            $return[$group['id_grupo']] = $group['user_management'];
+            if ($group['id_grupo'] == '0') {
+                $return['group_all'] = $group['id_grupo'];
+            }
+        }
+    }
+
+    return $return;
+}
+
+
+/**
+ * Obtiene una matriz con los grupos como clave y si tiene o no permiso UM sobre ese grupo(valor)
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_users_by_group($id_group, $um=false)
+{
+    $sql = sprintf(
+        "SELECT tusuario.* FROM tusuario 
+        INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user 
+        AND tusuario_perfil.id_grupo = '%s'",
+        $id_group
+    );
+
+    $users = db_get_all_rows_sql($sql);
+    $return = [];
+    foreach ($users as $key => $user) {
+        $return[$user['id_user']] = $user;
+        $return[$user['id_user']]['edit'] = $um;
+    }
+
+    return $return;
+}
+
+
+function users_has_profile_without_UM($id_user, $id_groups)
+{
+    $sql = sprintf(
+        "SELECT id_usuario, tperfil.user_management FROM tusuario_perfil
+        INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil AND tperfil.user_management = 0
+        WHERE tusuario_perfil.id_usuario like '%s' AND tusuario_perfil.id_grupo IN (%s)
+        ORDER BY tperfil.user_management DESC",
+        $id_user,
+        $id_groups
+    );
+
+    $without_um = db_get_all_rows_sql($sql);
+
+    if (isset($without_um[0])) {
+        $sql = sprintf(
+            "SELECT id_grupo, tperfil.* FROM tusuario_perfil
+            INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+            WHERE tusuario_perfil.id_usuario like '%s'
+            ORDER BY tperfil.user_management DESC",
+            $id_user
+        );
+
+        $um = db_get_all_rows_sql($sql);
+        return 1;
+    } else {
+        return 0;
+    }
+
+}
+
+
+function users_get_user_profile($id_user)
+{
+    $sql = sprintf(
+        "SELECT * FROM tusuario_perfil
+        INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+        WHERE tusuario_perfil.id_usuario like '%s'",
+        $id_user
+    );
+
+    $aux = db_get_all_rows_sql($sql);
+    $user_profiles = [];
+    foreach ($aux as $key => $value) {
+        $user_profiles[$value['id_grupo']] = $value;
+    }
+
+    return $user_profiles;
 }

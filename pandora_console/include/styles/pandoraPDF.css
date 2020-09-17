@@ -33,8 +33,17 @@ table.header_table {
 }
 
 table.header_table thead tr th,
-table.header_table tbody tr td {
+table.header_table tr td {
   padding: 10px;
+}
+
+table thead tr th {
+  background-color: #919191;
+}
+
+table thead tr th.title_table_pdf {
+  background-color: #d6d6d6;
+  color: #1c1c1c;
 }
 
 thead.header_tr tr {
@@ -52,7 +61,7 @@ thead.header_tr tr th.th_first {
 }
 
 thead.header_tr tr th.th_description {
-  background-color: #f5f5f5;
+  background-color: #fafafa;
   color: #1c1c1c;
   text-align: justify;
 }
@@ -79,4 +88,128 @@ th.title_table_pdf {
 
 table.table_agent_module tr td {
   padding: 5px;
+}
+
+table.header_table tbody tr {
+  background-color: #fafafa;
+}
+
+/* TABLE OF CONTENTS */
+div.mpdf_toc {
+  font-family: sans-serif;
+  line-height: normal;
+}
+
+a.mpdf_toc_a {
+  text-decoration: none;
+  color: #363636;
+}
+
+div.mpdf_toc_level_0 {
+  /* Whole line level 0 */
+  line-height: 1.5;
+  margin-left: 0;
+  padding-right: 0em; /* should match the outdent specified for ToC; 0 is default; suggested value 2em */
+}
+
+span.mpdf_toc_t_level_0 {
+  /* Title level 0 - may be inside <a> */
+  font-weight: normal;
+}
+
+span.mpdf_toc_p_level_0 {
+  /* Page no. level 0 - may be inside <a> */
+}
+
+div.mpdf_toc_level_1 {
+  /* Whole line level 1 */
+  margin-left: 2em;
+  text-indent: -2em;
+  padding-right: 1em;
+  padding-bottom: 1em;
+}
+
+span.mpdf_toc_t_level_1 {
+  /* Title level 1 */
+  font-style: normal;
+  font-weight: normal;
+}
+
+span.mpdf_toc_p_level_1 {
+  /* Page no. level 1 - may be inside <a> */
+}
+
+div.mpdf_toc_level_2 {
+  /* Whole line level 2 */
+  margin-left: 4em;
+  text-indent: -2em;
+  padding-right: 0em; /* should match the outdent specified for ToC; 0 is default; suggested value 2em */
+}
+
+span.mpdf_toc_t_level_2 {
+  /* Title level 2 */
+}
+
+span.mpdf_toc_p_level_2 {
+  /* Page no. level 2 - may be inside <a> */
+}
+
+table tbody td.cellCritical {
+  background: #f85858;
+  color: #fff;
+}
+
+table tbody td.cellBold {
+  font-weight: bold;
+}
+
+table tbody td.cellRight {
+  text-align: right;
+}
+
+table tbody td.cellCenter {
+  text-align: center;
+}
+
+table tbody td.cellWhite {
+  background: #fff;
+  color: #111;
+}
+
+table tbody td.cellNormal {
+  background: #6eb432;
+  color: #fff;
+}
+
+table tbody td.cellCritical {
+  background: #f85858;
+  color: #fff;
+}
+
+table tbody td.cellWarning {
+  background: #ffea59;
+  color: #111;
+}
+
+table tbody td.cellUnknown {
+  background: #aaaaaa;
+  color: #ffffff;
+}
+
+table tbody td.cellNotInit {
+  background: #4a83f3;
+  color: #ffffff;
+}
+
+table tbody td.cellAlert {
+  background: #ff8800;
+  color: #111;
+}
+
+table tbody td.cellBorder1 {
+  border: 1px solid #666;
+}
+
+table tbody td.cellBig {
+  font-size: 18px;
 }

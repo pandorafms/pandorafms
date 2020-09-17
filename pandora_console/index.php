@@ -31,6 +31,8 @@ if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
 
+require 'vendor/autoload.php';
+
 if (__PAN_XHPROF__ === 1) {
     if (function_exists('tideways_xhprof_enable')) {
         tideways_xhprof_enable();
@@ -140,6 +142,14 @@ if ((! file_exists('include/config.php'))
 
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
+
+if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+    ini_set('log_errors', 1);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', 0);
+    ini_set('error_log', 0);
+}
 
 if (isset($config['error'])) {
     $login_screen = $config['error'];
@@ -520,17 +530,17 @@ if (! isset($config['id_user'])) {
                             break;
 
                             case 'Group view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/group_view';
                             break;
 
                             case 'Alert detail':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/alerts_status';
                             break;
 
                             case 'Tactical view':
-                                $_GET['sec'] = 'estado';
+                                $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/tactical';
                             break;
 
@@ -541,9 +551,8 @@ if (! isset($config['id_user'])) {
 
                             case 'Dashboard':
                                 $_GET['sec'] = 'reporting';
-                                $_GET['sec2'] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
-                                $id_dashboard_select = db_get_value('id', 'tdashboard', 'name', $home_url);
-                                $_GET['id_dashboard_select'] = $id_dashboard_select;
+                                $_GET['sec2'] = 'operation/dashboard/dashboard';
+                                $_GET['id_dashboard_select'] = $home_url;
                                 $_GET['d_from_main_page'] = 1;
                             break;
 
@@ -686,6 +695,11 @@ if (! isset($config['id_user'])) {
             unset($query_params_redirect['sec2']);
         }
 
+        // Dashboard do not want sec2.
+        if ($home_page == 'Dashboard') {
+            unset($query_params_redirect['sec2']);
+        }
+
         $redirect_url = '?logged=1';
         foreach ($query_params_redirect as $key => $value) {
             if ($key == 'login') {
@@ -732,12 +746,13 @@ if (! isset($config['id_user'])) {
         $first = (boolean) get_parameter('first', 0);
         $reset_hash = get_parameter('reset_hash', '');
 
-        if ($correct_pass_change) {
+        $pass1 = get_parameter_post('pass1');
+        $pass2 = get_parameter_post('pass2');
+        $id_user = get_parameter_post('id_user');
+
+        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user)) {
             $correct_reset_pass_process = '';
             $process_error_message = '';
-            $pass1 = get_parameter('pass1');
-            $pass2 = get_parameter('pass2');
-            $id_user = get_parameter('id_user');
 
             if ($pass1 == $pass2) {
                 $res = update_user_password($id_user, $pass1);
@@ -1003,58 +1018,7 @@ if ($process_login) {
         }
     }
 
-    // Set the initial global counter for chat.
-    users_get_last_global_counter('session');
-
     $config['logged'] = true;
-}
-
-// ----------------------------------------------------------------------
-// Get old parameters before navigation.
-$old_sec = '';
-$old_sec2 = '';
-$old_page = '';
-if (isset($_SERVER['HTTP_REFERER'])) {
-    $old_page = $_SERVER['HTTP_REFERER'];
-}
-
-$chunks = explode('?', $old_page);
-if (count($chunks) == 2) {
-    $chunks = explode('&', $chunks[1]);
-
-    foreach ($chunks as $chunk) {
-        if (strstr($chunk, 'sec=') !== false) {
-            $old_sec = str_replace('sec=', '', $chunk);
-        }
-
-        if (strstr($chunk, 'sec2=') !== false) {
-            $old_sec = str_replace('sec2=', '', $chunk);
-        }
-    }
-}
-
-$_SESSION['new_chat'] = false;
-if ($old_sec2 == 'operation/users/webchat') {
-    users_get_last_global_counter('session');
-}
-
-if ($page == 'operation/users/webchat') {
-    // Reload the global counter.
-    users_get_last_global_counter('session');
-}
-
-if (isset($_SESSION['global_counter_chat'])) {
-    $old_global_counter_chat = $_SESSION['global_counter_chat'];
-} else {
-    $old_global_counter_chat = users_get_last_global_counter('return');
-}
-
-$now_global_counter_chat = users_get_last_global_counter('return');
-
-if ($old_global_counter_chat != $now_global_counter_chat) {
-    if (!users_is_last_system_message()) {
-        $_SESSION['new_chat'] = true;
-    }
 }
 
 require_once 'general/register.php';
@@ -1124,6 +1088,9 @@ if ($searchPage) {
                 }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else {
                 $main_sec = $sec;
             }
@@ -1200,8 +1167,7 @@ if ($searchPage) {
                 break;
 
                 case 'Dashboard':
-                    $id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
-                    $str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard.'&d_from_main_page=1';
+                    $str = 'sec=reporting&sec2=operation/dashboard/dashboard&dashboardId='.$home_url.'&d_from_main_page=1';
                     parse_str($str, $res);
                     foreach ($res as $key => $param) {
                         $_GET[$key] = $param;
@@ -1213,7 +1179,7 @@ if ($searchPage) {
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
                     } else {
-                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc.'&refr=60';
+                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
 
                     parse_str($str, $res);
@@ -1234,9 +1200,13 @@ if ($searchPage) {
 
             if (isset($_GET['sec2'])) {
                 $file = $_GET['sec2'].'.php';
+                // Make file path absolute to prevent accessing remote files.
+                $file = __DIR__.'/'.$file;
                 // Translate some secs.
                 $main_sec = get_sec($_GET['sec']);
                 $_GET['sec'] = ($main_sec == false) ? $_GET['sec'] : $main_sec;
+
+                // Third condition is aimed to prevent from traversal attack.
                 if (!file_exists($file)
                     || ($_GET['sec2'] != 'general/logon_ok' && enterprise_hook(
                         'enterprise_acl',
@@ -1247,7 +1217,8 @@ if ($searchPage) {
                             true,
                             isset($_GET['sec3']) ? $_GET['sec3'] : '',
                         ]
-                    ) == false)
+                    ) == false
+                    || strpos(realpath($file), __DIR__) === false)
                 ) {
                     unset($_GET['sec2']);
                     include 'general/noaccess.php';
@@ -1280,6 +1251,12 @@ echo '</div>';
 
 echo '<div id="um_msg_receiver">';
 echo '</div>';
+
+
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 
 if ($config['pure'] == 0) {
     echo '</div>';
@@ -1328,9 +1305,13 @@ require 'include/php_to_js_values.php';
 
     function scrollFunction() {
         if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            document.getElementById("top_btn").style.display = "block";
+            if(document.getElementById("top_btn")){
+                document.getElementById("top_btn").style.display = "block";
+            }
         } else {
-            document.getElementById("top_btn").style.display = "none";
+            if(document.getElementById("top_btn")){
+                document.getElementById("top_btn").style.display = "none";
+            }
         }
     }
 

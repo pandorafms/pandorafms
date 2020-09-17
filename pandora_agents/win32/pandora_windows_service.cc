@@ -47,6 +47,7 @@
 
 using namespace std;
 using namespace Pandora;
+using namespace Pandora_File;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
@@ -251,6 +252,22 @@ Pandora_Windows_Service::pandora_init (bool reload_modules) {
 		}
 	}
 
+	/* Set up the secondary buffer. */
+	if (conf->getValue ("secondary_mode") == "always") {
+		string secondary_temporal = conf->getValue("temporal");
+		if (secondary_temporal[secondary_temporal.length () - 1] != '\\') {
+			secondary_temporal += "\\";
+		}
+		secondary_temporal += SECONDARY_DIR;
+		if (!dirExists(secondary_temporal) && mkdir (secondary_temporal.c_str()) != 0) {
+			pandoraLog ("Pandora_Windows_Service::pandora_init: Can not create directory %s", secondary_temporal.c_str());
+		}
+		conf->setValue("secondary_temporal", secondary_temporal);
+	}
+	else if (conf->getValue ("secondary_mode") == "on_error") {
+		conf->setValue("secondary_temporal", conf->getValue("temporal"));
+	}
+	
 	// Set the intensive interval
 	if (intensive_interval != "") {
 		try {
@@ -980,7 +997,7 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 }
 
 int
-Pandora_Windows_Service::copyDataFile (string filename)
+Pandora_Windows_Service::copyDataFile (string filename, bool secondary_buffer)
 {
 	int rc = 0, timeout;
 	unsigned char copy_to_secondary = 0;
@@ -1020,19 +1037,18 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 	if (rc == 0) {
 		pandoraDebug ("Successfuly copied XML file to server.");
-	} else if (conf->getValue ("secondary_mode") == "on_error") {
-		copy_to_secondary = 1;
 	}
 	
-	if (conf->getValue ("secondary_mode") == "always") {
-		copy_to_secondary = 1;	
-	}
+	return rc;
+}
 
-	// Exit unless we have to send the file to a secondary server 
-	if (copy_to_secondary == 0) {
-		return rc;
-	}
-	
+int
+Pandora_Windows_Service::copyToSecondary (string filename, bool secondary_buffer)
+{
+	int rc = 0, timeout;
+	unsigned char copy_to_secondary = 0;
+	string mode, host, remote_path;
+
 	// Read secondary server configuration
 	mode = conf->getValue ("secondary_transfer_mode");
 	host = conf->getValue ("secondary_server_ip");
@@ -1040,6 +1056,12 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	timeout = atoi (conf->getValue ("secondary_transfer_timeout").c_str ());
 	if (timeout == 0) {
 		timeout = 30;
+	}
+
+	// Adjust the path for the secondary buffer.
+	if (secondary_buffer) {
+		filename.insert(0, "\\");
+		filename.insert(0, SECONDARY_DIR);
 	}
 
 	// Fix remote path
@@ -1061,7 +1083,7 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	} else {
 		rc = PANDORA_EXCEPTION;
 		pandoraLog ("Invalid transfer mode: %s."
-			    "Please recheck transfer_mode option "
+			    "Please recheck secondary_transfer_mode option "
 			    "in configuration file.");
 	}
 	
@@ -1671,10 +1693,11 @@ Pandora_Windows_Service::checkConfig (string file) {
 
 int
 Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
-    int rc = 0, xml_buffer;
+    int rc = 0, rc_sec = 0, xml_buffer;
     string            data_xml;
 	string            xml_filename, random_integer;
 	string            tmp_filename, tmp_filepath;
+	string            secondary_filename, secondary_filepath;
 	string            encoding;
 	string            ehorus_conf, eh_key;
 	static HANDLE     mutex = 0; 
@@ -1779,8 +1802,19 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	/* Allways reports to Data Server*/
 	rc = this->copyDataFile (tmp_filename);
+	if (rc != 0 && conf->getValue("secondary_mode") == "on_error") {
+		rc = this->copyToSecondary (tmp_filename, false);
+	} else if (conf->getValue("secondary_mode") == "always") {
+		rc_sec = this->copyToSecondary (tmp_filename, false);
+
+		/* Secondary buffer. */
+		if (rc_sec != 0 && xml_buffer == 1 && (GetDiskFreeSpaceEx (conf->getValue ("secondary_temporal").c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart >= min_free_bytes)) {
+			secondary_filepath = conf->getValue ("secondary_temporal") + "\\" + tmp_filename;
+			CopyFile (tmp_filepath.c_str(), secondary_filepath.c_str(), false);
+		}
+	}
         
-	/* Delete the file if successfully copied, buffer disabled or not enough space available */
+	/* Primary buffer. Delete the file if successfully copied, buffer disabled or not enough space available. */
 	if (rc == 0 || xml_buffer == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart < min_free_bytes)) {
 		/* Rename the file if debug mode is enabled*/
 		if (getPandoraDebug ()) {
@@ -1793,17 +1827,27 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	/* Send any buffered data files */
 	if (xml_buffer == 1) {
-		this->sendBufferedXml (conf->getValue ("temporal"));
+		this->sendBufferedXml (conf->getValue ("temporal"), &Pandora_Windows_Service::copyDataFile, false);
+		if (conf->getValue ("secondary_mode") == "always") {
+			this->sendBufferedXml (conf->getValue ("secondary_temporal"), &Pandora_Windows_Service::copyToSecondary, true);
+		} else {
+			this->sendBufferedXml (conf->getValue ("temporal"), &Pandora_Windows_Service::copyToSecondary, false);
+		}
 	}
 
 	ReleaseMutex (mutex);
 }
 
 void
-Pandora_Windows_Service::sendBufferedXml (string path) {
+Pandora_Windows_Service::sendBufferedXml (string path, copy_func_p copy_func, bool secondary_buffer) {
     string base_path = path, file_path;
     WIN32_FIND_DATA file_data;
     HANDLE find;
+
+	/* Nothing to do. */
+	if (path == "") {
+		return;
+	}
 
 	if (base_path[base_path.length () - 1] != '\\') {
 		base_path += "\\";
@@ -1817,7 +1861,7 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
     }
 
     /* Send data files as long as there are no errors */
-    if (this->copyDataFile (file_data.cFileName) != 0) {
+    if ((this->*copy_func) (file_data.cFileName, secondary_buffer) != 0) {
         FindClose(find);
         return;
     }
@@ -1832,7 +1876,7 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
     Pandora_File::removeFile (base_path + file_data.cFileName);
 
     while (FindNextFile(find, &file_data) != 0) {
-        if (this->copyDataFile (file_data.cFileName) != 0) {
+        if ((this->*copy_func) (file_data.cFileName, secondary_buffer) != 0) {
             FindClose(find);
             return;
         }
@@ -1918,16 +1962,19 @@ Pandora_Windows_Service::pandora_run_broker (string config, long executions) {
 			}
 
 			/* Evaluate intensive conditions */
-			intensive_match = module->evaluateIntensiveConditions ();
-			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
-				module->setNoOutput ();
-				this->broker_modules->goNext ();
-				continue;
-			}
-			module->setIntensiveMatch (intensive_match);
-			
-			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
-				module->setTimestamp (this->run_time);
+			if (module->isIntensive()) {
+				intensive_match = module->evaluateIntensiveConditions ();
+				if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+					module->setNoOutput ();
+					this->broker_modules->goNext ();
+					continue;
+				}
+
+				if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+					module->setTimestamp (this->run_time);
+				}
+
+				module->setIntensiveMatch (intensive_match);
 			}
 			
 			/* Evaluate module conditions */
@@ -2038,16 +2085,19 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 			}
 
 			/* Evaluate intensive conditions */
-			intensive_match = module->evaluateIntensiveConditions ();
-			if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
-				module->setNoOutput ();
-				this->modules->goNext ();
-				continue;
-			}
-			module->setIntensiveMatch (intensive_match);
-			
-			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
-				module->setTimestamp (this->run_time);
+			if (module->isIntensive()) {
+				intensive_match = module->evaluateIntensiveConditions ();
+				if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+					module->setNoOutput ();
+					this->modules->goNext ();
+					continue;
+				}
+
+				if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+					module->setTimestamp (this->run_time);
+				}
+
+				module->setIntensiveMatch (intensive_match);
 			}
 			
 			/* Evaluate module conditions */

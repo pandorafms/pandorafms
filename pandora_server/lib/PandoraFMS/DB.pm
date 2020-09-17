@@ -20,6 +20,7 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
+use Carp qw/croak/;
 
 use lib '/usr/lib/perl5';
 use PandoraFMS::Tools;
@@ -51,8 +52,10 @@ our @EXPORT = qw(
 		db_string
 		db_text
 		db_update
+		db_update_hash
 		db_update_get_values
 		set_update_agent
+		set_update_agentmodule
 		get_action_id
 		get_addr_id
 		get_agent_addr_id
@@ -80,6 +83,8 @@ our @EXPORT = qw(
 		get_module_id
 		get_module_name
 		get_nc_profile_name
+		get_pen_templates
+		get_nc_profile_advanced
 		get_os_id
 		get_os_name
 		get_plugin_id
@@ -93,6 +98,7 @@ our @EXPORT = qw(
 		get_user_disabled
 		get_user_exists
 		get_user_profile_id
+		get_group_children
 		is_agent_address
 		is_group_disabled
 		get_agent_status
@@ -287,6 +293,47 @@ sub get_group_id ($$) {
 
 	my $rc = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE ' . db_text ('nombre') . ' = ?', safe_input($group_name));
 	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+# Return a array of groups, children of given parent.
+########################################################################
+sub get_group_children ($$$;$);
+sub get_group_children ($$$;$) {
+	my ($dbh, $parent, $ignorePropagate, $href_groups) = @_;
+
+	if (is_empty($href_groups)) {
+		my @groups = get_db_rows($dbh, 'SELECT * FROM tgrupo');
+
+		my %groups = map {
+			$_->{'id_grupo'} => $_
+		} @groups;
+
+		$href_groups = \%groups;
+	}
+
+	my $return = {};
+	foreach my $id_grupo (keys %{$href_groups}) {
+		if ($id_grupo eq 0) {
+			next;
+		}
+
+		my $g = $href_groups->{$id_grupo};
+
+		if ($ignorePropagate || $parent eq 0 || $href_groups->{$parent}{'propagate'}) {
+			if ($g->{'parent'} eq $parent) {
+				$return->{$g->{'id_grupo'}} = $g;
+				if ($g->{'propagate'} || $ignorePropagate) {
+					$return = add_hashes(
+						$return,
+						get_group_children($dbh, $g->{'id_grupo'}, $ignorePropagate, $href_groups)
+					);
+				}
+			}
+		}
+	}
+
+	return $return;
 }
 
 ########################################################################
@@ -657,6 +704,48 @@ sub get_nc_profile_name ($$) {
 }
 
 ##########################################################################
+## Return all network component's profile ids matching given PEN.
+##########################################################################
+sub get_pen_templates($$) {
+	my ($dbh, $pen) = @_;
+
+	my @results = get_db_rows(
+		$dbh,
+		'SELECT t.`id_np`
+		 FROM `tnetwork_profile` t
+		 INNER JOIN `tnetwork_profile_pen` pp ON pp.`id_np` = t.`id_np`
+		 INNER JOIN `tpen` p ON pp.pen = p.pen
+		 WHERE p.`pen` = ?',
+		$pen
+	);
+
+	@results = map {
+		if (ref($_) eq 'HASH') { $_->{'id_np'} }
+		else {}
+	} @results;
+
+
+  return @results;
+}
+
+##########################################################################
+## Return a network component's profile data and pen list, given its ID.
+##########################################################################
+sub get_nc_profile_advanced($$) {
+	my ($dbh, $id_nc) = @_;
+	return get_db_single_row(
+		$dbh,
+		'SELECT t.*,GROUP_CONCAT(p.pen) AS "pen"
+		 FROM `tnetwork_profile` t
+		 LEFT JOIN `tnetwork_profile_pen` pp ON t.id_np = pp.id_np
+		 LEFT JOIN `tpen` p ON pp.pen = p.pen
+		 WHERE t.`id_np` = ?
+		 GROUP BY t.`id_np`',
+		$id_nc
+	);
+}
+
+##########################################################################
 ## Return user profile ID given the user id, group id and profile id.
 ##########################################################################
 sub get_user_profile_id ($$$$) {
@@ -825,17 +914,21 @@ sub get_db_rows_limit ($$$;@) {
 }
 
 ##########################################################################
-## Updates agent fields using field => value
-##  Be careful, no filter is done.
+## Updates using hashed data.
+##   $dbh       database connector (active)
+##   $tablename table name
+##   $id        hashref as { 'primary_key_id' => "value" }
+##   $data      hashref as { 'field1' => "value", 'field2' => "value"}
 ##########################################################################
-sub set_update_agent {
-	my ($dbh, $agent_id, $data) = @_;
+sub db_update_hash {
+	my ($dbh, $tablename, $id, $data) = @_;
 
-	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (defined($tablename) && $tablename ne "");
+	
 	return undef unless (ref($data) eq "HASH");
 
 	# Build update query
-	my $query = 'UPDATE tagente SET ';
+	my $query = 'UPDATE `'.$tablename.'` SET ';
 
 	my @values;
 	foreach my $field (keys %{$data}) {
@@ -846,12 +939,50 @@ sub set_update_agent {
 
 	chop($query);
 
-	$query .= ' WHERE id_agente = ? ';
-	push @values, $agent_id;
+	my @keys = keys %{$id};
+	my $k = shift @keys;
+
+	$query .= ' WHERE '.$k.' = ? ';
+	push @values, $id->{$k};
 
 	return db_update($dbh, $query, @values);
 }
 
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agent {
+	my ($dbh, $agent_id, $data) = @_;
+
+	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	return db_update_hash(
+		$dbh,
+		'tagente',
+		{ 'id_agente' => $agent_id },
+		$data
+	);
+}
+
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agentmodule {
+	my ($dbh, $agentmodule_id, $data) = @_;
+
+	return undef unless (defined($agentmodule_id) && $agentmodule_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	return db_update_hash(
+		$dbh,
+		'tagente_modulo',
+		{ 'id_agente_modulo' => $agentmodule_id },
+		$data
+	);
+}
 
 ##########################################################################
 ## SQL delete with a LIMIT clause.
@@ -894,7 +1025,7 @@ sub db_insert ($$$;@) {
 			$insert_id = $dbh->{'mysql_insertid'};
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 	
@@ -917,7 +1048,7 @@ sub db_update ($$;@) {
 			$rows = $dbh->do($query, undef, @values);
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 	
@@ -1163,7 +1294,7 @@ sub db_do ($$;@) {
 			$dbh->do($query, undef, @values);
 		}
 		else {
-			die($exception);
+			croak (join(', ', @_));
 		}
 	}
 }

@@ -1892,33 +1892,53 @@ function toggle_item_palette() {
       $("#text-label_ifr")
         .contents()
         .find("p")
-        .attr("data-mce-style", "line-height:" + $(this).val() + ";");
+        .attr("data-mce-style", "line-height:" + $(this).val() + ";")
+        .attr("data-mce-style", "margin-top:", "-10px;");
       $("#text-label_ifr")
         .contents()
         .find("p")
-        .css("line-height", $(this).val());
+        .css("line-height", $(this).val())
+        .css("margin-top", "-10px");
       $("#text-label_ifr")
         .contents()
         .find("span")
-        .attr("data-mce-style", "line-height:" + $(this).val() + ";");
+        .attr("data-mce-style", "line-height:" + $(this).val() + ";")
+        .attr("data-mce-style", "margin-top:", "-10px;");
       $("#text-label_ifr")
         .contents()
         .find("span")
-        .css("line-height", $(this).val());
+        .css("line-height", $(this).val())
+        .css("margin-top", "-10px");
     });
 
-    $("#text-label_ifr")
-      .contents()
-      .find("p")
-      .css("line-height", $("#lineheight").val());
-    $("#text-label_ifr")
-      .contents()
-      .find("span")
-      .css("line-height", $("#lineheight").val());
-    $("#text-label_ifr")
-      .contents()
-      .find("body")
-      .css("background", "lightgray");
+    if (item == "static_graph") {
+      $("#text-label_ifr")
+        .contents()
+        .find("p")
+        .css("line-height", $("#lineheight").val())
+        .css("margin-top", "-10px");
+      $("#text-label_ifr")
+        .contents()
+        .find("span")
+        .css("line-height", $("#lineheight").val());
+      $("#text-label_ifr")
+        .contents()
+        .find("body")
+        .css("background", "lightgray");
+    } else {
+      $("#text-label_ifr")
+        .contents()
+        .find("p")
+        .css("line-height", $("#lineheight").val());
+      $("#text-label_ifr")
+        .contents()
+        .find("span")
+        .css("line-height", $("#lineheight").val());
+      $("#text-label_ifr")
+        .contents()
+        .find("body")
+        .css("background", "lightgray");
+    }
   }
 
   if (creationItem != "simple_value") {

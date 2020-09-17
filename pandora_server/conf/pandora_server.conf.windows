@@ -148,6 +148,14 @@ wmiserver 0
 
 network_timeout 5
 
+# Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
+
+rcmd_timeout 10
+
+# Pandora FMS remote execution commands timeout tool filepath (by default at /usr/bin)
+
+rcmd_timeout_bin C:\PandoraFMS\Pandora_Server\bin\pandora_exec.exe
+
 # Server keepalive (in seconds)
 
 server_keepalive 45
@@ -366,8 +374,8 @@ webserver 1
 
 web_threads 1
 
-# Uncomment to perform web checks with CURL instead of LWP.
-#web_engine curl
+# Uncomment to perform web checks with LWP instead of CURL.
+#web_engine lwp
 
 # Enable (1) or disable (0) Pandora FMS Inventory Server (PANDORA FMS ENTERPRISE ONLY).
 

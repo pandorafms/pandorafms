@@ -101,7 +101,7 @@
   width: 15px;
 }
 .fileupload_form ul li div {
-  display: block;
+  display: block !important;
 }
 .fileupload_form ul li.working span {
   background-position: 0 -12px;

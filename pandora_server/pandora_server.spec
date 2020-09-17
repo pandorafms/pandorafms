@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.740
-%define release     191122
+%define version     7.0NG.749
+%define release     200917
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -18,7 +18,8 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-buildroot
 BuildArch:          noarch 
-PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+# PreReq:            %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+Requires(pre,preun):/usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
@@ -101,11 +102,21 @@ fi
 exit 0
 
 %post
-chkconfig pandora_server on 
-chkconfig tentacle_serverd on 
+if [ `command -v systemctl` ];
+then
+        echo "Copying new version for tentacle_serverd service"
+        cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+        chmod -x /usr/lib/systemd/system/tentacle_serverd.service
 
-# Enable the services on SystemD
-systemctl enable tentacle_serverd.service
+# Enable the service on SystemD
+        systemctl enable tentacle_serverd.service
+else
+        chkconfig tentacle_serverd on
+fi
+
+chkconfig pandora_server on
+
+# Enable the service on SystemD
 systemctl enable pandora_server.service
 
 
@@ -137,6 +148,14 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Tentacle Server daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
 
 exit 0
 

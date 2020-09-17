@@ -188,15 +188,17 @@ function profile_print_profile_table($id)
     $title = __('Profiles/Groups assigned to this user');
 
     $table = new stdClass();
+    $table->id = 'table_profiles';
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     if (defined('METACONSOLE')) {
         $table->head_colspan[0] = 0;
         $table->width = '100%';
         $table->class = 'databox_tactical data';
         $table->title = $title;
     } else {
-        echo '<h4>'.$title.'</h4>';
+        echo '<div id="edit_user_profiles" class="white_box">';
+        echo '<h4><p class="edit_user_labels">'.$title.'</p></h4>';
     }
 
     $table->data = [];
@@ -204,8 +206,8 @@ function profile_print_profile_table($id)
     $table->align = [];
     $table->style = [];
     if (!defined('METACONSOLE')) {
-        $table->style[0] = 'font-weight: bold';
-        $table->style[1] = 'font-weight: bold';
+        $table->style['name'] = 'font-weight: bold';
+        $table->style['group'] = 'font-weight: bold';
     }
 
     $table->head['name'] = __('Profile name');
@@ -215,10 +217,30 @@ function profile_print_profile_table($id)
     $table->head['actions'] = __('Action');
     $table->align['actions'] = 'center';
 
-    $result = db_get_all_rows_filter(
-        'tusuario_perfil',
-        ['id_usuario' => $id]
-    );
+    if (users_is_admin()) {
+        $result = db_get_all_rows_filter(
+            'tusuario_perfil',
+            ['id_usuario' => $id]
+        );
+    } else {
+        // Only profiles that can be viewed by the user.
+        $group_um = users_get_groups_UM($config['id_user']);
+        if (isset($group_um[0])) {
+            $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
+        } else {
+            $group_um_string = implode(',', array_keys($group_um));
+        }
+
+        $sql = sprintf(
+            "SELECT tusuario_perfil.* FROM tusuario_perfil
+            INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+            WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
+            $id,
+            $group_um_string
+        );
+
+        $result = db_get_all_rows_sql($sql);
+    }
 
     if ($result === false) {
         $result = [];
@@ -284,6 +306,7 @@ function profile_print_profile_table($id)
                 [
                     'pandora_management' => '<> 1',
                     'db_management'      => '<> 1',
+                    'user_management'    => '<> 1',
                 ]
             ),
             'assign_profile',
@@ -314,7 +337,7 @@ function profile_print_profile_table($id)
     $tags = tags_get_all_tags();
     $data['tags'] = html_print_select($tags, 'assign_tags[]', '', '', __('Any'), '', true, true);
 
-    $data['hierarchy'] = html_print_checkbox('no_hierarchy', 1, false, true).ui_print_help_icon('no_hierarchy', true);
+    $data['hierarchy'] = html_print_checkbox('no_hierarchy', 1, false, true);
 
     $data['actions'] = html_print_input_image('add', 'images/add.png', 1, '', true);
     $data['actions'] .= html_print_input_hidden('id', $id, true);
@@ -324,5 +347,9 @@ function profile_print_profile_table($id)
     array_push($table->data, $data);
 
     html_print_table($table);
+    if (!is_metaconsole()) {
+        echo '</div>';
+    }
+
     unset($table);
 }

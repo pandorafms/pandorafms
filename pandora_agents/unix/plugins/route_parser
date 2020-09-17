@@ -612,6 +612,12 @@ sub get_steps {
 				$desc = 'Step unreachable';
 			}
 
+			my $name = $preffix . $host;
+
+			if (defined $previous && $name eq $previous) {
+				next;
+			}
+
 			push @modules, {
 				name => $preffix . $host,
 				type => "generic_data",
@@ -708,6 +714,12 @@ sub get_steps {
 			}
 			elsif($i == $#steps) {
 				$desc = 'Step unreachable';
+			}
+
+			my $name = $preffix . $host;
+
+			if (defined $previous && $name eq $previous) {
+				next;
 			}
 
 			push @modules, {

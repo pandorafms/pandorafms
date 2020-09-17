@@ -150,6 +150,9 @@ if (check_login()) {
         $date_to = (string) get_parameter('date_to', date(DATE_FORMAT, $utimestamp));
         $time_to = (string) get_parameter('time_to', date(TIME_FORMAT, $utimestamp));
 
+        // Definition of new table.
+        $formtable = new stdClass();
+
         $formtable->width = '98%';
         $formtable->class = 'databox';
         $formtable->data = [];
@@ -327,6 +330,9 @@ if (check_login()) {
             $result = array_slice($module_data, $offset, $block_size);
         }
 
+        // Definition of new class.
+        $table = new stdClass();
+
         $table->width = '100%';
         $table->class = 'databox data';
         $table->data = [];
@@ -372,7 +378,13 @@ if (check_login()) {
                     $data[] = date('d F Y h:i:s A', $row['utimestamp']);
                 } else if (is_snapshot_data($row[$attr[0]])) {
                     if ($config['command_snapshot']) {
-                        $data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+                        $imagetab = '<img style="width:100%" src="';
+                        $imagetab .= io_safe_input($row[$attr[0]]);
+                        $imagetab .= '">';
+                        $image = '<img style="width:300px" src="';
+                        $image .= io_safe_input($row[$attr[0]]);
+                        $image .= '">';
+                        $data[] = '<a style="cursor:pointer;" onclick="newTabjs(\''.base64_encode($imagetab).'\')">'.$image.'</a>';
                     } else {
                         $data[] = '<span>'.wordwrap(io_safe_input($row[$attr[0]]), 60, "<br>\n", true).'</span>';
                     }
@@ -550,6 +562,13 @@ if (check_login()) {
         include_once $config['homedir'].'/include/functions_servers.php';
         include_once $config['homedir'].'/include/functions_tags.php';
         include_once $config['homedir'].'/include/functions_clippy.php';
+
+
+        // Disable module edition in cluster module list.
+        $cluster_view = (bool) preg_match(
+            '/operation\/cluster\/cluster/',
+            $_SERVER['HTTP_REFERER']
+        );
 
         $agent_a = check_acl($config['id_user'], 0, 'AR');
         $agent_w = check_acl($config['id_user'], 0, 'AW');
@@ -852,16 +871,16 @@ if (check_login()) {
         $table->align[8] = 'center';
         $table->align[9] = 'right';
 
-        $table->headstyle[2] = 'min-width: 85px';
-        $table->headstyle[3] = 'min-width: 130px';
-        $table->size[3] = '30%';
+        $table->headstyle[2] = 'min-width: 65px';
+        $table->headstyle[3] = 'min-width: 80px';
+        $table->size[3] = '25%';
         $table->style[3] = 'max-width: 28em;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;';
-        $table->size[4] = '30%';
-        $table->headstyle[5] = 'min-width: 85px';
-        $table->headstyle[6] = 'min-width: 125px; text-align: center;';
-        $table->headstyle[7] = 'min-width: 125px;';
-        $table->headstyle[8] = 'min-width: 100px; text-align: center;';
-        $table->headstyle[9] = 'min-width: 120px; text-align: right;';
+        $table->size[4] = '25%';
+        $table->headstyle[5] = 'min-width: 65px';
+        $table->headstyle[6] = 'min-width: 80px; text-align: center;';
+        $table->headstyle[7] = 'min-width: 80px;';
+        $table->headstyle[8] = 'min-width: 70px; text-align: center;';
+        $table->headstyle[9] = 'min-width: 100px; text-align: right;';
 
         $last_modulegroup = 0;
         $rowIndex = 0;
@@ -962,7 +981,9 @@ if (check_login()) {
 
             $data[2] = servers_show_type($module['id_modulo']).'&nbsp;';
 
-            if (check_acl($config['id_user'], $id_grupo, 'AW')) {
+            if (check_acl($config['id_user'], $id_grupo, 'AW')
+                && $cluster_view === false
+            ) {
                 $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">'.html_print_image('images/config.png', true, ['alt' => '0', 'border' => '', 'title' => __('Edit'), 'class' => 'action_button_img']).'</a>';
             }
 
@@ -1004,9 +1025,7 @@ if (check_login()) {
                 $data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/link2.png', true, ['id' => 'relations-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
             }
 
-
             $data[4] = ui_print_string_substr($module['descripcion'], 60, true, 8);
-
 
             if ($module['datos'] != strip_tags($module['datos'])) {
                 $module_value = io_safe_input($module['datos']);
@@ -1022,7 +1041,10 @@ if (check_login()) {
                 $title
             );
 
-            $data[5] = ui_print_status_image($status, $title, true);
+            $last_status_change_text = 'Time elapsed since last status change: ';
+            $last_status_change_text .= !empty($module['last_status_change']) ? human_time_comparation($module['last_status_change']) : __('N/A');
+
+            $data[5] = ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $last_status_change_text);
             if (!$show_context_help_first_time) {
                 $show_context_help_first_time = true;
 
@@ -1031,86 +1053,7 @@ if (check_login()) {
                 }
             }
 
-            if (is_numeric($module['datos']) && !modules_is_string_type($module['id_tipo_modulo'])) {
-                if ($config['render_proc']) {
-                    switch ($module['id_tipo_modulo']) {
-                        case 2:
-                        case 6:
-                        case 9:
-                        case 18:
-                        case 21:
-                        case 31:
-                            if ($module['datos'] >= 1) {
-                                $salida = $config['render_proc_ok'];
-                            } else {
-                                $salida = $config['render_proc_fail'];
-                            }
-                        break;
-
-                        default:
-                            switch ($module['id_tipo_modulo']) {
-                                case 15:
-                                    $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                                    if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                        if ($module['post_process'] > 0) {
-                                            $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
-                                        } else {
-                                            $salida = human_milliseconds_to_string($module['datos']);
-                                        }
-                                    } else {
-                                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                                    }
-                                break;
-
-                                default:
-                                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                                break;
-                            }
-                        break;
-                    }
-                } else {
-                    switch ($module['id_tipo_modulo']) {
-                        case 15:
-                            $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                            if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                if ($module['post_process'] > 0) {
-                                    $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
-                                } else {
-                                    $salida = human_milliseconds_to_string($module['datos']);
-                                }
-                            } else {
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                            }
-                        break;
-
-                        default:
-                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision']));
-                        break;
-                    }
-                }
-
-                // Show units ONLY in numeric data types
-                if (isset($module['unit'])) {
-                    $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
-                    if ($data_macro) {
-                        $salida = $data_macro;
-                    } else {
-                        $salida .= '&nbsp;<i>'.io_safe_output($module['unit']).'</i>';
-                    }
-                }
-            } else {
-                $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
-                if ($data_macro) {
-                    $salida = $data_macro;
-                } else {
-                    $salida = ui_print_module_string_value(
-                        $module['datos'],
-                        $module['id_agente_modulo'],
-                        $module['current_interval'],
-                        $module['module_name']
-                    );
-                }
-            }
+            $salida = modules_get_agentmodule_data_for_humans($module);
 
             if ($module['id_tipo_modulo'] != 25) {
                 $data[6] = ui_print_module_warn_value($module['max_warning'], $module['min_warning'], $module['str_warning'], $module['max_critical'], $module['min_critical'], $module['str_critical'], $module['warning_inverse'], $module['critical_inverse']);
@@ -1141,11 +1084,7 @@ if (check_login()) {
                     $draw_events = 0;
                 }
 
-                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;label='.rawurlencode(
-                    urlencode(
-                        base64_encode($module['nombre'])
-                    )
-                ).'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
+                $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 1000, 700)";
                 if (!is_snapshot_data($module['datos'])) {
                     $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
                 }
@@ -1172,6 +1111,7 @@ if (check_login()) {
             $rowIndex++;
         }
 
+        ui_require_javascript_file('pandora.js');
         ?>
     <script type="text/javascript">
         /* <![CDATA[ */

@@ -262,6 +262,11 @@ function format_for_graph(
     $divider=1000,
     $sufix=''
 ) {
+    // Exception to exclude modules whose unit is already formatted as KB (satellite modules)
+    if (!empty($sufix) && $sufix == 'KB') {
+        return;
+    }
+
     $shorts = [
         '',
         'K',
@@ -472,7 +477,8 @@ function set_user_language()
 
 
 /**
- * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
+ * INTERNAL (use ui_print_timestamp for output):
+ * Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.
  *
  * @param integer $seconds Seconds elapsed time
@@ -483,17 +489,11 @@ function set_user_language()
  */
 function human_time_description_raw($seconds, $exactly=false, $units='large')
 {
-    switch ($units) {
-        case 'large':
-            $secondsString = __('seconds');
-            $daysString = __('days');
-            $monthsString = __('months');
-            $yearsString = __('years');
-            $minutesString = __('minutes');
-            $hoursString = __('hours');
-            $nowString = __('Now');
-        break;
+    if (isset($units) === false || empty($units) === true) {
+        $units = 'large';
+    }
 
+    switch ($units) {
         case 'tiny':
             $secondsString = __('s');
             $daysString = __('d');
@@ -502,6 +502,17 @@ function human_time_description_raw($seconds, $exactly=false, $units='large')
             $minutesString = __('m');
             $hoursString = __('h');
             $nowString = __('N');
+        break;
+
+        default:
+        case 'large':
+            $secondsString = __('seconds');
+            $daysString = __('days');
+            $monthsString = __('months');
+            $yearsString = __('years');
+            $minutesString = __('minutes');
+            $hoursString = __('hours');
+            $nowString = __('Now');
         break;
     }
 
@@ -1994,7 +2005,12 @@ function get_snmpwalk(
     if (enterprise_installed()) {
         if ($server_to_exec != 0) {
             $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
-            exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+
+            if (empty($server_data['port'])) {
+                exec('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            } else {
+                exec('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_str.'"', $output, $rc);
+            }
         } else {
             exec($command_str, $output, $rc);
         }
@@ -2126,7 +2142,7 @@ function check_sql($sql)
 {
     // We remove "*" to avoid things like SELECT * FROM tusuario
     // Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
-    if (preg_match('/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i', $sql)) {
+    if (preg_match('/([ ]*(delete|drop|alter|modify|password|pass|insert|update)\b[ \\]+)/i', $sql)) {
         return '';
     }
 
@@ -2472,12 +2488,12 @@ function get_os_name($id_os)
 function get_user_dashboards($id_user)
 {
     if (users_is_admin($id_user)) {
-        $sql = "SELECT name
+        $sql = "SELECT id, name
 			FROM tdashboard WHERE id_user = '".$id_user."' OR id_user = ''";
     } else {
         $user_can_manage_all = users_can_manage_group_all('RR');
         if ($user_can_manage_all) {
-            $sql = "SELECT name
+            $sql = "SELECT id, name
 				FROM tdashboard WHERE id_user = '".$id_user."' OR id_user = ''";
         } else {
             $user_groups = users_get_groups($id_user, 'RR', false);
@@ -2490,7 +2506,7 @@ function get_user_dashboards($id_user)
                 $u_groups[] = $id;
             }
 
-            $sql = 'SELECT name
+            $sql = 'SELECT id, name
 				FROM tdashboard
 				WHERE id_group IN ('.implode(',', $u_groups).") AND (id_user = '".$id_user."' OR id_user = '')";
         }
@@ -2503,12 +2519,13 @@ function get_user_dashboards($id_user)
 /**
  * Get all the possible periods in seconds.
  *
- * @param bool Flag to show or not custom fist option
- * @param bool Show the periods by default if it is empty
+ * @param boolean $custom       Flag to show or not custom fist option
+ * @param boolean $show_default Show the periods by default if it is empty
+ * @param boolean $allow_zero   Allow the use of the value zero.
  *
- * @return The possible periods in an associative array.
+ * @return array The possible periods in an associative array.
  */
-function get_periods($custom=true, $show_default=true)
+function get_periods($custom=true, $show_default=true, $allow_zero=false)
 {
     global $config;
 
@@ -2520,6 +2537,10 @@ function get_periods($custom=true, $show_default=true)
 
     if (empty($config['interval_values'])) {
         if ($show_default) {
+            if ($allow_zero === true) {
+                $periods[0] = sprintf(__('%s seconds'), '0');
+            }
+
             $periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
             $periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
             $periods[SECONDS_1HOUR] = __('1 hour');
@@ -3066,8 +3087,6 @@ function array2XML($data, $root=null, $xml=null)
             $node = $xml->addChild($key);
             array2XML($value, $root, $node);
         } else {
-            $value = htmlentities($value);
-
             if (!is_numeric($value) && !is_bool($value)) {
                 if (!empty($value)) {
                     $xml->addChild($key, $value);
@@ -3190,7 +3209,7 @@ function get_refresh_time_array()
 }
 
 
-function date2strftime_format($date_format)
+function date2strftime_format($date_format, $timestamp=null)
 {
     $replaces_list = [
         'D' => '%a',
@@ -3213,11 +3232,14 @@ function date2strftime_format($date_format)
         'A' => '%p',
         'i' => '%M',
         's' => '%S',
-        'u' => '%s',
         'O' => '%z',
         'T' => '%Z',
         '%' => '%%',
         'G' => '%k',
+        'z' => '%j',
+        'U' => '%s',
+        'c' => '%FT%T%z',
+        'r' => '%d %b %Y %H:%M:%S %z',
     ];
 
     $return = '';
@@ -3230,7 +3252,30 @@ function date2strftime_format($date_format)
         if (isset($replaces_list[$c])) {
             $return .= $replaces_list[$c];
         } else {
-            $return .= $c;
+            // Check extra formats.
+            switch ($date_format) {
+                default: $return .= date($date_format, $timestamp);
+                break;
+
+                case 'n':
+                    if (stristr(PHP_OS, 'win')) {
+                        $return .= '%#m';
+                    } else {
+                        $return .= '%-m';
+                    }
+
+                case 'u':
+                    if (preg_match('/^[0-9]*\\.([0-9]+)$/', $timestamp, $reg)) {
+                        $decimal = substr(str_pad($reg[1], 6, '0'), 0, 6);
+                    } else {
+                        $decimal = '000000';
+                    }
+
+                    $return .= $decimal;
+                break;
+
+                break;
+            }
         }
     }
 
@@ -3316,6 +3361,10 @@ function get_number_of_mr($package, $ent, $offline)
                 $sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
 
                 foreach ($sqlfiles_num as $num) {
+                    if ($num <= $config['MR']) {
+                        continue;
+                    }
+
                     $mr_size[] = $num;
                 }
             }
@@ -3604,6 +3653,14 @@ function color_graph_array()
 }
 
 
+/**
+ * Label graph Sparse.
+ *
+ * @param array $data                Data chart.
+ * @param array $show_elements_graph Data visual styles chart.
+ *
+ * @return array Array label.
+ */
 function series_type_graph_array($data, $show_elements_graph)
 {
     global $config;
@@ -3626,7 +3683,13 @@ function series_type_graph_array($data, $show_elements_graph)
     $color_series = color_graph_array();
 
     if ($show_elements_graph['id_widget_dashboard']) {
-        $opcion = unserialize(db_get_value_filter('options', 'twidget_dashboard', ['id' => $show_elements_graph['id_widget_dashboard']]));
+        $opcion = unserialize(
+            db_get_value_filter(
+                'options',
+                'twidget_dashboard',
+                ['id' => $show_elements_graph['id_widget_dashboard']]
+            )
+        );
         if ($show_elements_graph['graph_combined']) {
             foreach ($show_elements_graph['modules_id'] as $key => $value) {
                 $color_series[$key] = [
@@ -3655,13 +3718,15 @@ function series_type_graph_array($data, $show_elements_graph)
 
             if (strpos($key, 'summatory') !== false) {
                 $data_return['series_type'][$key] = $type_graph;
-                $data_return['legend'][$key]      = __('Summatory series').' '.$str;
-                $data_return['color'][$key]       = $color_series['summatory'];
+                $data_return['legend'][$key] = __('Summatory series').' '.$str;
+                $data_return['color'][$key] = $color_series['summatory'];
             } else if (strpos($key, 'average') !== false) {
                 $data_return['series_type'][$key] = $type_graph;
-                $data_return['legend'][$key]      = __('Average series').' '.$str;
-                $data_return['color'][$key]       = $color_series['average'];
-            } else if (strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false) {
+                $data_return['legend'][$key] = __('Average series').' '.$str;
+                $data_return['color'][$key] = $color_series['average'];
+            } else if (strpos($key, 'sum') !== false
+                || strpos($key, 'baseline') !== false
+            ) {
                 switch ($value['id_module_type']) {
                     case 21:
                     case 2:
@@ -3683,26 +3748,62 @@ function series_type_graph_array($data, $show_elements_graph)
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
-                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']];
+                        $name_legend .= ' / ';
+                        $name_legend .= __('Unit ').' ';
+                        $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
                         $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
-                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].': ';
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
                         if ($value['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
+                            $name_legend = $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'];
+                            $name_legend .= ' / ';
+                            $name_legend .= __('Unit ').' ';
+                            $name_legend .= $value['unit'].'Baseline ';
                         } else {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
+                            $name_legend = $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'].'Baseline ';
                         }
                     } else {
+                        $name_legend = '';
+                        if ((int) $config['type_mode_graph'] === 1) {
+                            $name_legend .= 'Avg: ';
+                        }
+
                         if ($value['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
+                            $name_legend .= $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'];
+                            $name_legend .= ' / ';
+                            $name_legend .= __('Unit ').' ';
+                            $name_legend .= $value['unit'].': ';
                         } else {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                            $name_legend .= $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'].': ';
                         }
                     }
+                }
+
+                if (isset($value['weight']) === true
+                    && empty($value['weight']) === false
+                ) {
+                    $name_legend .= ' ('.__('Weight');
+                    $name_legend .= ' * '.$value['weight'].') ';
+                }
+
+                $data_return['legend'][$key] = $name_legend;
+                if ((int) $value['min'] === PHP_INT_MAX) {
+                    $value['min'] = 0;
+                }
+
+                if ((int) $value['max'] === (-PHP_INT_MAX)) {
+                    $value['max'] = 0;
                 }
 
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
@@ -3722,36 +3823,63 @@ function series_type_graph_array($data, $show_elements_graph)
                     )
                 ).' '.$str;
 
-                if ($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2') {
+                if ($show_elements_graph['compare'] == 'overlapped'
+                    && $key == 'sum2'
+                ) {
                     $data_return['color'][$key] = $color_series['overlapped'];
                 } else {
                     $data_return['color'][$key] = $color_series[$i];
                     $i++;
                 }
-            } else if (!$show_elements_graph['fullscale'] && strpos($key, 'min') !== false
-                || !$show_elements_graph['fullscale'] && strpos($key, 'max') !== false
+            } else if (!$show_elements_graph['fullscale']
+                && strpos($key, 'min') !== false
+                || !$show_elements_graph['fullscale']
+                && strpos($key, 'max') !== false
             ) {
                 $data_return['series_type'][$key] = $type_graph;
 
+                $name_legend = '';
+                if ((int) $config['type_mode_graph'] === 1) {
+                    if (strpos($key, 'min') !== false) {
+                        $name_legend .= 'Min: ';
+                    }
+
+                    if (strpos($key, 'max') !== false) {
+                        $name_legend .= 'Max: ';
+                    }
+                }
+
                 if ($show_elements_graph['unit']) {
-                    $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                    $name_legend .= $value['agent_alias'];
+                    $name_legend .= ' / ';
+                    $name_legend .= $value['module_name'];
+                    $name_legend .= ' / ';
+                    $name_legend .= __('Unit ').' ';
+                    $name_legend .= $show_elements_graph['unit'].': ';
                 } else {
-                    $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                    $name_legend .= $value['agent_alias'];
+                    $name_legend .= ' / ';
+                    $name_legend .= $value['module_name'].': ';
                 }
 
                 $data_return['legend'][$key] = $name_legend;
                 if ($show_elements_graph['type_mode_graph']) {
-                    $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
+                    $data_return['legend'][$key] .= __('Min:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
                             $config['graph_precision']
                         )
-                    ).' '.__('Max:').remove_right_zeros(
+                    );
+                    $data_return['legend'][$key] .= ' '.__('Max:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
                             $config['graph_precision']
                         )
-                    ).' '._('Avg:').remove_right_zeros(
+                    );
+                    $data_return['legend'][$key] .= ' '._('Avg:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
                             $config['graph_precision']
@@ -3759,7 +3887,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     ).' '.$str;
                 }
 
-                if ($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2') {
+                if ($show_elements_graph['compare'] == 'overlapped'
+                    && $key == 'sum2'
+                ) {
                     $data_return['color'][$key] = $color_series['overlapped'];
                 } else {
                     $data_return['color'][$key] = $color_series[$i];
@@ -3851,14 +3981,24 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     $file_js  = $config['homedir'].'/include/web2image.js';
     $url      = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
-    $img_file = 'img_'.uniqid().'.png';
-    $img_path = $config['homedir'].'/attachment/'.$img_file;
-    $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    if (!$params['return_img_base_64']) {
+        $img_file = 'img_'.uniqid().'.png';
+        $img_path = $config['homedir'].'/attachment/'.$img_file;
+        $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
+    }
 
-    $width_img  = 500;
-    $height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
+    if ($type_graph_pdf === 'vbar') {
+        $width_img  = $params['generals']['pdf']['width'];
+        $height_img = $params['generals']['pdf']['height'];
+    } else {
+        $width_img  = 550;
+        $height_img = $params['height'];
 
-    $params['height'] = $height_img;
+        if ((int) $params['landscape'] === 1) {
+            $height_img = 150;
+            $params['height'] = 150;
+        }
+    }
 
     $params_encode_json = urlencode(json_encode($params));
 
@@ -3882,7 +4022,6 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
 
     if ($params['return_img_base_64']) {
         // To be used in alerts.
-        $width_img = 500;
         return $img_content;
     } else {
         // to be used in PDF files.
@@ -3900,8 +4039,14 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
  */
 function get_product_name()
 {
+    global $config;
+
     $stored_name = enterprise_hook('enterprise_get_product_name');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+        if ($config['rb_product_name_alt']) {
+            return $config['rb_product_name_alt'];
+        }
+
         return 'Pandora FMS';
     }
 
@@ -3919,7 +4064,7 @@ function get_copyright_notice()
 {
     $stored_name = enterprise_hook('enterprise_get_copyright_notice');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        return 'Ártica ST';
+        return 'PandoraFMS.com';
     }
 
     return $stored_name;
@@ -3969,7 +4114,7 @@ function generate_hash_to_api()
  * @param string Key to identify the profiler run.
  * @param string Way to display the result
  *         "link" (default): Click into word "Performance" to display the profilling info.
- *         "console": Display with a message in pandora_console.log.
+ *         "console": Display with a message in console.log.
  */
 function pandora_xhprof_display_result($key='', $method='link')
 {
@@ -4118,35 +4263,11 @@ function get_help_info($section_name)
     }
 
     switch ($section_name) {
-        case 'tactical_view':
-            if ($es) {
-                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_t.C3.A1ctica';
-            } else {
-                $result .= 'Data_Presentation/Visualization&printable=yes#Tactical_view';
-            }
-        break;
-
-        case 'group_view':
-            if ($es) {
-                $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_Grupos';
-            } else {
-                $result .= 'Data_Presentation/Visualization&printable=yes#Group_view';
-            }
-        break;
-
         case 'tree_view':
             if ($es) {
                 $result .= 'Presentacion_datos/visualizacion&printable=yes#Vista_de_.C3.A1rbol';
             } else {
-                $result .= 'Data_Presentation/Visualization&printable=yes#The_Tree_View';
-            }
-        break;
-
-        case 'monitor_detail_view':
-            if ($es) {
-                $result .= 'Presentacion_datos/visualizacion&printable=yes#Detalles_Monitores';
-            } else {
-                $result .= 'Data_Presentation/Visualization&printable=yes#Monitor_Details';
+                $result .= 'Data_Presentation/Visualization#Tree_View';
             }
         break;
 
@@ -4214,14 +4335,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'agent_status':
-            if ($es) {
-                $result .= 'Presentacion_datos/visualizacion&printable=yes#Detalles_del_agente';
-            } else {
-                $result .= 'Data_Presentation/Visualization&printable=yes#Agent_Details';
-            }
-        break;
-
         case 'agent_main_tab':
             if ($es) {
                 $result .= 'Intro_Monitorizacion&printable=yes#Visualizaci.C3.B3n_del_agente';
@@ -4283,14 +4396,6 @@ function get_help_info($section_name)
                 $result .= 'Plantillas_y_Componentes&printable=yes#Grupos_de_componentes';
             } else {
                 $result .= 'Templates_and_components&printable=yes#Component_Groups';
-            }
-        break;
-
-        case 'configure_gis_map':
-            if ($es) {
-                $result .= 'Pandora_GIS&printable=yes#Introducci.C3.B3n';
-            } else {
-                $result .= 'GIS&printable=yes#Introduction';
             }
         break;
 
@@ -4464,6 +4569,13 @@ function get_help_info($section_name)
         break;
 
         case 'ipam_network_tab':
+            if ($es) {
+                $result .= 'IPAM#Vista_de_edici.C3.B3n';
+            } else {
+                $result .= 'IPAM#Edit_view';
+            }
+        break;
+
         case 'ipam_force_tab':
             if ($es) {
                 $result .= 'IPAM&printable=yes#Vista_de_iconos';
@@ -4492,7 +4604,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Intro_Monitorizacion&printable=yes#Configuraci.C3.B3n_del_agente_en_consola';
             } else {
-                $result .= 'Intro_Monitoring&printable=yes#Agent_configuration_in_the_console';
+                $result .= 'Intro_Monitoring#Agent_setup_in_the_console';
             }
         break;
 
@@ -4509,46 +4621,6 @@ function get_help_info($section_name)
                 $result .= 'Alertas&printable=yes#Escalado_de_alertas';
             } else {
                 $result .= 'Alerts&printable=yes#Scaling_Alerts';
-            }
-        break;
-
-        case 'map_builder_intro':
-            if ($es) {
-                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Introducci.C3.B3n';
-            } else {
-                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Introduction';
-            }
-        break;
-
-        case 'map_builder_favorite':
-            if ($es) {
-                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Consolas_visuales_favoritas';
-            } else {
-                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Favorite_visual_consoles';
-            }
-        break;
-
-        case 'map_builder_template':
-            if ($es) {
-                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Plantillas_de_consolas_visuales';
-            } else {
-                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Visual_Console_Templates';
-            }
-        break;
-
-        case 'map_builder_wizard':
-            if ($es) {
-                $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Asistente_de_consola_visuales';
-            } else {
-                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Wizard_Visual_Console';
-            }
-        break;
-
-        case 'module_linking':
-            if ($es) {
-                $result .= 'Politicas&printable=yes#Tipos_de_m.C3.B3dulos';
-            } else {
-                $result .= 'Policy&printable=yes#Types_of_Modules';
             }
         break;
 
@@ -4632,22 +4704,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'plugin_policy':
-            if ($es) {
-                $result .= 'Politicas&printable=yes#Plugins_de_agente';
-            } else {
-                $result .= 'Policy&printable=yes#Agent_Plug_Ins';
-            }
-        break;
-
-        case 'policy_queue':
-            if ($es) {
-                $result .= 'Politicas&printable=yes#Gesti.C3.B3n_de_la_cola_de_pol.C3.ADticas';
-            } else {
-                $result .= 'Policy&printable=yes#Policy_Queues_Management';
-            }
-        break;
-
         case 'prediction_source_module':
             if ($es) {
                 $result .= 'Monitorizacion_otra&printable=yes#Tipos_de_monitorizaci.C3.B3n_predictiva';
@@ -4696,51 +4752,11 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'reporting_advanced_tab':
-            if ($es) {
-                $result .= 'Presentacion_datos/Informes&printable=yes#Opciones_avanzadas_de_informe';
-            } else {
-                $result .= 'Data_Presentation/Reports&printable=yes#The_Advanced_Options_Tab';
-            }
-        break;
-
-        case 'reporting_global_tab':
-            if ($es) {
-                $result .= 'Presentacion_datos/Informes&printable=yes#Global';
-            } else {
-                $result .= 'Data_Presentation/Reports&printable=yes#The_Global_Tab';
-            }
-        break;
-
         case 'reporting_item_editor_tab':
             if ($es) {
                 $result .= 'Presentacion_datos/Informes&printable=yes#Pesta.C3.B1a_Item_editor';
             } else {
-                $result .= 'Data_Presentation/Reports&printable=yes#The_.27Item_Editor.27_Tab';
-            }
-        break;
-
-        case 'reporting_list_items_tab':
-            if ($es) {
-                $result .= 'Presentacion_datos/Informes&printable=yes#Pesta.C3.B1a_List_Items';
-            } else {
-                $result .= 'Data_Presentation/Reports&printable=yes#The_.27List_Items.27_Tab';
-            }
-        break;
-
-        case 'reporting_wizard_sla_tab':
-            if ($es) {
-                $result .= 'Presentacion_datos/Informes&printable=yes#Wizard_SLA';
-            } else {
-                $result .= 'Data_Presentation/Reports&printable=yes#The_SLA_Wizard_Tab';
-            }
-        break;
-
-        case 'reporting_wizard_tab':
-            if ($es) {
-                $result .= 'Presentacion_datos/Informes&printable=yes#Wizard_general';
-            } else {
-                $result .= 'Data_Presentation/Reports&printable=yes#The_Wizard_Tab';
+                $result .= 'Data_Presentation/Reports#Types_of_Items';
             }
         break;
 
@@ -4749,14 +4765,6 @@ function get_help_info($section_name)
                 $result .= 'Eventos&printable=yes#Event_Responses_macros';
             } else {
                 $result .= 'Events&printable=yes#Event_Responses_macros';
-            }
-        break;
-
-        case 'events_responses_tab':
-            if ($es) {
-                $result .= 'Eventos&printable=yes#Introducci.C3.B3n_3';
-            } else {
-                $result .= 'Events&printable=yes#Introduction_3';
             }
         break;
 
@@ -4776,19 +4784,11 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'tags_config':
-            if ($es) {
-                $result .= 'Gestion_y_Administracion&printable=yes#Sistemas_de_permisos_ampliados_mediante_etiquetas_.28tags.29';
-            } else {
-                $result .= 'Managing_and_Administration&printable=yes#Permission_system_extended_by_tags';
-            }
-        break;
-
         case 'transactional_map_phases':
             if ($es) {
                 $result .= 'Monitorizacion_transaccional&printable=yes#Creaci.C3.B3n_del_.C3.A1rbol_de_fases';
             } else {
-                $result .= 'Transactional_Monitoring&printable=yes#Creating_the_phase_tree';
+                $result .= 'Transactional_Monitoring#Creating_the_stage_tree';
             }
         break;
 
@@ -4812,7 +4812,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Gestion_y_Administracion&printable=yes#Configuraci.C3.B3n_de_notificaciones';
             } else {
-                $result .= 'Managing_and_Administration&printable=yes#Notification_configuration';
+                $result .= 'Managing_and_Administration#Notification_setup';
             }
         break;
 
@@ -4836,7 +4836,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Presentacion_datos/Mapas_visuales&printable=yes#Creaci.C3.B3n_y_edici.C3.B3n_de_consolas_visuales';
             } else {
-                $result .= 'Data_Presentation/Visual_Maps&printable=yes#Creation_and_edition_of_Visual_Consoles';
+                $result .= 'Data_Presentation/Visual_Maps#Elements_a_map_can_contain';
             }
         break;
 
@@ -4872,22 +4872,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'view_created_map_services_tab':
-            if ($es) {
-                $result .= 'Servicios&printable=yes#Vista_de_mapa_de_servicio';
-            } else {
-                $result .= 'Services&printable=yes#Service_Map_View';
-            }
-        break;
-
-        case 'view_created_services_tab':
-            if ($es) {
-                $result .= 'Servicios&printable=yes#Lista_simple_de_un_servicio_y_todos_los_elementos_que_contiene';
-            } else {
-                $result .= 'Services&printable=yes#List-based_view_of_a_Service_and_its_Elements';
-            }
-        break;
-
         case 'config_service_element_tab':
             if ($es) {
                 $result .= 'Servicios&printable=yes#Configuraci.C3.B3n_de_elementos';
@@ -4916,7 +4900,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_servicios';
             } else {
-                $result .= 'Console_Setup&printable=yes#Services_configuration';
+                $result .= 'Console_Setup#Service_setup';
             }
         break;
 
@@ -4924,7 +4908,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_de_las_consolas_visuales';
             } else {
-                $result .= 'Console_Setup&printable=yes#Visual_console_configuration';
+                $result .= 'Console_Setup#Visual_console_setup';
             }
         break;
 
@@ -4964,7 +4948,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Configuracion_Consola&printable=yes#Configuraci.C3.B3n_del_comportamiento';
             } else {
-                $result .= 'Console_Setup&printable=yes#Behaviour_configuration';
+                $result .= 'Console_Setup#Performance_configuration';
             }
         break;
 
@@ -4976,11 +4960,11 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'diagnostic_tool_tab':
+        case 'setup_module_library_tab':
             if ($es) {
-                $result .= 'Gestion_y_Administracion&printable=yes#Diagnostic_tool';
+                $result .= 'Configuracion_Consola&printable=yes#Librer.C3.ADa_de_m.C3.B3dulos';
             } else {
-                $result .= 'Managing_and_Administration&printable=yes#Diagnostic_tool';
+                $result .= 'Console_Setup&printable=yes#Module_library';
             }
         break;
 
@@ -5072,14 +5056,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'export_target_tab':
-            if ($es) {
-                $result .= 'ExportServer&printable=yes#A.C3.B1adir_un_servidor_de_destino';
-            } else {
-                $result .= 'Export_Server&printable=yes#Adding_a_Target_Server';
-            }
-        break;
-
         case 'servers_ha_clusters_tab':
             if ($es) {
                 $result .= 'HA&printable=yes#Alta_disponibilidad_del_Servidor_de_Datos';
@@ -5104,11 +5080,19 @@ function get_help_info($section_name)
             }
         break;
 
+        case 'module_library':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion&printable=yes#Librer.C3.ADa_de_m.C3.B3dulos';
+            } else {
+                $result .= 'Intro_Monitoring&printable=yes#Module_library';
+            }
+        break;
+
         case 'agent_snmp_explorer_tab':
             if ($es) {
                 $result .= 'Monitorizacion_remota&printable=yes#Wizard_SNMP';
             } else {
-                $result .= 'Remote_Monitoring&printable=yes#SNMP_Wizard';
+                $result .= 'Remote_Monitoring#SNMP_Wizard';
             }
         break;
 
@@ -5116,7 +5100,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Monitorizacion_remota&printable=yes#SNMP_Interfaces_wizard';
             } else {
-                $result .= 'Remote_Monitoring&printable=yes#SNMP_Interface_Wizard';
+                $result .= 'Remote_Monitoring#SNMP_Interface_Wizard';
             }
         break;
 
@@ -5125,14 +5109,6 @@ function get_help_info($section_name)
                 $result .= 'Monitorizacion_remota&printable=yes#Wizard_WMI';
             } else {
                 $result .= 'Remote_Monitoring&printable=yes#WMI_Wizard';
-            }
-        break;
-
-        case 'group_list_tab':
-            if ($es) {
-                $result .= 'Gestion_y_Administracion&printable=yes#Introducci.C3.B3n_2';
-            } else {
-                $result .= 'Managing_and_Administration&printable=yes#Introduction_2';
             }
         break;
 
@@ -5162,9 +5138,9 @@ function get_help_info($section_name)
 
         case 'network_component_tab':
             if ($es) {
-                $result .= 'Plantillas_y_Componentes&printable=yes#Componentes_de_red';
+                $result .= 'Intro_Monitorizacion#Par.C3.A1metros_comunes';
             } else {
-                $result .= 'Templates_and_components&printable=yes#Network_Components';
+                $result .= 'Intro_Monitoring#Common_Parameters';
             }
         break;
 
@@ -5176,19 +5152,11 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'module_template_tab':
-            if ($es) {
-                $result .= 'Plantillas_y_Componentes&printable=yes#Plantillas_de_m.C3.B3dulos';
-            } else {
-                $result .= 'Templates_and_components&printable=yes#Module_Templates';
-            }
-        break;
-
         case 'agent_autoconf_tab':
             if ($es) {
-                $result .= 'Configuracion_Agentes&printable=yes#Introducci.C3.B3n';
+                $result .= 'Configuracion_Agentes#Creaci.C3.B3n.2Fedici.C3.B3n_de_autoconfiguraci.C3.B3n';
             } else {
-                $result .= 'Configuration_Agents&printable=yes#Introduction';
+                $result .= 'Configuration_Agents#Creation_of_an_automatic_agent_configuration';
             }
         break;
 
@@ -5202,17 +5170,17 @@ function get_help_info($section_name)
 
         case 'massive_agents_tab':
             if ($es) {
-                $result .= 'Operaciones_Masivas&printable=yes#Edici.C3.B3n_masiva_de_agentes';
+                $result .= 'Intro_Monitorizacion#Configuraci.C3.B3n_del_agente_en_consola';
             } else {
-                $result .= 'Massive_Operations&printable=yes#Agent_massive_edition';
+                $result .= 'Intro_Monitoring#Agent_setup_in_the_console';
             }
         break;
 
         case 'massive_modules_tab':
             if ($es) {
-                $result .= 'Operaciones_Masivas&printable=yes#Edici.C3.B3n_masiva_de_m.C3.B3dulos';
+                $result .= 'Intro_Monitorizacion#Par.C3.A1metros_comunes';
             } else {
-                $result .= 'Massive_Operations&printable=yes#Modules_massive_edition';
+                $result .= 'Intro_Monitoring#Common_Parameters';
             }
         break;
 
@@ -5264,22 +5232,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'alerts_command_tab':
-            if ($es) {
-                $result .= 'Alertas&printable=yes#Introducci.C3.B3n_2';
-            } else {
-                $result .= 'Alerts&printable=yes#Introduction_2';
-            }
-        break;
-
-        case 'alerts_config_command_tab':
-            if ($es) {
-                $result .= 'Alertas&printable=yes#Creaci.C3.B3n_de_un_comando_para_una_alerta';
-            } else {
-                $result .= 'Alerts&printable=yes#Command_Creation_for_an_Alert';
-            }
-        break;
-
         case 'configure_alert_event_step_1':
             if ($es) {
                 $result .= 'Eventos&printable=yes#Creaci.C3.B3n_alerta_de_evento';
@@ -5300,7 +5252,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Monitorizacion_traps_SNMP&printable=yes#Introducci.C3.B3n_2';
             } else {
-                $result .= 'SNMP_traps_Monitoring&printable=yes#Introduction_2';
+                $result .= 'SNMP_traps_Monitoring#Adding_an_alert';
             }
         break;
 
@@ -5308,7 +5260,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'Monitorizacion_traps_SNMP&printable=yes#A.C3.B1adir_una_alerta';
             } else {
-                $result .= 'SNMP_traps_Monitoring&printable=yes#Alert_Creation';
+                $result .= 'SNMP_traps_Monitoring#Adding_an_alert';
             }
         break;
 
@@ -5454,6 +5406,201 @@ function get_help_info($section_name)
             } else {
                 $result .= 'Discovery&printable=yes';
             }
+
+        case 'alert_configure':
+            if ($es) {
+                $result .= 'Alerts#Correlation_alert_creation';
+            } else {
+                $result .= 'Alerts#Correlation_alert_creation';
+            }
+        break;
+
+        case 'alert_correlation':
+            if ($es) {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            } else {
+                $result .= 'Alerts#Alert_correlation:_event_and_log_alerts';
+            }
+        break;
+
+        case 'alert_rules':
+            if ($es) {
+                $result .= 'Alertas#Reglas_dentro_de_una_alerta_de_correlaci.C3.B3n';
+            } else {
+                $result .= 'Alerts#Rules_within_a_correlation_alert';
+            }
+        break;
+
+        case 'alert_fields':
+            if ($es) {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            } else {
+                $result .= 'Alerts#Step_3:_Advanced_fields';
+            }
+        break;
+
+        case 'alert_triggering':
+            if ($es) {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            } else {
+                $result .= 'Alerts#Configuring_an_alert_template';
+            }
+        break;
+
+        case 'log_viewer_advanced_options':
+            if ($es) {
+                $result .= 'Monitorizacion_logs#Visualizaci.C3.B3n_y_b.C3.BAsqueda_avanzadas';
+            } else {
+                $result .= 'Log_Monitoring#Display_and_advanced_search';
+            }
+        break;
+
+        case 'snmp_console':
+            if ($es) {
+                $result .= 'Monitorizacion_traps_SNMP#Acceso_a_la_consola_de_recepci.C3.B3n_de_traps';
+            } else {
+                $result .= 'SNMP_traps_Monitoring#Access_to_TRAP_Reception_Console';
+            }
+        break;
+
+        case 'cluster_view':
+            if ($es) {
+                $result .= 'Clusters#Planificando_la_monitorizaci.C3.B3n';
+            } else {
+                $result .= 'Clusters#Planning_monitoring';
+            }
+        break;
+
+        case 'aws_view':
+            if ($es) {
+                $result .= 'Discovery#Discovery_Cloud._Vista_general';
+            } else {
+                $result .= 'Discovery#Discovery_Cloud._Overview';
+            }
+        break;
+
+        case 'sap_view':
+            if ($es) {
+                $result .= 'Discovery#SAP_View';
+            } else {
+                $result .= 'Discovery#SAP_View';
+            }
+        break;
+
+        case 'vmware_view':
+            if ($es) {
+                $result .= 'Monitorizacion_entornos_Virtuales#Gesti.C3.B3n_y_visualizaci.C3.B3n_de_la_arquitectura_virtual_VMware';
+            } else {
+                $result .= 'Virtual_environment_monitoring#VMware_Virtual_Architecture_management_and_display';
+            }
+        break;
+
+        case 'visual_console_view':
+            if ($es) {
+                $result .= 'Presentacion_datos/Mapas_visuales#Elementos_que_puede_contener_un_mapa';
+            } else {
+                $result .= 'Data_Presentation/Visual_Maps#Elements_a_map_can_contain';
+            }
+        break;
+
+        case 'create_container':
+            if ($es) {
+                $result .= 'Presentacion_datos/visualizacion#Contenedores_de_gr.C3.A1ficas';
+            } else {
+                $result .= 'Data_Presentation/Visualization#Graph_containers';
+            }
+        break;
+
+        case 'setup_integria_tab':
+            if ($es) {
+                $result .= 'Gestion_de_Indicencias#Gesti.C3.B3n_de_incidencias_en_Pandora_FMS_con_Integria_IMS';
+            } else {
+                $result .= 'Incidence_Management';
+            }
+        break;
+
+        case 'deployment_center_tab':
+            if ($es) {
+                $result .= 'Discovery#Despliegue_autom.C3.A1tico_de_agentes';
+            } else {
+                $result .= 'Discovery#Automatic_agent_deployment';
+            }
+        break;
+
+        case 'Aws_credentials_tab':
+            if ($es) {
+                $result .= 'Discovery#Discovery_Cloud:_Amazon_Web_Services_.28AWS.29';
+            } else {
+                $result .= 'Discovery#Discovery_Cloud:_AWS';
+            }
+        break;
+
+        case 'Azure_credentials_tab':
+            if ($es) {
+                $result .= 'Discovery#Discovery_Cloud:_Microsoft_Azure';
+            } else {
+                $result .= 'Discovery#Discovery_Cloud:_Microsoft_Azure';
+            }
+        break;
+
+        case 'add_policy_tab':
+            if ($es) {
+                $result .= 'Intro_Monitorizacion#Par.C3.A1metros_comunes';
+            } else {
+                $result .= 'Intro_Monitoring#Common_Parameters';
+            }
+        break;
+
+        case 'password_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola#Password';
+            } else {
+                $result .= 'Console_Setup#Password_Policy';
+            }
+        break;
+
+        case 'setup_netflow_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola#Netflow';
+            } else {
+                $result .= 'Console_Setup#Netflow';
+            }
+        break;
+
+        case 'map_connection_tab':
+            if ($es) {
+                $result .= 'Pandora_GIS#Configuraci.C3.B3n_B.C3.A1sica';
+            } else {
+                $result .= 'GIS#Basic_Configuration';
+            }
+        break;
+
+        case 'command_definition':
+            if ($es) {
+                $result .= 'Omnishell#Ejemplo_de_uso';
+            } else {
+                $result .= 'Omnishell#Usage_example';
+            }
+        break;
+
+        case 'network_tools_tab':
+            if ($es) {
+                $result .= 'Gestion_y_Administracion#Network_Tools';
+            } else {
+                $result .= 'Managing_and_Administration#Network_Tools';
+            }
+        break;
+
+        case 'reports_configuration_tab':
+            if ($es) {
+                $result .= 'Configuracion_Consola#Configuraci.C3.B3n_informes';
+            } else {
+                $result .= 'Console_Setup#Reports_configuration';
+            }
+        break;
+
+        default:
+            // Default.
         break;
     }
 
@@ -5482,4 +5629,109 @@ if (!function_exists('getallheaders')) {
     }
 
 
+}
+
+
+/**
+ * Update config token that contains custom module units.
+ *
+ * @param  string Name of new module unit.
+ * @return boolean Success or failure.
+ */
+function add_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_module_units = get_custom_module_units();
+
+    $custom_module_units[$value] = $value;
+
+    $new_conf = json_encode($custom_module_units);
+
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+function get_custom_module_units()
+{
+    global $config;
+
+    if (!isset($config['custom_module_units'])) {
+        $custom_module_units = [];
+    } else {
+        $custom_module_units = json_decode(
+            io_safe_output($config['custom_module_units']),
+            true
+        );
+    }
+
+    return $custom_module_units;
+}
+
+
+function delete_custom_module_unit($value)
+{
+    global $config;
+
+    $custom_units = get_custom_module_units();
+
+    unset($custom_units[io_safe_output($value)]);
+
+    $new_conf = json_encode($custom_units);
+    $return = config_update_value(
+        'custom_module_units',
+        $new_conf
+    );
+
+    if ($return) {
+        $config['custom_module_units'] = $new_conf;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Get multiplier to be applied on module data in order to represent it properly. Based on setup configuration and module's unit, either 1000 or 1024 will be returned.
+ *
+ * @param string Module's unit.
+ *
+ * @return integer Multiplier.
+ */
+function get_data_multiplier($unit)
+{
+    global $config;
+
+    switch ($config['use_data_multiplier']) {
+        case 0:
+            if (strpos(strtolower($unit), 'yte') !== false) {
+                $multiplier = 1024;
+            } else {
+                $multiplier = 1000;
+            }
+        break;
+
+        case 2:
+            $multiplier = 1024;
+        break;
+
+        case 1:
+        default:
+            $multiplier = 1000;
+        break;
+    }
+
+    return $multiplier;
 }

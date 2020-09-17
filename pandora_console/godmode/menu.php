@@ -124,6 +124,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 if (check_acl($config['id_user'], 0, 'UM')) {
     $sub['godmode/users/user_list']['text'] = __('Users management');
     $sub['godmode/users/user_list']['id'] = 'Users management';
+}
+
+if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/users/profile_list']['text'] = __('Profile management');
     $sub['godmode/users/profile_list']['id'] = 'Profile management';
 }
@@ -137,11 +140,31 @@ if (!empty($sub)) {
 
 $sub = [];
 if (check_acl($config['id_user'], 0, 'PM')) {
-    $sub['godmode/modules/manage_network_components']['text'] = __('Network components');
-    $sub['godmode/modules/manage_network_components']['id'] = 'Network components';
-    enterprise_hook('components_submenu');
-    $sub['godmode/modules/manage_network_templates']['text'] = __('Module templates');
-    $sub['godmode/modules/manage_network_templates']['id'] = 'Module templates';
+    // enterprise_hook('components_submenu');
+    $sub['templates']['text'] = __('Templates');
+    $sub['templates']['id'] = 'Templates';
+    $sub['templates']['type'] = 'direct';
+    $sub['templates']['subtype'] = 'nolink';
+    $sub2 = [];
+    $sub2['godmode/modules/manage_module_templates']['text'] = __('Module templates');
+    $sub2['godmode/modules/manage_module_templates']['id'] = 'Module templates';
+    $sub2['godmode/modules/private_enterprise_numbers']['text'] = __('Private Enterprise Numbers');
+    $sub2['godmode/modules/private_enterprise_numbers']['id'] = 'Private Enterprise Numbers';
+    $sub2['enterprise/godmode/modules/local_components']['text'] = __('Local components');
+    $sub2['enterprise/godmode/modules/local_components']['id'] = 'Local components';
+    $sub2['godmode/modules/manage_network_components']['text'] = __('Remote components');
+    $sub2['godmode/modules/manage_network_components']['id'] = 'Network components';
+    $sub['templates']['sub2'] = $sub2;
+    /*
+        $sub2['godmode/modules/manage_snmp_modules']['text'] = __('SNMP Modules');
+        $sub2['godmode/modules/manage_snmp_modules']['id'] = 'SNMP Modules';
+        $sub2['godmode/modules/manage_wmi_modules']['text'] = __('WMI Modules');
+        $sub2['godmode/modules/manage_wmi_modules']['id'] = 'WMI Modules';
+        $sub['godmode/modules/manage_block_templates']['text'] = __('Module blocks');
+        $sub['godmode/modules/manage_block_templates']['id'] = 'Module blocks';
+    */
+
+
     enterprise_hook('inventory_submenu');
     enterprise_hook('autoconfiguration_menu');
     enterprise_hook('agent_repository_menu');
@@ -169,6 +192,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     enterprise_hook('massivepolicies_submenu');
     enterprise_hook('massivesnmp_submenu');
     enterprise_hook('massivesatellite_submenu');
+    enterprise_hook('massiveservices_submenu');
 
     $sub['gmassive']['sub2'] = $sub2;
 }
@@ -313,11 +337,16 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=integria']['text'] = __('Integria IMS');
     $sub2['godmode/setup/setup&amp;section=integria']['refr'] = 0;
 
+    enterprise_hook('module_library_submenu');
+
     $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
     $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
+    $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
+
     if ($config['activate_gis']) {
-        $sub2['godmode/setup/gis']['text'] = __('Map conections GIS');
+        $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
 
     $sub['general']['sub2'] = $sub2;
@@ -360,6 +389,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
             $sub['extensions/dbmanager']['text'] = __('DB Interface');
             $sub['extensions/dbmanager']['id'] = 'DB Interface';
             $sub['extensions/dbmanager']['sec'] = 'gbman';
+            enterprise_hook('elasticsearch_interface_menu');
         }
     }
 
@@ -495,6 +525,21 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $menu_godmode['messages']['sub'] = $sub;
 }
 
+// Module library.
+if (check_acl($config['id_user'], 0, 'AR')) {
+    $menu_godmode['gmodule_library']['text'] = __('Module library');
+    $menu_godmode['gmodule_library']['sec2'] = 'godmode/module_library/module_library_view';
+    $menu_godmode['gmodule_library']['id'] = 'god-module_library';
+
+    $sub = [];
+    $sub['godmode/module_library/module_library_view']['text'] = __('View');
+    $sub['godmode/module_library/module_library_view']['id'] = 'View';
+
+    $sub['godmode/module_library/module_library_view&tab=categories']['text'] = __('Categories');
+    $sub['godmode/module_library/module_library_view&tab=categories']['id'] = 'categories';
+
+    $menu_godmode['gmodule_library']['sub'] = $sub;
+}
 
 if (!$config['pure']) {
     menu_print_menu($menu_godmode);

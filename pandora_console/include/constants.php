@@ -50,7 +50,9 @@ define('EVENT_NO_VALIDATED', 3);
 define('AGENT_ENABLED', 0);
 define('AGENT_DISABLED', 1);
 
-
+// Module disabled status.
+define('MODULE_ENABLED', 0);
+define('MODULE_DISABLED', 1);
 
 // Error report codes.
 define('NOERR', 11111);
@@ -102,9 +104,9 @@ define('SECONDS_1MONTH', 2592000);
 define('SECONDS_2MONTHS', 5184000);
 define('SECONDS_3MONTHS', 7776000);
 define('SECONDS_6MONTHS', 15552000);
-define('SECONDS_1YEAR', 31104000);
-define('SECONDS_2YEARS', 62208000);
-define('SECONDS_3YEARS', 93312000);
+define('SECONDS_1YEAR', 31536000);
+define('SECONDS_2YEARS', 63072000);
+define('SECONDS_3YEARS', 94608000);
 
 
 
@@ -149,8 +151,8 @@ define('COL_IGNORED', '#DDD');
 define('COL_ALERTFIRED', '#F36201');
 define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
-define('COL_INFORMATIONAL', '#E4E4E4');
-define('COL_MAINTENANCE', '#4a83f3');
+define('COL_INFORMATIONAL', '#4a83f3');
+define('COL_MAINTENANCE', '#E4E4E4');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');
@@ -259,17 +261,27 @@ define('SERVICE_STATUS_NORMAL', 0);
 define('SERVICE_STATUS_CRITICAL', 1);
 define('SERVICE_STATUS_WARNING', 2);
 define('SERVICE_STATUS_ALERT', 4);
-// Default weights.
+// Default service weights.
 define('SERVICE_WEIGHT_CRITICAL', 1);
 define('SERVICE_WEIGHT_WARNING', 0.5);
+define('SERVICE_SMART_WEIGHT_CRITICAL', 50);
+define('SERVICE_SMART_WEIGHT_WARNING', 30);
+// Default service element weights.
 define('SERVICE_ELEMENT_WEIGHT_CRITICAL', 1);
 define('SERVICE_ELEMENT_WEIGHT_WARNING', 0.5);
 define('SERVICE_ELEMENT_WEIGHT_OK', 0);
 define('SERVICE_ELEMENT_WEIGHT_UNKNOWN', 0);
+define('SERVICE_ELEMENT_SMART_CRITICAL', 100);
+define('SERVICE_ELEMENT_SMART_WARNING', 50);
+// Service element types.
+define('SERVICE_ELEMENT_AGENT', 'agent');
+define('SERVICE_ELEMENT_MODULE', 'module');
+define('SERVICE_ELEMENT_SERVICE', 'service');
+define('SERVICE_ELEMENT_DYNAMIC', 'dynamic');
+
 // Modes.
 define('SERVICE_MODE_MANUAL', 0);
-define('SERVICE_MODE_AUTO', 1);
-define('SERVICE_MODE_SIMPLE', 2);
+define('SERVICE_MODE_SMART', 1);
 
 
 
@@ -280,6 +292,7 @@ define('STATUS_MODULE_CRITICAL', 'module_critical.png');
 define('STATUS_MODULE_WARNING', 'module_warning.png');
 define('STATUS_MODULE_NO_DATA', 'module_no_data.png');
 define('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
+define('STATUS_MODULE_ALERT_TRIGGERED', 'module_alertsfired.png');
 // For agents.
 define('STATUS_AGENT_CRITICAL', 'agent_critical.png');
 define('STATUS_AGENT_WARNING', 'agent_warning.png');
@@ -346,6 +359,7 @@ define('MODULE_PREDICTION', 5);
 define('MODULE_WMI', 6);
 define('MODULE_WEB', 7);
 define('MODULE_WUX', 8);
+define('MODULE_WIZARD', 9);
 
 // Type of Modules of Prediction.
 define('MODULE_PREDICTION_SERVICE', 2);
@@ -354,6 +368,9 @@ define('MODULE_PREDICTION_NETFLOW', 4);
 define('MODULE_PREDICTION_CLUSTER', 5);
 define('MODULE_PREDICTION_CLUSTER_AA', 6);
 define('MODULE_PREDICTION_CLUSTER_AP', 7);
+
+// Forced agent OS ID for cluster agents.
+define('CLUSTER_OS_ID', 100);
 
 // Type of Webserver Modules.
 define('MODULE_WEBSERVER_CHECK_LATENCY', 30);
@@ -523,9 +540,15 @@ define('ARROW_TYPE', 1);
 
 // Discovery task steps.
 define('STEP_SCANNING', 1);
+define('STEP_CAPABILITIES', 7);
 define('STEP_AFT', 2);
 define('STEP_TRACEROUTE', 3);
 define('STEP_GATEWAY', 4);
+define('STEP_MONITORING', 5);
+define('STEP_PROCESSING', 6);
+define('STEP_STATISTICS', 1);
+define('STEP_APP_SCAN', 2);
+define('STEP_CUSTOM_QUERIES', 3);
 
 // Networkmap node types.
 define('NODE_AGENT', 0);
@@ -591,7 +614,13 @@ define('DISCOVERY_CLOUD_AWS_RDS', 7);
 define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
+define('DISCOVERY_APP_DB2', 11);
 
+
+// Force task build tmp results.
+define('DISCOVERY_REVIEW', 0);
+define('DISCOVERY_STANDARD', 1);
+define('DISCOVERY_RESULTS', 2);
 
 // Discovery types matching definition.
 define('DISCOVERY_SCRIPT_HOSTDEVICES_CUSTOM', 0);
@@ -658,3 +687,54 @@ define('W_CREATE_MODULE', 3);
 define('W_CREATE_ALERT', 4);
 define('W_CREATE_TASK', 5);
 define('WELCOME_FINISHED', -1);
+
+// Fixed tnetwork_component values.
+define('MODULE_TYPE_NUMERIC', 1);
+define('MODULE_TYPE_INCREMENTAL', 2);
+define('MODULE_TYPE_BOOLEAN', 3);
+define('MODULE_TYPE_ALPHANUMERIC', 4);
+define('SCAN_TYPE_FIXED', 1);
+define('SCAN_TYPE_DYNAMIC', 2);
+define('EXECUTION_TYPE_NETWORK', 1);
+define('EXECUTION_TYPE_PLUGIN', 2);
+
+// Id of component type.
+define('COMPONENT_TYPE_NETWORK', 2);
+define('COMPONENT_TYPE_PLUGIN', 4);
+define('COMPONENT_TYPE_WMI', 6);
+define('COMPONENT_TYPE_WIZARD', 9);
+
+// Wizard Internal Plugins.
+define('PLUGIN_WIZARD_SNMP_MODULE', 1);
+define('PLUGIN_WIZARD_SNMP_PROCESS', 2);
+define('PLUGIN_WIZARD_WMI_MODULE', 3);
+
+// Module Types.
+define('MODULE_TYPE_GENERIC_DATA', 1);
+define('MODULE_TYPE_GENERIC_PROC', 2);
+define('MODULE_TYPE_GENERIC_DATA_STRING', 3);
+define('MODULE_TYPE_GENERIC_DATA_INC', 4);
+define('MODULE_TYPE_GENERIC_DATA_INC_ABS', 5);
+define('MODULE_TYPE_REMOTE_ICMP_PROC', 6);
+define('MODULE_TYPE_REMOTE_ICMP', 7);
+define('MODULE_TYPE_REMOTE_TCP', 8);
+define('MODULE_TYPE_REMOTE_TCP_PROC', 9);
+define('MODULE_TYPE_REMOTE_TCP_STRING', 10);
+define('MODULE_TYPE_REMOTE_TCP_INC', 11);
+define('MODULE_TYPE_REMOTE_SNMP', 15);
+define('MODULE_TYPE_REMOTE_SNMP_INC', 16);
+define('MODULE_TYPE_REMOTE_SNMP_STRING', 17);
+define('MODULE_TYPE_REMOTE_SNMP_PROC', 18);
+define('MODULE_TYPE_ASYNC_PROC', 21);
+define('MODULE_TYPE_ASYNC_DATA', 22);
+define('MODULE_TYPE_ASYNC_STRING', 23);
+define('MODULE_TYPE_WEB_ANALYSIS', 25);
+define('MODULE_TYPE_WEB_DATA', 30);
+define('MODULE_TYPE_WEB_PROC', 31);
+define('MODULE_TYPE_WEB_CONTENT_DATA', 32);
+define('MODULE_TYPE_WEB_CONTENT_STRING', 33);
+define('MODULE_TYPE_REMOTE_CMD', 34);
+define('MODULE_TYPE_REMOTE_CMD_PROC', 35);
+define('MODULE_TYPE_REMOTE_CMD_STRING', 36);
+define('MODULE_TYPE_REMOTE_CMD_INC', 37);
+define('MODULE_TYPE_KEEP_ALIVE', 100);

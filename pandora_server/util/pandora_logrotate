@@ -1,5 +1,6 @@
 /var/log/pandora/pandora_agent.log 
 /var/log/pandora/pandora_server.log 
+/var/log/pandora/web_socket.log
 /var/log/pandora/pandora_server.error {
 	weekly
 	missingok
@@ -12,7 +13,7 @@
 }
 
 # DEBIAN / UBUNTU 
-/var/www/pandora_console/pandora_console.log {
+/var/www/pandora_console/log/console.log {
 	weekly
         missingok
         size 100000
@@ -24,7 +25,7 @@
 }
 
 # OpenSUSE, SLES
-/srv/www/htdocs/pandora_console/pandora_console.log {
+/srv/www/htdocs/pandora_console/log/console.log {
 	weekly
 	missingok
 	size 100000
@@ -36,7 +37,7 @@
 }
 
 # Centos, Redhat, Fedora
-/var/www/html/pandora_console/pandora_console.log {
+/var/www/html/pandora_console/log/console.log {
         weekly
         missingok
         size 100000

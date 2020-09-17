@@ -89,6 +89,10 @@ $type = get_parameter('type');
 
 $id_element = get_parameter('id_element', null);
 
+if (!is_numeric($id_element)) {
+    $id_element = intval(preg_replace('/[^0-9]+/', '', $id_element), 10);
+}
+
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
 $background_color = get_parameter('background_color', null);
@@ -438,20 +442,16 @@ switch ($action) {
                     || ($layoutData['type'] == PERCENTILE_BUBBLE)
                 ) {
                     if ($value_show == 'value') {
-                        $returnValue = format_for_graph($returnValue, 2);
-
                         $unit_text_db = db_get_sql(
                             'SELECT unit
-							FROM tagente_modulo
-							WHERE id_agente_modulo = '.$layoutData['id_agente_modulo']
+                            FROM tagente_modulo
+                            WHERE id_agente_modulo = '.$layoutData['id_agente_modulo']
                         );
                         $unit_text_db = trim(io_safe_output($unit_text_db));
 
-                        if ($value_show == 'value') {
-                            // Set empty string unit at the moment
-                            // and change for old false value
-                            $unit_text = '';
-                        }
+                        $divisor = get_data_multiplier($unit_text_db);
+
+                        $returnValue = format_for_graph($returnValue, 2, '.', ',', $divisor);
 
                         if (!empty($unit_text_db)) {
                             $unit_text = $unit_text_db;
@@ -1279,7 +1279,7 @@ switch ($action) {
                                 [
                                     'disabled'                         => 0,
                                     'id_agente'                        => $elementFields['id_agent'],
-                                    'tagente_modulo.id_tipo_modulo IN' => '(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,17,23,3,10,33)',
+                                    'tagente_modulo.id_tipo_modulo IN' => '(17,23,3,10,33)',
                                 ]
                             );
 

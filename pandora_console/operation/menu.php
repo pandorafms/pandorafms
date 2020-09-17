@@ -15,6 +15,8 @@ if (! isset($config['id_user'])) {
     return;
 }
 
+use PandoraFMS\Dashboard\Manager;
+
 require_once 'include/functions_menu.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
@@ -344,7 +346,32 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
         'godmode/reporting/graph_builder',
     ];
 
-    enterprise_hook('dashboard_menu');
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/dashboard/dashboard']['text'] = __('Dashboard');
+        $sub['operation/dashboard/dashboard']['id'] = 'Dashboard';
+        $sub['operation/dashboard/dashboard']['refr'] = 0;
+        $sub['operation/dashboard/dashboard']['subsecs'] = ['operation/dashboard/dashboard'];
+
+        $dashboards = Manager::getDashboards(-1, -1, true);
+
+        $sub2 = [];
+        foreach ($dashboards as $dashboard) {
+            $name = io_safe_output($dashboard['name']);
+
+            $sub2['operation/dashboard/dashboard&dashboardId='.$dashboard['id']] = [
+                'text'  => mb_substr($name, 0, 19),
+                'title' => $name,
+            ];
+        }
+
+        if (empty($sub2) === false) {
+            $sub['operation/dashboard/dashboard']['sub2'] = $sub2;
+        }
+    }
+
     enterprise_hook('reporting_godmenu');
 
     $menu_operation['reporting']['sub'] = $sub;
@@ -386,10 +413,10 @@ if (check_acl($config['id_user'], 0, 'ER')
             )
         );
         if ($user_filter !== false) {
-            $filter = events_get_event_filter($user_filter['id_filter']);
+            $user_event_filter = events_get_event_filter($user_filter['id_filter']);
         } else {
             // Default.
-            $filter = [
+            $user_event_filter = [
                 'status'        => EVENT_NO_VALIDATED,
                 'event_view_hr' => $config['event_view_hr'],
                 'group_rep'     => 1,
@@ -399,7 +426,7 @@ if (check_acl($config['id_user'], 0, 'ER')
             ];
         }
 
-        $fb64 = base64_encode(json_encode($filter));
+        $fb64 = base64_encode(json_encode($user_event_filter));
 
         // RSS.
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
@@ -452,12 +479,6 @@ $sub['operation/users/user_edit']['refr'] = 0;
 $sub['operation/users/user_edit_notifications']['text'] = __('Configure user notifications');
 $sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
-
-// ANY user can chat with other user and dogs.
-// Users.
-$sub['operation/users/webchat']['text'] = __('WebChat');
-$sub['operation/users/webchat']['id'] = 'WebChat';
-$sub['operation/users/webchat']['refr'] = 0;
 
 
 // Incidents.

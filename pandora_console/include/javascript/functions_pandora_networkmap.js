@@ -738,27 +738,36 @@ function add_new_link(new_link) {
 }
 
 function move_to_networkmap(node) {
-  var params = [];
-  params.push("get_networkmap_from_fictional=1");
-  params.push("id=" + node.id_db);
-  params.push("id_map=" + node.map_id);
-  params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+  // Checks if is widget or not
+  var widget = false;
+  widget = $("#hidden-widget").val();
 
-  jQuery.ajax({
-    data: params.join("&"),
-    dataType: "json",
-    type: "POST",
-    url: "ajax.php",
-    success: function(data) {
-      if (data["correct"]) {
-        window.location =
-          "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
-          data["id_networkmap"];
-      } else {
-        edit_node(node, true);
+  if (widget == true) {
+    var id_cell = $(".widget_content").data("id_cell");
+    move_to_networkmap_widget(node.networkmap_id, id_cell);
+  } else {
+    var params = [];
+    params.push("get_networkmap_from_fictional=1");
+    params.push("id=" + node.id_db);
+    params.push("id_map=" + node.map_id);
+    params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+    jQuery.ajax({
+      data: params.join("&"),
+      dataType: "json",
+      type: "POST",
+      url: "ajax.php",
+      success: function(data) {
+        if (data["correct"]) {
+          window.location =
+            "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
+            data["id_networkmap"];
+        } else {
+          edit_node(node, true);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function edit_node(data_node, dblClick) {
@@ -792,8 +801,8 @@ function edit_node(data_node, dblClick) {
       var id_networkmap_lenght = networkmap_id.toString().length;
       var id_node_length = id.length - id_networkmap_lenght;
       id = id.substring(0, id_node_length);
-      var node_selected = graph.nodes[id];
-
+      var index_node = $.inArray(data_node, graph.nodes);
+      var node_selected = graph.nodes[index_node];
       var selected_links = get_relations(node_selected);
 
       $(
@@ -1172,8 +1181,16 @@ function add_agent_node(agents) {
             $("#agent_name").val("");
             $("#dialog_node_add").dialog("close");
 
+            const new_id =
+              Math.max.apply(
+                Math,
+                graph.nodes.map(function(o) {
+                  return o.id;
+                })
+              ) + 1;
+
             var temp_node = {};
-            temp_node["id"] = graph.nodes.length;
+            temp_node["id"] = new_id;
             temp_node["id_db"] = data["id_node"];
             temp_node["id_agent"] = data["id_agent"];
             temp_node["id_module"] = "";
@@ -2414,7 +2431,13 @@ function refresh_holding_area() {
           jQuery.each(holding_area.nodes, function(i, node) {
             var temp_node = {};
 
-            temp_node["id"] = graph.nodes.length;
+            temp_node["id"] =
+              Math.max.apply(
+                Math,
+                graph.nodes.map(function(o) {
+                  return o.id;
+                })
+              ) + 1;
             holding_area.nodes[i]["id"] = temp_node["id"];
 
             temp_node["id_db"] = node["id_db"];
@@ -2702,6 +2725,20 @@ function set_parent(parent_data) {
         url: "ajax.php",
         success: function(data) {
           if (data["correct"]) {
+            var child_index = -1;
+            var parent_index = -1;
+
+            // Get indexes of child and parent nodes.
+            $.each(graph.nodes, function(i, d) {
+              if (child_data.id == d.id) {
+                child_index = i;
+              }
+
+              if (parent_data.id == d.id) {
+                parent_index = i;
+              }
+            });
+
             //Add the relationship and paint
             item = {};
             item["arrow_start"] = "";
@@ -2714,11 +2751,11 @@ function set_parent(parent_data) {
             item["id_module_end"] = 0;
             item["id_db"] = data["id"];
             item["source_id_db"] = child_data.id_db;
-            item["target_id_db"] = parent_data.id;
-            item["id_agent_start"] = graph.nodes[child_data.id]["id_agent"];
-            item["id_agent_end"] = graph.nodes[parent_data.id]["id_agent"];
-            item["target"] = graph.nodes[parent_data.id];
-            item["source"] = graph.nodes[child_data.id];
+            item["target_id_db"] = parent_data.id_db;
+            item["id_agent_start"] = graph.nodes[child_index]["id_agent"];
+            item["id_agent_end"] = graph.nodes[parent_index]["id_agent"];
+            item["target"] = graph.nodes[parent_index];
+            item["source"] = graph.nodes[child_index];
 
             graph.links.push(item);
           }
@@ -2868,10 +2905,13 @@ function init_drag_and_drop() {
       var selection = d3.selectAll(".node_selected");
 
       selection.each(function(d) {
-        graph.nodes[d.id].x = d.x + delta[0];
-        graph.nodes[d.id].y = d.y + delta[1];
-        graph.nodes[d.id].px = d.px + delta[0];
-        graph.nodes[d.id].py = d.py + delta[1];
+        // We search the position of this node in the array (index).
+        // This is to avoid errors when deleting nodes (id doesn't match index).
+        var index_node = $.inArray(d, graph.nodes);
+        graph.nodes[index_node].x = d.x + delta[0];
+        graph.nodes[index_node].y = d.y + delta[1];
+        graph.nodes[index_node].px = d.px + delta[0];
+        graph.nodes[index_node].py = d.py + delta[1];
       });
 
       draw_elements_graph();
@@ -2910,8 +2950,16 @@ function add_fictional_node() {
         if (data["correct"]) {
           $("#dialog_node_add").dialog("close");
 
+          const new_id =
+            Math.max.apply(
+              Math,
+              graph.nodes.map(function(o) {
+                return o.id;
+              })
+            ) + 1;
+
           var temp_node = {};
-          temp_node["id"] = graph.nodes.length;
+          temp_node["id"] = new_id;
           temp_node["id_db"] = data["id_node"];
           temp_node["id_agent"] = data["id_agent"];
           temp_node["id_module"] = 0;
@@ -2939,8 +2987,16 @@ function add_fictional_node() {
   } else {
     $("#dialog_node_add").dialog("close");
 
+    const new_id =
+      Math.max.apply(
+        Math,
+        graph.nodes.map(function(o) {
+          return o.id;
+        })
+      ) + 1;
+
     var temp_node = {};
-    temp_node["id"] = graph.nodes.length;
+    temp_node["id"] = new_id;
     temp_node["id_db"] = data["id_node"];
     temp_node["id_agent"] = data["id_agent"];
     temp_node["id_module"] = 0;
@@ -4512,4 +4568,39 @@ function update_fictional_node_popup(id) {
     radious,
     color
   );
+}
+
+function move_to_networkmap_widget(networkmap_id, id_cell) {
+  var params = [];
+
+  $(".widget_content").each(function(i) {
+    $("#body_cell").empty();
+  });
+
+  var pathname = window.location.pathname;
+  var path;
+
+  if (
+    pathname == "/pandora_console/enterprise/dashboard/public_dashboard.php"
+  ) {
+    path = "../../ajax.php";
+  } else {
+    path = "ajax.php";
+  }
+
+  params.push("networkmap=true");
+  params.push("networkmap_id=" + networkmap_id);
+
+  params.push("page=enterprise/include/ajax/map_enterprise.ajax");
+  jQuery.ajax({
+    data: params.join("&"),
+    dataType: "html",
+    type: "POST",
+    url: path,
+    success: function(data) {
+      $(".widget_content").each(function(i) {
+        $("#body_cell").append(data);
+      });
+    }
+  });
 }

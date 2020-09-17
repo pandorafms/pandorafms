@@ -183,7 +183,7 @@ if ($id_module_type >= 15 && $id_module_type <= 18) {
     $data[3] = html_print_select(
         $snmp_versions,
         'snmp_version',
-        $tcp_send,
+        $snmp_version,
         '',
         '',
         '',
@@ -464,13 +464,15 @@ $data[1] = html_print_select(
     $disabledBecauseInPolicy
 );
 
+$data[1] .= '<br> <br><a class="info_cell" href="'.ui_get_full_url('index.php?sec=gagente&sec2=godmode/groups/group_list&tab=credbox').'">'.__('Manage credentials').'</a>';
+
 $array_os = [
     'inherited' => __('Inherited'),
-    'linux'     => __('Linux'),
-    'windows'   => __('Windows'),
+    'linux'     => __('SSH'),
+    'windows'   => __('Windows remote'),
 ];
 
-$data[2] = __('Target OS');
+$data[2] = __('Connection method');
 $data[3] = html_print_select(
     $array_os,
     'command_os',
@@ -496,7 +498,7 @@ if ($id_module_type !== 34
     $table_simple->rowstyle['row-cmd-row-2'] = 'display: none;';
 }
 
-snmp_browser_print_container(false, '100%', '60%', 'none');
+snmp_browser_print_container(false, '100%', '60%', 'display:none');
 
 ?>
 <script type="text/javascript">
@@ -541,14 +543,12 @@ $(document).ready (function () {
             $("#simple-field_snmpv3_row2").attr("style", "");
             $("#simple-field_snmpv3_row3").attr("style", "");
             $("input[name=active_snmp_v3]").val(1);
-            $("input[name=snmp_community]").attr("disabled", true);
         }
         else {
             $("#simple-field_snmpv3_row1").css("display", "none");
             $("#simple-field_snmpv3_row2").css("display", "none");
             $("#simple-field_snmpv3_row3").css("display", "none");
             $("input[name=active_snmp_v3]").val(0);
-            $("input[name=snmp_community]").removeAttr('disabled');
         }
     });
 

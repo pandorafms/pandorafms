@@ -83,6 +83,7 @@ if (check_login(false) === false) {
     <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
     <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
     <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
+    <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js'></script>
     <script language="javascript" type='text/javascript' src='javascript/jquery-3.3.1.min.js'></script>
 </head>
 <body>
@@ -101,7 +102,7 @@ $params = json_decode($_REQUEST['data'], true);
 // Metaconsole connection to the node.
 $server_id = $params['server_id'];
 
-if ($config['metaconsole'] && !empty($server_id)) {
+if (is_metaconsole() && !empty($server_id)) {
     $server = metaconsole_get_connection_by_id($server_id);
     // Error connecting.
     if (metaconsole_connect($server) !== NOERR) {
@@ -140,6 +141,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
         <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
+        <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery-3.3.1.min.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery-ui.min.js'></script>
@@ -158,25 +160,36 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.axislabels.js"></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/pandora.flot.js"></script>
     </head>
-    <body bgcolor="#ffffff" style='background:#ffffff;'>
+    <body style='background-color: <?php echo $params['backgroundColor']; ?>;'>
     <?php
     $params['only_image'] = false;
-    $params['width'] = (int) $_REQUEST['viewport_width'];
     $params['menu'] = false;
 
-    if ((isset($params['width']) === false
-        || ($params['width'] <= 0))
-    ) {
-        $params['width'] = 650;
-    }
+    $params_combined = json_decode($_REQUEST['data_combined'], true);
+    $module_list = json_decode($_REQUEST['data_module_list'], true);
+    $type_graph_pdf = $_REQUEST['type_graph_pdf'];
 
-        $params_combined = json_decode($_REQUEST['data_combined'], true);
-        $module_list = json_decode($_REQUEST['data_module_list'], true);
-        $type_graph_pdf = $_REQUEST['type_graph_pdf'];
+    if (isset($params['vconsole']) === false || $params['vconsole'] === false) {
+        $params['width'] = (int) $_REQUEST['viewport_width'];
+        if ((isset($params['width']) === false
+            || ($params['width'] <= 0))
+        ) {
+            $params['width'] = 650;
+            if ((int) $params['landscape'] === 1) {
+                $params['width'] = 850;
+            }
+
+            if ($type_graph_pdf === 'slicebar') {
+                $params['width'] = 100;
+                $params['height'] = 70;
+            }
+        }
+    }
 
         echo '<div>';
     switch ($type_graph_pdf) {
         case 'combined':
+            $params['pdf'] = true;
             echo graphic_combined_module(
                 $module_list,
                 $params,
@@ -204,24 +217,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'vbar':
-            echo flot_vcolumn_chart(
-                $params['chart_data'],
-                $params['width'],
-                $params['height'],
-                $params['color'],
-                $params['legend'],
-                $params['long_index'],
-                $params['homeurl'],
-                $params['unit'],
-                $params['water_mark_url'],
-                $params['homedir'],
-                $params['font'],
-                $config['font_size'],
-                $params['from_ux'],
-                $params['from_wux'],
-                $params['backgroundColor'],
-                $params['tick_color']
-            );
+            echo flot_vcolumn_chart($params);
         break;
 
         case 'hbar':
@@ -280,8 +276,10 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['full_legend_daterray'],
                 $params['not_interactive'],
                 $params['ttl'],
-                $params['widgets'],
-                $params['show']
+                $params['sizeForTicks'],
+                $params['show'],
+                $params['date_to'],
+                $params['server_id']
             );
         break;
 

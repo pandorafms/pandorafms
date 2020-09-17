@@ -72,6 +72,18 @@ abstract class Model
 
 
     /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @abstract
+     */
+    abstract public function delete(int $itemId): bool;
+
+
+    /**
      * Constructor of the model. It won't be public. The instances
      * will be created through factories which start with from*.
      *
@@ -116,7 +128,10 @@ abstract class Model
      *
      * @abstract
      */
-    abstract protected static function fetchDataFromDB(array $filter);
+    abstract protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    );
 
 
     /**
@@ -126,10 +141,10 @@ abstract class Model
      *
      * @return self A modeled element's instance.
      */
-    public static function fromDB(array $filter): self
+    public static function fromDB(array $filter, ?float $ratio=0): self
     {
         // The reserved word static refers to the invoked class at runtime.
-        return static::fromArray(static::fetchDataFromDB($filter));
+        return static::fromArray(static::fetchDataFromDB($filter, $ratio));
     }
 
 
@@ -151,7 +166,7 @@ abstract class Model
      */
     public function toJson(): string
     {
-        return \json_encode($this->data);
+        return json_encode($this->data);
     }
 
 

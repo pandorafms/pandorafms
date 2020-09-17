@@ -550,7 +550,7 @@ function groups_get_id_recursive($id_parent, $all=false)
     // Check propagate
     $propagate = db_get_value_filter('propagate', 'tgrupo', ['id_grupo' => $id_parent]);
 
-    if (($propagate != 1) || $all) {
+    if (($propagate == 1) || $all) {
         $children = db_get_all_rows_filter('tgrupo', ['parent' => $id_parent, 'disabled' => 0], ['id_grupo']);
 
         if ($children === false) {

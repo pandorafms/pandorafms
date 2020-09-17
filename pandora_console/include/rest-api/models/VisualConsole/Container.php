@@ -124,6 +124,21 @@ final class Container extends Model
 
 
     /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        return true;
+    }
+
+
+    /**
      * Extract a group Id value.
      *
      * @param array $data Unknown input data structure.
@@ -230,8 +245,10 @@ final class Container extends Model
      *
      * @override Model::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter)
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ) {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
         $row = \db_get_row_filter('tlayout', $filter);
@@ -254,7 +271,7 @@ final class Container extends Model
         $backgroundImage = static::extractBackgroundImage($row);
 
         if ($backgroundUrl === null && $backgroundImage !== null) {
-            $row['backgroundURL'] = ui_get_full_url(
+            $row['backgroundURL'] = \ui_get_full_url(
                 'images/console/background/'.$backgroundImage,
                 false,
                 false,
@@ -345,7 +362,8 @@ final class Container extends Model
      */
     public static function getItemsFromDB(
         int $layoutId,
-        array $groupsFilter=[]
+        array $groupsFilter=[],
+        ?float $ratio=0
     ): array {
         // Default filter.
         $filter = ['id_layout' => $layoutId];
@@ -396,13 +414,55 @@ final class Container extends Model
             $class = static::getItemClass((int) $data['type']);
 
             try {
-                array_push($items, $class::fromDB($data));
+                array_push($items, $class::fromDB($data, $ratio));
             } catch (\Throwable $e) {
-                // TODO: Log this?
+                error_log('VC[Container]: '.$e->getMessage());
             }
         }
 
         return $items;
+    }
+
+
+    /**
+     * Obtain an item which belong to the Visual Console.
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return Model Item or Line.
+     * @throws \Exception When the data cannot be retrieved from the DB.
+     */
+    public static function getItemFromDB(int $itemId): Model
+    {
+        // Default filter.
+        $filter = ['id' => $itemId];
+        $fields = [
+            'DISTINCT(id) AS id',
+            'type',
+            'cache_expiration',
+            'id_layout',
+        ];
+
+        $row = \db_get_row_filter(
+            'tlayout_data',
+            $filter,
+            $fields,
+            'OR'
+        );
+
+        if ($rows === false) {
+            return '';
+        }
+
+        $class = static::getItemClass((int) $row['type']);
+
+        try {
+            $item = $class::fromDB($row);
+        } catch (\Throwable $e) {
+            // TODO: Log this?
+        }
+
+        return $item;
     }
 
 

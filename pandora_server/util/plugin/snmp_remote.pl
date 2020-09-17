@@ -24,47 +24,65 @@
 #
 # GPL License: http://www.gnu.org/licenses/gpl.txt
 #-----------------------------------------------------------------------
+# Revised by Kevin Rojas 2020 kevin.rojas@pandorafms.com
+# - Added check for Module options
+# - Optimized SNMP v3 code
+# - Improved Help
+#-----------------------------------------------------------------------
 
 use strict;
 use Getopt::Std;
 
-my $VERSION = 'v1r1';
+
+my $VERSION = 'v1r2';
 
 #-----------------------------------------------------------------------
 # HELP
 #-----------------------------------------------------------------------
 
 if ($#ARGV == -1 ) {
+	print "SNMP remote plugin ($VERSION). Retrieves information via SNMP for:\n";
+	print "\t- Memory Usage (%)\n";
+	print "\t- CPU Usage (%)\n";
+	print "\t- Disk Usage (%)\n";
+	print "\t- Whether a process is running (1) or not (0)\n";
+	print "\n";
+
+	print "Arguments:\n\n";
+
 	print "-H, --host=STRING\n";
 	print "\tHost IP\n";
 	
 	print "-c, --community=STRING\n";
-	print "\tSnmp Community\n";
+	print "\tSNMP Community\n";
 	
 	print "-m, --module=STRING\n";
 	print "\tDefine module (memuse|diskuse|process|cpuload) \n";
 	
 	print "-d, --disk=STRING\n";
-	print "\tDefine disk name (C:, D: in Windows) or mount point (Linux)(only in diskuse module)\n";
-	
+	print "\t[Only for diskuse module] Define disk name (C:, D: in Windows) or mount point (Linux). Default: /\n";
+
 	print "-p, --process=STRING\n";
-	print "\tProcess or service name (only in process module)\n";
+	print "\t[Only for process module] Process or service name\n\n";
 	
+	print "SNMP v3 options:\n";
+	print "\n";
+
 	print "-v, --version=STRING\n";
-	print "\tVersion of protocol\n";
+	print "\tSNMP version (Default 2c)\n";
 	
 	print "-u, --user=STRING\n";
 	print "\tAuth user\n";
-	
-	print "-A, --auth=STRING\n";
-	print "\tAuth pass\n";
-	
+
 	print "-l, --level=STRING\n";
 	print "\tSecurity level\n";
 	
 	print "-a STRING\n";
 	print "\tAuth method\n";
 	
+	print "-A, --auth=STRING\n";
+	print "\tAuth pass\n";
+
 	print "-x STRING\n";
 	print "\tPrivacy method\n";
 	
@@ -72,10 +90,12 @@ if ($#ARGV == -1 ) {
 	print "\tPrivacy pass\n";
 	
 	print "\n";
-	print "Example of use \n";
-	print "perl snmp_remoto.pl -H host -c community -m (memuse|diskuse|process|cpuload) [-p process -d disk] \n";
-	print "\n";
-	print "Version=$VERSION\n";
+	print "Usage: \n";
+	print "SNMP v1|2|2c:\n" ;
+	print "\tperl $0 -H host -c community -m (memuse|diskuse|process|cpuload) [-p process -d disk] \n" ;
+	print "SNMP v3:\n" ;
+	print "\tperl $0 -H host -v 3 -u user -l seclevel -a authMethod -A authPass -x privMethod -X privPass -m (memuse|diskuse|process|cpuload) [-p process -d disk] \n" ;
+	print "\n" ;
 	exit;
 }
 
@@ -151,104 +171,97 @@ sub options {
 		$opts{"X"});
 }
 
-#-----------------------------------------------------------------------
-# Module % Memory use
-#-----------------------------------------------------------------------
-if ($module eq "memuse") {
-	my $memuse = 0;
-	my $command_line_parammeters;
-	
-	if ($version == "3") {
-		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
-		}
-		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
-		}
-		else {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
-		}
-	}
-	else {
-		$command_line_parammeters = "-v $version -c $community $host";
-	}
-	
-	my $memid = `snmpwalk -On $command_line_parammeters  .1.3.6.1.2.1.25.2.3.1.3 | grep Physical | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
-	my $memtot = `snmpget $command_line_parammeters  .1.3.6.1.2.1.25.2.3.1.5.$memid ` ;
-	my $memtot2 = `echo "$memtot" | gawk '{print \$4}'`;
-	my $memfree = `snmpget $command_line_parammeters  .1.3.6.1.2.1.25.2.3.1.6.$memid` ;
-	my $memfree2 = `echo "$memfree" | gawk '{print \$4}'`;
-	
-	$memuse = ($memfree2) * 100 / $memtot2;
-	
-	printf("%.2f", $memuse);
+unless ( $module ~~ ["memuse","cpuload","process","diskuse"] ){
+	print "Error: Invalid or missing argument (-m).\n";
+	print "Available options: memuse | diskuse | process | cpuload \n\n";
+	exit;
+}
+
+unless ($host){
+	print "Error: missing host address.\n";
+	exit;
 }
 
 #-----------------------------------------------------------------------
-# Module % Disk use
+# SNMP Version parameters
+#-----------------------------------------------------------------------
+my $command_line_parameters;
+if ($version == "3") {
+		if (lc($security_level) eq lc('authNoPriv')) {
+			$command_line_parameters = "-v $version -u $user -a $auth_method -A '$pass' -l $security_level $host";
+		}
+		elsif (lc($security_level) eq lc("AuthPriv")) {
+			$command_line_parameters = "-v $version -u $user -a $auth_method -A '$pass' -l $security_level -x $privacy_method -X '$privacy_pass' $host";
+		}
+		else {
+			$command_line_parameters = "-v $version -u $user -l $security_level $host";
+		}
+	}
+else {
+	$command_line_parameters = "-v $version -c $community $host";
+}
+
+#-----------------------------------------------------------------------
+# Memory use % module
+#-----------------------------------------------------------------------
+if ($module eq "memuse") {
+	my $memuse = 0;
+	
+	my $memid = `snmpwalk -On $command_line_parameters .1.3.6.1.2.1.25.2.3.1.3 | grep Physical | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
+	my @memtot = split(/\s/, `snmpget $command_line_parameters .1.3.6.1.2.1.25.2.3.1.5.$memid `) ;
+	my @memfree = split(/\s/, `snmpget $command_line_parameters .1.3.6.1.2.1.25.2.3.1.6.$memid `) ;
+
+	if ($memid){
+	$memuse = ($memfree[-1]) * 100 / $memtot[-1];
+	printf("%.2f", $memuse);
+	}
+	else {
+		print STDOUT "-1";
+		print STDERR "Error: Memory OID not found";
+	}
+}
+
+#-----------------------------------------------------------------------
+# Disk use % module 
 #-----------------------------------------------------------------------
 if ($module eq "diskuse") {
 	my $diskuse = 0;
-	my $command_line_parammeters;
 	
-	if ($version == "3") {
-		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
-		}
-		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
-		}
-		else {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
-		}
-	}
-	else {
-		$command_line_parammeters = "-v $version -c $community $host";
+	unless ($disk){
+		print "Error: Invalid or missing argument (-d).\n";
+		exit;
 	}
 
 	if ($disk =~ /\\ /) {
         	$disk =~ s/\\/\\\\/g;
         }
-	my $diskid = `snmpwalk -r 2 -On $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.3 | grep -F '$disk' | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
-	my $disktot = `snmpget -r 2 $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.5.$diskid ` ;
-	my $disktot2 = `echo "$disktot" | gawk '{print \$4}'`;
-	
-	if ($disktot2 == 0) {
+	my $diskid = `snmpwalk -r 2 -On $command_line_parameters .1.3.6.1.2.1.25.2.3.1.3 | grep -F '$disk' | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
+	my @disktot= split /\s/, `snmpget -r 2 $command_line_parameters .1.3.6.1.2.1.25.2.3.1.5.$diskid` ;
+
+	if ($diskid == ""){
+		print STDOUT "-1";
+		print STDERR "Error: Disk or partition not found\n";
+		exit;
+	}
+	if ($disktot[-1] == 0) {
 		$diskuse = 0;
 	}
 	else {
-		my $diskfree = `snmpget -r 2 $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.6.$diskid` ;
-		my $diskfree2 = `echo "$diskfree" | gawk '{print \$4}'`;
-		
-		$diskuse = ($disktot2 - $diskfree2) * 100 / $disktot2;
+		my @diskfree = split (/\s/, `snmpget -r 2 $command_line_parameters .1.3.6.1.2.1.25.2.3.1.6.$diskid`) ;
+
+		$diskuse = ($disktot[-1] - $diskfree[-1]) * 100 / $disktot[-1];
 	}
 	
 	printf("%.2f", $diskuse);
 }
 
 #-----------------------------------------------------------------------
-# Module Process Status
+# Process Status module
 #-----------------------------------------------------------------------
 if ($module eq "process") {
 	my $status = 0;
-	my $command_line_parammeters;
 	
-	if ($version == "3") {
-		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
-		}
-		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
-		}
-		else {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
-		}
-	}
-	else {
-		$command_line_parammeters = "-v $version -c $community $host";
-	}
-	
-	$status = `snmpwalk $command_line_parammeters  1.3.6.1.2.1.25.4.2.1.2 2>/dev/null`;
+	$status = `snmpwalk $command_line_parameters  .1.3.6.1.2.1.25.4.2.1.2 2>/dev/null`;
 
 	if ($? == 0) {
 		print (($status =~ m/$process/mi)?1:0);
@@ -256,28 +269,12 @@ if ($module eq "process") {
 }
 
 #-----------------------------------------------------------------------
-# Module % Cpu Load
+# CPU Load % module
 #-----------------------------------------------------------------------
 if ($module eq "cpuload") {
 	my $cputotal = 0;
-	my $command_line_parammeters;
 	
-	if ($version == "3") {
-		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
-		}
-		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
-		}
-		else {
-			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
-		}
-	}
-	else {
-		$command_line_parammeters = "-v $version -c $community $host";
-	}
-	
-	my $cpuload = `snmpwalk $command_line_parammeters .1.3.6.1.2.1.25.3.3.1.2 | gawk '{print \$4}' `;
+	my $cpuload = `snmpwalk $command_line_parameters .1.3.6.1.2.1.25.3.3.1.2 | gawk '{print \$4}' `;
 	my @cpuload = split(/\n/, $cpuload);
 	my $sum;
 	my $counter = 0;

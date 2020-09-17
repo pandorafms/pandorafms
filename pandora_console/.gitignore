@@ -6,7 +6,10 @@ attachment/collection
 attachment/files_repo
 include/config.php
 pandora_console.log
+log/console.log
+log/cron.log
 enterprise
 *.bak
 audit.log
+log/audit.log
 install_old.php

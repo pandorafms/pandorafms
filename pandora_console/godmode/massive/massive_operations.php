@@ -30,7 +30,7 @@ require_once 'include/functions_modules.php';
 enterprise_include('godmode/massive/massive_operations.php');
 
 $tab = (string) get_parameter('tab', 'massive_agents');
-$option = (string) get_parameter('option', '');
+$option = (string) get_parameter('option');
 
 
 $options_alerts = [
@@ -92,6 +92,12 @@ if ($satellite_options != ENTERPRISE_NOT_HOOK) {
     $options_satellite = array_merge($options_satellite, $satellite_options);
 }
 
+$options_services = enterprise_hook('massive_services_options');
+if ($options_services === ENTERPRISE_NOT_HOOK) {
+    $options_services = [];
+}
+
+
 if (in_array($option, array_keys($options_alerts))) {
     $tab = 'massive_alerts';
 } else if (in_array($option, array_keys($options_agents))) {
@@ -108,8 +114,38 @@ if (in_array($option, array_keys($options_alerts))) {
     $tab = 'massive_satellite';
 } else if (in_array($option, array_keys($options_plugins))) {
     $tab = 'massive_plugins';
-} else {
-    $option = '';
+} else if (in_array($option, array_keys($options_services))) {
+    $tab = 'massive_services';
+}
+
+if ($tab == 'massive_agents' && $option == '') {
+    $option = 'edit_agents';
+}
+
+if ($tab == 'massive_modules' && $option == '') {
+    $option = 'edit_modules';
+}
+
+if ($tab == 'massive_policies' && $option == '') {
+    $option = 'edit_policy_modules';
+}
+
+switch ($option) {
+    case 'edit_agents':
+        $help_header = 'massive_agents_tab';
+    break;
+
+    case 'edit_modules':
+        $help_header = 'massive_modules_tab';
+    break;
+
+    case 'edit_policy_modules':
+        $help_header = 'massive_policies_tab';
+    break;
+
+    default:
+        $help_header = '';
+    break;
 }
 
 switch ($tab) {
@@ -119,12 +155,10 @@ switch ($tab) {
 
     case 'massive_agents':
         $options = $options_agents;
-        $help_header = 'massive_agents_tab';
     break;
 
     case 'massive_modules':
         $options = $options_modules;
-        $help_header = 'massive_modules_tab';
     break;
 
     case 'massive_users':
@@ -133,7 +167,6 @@ switch ($tab) {
 
     case 'massive_policies':
         $options = $options_policies;
-        $help_header = 'massive_policies_tab';
     break;
 
     case 'massive_snmp':
@@ -146,6 +179,10 @@ switch ($tab) {
 
     case 'massive_plugins':
         $options = $options_plugins;
+    break;
+
+    case 'massive_services':
+        $options = $options_services;
     break;
 
     default:
@@ -216,6 +253,11 @@ if ($satellitetab == ENTERPRISE_NOT_HOOK) {
     $satellitetab = '';
 }
 
+$servicestab = enterprise_hook('massive_services_tab');
+
+if ($servicestab == ENTERPRISE_NOT_HOOK) {
+    $servicestab = '';
+}
 
 $onheader = [];
 $onheader['massive_agents'] = $agentstab;
@@ -229,6 +271,7 @@ $onheader['massive_alerts'] = $alertstab;
 $onheader['policies'] = $policiestab;
 $onheader['snmp'] = $snmptab;
 $onheader['satellite'] = $satellitetab;
+$onheader['services'] = $servicestab;
 
 /*
     Hello there! :)
@@ -246,7 +289,7 @@ ui_print_page_header(
     $help_header,
     true,
     $onheader,
-    true,
+    false,
     'massivemodal'
 );
 
@@ -305,6 +348,10 @@ echo '</div>';
 </script>
 
 <?php
+if (is_central_policies_on_node() && $option == 'delete_agents') {
+    ui_print_warning_message(__('This node is configured with centralized mode. To delete an agent go to metaconsole.'));
+}
+
 echo '<br />';
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';
 echo '<table border="0"><tr><td>';

@@ -159,7 +159,7 @@ function snmp_browser_get_html_tree(
         $status = (!empty($checked) && isset($checked[$level]));
         $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
-            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.$sub_level['__VALUE__'].'</span>';
+            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
         }
 
         $output .= '</li>';
@@ -238,8 +238,17 @@ function snmp_browser_print_tree(
 /**
  * Build the SNMP tree for the given SNMP agent.
  *
- * @param target_ip string IP of the SNMP agent.
- * @param community string SNMP community to use.
+ * @param string      $target_ip               Target_ip.
+ * @param string      $community               Community.
+ * @param string      $starting_oid            Starting_oid.
+ * @param string      $version                 Version.
+ * @param string      $snmp3_auth_user         Snmp3_auth_user.
+ * @param string      $snmp3_security_level    Snmp3_security_level.
+ * @param string      $snmp3_auth_method       Snmp3_auth_method.
+ * @param string      $snmp3_auth_pass         Snmp3_auth_pass.
+ * @param string      $snmp3_privacy_method    Snmp3_privacy_method.
+ * @param string      $snmp3_privacy_pass      Snmp3_privacy_pass.
+ * @param string|null $snmp3_context_engine_id Snmp3_context_engine_id.
  *
  * @return array The SNMP tree.
  */
@@ -254,27 +263,74 @@ function snmp_browser_get_tree(
     $snmp3_auth_pass='',
     $snmp3_privacy_method='',
     $snmp3_privacy_pass='',
-    $server_to_exec=0
+    $snmp3_context_engine_id=null
 ) {
     global $config;
 
-    $output = get_snmpwalk(
-        $target_ip,
-        $version,
-        $community,
-        $snmp3_auth_user,
-        $snmp3_security_level,
-        $snmp3_auth_method,
-        $snmp3_auth_pass,
-        $snmp3_privacy_method,
-        $snmp3_privacy_pass,
-        0,
-        $starting_oid,
-        '',
-        $server_to_exec,
-        '',
-        ''
-    );
+    switch ($version) {
+        case '1':
+            $snmp_version = SNMP::VERSION_1;
+        break;
+
+        case '2':
+            $snmp_version = SNMP::VERSION_2C;
+        break;
+
+        case '2c':
+            $snmp_version = SNMP::VERSION_2C;
+        break;
+
+        case '3':
+            $snmp_version = SNMP::VERSION_3;
+            $community = $snmp3_auth_user;
+        break;
+
+        default:
+            $snmp_version = SNMP::VERSION_2C;
+        break;
+    }
+
+    $snmp_session = new SNMP($snmp_version, $target_ip, $community);
+    $snmp_session->oid_output_format = SNMP_OID_OUTPUT_MODULE;
+
+      // Set security if SNMP Version is 3.
+    if ($snmp_version == SNMP::VERSION_3) {
+        $snmp_session->setSecurity(
+            $snmp3_security_level,
+            $snmp3_auth_method,
+            $snmp3_auth_pass,
+            $snmp3_privacy_method,
+            $snmp3_privacy_pass,
+            '',
+            $snmp3_context_engine_id
+        );
+    }
+
+    $mibs_dir = $config['homedir'].'/attachment/mibs';
+    $_dir = opendir($mibs_dir);
+
+    // Future. Recomemended: Use a global config limit of MIBs loaded.
+    while (($mib_file = readdir($_dir)) !== false) {
+        if ($mib_file == '..' || $mib_file == '.') {
+            continue;
+        }
+
+        $rs = snmp_read_mib($mibs_dir.'/'.$mib_file);
+        if ($rs !== true) {
+            error_log('Failed while reading MIB file: '.$mib_file);
+        }
+    }
+
+    closedir($_dir);
+
+    $output = $snmp_session->walk($starting_oid);
+    if ($output == false) {
+        $output = $snmp_session->getError();
+        $snmp_session->close();
+        return $output;
+    }
+
+    $snmp_session->close();
 
     // Build the tree.
     $oid_tree = ['__LEAVES__' => []];
@@ -365,6 +421,10 @@ function snmp_browser_get_oid(
         return;
     }
 
+    if ($version == '2') {
+        $version = '2c';
+    }
+
     $output = get_snmpwalk(
         $target_ip,
         $version,
@@ -409,11 +469,20 @@ function snmp_browser_get_oid(
 
         if ($server_to_exec != 0) {
             $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
-            exec(
-                'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
-                $translate_output,
-                $rc
-            );
+
+            if (empty($server_data['port'])) {
+                exec(
+                    'ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
+                    $translate_output,
+                    $rc
+                );
+            } else {
+                exec(
+                    'ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$command_output.'"',
+                    $translate_output,
+                    $rc
+                );
+            }
         } else {
             exec(
                 $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid),
@@ -547,8 +616,7 @@ function snmp_browser_print_oid(
     $output .= html_print_table($table, true);
 
     $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-
-    $output .= '<form style="text-align: center; margin: 10px" method="post" action="'.$url.'">';
+    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);
@@ -561,19 +629,35 @@ function snmp_browser_print_oid(
     $description = '';
     if (!empty($oid['description'])) {
         $description = $oid['description'];
+        // Remove extra whitespaces.
+        $description = preg_replace('/\s+/', ' ', $description);
     }
 
     $output .= html_print_input_hidden('description', $description, true);
     $output .= html_print_input_hidden('snmp_oid', $oid['numeric_oid'], true);
-    $output .= html_print_input_hidden('snmp_community', $community, true);
-    $output .= html_print_input_hidden('snmp_version', $snmp_version, true);
+
+    // Create module buttons.
     $output .= html_print_submit_button(
         __('Create network component'),
-        '',
+        'create_network_component',
         false,
         'class="sub add"',
         true
     );
+
+    // Hidden by default.
+    $output .= html_print_button(
+        __('Create agent module'),
+        'create_module_agent_single',
+        false,
+        'show_add_module()',
+        'class="sub add" style="display:none"',
+        true
+    );
+
+    // Select agent modal.
+    $output .= snmp_browser_print_create_modules(true);
+
     $output .= '</form>';
 
     if ($return) {
@@ -594,7 +678,7 @@ function snmp_browser_print_oid(
  *
  * @return string The container div.
  */
-function snmp_browser_print_container($return=false, $width='100%', $height='60%', $display='')
+function snmp_browser_print_container($return=false, $width='100%', $height='60%', $display='', $show_massive_buttons=false)
 {
     // Target selection
     $table = new stdClass();
@@ -737,12 +821,13 @@ function snmp_browser_print_container($return=false, $width='100%', $height='60%
     $table2->data[0][2] .= '&nbsp;'.'<a href="javascript:">'.html_print_image('images/collapse.png', true, ['title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();']).'</a>';
     $table2->cellstyle[0][2] = 'text-align:center;';
 
-    // This extra div that can be handled by jquery's dialog
-    $output = '<div id="snmp_browser_container" style="display:'.$display.'">';
+    // This extra div that can be handled by jquery's dialog.
+    $output = '<div id="snmp_browser_container" style="'.$display.'">';
     $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
     $output .= '<div style="width: 100%">';
     $output .= html_print_table($table, true);
     $output .= '</div>';
+
     if (!isset($snmp_version)) {
         $snmp_version = null;
     }
@@ -770,11 +855,44 @@ function snmp_browser_print_container($return=false, $width='100%', $height='60%
 
     $output .= '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
     $output .= '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">'.html_print_image('images/spinner.gif', true).'</div>';
-    $output .= '<div id="snmp_browser" style="height: 100%; min-height:100px; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
-    $output .= '<div class="databox" id="snmp_data" style="margin: 5px;"></div>';
+    $output .= '<div id="snmp_browser">';
+    $output .= '</div>';
+    $output .= '<div class="databox" id="snmp_data" style="margin: 5px; display:    none"></div>';
     $output .= '</div>';
     $output .= '</div>';
     $output .= '</div>';
+
+    if ($show_massive_buttons) {
+        $output .= '<div id="snmp_create_buttons" style="display:none">';
+
+                $output .= html_print_submit_button(
+                    __('Create agent modules'),
+                    'create_modules_agent',
+                    false,
+                    ['class' => 'sub add'],
+                    true
+                );
+
+        if (enterprise_installed()) {
+            $output .= html_print_submit_button(
+                __('Create policy modules'),
+                'create_modules_policy',
+                false,
+                ['class' => 'sub add'],
+                true
+            );
+        }
+
+                $output .= html_print_submit_button(
+                    __('Create network components'),
+                    'create_modules_network_component',
+                    false,
+                    ['class' => 'sub add'],
+                    true
+                );
+
+                $output .= '</div>';
+    }
 
     if ($return) {
         return $output;
@@ -784,141 +902,509 @@ function snmp_browser_print_container($return=false, $width='100%', $height='60%
 }
 
 
-?>
+/**
+ * Create selected oids as modules on selected target.
+ *
+ * @param  string     $module_target Target where modules will be created (network componen, agent or policy).
+ * @param  array      $targets_oids  Modules oids.
+ * @param  array      $values        SNMP conf values.
+ * @param  array|null $id_target     (Optional) Id target where modules will be created.
+ * @return array        $fail_modules
+ */
+function snmp_browser_create_modules_snmp(string $module_target, array $snmp_values, ?array $id_target)
+{
+    if (is_array($snmp_values)) {
+        $snmp_version = $snmp_values['snmp_browser_version'];
+        $community = $snmp_values['community'];
+        $target_ip = $snmp_values['target_ip'];
+        $snmp3_auth_user = $snmp_values['snmp3_browser_auth_user'];
+        $snmp3_security_level = $snmp_values['snmp3_browser_security_level'];
+        $snmp3_auth_method = $snmp_values['snmp3_browser_auth_method'];
+        $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
+        $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
+        $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
+        $targets_oids = $snmp_values['oids'];
+    }
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('input[name*=create_network_component]').click(function () {
-            var id_check = $('#ul_0').find('input').map(function(){ 
-                if(this.id.indexOf('checkbox-create_')!=-1){
-                    if($(this).is(':checked')){
-                        return this.id;
-                    }
-                    
-                } }).get();
-            $('input[name*=create_network_component]').removeClass("sub add");
-            $('input[name*=create_network_component]').addClass("sub spinn");
-            
-            var target_ip = $('#text-target_ip').val();
-            var community = $('#text-community').val();
-            var snmp_version = $('#snmp_browser_version').val();
-            var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
-            var snmp3_security_level = $('#snmp3_browser_security_level').val();
-            var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
-            var snmp3_auth_pass = $('#password-snmp3_browser_auth_pass').val();
-            var snmp3_privacy_method = $('#snmp3_browser_privacy_method').val();
-            var snmp3_privacy_pass = $('#password-snmp3_browser_privacy_pass').val();
-            
-            var custom_action = $('#hidden-custom_action').val();
-            if (custom_action == undefined) {
-                custom_action = '';
+     $fail_modules = [];
+
+    foreach ($targets_oids as $key => $target_oid) {
+        $oid = snmp_browser_get_oid(
+            $target_ip,
+            $community,
+            htmlspecialchars_decode($target_oid),
+            $snmp_version,
+            $snmp3_auth_user,
+            $snmp3_security_level,
+            $snmp3_auth_method,
+            $snmp3_auth_pass,
+            $snmp3_privacy_method,
+            $snmp3_privacy_pass
+        );
+
+        if (empty($oid['description'])) {
+            $description = '';
+        } else {
+            // Delete extra spaces.
+            $description = io_safe_input(preg_replace('/\s+/', ' ', $oid['description']));
+        }
+
+        if (!empty($oid['type'])) {
+            $module_type = snmp_module_get_type($oid['type']);
+        } else {
+            $module_type = 17;
+        }
+
+        if ($module_target == 'network_component') {
+            $name_check = db_get_value(
+                'name',
+                'tnetwork_component',
+                'name',
+                $oid['oid']
+            );
+
+            if (!$name_check) {
+                $id = network_components_create_network_component(
+                    $oid['oid'],
+                    $module_type,
+                    1,
+                    [
+                        'description'           => $description,
+                        'module_interval'       => 300,
+                        'max'                   => 0,
+                        'min'                   => 0,
+                        'tcp_send'              => $snmp_version,
+                        'tcp_rcv'               => '',
+                        'tcp_port'              => 0,
+                        'snmp_oid'              => $oid['numeric_oid'],
+                        'snmp_community'        => $community,
+                        'id_module_group'       => 3,
+                        'id_modulo'             => 2,
+                        'id_plugin'             => 0,
+                        'plugin_user'           => '',
+                        'plugin_pass'           => '',
+                        'plugin_parameter'      => '',
+                        'macros'                => '',
+                        'max_timeout'           => 0,
+                        'max_retries'           => 0,
+                        'history_data'          => '',
+                        'dynamic_interval'      => 0,
+                        'dynamic_max'           => 0,
+                        'dynamic_min'           => 0,
+                        'dynamic_two_tailed'    => 0,
+                        'min_warning'           => 0,
+                        'max_warning'           => 0,
+                        'str_warning'           => '',
+                        'min_critical'          => 0,
+                        'max_critical'          => 0,
+                        'str_critical'          => '',
+                        'min_ff_event'          => 0,
+                        'custom_string_1'       => '',
+                        'custom_string_2'       => '',
+                        'custom_string_3'       => '',
+                        'post_process'          => 0,
+                        'unit'                  => '',
+                        'wizard_level'          => 'nowizard',
+                        'macros'                => '',
+                        'critical_instructions' => '',
+                        'warning_instructions'  => '',
+                        'unknown_instructions'  => '',
+                        'critical_inverse'      => 0,
+                        'warning_inverse'       => 0,
+                        'id_category'           => 0,
+                        'tags'                  => '',
+                        'disabled_types_event'  => '{"going_unknown":1}',
+                        'min_ff_event_normal'   => 0,
+                        'min_ff_event_warning'  => 0,
+                        'min_ff_event_critical' => 0,
+                        'ff_type'               => 0,
+                        'each_ff'               => 0,
+                        'history_data'          => 1,
+                    ]
+                );
             }
-            
-            var oids = [];
-            id_check.forEach(function(product, index) {
-                var oid = $("#"+product).siblings('a').attr('href');
-                if(oid.indexOf('javascript: snmpGet("')!=-1) {
-                    oid = oid.replace('javascript: snmpGet("',"");
-                    oid = oid.replace('");',"");
-                    oids.push(oid);    
+        } else if ($module_target == 'agent') {
+                $values = [
+                    'id_tipo_modulo'        => $module_type,
+                    'descripcion'           => $description,
+                    'module_interval'       => 300,
+                    'max'                   => 0,
+                    'min'                   => 0,
+                    'tcp_send'              => $snmp_version,
+                    'tcp_rcv'               => '',
+                    'tcp_port'              => 0,
+                    'snmp_oid'              => $oid['numeric_oid'],
+                    'snmp_community'        => $community,
+                    'id_module_group'       => 3,
+                    'id_modulo'             => 2,
+                    'id_plugin'             => 0,
+                    'plugin_user'           => '',
+                    'plugin_pass'           => '',
+                    'plugin_parameter'      => '',
+                    'macros'                => '',
+                    'max_timeout'           => 0,
+                    'max_retries'           => 0,
+                    'history_data'          => '',
+                    'dynamic_interval'      => 0,
+                    'dynamic_max'           => 0,
+                    'dynamic_min'           => 0,
+                    'dynamic_two_tailed'    => 0,
+                    'min_warning'           => 0,
+                    'max_warning'           => 0,
+                    'str_warning'           => '',
+                    'min_critical'          => 0,
+                    'max_critical'          => 0,
+                    'str_critical'          => '',
+                    'min_ff_event'          => 0,
+                    'custom_string_1'       => '',
+                    'custom_string_2'       => '',
+                    'custom_string_3'       => '',
+                    'post_process'          => 0,
+                    'unit'                  => '',
+                    'wizard_level'          => 'nowizard',
+                    'macros'                => '',
+                    'critical_instructions' => '',
+                    'warning_instructions'  => '',
+                    'unknown_instructions'  => '',
+                    'critical_inverse'      => 0,
+                    'warning_inverse'       => 0,
+                    'id_category'           => 0,
+                    'disabled_types_event'  => '{"going_unknown":1}',
+                    'min_ff_event_normal'   => 0,
+                    'min_ff_event_warning'  => 0,
+                    'min_ff_event_critical' => 0,
+                    'ff_type'               => 0,
+                    'each_ff'               => 0,
+                    'ip_target'             => $target_ip,
+                    'history_data'          => 1,
+                ];
+                foreach ($id_target as $agent) {
+                    $ids[] = modules_create_agent_module($agent, $oid['oid'], $values);
                 }
-                
-            });
-            // Prepare the AJAX call
-            var params = {};
-            params["target_ip"] = target_ip;
-            params["community"] = community;
-            params["oids"] = oids;
-            params["snmp_browser_version"] = snmp_version;
-            params["snmp3_browser_auth_user"] = snmp3_auth_user;
-            params["snmp3_browser_security_level"] = snmp3_security_level;
-            params["snmp3_browser_auth_method"] = snmp3_auth_method;
-            params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
-            params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
-            params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
-            params["action"] = "create_modules_snmp";
-            params["custom_action"] = custom_action;
-            params["page"] = "include/ajax/snmp_browser.ajax";
-            
-            $.ajax({
-                type: "GET",
-                url: "ajax.php",
-                data: params,
-                dataType: "html",
-                success: function(data) {
-                    
-                    var dato = data.replace(/[^]+(?=\[)/,"");
-                    $('input[name*=create_network_component]').removeClass("sub spinn");
-                    $('input[name*=create_network_component]').addClass("sub add");
-                    
-                    dato = JSON.parse(dato);
-                    
-                    if(dato.length !== 0){
-                        $('#error_text').text("");
-                        
-                        dato.forEach( function(valor, indice, array) {
-                            $('#error_text').append('<br/>'+ valor );
-                        });
-                        $("#dialog_error")
-                            .dialog({
-                                resizable: true,
-                                draggable: true,
-                                modal: true,
-                                height: 300,
-                                width: 500,
-                                overlay: {
-                                    opacity: 0.5,
-                                    background: "black"
-                                }
-                            });
-                    } else {
-                        $("#dialog_success")
-                            .dialog({
-                                resizable: true,
-                                draggable: true,
-                                modal: true,
-                                height: 250,
-                                width: 500,
-                                overlay: {
-                                    opacity: 0.5,
-                                    background: "black"
-                                }
-                            });
-                    }
-                    
-                    
+        } else if ($module_target == 'policy') {
+            // Policies only in enterprise version.
+            if (enterprise_installed()) {
+                $values = [
+                    'id_tipo_modulo'        => $module_type,
+                    'description'           => $description,
+                    'module_interval'       => 300,
+                    'max'                   => 0,
+                    'min'                   => 0,
+                    'tcp_send'              => $snmp_version,
+                    'tcp_rcv'               => '',
+                    'tcp_port'              => 0,
+                    'snmp_oid'              => $oid['numeric_oid'],
+                    'snmp_community'        => $community,
+                    'id_module_group'       => 3,
+                    'id_plugin'             => 0,
+                    'plugin_user'           => '',
+                    'plugin_pass'           => '',
+                    'plugin_parameter'      => '',
+                    'macros'                => '',
+                    'max_timeout'           => 0,
+                    'max_retries'           => 0,
+                    'history_data'          => 1,
+                    'dynamic_interval'      => 0,
+                    'dynamic_max'           => 0,
+                    'dynamic_min'           => 0,
+                    'dynamic_two_tailed'    => 0,
+                    'min_warning'           => 0,
+                    'max_warning'           => 0,
+                    'str_warning'           => '',
+                    'min_critical'          => 0,
+                    'max_critical'          => 0,
+                    'str_critical'          => '',
+                    'min_ff_event'          => 0,
+                    'custom_string_1'       => '',
+                    'custom_string_2'       => '',
+                    'custom_string_3'       => '',
+                    'post_process'          => 0,
+                    'unit'                  => '',
+                    'macros'                => '',
+                    'critical_instructions' => '',
+                    'warning_instructions'  => '',
+                    'unknown_instructions'  => '',
+                    'critical_inverse'      => 0,
+                    'warning_inverse'       => 0,
+                    'id_category'           => 0,
+                    'disabled_types_event'  => '{"going_unknown":1}',
+                    'min_ff_event_normal'   => 0,
+                    'min_ff_event_warning'  => 0,
+                    'min_ff_event_critical' => 0,
+                    'ff_type'               => 0,
+                    'each_ff'               => 0,
+                    'ip_target'             => $target_ip,
+                    'configuration_data'    => '',
+                    'history_data'          => 1,
+                ];
+
+                enterprise_include_once('include/functions_policies.php');
+                foreach ($id_target as $policy) {
+                    $ids[] = policies_create_module($oid['oid'], $policy, 2, $values);
                 }
-            });
-        });
-        
-        $('input[id^=checkbox-create]').change(function () {
-            if ($(this).is(':checked') ) {
-                $('input[name*=create_network_component]').show();
-                var id_input = $(this).attr("id");
-                id_input = id_input.match("checkbox-create_([0-9]+)");
-                var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
-                    if(this.id.indexOf('checkbox-create_')!=-1){
-                        return this.id;
-                    } }).get();
-                
-                checks.forEach(function(product, index) {
-                    $("#"+product).prop('checked', "true");
-                });
-                
-            } else {
-                var id_input = $(this).attr("id");
-                
-                id_input = id_input.match("checkbox-create_([0-9]+)");
-                var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
-                    if(this.id.indexOf('checkbox-create_')!=-1){
-                        return this.id;
-                    } }).get();
-                    
-                checks.forEach(function(product, index) {
-                    $("#"+product).prop('checked', false);
-                });
             }
-        });
-    });
-    
-</script>
+        }
+
+        if (is_array($ids)) {
+            foreach ($ids as $id) {
+                // Id < 0 for error codes.
+                if (!$id || $id < 0) {
+                    array_push($fail_modules, $oid['oid']);
+                }
+            }
+        } else {
+            if (empty($id)) {
+                array_push($fail_modules, $oid['oid']);
+            }
+        }
+    }
+
+     return $fail_modules;
+}
+
+
+/**
+ * Prints html for create module from snmp massive dialog
+ *
+ * @param  string  $url_form
+ * @param  string  $title
+ * @param  boolean $return
+ * @return void
+ */
+function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $return=false)
+{
+    // String for labels.
+    switch ($target) {
+        case 'agent':
+            $target_item = 'Agents';
+        break;
+
+        case 'policy':
+            $target_item = 'Policies';
+        break;
+    }
+
+    $output .= "<form target='_blank' id='create_module_massive' action='#' method='post'>";
+
+    $strict_user = db_get_value(
+        'strict_acl',
+        'tusuario',
+        'id_user',
+        $config['id_user']
+    );
+
+    $keys_field = 'id_grupo';
+
+    $table = new stdClass();
+    $table->width = '100%';
+    $table->data = [];
+
+    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div' style='display:none; float:left;'><img src='images/spinner.gif'></div>";
+
+    $table->data[0][1] = html_print_select_groups(
+        false,
+        'RR',
+        users_can_manage_group_all('RR'),
+        'group',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        $keys_field,
+        $strict_user
+    );
+
+    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div' style='display:none; float:left;'><img src='images/spinner.gif'></div>";
+    $table->data[1][1] = html_print_input_text(
+        'filter',
+        '',
+        '',
+        20,
+        150,
+        true
+    );
+
+    $table->data[2][0] = __($target_item.' available').html_print_input_image('select_all_left', 'images/tick.png', 1, '', true, ['title' => __('Select all')]);
+    $table->data[2][1] = '';
+    $table->data[2][2] = __($target_item.' to apply').html_print_input_image('select_all_right', 'images/tick.png', 1, '', true, ['title' => __('Select all')]);
+
+    $table->data[3][0] = html_print_select(
+        [],
+        'id_item[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width: 100%;',
+        []
+    );
+
+    if ($target == 'policy') {
+        if (enterprise_installed()) {
+            $table->data[4][0] = html_print_button(
+                __('Create new policy'),
+                'snmp_browser_create_policy',
+                false,
+                '',
+                'class="sub add" style="margin-left:0px"',
+                true
+            );
+        }
+
+        $table->data[4][1] = html_print_div(
+            [
+                'style' => 'display:none',
+                'id'    => 'policy_modal',
+            ],
+            true
+        );
+    }
+
+    $table->cellstyle[3][1] = 'text-align: center';
+    $table->data[3][1] = html_print_image(
+        'images/darrowright.png',
+        true,
+        [
+            'id'    => 'right',
+            'title' => __('Add'),
+        ]
+    ).'<br /><br /><br /><br />'.html_print_image(
+        'images/darrowleft.png',
+        true,
+        [
+            'id'    => 'left',
+            'title' => __('Undo'),
+        ]
+    );
+    $table->data[3][2] = html_print_select(
+        [],
+        'id_item2[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width: 100%;',
+        []
+    );
+
+    $output .= html_print_table($table, true);
+
+    // SNMP extradata.
+    $output .= html_print_input_hidden('snmp_extradata', $snmp_conf, true);
+
+    $output .= '</form>';
+
+    $output .= '</div>';
+
+    $script = 'add_module_massive_controller("'.$target.'")';
+
+    // Add script to output.
+    $output .= '<script>'.$script.'</script>';
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
+}
+
+
+/**
+ * Prints form from create snmp module dialog
+ *
+ * @param  boolean $return
+ * @return void
+ */
+function snmp_browser_print_create_modules($return=false)
+{
+    $output = "<div id='dialog_create_module' style='display: none;' title='Select agent'>";
+
+    $table = new stdClass();
+    $table->width = '100%';
+    $table->class = 'databox filters';
+    $table->style = [];
+    $table->style[0] = 'font-weight: bolder;';
+
+    $table->data[0][0] = __('Agent');
+
+    $params['return'] = true;
+    $params['show_helptip'] = true;
+    $params['input_name'] = 'id_agent';
+    $params['selectbox_id'] = 'id_agent_module';
+    $params['metaconsole_enabled'] = false;
+    $params['hidden_input_idagent_name'] = 'id_agent_module';
+    $params['print_hidden_input_idagent'] = true;
+
+    $table->data[1][1] = ui_print_agent_autocomplete_input($params);
+
+    $output .= html_print_table($table, true);
+
+    $output .= '</div>';
+
+    if ($return) {
+        return $output;
+    }
+
+    echo $output;
+
+}
+
+
+function snmp_browser_print_create_policy()
+{
+    $table = new stdClass();
+
+    $table->width = '100%';
+    $table->class = 'databox filters';
+    $table->style = [];
+    $table->style[0] = 'font-weight: bold; vertical-align: top';
+    $table->data = [];
+
+    $table->data[0][0] = __('Name');
+    $table->data[0][1] = html_print_input_text('name', $name, '', '60%', 150, true);
+
+    $table->data[1][0] = __('Group');
+    $table->data[1][1] = html_print_select_groups(
+        false,
+        'AW',
+        false,
+        'id_group',
+        $id_group,
+        '',
+        '',
+        '',
+        true
+    );
+    $table->data[1][1] .= ' <span id="group_preview">';
+    $table->data[1][1] .= ui_print_group_icon($id_group, true, 'groups_small', '', false);
+    $table->data[1][1] .= '</span>';
+
+    $table->data[2][0] = __('Description');
+    $table->data[2][1] = html_print_textarea('description', 3, 30, $description, '', true);
+
+    $output = '<form method="post" id="snmp_browser_add_policy_form">';
+    $output .= html_print_table($table, true);
+    $output .= '</form>';
+
+    return $output;
+
+}

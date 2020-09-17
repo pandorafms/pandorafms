@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.740
-%define release     191122
+%define version     7.0NG.749
+%define release     200917
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2
@@ -49,7 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
+cp -aRf . $RPM_BUILD_ROOT%{prefix}/pandora_console
 if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec ] ; then
    rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec
 fi

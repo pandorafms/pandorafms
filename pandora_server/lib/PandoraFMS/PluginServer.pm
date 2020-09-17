@@ -179,7 +179,7 @@ sub data_consumer ($$) {
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
-			my $macros = decode_json(encode_utf8($module->{'macros'}));
+			my $macros = JSON->new->allow_nonref->decode(encode_utf8($module->{'macros'}));
 			my %macros = %{$macros};
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
@@ -227,6 +227,7 @@ sub data_consumer ($$) {
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',

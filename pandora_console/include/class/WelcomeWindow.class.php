@@ -154,7 +154,7 @@ class WelcomeWindow extends Wizard
             target: $('#welcome_modal_window'),
             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
             modal: {
-                title: "<?php echo __('Welcome to Pandora FMS'); ?>",
+                title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
                 cancel: '<?php echo __('Do not show anymore'); ?>',
                 ok: '<?php echo __('Close'); ?>'
             },
@@ -396,7 +396,11 @@ class WelcomeWindow extends Wizard
             $logo_url = ENTERPRISE_DIR.'/';
         }
 
-        $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
+        if (empty($config['custom_logo_white_bg']) === false) {
+            $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
+        } else {
+            $logo_url .= 'images/custom_logo/pandora_logo_head_white_bg.png';
+        }
 
         $inputs = [
             [

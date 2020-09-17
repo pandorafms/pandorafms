@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.740
-%define release     191122
+%define version     7.0NG.749
+%define release     200917
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -110,20 +110,34 @@ exit 0
 
 %post
 # Initial installation
-if [ "$1" = 1 ]; then
-   /sbin/chkconfig --add pandora_server
-   /sbin/chkconfig --add tentacle_serverd
-   /sbin/chkconfig pandora_server on 
-   /sbin/chkconfig tentacle_serverd on 
+# Run when not uninstalling
+if [ "$1" -ge 1 ]
+then
+        if [ `command -v systemctl` ]
+        then
+                echo "Copying new version for tentacle_serverd service"
+                cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+                chmod -x /usr/lib/systemd/system/tentacle_serverd.service
+        # Enable the services on SystemD
+                systemctl enable tentacle_serverd.service     
+        else
+                /sbin/chkconfig --add tentacle_serverd
+                /sbin/chkconfig tentacle_serverd on 
+        fi
 
-   echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
-   echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
-   echo "The manual can be reached at: man pandora or man pandora_server"
-   echo "Pandora FMS Documentation is in: http://pandorafms.org"
-   echo " "
+        /sbin/chkconfig --add pandora_server
+        /sbin/chkconfig pandora_server on 
+
+        systemctl enable pandora_server.service
+
+        echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
+        echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
+        echo "The manual can be reached at: man pandora or man pandora_server"
+        echo "Pandora FMS Documentation is in: http://pandorafms.org"
+        echo " "
 fi
 
-# This will avoid confi files overwritting on UPGRADES.
+# This will avoid config files overwritting on UPGRADES.
 # Main configuration file
 if [ ! -e "/etc/pandora/pandora_server.conf" ]
 then
@@ -144,6 +158,14 @@ fi
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
 
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Tentacle Server daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 %preun
 
 # Upgrading
@@ -159,7 +181,7 @@ fi
 exit 0
 
 %files
-%defattr(-,root,root)
+%defattr(750,root,root)
 %doc AUTHORS COPYING README
 %{_sysconfdir}/rc.d/init.d/pandora_server
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
@@ -174,10 +196,11 @@ exit 0
 %{_mandir}/man1/pandora_server.1.gz
 %{_mandir}/man1/tentacle_server.1.gz
 
-%defattr(-,pandora,root)
+%defattr(750,pandora,root)
 %{_bindir}/pandora_exec
 %{_bindir}/pandora_server
 %{_bindir}/tentacle_server
+
 %dir %{_sysconfdir}/pandora
 %dir %{_localstatedir}/spool/pandora
 

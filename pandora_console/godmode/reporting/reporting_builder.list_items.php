@@ -386,7 +386,7 @@ if ($items) {
     }
 
     $table->head[4] = __('Time lapse');
-    $table->head[5] = __('Name').' / '.__('Description');
+    $table->head[5] = __('Name or Description');
     if (check_acl($config['id_user'], 0, 'RM')) {
         $table->head[6] = '<span title="'.__('Options').'">'.__('Op.').'</span>';
         if ($report_w || $report_m) {
@@ -455,7 +455,7 @@ foreach ($items as $item) {
 
     if ($item['type'] == 'custom_graph') {
         $custom_graph_name = db_get_row_sql('SELECT name FROM tgraph WHERE id_graph = '.$item['id_gs']);
-        $row[1] = get_report_name($item['type']).' ('.$custom_graph_name['name'].')';
+        $row[1] = get_report_name($item['type']).' ('.io_safe_output($custom_graph_name['name']).')';
     }
 
 
@@ -471,7 +471,7 @@ foreach ($items as $item) {
             if ($is_inventory_item) {
                 $external_source = json_decode($item['external_source'], true);
                 $agents = $external_source['id_agents'];
-                $modules = $external_source['inventory_modules'];
+                $modules = io_safe_output($external_source['inventory_modules']);
 
                 $agent_name_db = [];
                 foreach ($agents as $a) {

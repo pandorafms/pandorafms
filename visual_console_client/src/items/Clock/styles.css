@@ -15,14 +15,16 @@
 }
 
 .visual-console-item .digital-clock > span {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
-  font-size: 50px;
-
   /* To improve legibility */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
+
+.visual-console-item .digital-clock > span.time {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
+  font-size: 50px;
 }
 
 .visual-console-item .digital-clock > span.date {

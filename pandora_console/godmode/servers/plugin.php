@@ -94,7 +94,7 @@ require_once $config['homedir'].'/include/functions_filemanager.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Plugin Management'
@@ -283,7 +283,7 @@ if (($create != '') || ($view != '')) {
                 __('Plugin registration'),
                 'images/gm_servers.png',
                 false,
-                'plugin_definition',
+                '',
                 true
             );
         } else {
@@ -291,7 +291,7 @@ if (($create != '') || ($view != '')) {
                 __('Plugin update'),
                 'images/gm_servers.png',
                 false,
-                'plugin_definition',
+                '',
                 true
             );
         }
@@ -391,14 +391,14 @@ if (($create != '') || ($view != '')) {
     }
 
     $data = [];
-    $data[0] = __('Plugin command');
+    $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
     $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
     if ($locked) {
         $data[1] .= html_print_image('images/lock.png', true, ['class' => 'command_advanced_conf lock']);
     }
 
     $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" style="vertical-align: bottom;">';
-    $data[1] .= html_print_image('images/file.png', true);
+    $data[1] .= html_print_image('images/file.png', true, false, false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
 

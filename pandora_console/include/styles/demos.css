@@ -1,0 +1,103 @@
+/*
+ * ---------------------------------------------------------------------
+ * - INSTALLING DB FOR DEMOS                                           -
+ * ---------------------------------------------------------------------
+ */
+
+.textBanner,
+h1,
+p {
+  font-family: "Open Sans", "lato-bolder", sans-serif;
+  font-size: 1vw;
+  color: #3f3f3f;
+}
+
+h1 {
+  font-size: 2vw;
+  margin-bottom: 40px;
+  text-transform: none;
+}
+
+p {
+  font-size: 1vw;
+}
+
+#demo_side_left {
+  position: absolute;
+  width: 342px;
+  height: 1000px;
+  background-image: url(/pandora_console/images/demo_background_left.png);
+  z-index: 0;
+}
+
+#demo_side_right {
+  position: absolute;
+  width: 640px;
+  height: 1000px;
+  right: 0;
+  background-image: url(/pandora_console/images/demo_background_right.png);
+  z-index: 0;
+}
+
+#demo_side_center {
+  position: relative;
+}
+
+#spinner_logo_demo {
+  background: url(/pandora_console/images/demo_logo_spinner.gif) no-repeat;
+  margin: 0 auto;
+  width: 350px;
+  height: 350px;
+}
+
+#text_message_demo {
+  text-align: center;
+}
+
+div#header_demo {
+  width: 100%;
+  height: 65px;
+}
+
+div.text_banner_demo {
+  width: 100%;
+  margin: 20px 0 60px;
+  text-align: center;
+}
+
+.textBanner {
+  font-size: 3vw;
+}
+
+.textProduct {
+  color: #82b92e;
+}
+
+div#container_demo {
+  width: 100%;
+  margin-top: 100px;
+}
+
+div#list_icon_docs_support {
+  float: left;
+  margin-top: 25px;
+  margin-left: 5%;
+}
+
+div#list_icon_docs_support ul {
+  margin-top: 5px;
+  line-height: 36px;
+}
+
+div#list_icon_docs_support ul li {
+  display: inline-block;
+  color: #979797;
+  vertical-align: middle;
+  margin-right: 5px;
+  font-size: 10pt;
+}
+
+div#list_icon_docs_support ul li a {
+  color: #979797;
+  font-size: 10pt;
+}

@@ -49,11 +49,10 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 
-$label    = get_parameter('label');
-$label    = base64_decode($label);
-$id       = get_parameter('id');
-$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id);
-$alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
+$id          = get_parameter('id');
+$id_agent    = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id);
+$alias       = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
+$label       = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id);
 // $agent = agents_get_agent_with_ip ("192.168.50.31");
 // $label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));
 ?>
@@ -74,6 +73,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
         <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
+        <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
@@ -117,8 +117,6 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
         $period = get_parameter('period');
         $id     = get_parameter('id', 0);
-        $label = get_parameter('label', '');
-        $label_graph = base64_decode(get_parameter('label', ''));
         $start_date = get_parameter('start_date', date('Y/m/d'));
         $start_time = get_parameter('start_time', date('H:i:s'));
         $draw_events = get_parameter('draw_events', 0);
@@ -178,7 +176,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 
 
         // Graph.
-        echo '<div style="padding-top: 60px;">';
+        echo '<div style="padding-top: 60px; padding-right: 30px;">';
         $width  = '90%';
         $height = '450';
 
@@ -190,7 +188,7 @@ $alias    = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
                     'agent_module_id' => $id,
                     'period'          => $period,
                     'show_events'     => $draw_events,
-                    'title'           => $label_graph,
+                    'title'           => $label,
                     'unit_name'       => $unit,
                     'show_alerts'     => $draw_alerts,
                     'date'            => $date,

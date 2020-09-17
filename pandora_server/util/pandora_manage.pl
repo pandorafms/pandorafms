@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.740 PS191122";
+my $version = "7.0NG.749 PS200917";
 
 # save program name for logging
 my $progname = basename($0);
@@ -121,6 +121,7 @@ sub help_screen{
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agent_status', '<agent_name> [<use_alias>]', 'Get the status of an agent');
 	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
@@ -194,7 +195,7 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent> <use_alias>]", 'Add event');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
@@ -243,6 +244,8 @@ sub help_screen{
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
+	print "\nEVENTS\n\n" unless $param ne '';
+	help_screen_line('--event_in_progress', '<id_event> ', 'Set event in progress');
 
 	print "\n";
 	exit;
@@ -254,7 +257,7 @@ sub help_screen{
 sub api_call($$$;$$$$) {
 	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
-	
+ 
 	eval {
 		# Set the parameters for the POST request.
 		my $params = {};
@@ -640,9 +643,9 @@ sub pandora_delete_module_data ($$) {
 	my $buffer = 1000;
 	
 	while(1) {
-		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=?', $id_module);
+		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_inc WHERE id_agente_modulo=?', $id_module);
+		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_log4x WHERE id_agente_modulo=?', $id_module);
 		my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		
 		my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
@@ -652,19 +655,19 @@ sub pandora_delete_module_data ($$) {
 		}
 		
 		if($nd > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndinc > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_inc', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	
 		if($ndlog4x > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_log4x', 'id_agente_modulo='.$id_module, $buffer);
 		}
 		
 		if($ndstring > 0) {
-			db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit($dbh, 'tagente_datos_string', 'id_agente_modulo='.$id_module, $buffer);
 		}
 	}
 		
@@ -784,7 +787,7 @@ sub pandora_get_agent_status ($$) {
 	return 'normal' unless $normal == 0;
 	return 'normal' unless $normal == 0;
 		
-	return '';
+	return 'not_init';
 }
 
 ##########################################################################
@@ -1126,8 +1129,13 @@ sub cli_create_agent() {
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+	my $agent_id = pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
 		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
+
+	# Create address for this agent in taddress.
+  if (defined($address)) {
+      pandora_add_agent_address($conf, $agent_id, $agent_name, $address, $dbh);
+  }
 }
 
 ##############################################################################
@@ -1142,6 +1150,11 @@ sub cli_delete_agent() {
 	my $id_agent;
 	
 	$agent_name = decode_entities($agent_name);
+
+	if(is_metaconsole($conf) != 1 and pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete an agent go to metaconsole. \n\n";
+		exit;
+	}
 
 	if (is_metaconsole($conf) == 1) {
 		if (not defined $use_alias) {
@@ -4089,10 +4102,10 @@ sub cli_create_event() {
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			# Base64 encode custom data
-			$custom_data = encode_base64 ($custom_data);
+			$custom_data = encode_base64 ($custom_data, '');
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4139,10 +4152,10 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		# Base64 encode custom data
-		$custom_data = encode_base64 ($custom_data);
+		$custom_data = encode_base64 ($custom_data, '');
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 
 	}
 }
@@ -4329,7 +4342,7 @@ sub cli_add_event_comment() {
 	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
-	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
 	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
@@ -4416,7 +4429,7 @@ sub cli_delete_data($) {
 		
 				print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-				pandora_delete_data($dbh, 'module', $id_agent);
+				pandora_delete_data($dbh, 'agent', $id_agent);
 			}
 		} else {
 			my $id_agent = get_agent_id($dbh,$name);
@@ -4424,7 +4437,7 @@ sub cli_delete_data($) {
 		
 			print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
-			pandora_delete_data($dbh, 'module', $id_agent);
+			pandora_delete_data($dbh, 'agent', $id_agent);
 		}
 	}
 	elsif($opt eq '-g' || $opt eq '--g') {
@@ -4843,6 +4856,36 @@ sub cli_get_agent_modules() {
 		}
 	}
 }
+
+##############################################################################
+# Show the status of an agent
+# Related option: --get_agent_status
+##############################################################################
+
+sub cli_get_agent_status() {
+	my ($agent_name,$use_alias) = @ARGV[2..3];
+
+	my @id_agents;
+	my $id_agent;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			exist_check($id->{'id_agente'},'agent',$agent_name);
+
+			my $agent_status = pandora_get_agent_status($dbh,$id->{'id_agente'});
+
+			print pandora_get_agent_status($dbh,$id->{'id_agente'})."\n";
+		}
+	} else {
+		$id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+
+		print pandora_get_agent_status($dbh,$id_agent)."\n";
+	}
+}
+
 
 ##############################################################################
 # Show id, name and id_server of an agent given alias
@@ -7464,6 +7507,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
 		}
+		elsif ($param eq '--get_agent_status') {
+			param_check($ltotal, 2, 1);
+			cli_get_agent_status();
+		}
 		elsif ($param eq '--get_agents_id_name_by_alias') {
 			param_check($ltotal, 2,1);
 			cli_get_agents_id_name_by_alias();
@@ -7671,6 +7718,9 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--reset_agent_counts') {
 			param_check($ltotal, 1, 0);
 			cli_reset_agent_counts();
+		}elsif ($param eq '--event_in_progress') {
+			param_check($ltotal, 1, 0);
+			cli_event_in_progress();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -8319,4 +8369,21 @@ sub cli_reset_agent_counts() {
 	my $result = api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
 	print "$result \n\n ";
 
+}
+
+
+##############################################################################
+# Set an event in progress.
+# Related option: --event_in_progress
+##############################################################################
+
+sub cli_event_in_progress() {
+	my $event_id = @ARGV[2];
+
+	# Call the API.
+	my $result = api_call(
+		$conf, 'set', 'event_in_progress', $event_id
+	);
+
+	print "\n$result\n";
 }

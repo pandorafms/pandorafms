@@ -3,7 +3,8 @@ import {
   modulePropsDecoder,
   parseIntOr,
   decodeBase64,
-  stringIsEmpty
+  stringIsEmpty,
+  t
 } from "../lib";
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 

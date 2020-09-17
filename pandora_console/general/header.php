@@ -13,6 +13,8 @@
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
 require_once 'include/functions_notifications.php';
+require_once 'include/ajax/order_interpreter.php';
+ui_require_css_file('order_interpreter');
 
 // Check permissions
 // Global errors/warnings checking.
@@ -79,13 +81,6 @@ if ($config['menu_type'] == 'classic') {
         }
 
 
-        // Chat messages.
-        $header_chat = "<div id='header_chat'><span id='icon_new_messages_chat' style='display: none;'>";
-        $header_chat .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-        $header_chat .= html_print_image('images/header_chat_gray.png', true, ['title' => __('New chat message')]);
-        $header_chat .= '</a></span></div>';
-
-
         // Search.
         $acl_head_search = true;
         if ($config['acl_enterprise'] == 1 && !users_is_admin()) {
@@ -99,7 +94,8 @@ if ($config['menu_type'] == 'classic') {
 
         if ($acl_head_search) {
             // Search bar.
-            $search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
+            $search_bar = '<form autocomplete="off" method="get" style="display: inline;" name="quicksearch" action="">';
+            '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
             } else {
@@ -110,7 +106,7 @@ if ($config['menu_type'] == 'classic') {
                 }
             }
 
-            $search_bar .= '<input type="text" id="keywords" name="keywords"';
+            $search_bar .= '<input id="keywords" name="keywords"';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= "value='".__('Enter keywords to search')."'";
             } else if (strlen($config['search_keywords']) == 0) {
@@ -119,9 +115,11 @@ if ($config['menu_type'] == 'classic') {
                 $search_bar .= "value='".$config['search_keywords']."'";
             }
 
-            $search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="javascript: fieldKeyWordEmpty = false;" class="search_input" />';
+            $search_bar .= 'type="search" onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+                    onkeyup="showinterpreter()" class="search_input"/>';
 
+
+            $search_bar .= '<div id="result_order" class="result_order"></div>';
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
@@ -175,7 +173,7 @@ if ($config['menu_type'] == 'classic') {
                     break;
 
                     case 'Dashboard':
-                        $_GET['sec2'] = 'enterprise/dashboard/main_dashboard';
+                        $_GET['sec2'] = 'operation/dashboard/dashboard';
                     break;
 
                     case 'Visual console':
@@ -208,84 +206,108 @@ if ($config['menu_type'] == 'classic') {
             $select[0]['autorefresh_white_list']
         );
 
-        if ($autorefresh_list !== null
-            && array_search($_GET['sec2'], $autorefresh_list) !== false
+        if ($config['legacy_vc']
+            || ($_GET['sec2'] !== 'operation/visual_console/render_view')
+            || (($_GET['sec2'] !== 'operation/visual_console/render_view')
+            && $config['legacy_vc'])
         ) {
-            $do_refresh = true;
-            if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                    $do_refresh = false;
+            if ($autorefresh_list !== null
+                && array_search($_GET['sec2'], $autorefresh_list) !== false
+            ) {
+                $do_refresh = true;
+                if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
+                    if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
+                        $do_refresh = false;
+                    }
                 }
-            }
 
-            if ($do_refresh) {
+                if ($do_refresh) {
+                    $autorefresh_img = html_print_image(
+                        'images/header_refresh_gray.png',
+                        true,
+                        [
+                            'class' => 'bot',
+                            'alt'   => 'lightning',
+                            'title' => __('Configure autorefresh'),
+                        ]
+                    );
+
+                    if ((isset($select[0]['time_autorefresh']) === true)
+                        && $select[0]['time_autorefresh'] !== 0
+                        && $config['refr'] === null
+                    ) {
+                        $config['refr'] = $select[0]['time_autorefresh'];
+                        $autorefresh_txt .= ' (<span id="refrcounter">';
+                        $autorefresh_txt .= date(
+                            'i:s',
+                            $config['refr']
+                        );
+                        $autorefresh_txt .= '</span>)';
+                    } else if ($_GET['refr']) {
+                        $autorefresh_txt .= ' (<span id="refrcounter">';
+                        $autorefresh_txt .= date('i:s', $config['refr']);
+                        $autorefresh_txt .= '</span>)';
+                    }
+
+                    $ignored_params['refr'] = '';
+                    $values = get_refresh_time_array();
+
+                    $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
+                    $autorefresh_additional .= html_print_select(
+                        $values,
+                        'ref',
+                        '',
+                        '',
+                        __('Select'),
+                        '0',
+                        true,
+                        false,
+                        false
+                    );
+                    $autorefresh_additional .= '</span>';
+                    unset($values);
+                    if ($home_page != '') {
+                        $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
+                    } else {
+                        $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
+                    }
+
+                    if ($_GET['refr']
+                        || ((isset($select[0]['time_autorefresh']) === true)
+                        && $select[0]['time_autorefresh'] !== 0)
+                    ) {
+                        if ($home_page != '') {
+                            $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
+                        } else {
+                            $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
+                        }
+                    } else {
+                        $autorefresh_link_open_txt = '<a>';
+                    }
+
+                    $autorefresh_link_close = '</a>';
+                    $display_counter = 'display:block';
+                } else {
+                    $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+
+                    $ignored_params['refr'] = false;
+
+                    $autorefresh_link_open_img = '';
+                    $autorefresh_link_open_txt = '';
+                    $autorefresh_link_close = '';
+
+                    $display_counter = 'display:none';
+                }
+            } else {
                 $autorefresh_img = html_print_image(
-                    'images/header_refresh_gray.png',
+                    'images/header_refresh_disabled_gray.png',
                     true,
                     [
-                        'class' => 'bot',
+                        'class' => 'bot autorefresh_disabled',
                         'alt'   => 'lightning',
-                        'title' => __('Configure autorefresh'),
+                        'title' => __('Disabled autorefresh'),
                     ]
                 );
-
-                if ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0
-                    && $config['refr'] === null
-                ) {
-                    $config['refr'] = $select[0]['time_autorefresh'];
-                    $autorefresh_txt .= ' (<span id="refrcounter">';
-                    $autorefresh_txt .= date(
-                        'i:s',
-                        $config['refr']
-                    );
-                    $autorefresh_txt .= '</span>)';
-                } else if ($_GET['refr']) {
-                    $autorefresh_txt .= ' (<span id="refrcounter">';
-                    $autorefresh_txt .= date('i:s', $config['refr']);
-                    $autorefresh_txt .= '</span>)';
-                }
-
-                $ignored_params['refr'] = '';
-                $values = get_refresh_time_array();
-
-                $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-                $autorefresh_additional .= html_print_select(
-                    $values,
-                    'ref',
-                    '',
-                    '',
-                    __('Select'),
-                    '0',
-                    true,
-                    false,
-                    false
-                );
-                $autorefresh_additional .= '</span>';
-                unset($values);
-                if ($home_page != '') {
-                    $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
-                } else {
-                    $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
-                }
-
-                if ($_GET['refr']
-                    || ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0)
-                ) {
-                    if ($home_page != '') {
-                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
-                    } else {
-                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
-                    }
-                } else {
-                    $autorefresh_link_open_txt = '<a>';
-                }
-
-                $autorefresh_link_close = '</a>';
-                $display_counter = 'display:block';
-            } else {
-                $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
 
                 $ignored_params['refr'] = false;
 
@@ -295,38 +317,20 @@ if ($config['menu_type'] == 'classic') {
 
                 $display_counter = 'display:none';
             }
-        } else {
-            $autorefresh_img = html_print_image(
-                'images/header_refresh_disabled_gray.png',
-                true,
-                [
-                    'class' => 'bot autorefresh_disabled',
-                    'alt'   => 'lightning',
-                    'title' => __('Disabled autorefresh'),
-                ]
-            );
 
-            $ignored_params['refr'] = false;
+            $header_autorefresh = '<div id="header_autorefresh">';
+            $header_autorefresh .= $autorefresh_link_open_img;
+            $header_autorefresh .= $autorefresh_img;
+            $header_autorefresh .= $autorefresh_link_close;
+            $header_autorefresh .= '</div>';
 
-            $autorefresh_link_open_img = '';
-            $autorefresh_link_open_txt = '';
-            $autorefresh_link_close = '';
-
-            $display_counter = 'display:none';
+            $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
+            $header_autorefresh_counter .= $autorefresh_link_open_txt;
+            $header_autorefresh_counter .= $autorefresh_txt;
+            $header_autorefresh_counter .= $autorefresh_link_close;
+            $header_autorefresh_counter .= $autorefresh_additional;
+            $header_autorefresh_counter .= '</div>';
         }
-
-        $header_autorefresh = '<div id="header_autorefresh">';
-        $header_autorefresh .= $autorefresh_link_open_img;
-        $header_autorefresh .= $autorefresh_img;
-        $header_autorefresh .= $autorefresh_link_close;
-        $header_autorefresh .= '</div>';
-
-        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
-        $header_autorefresh_counter .= $autorefresh_link_open_txt;
-        $header_autorefresh_counter .= $autorefresh_txt;
-        $header_autorefresh_counter .= $autorefresh_link_close;
-        $header_autorefresh_counter .= $autorefresh_additional;
-        $header_autorefresh_counter .= '</div>';
 
         // Button for feedback pandora.
         if (enterprise_installed()) {
@@ -406,7 +410,7 @@ if ($config['menu_type'] == 'classic') {
 
         echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
@@ -519,15 +523,34 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    function print_toast(title, subtitle, severity, url, id, onclick) {
+    function closeToast(event) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
+        var div_id = document.getElementById(match.input);
+        $(div_id).attr("hidden",true);
+    }
+
+    function print_toast(title, subtitle, severity, url, id, onclick, closeToast) {
         // TODO severity.
         severity = '';
-
         // Start the toast.
+
+        var parent_div = document.createElement('div');
+
+        // Print close image
+        var img = document.createElement('img');
+        img.setAttribute('id', id);
+        img.setAttribute("src", './images/close_button_dialog.png');
+        img.setAttribute('onclick', closeToast);
+        img.setAttribute('style', 'margin-left: 95%;');
+        parent_div.appendChild(img);
+
+        // Print a element
         var toast = document.createElement('a');
-        toast.setAttribute('onclick', onclick);
-        toast.setAttribute('href', url);
         toast.setAttribute('target', '_blank');
+        toast.setAttribute('href', url);
+        toast.setAttribute('onclick', onclick);
+
+        var link_div = document.createElement('div');
 
         // Fill toast.
         var toast_div = document.createElement('div');
@@ -537,9 +560,13 @@ if ($config['menu_type'] == 'classic') {
         var toast_text = document.createElement('p');
         toast_title.innerHTML = title;
         toast_text.innerHTML = subtitle;
-        toast_div.appendChild(toast_title);
+
+        // Append Elements
+        toast_div.appendChild(img);
+        link_div.appendChild(toast_title);
+        toast.appendChild(link_div);
+        toast_div.appendChild(toast);
         toast_div.appendChild(toast_text);
-        toast.appendChild(toast_div);
 
         // Show and program the hide event.
         toast_div.className = toast_div.className + ' show';
@@ -547,15 +574,35 @@ if ($config['menu_type'] == 'classic') {
             toast_div.className = toast_div.className.replace("show", "");
         }, 8000);
 
-        return toast;
-    }
+        toast_div.appendChild(parent_div);
 
+        return toast_div;
+    }
+  
     function check_new_notifications() {
         var last_id = document.getElementById('notification-ball-header')
             .getAttribute('last_id');
         if (last_id === null) {
             console.error('Cannot retrieve notifications ball last_id.');
             return;
+        }
+
+        // Get notifications buffer in local storage.
+        var user_notifications = localStorage.getItem('user_notifications');
+
+        if (user_notifications !== null && user_notifications.length) {
+            var user_notifications_parsed = JSON.parse(user_notifications);
+            var current_timestamp = Math.floor(Date.now() / 1000);
+
+            // Remove old notifications from local storage.
+            user_notifications_parsed_updated = user_notifications_parsed.filter(function(notification) {
+                return (notification.item_datetime > current_timestamp - 90);
+            });
+
+            if (user_notifications_parsed_updated.length !== user_notifications_parsed.length) {
+                localStorage.setItem('user_notifications', JSON.stringify(user_notifications_parsed_updated));
+                user_notifications_parsed = user_notifications_parsed_updated;
+            }
         }
 
         jQuery.post ("ajax.php",
@@ -596,20 +643,43 @@ if ($config['menu_type'] == 'classic') {
                     not_drop.removeChild(not_drop.firstChild);
                 }
 
-                // Add the new toasts.
-                if (Array.isArray(data.new_notifications)) {
-                    data.new_notifications.forEach(function(ele) {
-                        toast_wrapper.appendChild(
-                            print_toast(
-                                ele.subject,
-                                ele.mensaje,
-                                ele.criticity,
-                                ele.full_url,
-                                'notification-toast-id-' + ele.id_mensaje,
-                                'click_on_notification_toast(event)'
-                            )
-                        );
-                    });
+                // Prevent to print toasts if tab is not active.
+                if (document.hidden === false) {
+                    var localStorageItemsArray = [];
+
+                    // Add the new toasts.
+                    if (Array.isArray(data.new_notifications)) {
+                        data.new_notifications.forEach(function(ele) {
+                            // Keep track of notifications in browser local storage to avoid displaying toasts more than once across different tabs for a specific user.
+                            if (typeof user_notifications_parsed !== "undefined") {
+                                localStorageItemsArray = user_notifications_parsed;
+
+                                // Check if toast has already been fired and therefore it should be skipped.
+                                if (localStorageItemsArray.some(function(item) {
+                                    return item.message_id == ele.id_mensaje && ele.id_usuario_origen == ele.id_usuario_origen
+                                })) {
+                                    return;
+                                }
+
+                            }
+
+                            localStorageItemsArray.push({message_id: ele.id_mensaje, source_user_id: ele.id_usuario_origen, item_datetime: Math.floor(Date.now() / 1000)});
+
+                            localStorage.setItem('user_notifications', JSON.stringify(localStorageItemsArray));
+                            
+                            toast_wrapper.appendChild(
+                                print_toast(
+                                    ele.subject,
+                                    ele.mensaje,
+                                    ele.criticity,
+                                    ele.full_url,
+                                    'notification-toast-id-' + ele.id_mensaje,
+                                    'click_on_notification_toast(event)',
+                                    'closeToast(event)'
+                                )
+                            );
+                        });
+                    }
                 }
             },
             "json"
@@ -622,15 +692,91 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    // Resize event
+    // Resize event.
     window.addEventListener("resize", function() {
         attatch_to_image();
     });
 
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 
-    var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
+    function showinterpreter(){
 
+        document.onclick = function(e) {
+            $('#result_order').hide();
+            $('#keywords').addClass('search_input');
+            $('#keywords').removeClass('results-found');
+            $('#keywords').value = '';
+            $('#keywords').attr('placeholder','Enter keywords to search');
+        }
+
+        if(event.keyCode == 13 && $("#result_items li.active").length != 0 )
+        {
+            window.location = $('#result_items').find("li.active a").attr('href');
+        }
+        var code = event.key;
+        switch (code){
+            case 'ArrowDown':
+                if($("#result_items li.active").length!=0)
+                {
+                    var storeTarget = $('#result_items').find("li.active").next();
+                    $("#result_items li.active").removeClass("active");
+                    storeTarget.focus().addClass("active");
+                   
+                }
+                else
+                {
+                    $('#result_items').find("li:first").focus().addClass("active");
+                }
+           return;
+
+           case 'ArrowUp':
+                if($("#result_items li.active"))
+                {
+                    var storeTarget = $('#result_items').find("li.active").prev();
+                    $("#result_items li.active").removeClass("active");
+                    storeTarget.focus().addClass("active");
+                }
+                else
+                {
+                    $('#result_items').find("li:first").focus().addClass("active");
+                }
+           return;
+                
+           case 'ArrowRight':
+           return;
+           case 'ArrowLeft':
+           return;
+
+        }
+        
+        if( $('#keywords').val() === ''){
+            $('#keywords').addClass('search_input');
+            $('#keywords').removeClass('results-found');
+            $('#result_order').hide();
+            $('#keywords').attr('placeholder','Enter keywords to search');
+        }else {
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "html",
+                data: {
+                    page: 'include/ajax/order_interpreter',
+                    method: 'getResult',
+                    text: $('#keywords').val(),
+                },
+                success: function (data) {
+                   $('#result_order').html(data);
+                },
+                error: function (data) {
+                    console.error("Fatal error in AJAX call to interpreter order", data)
+                }
+            });
+            $('#keywords').removeClass('search_input');
+            $('#keywords').addClass('results-found');
+            $('#result_order').show();
+
+        }
+    }
     /**
     * Loads modal from AJAX to add feedback.
     */
@@ -666,7 +812,7 @@ if ($config['menu_type'] == 'classic') {
     $(document).ready (function () {
 
         // Check new notifications on a periodic way
-        setInterval(check_new_notifications, 10000);
+        setInterval(check_new_notifications, 60000);
 
         // Print the wrapper for notifications
         var notifications_toasts_wrapper = document.createElement('div');
@@ -690,9 +836,7 @@ if ($config['menu_type'] == 'classic') {
                 }
             }
 
-            $new_dashboard = get_parameter('new_dashboard', 0);
-
-            if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
+            if ($_GET['sec2'] == 'operation/dashboard/dashboard' && $new_dashboard) {
                 $do_refresh = false;
             }
         }
@@ -702,9 +846,7 @@ if ($config['menu_type'] == 'classic') {
             $('div#head').addClass('fixed_header');
             $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
-        
-        check_new_chats_icon('icon_new_messages_chat');
-        
+      
         /* Temporal fix to hide graphics when ui_dialog are displayed */
         $("#yougotalert").click(function () { 
             $("#agent_access").css("display", "none");

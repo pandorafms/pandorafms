@@ -84,7 +84,7 @@ $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
 $get_comments = get_parameter('get_comments', 0);
 $get_events_fired = (bool) get_parameter('get_events_fired');
-
+$get_id_source_event = get_parameter('get_id_source_event');
 if ($get_comments) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
@@ -128,7 +128,7 @@ if ($get_comments) {
         );
 
         if ($events !== false) {
-            $event = $events[0];
+            $event = $events;
         }
     }
 
@@ -231,7 +231,7 @@ if ($save_event_filter) {
     $values['id_name'] = get_parameter('id_name');
     $values['id_group'] = get_parameter('id_group');
     $values['event_type'] = get_parameter('event_type');
-    $values['severity'] = get_parameter('severity');
+    $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
     $values['text_agent'] = get_parameter('text_agent');
@@ -253,7 +253,7 @@ if ($save_event_filter) {
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
-
+    $values['id_source_event'] = get_parameter('id_source_event');
     $exists = (bool) db_get_value_filter(
         'id_filter',
         'tevent_filter',
@@ -278,7 +278,7 @@ if ($update_event_filter) {
     $id = get_parameter('id');
     $values['id_group'] = get_parameter('id_group');
     $values['event_type'] = get_parameter('event_type');
-    $values['severity'] = get_parameter('severity');
+    $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
     $values['text_agent'] = get_parameter('text_agent');
@@ -300,6 +300,7 @@ if ($update_event_filter) {
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
+    $values['id_source_event'] = get_parameter('id_source_event');
 
     if (io_safe_output($values['tag_with']) == '["0"]') {
         $values['tag_with'] = '[]';
@@ -376,8 +377,9 @@ if ($load_filter_modal) {
     }
 
     $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    if (!is_metaconsole()) {
-        $table->style[0] = 'width: 50%; width:50%;';
+    $filter_id_width = '200px';
+    if (is_metaconsole()) {
+        $filter_id_width = '150px';
     }
 
     $data = [];
@@ -390,7 +392,12 @@ if ($load_filter_modal) {
         '',
         __('None'),
         0,
-        true
+        true,
+        false,
+        true,
+        '',
+        false,
+        'margin-left:5px; width:'.$filter_id_width.';'
     );
     $data[1] = html_print_submit_button(
         __('Load filter'),
@@ -411,10 +418,11 @@ function show_filter() {
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 450
     });
 }
-
+//aki
 function load_form_filter() {
     jQuery.post (
         "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -431,8 +439,10 @@ function load_form_filter() {
                     $("#id_group").val(val);
                 if (i == 'event_type')
                     $("#event_type").val(val);
-                if (i == 'severity')
-                    $("#severity").val(val);
+                if (i == 'severity') {
+                    const multiple = val.split(",");
+                    $("#severity").val(multiple);
+                }
                 if (i == 'status')
                     $("#status").val(val);
                 if (i == 'search')
@@ -465,6 +475,8 @@ function load_form_filter() {
                     $("#text-id_extra").val(val);
                 if (i == 'user_comment')
                     $("#text-user_comment").val(val);
+                if (i == 'id_source_event')
+                    $("#text-id_source_event").val(val);
             });
             reorder_tags_inputs();
             // Update the info with the loaded filter
@@ -685,7 +697,8 @@ function save_new_filter() {
             "date_to": $("#text-date_to").val(),
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
-            "user_comment": $("#text-user_comment").val()
+            "user_comment": $("#text-user_comment").val(),
+            "id_source_event": $("#text-id_source_event").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -754,7 +767,9 @@ function save_update_filter() {
         "date_to": $("#text-date_to").val(),
         "source": $("#text-source").val(),
         "id_extra": $("#text-id_extra").val(),
-        "user_comment": $("#text-user_comment").val()
+        "user_comment": $("#text-user_comment").val(),
+        "id_source_event": $("#text-id_source_event").val()
+
         },
         function (data) {
             $(".info_box").hide();
@@ -856,6 +871,11 @@ if ($get_response_description) {
 }
 
 if ($get_response_params) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $params = db_get_value('params', 'tevent_response', 'id', $response_id);
@@ -870,6 +890,11 @@ if ($get_response_params) {
 }
 
 if ($get_response_target) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = (int) get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id');
@@ -886,6 +911,11 @@ if ($get_response_target) {
 }
 
 if ($get_response) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
@@ -902,11 +932,25 @@ if ($get_response) {
 if ($perform_event_response) {
     global $config;
 
-    $command = get_parameter('target', '');
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
 
+    $target = get_parameter('target', '');
     $response_id = get_parameter('response_id');
+    $event_id = (int) get_parameter('event_id');
+    $server_id = (int) get_parameter('server_id', 0);
+
+    if (empty($target)) {
+        $command = events_get_response_target($event_id, $response_id, $server_id);
+    } else {
+        $command = $target;
+    }
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
+
+    $command_timeout = $event_response !== false ? $event_response['command_timeout'] : 90;
 
     if (enterprise_installed()) {
         if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
@@ -939,7 +983,11 @@ if ($perform_event_response) {
                     break;
                 }
 
-                system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' 90 '.io_safe_output($command).' 2>&1"', $ret_val);
+                if (empty($server_data['port'])) {
+                    system('ssh pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                } else {
+                    system('ssh -p '.$server_data['port'].' pandora_exec_proxy@'.$server_data['ip_address'].' "'.$timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1"', $ret_val);
+                }
             }
         } else {
             switch (PHP_OS) {
@@ -956,7 +1004,7 @@ if ($perform_event_response) {
                 break;
             }
 
-            system($timeout_bin.' 90 '.io_safe_output($command).' 2>&1');
+            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
         }
     } else {
         switch (PHP_OS) {
@@ -973,7 +1021,13 @@ if ($perform_event_response) {
             break;
         }
 
-        system($timeout_bin.' 90 '.io_safe_output($command).' 2>&1');
+            system($timeout_bin.' '.$command_timeout.' '.io_safe_output($command).' 2>&1', $ret_val);
+    }
+
+    if ($ret_val != 0) {
+        echo "<div style='text-align:left'>";
+        echo __('Error executing response');
+        echo '</div><br>';
     }
 
     return;
@@ -981,6 +1035,11 @@ if ($perform_event_response) {
 
 if ($dialogue_event_response) {
     global $config;
+
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
 
     $event_id = get_parameter('event_id');
     $response_id = get_parameter('response_id');
@@ -990,6 +1049,7 @@ if ($dialogue_event_response) {
     $show_execute_again_btn = get_parameter('show_execute_again_btn');
     $out_iterator = get_parameter('out_iterator');
     $event_response = db_get_row('tevent_response', 'id', $response_id);
+    $server_id = get_parameter('server_id');
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
 
@@ -1033,14 +1093,16 @@ if ($dialogue_event_response) {
                 }
             } else {
                 echo "<div style='text-align:left'>";
-                echo $prompt.sprintf(__('Executing command: %s', $command));
+
+                echo $prompt."Executing command: $command";
                 echo '</div><br>';
 
                 echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
                 echo "<br><div id='response_out' style='text-align:left'></div>";
 
                 echo "<br><div id='re_exec_command' style='display:none;'>";
-                html_print_button(__('Execute again'), 'btn_str', false, 'perform_response(\''.$command.'\', '.$response_id.');', "class='sub next'");
+                html_print_button(__('Execute again'), 'btn_str', false, "perform_response({'target':'".$command."','event_id':".$event_id.",'server_id':".$server_id.'}, '.$response_id.');', "class='sub next'");
+
                 echo '</div>';
             }
         break;
@@ -1057,10 +1119,18 @@ if ($dialogue_event_response) {
 }
 
 if ($add_comment) {
+    $aviability_comment = true;
     $comment = get_parameter('comment');
+    if (preg_match('/script/i', io_safe_output($comment))) {
+        $aviability_comment = false;
+        $return = false;
+    }
+
     $event_id = get_parameter('event_id');
 
-    $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
+    if ($aviability_comment !== false) {
+        $return = events_comment($event_id, $comment, 'Added comment', $meta, $history);
+    }
 
     if ($return) {
         echo 'comment_ok';
@@ -1283,24 +1353,18 @@ if ($get_extended_event) {
     // If metaconsole switch to node to get details and custom fields.
     if ($meta) {
         $server = metaconsole_get_connection_by_id($server_id);
-        metaconsole_connect($server);
     } else {
         $server = '';
     }
 
     $details = events_page_details($event, $server);
 
-    if ($meta) {
-        metaconsole_restore_db();
-    }
-
     if (events_has_extended_info($event['id_evento']) === true) {
         $related = events_page_related($event, $server);
     }
 
     if ($meta) {
-        $server = metaconsole_get_connection_by_id($server_id);
-            metaconsole_connect($server);
+        metaconsole_connect($server);
     }
 
     $custom_fields = events_page_custom_fields($event);
@@ -1564,7 +1628,7 @@ if ($get_list_events_agents) {
     $id_agent = get_parameter('id_agent');
     $server_id = get_parameter('server_id');
     $event_type = get_parameter('event_type');
-    $severity = get_parameter('severity');
+    $severity = implode(',', get_parameter('severity', -1));
     $status = get_parameter('status');
     $search = get_parameter('search');
     $id_agent_module = get_parameter('id_agent_module');

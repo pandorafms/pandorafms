@@ -19,7 +19,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
         $server_name = '';
         $server_id = '';
         $url_hash = '';
-        $console_url = '';
+        $console_url = ui_get_full_url('/');
     } else {
         $server_name = $server_data['server_name'];
         $server_id = $server_data['id'];
@@ -95,7 +95,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row = [];
     $row['title'] = __('Warning status');
     $row['data'] = $warning_status_str;
-    $table->data['watning_status'] = $row;
+    $table->data['warning_status'] = $row;
 
     // Critical Min/Max
     if (modules_is_string_type($module['id_tipo_modulo'])) {
@@ -123,10 +123,16 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['data'] = $module_group;
     $table->data['module_group'] = $row;
 
-    // Description
     $row = [];
     $row['title'] = __('Description');
-    $row['data'] = ui_print_truncate_text($module['descripcion'], 'description', true, true, true, '[&hellip;]');
+    $row['data'] = ui_print_truncate_text(
+        $module['descripcion'],
+        'description',
+        true,
+        true,
+        true,
+        '[&hellip;]'
+    );
     $table->data['description'] = $row;
 
     // Tags
@@ -182,16 +188,16 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
             default:
                 // ~ if (is_numeric($last_data["datos"]))
-                    // ~ $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
+                // ~ $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
                 // ~ else
-                    // ~ $data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+                // ~ $data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
                 switch ($module['id_tipo_modulo']) {
                     case 15:
                         $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
                         if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                             $data = "<span title='".$last_data['datos']."' style='white-space: nowrap;'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                         } else if (is_numeric($last_data['datos'])) {
-                                $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -230,7 +236,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
                     $data = "<span title='".human_milliseconds_to_string($last_data['datos'])."' style='white-space: nowrap;'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                 } else if (is_numeric($last_data['datos'])) {
-                        $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -317,6 +323,14 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $row['title'] = __('Last data');
     $row['data'] = $last_data_str;
     $table->data['last_data'] = $row;
+
+    // Last status change.
+    $last_status_change = db_get_value('last_status_change', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+    $row = [];
+    $row['title'] = __('Last status change');
+    $time_elapsed = ($last_status_change > 0) ? human_time_comparation($last_status_change) : __('N/A');
+    $row['data'] = $time_elapsed;
+    $table->data['tags'] = $row;
 
     // End of table
     html_print_table($table);
@@ -486,7 +500,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $server_name = '';
         $server_id = '';
         $url_hash = '';
-        $console_url = '';
+        $console_url = ui_get_full_url('/');
     } else {
         $server_name = $server_data['server_name'];
         $server_id = $server_data['id'];
@@ -553,7 +567,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->head = [];
     $table->data = [];
 
-    // Agent name
+    // Agent name.
     if ($agent['disabled']) {
         $cellName = '<em>';
     } else {
@@ -562,10 +576,10 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     if (is_metaconsole()) {
         $pwd = $server_data['auth_token'];
-        // Create HASH login info
+        // Create HASH login info.
         $user = $config['id_user'];
 
-        // Extract auth token from serialized field
+        // Extract auth token from serialized field.
         $pwd_deserialiced = json_decode($pwd, true);
         $hashdata = $user.$pwd_deserialiced['auth_token'];
 
@@ -574,7 +588,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
         $cellName .= '<a href="'.$url.'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
     } else {
-        $cellName .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente'].'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+        $url = ui_get_full_url(
+            'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente']
+        );
+        $cellName .= '<a href="'.$url.'">';
+        $cellName .= '<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
     }
 
     if ($agent['disabled']) {
@@ -586,7 +604,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = $cellName;
     $table->data['name'] = $row;
 
-    // Addresses
+    // Addresses.
     $ips = [];
     $addresses = agents_get_addresses($id_agente);
     $address = agents_get_address($id_agente);
@@ -597,8 +615,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    if (!empty($addresses)) {
-        $address .= ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>', $addresses), true);
+    if (empty($addresses) === false) {
+        $address .= ui_print_help_tip(
+            __('Other IP addresses').': <br>'.implode('<br>', $addresses),
+            true
+        );
     }
 
     $row = [];
@@ -606,25 +627,27 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = $address;
     $table->data['address'] = $row;
 
-    // Agent Interval
+    // Agent Interval.
     $row = [];
     $row['title'] = __('Interval');
     $row['data'] = human_time_description_raw($agent['intervalo']);
     $table->data['interval'] = $row;
 
-    // Comments
+    // Comments.
     $row = [];
     $row['title'] = __('Description');
     $row['data'] = $agent['comentarios'];
     $table->data['description'] = $row;
 
-    // Last contact
+    // Last contact.
     $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true);
 
     if ($agent['ultimo_contacto_remoto'] == '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
     } else {
-        $last_remote_contact = ui_print_timestamp($agent['ultimo_contacto_remoto'], true);
+        $last_remote_contact = date_w_fixed_tz(
+            $agent['ultimo_contacto_remoto']
+        );
     }
 
     $row = [];
@@ -632,7 +655,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = "$last_contact / $last_remote_contact";
     $table->data['contact'] = $row;
 
-    // Next contact (agent)
+    // Next contact (agent).
     $progress = agents_get_next_contact($id_agente);
 
     $row = [];
@@ -646,19 +669,28 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     );
     $table->data['next_contact'] = $row;
 
-    // End of table
+    // End of table.
     $agent_table = html_print_table($table, true);
 
     if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
         $go_to_agent = '<div style="text-align: right;">';
 
-        if ($agent['id_os'] != 100) {
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            if (enterprise_installed()) {
+                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                    $agent['id_agente']
+                );
+                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+                $url .= '/operation/cluster/cluster';
+                $url = ui_get_full_url(
+                    $url.'&op=update&id='.$cluster->id()
+                );
+                $go_to_agent .= '<a target="_blank" href="'.$url.'">';
+                $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
+            }
+        } else {
             $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
             $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
-        } else {
-            $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$id_agente);
-            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1='.$id_agente.'">';
-            $go_to_agent .= html_print_submit_button(__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
         }
 
         $go_to_agent .= '</a>';
@@ -746,21 +778,40 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    // End of table advanced
+    // End of table advanced.
     $table_advanced = html_print_table($table, true);
     $table_advanced .= '<br>';
 
     ui_toggle($table_advanced, __('Advanced information'));
 
     if ($config['agentaccess']) {
-        $access_graph = '<div style="width:100%; height:130px;">';
-        $access_graph .= graphic_agentaccess($id_agente, 380, 120, SECONDS_1DAY, true, true);
+        $access_graph = '<div style="width:100%; height:130px; text-align:center;">';
+        $access_graph .= graphic_agentaccess(
+            $id_agente,
+            SECONDS_1DAY,
+            false
+        );
         $access_graph .= '</div>';
-        ui_toggle($access_graph, __('Agent access rate (24h)'));
+
+        ui_toggle(
+            $access_graph,
+            __('Agent access rate (24h)')
+        );
     }
 
-    $events_graph = '<div style="margin-left:10px; width:100%;">';
-    $events_graph .= graph_graphic_agentevents($id_agente, 375, 45, SECONDS_1DAY, '', true, false, true);
+    $events_graph = '<div style="width: 100%; height: 90px; display: flex; flex-direction: row; justify-content: center;">';
+    $events_graph .= graph_graphic_agentevents(
+        $id_agente,
+        '385px;',
+        45,
+        SECONDS_1DAY,
+        '',
+        true,
+        false,
+        550,
+        1,
+        $server_id
+    );
     $events_graph .= '</div><br>';
 
     ui_toggle($events_graph, __('Events (24h)'));

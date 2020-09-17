@@ -61,7 +61,7 @@ $refr = (int) get_parameter('refr', $config['vc_refr']);
 $graph_javascript = (bool) get_parameter('graph_javascript', true);
 $vc_refr = false;
 
-if (isset($config['vc_refr']) and $config['vc_refr'] != 0) {
+if (isset($config['vc_refr']) && $config['vc_refr'] != 0) {
     $view_refresh = $config['vc_refr'];
 } else {
     $view_refresh = '300';
@@ -170,7 +170,14 @@ $options['view']['active'] = true;
 if (!is_metaconsole()) {
     if (!$config['pure']) {
         $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
-        ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
+        ui_print_page_header(
+            $layout_name,
+            'images/visual_console.png',
+            false,
+            'visual_console_view',
+            false,
+            $options
+        );
     }
 
     // Set the hidden value for the javascript
@@ -181,7 +188,7 @@ if (!is_metaconsole()) {
 }
 
 if ($config['pure']) {
-    // Container of the visual map (ajax loaded)
+    // Container of the visual map (ajax loaded).
     echo '<div id="vc-container">'.visual_map_print_visual_map(
         $id_layout,
         true,
@@ -193,22 +200,32 @@ if ($config['pure']) {
         true
     ).'</div>';
 
-    // Floating menu - Start
+    // Floating menu - Start.
     echo '<div id="vc-controls" style="z-index: 999">';
 
     echo '<div id="menu_tab">';
     echo '<ul class="mn">';
 
-    // Quit fullscreen
+    // Quit fullscreen.
     echo '<li class="nomn">';
-    echo '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
+    if (!is_metaconsole()) {
+        echo '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
+    } else {
+        echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$id_layout.'&refr='.$refr.'">';
+    }
+
     echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
     echo '</a>';
     echo '</li>';
 
-    // Countdown
+    // Countdown.
     echo '<li class="nomn">';
-    echo '<div class="vc-refr">';
+    if (is_metaconsole()) {
+        echo '<div class="vc-refr-meta">';
+    } else {
+        echo '<div class="vc-refr">';
+    }
+
     echo '<div class="vc-countdown"></div>';
     echo '<div id="vc-refr-form">';
     echo __('Refresh').':';
@@ -217,16 +234,21 @@ if ($config['pure']) {
     echo '</div>';
     echo '</li>';
 
-    // Console name
+    // Console name.
     echo '<li class="nomn">';
-    echo '<div class="vc-title">'.$layout_name.'</div>';
+    if (is_metaconsole()) {
+        echo '<div class="vc-title-meta">'.$layout_name.'</div>';
+    } else {
+        echo '<div class="vc-title">'.$layout_name.'</div>';
+    }
+
     echo '</li>';
 
     echo '</ul>';
     echo '</div>';
 
     echo '</div>';
-    // Floating menu - End
+    // Floating menu - End.
     ui_require_jquery_file('countdown');
 
     ?>
@@ -235,7 +257,6 @@ if ($config['pure']) {
         body.pure {
             min-height: 100px;
             margin: 0px;
-            overflow: hidden;
             height: 100%;
             <?php
             echo 'background-color: '.$layout['background_color'].';';
@@ -300,7 +321,7 @@ $ignored_params['refr'] = '';
             
             var controls = document.getElementById('vc-controls');
             autoHideElement(controls, 1000);
-            
+
             $('select#refr').change(function (event) {
                 refr = Number.parseInt(event.target.value, 10);
                 new_count = event.target.value;

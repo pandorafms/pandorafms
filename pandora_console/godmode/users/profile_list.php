@@ -22,7 +22,7 @@ require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 
-if (! check_acl($config['id_user'], 0, 'UM')) {
+if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access User Management'
@@ -275,29 +275,29 @@ $table->align = [];
 
 $table->head['profiles'] = __('Profiles');
 
-$table->head['IR'] = 'IR'.ui_print_help_tip(__('System incidents reading'), true);
-$table->head['IW'] = 'IW'.ui_print_help_tip(__('System incidents writing'), true);
-$table->head['IM'] = 'IM'.ui_print_help_tip(__('System incidents management'), true);
-$table->head['AR'] = 'AR'.ui_print_help_tip(__('Agents reading'), true);
-$table->head['AW'] = 'AW'.ui_print_help_tip(__('Agents management'), true);
-$table->head['AD'] = 'AD'.ui_print_help_tip(__('Agents disable'), true);
-$table->head['LW'] = 'LW'.ui_print_help_tip(__('Alerts editing'), true);
-$table->head['LM'] = 'LM'.ui_print_help_tip(__('Alerts management'), true);
-$table->head['UM'] = 'UM'.ui_print_help_tip(__('Users management'), true);
-$table->head['DM'] = 'DM'.ui_print_help_tip(__('Database management'), true);
-$table->head['ER'] = 'ER'.ui_print_help_tip(__('Events reading'), true);
-$table->head['EW'] = 'EW'.ui_print_help_tip(__('Events writing'), true);
-$table->head['EM'] = 'EM'.ui_print_help_tip(__('Events management'), true);
-$table->head['RR'] = 'RR'.ui_print_help_tip(__('Reports reading'), true);
-$table->head['RW'] = 'RW'.ui_print_help_tip(__('Reports writing'), true);
-$table->head['RM'] = 'RM'.ui_print_help_tip(__('Reports management'), true);
-$table->head['MR'] = 'MR'.ui_print_help_tip(__('Network maps reading'), true);
-$table->head['MW'] = 'MW'.ui_print_help_tip(__('Network maps writing'), true);
-$table->head['MM'] = 'MM'.ui_print_help_tip(__('Network maps management'), true);
-$table->head['VR'] = 'VR'.ui_print_help_tip(__('Visual console reading'), true);
-$table->head['VW'] = 'VW'.ui_print_help_tip(__('Visual console writing'), true);
-$table->head['VM'] = 'VM'.ui_print_help_tip(__('Visual console management'), true);
-$table->head['PM'] = 'PM'.ui_print_help_tip(__('Systems management'), true);
+$table->head['IR'] = 'IR';
+$table->head['IW'] = 'IW';
+$table->head['IM'] = 'IM';
+$table->head['AR'] = 'AR';
+$table->head['AW'] = 'AW';
+$table->head['AD'] = 'AD';
+$table->head['LW'] = 'LW';
+$table->head['LM'] = 'LM';
+$table->head['UM'] = 'UM';
+$table->head['DM'] = 'DM';
+$table->head['ER'] = 'ER';
+$table->head['EW'] = 'EW';
+$table->head['EM'] = 'EM';
+$table->head['RR'] = 'RR';
+$table->head['RW'] = 'RW';
+$table->head['RM'] = 'RM';
+$table->head['MR'] = 'MR';
+$table->head['MW'] = 'MW';
+$table->head['MM'] = 'MM';
+$table->head['VR'] = 'VR';
+$table->head['VW'] = 'VW';
+$table->head['VM'] = 'VM';
+$table->head['PM'] = 'PM';
 $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
 
 $table->align = array_fill(1, 11, 'center');

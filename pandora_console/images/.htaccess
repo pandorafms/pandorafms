@@ -1,0 +1,4 @@
+#pandora disable phpexec
+<FilesMatch "\.(php)$">
+Deny from all
+</FilesMatch>

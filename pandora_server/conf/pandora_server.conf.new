@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.740
+# Version 7.0NG.749
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -164,7 +164,14 @@ network_timeout 4
 
 # Network timeout (in seconds) for timeout in remote execution commands (PANDORA FMS ENTERPRISE ONLY).
 
-rcmd_timeout 30
+rcmd_timeout 10
+
+# Pandora FMS remote execution commands timeout tool filepath (by default at /usr/bin)
+
+rcmd_timeout_bin /usr/bin/timeout
+
+# Remote execution modules, ssh_launcher extra option (PANDORA FMS ENTERPRISE ONLY).
+ssh_launcher /usr/share/pandora_server/util/ssh_launcher.sh
 
 # Server keepalive (in seconds)
 
@@ -322,7 +329,7 @@ autocreate_group 10
 # If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
 # If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).
 
-autocreate_group_force 1
+autocreate_group_force 0
 
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable (for security purposes, for example).
@@ -397,7 +404,7 @@ sample_agent_interval 600
 
 # Update parent from the agent xml
 
-#update_parent 1
+update_parent 1
 #
 #
 # This enable realtime reverse geocoding using Google Maps public api.
@@ -426,8 +433,8 @@ web_threads 1
 
 web_timeout 60
 
-# Uncomment to perform web checks with CURL instead of LWP.
-#web_engine curl
+# Uncomment to perform web checks with LWP instead of CURL.
+#web_engine lwp
 
 # Enable (1) or disable (0) Pandora FMS Inventory Server (PANDORA FMS ENTERPRISE ONLY).
 
@@ -449,9 +456,16 @@ export_threads 1
 
 eventserver 0
 
-# Event Server event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
+
+# Correlated Alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+
+log_window 3600
+
+# Pre-load windows on start with available information. (PANDORA FMS ENTERPRISE ONLY).
+#preload_windows 0
 
 # If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
 
@@ -549,20 +563,10 @@ async_recovery 1
 # Required for some features like the module graphs macros.
 
 # console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
-console_api_url http://localhost/pandora_console/include/api.php
+# console_api_url http://localhost/pandora_console/include/api.php
 
 # console_api_pass: Api pass
 # console_api_pass 1234
-
-# console_user: Console user name (admin by default)
-console_user admin
-
-# console_pass: Console password (pandora by default)
-# To make sure console_api_url, console_api_pass, console_user and console_pass are properly configured run:
-# 	curl "<console_api_url>?op=get&op2=test&apipass=<console_api_pass>&user=<console_user>&pass=<console_pass>"
-# It should return a string similar to:
-# 	OK,{VERSION},{BUILD}
-console_pass pandora
 
 # Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).
 #encryption_passphrase passphrase
@@ -621,6 +625,9 @@ wuxserver 0
 
 # Maximum timeout to connect to a target web site, also for communications with a Selenium Grid server.
 #wux_webagent_timeout 15
+
+# Force closing previous sessions on remote wux_host, only for Selenium Grid server 3.
+#clean_wux_sessions 1
 
 # Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 syslogserver 1

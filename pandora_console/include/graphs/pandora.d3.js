@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+/* globals jQuery, d3 */
+
 // The recipient is the selector of the html element
 // The elements is an array with the names of the wheel elements
 // The matrix must be a 2 dimensional array with a row and a column for each element
@@ -1003,7 +1005,8 @@ function createGauge(
   critical_inverse,
   font_size,
   height,
-  font
+  font,
+  transitionDuration
 ) {
   var gauges;
 
@@ -1012,7 +1015,8 @@ function createGauge(
     label: etiqueta,
     min: undefined != min ? min : 0,
     max: undefined != max ? max : 100,
-    font_size: font_size
+    font_size: font_size,
+    transitionDuration: transitionDuration
   };
 
   if (value == null) {
@@ -1126,7 +1130,7 @@ function createGauge(
 
   gauges = new Gauge(name, config, font);
   gauges.render();
-  gauges.redraw(value);
+  gauges.redraw(value, config.transitionDuration);
   $(".gauge>text").each(function() {
     label = $(this).text();
 
@@ -1153,12 +1157,17 @@ function createGauge(
       $(this).text(text);
     }
   });
-  config = false;
-  max_warning2 = false;
-  min_warning2 = false;
 }
 
-function createGauges(data, width, height, font_size, no_data_image, font) {
+function createGauges(
+  data,
+  width,
+  height,
+  font_size,
+  no_data_image,
+  font,
+  transitionDuration
+) {
   var nombre,
     label,
     minimun_warning,
@@ -1169,7 +1178,7 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
     maxinum,
     valor;
 
-  for (key in data) {
+  for (var key in data) {
     nombre = data[key].gauge;
 
     label = data[key].label;
@@ -1189,8 +1198,8 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
     mininum = round_with_decimals(parseFloat(data[key].min));
     maxinum = round_with_decimals(parseFloat(data[key].max));
 
-    critical_inverse = parseInt(data[key].critical_inverse);
-    warning_inverse = parseInt(data[key].warning_inverse);
+    var critical_inverse = parseInt(data[key].critical_inverse);
+    var warning_inverse = parseInt(data[key].warning_inverse);
 
     valor = round_with_decimals(data[key].value);
 
@@ -1209,7 +1218,8 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
       critical_inverse,
       font_size,
       height,
-      font
+      font,
+      transitionDuration
     );
   }
 }
@@ -1245,7 +1255,7 @@ function Gauge(placeholderName, configuration, font) {
     this.config.yellowColor = configuration.yellowColor || "#FF9900";
     this.config.redColor = configuration.redColor || "#DC3912";
 
-    this.config.transitionDuration = configuration.transitionDuration || 500;
+    this.config.transitionDuration = configuration.transitionDuration;
   };
 
   this.render = function() {
@@ -1479,11 +1489,7 @@ function Gauge(placeholderName, configuration, font) {
     var pointer = pointerContainer.selectAll("path");
     pointer
       .transition()
-      .duration(
-        undefined != transitionDuration
-          ? transitionDuration
-          : this.config.transitionDuration
-      )
+      .duration(undefined != transitionDuration ? transitionDuration : 0)
       //.delay(0)
       //.ease("linear")
       //.attr("transform", function(d)
@@ -1541,21 +1547,19 @@ function Gauge(placeholderName, configuration, font) {
   this.configure(configuration);
 }
 
-function print_phases_donut(recipient, phases) {
+function print_phases_donut(recipient, phases, width, height) {
   var svg = d3
     .select(recipient)
     .append("svg")
-    .attr("width", 800)
-    .attr("height", 500)
+    .attr("width", width)
+    .attr("height", height)
     .append("g");
 
   svg.append("g").attr("class", "slices");
   svg.append("g").attr("class", "labels");
   svg.append("g").attr("class", "lines");
 
-  var width = 550,
-    height = 300,
-    radius = Math.min(width, height) / 2;
+  var radius = Math.min(width, height) / 2 - 50;
 
   var pie = d3.layout
     .pie()
@@ -1574,8 +1578,6 @@ function print_phases_donut(recipient, phases) {
     .innerRadius(radius * 0.9)
     .outerRadius(radius * 0.9);
 
-  width = 800;
-  height = 500;
   svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
   var key = function(d) {
@@ -2293,6 +2295,7 @@ function print_interior_circular_progress_bar(
   })();
 }
 
+// eslint-disable-next-line no-unused-vars
 function print_donut_graph(
   recipient,
   width,
@@ -2309,40 +2312,13 @@ function print_donut_graph(
 
   svg.append("g").attr("class", "slices");
 
-  var radius = 120;
-  var increment_y = 60;
-  var increment_y_padding = 25;
-  var decrement_x_padding = 150;
-  if (width >= 500) {
-    radius = 180;
-    increment_y = 60;
-    increment_y_padding = 20;
-    decrement_x_padding = 40;
-  } else if (width >= 400) {
-    radius = 140;
-    increment_y = 40;
-    increment_y_padding = 20;
-    decrement_x_padding = 40;
-  } else if (width >= 300) {
-    radius = 100;
-    increment_y = 40;
-    increment_y_padding = 15;
-    decrement_x_padding = 40;
-  } else if (width >= 200) {
-    radius = 50;
-    increment_y = 40;
-    increment_y_padding = 15;
-    decrement_x_padding = 25;
-  } else if (width >= 100) {
-    radius = 20;
-    increment_y = 20;
-    increment_y_padding = 8;
-    decrement_x_padding = 25;
-  } else {
-    radius = 10;
-    increment_y = 10;
-    increment_y_padding = 3;
-    decrement_x_padding = 5;
+  var heightLegend = 25 * module_data.length;
+
+  var maxRadius = (height - heightLegend) / 2;
+
+  var radius = maxRadius;
+  if (maxRadius > width / 2) {
+    radius = width / 2;
   }
 
   var arc = d3.svg
@@ -2365,37 +2341,22 @@ function print_donut_graph(
     svg
       .append("g")
       .append("rect")
-      .attr(
-        "transform",
-        "translate(" +
-          (width / 2 - (radius + decrement_x_padding)) +
-          "," +
-          (height / 2 - radius - increment_y) +
-          ")"
-      )
       .attr("fill", m_d.color)
-      .attr("x", -20)
-      .attr("y", -10)
-      .attr("width", 20)
-      .attr("height", 10);
+      .attr("x", 20)
+      .attr("y", 20 * (key + 1))
+      .attr("width", 25)
+      .attr("height", 15);
 
     svg
       .append("g")
       .append("text")
       .attr("fill", resume_color)
-      .attr(
-        "transform",
-        "translate(" +
-          (width / 2 - (radius + decrement_x_padding) + 10) +
-          "," +
-          (height / 2 - radius - increment_y) +
-          ")"
-      )
+      .attr("transform", "translate(" + 40 + "," + 20 * (key + 1) + ")")
+      .attr("x", 15)
+      .attr("y", 10)
       .text(m_d.tag_name)
       .style("font-family", "smallfontFont")
       .style("font-size", "7pt");
-
-    increment_y -= increment_y_padding;
   });
 
   function donutData() {
@@ -2425,7 +2386,7 @@ function print_donut_graph(
       .attr("class", "slice")
       .attr(
         "transform",
-        "translate(" + width / 2 + "," + (height - radius) + ")"
+        "translate(" + width / 2 + "," + (height + heightLegend) / 2 + ")"
       );
 
     slice

@@ -35,6 +35,68 @@ final class Group extends Item
 
 
     /**
+     * Get the "show statistics" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed If the statistics should be shown or not.
+     */
+    private static function getShowStatistics(array $data)
+    {
+        return static::issetInArray(
+            $data,
+            [
+                'showStatistics',
+                'show_statistics',
+            ]
+        );
+    }
+
+
+    /**
+     * Extract a group Id (for ACL) value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return integer Valid identifier of a group.
+     */
+    private static function getGroupId(array $data)
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['id_group', 'groupId']),
+            null
+        );
+    }
+
+
+    /**
+     * Return a valid representation of a record in database.
+     *
+     * @param array $data Input data.
+     *
+     * @return array Data structure representing a record in database.
+     *
+     * @overrides Item->encode.
+     */
+    protected function encode(array $data): array
+    {
+        $return = parent::encode($data);
+
+        $id_group = static::getGroupId($data);
+        if ($id_group !== null) {
+            $return['id_group'] = $id_group;
+        }
+
+        $show_statistics = static::getShowStatistics($data);
+        if ($show_statistics !== null) {
+            $return['show_statistics'] = static::parseBool($show_statistics);
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Returns a valid representation of the model.
      *
      * @param array $data Input data.
@@ -140,11 +202,13 @@ final class Group extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -209,7 +273,7 @@ final class Group extends Item
             $agentsOk = \agents_get_agents(
                 [
                     'id_grupo' => $groupId,
-                    'status'   => AGENT_STATUS_OK,
+                    'status'   => AGENT_STATUS_NORMAL,
                 ],
                 ['COUNT(*) AS total'],
                 'AR',
@@ -221,20 +285,39 @@ final class Group extends Item
             $numNormal = $agentsOk[0]['total'];
 
             $numTotal = ($numCritical + $numWarning + $numUnknown + $numNormal);
+
             $agentStats = [
-                'critical' => ($numCritical / $numTotal * 100),
-                'warning'  => ($numWarning / $numTotal * 100),
-                'normal'   => ($numNormal / $numTotal * 100),
-                'unknown'  => ($numUnknown / $numTotal * 100),
+                'critical' => 0,
+                'warning'  => 0,
+                'normal'   => 0,
+                'unknown'  => 0,
             ];
+            if ($numTotal !== 0) {
+                $agentStats = [
+                    'critical' => ($numCritical / $numTotal * 100),
+                    'warning'  => ($numWarning / $numTotal * 100),
+                    'normal'   => ($numNormal / $numTotal * 100),
+                    'unknown'  => ($numUnknown / $numTotal * 100),
+                ];
+            }
 
             $groupName = \groups_get_name($groupId, true);
             $data['html'] = static::printStatsTable(
                 $groupName,
-                $agentStats,
-                (int) $data['width'],
-                (int) $data['height']
+                $agentStats
             );
+
+            if (isset($data['width']) === false
+                || (int) $data['width'] === 0
+            ) {
+                $data['width'] = 500;
+            }
+
+            if (isset($data['height']) === false
+                || (int) $data['height'] === 0
+            ) {
+                $data['height'] = 70;
+            }
         } else {
             if (\is_metaconsole()) {
                 $groupFilter = $groupId;
@@ -306,100 +389,56 @@ final class Group extends Item
     /**
      * HTML representation for the agent stats of a group.
      *
-     * @param string  $groupName  Group name.
-     * @param array   $agentStats Data structure with the agent statistics.
-     * @param integer $width      Width.
-     * @param integer $height     Height.
+     * @param string $groupName  Group name.
+     * @param array  $agentStats Data structure with the agent statistics.
      *
      * @return string HTML representation.
      */
     private static function printStatsTable(
         string $groupName,
-        array $agentStats,
-        int $width=520,
-        int $height=80
+        array $agentStats
     ): string {
-        $width = ($width > 0) ? $width : 520;
-        $height = ($height > 0) ? $height : 80;
+        $critical = \number_format($agentStats['critical'], 2).'%';
+        $warning = \number_format($agentStats['warning'], 2).'%';
+        $normal = \number_format($agentStats['normal'], 2).'%';
+        $unknown = \number_format($agentStats['unknown'], 2).'%';
 
-        $tableStyle = \join(
-            [
-                'width:'.$width.'px;',
-                'height:'.$height.'px;',
-                'text-align:center;',
-            ]
-        );
-        $headStyle = \join(
-            [
-                'text-align:center;',
-                'background-color:#9d9ea0;',
-                'color:black;',
-                'font-weight:bold;',
-            ]
-        );
-        $valueStyle = \join(
-            [
-                'margin-left: 2%;',
-                'color: #FFF;',
-                'font-size: 12px;',
-                'display: inline;',
-                'background-color: #e63c52;',
-                'position: relative;',
-                'height: 80%;',
-                'width: 9.4%;',
-                'height: 80%;',
-                'border-radius: 2px;',
-                'text-align: center;',
-                'padding: 5px;',
-            ]
-        );
-        $nameStyle = \join(
-            [
-                'background-color: white;',
-                'color: black;',
-                'font-size: 12px;',
-                'display: inline;',
-                'display: inline;',
-                'position:relative;',
-                'width: 9.4%;',
-                'height: 80%;',
-                'border-radius: 2px;',
-                'text-align: center;',
-                'padding: 5px;',
-            ]
-        );
-
-        $html = '<table class="databox" style="'.$tableStyle.'">';
-        $html .= '<tr style="height:10%;">';
-        $html .= '<th style="'.$headStyle.'">'.$groupName.'</th>';
-        $html .= '</tr>';
-        $html .= '<tr style="background-color:whitesmoke;height:90%;">';
-        $html .= '<td>';
-
+        $html = '<div class="group-container">';
+        $html .= '<div class="group-item-title">';
+        $html .= $groupName;
+        $html .= '</div>';
+        $html .= '<div class="group-item-info">';
         // Critical.
-        $html .= '<div style="'.$valueStyle.'background-color: #e63c52;">';
-        $html .= \number_format($agentStats['critical'], 2).'%';
+        $html .= '<div class="group-item-info-container">';
+        $html .= '<div class="value-style" style="background-color: #e63c52;">';
+        $html .= $critical;
         $html .= '</div>';
-        $html .= '<div style="'.$nameStyle.'">'.__('Critical').'</div>';
+        $html .= '<div class="name-style">'.__('Critical').'</div>';
+        $html .= '</div>';
         // Warning.
-        $html .= '<div style="'.$valueStyle.'background-color: #f8db3f;">';
-        $html .= \number_format($agentStats['warning'], 2).'%';
+        $html .= '<div class="group-item-info-container">';
+        $html .= '<div class="value-style" style="background-color: #f8db3f;">';
+        $html .= $warning;
         $html .= '</div>';
-        $html .= '<div style="'.$nameStyle.'">'.__('Warning').'</div>';
+        $html .= '<div class="name-style">'.__('Warning').'</div>';
+        $html .= '</div>';
         // Normal.
-        $html .= '<div style="'.$valueStyle.'background-color: #84b83c;">';
-        $html .= \number_format($agentStats['normal'], 2).'%';
+        $html .= '<div class="group-item-info-container">';
+        $html .= '<div class="value-style" style="background-color: #84b83c;">';
+        $html .= $normal;
         $html .= '</div>';
-        $html .= '<div style="'.$nameStyle.'">'.__('Normal').'</div>';
+        $html .= '<div class="name-style">'.__('Normal').'</div>';
+        $html .= '</div>';
         // Unknown.
-        $html .= '<div style="'.$valueStyle.'background-color: #9d9ea0;">';
-        $html .= \number_format($agentStats['unknown'], 2).'%';
+        $html .= '<div class="group-item-info-container">';
+        $html .= '<div class="value-style" style="background-color: #9d9ea0;">';
+        $html .= $unknown;
         $html .= '</div>';
-        $html .= '<div style="'.$nameStyle.'">'.__('Unknown').'</div>';
+        $html .= '<div class="name-style">'.__('Unknown').'</div>';
+        $html .= '</div>';
 
-        $html .= '</td>';
-        $html .= '</tr>';
-        $html .= '</table>';
+        $html .= '</div>';
+        $html .= '</div>';
 
         return $html;
     }
@@ -444,6 +483,97 @@ final class Group extends Item
                 'group_id' => $groupId,
             ]
         );
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[Group]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // List images VC.
+            if (isset($values['imageSrc']) === false) {
+                $values['imageSrc'] = 'appliance';
+            }
+
+            $baseUrl = ui_get_full_url('/', false, false, false);
+
+            $inputs[] = [
+                'label'     => __('Image'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => self::getListImagesVC(),
+                    'name'     => 'imageSrc',
+                    'selected' => $values['imageSrc'],
+                    'script'   => 'imageVCChange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
+                    'return'   => true,
+                ],
+            ];
+
+            $images = self::imagesElementsVC($values['imageSrc']);
+
+            $inputs[] = [
+                'block_id'      => 'image-item',
+                'class'         => 'flex-row flex-end w100p',
+                'direct'        => 1,
+                'block_content' => [
+                    ['label' => $images],
+                ],
+            ];
+
+            // Group.
+            $inputs[] = [
+                'label'     => __('Group'),
+                'arguments' => [
+                    'type'           => 'select_groups',
+                    'name'           => 'groupId',
+                    'returnAllGroup' => true,
+                    'privilege'      => $values['access'],
+                    'selected'       => $values['groupId'],
+                    'return'         => true,
+                ],
+            ];
+
+            // Show statistics.
+            $inputs[] = [
+                'label'     => __('Show statistics'),
+                'arguments' => [
+                    'name'  => 'showStatistics',
+                    'id'    => 'showStatistics',
+                    'type'  => 'switch',
+                    'value' => $values['showStatistics'],
+                ],
+            ];
+
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
+        return $inputs;
     }
 
 

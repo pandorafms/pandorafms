@@ -311,7 +311,7 @@ function messages_get_message_sent(int $message_id)
     $sql = sprintf(
         "SELECT id_usuario_origen, subject, mensaje, timestamp
         FROM tmensajes
-        WHERE id_usuario_origen='%s' AND id_mensaje=%d",
+        WHERE id_usuario_origen='%s' AND id_mensaje=%d AND hidden_sent = 0",
         $config['id_user'],
         $message_id
     );
@@ -431,7 +431,7 @@ function messages_get_count_sent(string $user='')
 
     $sql = sprintf(
         "SELECT COUNT(*)
-        FROM tmensajes WHERE id_usuario_origen='%s'",
+        FROM tmensajes WHERE id_usuario_origen='%s' AND hidden_sent = 0",
         $user
     );
 
@@ -579,6 +579,17 @@ function messages_get_overview_sent(
         $order .= ' DESC';
     }
 
+    $filter = [
+        'id_usuario_origen' => $config['id_user'],
+        'hidden_sent'       => 0,
+        'order'             => $order,
+    ];
+
+    return db_get_all_rows_filter(
+        'tmensajes',
+        $filter
+    );
+
     return db_get_all_rows_field_filter(
         'tmensajes',
         'id_usuario_origen',
@@ -660,4 +671,28 @@ function messages_get_url($message_id)
 
     // Return the message direction.
     return ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_edit&read_message=1&id_message='.$message_id);
+}
+
+
+/**
+ * Deletes sent message
+ *
+ * @param integer $message_id Message id to get URL.
+ *
+ * @return boolean true when deleted, false in case of error
+ */
+function messages_delete_message_sent($id_message)
+{
+    global $config;
+
+    $ret = db_process_sql_update(
+        'tmensajes',
+        ['hidden_sent' => 1],
+        [
+            'id_mensaje'        => $id_message,
+            'id_usuario_origen' => $config['id_user'],
+        ]
+    );
+
+    return $ret;
 }

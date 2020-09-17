@@ -135,6 +135,10 @@ $id_agent = get_parameter(
     'filter[id_agent]',
     $filter['id_agent']
 );
+$text_module = get_parameter(
+    'filter[module_search]',
+    $filter['module_search']
+);
 $id_agent_module = get_parameter(
     'filter[id_agent_module]',
     $filter['id_agent_module']
@@ -179,6 +183,14 @@ $date_to = get_parameter(
     'filter[date_to]',
     $filter['date_to']
 );
+$time_from = get_parameter(
+    'filter[time_from]',
+    $filter['time_from']
+);
+$time_to = get_parameter(
+    'filter[time_to]',
+    $filter['time_to']
+);
 $source = get_parameter(
     'filter[source]',
     $filter['source']
@@ -196,6 +208,43 @@ $history = get_parameter(
     $filter['history']
 );
 $section = get_parameter('section', false);
+
+$id_source_event = get_parameter(
+    'filter[id_source_event]',
+    $filter['id_source_event']
+);
+
+$server_id = get_parameter(
+    'filter[server_id]',
+    $filter['id_server_meta']
+);
+
+if (is_metaconsole()) {
+    // Connect to node database.
+    $id_node = $server_id;
+    if ($id_node != 0) {
+        if (metaconsole_connect(null, $id_node) != NOERR) {
+            return false;
+        }
+    }
+}
+
+
+if (empty($text_agent) && !empty($id_agent)) {
+    $text_agent = agents_get_alias($id_agent);
+}
+
+if (empty($text_module) && !empty($id_agent_module)) {
+    $text_module = modules_get_agentmodule_name($id_agent_module);
+    $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
+}
+
+if (is_metaconsole()) {
+    // Return to metaconsole database.
+    if ($id_node != 0) {
+        metaconsole_restore_db();
+    }
+}
 
 // Ajax responses.
 if (is_ajax()) {
@@ -268,7 +317,12 @@ if (is_ajax()) {
             );
             $count = events_get_all(
                 'count',
-                $filter
+                $filter,
+                null,
+                null,
+                null,
+                null,
+                $history
             );
 
             if ($count !== false) {
@@ -279,6 +333,8 @@ if (is_ajax()) {
                 $data = array_reduce(
                     $events,
                     function ($carry, $item) {
+                        global $config;
+
                         $tmp = (object) $item;
                         $tmp->meta = is_metaconsole();
                         if (is_metaconsole()) {
@@ -311,7 +367,10 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric($tmp->data, 1);
+                        $tmp->data = format_numeric(
+                            $tmp->data,
+                            $config['graph_precision']
+                        );
 
                         $tmp->instructions = events_get_instructions($item);
 
@@ -368,7 +427,10 @@ $user_filter = db_get_row_sql(
         $config['id_user']
     )
 );
-if ($user_filter !== false) {
+
+// Do not load the user filter if we come from the 24h event graph
+$from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
+if ($user_filter !== false && $from_event_graph != 1) {
     $filter = events_get_event_filter($user_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];
@@ -396,6 +458,7 @@ if ($user_filter !== false) {
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
+        $id_source_event = $filter['id_source_event'];
     }
 }
 
@@ -407,17 +470,21 @@ $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
+$tag_with = json_decode(base64_decode($tag_with), true);
+$tag_without = json_decode(base64_decode($tag_without), true);
+
+
 foreach ($tags as $id_tag => $tag) {
-    if ((array_search($id_tag, $tag_with) === false)
-        || (array_search($id_tag, $tag_with) === null)
+    if (is_array($tag_with) === true
+        && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
         $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {
         $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
     }
 
-    if ((array_search($id_tag, $tag_without) === false)
-        || (array_search($id_tag, $tag_without) === null)
+    if (is_array($tag_without) === true
+        && ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null))
     ) {
         $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {
@@ -844,22 +911,6 @@ $in = '<div class="filter_input"><label>'.__('Event type').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Criticity - severity.
-$severity_select .= html_print_select(
-    get_priorities(),
-    'severity',
-    $severity,
-    '',
-    __('All'),
-    '-1',
-    true,
-    false,
-    false
-);
-$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
-$in .= $severity_select.'</div>';
-$inputs[] = $in;
-
 // Event status.
 $data = html_print_select(
     events_get_all_status(),
@@ -908,6 +959,28 @@ $inputs[] = $in;
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
 $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
+$in .= $data.'</div>';
+$inputs[] = $in;
+
+if (empty($severity) && $severity !== '0') {
+    $severity = -1;
+}
+
+// Criticity - severity.
+$data = html_print_select(
+    get_priorities(),
+    'severity',
+    $severity,
+    '',
+    __('All'),
+    -1,
+    true,
+    true,
+    true,
+    '',
+    false
+);
+$in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
@@ -1051,8 +1124,20 @@ $in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
 $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
-// Gap.
-$adv_inputs[] = '<div class="filter_input"></div>';
+if (is_metaconsole()) {
+    $data = html_print_input_text(
+        'id_source_event',
+        $id_source_event,
+        '',
+        5,
+        255,
+        true
+    );
+    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
+    $in .= $data.'</div>';
+    $adv_inputs[] = $in;
+}
+
 
 // Date from.
 $data = html_print_input_text(
@@ -1454,26 +1539,26 @@ foreach ($event_responses as $val) {
     $array_events_actions[$val['id']] = $val['name'];
 }
 
-
-echo '<div class="multi-response-buttons">';
-echo '<form method="post" id="form_event_response">';
-echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
-html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
-echo '&nbsp&nbsp';
-html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
-echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
-echo '</form>';
-echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
-echo __(
-    'A maximum of %s event custom responses can be selected',
-    $config['max_execution_event_response']
-).'</span>';
-echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
-echo __(
-    'Please, select an event'
-).'</span>';
-echo '</div>';
-
+if (check_acl($config['id_user'], 0, 'EW')) {
+    echo '<div class="multi-response-buttons">';
+    echo '<form method="post" id="form_event_response">';
+    echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
+    html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+    echo '&nbsp&nbsp';
+    html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
+    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+    echo '</form>';
+    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+    echo __(
+        'A maximum of %s event custom responses can be selected',
+        $config['max_execution_event_response']
+    ).'</span>';
+    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+    echo __(
+        'Please, select an event'
+    ).'</span>';
+    echo '</div>';
+}
 
 // Close viewer.
 enterprise_hook('close_meta_frame');
@@ -1602,6 +1687,10 @@ function process_datatables_callback(table, settings) {
 
     }
 
+    // Uncheck checkbox to select all.
+    if ($('#checkbox-all_validate_box').length) {
+        $('#checkbox-all_validate_box').uncheck();
+    }
 }
 
 function process_datatables_item(item) {
@@ -1685,6 +1774,9 @@ function process_datatables_item(item) {
         evn += '('+item.event_rep+') ';
     }
     evn += item.evento+'</a>';
+    if(item.meta === true) {
+        evn += '<input id="hidden-server_id_'+item.id_evento+'" type="hidden" value="'+item.server_id+'">';
+    }
 
     item.mini_severity = '<div class="event flex-row h100p nowrap">';
     item.mini_severity += output;
@@ -1879,17 +1971,7 @@ function process_datatables_item(item) {
 
     /* Agent ID link */
     if (item.id_agente > 0) {
-        <?php
-        if (in_array('agent_name', $fields)) {
-            ?>
-            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
-            <?php
-        } else {
-            ?>
-            item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.agent_name + '</a>';
-            <?php
-        }
-        ?>
+        item.id_agente = '<a href="'+url_link+item.id_agente+url_link_hash+'">' + item.id_agente + '</a>';
     } else {
         item.id_agente = '';
     }

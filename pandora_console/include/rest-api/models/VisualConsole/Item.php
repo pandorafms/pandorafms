@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Models\VisualConsole;
+use Models\VisualConsole\Container as VC;
 use Models\CachedModel;
 
 /**
@@ -39,6 +40,13 @@ class Item extends CachedModel
      * @var boolean
      */
     protected static $useHtmlOutput = false;
+
+    /**
+     * Enable the cache index by user id.
+     *
+     * @var boolean
+     */
+    protected static $indexCacheByUser = true;
 
 
     /**
@@ -158,8 +166,14 @@ class Item extends CachedModel
 
         // The item uses HTML output.
         if (static::$useHtmlOutput === true) {
-            if (static::notEmptyStringOr(static::issetInArray($data, ['encodedHtml']), null) === null
-                && static::notEmptyStringOr(static::issetInArray($data, ['html']), null) === null
+            if (static::notEmptyStringOr(
+                static::issetInArray($data, ['encodedHtml']),
+                null
+            ) === null
+                && static::notEmptyStringOr(
+                    static::issetInArray($data, ['html']),
+                    null
+                ) === null
             ) {
                 throw new \InvalidArgumentException(
                     'the html property is required and should be a not empty string'
@@ -181,18 +195,19 @@ class Item extends CachedModel
     protected function decode(array $data): array
     {
         $decodedData = [
-            'id'            => (int) $data['id'],
-            'type'          => (int) $data['type'],
-            'label'         => static::extractLabel($data),
-            'labelPosition' => static::extractLabelPosition($data),
-            'isLinkEnabled' => static::extractIsLinkEnabled($data),
-            'isOnTop'       => static::extractIsOnTop($data),
-            'parentId'      => static::extractParentId($data),
-            'aclGroupId'    => static::extractAclGroupId($data),
-            'width'         => (int) $data['width'],
-            'height'        => (int) $data['height'],
-            'x'             => static::extractX($data),
-            'y'             => static::extractY($data),
+            'id'              => (int) $data['id'],
+            'type'            => (int) $data['type'],
+            'label'           => static::extractLabel($data),
+            'labelPosition'   => static::extractLabelPosition($data),
+            'isLinkEnabled'   => static::extractIsLinkEnabled($data),
+            'isOnTop'         => static::extractIsOnTop($data),
+            'parentId'        => static::extractParentId($data),
+            'aclGroupId'      => static::extractAclGroupId($data),
+            'width'           => (int) $data['width'],
+            'height'          => (int) $data['height'],
+            'x'               => static::extractX($data),
+            'y'               => static::extractY($data),
+            'cacheExpiration' => static::extractCacheExpiration($data),
         ];
 
         if (static::$useLinkedModule === true) {
@@ -272,7 +287,14 @@ class Item extends CachedModel
     private static function extractAclGroupId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['id_group', 'aclGroupId', 'idGroup']),
+            static::issetInArray(
+                $data,
+                [
+                    'element_group',
+                    'aclGroupId',
+                    'elementGroup',
+                ]
+            ),
             null
         );
     }
@@ -288,7 +310,14 @@ class Item extends CachedModel
     private static function extractParentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['parentId', 'parent_item', 'parentItem']),
+            static::issetInArray(
+                $data,
+                [
+                    'parentId',
+                    'parent_item',
+                    'parentItem',
+                ]
+            ),
             null
         );
     }
@@ -319,7 +348,14 @@ class Item extends CachedModel
     private static function extractIsLinkEnabled(array $data): bool
     {
         return static::parseBool(
-            static::issetInArray($data, ['isLinkEnabled', 'enable_link', 'enableLink'])
+            static::issetInArray(
+                $data,
+                [
+                    'isLinkEnabled',
+                    'enable_link',
+                    'enableLink',
+                ]
+            )
         );
     }
 
@@ -333,10 +369,7 @@ class Item extends CachedModel
      */
     private static function extractLabel(array $data)
     {
-        return static::notEmptyStringOr(
-            static::issetInArray($data, ['label']),
-            null
-        );
+        return static::issetInArray($data, ['label']);
     }
 
 
@@ -376,23 +409,38 @@ class Item extends CachedModel
     private static function extractAgentId(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['agentId', 'id_agent', 'id_agente', 'idAgent', 'idAgente']),
+            static::issetInArray(
+                $data,
+                [
+                    'agentId',
+                    'id_agent',
+                    'id_agente',
+                    'idAgent',
+                    'idAgente',
+                ]
+            ),
             null
         );
     }
 
 
     /**
-     * Extract a custom id graph value.
+     * Extract the cache expiration value.
      *
      * @param array $data Unknown input data structure.
      *
-     * @return integer Valid identifier of an agent.
+     * @return integer Cache expiration time.
      */
-    private static function extractIdCustomGraph(array $data)
+    private static function extractCacheExpiration(array $data)
     {
         return static::parseIntOr(
-            static::issetInArray($data, ['id_custom_graph', 'idCustomGraph', 'customGraphId']),
+            static::issetInArray(
+                $data,
+                [
+                    'cacheExpiration',
+                    'cache_expiration',
+                ]
+            ),
             null
         );
     }
@@ -490,7 +538,13 @@ class Item extends CachedModel
 
         // The agent description should be a valid string or a null value.
         $agentData['agentDescription'] = static::notEmptyStringOr(
-            static::issetInArray($data, ['agentDescription', 'agent_description']),
+            static::issetInArray(
+                $data,
+                [
+                    'agentDescription',
+                    'agent_description',
+                ]
+            ),
             null
         );
 
@@ -547,7 +601,13 @@ class Item extends CachedModel
 
         // The module description should be a valid string or a null value.
         $moduleData['moduleDescription'] = static::notEmptyStringOr(
-            static::issetInArray($data, ['moduleDescription', 'module_description']),
+            static::issetInArray(
+                $data,
+                [
+                    'moduleDescription',
+                    'module_description',
+                ]
+            ),
             null
         );
 
@@ -563,21 +623,19 @@ class Item extends CachedModel
      * @return array Data structure of the linked visual console info.
      *
      * @example [
-     *   'metaconsoleId'          => 2,
      *   'linkedLayoutId'         => 12,
-     *   'linkedLayoutAgentId'    => 48,
+     *   'linkedLayoutNodeId'     => 2,
      *   'linkedLayoutStatusType' => 'default',
      * ]
      * @example [
      *   'linkedLayoutId'               => 11,
-     *   'linkedLayoutAgentId'          => null,
+     *   'linkedLayoutNodeId'           => null,
      *   'linkedLayoutStatusType'       => 'weight',
      *   'linkedLayoutStatusTypeWeight' => 80,
      * ]
      * @example [
-     *   'metaconsoleId'                           => 2,
      *   'linkedLayoutId'                          => 10,
-     *   'linkedLayoutAgentId'                     => 48,
+     *   'linkedLayoutNodeId'                      => 2,
      *   'linkedLayoutStatusType'                  => 'service',
      *   'linkedLayoutStatusTypeWarningThreshold'  => 50,
      *   'linkedLayoutStatusTypeCriticalThreshold' => 80,
@@ -587,25 +645,18 @@ class Item extends CachedModel
     {
         $vcData = [];
 
-        // We should add the metaconsole Id if we can. If not,
-        // it doesn't have to be into the structure.
-        $metaconsoleId = static::extractMetaconsoleId($data);
-        if ($metaconsoleId !== null) {
-            $vcData['metaconsoleId'] = $metaconsoleId;
-        }
-
         // The linked vc Id should be a valid int or a null value.
         $vcData['linkedLayoutId'] = static::parseIntOr(
             static::issetInArray($data, ['linkedLayoutId', 'id_layout_linked']),
             null
         );
 
-        // The linked vc agent Id should be a valid int or a null value.
-        $vcData['linkedLayoutAgentId'] = static::parseIntOr(
+        // The linked vc's remote node Id should be a valid int or a null value.
+        $vcData['linkedLayoutNodeId'] = static::parseIntOr(
             static::issetInArray(
                 $data,
                 [
-                    'linkedLayoutAgentId',
+                    'linkedLayoutNodeId',
                     'linked_layout_node_id',
                 ]
             ),
@@ -703,8 +754,10 @@ class Item extends CachedModel
      *
      * @override Model::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Load side libraries.
         global $config;
         include_once $config['homedir'].'/include/functions_io.php';
@@ -734,6 +787,13 @@ class Item extends CachedModel
         // Build the item link if needed.
         if (static::extractIsLinkEnabled($row) === true) {
             $row['link'] = static::buildLink($row);
+        }
+
+        if ($ratio != 0) {
+            $row['width'] = ($row['width'] * $ratio);
+            $row['height'] = ($row['height'] * $ratio);
+            $row['pos_x'] = ($row['pos_x'] * $ratio);
+            $row['pos_y'] = ($row['pos_y'] * $ratio);
         }
 
         return $row;
@@ -771,6 +831,14 @@ class Item extends CachedModel
         );
 
         if ($data === false) {
+            // Invalid entry, clean it.
+            self::clearCachedData(
+                [
+                    'vc_id'      => $filter['vc_id'],
+                    'vc_item_id' => $filter['vc_item_id'],
+                    'user_id'    => $filter['user_id'],
+                ]
+            );
             return null;
         }
 
@@ -791,14 +859,19 @@ class Item extends CachedModel
      */
     protected static function saveCachedData(array $filter, array $data): bool
     {
+        global $config;
+        if (static::$indexCacheByUser === true) {
+            $filter['user_id'] = $config['id_user'];
+        }
+
         return \db_process_sql_insert(
             'tvisual_console_elements_cache',
             [
-                'vc_id'      => $filter['vc_id'],
-                'vc_item_id' => $filter['vc_item_id'],
+                'vc_id'      => $data['id_layout'],
+                'vc_item_id' => $data['id'],
                 'user_id'    => $filter['user_id'],
                 'data'       => base64_encode(json_encode($data)),
-                'expiration' => $filter['expiration'],
+                'expiration' => $data['cache_expiration'],
             ]
         ) > 0;
     }
@@ -836,6 +909,10 @@ class Item extends CachedModel
      */
     protected static function fetchAgentDataFromDB(array $itemData): array
     {
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
+
         $agentData = [];
 
         // We should add the metaconsole Id if we can.
@@ -887,7 +964,7 @@ class Item extends CachedModel
         $agentData['agentDescription'] = $agent['comentarios'];
         $agentData['agentAddress'] = $agent['direccion'];
 
-        return $agentData;
+        return \io_safe_output($agentData);
     }
 
 
@@ -903,6 +980,10 @@ class Item extends CachedModel
      */
     protected static function fetchModuleDataFromDB(array $itemData): array
     {
+        // Load side libraries.
+        global $config;
+        include_once $config['homedir'].'/include/functions_io.php';
+
         // Load side libraries.
         if (\is_metaconsole()) {
             \enterprise_include_once('include/functions_metaconsole.php');
@@ -961,7 +1042,7 @@ class Item extends CachedModel
         $moduleData['moduleName'] = $moduleName['nombre'];
         $moduleData['moduleDescription'] = $moduleName['descripcion'];
 
-        return $moduleData;
+        return \io_safe_output($moduleData);
     }
 
 
@@ -998,9 +1079,22 @@ class Item extends CachedModel
             // Linked Visual Console.
             $vcId = $linkedVisualConsole['linkedLayoutId'];
             // The layout can be from another node.
-            $linkedLayoutAgentId = $linkedVisualConsole['linkedLayoutAgentId'];
+            $linkedLayoutNodeId = $linkedVisualConsole['linkedLayoutNodeId'];
 
-            if (empty($linkedLayoutAgentId) === true && \is_metaconsole()) {
+            // Check ACL.
+            $visualConsole = VC::fromDB(['id' => $vcId]);
+            $visualConsoleData = $visualConsole->toArray();
+            $vcGroupId = $visualConsoleData['groupId'];
+
+            $aclRead = \check_acl($config['id_user'], $vcGroupId, 'VR');
+            // To build the link to another visual console
+            // you must have read permissions of the visual console
+            // with which it is linked.
+            if ($aclRead === 0) {
+                return null;
+            }
+
+            if (empty($linkedLayoutNodeId) === true && \is_metaconsole()) {
                 /*
                  * A Visual Console from this console.
                  * We are in a metaconsole.
@@ -1015,7 +1109,7 @@ class Item extends CachedModel
                         'pure'         => (int) $config['pure'],
                     ]
                 );
-            } else if (empty($linkedLayoutAgentId) === true
+            } else if (empty($linkedLayoutNodeId) === true
                 && !\is_metaconsole()
             ) {
                 /*
@@ -1039,14 +1133,15 @@ class Item extends CachedModel
 
                 try {
                     $node = \metaconsole_get_connection_by_id(
-                        $linkedLayoutAgentId
+                        $linkedLayoutNodeId
                     );
+
+                    // TODO: Link to a public view.
                     return \ui_meta_get_node_url(
                         $node,
                         'network',
-                        // TODO: Link to a public view.
                         'operation/visual_console/view',
-                        [],
+                        ['id' => $vcId],
                         // No autologin from the public view.
                         !$config['public_view']
                     );
@@ -1207,6 +1302,9 @@ class Item extends CachedModel
 
 
     /**
+     * TODO: CRITICAL. This function contains values which belong to its
+     * subclasses. This function should be overrided there to add them.
+     *
      * Return a valid representation of a record in database.
      *
      * @param array $data Input data.
@@ -1220,12 +1318,12 @@ class Item extends CachedModel
         $result = [];
 
         $id = static::getId($data);
-        if ($id) {
+        if (isset($id) === true) {
             $result['id'] = $id;
         }
 
         $id_layout = static::getIdLayout($data);
-        if ($id_layout) {
+        if (isset($id_layout) === true) {
             $result['id_layout'] = $id_layout;
         }
 
@@ -1260,6 +1358,7 @@ class Item extends CachedModel
             $result['label'] = $label;
         }
 
+        // TODO change.
         $image = static::getImageSrc($data);
         if ($image !== null) {
             $result['image'] = $image;
@@ -1273,6 +1372,7 @@ class Item extends CachedModel
             $result['type'] = $type;
         }
 
+        // TODO change.
         $period = static::parseIntOr(
             static::issetInArray($data, ['period', 'maxTime']),
             null
@@ -1292,7 +1392,14 @@ class Item extends CachedModel
         }
 
         $id_layout_linked = static::parseIntOr(
-            static::issetInArray($data, ['linkedLayoutId', 'id_layout_linked', 'idLayoutLinked']),
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutId',
+                    'id_layout_linked',
+                    'idLayoutLinked',
+                ]
+            ),
             null
         );
         if ($id_layout_linked !== null) {
@@ -1304,7 +1411,14 @@ class Item extends CachedModel
             $result['parent_item'] = $parent_item;
         }
 
-        $enable_link = static::issetInArray($data, ['isLinkEnabled', 'enable_link', 'enableLink']);
+        $enable_link = static::issetInArray(
+            $data,
+            [
+                'isLinkEnabled',
+                'enable_link',
+                'enableLink',
+            ]
+        );
         if ($enable_link !== null) {
             $result['enable_link'] = static::parseBool($enable_link);
         }
@@ -1314,24 +1428,9 @@ class Item extends CachedModel
             $result['id_metaconsole'] = $id_metaconsole;
         }
 
-        $id_group = static::extractAclGroupId($data);
-        if ($id_group !== null) {
-            $result['id_group'] = $id_group;
-        }
-
-        $id_custom_graph = static::extractIdCustomGraph($data);
-        if ($id_custom_graph !== null) {
-            $result['id_custom_graph'] = $id_custom_graph;
-        }
-
-        $border_width = static::getBorderWidth($data);
-        if ($border_width !== null) {
-            $result['border_width'] = $border_width;
-        }
-
-        $type_graph = static::getTypeGraph($data);
-        if ($type_graph !== null) {
-            $result['type_graph'] = $type_graph;
+        $element_group = static::extractAclGroupId($data);
+        if ($element_group !== null) {
+            $result['element_group'] = $element_group;
         }
 
         $label_position = static::notEmptyStringOr(
@@ -1342,26 +1441,17 @@ class Item extends CachedModel
             $result['label_position'] = $label_position;
         }
 
+        // TODO change.
         $border_color = static::getBorderColor($data);
         if ($border_color !== null) {
             $result['border_color'] = $border_color;
-        }
-
-        $fill_color = static::getFillColor($data);
-        if ($fill_color !== null) {
-            $result['fill_color'] = $fill_color;
-        }
-
-        $show_statistics = static::issetInArray($data, ['showStatistics', 'show_statistics']);
-        if ($show_statistics !== null) {
-            $result['show_statistics'] = static::parseBool($show_statistics);
         }
 
         $linked_layout_node_id = static::parseIntOr(
             static::issetInArray(
                 $data,
                 [
-                    'linkedLayoutAgentId',
+                    'linkedLayoutNodeId',
                     'linked_layout_node_id',
                 ]
             ),
@@ -1372,7 +1462,13 @@ class Item extends CachedModel
         }
 
         $linked_layout_status_type = static::notEmptyStringOr(
-            static::issetInArray($data, ['linkedLayoutStatusType', 'linked_layout_status_type']),
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusType',
+                    'linked_layout_status_type',
+                ]
+            ),
             null
         );
         if ($linked_layout_status_type !== null) {
@@ -1380,7 +1476,13 @@ class Item extends CachedModel
         }
 
         $id_layout_linked_weight = static::parseIntOr(
-            static::issetInArray($data, ['linkedLayoutStatusTypeWeight', 'id_layout_linked_weight']),
+            static::issetInArray(
+                $data,
+                [
+                    'linkedLayoutStatusTypeWeight',
+                    'id_layout_linked_weight',
+                ]
+            ),
             null
         );
         if ($id_layout_linked_weight !== null) {
@@ -1423,49 +1525,59 @@ class Item extends CachedModel
             $result['element_group'] = $element_group;
         }
 
-        $show_on_top = static::issetInArray($data, ['isOnTop', 'show_on_top', 'showOnTop']);
+        $show_on_top = static::issetInArray(
+            $data,
+            [
+                'isOnTop',
+                'show_on_top',
+                'showOnTop',
+            ]
+        );
         if ($show_on_top !== null) {
             $result['show_on_top'] = static::parseBool($show_on_top);
         }
 
-        $clock_animation = static::notEmptyStringOr(
-            static::issetInArray($data, ['clockType', 'clock_animation', 'clockAnimation']),
+        // TODO change.
+        $show_last_value = static::notEmptyStringOr(
+            static::issetInArray($data, ['showLastValueTooltip']),
             null
         );
-        if ($clock_animation !== null) {
-            $result['clock_animation'] = $clock_animation;
+        if ($show_last_value === null) {
+            $show_last_value = static::parseIntOr(
+                static::issetInArray(
+                    $data,
+                    [
+                        'show_last_value',
+                        'showLastValue',
+                    ]
+                ),
+                null
+            );
         }
 
-        $time_format = static::notEmptyStringOr(
-            static::issetInArray($data, ['clockFormat', 'time_format', 'timeFormat']),
-            null
-        );
-        if ($time_format !== null) {
-            $result['time_format'] = $time_format;
-        }
-
-        $timezone = static::notEmptyStringOr(
-            static::issetInArray($data, ['timezone', 'timeZone', 'time_zone', 'clockTimezone']),
-            null
-        );
-        if ($timezone !== null) {
-            $result['timezone'] = $timezone;
-        }
-
-        $show_last_value = static::parseIntOr(
-            static::issetInArray($data, ['show_last_value', 'showLastValue']),
-            null
-        );
         if ($show_last_value !== null) {
-            $result['show_last_value'] = $show_last_value;
+            if (\is_numeric($show_last_value) === true) {
+                $result['show_last_value'] = $show_last_value;
+            } else {
+                switch ($show_last_value) {
+                    case 'enabled':
+                        $result['show_last_value'] = 1;
+                    break;
+
+                    case 'disabled':
+                        $result['show_last_value'] = 2;
+                    break;
+
+                    default:
+                        $result['show_last_value'] = 0;
+                    break;
+                }
+            }
         }
 
-        $cache_expiration = static::parseIntOr(
-            static::issetInArray($data, ['cache_expiration', 'cacheExpiration']),
-            null
-        );
-        if ($cache_expiration !== null) {
-            $result['cache_expiration'] = $cache_expiration;
+        $cacheExpiration = static::extractCacheExpiration($data);
+        if ($cacheExpiration !== null) {
+            $result['cache_expiration'] = $cacheExpiration;
         }
 
         return $result;
@@ -1545,9 +1657,15 @@ class Item extends CachedModel
      */
     protected static function getImageSrc(array $data)
     {
-        $imageSrc = static::notEmptyStringOr(
-            static::issetInArray($data, ['image', 'imageSrc', 'backgroundColor', 'backgroundType', 'valueType']),
-            null
+        $imageSrc = static::issetInArray(
+            $data,
+            [
+                'image',
+                'imageSrc',
+                'backgroundColor',
+                'backgroundType',
+                'valueType',
+            ]
         );
 
         return $imageSrc;
@@ -1561,26 +1679,10 @@ class Item extends CachedModel
      *
      * @return integer Valid border width.
      */
-    private static function getBorderWidth(array $data)
+    protected static function getBorderWidth(array $data)
     {
         return static::parseIntOr(
             static::issetInArray($data, ['border_width', 'borderWidth']),
-            null
-        );
-    }
-
-
-    /**
-     * Extract a type graph value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return string One of 'vertical' or 'horizontal'. 'vertical' by default.
-     */
-    private static function getTypeGraph(array $data)
-    {
-        return static::notEmptyStringOr(
-            static::issetInArray($data, ['typeGraph', 'type_graph', 'graphType']),
             null
         );
     }
@@ -1593,26 +1695,19 @@ class Item extends CachedModel
      *
      * @return mixed String representing the border color (not empty) or null.
      */
-    private static function getBorderColor(array $data)
+    protected static function getBorderColor(array $data)
     {
         return static::notEmptyStringOr(
-            static::issetInArray($data, ['borderColor', 'border_color', 'gridColor', 'color', 'legendBackgroundColor']),
-            null
-        );
-    }
-
-
-    /**
-     * Extract a fill color value.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return mixed String representing the fill color (not empty) or null.
-     */
-    private static function getFillColor(array $data)
-    {
-        return static::notEmptyStringOr(
-            static::issetInArray($data, ['fillColor', 'fill_color', 'labelColor']),
+            static::issetInArray(
+                $data,
+                [
+                    'borderColor',
+                    'border_color',
+                    'gridColor',
+                    'color',
+                    'legendBackgroundColor',
+                ]
+            ),
             null
         );
     }
@@ -1627,30 +1722,35 @@ class Item extends CachedModel
      *
      * @overrides Model::save.
      */
-    public function save(array $data=[]): bool
+    public function save(array $data=[]): int
     {
-        if (empty($data)) {
-            return false;
-        }
-
-        $dataModelEncode = $this->encode($this->toArray());
-        $dataEncode = $this->encode($data);
-
-        $save = \array_merge($dataModelEncode, $dataEncode);
-
-        if (!empty($save)) {
-            if (empty($save['id'])) {
+        if (empty($data) === false) {
+            if (empty($data['id']) === true) {
                 // Insert.
+                $save = static::encode($data);
+
                 $result = \db_process_sql_insert('tlayout_data', $save);
                 if ($result) {
                     $item = static::fromDB(['id' => $result]);
+                    $item->setData($item->toArray());
                 }
             } else {
                 // Update.
-                $result = \db_process_sql_update('tlayout_data', $save, ['id' => $save['id']]);
+                $dataModelEncode = $this->encode($this->toArray());
+                $dataEncode = $this->encode($data);
+
+                $save = array_merge($dataModelEncode, $dataEncode);
+
+                $result = \db_process_sql_update(
+                    'tlayout_data',
+                    $save,
+                    ['id' => $save['id']]
+                );
+
                 // Invalidate the item's cache.
                 if ($result !== false && $result > 0) {
-                    db_process_sql_delete(
+                    // TODO: Invalidate the cache with the function clearCachedData.
+                    \db_process_sql_delete(
                         'tvisual_console_elements_cache',
                         [
                             'vc_item_id' => (int) $save['id'],
@@ -1666,7 +1766,721 @@ class Item extends CachedModel
             }
         }
 
+        return $result;
+    }
+
+
+    /**
+     * Delete an item in the database
+     *
+     * @param integer $itemId Identifier of the Item.
+     *
+     * @return boolean The modeled element data structure stored into the DB.
+     *
+     * @overrides Model::delete.
+     */
+    public function delete(int $itemId): bool
+    {
+        $result = db_process_sql_delete(
+            'tlayout_data',
+            ['id' => $itemId]
+        );
+
+        if ($result) {
+            // TODO: Invalidate the cache with the function clearCachedData.
+            db_process_sql_delete(
+                'tvisual_console_elements_cache',
+                ['vc_item_id' => $itemId]
+            );
+        }
+
         return (bool) $result;
+    }
+
+
+    /**
+     * Generates inputs for form (global, common).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        $inputs = [];
+
+        switch ($values['tabSelected']) {
+            case 'label':
+                $inputs[] = [
+                    'arguments' => [
+                        'type'  => 'hidden',
+                        'name'  => 'tabLabel',
+                        'value' => true,
+                    ],
+                ];
+
+                // Label.
+                $inputs[] = ['label' => __('Label')];
+
+                $inputs[] = [
+                    'id'        => 'div-textarea-label',
+                    'arguments' => [
+                        'type'    => 'textarea',
+                        'rows'    => 4,
+                        'columns' => 60,
+                        'name'    => 'label',
+                        'value'   => $values['label'],
+                        'return'  => true,
+                    ],
+                ];
+
+                // Label Position.
+                $fields = [
+                    'down'  => __('Bottom'),
+                    'up'    => __('Top'),
+                    'right' => __('Right'),
+                    'left'  => __('Left'),
+                ];
+
+                $inputs[] = [
+                    'label'     => __('Label position'),
+                    'arguments' => [
+                        'type'     => 'select',
+                        'fields'   => $fields,
+                        'name'     => 'labelPosition',
+                        'selected' => $values['labelPosition'],
+                        'return'   => true,
+                    ],
+                ];
+            break;
+
+            case 'general':
+                $inputs[] = [
+                    'arguments' => [
+                        'type'  => 'hidden',
+                        'name'  => 'tabGeneral',
+                        'value' => true,
+                    ],
+                ];
+
+                // Size.
+                $inputs[] = [
+                    'block_id'      => 'size-item',
+                    'class'         => 'flex-row flex-start w100p',
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label' => __('Size'),
+                        ],
+                        [
+                            'label'     => __('width'),
+                            'arguments' => [
+                                'name'   => 'width',
+                                'type'   => 'number',
+                                'value'  => $values['width'],
+                                'return' => true,
+                                'min'    => 0,
+                            ],
+                        ],
+                        [
+                            'label'     => __('height'),
+                            'arguments' => [
+                                'name'   => 'height',
+                                'type'   => 'number',
+                                'value'  => $values['height'],
+                                'return' => true,
+                                'min'    => 0,
+                            ],
+                        ],
+                    ],
+                ];
+
+                // Position.
+                $inputs[] = [
+                    'block_id'      => 'position-item',
+                    'class'         => 'flex-row flex-start w100p',
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label' => __('Position'),
+                        ],
+                        [
+                            'label'     => __('X'),
+                            'arguments' => [
+                                'name'   => 'x',
+                                'type'   => 'number',
+                                'value'  => $values['x'],
+                                'return' => true,
+                                'min'    => 0,
+                            ],
+                        ],
+                        [
+                            'label'     => __('Y'),
+                            'arguments' => [
+                                'name'   => 'y',
+                                'type'   => 'number',
+                                'value'  => $values['y'],
+                                'return' => true,
+                                'min'    => 0,
+                            ],
+                        ],
+                    ],
+                ];
+
+                if ($values['type'] !== LABEL) {
+                    // Link enabled.
+                    $inputs[] = [
+                        'label'     => __('Link enabled'),
+                        'arguments' => [
+                            'name'  => 'isLinkEnabled',
+                            'id'    => 'isLinkEnabled',
+                            'type'  => 'switch',
+                            'value' => $values['isLinkEnabled'],
+                        ],
+                    ];
+                }
+
+                // Show on top.
+                $inputs[] = [
+                    'label'     => __('Show on top'),
+                    'arguments' => [
+                        'name'  => 'isOnTop',
+                        'id'    => 'isOnTop',
+                        'type'  => 'switch',
+                        'value' => $values['isOnTop'],
+                    ],
+                ];
+
+                // Parent.
+                // Check groups can access user.
+                $aclUserGroups = [];
+                if (!\users_can_manage_group_all('AR')) {
+                    $aclUserGroups = array_keys(
+                        \users_get_groups(false, 'AR')
+                    );
+                }
+
+                $vcItems = VC::getItemsFromDB(
+                    $values['vCId'],
+                    $aclUserGroups
+                );
+
+                $fields = [];
+                $fields[0] = __('None');
+                foreach ($vcItems as $key => $value) {
+                    $text = '';
+                    $data = $value->toArray();
+                    switch ($data['type']) {
+                        case STATIC_GRAPH:
+                            $text = __('Static graph');
+                            $text .= ' - ';
+                            $text .= $data['imageSrc'];
+                        break;
+
+                        case MODULE_GRAPH:
+                            $text = __('Module graph');
+                        break;
+
+                        case CLOCK:
+                            $text = __('Clock');
+                        break;
+
+                        case BARS_GRAPH:
+                            $text = __('Bars graph');
+                        break;
+
+                        case AUTO_SLA_GRAPH:
+                            $text = __('Event History Graph');
+                        break;
+
+                        case PERCENTILE_BAR:
+                            $text = __('Percentile bar');
+                        break;
+
+                        case PERCENTILE_BUBBLE:
+                            $text = __('Percentile bubble');
+                        break;
+
+                        case CIRCULAR_PROGRESS_BAR:
+                            $text = __('Circular progress bar');
+                        break;
+
+                        case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                            $text = __('Circular progress bar (interior)');
+                        break;
+
+                        case SIMPLE_VALUE:
+                            $text = __('Simple Value');
+                        break;
+
+                        case LABEL:
+                            $text = __('Label');
+                        break;
+
+                        case GROUP_ITEM:
+                            $text = __('Group');
+                        break;
+
+                        case COLOR_CLOUD:
+                            $text = __('Color cloud');
+                        break;
+
+                        case ICON:
+                            $text = __('Icon');
+                        break;
+
+                        default:
+                            // Line not parent.
+                        break;
+                    }
+
+                    if (isset($data['agentAlias']) === true
+                        && empty($data['agentAlias']) === false
+                    ) {
+                        $text .= ' ('.$data['agentAlias'].')';
+                    }
+
+                    if ($data['id'] !== $values['id']) {
+                        $fields[$data['id']] = $text;
+                    }
+                }
+
+                $inputs[] = [
+                    'label'     => __('Parent'),
+                    'arguments' => [
+                        'type'     => 'select',
+                        'fields'   => $fields,
+                        'name'     => 'parentId',
+                        'selected' => $values['parentId'],
+                        'return'   => true,
+                        'sort'     => false,
+                    ],
+                ];
+
+                // Restrict access to group.
+                $inputs[] = [
+                    'label'     => __('Restrict access to group'),
+                    'arguments' => [
+                        'type'           => 'select_groups',
+                        'name'           => 'aclGroupId',
+                        'returnAllGroup' => true,
+                        'privilege'      => $values['access'],
+                        'selected'       => $values['aclGroupId'],
+                        'return'         => true,
+                    ],
+                ];
+
+                // Cache expiration.
+                $inputs[] = [
+                    'label'     => __('Cache expiration'),
+                    'arguments' => [
+                        'name'          => 'cacheExpiration',
+                        'type'          => 'interval',
+                        'value'         => $values['cacheExpiration'],
+                        'nothing'       => __('None'),
+                        'nothing_value' => 0,
+                    ],
+                ];
+            break;
+
+            case 'specific':
+                // Override.
+                $inputs = [];
+            break;
+
+            default:
+                // Not possible.
+            break;
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        global $config;
+
+        // Default values.
+        if (isset($values['x']) === false) {
+            $values['x'] = 0;
+        }
+
+        if (isset($values['y']) === false) {
+            $values['y'] = 0;
+        }
+
+        if (isset($values['parentId']) === false) {
+            $values['parentId'] = 0;
+        }
+
+        if (isset($values['aclGroupId']) === false) {
+            $values['aclGroupId'] = 0;
+        }
+
+        if (isset($values['isLinkEnabled']) === false) {
+            $values['isLinkEnabled'] = true;
+        }
+
+        if (isset($values['isOnTop']) === false) {
+            $values['isOnTop'] = false;
+        }
+
+        if (isset($values['cacheExpiration']) === false) {
+            $values['cacheExpiration'] = $config['vc_default_cache_expiration'];
+        }
+
+        return $values;
+    }
+
+
+    /**
+     * List images for Vc Icons.
+     *
+     * @param boolean|null $service If service item.
+     *
+     * @return array
+     */
+    public function getListImagesVC(?bool $service=false):array
+    {
+        global $config;
+
+        $result = [];
+
+        // Extract images.
+        $all_images = \list_files(
+            $config['homedir'].'/images/console/icons/',
+            'png',
+            1,
+            0
+        );
+
+        if (isset($all_images) === true && is_array($all_images) === true) {
+            $base_url = \ui_get_full_url(
+                '/images/console/icons/',
+                false,
+                false,
+                false
+            );
+
+            foreach ($all_images as $image_file) {
+                $image_file = substr($image_file, 0, (strlen($image_file) - 4));
+
+                if (strpos($image_file, '_bad') !== false) {
+                    continue;
+                }
+
+                if (strpos($image_file, '_ok') !== false) {
+                    continue;
+                }
+
+                if (strpos($image_file, '_warning') !== false) {
+                    continue;
+                }
+
+                $result[$image_file] = $image_file;
+            }
+        }
+
+        if ($service === true) {
+            \array_unshift($result, ['name' => __('None')]);
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get all VC except own.
+     *
+     * @param integer $id Id Visual Console.
+     *
+     * @return array Array all VCs.
+     */
+    public function getAllVisualConsole(int $id):array
+    {
+        // Extract all VC except own.
+        $result = db_get_all_rows_filter(
+            'tlayout',
+            'id != '.(int) $id,
+            [
+                'id',
+                'name',
+            ]
+        );
+
+        // Extract all VC for each node.
+        if (is_metaconsole() === true) {
+            enterprise_include_once('include/functions_metaconsole.php');
+            $meta_servers = metaconsole_get_servers();
+            foreach ($meta_servers as $server) {
+                if (metaconsole_load_external_db($server) !== NOERR) {
+                    metaconsole_restore_db();
+                    continue;
+                }
+
+                $node_visual_maps = db_get_all_rows_filter(
+                    'tlayout',
+                    [],
+                    [
+                        'id',
+                        'name',
+                    ]
+                );
+
+                if (isset($node_visual_maps) === true
+                    && is_array($node_visual_maps) === true
+                ) {
+                    foreach ($node_visual_maps as $node_visual_map) {
+                        // ID.
+                        $id = $node_visual_map['id'];
+                        $id .= '|';
+                        $id .= $server['id'];
+
+                        // Name = vc_name - (node).
+                        $name = $node_visual_map['name'];
+                        $name .= ' - (';
+                        $name .= $server['server_name'].')';
+
+                        $result[$id] = $name;
+                    }
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+
+        if ($result === false && $result === '') {
+            $result = [];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Inputs for Linked Visual Console.
+     *
+     * @param array $values Array values item.
+     *
+     * @return array Inputs.
+     */
+    public function inputsLinkedVisualConsole(array $values):array
+    {
+        // LinkConsoleInputGroup.
+        $fields = self::getAllVisualConsole($values['vCId']);
+
+        if ($fields === false) {
+            $fields = [];
+        } else {
+            $fields = \array_reduce(
+                $fields,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+        }
+
+        $getAllVisualConsoleValue = $values['linkedLayoutId'];
+        if (\is_metaconsole() === true) {
+            $getAllVisualConsoleValue = $values['linkedLayoutId'];
+            if ($values['linkedLayoutNodeId'] !== 0) {
+                $getAllVisualConsoleValue .= '|';
+                $getAllVisualConsoleValue .= $values['linkedLayoutNodeId'];
+            }
+        }
+
+        $inputs[] = [
+            'label'     => __('Linked visual console'),
+            'arguments' => [
+                'type'          => 'select',
+                'fields'        => $fields,
+                'name'          => 'getAllVisualConsole',
+                'selected'      => $getAllVisualConsoleValue,
+                'script'        => 'linkedVisualConsoleChange()',
+                'return'        => true,
+                'nothing'       => __('None'),
+                'nothing_value' => 0,
+            ],
+        ];
+
+        $inputs[] = [
+            'arguments' => [
+                'type'  => 'hidden',
+                'name'  => 'linkedLayoutId',
+                'value' => $values['linkedLayoutId'],
+            ],
+        ];
+
+        $inputs[] = [
+            'arguments' => [
+                'type'  => 'hidden',
+                'name'  => 'linkedLayoutNodeId',
+                'value' => $values['linkedLayoutNodeId'],
+            ],
+        ];
+
+        // Initial hidden.
+        $hiddenType = true;
+        $hiddenWeight = true;
+        $hiddenCritical = true;
+        $hiddenWarning = true;
+        if (isset($values['linkedLayoutId']) === true
+            && $values['linkedLayoutId'] !== 0
+        ) {
+            $hiddenType = false;
+            if ($values['linkedLayoutStatusType'] === 'service') {
+                $hiddenCritical = false;
+                $hiddenWarning = false;
+            }
+
+            if ($values['linkedLayoutStatusType'] === 'weight') {
+                $hiddenWeight = false;
+            }
+        }
+
+        // Type of the status calculation of the linked visual console.
+        $fields = [
+            'default' => __('By default'),
+            'weight'  => __('By status weight'),
+            'service' => __('By critical elements'),
+        ];
+
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusType',
+            'hidden'    => $hiddenType,
+            'label'     => __(
+                'Type of the status calculation of the linked visual console'
+            ),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'linkedLayoutStatusType',
+                'selected' => $values['linkedLayoutStatusType'],
+                'script'   => 'linkedVisualConsoleTypeChange()',
+                'return'   => true,
+            ],
+        ];
+
+        // Linked visual console weight.
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusTypeWeight',
+            'hidden'    => $hiddenWeight,
+            'label'     => __('Linked visual console weight'),
+            'arguments' => [
+                'name'   => 'linkedLayoutStatusTypeWeight',
+                'type'   => 'number',
+                'value'  => $values['linkedLayoutStatusTypeWeight'],
+                'return' => true,
+                'min'    => 0,
+            ],
+        ];
+
+        // Critical weight.
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusTypeCriticalThreshold',
+            'hidden'    => $hiddenCritical,
+            'label'     => __('Critical weight'),
+            'arguments' => [
+                'name'   => 'linkedLayoutStatusTypeCriticalThreshold',
+                'type'   => 'number',
+                'value'  => $values['linkedLayoutStatusTypeCriticalThreshold'],
+                'return' => true,
+                'min'    => 0,
+            ],
+        ];
+
+        // Warning weight.
+        $inputs[] = [
+            'id'        => 'li-linkedLayoutStatusTypeWarningThreshold',
+            'hidden'    => $hiddenWarning,
+            'label'     => __('Warning weight'),
+            'arguments' => [
+                'name'   => 'linkedLayoutStatusTypeWarningThreshold',
+                'type'   => 'number',
+                'value'  => $values['linkedLayoutStatusTypeWarningThreshold'],
+                'return' => true,
+                'min'    => 0,
+            ],
+        ];
+
+        return $inputs;
+    }
+
+
+    /**
+     * Return html images.
+     *
+     * @param string       $image Name image.
+     * @param boolean|null $only  Only normal image.
+     *
+     * @return string Html images.
+     */
+    public static function imagesElementsVC(
+        string $image,
+        ?bool $only=false
+    ):string {
+        $images = '';
+        if ($image !== '0') {
+            $type_image = [''];
+            if ($only === false) {
+                $type_image = [
+                    'bad',
+                    'ok',
+                    'warning',
+                    '',
+                ];
+            }
+
+            foreach ($type_image as $k => $v) {
+                $type = '';
+                if ($v !== '') {
+                    $type = '_'.$v;
+                }
+
+                $images .= html_print_image(
+                    'images/console/icons/'.$image.$type.'.png',
+                    true,
+                    [
+                        'title' => __('Image Vc'),
+                        'alt'   => __('Image Vc'),
+                        'style' => 'max-width:70px; max-height:70px;',
+                    ]
+                );
+            }
+        }
+
+        return $images;
+    }
+
+
+    /**
+     * Return zones.
+     *
+     * @param string $zone Name zone.
+     *
+     * @return array Zones.
+     */
+    public static function zonesVC(string $zone):array
+    {
+        $result = [];
+        $timezones = timezone_identifiers_list();
+        foreach ($timezones as $timezone) {
+            if (strpos($timezone, $zone) !== false) {
+                $result[$timezone] = $timezone;
+            }
+        }
+
+        return $result;
     }
 
 

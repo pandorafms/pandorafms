@@ -699,45 +699,6 @@ function notifications_print_global_source_configuration($source)
         $source['id']
     );
     $html_selectors .= '</div>';
-    // Generate the checkboxes and time select.
-    $html_checkboxes = "<div class='global-config-notification-checkboxes'>";
-    $html_checkboxes .= '   <span>';
-    $html_checkboxes .= html_print_checkbox_extended('all-'.$source['id'], 1, $is_group_all, false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-all_users"');
-    $html_checkboxes .= __('Notify all users');
-    $html_checkboxes .= '   </span><br><span>';
-    $html_checkboxes .= html_print_checkbox_extended('mail-'.$source['id'], 1, $source['also_mail'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-also_mail"');
-    $html_checkboxes .= __('Also email users with notification content');
-    $html_checkboxes .= '   </span><br><span>';
-    $html_checkboxes .= html_print_checkbox_extended('user-'.$source['id'], 1, $source['user_editable'], false, '', 'class= "elem-clickable"', true, 'id="nt-'.$source['id'].'-user_editable"');
-    $html_checkboxes .= __('Users can modify notification preferences');
-    $html_checkboxes .= '   </span>';
-    $html_checkboxes .= '</div>';
-
-    // Generate the select with the time.
-    $html_select_pospone = __('Users can postpone notifications up to');
-    // FIXMEit should not be disabled.
-    $html_select_pospone .= html_print_select(
-        [
-            SECONDS_5MINUTES               => __('5 minutes'),
-            SECONDS_15MINUTES              => __('15 minutes'),
-            SECONDS_12HOURS                => __('12 hours'),
-            SECONDS_1DAY                   => __('1 day'),
-            SECONDS_1WEEK                  => __('1 week'),
-            SECONDS_15DAYS                 => __('15 days'),
-            SECONDS_1MONTH                 => __('1 month'),
-            NOTIFICATIONS_POSTPONE_FOREVER => __('forever'),
-        ],
-        'nt-'.$source['id'].'-max_postpone_time',
-        $source['max_postpone_time'],
-        '',
-        '',
-        0,
-        true,
-        false,
-        true,
-        'elem-changeable',
-        true
-    );
 
     // Return all html.
     return $html_title.$html_selectors.$html_checkboxes.$html_select_pospone;
@@ -767,7 +728,7 @@ function notifications_print_source_select_box(
         "
         <div class='global-config-notification-single-selector'>
             <div>
-                <h4>%s</h4>
+                <h5>%s</h5>
                 %s
             </div>
             <div class='global-notifications-icons'>
@@ -916,7 +877,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
 function notifications_print_user_switch($source, $user, $label)
 {
     $status = notifications_get_user_label_status($source, $user, $label);
-    return html_print_switch(
+    $switch = html_print_switch(
         [
             'name'     => $label,
             'value'    => $status['status'],
@@ -925,6 +886,13 @@ function notifications_print_user_switch($source, $user, $label)
             'id'       => 'notifications-user-'.$source['id'].'-label-'.$label,
         ]
     );
+
+    $data = [
+        'disabled' => !$status['enabled'],
+        'switch'   => $switch,
+    ];
+
+    return $data;
 }
 
 

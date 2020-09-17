@@ -14,14 +14,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.740-191122"
+pandora_version="7.0NG.749-200917"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
 if [ $? = 1 ]
 then
-	echo "No found \"dpkg-deb\" aplication, please install."
-	exit 1
+	if [ "$DPKG_DEB" == "" ]; then
+		echo "No found \"dpkg-deb\" aplication, please install."
+		exit 1
+	fi
+
+	echo ">> Using dockerized version of dpkg-deb: "
+	echo "  $DPKG_DEB"
+	USE_DOCKER_APP=1
 else
 	echo "Found \"dpkg-debs\"."
 fi
@@ -73,7 +79,10 @@ cp Linux/pandora_agent.conf temp_package/etc/pandora/
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
 # Relocate plugins to the final dir and delete 
-mv temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+cp temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+
+# Make sure the plugins have execution privileges
+chmod 755 temp_package/etc/pandora/plugins/*
 
 echo "Official plugins are placed on /etc/pandora/plugins" > temp_package/usr/share/pandora_agent/plugins/README
 
@@ -122,8 +131,12 @@ do
 done
 echo "END"
 
-echo "Make the package \"Pandorafms console\"."
-dpkg-deb --build temp_package
+echo "Make the package \"Pandorafms agent\"."
+if [ "$USE_DOCKER_APP" == "1" ]; then 
+	eval $DPKG_DEB --build temp_package
+else
+	dpkg-deb --build temp_package
+fi
 mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb
 
 echo "Delete the \"temp_package\" temp dir for job."

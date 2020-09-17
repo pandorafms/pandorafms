@@ -33,6 +33,10 @@ div#error_buttons a {
   background-repeat: repeat;
 }
 
+.login_body_trident {
+  background: url("../../images/backgrounds/background_pandora_console_keys.jpg") !important;
+}
+
 p.log_in {
   color: #fff;
   padding: 0px 10px;

@@ -125,23 +125,22 @@ if (defined('METACONSOLE')) {
     $sec = 'galertas';
 }
 
-// This prevents to duplicate the header in case delete_templete action is performed
+// This prevents to duplicate the header in
+// case delete_templete action is performed.
 if (!$delete_template) {
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        // ~ ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
         ui_print_page_header(
             __('Alerts').' &raquo; '.__('Alert templates'),
             'images/gm_alerts.png',
             false,
-            'alert_templates_tab',
+            '',
             true
         );
     }
 }
-
 
 if ($update_template) {
     $id = (int) get_parameter('id');
@@ -151,7 +150,7 @@ if ($update_template) {
     $fields_recovery = [];
     for ($i = 1; $i <= 10; $i++) {
         $values['field'.$i] = (string) get_parameter('field'.$i);
-        $values['field'.$i.'_recovery'] = $recovery_notify ? (string) get_parameter('field'.$i.'_recovery') : '';
+        $values['field'.$i.'_recovery'] = ($recovery_notify) ? (string) get_parameter('field'.$i.'_recovery') : '';
     }
 
     $values['recovery_notify'] = $recovery_notify;
@@ -164,13 +163,15 @@ if ($update_template) {
     );
 }
 
-// If user tries to delete a template with group=ALL then must have "PM" access privileges
+// If user tries to delete a template with group=ALL
+// then must have "PM" access privileges.
 if ($delete_template) {
     $id = get_parameter('id');
     $al_template = alerts_get_alert_template($id);
 
     if ($al_template !== false) {
-        // If user tries to delete a template with group=ALL then must have "PM" access privileges
+        // If user tries to delete a template with group=ALL
+        // then must have "PM" access privileges.
         if ($al_template['id_group'] == 0) {
             if (! check_acl($config['id_user'], 0, 'PM')) {
                 db_pandora_audit(
@@ -192,8 +193,7 @@ if ($delete_template) {
                     );
                 }
             }
-        } //end if
-        else {
+        } else {
             $own_info = get_user_info($config['id_user']);
             if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
                 $own_groups = array_keys(users_get_groups($config['id_user'], 'LM'));
@@ -202,7 +202,7 @@ if ($delete_template) {
             }
 
             $is_in_group = in_array($al_template['id_group'], $own_groups);
-            // Then template group have to be is his own groups
+            // Then template group have to be is his own groups.
             if ($is_in_group) {
                 if (defined('METACONSOLE')) {
                     alerts_meta_print_header();
@@ -241,9 +241,15 @@ if ($delete_template) {
     $result = alerts_delete_alert_template($id);
 
     if ($result) {
-        db_pandora_audit('Template alert management', 'Delete alert template #'.$id);
+        db_pandora_audit(
+            'Template alert management',
+            'Delete alert template #'.$id
+        );
     } else {
-        db_pandora_audit('Template alert management', 'Fail try to delete alert template #'.$id);
+        db_pandora_audit(
+            'Template alert management',
+            'Fail try to delete alert template #'.$id
+        );
     }
 
     ui_print_result_message(
@@ -253,6 +259,11 @@ if ($delete_template) {
     );
 }
 
+if (is_central_policies_on_node() === true) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+    );
+}
 
 $search_string = (string) get_parameter('search_string');
 $search_type = (string) get_parameter('search_type');
@@ -269,7 +280,7 @@ $url = ui_get_url_refresh(
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->cellspacing = 0;
     $table->cellpadding = 0;
 }
@@ -313,7 +324,7 @@ $table->data[0][4] .= html_print_submit_button(
 );
 $table->data[0][4] .= '</div>';
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $filter = '<form class="" method="post" action="'.$url.'">';
     $filter .= html_print_table($table, true);
     $filter .= '</form>';
@@ -351,6 +362,7 @@ $templates = alerts_get_alert_templates(
         'description',
         'type',
         'id_group',
+        'previous_name',
     ]
 );
 if ($templates === false) {
@@ -394,18 +406,34 @@ foreach ($templates as $template) {
     $data[1] = ui_print_group_icon($template['id_group'], true);
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
-    if (check_acl($config['id_user'], $template['id_group'], 'LM')) {
+    if (is_central_policies_on_node() === false
+        && check_acl($config['id_user'], $template['id_group'], 'LM')
+    ) {
         $table->cellclass[][4] = 'action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
-        $data[4] .= html_print_input_image('dup', 'images/copy.png', 1, '', true, ['title' => __('Duplicate')]);
+        $data[4] .= html_print_input_image(
+            'dup',
+            'images/copy.png',
+            1,
+            '',
+            true,
+            ['title' => __('Duplicate')]
+        );
         $data[4] .= '</form> ';
 
         $data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
         $data[4] .= html_print_input_hidden('delete_template', 1, true);
         $data[4] .= html_print_input_hidden('id', $template['id'], true);
-        $data[4] .= html_print_input_image('del', 'images/cross.png', 1, '', true, ['title' => __('Delete')]);
+        $data[4] .= html_print_input_image(
+            'del',
+            'images/cross.png',
+            1,
+            '',
+            true,
+            ['title' => __('Delete')]
+        );
         $data[4] .= '</form> ';
     } else {
         $data[4] = '';
@@ -415,18 +443,34 @@ foreach ($templates as $template) {
 }
 
 ui_pagination($total_templates, $url);
-if (isset($data)) {
+if (isset($data) === true) {
     html_print_table($table);
-    ui_pagination($total_templates, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination(
+        $total_templates,
+        $url,
+        0,
+        0,
+        false,
+        'offset',
+        true,
+        'pagination-bottom'
+    );
 } else {
-    ui_print_info_message(['no_close' => true, 'message' => __('No alert templates defined') ]);
+    ui_print_info_message(
+        [
+            'no_close' => true,
+            'message'  => __('No alert templates defined'),
+        ]
+    );
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
-html_print_input_hidden('create_alert', 1);
-echo '</form>';
-echo '</div>';
+if (is_central_policies_on_node() === false) {
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
+    html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+    html_print_input_hidden('create_alert', 1);
+    echo '</form>';
+    echo '</div>';
+}
 
 enterprise_hook('close_meta_frame');

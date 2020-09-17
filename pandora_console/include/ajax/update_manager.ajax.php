@@ -266,9 +266,10 @@ if ($install_package) {
             [$version]
         );
 
+        $product_name = io_safe_output(get_product_name());
         db_pandora_audit(
-            'Update '.get_product_name(),
-            "Update version: $version of ".get_product_name().' by '.$config['id_user']
+            'Update '.$product_name,
+            "Update version: $version of ".$product_name.' by '.$config['id_user']
         );
 
         $return['status'] = 'success';
@@ -403,6 +404,13 @@ if ($search_minor) {
         $return['have_minor'] = true;
         $size_mr = get_number_of_mr($package, $ent, $offline);
         $return['mr'] = $size_mr;
+    } else {
+        $product_name = io_safe_output(get_product_name());
+        $version = get_parameter('version', '');
+        db_pandora_audit(
+            'ERROR: Update '.$product_name,
+            'Update version of '.$product_name.' by '.$config['id_user'].' has failed.'
+        );
     }
 
     echo json_encode($return);

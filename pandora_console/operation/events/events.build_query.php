@@ -231,6 +231,13 @@ if ($source != '') {
     $sql_post .= " AND source LIKE '%$source%'";
 }
 
+if (is_metaconsole()) {
+    if ($id_source_event != '') {
+        $sql_post .= " AND id_source_event LIKE '%$id_source_event%'";
+    }
+}
+
+
 // In metaconsole mode the agent search is performed by name.
 if ($meta) {
     $text_agent = get_parameter('text_agent', '');

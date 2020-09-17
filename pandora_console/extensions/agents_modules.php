@@ -450,7 +450,7 @@ function mainAgentsModules()
             __('Agents/Modules'),
             'images/module_mc.png',
             false,
-            'agents_module_view',
+            '',
             false,
             $updated_time
         );
@@ -541,11 +541,14 @@ function mainAgentsModules()
                 $show_filters .= '<td>'.$filter_modules.'</td>';
             $show_filters .= '</tr>';
             $show_filters .= '<tr>';
-                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
+                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</span></td>';
             $show_filters .= '</tr>';
         $show_filters .= '</table>';
         $show_filters .= '</form>';
-        ui_toggle($show_filters, __('Filters'));
+        ui_toggle(
+            $show_filters,
+            __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true)
+        );
     }
 
     if ($agents_id[0] != -1) {
@@ -798,38 +801,40 @@ function mainAgentsModules()
                     echo "<td style='text-align: center;'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
-                    $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'label='.rawurlencode(
-                        urlencode(
-                            base64_encode($module['name'])
-                        )
-                    ).'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."')";
+                    $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."')";
 
                     echo '<a href="javascript:'.$link.'">';
+
+                    $module_last_value = modules_get_last_value($module_id);
+                    if (!is_numeric($module_last_value)) {
+                        $module_last_value = htmlspecialchars($module_last_value);
+                    }
+
                     switch ($status) {
                         case AGENT_MODULE_STATUS_NORMAL:
-                            ui_print_status_image('module_ok.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_ok.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                            ui_print_status_image('module_critical.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_critical.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_WARNING:
-                            ui_print_status_image('module_warning.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_warning.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_UNKNOWN:
-                            ui_print_status_image('module_unknown.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_unknown.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_NORMAL_ALERT:
                         case AGENT_MODULE_STATUS_WARNING_ALERT:
                         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                            ui_print_status_image('module_alertsfired.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_alertsfired.png', $module_last_value, false);
                         break;
 
                         case 4:
-                            ui_print_status_image('module_no_data.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_no_data.png', $module_last_value, false);
                         break;
                     }
 

@@ -29,12 +29,13 @@ use Time::HiRes qw(usleep);
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
+use PandoraFMS::Core;
 use PandoraFMS::Tools;
 use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.740 PS191122";
+my $version = "7.0NG.749 PS200917";
 
 # Pandora server configuration
 my %conf;
@@ -139,29 +140,6 @@ sub pandora_purgedb ($$) {
 		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
-		
-		#
-		# Now the log4x data
-		#
-		$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC', 1);
-		if (defined ($first_mark)) {
-			$total_time = $ulimit_timestamp - $first_mark;
-			$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-			if ($purge_steps > 0) {
-				for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-					db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-					log_message ('PURGE', "Log4x data deletion progress %$ax\r");
-					# Do a nanosleep here for 0,01 sec
-					usleep (10000);
-				}
-				log_message ('', "\n");
-			} else {
-				log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
-			}
-		}
-		else {
-			log_message ('PURGE', 'No data in tagente_datos_log4x.');
-		}
 	}
 	else {
 		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
@@ -401,16 +379,11 @@ sub pandora_purgedb ($$) {
 		log_message ('PURGE', 'netflow_max_lifetime is set to 0. Old netflow data will not be deleted.');
 	}
 	
-	
-	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");
-	if (!defined ($conf->{'logstash_host'}) || $conf->{'logstash_host'} eq '') {
-		log_message ('!', "Log collection disabled.");
-	}
-	elsif (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
+	if (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
 		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_days_purge_old_information'} . ' days.');
-    	enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
+    enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
@@ -482,7 +455,7 @@ sub pandora_compactdb ($$) {
 		$limit_utime  = $conf->{'_last_compact'};
 	}
 	
-	if ($start_utime <= $limit_utime) {
+	if ($start_utime <= $limit_utime || ( defined ($conf->{'_last_compact'}) && (($conf->{'_last_compact'} + 24 * 60 * 60) > $start_utime))) {
 		log_message ('COMPACT', "Data already compacted.");
 		return;
 	}
@@ -516,7 +489,7 @@ sub pandora_compactdb ($$) {
 					next unless defined ($module_type);
 
 					# Mark proc modules.
-					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {
+					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31 || $module_type == 35 || $module_type == 100) {
 						$module_proc_hash{$id_module} = 1;
 					}
 					else {
@@ -541,7 +514,9 @@ sub pandora_compactdb ($$) {
 			}
 
 			# Delete interval from the database
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE utimestamp < ? AND utimestamp >= ?', $start_utime, $stop_utime);
+			db_do ($dbh, 'DELETE ad FROM tagente_datos ad
+				INNER JOIN tagente_modulo am ON ad.id_agente_modulo = am.id_agente_modulo AND am.id_tipo_modulo NOT IN (2,6,9,18,21,31,35,100)
+				WHERE ad.utimestamp < ? AND ad.utimestamp >= ?', $start_utime, $stop_utime);
 
 			# Insert interval average value
 			foreach my $key (keys(%value_hash)) {
@@ -686,6 +661,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_purge_old_information'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'Days_purge_old_information'");
 	$conf->{'_elasticsearch_ip'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_ip'");
 	$conf->{'_elasticsearch_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_port'");
+	$conf->{'_server_unique_identifier'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'server_unique_identifier'");
 
 	$BIG_OPERATION_STEP = $conf->{'_big_operation_step_datos_purge'}
 					if ( $conf->{'_big_operation_step_datos_purge'} );
@@ -1055,6 +1031,9 @@ sub pandoradb_main ($$$) {
 	# Recalculating dynamic intervals.
 	enterprise_hook("update_min_max", [$dbh, $conf]);
 
+	# Metaconsole database cleanup.
+	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
+
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
 
@@ -1078,7 +1057,8 @@ my $history_dbh = undef;
 is_metaconsole(\%conf);
 if ($conf{'_history_db_enabled'} eq '1') {
 	eval {
-		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'});
+		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
+		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));
 	};
 	if ($@) {
 		if (is_offline(\%conf)) {

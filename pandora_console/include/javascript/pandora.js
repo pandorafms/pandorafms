@@ -36,6 +36,12 @@ function winopeng_var(url, wid, width, height) {
   status = wid;
 }
 
+function newTabjs(content) {
+  content = atob(content);
+  var printWindow = window.open("");
+  printWindow.document.body.innerHTML += "<div>" + content + "</div>";
+}
+
 function open_help(url) {
   if (!navigator.onLine) {
     alert(
@@ -712,7 +718,7 @@ function post_process_select_init_unit(name, selected) {
     });
 
     if (select_or_text) {
-      $("#" + name + "_select option[value=" + selected + "]").attr(
+      $("#" + name + "_select option[value='" + selected + "']").attr(
         "selected",
         true
       );
@@ -728,7 +734,7 @@ function post_process_select_init_unit(name, selected) {
 
   $("#" + name + "_select").change(function() {
     var value = $("#" + name + "_select").val();
-    $("#" + name + "_select option[value=" + value + "]").attr(
+    $("#" + name + "_select option[value='" + value + "']").attr(
       "selected",
       true
     );
@@ -833,11 +839,12 @@ function post_process_select_events(name) {
  * This function initialize the values of the control
  *
  * @param name string with the name of the select for time
+ * @param allow_zero bool Allow the use of the value zero
  */
-function period_select_init(name) {
+function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
-  $("#" + name + "_manual").hide();
-  $("#" + name + "_default").show();
+  $("#" + name + "_manual").css("display", "none");
+  $("#" + name + "_default").css("display", "inline");
 
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
@@ -849,10 +856,10 @@ function period_select_init(name) {
     } else {
       $("#" + name + "_select option:eq(1)").prop("selected", true);
     }
-  } else if ($("#text-" + name + "_text").val() == 0) {
+  } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
-    $("#" + name + "_manual").show();
-    $("#" + name + "_default").hide();
+    $("#" + name + "_manual").css("display", "inline");
+    $("#" + name + "_default").css("display", "none");
   }
 }
 
@@ -1586,8 +1593,10 @@ function paint_graph_status(
     //delete elements
     svg.selectAll("g").remove();
 
-    width_x = 101;
-    height_x = 50;
+    var width_x = 101;
+    var height_x = 50;
+    var legend_width_x = 135;
+    var legend_height_x = 80;
 
     svg
       .append("g")
@@ -1600,8 +1609,8 @@ function paint_graph_status(
       .attr("width", 300)
       .attr("height", 300)
       .append("text")
-      .attr("x", width_x)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x - 20)
       .attr("fill", "black")
       .style("font-family", "arial")
       .style("font-weight", "bold")
@@ -1616,8 +1625,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_normal")
-      .attr("x", width_x + 80)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#82B92E");
@@ -1626,8 +1635,8 @@ function paint_graph_status(
     svg
       .append("g")
       .append("text")
-      .attr("x", width_x + 100)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x + 5)
       .attr("fill", "black")
       .style("font-family", "arial")
       .style("font-weight", "bold")
@@ -1640,8 +1649,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_warning")
-      .attr("x", width_x + 185)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x - 5)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#ffd731");
@@ -1650,8 +1659,8 @@ function paint_graph_status(
     svg
       .append("g")
       .append("text")
-      .attr("x", width_x + 205)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x + 30)
       .attr("fill", "black")
       .style("font-family", "arial")
       .style("font-weight", "bold")
@@ -1664,8 +1673,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_critical")
-      .attr("x", width_x + 285)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x + 20)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#e63c52");
@@ -1689,7 +1698,7 @@ function paint_graph_status(
       .attr("id", "status_rect")
       .attr("x", width_x)
       .attr("y", height_x)
-      .attr("width", 300)
+      .attr("width", 20)
       .attr("height", 200)
       .style("fill", "#82B92E");
 
@@ -1706,7 +1715,7 @@ function paint_graph_status(
           "y",
           height_x + (range_max - min_w) * position - (max_w - min_w) * position
         )
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (max_w - min_w) * position)
         .style("fill", "#ffd731");
     } else {
@@ -1718,7 +1727,7 @@ function paint_graph_status(
         .attr("id", "warning_rect")
         .attr("x", width_x)
         .attr("y", height_x + 200 - (min_w - range_min) * position)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (min_w - range_min) * position)
         .style("fill", "#ffd731");
 
@@ -1730,7 +1739,7 @@ function paint_graph_status(
         .attr("id", "warning_inverse_rect")
         .attr("x", width_x)
         .attr("y", height_x)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr(
           "height",
           (range_max - min_w) * position - (max_w - min_w) * position
@@ -1750,7 +1759,7 @@ function paint_graph_status(
           "y",
           height_x + (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (max_c - min_c) * position)
         .style("fill", "#e63c52");
     } else {
@@ -1762,7 +1771,7 @@ function paint_graph_status(
         .attr("id", "critical_rect")
         .attr("x", width_x)
         .attr("y", height_x + 200 - (min_c - range_min) * position)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (min_c - range_min) * position)
         .style("fill", "#e63c52");
       svg
@@ -1773,7 +1782,7 @@ function paint_graph_status(
         .attr("id", "critical_inverse_rect")
         .attr("x", width_x)
         .attr("y", height_x)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position
@@ -1829,7 +1838,7 @@ function round_with_decimals(value, multiplier) {
   if (typeof multiplier === "undefined") multiplier = 1;
 
   // Return non numeric types without modification
-  if (typeof value !== "number" || Number.isNaN(value)) {
+  if (typeof value !== "number" || isNaN(value)) {
     return value;
   }
 
@@ -1891,342 +1900,6 @@ function ellipsize(str, max, ellipse) {
   return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
 }
 
-/**
- * Display a dialog with an image
- *
- * @param {string} icon_name The name of the icon you will display
- * @param {string} icon_path The path to the icon
- * @param {Object} incoming_options All options
- * 		grayed: {bool} True to display the background black
- * 		title {string} 'Logo preview' by default
- */
-function logo_preview(icon_name, icon_path, incoming_options) {
-  // Get the options
-  options = {
-    grayed: false,
-    title: "Logo preview"
-  };
-  $.extend(options, incoming_options);
-
-  if (icon_name == "") return;
-
-  $dialog = $("<div></div>");
-  $image = $('<img src="' + icon_path + '">');
-  $image.css("max-width", "500px").css("max-height", "500px");
-
-  try {
-    $dialog
-      .hide()
-      .html($image)
-      .dialog({
-        title: options.title,
-        resizable: true,
-        draggable: true,
-        modal: true,
-        dialogClass: options.grayed ? "dialog-grayed" : "",
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        },
-        minHeight: 1,
-        width: $image.width,
-        close: function() {
-          $dialog.empty().remove();
-        }
-      })
-      .show();
-  } catch (err) {
-    // console.log(err);
-  }
-}
-
-// Advanced Form control.
-function load_modal(settings) {
-  var AJAX_RUNNING = 0;
-  var data = new FormData();
-  if (settings.extradata) {
-    settings.extradata.forEach(function(item) {
-      if (item.value != undefined) data.append(item.name, item.value);
-    });
-  }
-  data.append("page", settings.onshow.page);
-  data.append("method", settings.onshow.method);
-  if (settings.onshow.extradata != undefined) {
-    data.append("extradata", JSON.stringify(settings.onshow.extradata));
-  }
-
-  if (settings.target == undefined) {
-    var uniq = uniqId();
-    var div = document.createElement("div");
-    div.id = "div-modal-" + uniq;
-    div.style.display = "none";
-
-    document.getElementById("main").append(div);
-
-    var id_modal_target = "#div-modal-" + uniq;
-
-    settings.target = $(id_modal_target);
-  }
-
-  var width = 630;
-  if (settings.onshow.width) {
-    width = settings.onshow.width;
-  }
-
-  if (settings.modal.overlay == undefined) {
-    settings.modal.overlay = {
-      opacity: 0.5,
-      background: "black"
-    };
-  }
-
-  settings.target.html("Loading modal...");
-  settings.target
-    .dialog({
-      title: "Loading",
-      close: false,
-      width: 200,
-      buttons: []
-    })
-    .show();
-  var required_buttons = [];
-  if (settings.modal.cancel != undefined) {
-    //The variable contains a function
-    // that is responsible for executing the method it receives from settings
-    // which confirms the closure of a modal
-    var cancelModal = function() {
-      settings.target.dialog("close");
-      if (AJAX_RUNNING) return;
-      AJAX_RUNNING = 1;
-      var formdata = new FormData();
-
-      formdata.append("page", settings.oncancel.page);
-      formdata.append("method", settings.oncancel.method);
-
-      $.ajax({
-        method: "post",
-        url: settings.url,
-        processData: false,
-        contentType: false,
-        data: formdata,
-        success: function(data) {
-          if (typeof settings.oncancel.callback == "function") {
-            settings.oncancel.callback(data);
-            settings.target.dialog("close");
-          }
-          AJAX_RUNNING = 0;
-        },
-        error: function(data) {
-          // console.log(data);
-          AJAX_RUNNING = 0;
-        }
-      });
-    };
-
-    required_buttons.push({
-      class:
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-      text: settings.modal.cancel,
-      click: function() {
-        if (settings.oncancel != undefined) {
-          if (typeof settings.oncancel.confirm == "function") {
-            //receive function
-            settings.oncancel.confirm(cancelModal);
-          } else if (settings.oncancel != undefined) {
-            cancelModal();
-          }
-        } else {
-          $(this).dialog("close");
-        }
-      }
-    });
-  }
-
-  if (settings.modal.ok != undefined) {
-    required_buttons.push({
-      class:
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-      text: settings.modal.ok,
-      click: function() {
-        if (AJAX_RUNNING) return;
-
-        if (settings.onsubmit != undefined) {
-          if (settings.onsubmit.preaction != undefined) {
-            settings.onsubmit.preaction();
-          }
-          AJAX_RUNNING = 1;
-          if (settings.onsubmit.dataType == undefined) {
-            settings.onsubmit.dataType = "html";
-          }
-
-          var formdata = new FormData();
-          if (settings.extradata) {
-            settings.extradata.forEach(function(item) {
-              if (item.value != undefined)
-                formdata.append(item.name, item.value);
-            });
-          }
-          formdata.append("page", settings.onsubmit.page);
-          formdata.append("method", settings.onsubmit.method);
-
-          var flagError = false;
-
-          $("#" + settings.form + " :input").each(function() {
-            if (this.checkValidity() === false) {
-              $(this).attr("title", this.validationMessage);
-              $(this).tooltip({
-                tooltipClass: "uitooltip",
-                position: {
-                  my: "right bottom",
-                  at: "right top",
-                  using: function(position, feedback) {
-                    $(this).css(position);
-                    $("<div>")
-                      .addClass("arrow")
-                      .addClass(feedback.vertical)
-                      .addClass(feedback.horizontal)
-                      .appendTo(this);
-                  }
-                }
-              });
-              $(this).tooltip("open");
-
-              var element = $(this);
-              setTimeout(
-                function(element) {
-                  element.tooltip("destroy");
-                  element.removeAttr("title");
-                },
-                3000,
-                element
-              );
-
-              flagError = true;
-            }
-
-            if (this.type == "file") {
-              if ($(this).prop("files")[0]) {
-                formdata.append(this.name, $(this).prop("files")[0]);
-              }
-            } else {
-              if ($(this).attr("type") == "checkbox") {
-                if (this.checked) {
-                  formdata.append(this.name, "on");
-                }
-              } else {
-                formdata.append(this.name, $(this).val());
-              }
-            }
-          });
-
-          if (flagError === false) {
-            $.ajax({
-              method: "post",
-              url: settings.url,
-              processData: false,
-              contentType: false,
-              data: formdata,
-              dataType: settings.onsubmit.dataType,
-              success: function(data) {
-                if (settings.ajax_callback != undefined) {
-                  if (settings.idMsgCallback != undefined) {
-                    settings.ajax_callback(data, settings.idMsgCallback);
-                  } else {
-                    settings.ajax_callback(data);
-                  }
-                }
-                AJAX_RUNNING = 0;
-              }
-            });
-          } else {
-            AJAX_RUNNING = 0;
-          }
-        } else {
-          // No onsumbit configured. Directly close.
-          $(this).dialog("close");
-        }
-      },
-      error: function(data) {
-        // console.log(data);
-        AJAX_RUNNING = 0;
-      }
-    });
-  }
-
-  $.ajax({
-    method: "post",
-    url: settings.url,
-    processData: false,
-    contentType: false,
-    data: data,
-    success: function(data) {
-      settings.target.html(data);
-      if (settings.onload != undefined) {
-        settings.onload(data);
-      }
-      settings.target.dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        title: settings.modal.title,
-        width: width,
-        overlay: settings.modal.overlay,
-        buttons: required_buttons,
-        closeOnEscape: false,
-        open: function() {
-          $(".ui-dialog-titlebar-close").hide();
-        },
-        close: function() {
-          if (id_modal_target != undefined) {
-            $(id_modal_target).remove();
-          }
-        }
-      });
-    },
-    error: function(data) {
-      // console.log(data);
-    }
-  });
-}
-
-//Function that shows a dialog box to confirm closures of generic manners. The modal id is random
-function confirmDialog(settings) {
-  var randomStr = uniqId();
-
-  $("body").append(
-    '<div id="confirm_' + randomStr + '">' + settings.message + "</div>"
-  );
-  $("#confirm_" + randomStr);
-  $("#confirm_" + randomStr)
-    .dialog({
-      title: settings.title,
-      close: false,
-      width: 350,
-      modal: true,
-      buttons: [
-        {
-          text: "Cancel",
-          class:
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
-          click: function() {
-            $(this).dialog("close");
-            if (typeof settings.onDeny == "function") settings.onDeny();
-          }
-        },
-        {
-          text: "Ok",
-          class:
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-          click: function() {
-            $(this).dialog("close");
-            if (typeof settings.onAccept == "function") settings.onAccept();
-          }
-        }
-      ]
-    })
-    .show();
-}
-
 function uniqId() {
   var randomStr =
     Math.random()
@@ -2237,58 +1910,6 @@ function uniqId() {
       .substring(2, 15);
 
   return randomStr;
-}
-
-/**
- * Function to show modal with message Validation.
- *
- * @param {json} data Json example:
- * $return = [
- *  'error' => 0 or 1,
- *  'title' => [
- *    Failed,
- *    Success,
- *  ],
- *  'text'  => [
- *    Failed,
- *    Success,
- *  ],
- *];
- * @param {string} idMsg ID div charge modal.
- *
- * @return {void}
- */
-function generalShowMsg(data, idMsg) {
-  var title = data.title[data.error];
-  var text = data.text[data.error];
-  var failed = !data.error;
-
-  $("#" + idMsg).empty();
-  $("#" + idMsg).html(text);
-  $("#" + idMsg).dialog({
-    width: 450,
-    position: {
-      my: "center",
-      at: "center",
-      of: window,
-      collision: "fit"
-    },
-    title: title,
-    buttons: [
-      {
-        class:
-          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-        text: "OK",
-        click: function(e) {
-          if (!failed) {
-            $(".ui-dialog-content").dialog("close");
-          } else {
-            $(this).dialog("close");
-          }
-        }
-      }
-    ]
-  });
 }
 
 /**
@@ -2309,4 +1930,121 @@ function ajaxRequest(id, settings) {
       $("#" + id).append(data);
     }
   });
+}
+
+/**
+ * -------------------------------------
+ *        Connection Check
+ * --------------------------------------
+ */
+
+checkConnection(1);
+
+/**
+ * Performs connection tests every minutes and add connection listeners
+ * @param {integer} time in minutes
+ */
+
+function checkConnection(minutes) {
+  var cicle = minutes * 60 * 1000;
+  var checkConnection = setInterval(handleConnection, cicle);
+
+  // Connection listeters.
+  window.addEventListener("online", handleConnection);
+  window.addEventListener("offline", handleConnection);
+}
+
+/**
+ * Handle connection status test.
+ *
+ * Test conectivity with server and shows modal message.
+ */
+function handleConnection() {
+  var connected;
+  var msg = "online";
+
+  if (navigator.onLine) {
+    isReachable(getServerUrl())
+      .then(function(online) {
+        if (online) {
+          // handle online status
+          connected = true;
+          showConnectionMessage(connected, msg);
+        } else {
+          connected = false;
+          msg = "No connectivity with server";
+          showConnectionMessage(connected, msg);
+        }
+      })
+      .catch(function(err) {
+        connected = false;
+        msg = err;
+        showConnectionMessage(connected, msg);
+      });
+  } else {
+    // handle offline status
+    connected = false;
+    msg = "Connection offline";
+    showConnectionMessage(connected, msg);
+  }
+}
+
+/**
+ * Test server reachibilty and get response.
+ *
+ * @param {String} url
+ *
+ * Return {promise}
+ */
+function isReachable(url) {
+  /**
+   * Note: fetch() still "succeeds" for 404s on subdirectories,
+   * which is ok when only testing for domain reachability.
+   *
+   * Example:
+   *   https://google.com/noexist does not throw
+   *   https://noexist.com/noexist does throw
+   */
+  return fetch(url, { method: "HEAD", mode: "no-cors" })
+    .then(function(resp) {
+      return resp && (resp.ok || resp.type === "opaque");
+    })
+    .catch(function(error) {
+      console.warn("[conn test failure]:", error);
+    });
+}
+
+/**
+ * Gets server origin url
+ */
+function getServerUrl() {
+  var server_url;
+
+  try {
+    server_url = get_php_value("homeurl");
+  } catch (SyntaxError) {
+    console.warn("Pandora homeurl cannot be found.");
+    server_url = window.location.origin + "/pandora_console";
+  }
+  return server_url;
+}
+
+/**
+ * Shows or hide connection infoMessage.
+ *
+ * @param {bool} conn
+ * @param {string} msg
+ */
+function showConnectionMessage(conn = true, msg = "") {
+  var data = {};
+  if (conn) {
+    $("div#message_dialog_connection")
+      .closest(".ui-dialog-content")
+      .dialog("close");
+  } else {
+    data.title = "Connection with server has been lost";
+    data.text = "Connection status: " + msg;
+
+    infoMessage(data, "message_dialog_connection");
+  }
 }

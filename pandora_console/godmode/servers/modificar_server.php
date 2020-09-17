@@ -30,9 +30,9 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 if (isset($_GET['server'])) {
     $id_server = get_parameter_get('server');
-    // Headers
+    // Headers.
     ui_print_page_header(__('Update Server'), 'images/gm_servers.png', false, 'servers', true);
-    $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy FROM tserver WHERE id_server = %d', $id_server);
+    $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
     $row = db_get_row_sql($sql);
     echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
     html_print_input_hidden('server', $id_server);
@@ -75,6 +75,14 @@ if (isset($_GET['server'])) {
                 __('Exec Server'),
                 html_print_checkbox('exec_proxy', 1, $row['exec_proxy'], true),
             ];
+
+            $port_number = empty($row['port']) ? '' : $row['port'];
+
+            $table->data[] = [
+                __('Port'),
+                html_print_input_text('port', $port_number, '', 10, 0, true).ui_print_help_tip(__('Leave blank to use SSH default port (22)'), true),
+            ];
+
             if ($row['exec_proxy']) {
                 $table->data[] = [
                     __('Check Exec Server'),
@@ -90,16 +98,16 @@ if (isset($_GET['server'])) {
     echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
     echo '</div>';
 } else if (isset($_GET['server_remote'])) {
-    // Headers
+    // Headers.
     $id_server = get_parameter_get('server_remote');
     $ext = get_parameter('ext', '');
     ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true);
     enterprise_include('godmode/servers/server_disk_conf_editor.php');
 } else {
-    // Header
-    ui_print_page_header(__('%s servers', get_product_name()), 'images/gm_servers.png', false, 'servers', true);
+    // Header.
+    ui_print_page_header(__('%s servers', get_product_name()), 'images/gm_servers.png', false, '', true);
 
-    // Move SNMP modules back to the enterprise server
+    // Move SNMP modules back to the enterprise server.
     if (isset($_GET['server_reset_snmp_enterprise'])) {
         $result = db_process_sql('UPDATE tagente_estado SET last_error=0');
 
@@ -110,7 +118,7 @@ if (isset($_GET['server'])) {
         }
     }
 
-    // Reset module count
+    // Reset module count.
     if (isset($_GET['server_reset_counts'])) {
         $reslt = db_process_sql('UPDATE tagente SET update_module_count=1, update_alert_count=1');
 
@@ -132,15 +140,19 @@ if (isset($_GET['server'])) {
             ui_print_error_message(__('There was a problem deleting the server'));
         }
     } else if (isset($_GET['update'])) {
-        $address = get_parameter_post('address');
-        $description = get_parameter_post('description');
+        $address = trim(get_parameter_post('address'), '&#x20;');
+        $description = trim(get_parameter_post('description'), '&#x20;');
         $id_server = get_parameter_post('server');
         $exec_proxy = get_parameter_post('exec_proxy');
+        $port = get_parameter_post('port');
+
+        $port_number = empty($port) ? 0 : $port;
 
         $values = [
             'ip_address'  => $address,
             'description' => $description,
             'exec_proxy'  => $exec_proxy,
+            'port'        => $port_number,
         ];
         $result = db_process_sql_update('tserver', $values, ['id_server' => $id_server]);
         if ($result !== false) {
@@ -155,7 +167,7 @@ if (isset($_GET['server'])) {
         $server_md5 = md5(io_safe_output(servers_get_name($id_server, 'none').$ext), false);
 
         if (file_exists($config['remote_config'].'/md5/'.$server_md5.'.srv.md5')) {
-            // Server remote configuration editor
+            // Server remote configuration editor.
             $file_name = $config['remote_config'].'/conf/'.$server_md5.'.srv.conf';
             $correct = @unlink($file_name);
 

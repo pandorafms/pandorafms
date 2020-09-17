@@ -59,52 +59,36 @@ switch ($action) {
             $resultOperationDB = false;
         } else if (!empty($ids_serialize)) {
             $ids = explode('|', $ids_serialize);
-
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $items = db_get_all_rows_sql(
-                        '
-								SELECT id_gs, `field_order`
-								FROM tgraph_source
-								WHERE id_graph = '.$id_graph.'
-								ORDER BY `field_order`'
-                    );
-                break;
-            }
+                $items = db_get_all_rows_sql(
+                    'SELECT id_gs, `field_order`
+					 FROM tgraph_source
+					 WHERE id_graph = '.$id_graph.'
+					 ORDER BY `field_order`'
+                );
 
             if ($items === false) {
                 $items = [];
             }
 
 
-            // Clean the repeated order values
+            // Clean the repeated order values.
             $order_temp = 1;
             foreach ($items as $item) {
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                        db_process_sql_update(
-                            'tgraph_source',
-                            ['`field_order`' => $order_temp],
-                            ['id_gs' => $item['id_rc']]
-                        );
-                    break;
-                }
+                db_process_sql_update(
+                    'tgraph_source',
+                    ['`field_order`' => $order_temp],
+                    ['id_gs' => $item['id_rc']]
+                );
 
                 $order_temp++;
             }
 
-
-            switch ($config['dbtype']) {
-                case 'mysql':
-                    $items = db_get_all_rows_sql(
-                        '
-								SELECT id_gs, `field_order`
-								FROM tgraph_source
-								WHERE id_graph = '.$id_graph.'
-								ORDER BY `field_order`'
-                    );
-                break;
-            }
+                $items = db_get_all_rows_sql(
+                    'SELECT id_gs, `field_order`
+					 FROM tgraph_source
+					 WHERE id_graph = '.$id_graph.'
+					 ORDER BY `field_order`'
+                );
 
             if ($items === false) {
                 $items = [];
@@ -116,7 +100,7 @@ switch ($action) {
 
             $temp = [];
             foreach ($items as $item) {
-                // Remove the contents from the block to sort
+                // Remove the contents from the block to sort.
                 if (array_search($item['id_gs'], $ids) === false) {
                     $temp[$item['field_order']] = $item['id_gs'];
                 }
@@ -150,16 +134,11 @@ switch ($action) {
 
 
             foreach ($items as $order => $id) {
-                switch ($config['dbtype']) {
-                    case 'mysql':
-
-                        db_process_sql_update(
-                            'tgraph_source',
-                            ['`field_order`' => ($order + 1)],
-                            ['id_gs' => $id]
-                        );
-                    break;
-                }
+                db_process_sql_update(
+                    'tgraph_source',
+                    ['`field_order`' => ($order + 1)],
+                    ['id_gs' => $id]
+                );
             }
 
             $resultOperationDB = true;
@@ -211,8 +190,20 @@ if ($editGraph) {
     $weights = implode(',', $weight_array);
 }
 
-// Modules table
-if (count($module_array) > 0) {
+
+
+$count_module_array = count($module_array);
+if ($count_module_array > 10) {
+    ui_print_warning_message(
+        __(
+            'The maximum number of items in a chart is 10. You have %s elements, only first 10 will be displayed.',
+            $count_module_array
+        )
+    );
+}
+
+// Modules table.
+if ($count_module_array > 0) {
     echo "<table width='100%' cellpadding=4 cellpadding=4 class='databox filters'>";
     echo '<tr>
 	<th>'.__('P.').'</th>
@@ -223,8 +214,8 @@ if (count($module_array) > 0) {
 	<th>'.__('Delete').'</th>
 	<th>'.__('Sort').'</th>';
     $color = 0;
-    for ($a = 0; $a < count($module_array); $a++) {
-        // Calculate table line color
+    for ($a = 0; $a < $count_module_array; $a++) {
+        // Calculate table line color.
         if ($color == 1) {
             $tdcolor = 'datos';
             $color = 0;
@@ -332,7 +323,7 @@ echo '</form>';
 echo '<br>';
 
 
-// Configuration form
+// Configuration form.
 echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
 echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=".$id_graph."'>";
 
@@ -352,7 +343,7 @@ echo "<td colspan='3'>".html_print_select_groups(
     true
 ).'</td>';
 echo '</tr><tr>';
-echo "<td style='vertical-align: top;'>".__('Agents').'</td>';
+echo "<td style='vertical-align: top;'>".__('Agents').ui_print_help_tip(__('If you select several agents, only the common modules will be displayed'), true).'</td>';
 echo '<td></td>';
 echo "<td style='vertical-align: top;'>".__('Modules').'</td>';
 echo '</tr><tr>';

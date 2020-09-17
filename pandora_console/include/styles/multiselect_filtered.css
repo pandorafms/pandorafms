@@ -1,0 +1,54 @@
+.multi-select .multi-select-container {
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+.multi-select-container * {
+  flex: 1 1 auto;
+}
+
+.multi-select.flex-column {
+  justify-content: space-between;
+}
+
+.multi-select-container.flex-column * {
+  margin: 0.2em 0;
+}
+
+.multi-select-container.flex-column {
+  flex-wrap: nowrap;
+}
+
+.arrows-container {
+  width: 50px;
+}
+
+.multi-select-container .filter input,
+.multi-select-container .filter select {
+  float: right;
+  width: 50%;
+  text-align: left;
+}
+.multi-select-container .filter input[type="checkbox"] {
+  width: auto;
+}
+
+.group-filter.flex-row-vcenter div,
+.item-filter.flex-row-vcenter div {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.multi-select-container .title {
+  text-align: center;
+  font-style: italic;
+  margin-top: 1em;
+  color: #424242;
+}
+
+.multi-select-container.flex-column div {
+  text-align: left;
+}
+
+.multi-select-container.flex-column div input {
+  margin-left: 1em;
+}

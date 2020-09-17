@@ -1,0 +1,124 @@
+.sim-tree {
+  list-style: none;
+  font-size: 14px;
+  color: #333;
+}
+.sim-tree ul,
+.sim-tree li {
+  margin: 0;
+  padding: 0;
+}
+.sim-tree li {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0;
+}
+.sim-tree li ul {
+  display: none;
+  margin-left: 15px;
+}
+.sim-tree ul.show,
+.sim-tree li.show {
+  display: block;
+}
+.sim-tree ul.none,
+.sim-tree li.none {
+  display: none;
+}
+.sim-tree li.disabled > a {
+  color: #aaa;
+  cursor: not-allowed;
+}
+.sim-tree li.disabled > a .sim-tree-checkbox {
+  border-color: #eee;
+}
+.sim-tree a {
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  vertical-align: top;
+  line-height: 26px;
+}
+.sim-tree .sim-tree-spread {
+  width: 20px;
+  padding-left: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.sim-tree .sim-tree-spread.hidden {
+  visibility: hidden;
+}
+.sim-tree .sim-tree-spread,
+.sim-tree a {
+  display: inline-block;
+  height: 26px;
+  cursor: pointer;
+}
+.sim-tree .sim-loading {
+  background: url(data:image/gif;base64,R0lGODlhEAAQAMQQAObm5uLi4unp6dHR0cnJydfX1+jo6O/v7/Dw8NPT0/39/crKyvr6+uDg4MfHx////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFAAAQACwAAAAAEAAQAAAFXeAjPkiTjGgaLI6Tvs9BtPAIMPH8KgK5DDhZSlFYlFrAGIrYMrUcyRGzdapZr6jE02FAyZ6JxrOrEAVnjgaCRS6IkjLjo9F2PaDBwLJAu+NfAix2LQsAMCVVYQgoIQAh+QQFAAAQACwJAAAABwAHAAAFFGDSIE/5OM7SmKhjsK55vjIt32UIACH5BAUAABAALAoAAwAGAAoAAAUaICQqgggpxYKcheM0qOskZm0/eA7luMibvRAAIfkEBQAAEAAsCQAJAAcABwAABRXgcxBOmTwi6TRouiAoIwbtI9d4/oQAIfkEBQAAEAAsAwAKAAoABgAABRsgJI7MKD6POJQnKjpD60IODKFzvQD3nDQISAgAIfkEBQAAEAAsAAAJAAcABwAABRPgI45kSSrFWTgj6rCisLwk0iQhACH5BAUAABAALAAAAwAHAAoAAAUcIPRAJPmco4mm61m+cJk4tGNATX0ryGK/jVspBAAh+QQFAAAQACwAAAAABwAHAAAFFOAjjmRpPgBDIsugio3juGIiz2oIADs=)
+    center center no-repeat;
+}
+.sim-tree .sim-loading.sim-icon-d:before,
+.sim-tree .sim-loading.sim-icon-r:before {
+  display: none;
+}
+.sim-tree .sim-icon-d:before,
+.sim-tree .sim-icon-r:before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  vertical-align: top;
+  position: relative;
+}
+.sim-tree .sim-icon-r:before {
+  border-left-width: 8px;
+  border-left-color: #333;
+  top: 7px;
+}
+.sim-tree .sim-icon-d:before {
+  margin-left: -4px;
+  border-top-color: #333;
+  top: 10px;
+}
+.sim-tree .sim-tree-checkbox {
+  display: inline-block;
+  border: 1px solid #ccc;
+  height: 16px;
+  width: 16px;
+  border-radius: 3px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-align: center;
+  line-height: 16px;
+  background: #fff;
+  color: #fff;
+  vertical-align: middle;
+  margin-right: 6px;
+  margin-top: -2px;
+}
+.sim-tree .sim-tree-checkbox.sim-tree-semi,
+.sim-tree .sim-tree-checkbox.checked {
+  border-color: #2b85e4;
+  background-color: #2b85e4;
+}
+.sim-tree .sim-tree-checkbox.sim-tree-semi {
+  position: relative;
+}
+.sim-tree .sim-tree-checkbox.sim-tree-semi:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 2px;
+  background: #fff;
+  top: 6px;
+  left: 3px;
+}
+.sim-tree .sim-tree-checkbox.checked {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAPFBMVEUAAAD///////////////////////////////////////////////////////////////////////8AAADY904BAAAAE3RSTlMAOiE8877cHQkXr9cZQvUc20NAbrhSVAAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAA7SURBVAjXY2DADhiZEGxmFlYkNhs7KpuDE0mci5sHoYaXj5sHyOaHqOblE4CzGRgE+RBsBgYhfmxuAABcBQF5T7U3IwAAAABJRU5ErkJggg==);
+  background-repeat: no-repeat;
+  background-position: center center;
+}

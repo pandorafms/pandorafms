@@ -147,7 +147,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 }
 
 // Constant with fonts directory.
-define('_MPDF_TTFONTPATH', 'include/fonts/');
+define('_MPDF_TTFONTPATH', $config['homedir'].'/include/fonts/');
 
 $activeTab = get_parameter('tab', 'main');
 $action = get_parameter('action', 'list');
@@ -170,6 +170,7 @@ if ($schedule_report != '') {
     $parameters[4] = get_parameter('report_type', '');
     $parameters['first_execution'] = strtotime($date.' '.$time);
 
+
     $values = [
         'id_usuario'   => $config['id_user'],
         'id_user_task' => $id_user_task,
@@ -180,9 +181,11 @@ if ($schedule_report != '') {
 
     $result = db_process_sql_insert('tuser_task_scheduled', $values);
 
+    $report_type = $parameters[4];
+
     ui_print_result_message(
         $result,
-        __('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
+        __('Your report has been planned, and the system will email you a '.$report_type.' file with the report as soon as its finished'),
         __('An error has ocurred')
     );
     echo '<br>';
@@ -767,9 +770,14 @@ switch ($action) {
             )
         );
 
-
         if (count($reports)) {
+            $filters = [
+                'search'   => $search,
+                'id_group' => $id_group,
+            ];
+            $filtersStr = http_build_query($filters, '', '&amp;');
             $url = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
+            $url .= '&'.$filtersStr;
             ui_pagination($total_reports, $url, $offset, $pagination);
 
             $table = new stdClass();
@@ -1207,8 +1215,7 @@ switch ($action) {
                 $report_id_user = get_parameter('report_id_user');
                 $non_interactive = get_parameter('non_interactive', 0);
 
-                // Pretty font by default for pdf.
-                $custom_font = 'FreeSans.ttf';
+                $custom_font = $config['custom_report_front_font'];
 
                 switch ($type_access_selected) {
                     case 'group_view':
@@ -1284,7 +1291,6 @@ switch ($action) {
                         $metaconsole_report = (int) is_metaconsole();
 
                         if ($config['custom_report_front']) {
-                            $custom_font = $config['custom_report_front_font'];
                             $logo = $config['custom_report_front_logo'];
                             $header = $config['custom_report_front_header'];
                             $first_page = $config['custom_report_front_firstpage'];
@@ -1376,7 +1382,10 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
-                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+                        $values['show_extended_events'] = get_parameter(
+                            'include_extended_events',
+                            null
+                        );
 
                         $label = get_parameter('label', '');
 
@@ -1414,6 +1423,9 @@ switch ($action) {
                             $items_label,
                             $name_it
                         );
+
+                        $values['landscape'] = get_parameter('landscape');
+                        $values['pagebreak'] = get_parameter('pagebreak');
 
                         /*
                             Added support for projection graphs,
@@ -1608,6 +1620,14 @@ switch ($action) {
                                 $values['agent_min_value'] = get_parameter(
                                     'agent_min_value'
                                 );
+                                $values['failover_mode'] = get_parameter(
+                                    'failover_mode',
+                                    0
+                                );
+                                $values['failover_type'] = get_parameter(
+                                    'failover_type',
+                                    REPORT_FAILOVER_TYPE_NORMAL
+                                );
                                 $good_format = true;
                             break;
 
@@ -1693,6 +1713,10 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['compare_work_time'] = get_parameter(
+                            'compare_work_time',
+                            0
+                        );
                         $values['total_time'] = get_parameter('total_time', 0);
                         $values['time_failed'] = get_parameter(
                             'time_failed',
@@ -1924,10 +1948,6 @@ switch ($action) {
                             'show_in_same_row',
                             0
                         );
-                        $style['show_in_landscape'] = get_parameter(
-                            'show_in_landscape',
-                            0
-                        );
                         $style['hide_notinit_agents'] = get_parameter(
                             'hide_notinit_agents',
                             0
@@ -2099,6 +2119,9 @@ switch ($action) {
                             $items_label,
                             $name_it
                         );
+
+                        $values['landscape'] = get_parameter('landscape');
+                        $values['pagebreak'] = get_parameter('pagebreak');
 
                         // Support for projection graph, prediction date
                         // and SLA reports 'top_n_value', 'top_n' and 'text'
@@ -2323,7 +2346,6 @@ switch ($action) {
                             'checkbox_only_display_wrong',
                             0
                         );
-
                         $values['monday'] = get_parameter('monday', 0);
                         $values['tuesday'] = get_parameter('tuesday', 0);
                         $values['wednesday'] = get_parameter('wednesday', 0);
@@ -2331,6 +2353,10 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['compare_work_time'] = get_parameter(
+                            'compare_work_time',
+                            0
+                        );
                         $values['total_time'] = get_parameter('total_time', 0);
                         $values['time_failed'] = get_parameter(
                             'time_failed',
@@ -2488,10 +2514,6 @@ switch ($action) {
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
-                            0
-                        );
-                        $style['show_in_landscape'] = get_parameter(
-                            'show_in_landscape',
                             0
                         );
                         $style['hide_notinit_agents'] = get_parameter(
@@ -3124,22 +3146,14 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
     // Print header.
     ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
 } else {
-    switch ($activeTab) {
-        case 'main':
-            $helpers = '';
-        break;
-
-        default:
-            $helpers = 'reporting_'.$activeTab.'_tab';
-        break;
-    }
+    $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
     if ($action !== 'update' && !is_metaconsole()) {
         ui_print_page_header(
             $textReportName,
             'images/op_reporting.png',
             false,
-            $helpers,
+            $tab_builder,
             false,
             $buttons,
             false,

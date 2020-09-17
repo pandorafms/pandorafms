@@ -27,7 +27,14 @@ if (! check_acl($config['id_user'], 0, 'IR')) {
 
 // Header tabs.
 $onheader = integriaims_tabs('list_tab');
-ui_print_page_header(__('Integria IMS Tickets'), '', false, '', false, $onheader);
+ui_print_page_header(
+    __('Integria IMS Tickets'),
+    '',
+    false,
+    'integria_tab',
+    false,
+    $onheader
+);
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {

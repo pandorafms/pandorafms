@@ -125,6 +125,20 @@ if ($report_r && $report_w) {
                         get_graphs_container(id_container,hash,time);
                     }
                 });
+
+                $("div[id^=period_container_] a").on('click', function(e){
+                    if ($("div[id^=period_container_][id$=_default]").css('display') == 'none') {
+                        $('#refresh_custom_time').show();
+                        $('#refresh_custom_time').on('click', function(e){
+                            var time = $('input[id *= hidden-period_container_'+hash+']').val();
+                            get_graphs_container(id_container,hash,time);
+                        });                
+                    } 
+                    else if ($("div[id^=period_container_][id$=_manual]").css('display') == 'none') {
+                        $('#refresh_custom_time').hide();
+                    }
+                });
+
             }
         });
     }

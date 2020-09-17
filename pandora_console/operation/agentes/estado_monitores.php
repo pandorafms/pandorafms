@@ -148,8 +148,10 @@ $sort = get_parameter('sort', 'up');
 
 
 $modules_not_init = agents_monitor_notinit($id_agente);
-if (!empty($modules_not_init)) {
-    $help_not_init = clippy_context_help('modules_not_init');
+if (empty($modules_not_init) === false) {
+    $help_not_init = ui_print_warning_message(
+        __('Non-initialized modules found.')
+    );
 } else {
     $help_not_init = '';
 }

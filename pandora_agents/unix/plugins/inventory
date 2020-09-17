@@ -460,15 +460,19 @@ close (FILE);
 $Mode = 'LSHW';
 $Separator = '\s+\*\-';
 my @hwinfo;
+my $lshwpath = $0 =~ s/inventory/lshw/r ;
 if (is_enabled $AIX) {
     $Separator = '^\s*$';
     @hwinfo=`prtconf 2>/dev/null`;
 } else {
     @hwinfo = `lshw 2>/dev/null`;
     if ($? != 0) {
-    	$Mode = 'HWINFO';
-    	$Separator = 'Hardware Class:';
-    	@hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+        @hwinfo = `$lshwpath 2>/dev/null`;
+        if ($? != 0) {
+                $Mode = 'HWINFO';
+                $Separator = 'Hardware Class:';
+                @hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+        }
     }
 }
 
@@ -567,12 +571,12 @@ if ($enable_all == 1 || $enabled{'software'} == 1) {
 
 #init_services
 if ($enable_all == 1 || $enabled{'init_services'} == 1) {
-        get_servicies_init_machine ('Init_services', \%modules);
+        get_servicies_init_machine ('Init services', \%modules);
 }
 
 #filesystem
 if ($enable_all == 1 || $enabled{'filesystem'} == 1) {
-	get_file_system('Filesystem', \%modules);
+	get_file_system('File system', \%modules);
 }
 
 #processes

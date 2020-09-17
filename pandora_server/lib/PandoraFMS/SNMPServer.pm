@@ -28,6 +28,8 @@ use Time::Local;
 use Time::HiRes qw(usleep);
 use XML::Simple;
 
+use Scalar::Util qw(looks_like_number);
+
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
@@ -157,6 +159,10 @@ sub data_producer ($) {
 	
 			# Storm protection.
 			my ($ver, $date, $time, $source, $null) = split(/\[\*\*\]/, $line, 5);
+			if ($ver eq "SNMPv2" || $pa_config->{'snmp_pdu_address'} eq '1' ) {
+				$source =~ s/(?:(?:TCP|UDP):\s*)?\[?([^] ]+)\]?(?::-?\d+)?(?:\s*->.*)?$/$1/;
+			}
+
 			next unless defined ($source);
 			if (! defined ($AGENTS{$source})) {
 				$AGENTS{$source}{'count'} = 1;
@@ -536,10 +542,17 @@ sub reset_if_truncated($$) {
 ###############################################################################
 sub DESTROY {
 	my $self = shift;
-	
+
 	if ($self->{'snmp_trapd'} ne 'manual') {
-		system ("kill -9 `cat /var/run/pandora_snmptrapd.pid 2>$DEVNULL`");
-		unlink ('/var/run/pandora_snmptrapd.pid');
+		my $pid_file = '/var/run/pandora_snmptrapd.pid';
+		if (-e $pid_file) {
+			my $pid = `cat $pid_file 2>$DEVNULL`;
+			if (defined($pid) && ("$pid" ne "") && looks_like_number($pid)) {
+					system ("kill -9 $pid");
+			}
+
+			unlink ($pid_file);
+		}
 	}
 }
 

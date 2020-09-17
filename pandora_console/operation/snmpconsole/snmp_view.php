@@ -521,7 +521,7 @@ $table->data[1][1] = html_print_select(
     $alerted,
     'filter_fired',
     $filter_fired,
-    'javascript:this.form.submit();',
+    '',
     __('All'),
     '-1',
     true
@@ -538,7 +538,7 @@ $table->data[2][1] = html_print_select(
     $paginations,
     'pagination',
     $pagination,
-    'this.form.submit();',
+    '',
     __('Default'),
     $config['block_size'],
     true
@@ -550,7 +550,7 @@ $table->data[1][3] = html_print_select(
     $severities,
     'filter_severity',
     $filter_severity,
-    'this.form.submit();',
+    '',
     __('All'),
     -1,
     true
@@ -566,7 +566,7 @@ $table->data[3][1] = html_print_select(
     $status_array,
     'filter_status',
     $filter_status,
-    'this.form.submit();',
+    '',
     '',
     '',
     true
@@ -614,7 +614,7 @@ $table->data[6][2] = html_print_select(
     $trap_types,
     'trap_type',
     $trap_type,
-    'this.form.submit();',
+    '',
     '',
     '',
     true,
@@ -659,7 +659,7 @@ if (empty($traps)) {
         __('SNMP Console'),
         'images/op_snmp.png',
         false,
-        '',
+        'snmp_console',
         false,
         [
             $list,

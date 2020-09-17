@@ -64,14 +64,22 @@ class Tree
     const TV_DEFAULT_AGENT_STATUS = -1;
 
 
-    public function __construct($type, $rootType='', $id=-1, $rootID=-1, $serverID=false, $childrenMethod='on_demand', $access='AR')
-    {
+    public function __construct(
+        $type,
+        $rootType='',
+        $id=-1,
+        $rootID=-1,
+        $serverID=false,
+        $childrenMethod='on_demand',
+        $access='AR',
+        $id_meta_server=0
+    ) {
         $this->type = $type;
         $this->rootType = !empty($rootType) ? $rootType : $type;
         $this->id = $id;
         $this->rootID = !empty($rootID) ? $rootID : $id;
         $this->serverID = $serverID;
-        if (is_metaconsole()) {
+        if (is_metaconsole() && $id_meta_server == 0) {
             $this->serverName = metaconsole_get_server_by_id($serverID);
         }
 
@@ -90,7 +98,7 @@ class Tree
         include_once $config['homedir'].'/include/functions_tags.php';
         enterprise_include_once('include/functions_agents.php');
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() && $id_meta_server == 0) {
             enterprise_include_once('meta/include/functions_ui_meta.php');
         }
     }
@@ -123,7 +131,7 @@ class Tree
             return '';
         }
 
-        return " AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ";
+        return " AND tam.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchModule'])."%%' ";
     }
 
 
@@ -133,7 +141,7 @@ class Tree
             return '';
         }
 
-        return " AND LOWER(ta.alias) LIKE LOWER('%%".$this->filter['searchAgent']."%%')";
+        return " AND LOWER(ta.alias) LIKE LOWER('%%".str_replace('%', '%%', $this->filter['searchAgent'])."%%')";
     }
 
 
@@ -331,7 +339,7 @@ class Tree
             return '';
         }
 
-        return " AND tg.nombre LIKE '%%".$this->filter['searchGroup']."%%'";
+        return " AND tg.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchGroup'])."%%'";
     }
 
 
@@ -557,7 +565,7 @@ class Tree
         $module['id_module_type'] = (int) $module['id_tipo_modulo'];
         $module['server_type'] = (int) $module['id_modulo'];
         $module['status'] = $module['estado'];
-        $module['value'] = $module['datos'];
+        $module['value'] = modules_get_agentmodule_data_for_humans($module);
 
         if (is_metaconsole()) {
             $module['serverID'] = $this->serverID;
@@ -616,13 +624,14 @@ class Tree
             && $statusType !== STATUS_MODULE_NO_DATA_BALL
         ) {
             if (is_numeric($module['value'])) {
-                $statusTitle .= ' : '.format_for_graph($module['value']);
+                $divisor = get_data_multiplier($module['unit']);
+                $statusTitle .= ' : '.format_for_graph($module['value'], 1, '.', ',', $divisor);
             } else {
                 $statusTitle .= ' : '.substr(io_safe_output($module['value']), 0, 42);
             }
         }
 
-        $module['statusImageHTML'] = ui_print_status_image($statusType, $statusTitle, true);
+        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
 
         // HTML of the server type image
         $module['serverTypeHTML'] = servers_show_type($module['server_type']);
@@ -652,7 +661,6 @@ class Tree
                 'type'    => $graphType,
                 'period'  => SECONDS_1DAY,
                 'id'      => $module['id'],
-                'label'   => base64_encode($module['name']),
                 'refresh' => SECONDS_10MINUTES,
             ];
 
@@ -738,11 +746,9 @@ class Tree
             $agent['counters']['warning'],
             $agent['counters']['unknown'],
             $agent['counters']['total'],
-            $agent['counters']['not_init']
+            $agent['counters']['not_init'],
+            $agent['counters']['alerts']
         );
-
-        // Alerts fired image
-        $agent['alertImageHTML'] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
 
         // search module recalculate counters
         if (array_key_exists('state_normal', $agent)) {
@@ -1062,7 +1068,7 @@ class Tree
 
         $columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
-			tam.parent_module_id AS parent, tatm.id AS alerts';
+			tam.parent_module_id AS parent, tatm.id AS alerts, tam.unit';
 
         $sql = "SELECT $columns
 			FROM tagente_modulo tam
@@ -1075,8 +1081,6 @@ class Tree
 				ON ta.id_agente = tasg.id_agent
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
-                AND tatm.id_alert_template = 1 
-				OR tatm.id_alert_template = NULL
 			$inner
 			WHERE tam.disabled = 0 AND ta.disabled = 0
 				$condition
@@ -1086,7 +1090,8 @@ class Tree
 				$agent_status_filter
 				$module_search_filter
 				$tag_condition
-			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
+            GROUP BY tam.id_agente_modulo
+            ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
 
         return $sql;
     }

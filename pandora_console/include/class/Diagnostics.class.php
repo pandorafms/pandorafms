@@ -152,7 +152,7 @@ class Diagnostics extends Wizard
             __('%s Diagnostic tool', $this->product_name),
             'images/gm_massive_operations.png',
             false,
-            'diagnostic_tool_tab',
+            '',
             true,
             $header_buttons
         );
@@ -1008,7 +1008,7 @@ class Diagnostics extends Wizard
         $pathErrLogs = '/var/log/pandora/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
-        $pathConsoleLogs = $config['homedir'].'/pandora_console.log';
+        $pathConsoleLogs = $config['homedir'].'/log/console.log';
         $console = $this->getLogInfo($pathConsoleLogs);
 
         $result = [
@@ -2079,7 +2079,7 @@ class Diagnostics extends Wizard
             ],
             'text'  => [
                 ui_print_error_message(__('Invalid cron task'), '', true),
-                ui_print_success_message(__('Cron task generated'), '', true),
+                ui_print_success_message(__('Sending of information has been processed'), '', true),
             ],
         ];
 
@@ -2092,9 +2092,9 @@ class Diagnostics extends Wizard
      *
      * @param string|null $filename Filename.
      *
-     * @return void
+     * @return mixed
      */
-    public function exportPDF(?string $filename=null):void
+    public function exportPDF(?string $filename=null)
     {
         global $config;
 
@@ -2141,7 +2141,7 @@ class Diagnostics extends Wizard
         // Write html filename.
         $mpdf->writePDFfile($filename);
 
-        exit;
+        return;
     }
 
 

@@ -283,7 +283,6 @@ if ($id_agent_module) {
 
     // Security level Could be noAuthNoPriv | authNoPriv | authPriv.
     $snmp3_security_level = $module['custom_string_3'];
-
     $ip_target = $module['ip_target'];
     $disabled = $module['disabled'];
     $id_export = $module['id_export'];
@@ -297,6 +296,7 @@ if ($id_agent_module) {
     $custom_integer_2 = $module['custom_integer_2'];
     $custom_string_1 = $module['custom_string_1'];
     $custom_string_2 = $module['custom_string_2'];
+    $custom_string_3 = $module['custom_string_3'];
     $max_timeout = $module['max_timeout'];
     $max_retries = $module['max_retries'];
     $custom_id = $module['custom_id'];
@@ -493,6 +493,25 @@ if ($id_agent_module) {
         $ff_timeout = 0;
 
         $module_macros = [];
+    }
+
+    $create_network_from_snmp_browser = get_parameter('create_network_from_snmp_browser', 0);
+
+    if ($create_network_from_snmp_browser) {
+        $moduletype = get_parameter('id_component_type', 2);
+        $id_module_type = get_parameter('type', 1);
+        $name = get_parameter('name', '');
+        $description = get_parameter('description');
+        $ip_target = get_parameter('target_ip');
+        $snmp_community = get_parameter('community');
+        $snmp_version = get_parameter('snmp_version');
+        $snmp3_auth_user = get_parameter('snmp3_auth_user');
+        $snmp3_auth_pass = get_parameter('snmp3_auth_pass');
+        $snmp3_auth_method = get_parameter('snmp3_auth_method');
+        $snmp3_privacy_method = get_parameter('snmp3_privacy_method');
+        $snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
+        $snmp3_security_level = get_parameter('snmp3_security_level');
+        $snmp_oid = get_parameter('snmp_oid');
     }
 }
 

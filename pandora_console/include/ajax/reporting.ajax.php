@@ -111,6 +111,7 @@ if ($add_general) {
     $id_module = get_parameter('id_module', 0);
     $id_server = (int) get_parameter('id_server', 0);
     $operation = get_parameter('operation', '');
+    $id_module_failover = (int) get_parameter('id_module_failover', 0);
 
     $include_enterprise = enterprise_include('include/functions_metaconsole.php');
 
@@ -126,10 +127,11 @@ if ($add_general) {
     $result = db_process_sql_insert(
         'treport_content_item',
         [
-            'id_report_content' => $id,
-            'id_agent_module'   => $id_module,
-            'server_name'       => $connection['server_name'],
-            'operation'         => $operation,
+            'id_report_content'        => $id,
+            'id_agent_module'          => $id_module,
+            'server_name'              => $connection['server_name'],
+            'operation'                => $operation,
+            'id_agent_module_failover' => $id_module_failover,
         ]
     );
 

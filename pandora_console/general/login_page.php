@@ -82,10 +82,16 @@ if (!empty($page) && !empty($sec)) {
 }
 
 $login_body_style = '';
+$login_body_class = '';
 // Overrides the default background with the defined by the user.
 if (!empty($config['login_background'])) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
     $login_body_style = "style=\"background:linear-gradient(74deg, #02020255 36%, transparent 36%), url('".$background_url."');\"";
+}
+
+// Support for Internet Explorer and Microsoft Edge browsers
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Edge') !== false) {
+    $login_body_class = "class='login_body_trident'";
 }
 
 // Get alternative custom in case of db fail.
@@ -111,7 +117,7 @@ foreach ($custom_fields as $field) {
 // Get the custom icons.
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
-echo '<div id="login_body" '.$login_body_style.'>';
+echo '<div id="login_body" '.$login_body_class.' '.$login_body_style.'>';
 echo '<div id="header_login">';
 
 echo '<div id="list_icon_docs_support"><ul>';
@@ -154,21 +160,21 @@ echo '<div class="login_page">';
         echo '<a href="'.$logo_link.'">';
 if (defined('METACONSOLE')) {
     if (!isset($config['custom_logo_login'])) {
-        html_print_image('images/custom_logo_login/login_logo.png', false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('images/custom_logo_login/login_logo.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
-        html_print_image('images/custom_logo_login/'.$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 } else if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (!isset($config['custom_logo_login'])) {
-        html_print_image('enterprise/images/custom_logo_login/login_logo_v7.png', false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/login_logo_v7.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
-        html_print_image('enterprise/images/custom_logo_login/'.$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 } else {
-    if (!isset($config['custom_logo_login']) || $config['custom_logo_login'] === 0) {
-        html_print_image('images/custom_logo_login/pandora_logo.png', false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+    if (empty($config['custom_logo_login']) === true) {
+        html_print_image(ui_get_full_url('images/custom_logo_login/pandora_logo.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
-        html_print_image('images/custom_logo_login/'.$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('images/custom_logo_login/').$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 
     // I comment this in case in the future we put a logo without text.

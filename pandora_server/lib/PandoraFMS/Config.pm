@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.740";
-my $pandora_build = "191122";
+my $pandora_version = "7.0NG.749";
+my $pandora_build = "200917";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -177,6 +177,8 @@ sub pandora_get_sharedconfig ($$) {
 
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
+	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
+
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
 	}
@@ -214,6 +216,9 @@ sub pandora_get_sharedconfig ($$) {
 			$pa_config->{"mta_encryption"} = 'none';
 		}
 	}
+
+	# Server identifier
+	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
 }
 
 ##########################################################################
@@ -275,7 +280,8 @@ sub pandora_load_config {
 	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
 	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
-	$pa_config->{"rcmd_timeout"} = 30; # Introduced on 7.0.740
+	$pa_config->{"rcmd_timeout"} = 10; # Introduced on 7.0.740
+	$pa_config->{"rcmd_timeout_bin"} = '/usr/bin/timeout'; # Introduced on 7.0.743
 	$pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
 	$pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
@@ -293,7 +299,7 @@ sub pandora_load_config {
 	$pa_config->{"inventory_threads"} = 2; # 2.1
 	$pa_config->{"export_threads"} = 1; # 3.0
 	$pa_config->{"web_threads"} = 1; # 3.0
-	$pa_config->{"web_engine"} = 'lwp'; # 5.1
+	$pa_config->{"web_engine"} = 'curl'; # 5.1
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
 	$pa_config->{"recon_reverse_geolocation_file"} = ''; # 3.1
@@ -303,6 +309,8 @@ sub pandora_load_config {
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
+	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
 	$pa_config->{"snmpserver"} = 0; # 4.0
@@ -354,6 +362,12 @@ sub pandora_load_config {
 
 	# Discovery SAP utils
 	$pa_config->{"sap_utils"} = "/usr/share/pandora_server/util/recon_scripts/SAP";
+	
+	# Discovery SAP Artica environment
+	$pa_config->{"sap_artica_test"} = 0;
+
+	# Remote execution modules, option ssh_launcher
+	$pa_config->{"ssh_launcher"} = "/usr/bin/ssh_launcher";
 
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
@@ -387,7 +401,8 @@ sub pandora_load_config {
 	$pa_config->{'max_log_generation'} = 1;
 
 	# Ignore the timestamp in the XML and use the file timestamp instead
-	$pa_config->{'use_xml_timestamp'} = 0; 
+	# If 1 => uses timestamp from received XML #5763.
+	$pa_config->{'use_xml_timestamp'} = 1;
 
 	# Server restart delay in seconds
 	$pa_config->{'restart_delay'} = 60; 
@@ -444,12 +459,6 @@ sub pandora_load_config {
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
 
-	# Console API connection
-	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 6.0
-	$pa_config->{"console_api_pass"} = ''; # 6.0
-	$pa_config->{"console_user"} = 'admin'; # 6.0
-	$pa_config->{"console_pass"} = 'pandora'; # 6.0
-
 	# Database password encryption passphrase
 	$pa_config->{"encryption_passphrase"} = ''; # 6.0
 
@@ -465,6 +474,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
+	$pa_config->{"use_custom_encoding"} = 0; 
 	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
 	# -------------------------------------------------------------------------
 	
@@ -516,6 +526,7 @@ sub pandora_load_config {
 	$pa_config->{"wux_port"} = 4444; # 7.0
 	$pa_config->{"wux_browser"} = "*firefox"; # 7.0
 	$pa_config->{"wux_webagent_timeout"} = 15; # 7.0
+	$pa_config->{"clean_wux_sessions"} = 1; # 7.0.746 (only selenium 3)
 
 	# Syslog Server
 	$pa_config->{"syslogserver"} = 1; # 7.0.716
@@ -798,6 +809,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^rcmd_timeout\s+([0-9]*)/i) {
 			$pa_config->{"rcmd_timeout"} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^rcmd_timeout_bin\s(.*)/i) {
+			$pa_config->{"rcmd_timeout_bin"} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^tcp_checks\s+([0-9]*)/i) {
 			$pa_config->{"tcp_checks"} = clean_blank($1);
 		}
@@ -852,6 +866,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^sap_utils\s(.*)/i) {
 			$pa_config->{'sap_utils'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sap_artica_test\s(.*)/i) {
+			$pa_config->{'sap_artica_test'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ssh_launcher\s(.*)/i) {
+			$pa_config->{'ssh_launcher'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 
@@ -979,6 +999,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_window\s+([0-9]*)/i) {
 			$pa_config->{'event_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
+			$pa_config->{'log_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
+			$pa_config->{'preload_windows'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);
@@ -1183,6 +1209,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^wux_webagent_timeout\s+([0-9]*)/i) {
 			$pa_config->{'wux_webagent_timeout'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^clean_wux_sessions\s+([0-9]*)/i) {
+			$pa_config->{'clean_wux_sessions'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^syslogserver\s+([0-1])/i) {
 			$pa_config->{'syslogserver'}= clean_blank($1);

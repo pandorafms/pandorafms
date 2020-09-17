@@ -1,4 +1,4 @@
-FROM pandorafms/pandorafms-base
+FROM pandorafms/pandorafms-base:centos7
 MAINTAINER Pandora FMS Team <info@pandorafms.com>
 
 # Pandora FMS Server dependencies

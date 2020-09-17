@@ -106,12 +106,8 @@ if (!function_exists('mime_content_type')) {
             finfo_close($finfo);
             return $mimetype;
         } else {
-            $temp = exec('file '.$filename);
-            if (isset($temp) && $temp != '') {
-                return $temp;
-            } else {
-                return 'application/octet-stream';
-            }
+            error_log('Warning: Cannot find finfo_open function. Fileinfo extension is not enabled. Please add "extension=fileinfo.so" or "extension=fileinfo.dll" in your php.ini');
+            return 'unknown';
         }
     }
 
@@ -373,11 +369,21 @@ if ($delete_file) {
         $config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
 
         if (is_dir($filename)) {
-            rmdir($filename);
-            $config['filemanager']['delete'] = 1;
+            if (rmdir($filename)) {
+                $config['filemanager']['delete'] = 1;
+            } else {
+                $config['filemanager']['delete'] = 0;
+            }
         } else {
-            unlink($filename);
-            $config['filemanager']['delete'] = 1;
+            if (unlink($filename)) {
+                    $config['filemanager']['delete'] = 1;
+            } else {
+                $config['filemanager']['delete'] = 0;
+            }
+        }
+
+        if ($config['filemanager']['delete'] == 0) {
+            $config['filemanager']['message'] = ui_print_error_message(__('Deleted'), '', true);
         }
     }
 }
@@ -694,8 +700,9 @@ function filemanager_file_explorer(
 
             $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
         } else {
-            $hash = md5($relative_path.$config['dbpass']);
-            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode(base64_encode($relative_path)).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
+            $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
+            $hash = md5($filename.$config['dbpass']);
+            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
         }
 
         // Notice that uploaded php files could be dangerous
@@ -746,7 +753,7 @@ function filemanager_file_explorer(
 
             if (($editor) && (!$readOnly)) {
                 if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg')
-                    && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc')
+                    && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
                 ) {
                     $hash = md5($fileinfo['realpath'].$config['dbpass']);
                     $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file')]).'</a>';
@@ -755,8 +762,9 @@ function filemanager_file_explorer(
         }
 
         if ((!$fileinfo['is_dir']) && ($download_button)) {
-            $hash = md5($fileinfo['realpath'].$config['dbpass']);
-            $data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['realpath'])).'&hash='.$hash.'" style="vertical-align: 25%;">';
+            $filename = base64_encode($fileinfo['name']);
+            $hash = md5($filename.$config['dbpass']);
+            $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
             $data[4] .= html_print_image('images/file.png', true);
             $data[4] .= '</a>';
         }

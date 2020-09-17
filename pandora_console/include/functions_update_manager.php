@@ -55,6 +55,25 @@ function update_manager_verify_registration()
 
 
 /**
+ * Check if a trial license is in use.
+ *
+ * @return boolean true if a trial license is in use, false otherwise.
+ */
+function update_manager_verify_trial()
+{
+    global $config;
+
+    if (isset($config['license_licensed_to'])
+        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== false
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * Parses responses from configuration wizard.
  *
  * @return void
@@ -440,6 +459,11 @@ function registration_wiz_modal(
     global $config;
     $output = '';
 
+    // Do not show the wizard for trial licenses.
+    if (update_manager_verify_trial()) {
+        return '';
+    }
+
     $product_name = get_product_name();
 
     $output .= '<div id="registration_wizard" title="';
@@ -762,7 +786,7 @@ function newsletter_wiz_modal(
         __('Cancel'),
         'cancel_newsletter',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="color: red; width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="width:100px;"',
         true
     );
     $output .= '</div>';
@@ -1166,7 +1190,7 @@ function update_manager_install_package_step2()
     }
 
     update_manager_enterprise_set_version($version);
-    $product_name = get_product_name();
+    $product_name = io_safe_output(get_product_name());
 
     // Generate audit entry.
     db_pandora_audit(
@@ -1819,9 +1843,15 @@ function update_manager_recurse_copy($src, $dst, $black_list)
     while (false !== ( $file = readdir($dir))) {
         if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) {
             if (is_dir($src.'/'.$file)) {
+                $dir_dst = $dst;
+
+                if ($file != 'pandora_console') {
+                    $dir_dst .= '/'.$file;
+                }
+
                 if (!update_manager_recurse_copy(
                     $src.'/'.$file,
-                    $dst.'/'.$file,
+                    $dir_dst,
                     $black_list
                 )
                 ) {

@@ -94,6 +94,7 @@ page.onCallback = function() {
   if (!base_64) {
     page.render(output_filename, { format: "png" });
   } else {
+    page.settings.loadImages = false;
     var base64 = page.renderBase64("png");
     // do not remove this console.output
     console.log(base64);

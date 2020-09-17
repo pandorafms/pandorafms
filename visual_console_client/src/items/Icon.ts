@@ -4,6 +4,7 @@ import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 
 export type IconProps = {
   type: ItemType.ICON;
+  image: string;
   imageSrc: string; // URL?
 } & ItemProps &
   LinkedVisualConsoleProps;
@@ -22,9 +23,14 @@ export function iconPropsDecoder(data: AnyObject): IconProps | never {
     throw new TypeError("invalid image src.");
   }
 
+  if (typeof data.image !== "string" || data.image.length === 0) {
+    throw new TypeError("invalid image.");
+  }
+
   return {
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.ICON,
+    image: data.image,
     imageSrc: data.imageSrc,
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -33,11 +39,20 @@ export function iconPropsDecoder(data: AnyObject): IconProps | never {
 export default class Icon extends Item<IconProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
-    element.className = "icon";
-    element.style.background = `url(${this.props.imageSrc}) no-repeat`;
+    element.className = "icon " + this.props.image;
+    element.style.backgroundImage = `url(${this.props.imageSrc})`;
+    element.style.backgroundRepeat = "no-repeat";
     element.style.backgroundSize = "contain";
     element.style.backgroundPosition = "center";
 
     return element;
+  }
+
+  /**
+   * To update the content element.
+   * @override Item.updateDomElement
+   */
+  protected updateDomElement(element: HTMLElement): void {
+    element.style.backgroundImage = `url(${this.props.imageSrc})`;
   }
 }

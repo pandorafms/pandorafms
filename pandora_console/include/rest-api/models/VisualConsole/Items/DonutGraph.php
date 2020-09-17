@@ -87,11 +87,13 @@ final class DonutGraph extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -124,9 +126,9 @@ final class DonutGraph extends Item
         // Maybe connect to node.
         $nodeConnected = false;
         if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $server = \metaconsole_get_connection_by_id($metaconsoleId);
             $nodeConnected = \metaconsole_connect(
-                null,
-                $metaconsoleId
+                $server
             ) === NOERR;
 
             if ($nodeConnected === false) {
@@ -147,28 +149,14 @@ final class DonutGraph extends Item
             $agentId,
             $moduleId
         );
+
         $isString = (bool) \db_get_value_sql($sql);
 
-        // Restore connection.
-        if ($nodeConnected === true) {
-            \metaconsole_restore_db();
-        }
+        $width = (int) $data['width'];
+        $height = (int) $data['height'];
 
         if ($isString === true) {
             $graphData = \get_donut_module_data($moduleId);
-
-            $width = (int) $data['width'];
-            $height = (int) $data['height'];
-
-            // Default width.
-            if ($width <= 0) {
-                $width = 300;
-            }
-
-            // Default height.
-            if ($height <= 0) {
-                $height = 300;
-            }
 
             $data['html'] = \d3_donut_graph(
                 (int) $data['id'],
@@ -183,10 +171,126 @@ final class DonutGraph extends Item
                 $src = '../../'.$src;
             }
 
-            $data['html'] = '<img src="'.$src.'">';
+            $style = 'width:'.$width.'px; height:'.$height.'px;';
+            $data['html'] = '<img src="'.$src.'" style="'.$style.'">';
+        }
+
+        // Restore connection.
+        if ($nodeConnected === true) {
+            \metaconsole_restore_db();
         }
 
         return $data;
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @param array $values Default values.
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public static function getFormInputs(array $values): array
+    {
+        // Default values.
+        $values = static::getDefaultGeneralValues($values);
+
+        // Retrieve global - common inputs.
+        $inputs = Item::getFormInputs($values);
+
+        if (is_array($inputs) !== true) {
+            throw new Exception(
+                '[DonutGraph]::getFormInputs parent class return is not an array'
+            );
+        }
+
+        if ($values['tabSelected'] === 'specific') {
+            // Autocomplete agents.
+            $inputs[] = [
+                'label'     => __('Agent'),
+                'arguments' => [
+                    'type'                    => 'autocomplete_agent',
+                    'name'                    => 'agentAlias',
+                    'id_agent_hidden'         => $values['agentId'],
+                    'name_agent_hidden'       => 'agentId',
+                    'server_id_hidden'        => $values['metaconsoleId'],
+                    'name_server_hidden'      => 'metaconsoleId',
+                    'return'                  => true,
+                    'module_input'            => true,
+                    'module_name'             => 'moduleId',
+                    'module_none'             => false,
+                    'get_only_string_modules' => true,
+                ],
+            ];
+
+            // Autocomplete module.
+            $inputs[] = [
+                'label'     => __('Module'),
+                'arguments' => [
+                    'type'                    => 'autocomplete_module',
+                    'fields'                  => $fields,
+                    'name'                    => 'moduleId',
+                    'selected'                => $values['moduleId'],
+                    'return'                  => true,
+                    'sort'                    => false,
+                    'agent_id'                => $values['agentId'],
+                    'metaconsole_id'          => $values['metaconsoleId'],
+                    'get_only_string_modules' => true,
+                ],
+            ];
+
+            // Resume data color.
+            $inputs[] = [
+                'label'     => __('Resume data color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'legendBackgroundColor',
+                    'type'    => 'color',
+                    'value'   => $values['legendBackgroundColor'],
+                    'return'  => true,
+                ],
+            ];
+
+            // Inputs LinkedVisualConsole.
+            $inputsLinkedVisualConsole = self::inputsLinkedVisualConsole(
+                $values
+            );
+            foreach ($inputsLinkedVisualConsole as $key => $value) {
+                $inputs[] = $value;
+            }
+        }
+
+        return $inputs;
+    }
+
+
+    /**
+     * Default values.
+     *
+     * @param array $values Array values.
+     *
+     * @return array Array with default values.
+     *
+     * @overrides Item->getDefaultGeneralValues.
+     */
+    public function getDefaultGeneralValues(array $values): array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getDefaultGeneralValues($values);
+
+        // Default values.
+        if (isset($values['width']) === false) {
+            $values['width'] = 300;
+        }
+
+        if (isset($values['height']) === false) {
+            $values['height'] = 300;
+        }
+
+        return $values;
     }
 
 

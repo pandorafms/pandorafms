@@ -564,13 +564,13 @@ function visual_map_print_item(
                 }
 
                 if ($is_a_link_to_other_visualconsole) {
-                    if (METACONSOLE == 1) {
+                    if (is_metaconsole() === true) {
                         $url = $config['homeurl'].'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$layoutData['id_layout_linked'].'&refr=300';
                     } else {
                         $url = $config['homeurl'].'index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     }
                 } else {
-                    if (METACONSOLE == 1) {
+                    if (is_metaconsole() === true) {
                         $url = $config['homeurl'].'index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$layoutData['id_group'].'&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status=-1&sort_field=&sort=none&pure=';
                     } else {
                         $url = $config['homeurl'].'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$layoutData['id_group'];
@@ -1025,11 +1025,13 @@ function visual_map_print_item(
                             $params_combined
                         ).'</div>';
                     } else {
-                        $img = graphic_combined_module(
+                        $img = '<div style="width:'.$width.'px; height:'.$height.'px;">';
+                        $img .= graphic_combined_module(
                             false,
                             $params,
                             $params_combined
                         );
+                        $img .= '</div>';
                     }
                 }
             } else {
@@ -1223,7 +1225,16 @@ function visual_map_print_item(
                     'alpha'  => CHART_DEFAULT_ALPHA,
                 ];
 
-                $module_data = get_bars_module_data($id_module);
+                $module_data = get_bars_module_data(
+                    $id_module,
+                    ($layoutData['type_graph'] !== 'horizontal')
+                );
+                $options = [];
+                $options['generals']['rotate'] = true;
+                $options['generals']['forceTicks'] = true;
+                $options['generals']['arrayColors'] = $color;
+                $options['x']['labelWidth'] = 60;
+
                 $water_mark = [
                     'file' => '/var/www/html/pandora_console/images/logo_vertical_water.png',
                     'url'  => 'http://localhost/pandora_console/images/logo_vertical_water.png',
@@ -1252,27 +1263,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:right;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                400,
-                                400,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:right;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else if ($layoutData['label_position'] == 'right') {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1296,27 +1289,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:left;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                400,
-                                400,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:left;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1340,27 +1315,7 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             );
                         } else {
-                            $img = vbar_graph(
-                                $module_data,
-                                400,
-                                400,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            );
+                            $img = vbar_graph($module_data, $options, 1);
                         }
                     }
                 } else {
@@ -1386,27 +1341,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:right;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                $width,
-                                $height,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:right;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else if ($layoutData['label_position'] == 'right') {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1430,27 +1367,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             ).'</div>';
                         } else {
-                            $img = '<div style="float:left;height:'.$himg.'px;">'.vbar_graph(
-                                $module_data,
-                                $width,
-                                $height,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            ).'</div>';
+                            $img = '<div style="float:left;height:'.$himg.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     } else {
                         if ($layoutData['type_graph'] == 'horizontal') {
@@ -1474,27 +1393,9 @@ function visual_map_print_item(
                                 $layoutData['border_color']
                             );
                         } else {
-                            $img = vbar_graph(
-                                $module_data,
-                                $width,
-                                $height,
-                                $color,
-                                [],
-                                [],
-                                ui_get_full_url('images/image_problem_area.png', false, false, false),
-                                '',
-                                '',
-                                $water_mark,
-                                $config['fontpath'],
-                                6,
-                                '',
-                                0,
-                                $config['homeurl'],
-                                $layoutData['image'],
-                                true,
-                                false,
-                                $layoutData['border_color']
-                            );
+                            $img = '<div style="width:'.$width.'px; height:'.$height.'px;">';
+                            $img .= vbar_graph($module_data, $options, 1);
+                            $img .= '</div>';
                         }
                     }
                 }
@@ -1593,6 +1494,7 @@ function visual_map_print_item(
 
         case CLOCK:
             if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+                $image_prefix = (is_metaconsole()) ? '../../' : '';
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
@@ -1606,17 +1508,16 @@ function visual_map_print_item(
                         }
                     } else {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
-                            $img = '<img src="images/console/signes/clock.png" style="width:200px;height:240px;">';
+                            $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:200px;height:240px;">';
                         } else {
                             if ($layoutData['time_format'] == 'time') {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:71px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:71px">';
                             } else {
-                                $img = '<img src="images/console/signes/digital-clock.png" style="width:200px;height:91px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:91px">';
                             }
                         }
                     }
                 } else {
-                    $image_prefix = ($layoutData['id_metaconsole'] != 0) ? '../../' : '';
                     if ($layoutData['clock_animation'] == 'analogic_1') {
                         $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:'.$width.'px;height:'.($width + 40).'px;">';
                     } else {
@@ -1900,6 +1801,8 @@ function visual_map_print_item(
                             echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                         }
                     } else {
+                        $is_meta = is_metaconsole();
+
                         $agents_critical = agents_get_agents(
                             [
                                 'disabled' => 0,
@@ -1908,7 +1811,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_warning = agents_get_agents(
                             [
@@ -1918,7 +1824,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_unknown = agents_get_agents(
                             [
@@ -1928,7 +1837,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $agents_ok = agents_get_agents(
                             [
@@ -1938,7 +1850,10 @@ function visual_map_print_item(
                             ],
                             ['COUNT(*) as total'],
                             'AR',
-                            false
+                            false,
+                            false,
+                            0,
+                            $is_meta
                         );
                         $total_agents = ($agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total']);
                         $stat_agent_ok = ($agents_ok[0]['total'] / $total_agents * 100);
@@ -2429,7 +2344,7 @@ function get_if_module_is_image($id_module)
 }
 
 
-function get_bars_module_data($id_module)
+function get_bars_module_data($id_module, $vBars=false)
 {
     // This charts is only serialize graphs.
     // In other string show image no data to show.
@@ -2458,9 +2373,19 @@ function get_bars_module_data($id_module)
         return false;
     }
 
-    foreach ($values as $val) {
-        $data = explode(',', $val);
-        $values_to_return[$data[0]] = ['g' => $data[1]];
+    if ($vBars === false) {
+        foreach ($values as $val) {
+            $data = explode(',', $val);
+            $values_to_return[$data[0]] = ['g' => $data[1]];
+        }
+    } else {
+        foreach ($values as $val) {
+            $data = explode(',', $val);
+            $values_to_return[] = [
+                'tick' => $data[0],
+                'data' => $data[1],
+            ];
+        }
     }
 
     return $values_to_return;
@@ -3272,7 +3197,8 @@ function visual_map_get_color_line_status($layoutData)
 /**
  * Get image of element in the visual console with status.
  *
- * @param array $layoutData The row of element in DB.
+ * @param array   $layoutData The row of element in DB.
+ * @param boolean $status     Status.
  *
  * @return string The image with the relative path to pandora console directory.
  */
@@ -3280,8 +3206,12 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 {
     $img = 'images/console/icons/'.$layoutData['image'];
 
+    if (empty($layoutData['image'])) {
+        return false;
+    }
+
     if ($layoutData['type'] == 5) {
-        // ICON ELEMENT
+        // ICON ELEMENT.
         $img .= '.png';
     } else {
         if ($status === false) {
@@ -3290,35 +3220,28 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
         switch ($status) {
             case 1:
-                // Critical (BAD)
+            case 4:
+                // Critical or critical alert (BAD).
                 $img .= '_bad.png';
             break;
 
-            case 4:
-                // Critical (ALERT)
-                $img = '4'.$img.'_bad.png';
-            break;
-
             case 0:
-                // Normal (OK)
+                // Normal (OK).
                 $img .= '_ok.png';
             break;
 
             case 2:
-                // Warning
+            case 10:
+                // Warning or warning alert.
                 $img .= '_warning.png';
             break;
 
-            case 10:
-                // Warning (ALERT)
-                $img = '4'.$img.'_warning.png';
-            break;
-
             case 3:
-                // Unknown
+                // Unknown.
             default:
                 $img .= '.png';
-                // Default is Grey (Other)
+                // Default is Grey (Other).
+            break;
         }
     }
 
@@ -3665,11 +3588,7 @@ function visual_map_print_visual_map(
         $proportion_width = ($mapWidth / $layout['width']);
 
         if ($layout['background'] != 'None.png') {
-            if (is_metaconsole()) {
-                $backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size='.$mapWidth.'x'.$mapHeight.'&file='.$config['homeurl'].'images/console/background/'.$layout['background'];
-            } else {
                 $backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size='.$mapWidth.'x'.$mapHeight.'&file='.$config['homedir'].'/images/console/background/'.($layout['background']);
-            }
         }
     } else {
         $mapWidth = $layout['width'];
@@ -4148,6 +4067,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         case 'default':
             $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
             $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
             $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
             $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
@@ -4155,6 +4075,8 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
                 return VISUAL_MAP_STATUS_CRITICAL_ALERT;
             } else if ($num_items_critical > 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
+            } else if ($num_items_warning_alert > 0) {
+                return VISUAL_MAP_STATUS_WARNING_ALERT;
             } else if ($num_items_warning > 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else if ($num_items_unknown > 0) {
@@ -4168,17 +4090,18 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             $num_items = count($valid_layout_items);
             $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
             $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
             $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
             $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if ($num_items_critical > 0
+            if (($num_items_critical > 0 || $num_items_critical_alert > 0)
                 && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
             ) {
                 return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($num_items_warning > 0
-                && (($num_items_warning * 100) / $num_items) >= $weight
+            } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
+                && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
             ) {
-                return VISUAL_MAP_STATUS_WARNING;
+                return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
             } else if ($num_items_unknown > 0
                 && (($num_items_unknown * 100) / $num_items) >= $weight
             ) {
@@ -4192,9 +4115,12 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
             $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
 
-            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical']) {
+            $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
+            $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
+
+            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning']) {
+            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else {
                 return VISUAL_MAP_STATUS_NORMAL;
@@ -4246,7 +4172,7 @@ function visual_map_create_internal_name_item($label=null, $type, $image, $agent
 
             case 'auto_sla_graph':
             case AUTO_SLA_GRAPH:
-                $text = __('Auto SLA Graph');
+                $text = __('Event history graph');
             break;
 
             case 'percentile_bar':

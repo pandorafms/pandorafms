@@ -215,6 +215,30 @@ class ConsoleSupervisor
          */
         $this->checkConsoleServerVersions();
 
+        /*
+         * Check if AllowOverride is None or All.
+         *  NOTIF.ALLOWOVERIDE.MESSAGE
+         */
+        $this->checkAllowOverrideEnabled();
+
+        /*
+         * Check if AllowOverride is None or All.
+         *  NOTIF.HAMASTER.MESSAGE
+         */
+        $this->checkHaStatus();
+
+        /*
+         * Check if the Pandora Console log
+         * file remains in old location.
+         */
+        $this->checkPandoraConsoleLogOldLocation();
+
+        /*
+         * Check if the audit log file
+         * remains in old location.
+         */
+        $this->checkAuditLogOldLocation();
+
     }
 
 
@@ -392,13 +416,6 @@ class ConsoleSupervisor
         $this->checkDefaultPassword();
 
         /*
-         * Check if there's an active subscription.
-         *    NOTIF.NEWSLETTER.SUBSCRIPTION
-         */
-
-        $this->checkNewsletterSubscription();
-
-        /*
          * Check if there're new updates.
          *    NOTIF.UPDATEMANAGER.OPENSETUP
          *    NOTIF.UPDATEMANAGER.UPDATE
@@ -446,6 +463,29 @@ class ConsoleSupervisor
          * the same versions.
          */
         $this->checkConsoleServerVersions();
+
+        /*
+         * Check if AllowOverride is None or All.
+         */
+        $this->checkAllowOverrideEnabled();
+
+          /*
+           * Check if HA status.
+           */
+        if (enterprise_installed()) {
+            $this->checkHaStatus();
+        }
+
+        /*
+         * Check if the audit log file
+         * remains in old location.
+         */
+        $this->checkAuditLogOldLocation();
+
+        /*
+            Check if AllowOverride is None or All.
+        */
+        $this->checkAllowOverrideEnabled();
 
     }
 
@@ -608,12 +648,14 @@ class ConsoleSupervisor
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
             case 'NOTIF.SECURITY.DEFAULT_PASSWORD':
-            case 'NOTIF.NEWSLETTER.SUBSCRIPTION':
             case 'NOTIF.UPDATEMANAGER.OPENSETUP':
             case 'NOTIF.UPDATEMANAGER.UPDATE':
             case 'NOTIF.UPDATEMANAGER.MINOR':
             case 'NOTIF.UPDATEMANAGER.MESSAGES':
             case 'NOTIF.CRON.CONFIGURED':
+            case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
+            case 'NOTIF.HAMASTER.MESSAGE':
+
             default:
                 // NOTIF.SERVER.STATUS.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
@@ -748,25 +790,41 @@ class ConsoleSupervisor
 
         // Expiry.
         if (($days_to_expiry <= 15) && ($days_to_expiry > 0)) {
+            if ($config['license_mode'] == 1) {
+                $title = __('License is about to expire');
+                $msg = 'Your license will expire in %d days. Please, contact our sales department.';
+            } else {
+                $title = __('Support is about to expire');
+                $msg = 'Your support license will expire in %d days. Please, contact our sales department.';
+            }
+
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('License is about to expire'),
+                    'title'   => $title,
                     'message' => __(
-                        'Your license will expire in %d days. Please, contact our sales department.',
+                        $msg,
                         $days_to_expiry
                     ),
                     'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
         } else if ($days_to_expiry < 0) {
+            if ($config['license_mode'] == 1) {
+                $title = __('Expired license');
+                $msg = __('Your license has expired. Please, contact our sales department.');
+            } else {
+                $title = __('Support expired');
+                $msg = __('This license is outside of support. Please, contact our sales department.');
+            }
+
             // Warn user, license has expired.
             $this->notify(
                 [
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => __('Expired license'),
-                    'message' => __('Your license has expired. Please, contact our sales department.'),
+                    'title'   => $title,
+                    'message' => $msg,
                     'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
                 ]
             );
@@ -1163,6 +1221,9 @@ class ConsoleSupervisor
             // At this point there's no servers with issues.
             $this->cleanNotifications('NOTIF.SERVER.STATUS%');
             return;
+        } else {
+            // Clean notifications. Only show notif for down servers.
+            $this->cleanNotifications('NOTIF.SERVER.STATUS%');
         }
 
         foreach ($servers as $server) {
@@ -1329,7 +1390,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.INPUT_TIME');
         }
 
-        if ($PHPmax_execution_time !== '0') {
+        if ((int) $PHPmax_execution_time !== 0) {
             $url = 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time';
             if ($config['language'] == 'es') {
                 $url = 'http://php.net/manual/es/info.configuration.php#ini.max-execution-time';
@@ -2001,41 +2062,6 @@ class ConsoleSupervisor
 
 
     /**
-     * Check if instance is subscribed to newsletter.
-     *
-     * @return void
-     */
-    public function checkNewsletterSubscription()
-    {
-        global $config;
-        $login = get_parameter('login', false);
-
-        // Newsletter advice.
-        $newsletter = db_get_value(
-            'middlename',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
-        if (!$config['disabled_newsletter']
-            && $newsletter != 1
-            && $login === false
-        ) {
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.NEWSLETTER.SUBSCRIPTION',
-                    'title'   => __('Not subscribed to the newsletter'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to subscribe to the newsletter'),
-                    'url'     => 'javascript: force_run_newsletter();',
-                ]
-            );
-        } else {
-            $this->cleanNotifications('NOTIF.NEWSLETTER.SUBSCRIPTION');
-        }
-    }
-
-
-    /**
      * Check if user 'admin' is enabled and using default password.
      *
      * @return void
@@ -2256,8 +2282,8 @@ class ConsoleSupervisor
                     ui_get_full_url(false)
                 );
                 $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; ';
-                $message_conf_cron .= $config['homedir'].'/pandora_console.log</pre>';
+                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 
             if (isset($config['cron_last_run']) === true) {
@@ -2399,6 +2425,162 @@ class ConsoleSupervisor
         // Cleanup notifications if exception is recovered.
         if ($missed == 0) {
             $this->cleanNotifications('NOTIF.SERVER.MISALIGNED');
+        }
+    }
+
+
+    /**
+     * Check if AllowOveride is None or All.
+     *
+     * @return void
+     */
+    public function checkAllowOverrideEnabled()
+    {
+        global $config;
+
+        $message = 'If AllowOverride is disabled, .htaccess will not works.';
+        $message .= '<pre>Please check /etc/httpd/conf/httpd.conf to resolve this problem.';
+
+        // Get content file.
+        $file = file_get_contents('/etc/httpd/conf/httpd.conf');
+        $file_lines = preg_split("#\r?\n#", $file, -1, PREG_SPLIT_NO_EMPTY);
+        $is_none = false;
+
+        $i = 0;
+        foreach ($file_lines as $line) {
+            $i++;
+
+            // Check Line and content.
+            if (preg_match('/ AllowOverride/', $line) && $i === 311) {
+                $result = explode(' ', $line);
+                if ($result[5] == 'None') {
+                    $is_none = true;
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
+                            'title'   => __('AllowOverride is disabled'),
+                            'message' => __($message),
+                            'url'     => ui_get_full_url('index.php'),
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Cleanup notifications if AllowOverride is All.
+        if (!$is_none) {
+            $this->cleanNotifications('NOTIF.ALLOWOVERRIDE.MESSAGE');
+        }
+
+    }
+
+
+    /**
+     * Check if AllowOveride is None or All.
+     *
+     * @return void
+     */
+    public function checkHaStatus()
+    {
+        global $config;
+        enterprise_include_once('include/class/DatabaseHA.class.php');
+
+        $cluster = new DatabaseHA();
+        $nodes = $cluster->getNodes();
+
+        foreach ($nodes as $node) {
+            $cluster_master = $cluster->isClusterMaster($node);
+            $db_master = $cluster->isDBMaster($node);
+
+            $message = '<pre>The roles played by node '.$node['host'].' are out of sync:
+            Role in the cluster: Master
+            Role in the database: Slave Desynchronized operation in the node';
+
+            if ((int) $db_master !== (int) $cluster_master) {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.HAMASTER.MESSAGE',
+                        'title'   => __('Desynchronized operation on the node '.$node['host']),
+                        'message' => __($message),
+                        'url'     => ui_get_full_url('index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster'),
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
+            }
+        }
+    }
+
+
+    /*
+     * Check if Pandora console log file remains in old location.
+     *
+     * @return void
+     */
+    public function checkPandoraConsoleLogOldLocation()
+    {
+        global $config;
+
+        if (file_exists($config['homedir'].'/pandora_console.log')) {
+            $title_pandoraconsole_old_log = __(
+                'Pandora FMS console log file changed location',
+                $config['homedir']
+            );
+            $message_pandoraconsole_old_log = __(
+                'Pandora FMS console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                $config['homedir'],
+                $config['homedir']
+            );
+
+            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_EN:General_Quick_Guide#Solving_problems._Where_to_look_and_who_to_ask';
+            if ($config['language'] == 'es') {
+                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_ES:Guia_Rapida_General#Soluci.C3.B3n_de_problemas._D.C3.B3nde_mirar.2C_a_qui.C3.A9n_preguntar';
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
+                    'title'   => __($title_pandoraconsole_old_log),
+                    'message' => __($message_pandoraconsole_old_log),
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PANDORACONSOLE.LOG.OLD');
+        }
+    }
+
+
+    /**
+     * Check if audit log file remains in old location.
+     *
+     * @return void
+     */
+    public function checkAuditLogOldLocation()
+    {
+        global $config;
+
+        if (file_exists($config['homedir'].'/audit.log')) {
+            $title_audit_old_log = __(
+                'Pandora FMS audit log file changed location',
+                $config['homedir']
+            );
+            $message_audit_old_log = __(
+                'Pandora FMS audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                $config['homedir'],
+                $config['homedir']
+            );
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.AUDIT.LOG.OLD',
+                    'title'   => __($title_audit_old_log),
+                    'message' => __($message_audit_old_log),
+                    'url'     => '#',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.AUDIT.LOG.OLD');
         }
     }
 

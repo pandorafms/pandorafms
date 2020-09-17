@@ -2780,6 +2780,11 @@ function alerts_ui_update_or_create_actions($update=true)
     if ($update) {
         $values['name'] = $name;
         $values['id_alert_command'] = $id_alert_command;
+        // Only for Metaconsole, save the previous name for synchronization.
+        if (is_metaconsole()) {
+            $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
+        }
+
         $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
     } else {
         $name_check = db_get_value('name', 'talert_actions', 'name', $name);

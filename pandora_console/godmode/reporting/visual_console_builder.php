@@ -761,7 +761,7 @@ $buttons['consoles_list'] = [
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console')]).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,
@@ -783,10 +783,13 @@ $buttons['wizard'] = [
     'active' => false,
     'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand.png', true, ['title' => __('Wizard')]).'</a>',
 ];
-$buttons['editor'] = [
-    'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder')]).'</a>',
-];
+if ($config['legacy_vc']) {
+    $buttons['editor'] = [
+        'active' => false,
+        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder')]).'</a>',
+    ];
+}
+
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="'.$url_view.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>',
@@ -802,12 +805,14 @@ if ($action == 'new' || $idVisualConsole === false) {
 
 $buttons[$activeTab]['active'] = true;
 
+$tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
+
 if (!defined('METACONSOLE')) {
     ui_print_page_header(
         $visualConsoleName,
         'images/visual_console.png',
         false,
-        'visual_console_editor_'.$activeTab.'_tab',
+        $tab_builder,
         false,
         $buttons
     );

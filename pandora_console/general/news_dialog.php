@@ -40,7 +40,7 @@ if (!empty($news)) {
 // Prints news dialog template
 echo '<div id="news_dialog" title="" style="display: none;">';
 
-    echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; min-width:560px; width: 95%; margin: 0 auto; border: 1px solid #FFF; line-height: 19px;">';
+    echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; min-width:560px; width: 95%; margin: 0 auto; line-height: 19px;">';
         echo '<span style="display: block; height: 260px; overflow: auto; text-align: justify; padding: 5px 15px 4px 10px; background: #ECECEC; border-radius: 4px;" id="new_text"></span>';
         echo '<span style="font-size: 12px; display: block; margin-top: 20px;" id="new_author"></span>';
         echo '<span style="font-size: 12px; display: block; font-style: italic;" id="new_timestamp"></span>';

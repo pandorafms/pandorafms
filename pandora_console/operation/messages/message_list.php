@@ -78,7 +78,13 @@ if ($mark_unread) {
 
 if ($delete_msg) {
     $id = (int) get_parameter('id');
-    $result = messages_delete_message($id);
+
+    if ($show_sent) {
+        $result = messages_delete_message_sent($id);
+    } else {
+        $result = messages_delete_message($id);
+    }
+
     // Delete message function will actually check the credentials.
     ui_print_result_message(
         $result,
@@ -91,7 +97,11 @@ if ($multiple_delete) {
     $ids = (array) get_parameter('delete_multiple_messages', []);
 
     foreach ($ids as $id) {
-        $result = messages_delete_message($id);
+        if ($show_sent) {
+            $result = messages_delete_message_sent($id);
+        } else {
+            $result = messages_delete_message($id);
+        }
 
         if ($result === false) {
             break;

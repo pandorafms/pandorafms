@@ -1,5 +1,7 @@
 # Centos, Redhat, Fedora
-/var/www/html/pandora_console/pandora_console.log {
+/var/www/html/pandora_console/log/audit.log
+/var/www/html/pandora_console/log/cron.log
+/var/www/html/pandora_console/log/console.log {
         weekly
         missingok
         size 100000

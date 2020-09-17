@@ -290,7 +290,7 @@ $table_aux = new stdClass();
             foreach ($result_graphs as $graph) {
                 $data = [];
 
-                $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text(io_safe_output($graph['name']), 70).'</a>';
+                $data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$graph['id_graph'].'">'.ui_print_truncate_text($graph['name'], 70).'</a>';
 
                 $data[1] = ui_print_truncate_text($graph['description'], 70);
 

@@ -28,6 +28,14 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
+ui_require_css_file('visual_maps');
+ui_require_css_file('register');
+
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
@@ -130,6 +138,11 @@ echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of 
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+
 // Check groups can access user.
 $aclUserGroups = [];
 if (!users_can_manage_group_all('AR')) {
@@ -221,6 +234,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         <?php echo ($refr * 1000); ?>,
         handleUpdate
     );
+
+    var controls = document.getElementById('vc-controls');
+    autoHideElement(controls, 1000);
 
     // Update the data fetch interval.
     $('select#vc-refr').change(function(event) {

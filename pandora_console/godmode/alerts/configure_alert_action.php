@@ -52,7 +52,7 @@ if ($al_action !== false) {
 
     $is_in_group = in_array($al_action['id_group'], $own_groups);
 
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -65,7 +65,7 @@ if ($al_action !== false) {
         );
     }
 } else {
-    // Header
+    // Header.
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
@@ -80,12 +80,20 @@ if ($al_action !== false) {
 }
 
 
+$is_central_policies_on_node = is_central_policies_on_node();
+
+if ($is_central_policies_on_node === true) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+    );
+}
+
+
 $name = '';
 $id_command = '';
 $group = 0;
-// All group is 0
 $action_threshold = 0;
-// All group is 0
+// All group is 0.
 if ($id) {
     $action = alerts_get_alert_action($id);
     $name = $action['name'];
@@ -95,7 +103,7 @@ if ($id) {
     $action_threshold = $action['action_threshold'];
 }
 
-// Hidden div with help hint to fill with javascript
+// Hidden div with help hint to fill with javascript.
 html_print_div(
     [
         'id'      => 'help_alert_macros_hint',
@@ -126,7 +134,26 @@ $table->size = [];
 $table->size[0] = '20%';
 $table->data = [];
 $table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text('name', $name, '', 35, 255, true);
+$table->data[0][1] = html_print_input_text(
+    'name',
+    $name,
+    '',
+    35,
+    255,
+    true,
+    false,
+    false,
+    '',
+    '',
+    '',
+    '',
+    false,
+    '',
+    '',
+    '',
+    $is_central_policies_on_node
+);
+
 if (io_safe_output($name) == 'Monitoring Event') {
     $table->data[0][1] .= '&nbsp;&nbsp;'.ui_print_help_tip(
         __('This action may stop working, if you change its name.'),
@@ -140,14 +167,22 @@ $table->colspan[0][1] = 2;
 $table->data[1][0] = __('Group');
 
 $own_info = get_user_info($config['id_user']);
-// Only display group "All" if user is administrator or has "PM" privileges
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-    $display_all_group = true;
-} else {
-    $display_all_group = false;
-}
 
-$table->data[1][1] = html_print_select_groups(false, 'LW', $display_all_group, 'group', $group, '', '', 0, true);
+$table->data[1][1] = html_print_select_groups(
+    false,
+    'LW',
+    true,
+    'group',
+    $group,
+    '',
+    '',
+    0,
+    true,
+    false,
+    true,
+    '',
+    $is_central_policies_on_node
+);
 $table->colspan[1][1] = 2;
 
 $table->data[2][0] = __('Command');
@@ -169,13 +204,18 @@ $table->data[2][1] = html_print_select_from_sql(
     '',
     __('None'),
     0,
-    true
+    true,
+    false,
+    false,
+    $is_central_policies_on_node
 );
 $table->data[2][1] .= ' ';
-if (check_acl($config['id_user'], 0, 'PM')) {
-    $table->data[2][1] .= html_print_image('images/add.png', true);
-    $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+if ($is_central_policies_on_node === false
+    && check_acl($config['id_user'], 0, 'PM')
+) {
     $table->data[2][1] .= __('Create Command');
+    $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+    $table->data[2][1] .= html_print_image('images/add.png', true);
     $table->data[2][1] .= '</a>';
 }
 
@@ -183,7 +223,23 @@ $table->data[2][1] .= '<div id="command_description" style=""></div>';
 $table->colspan[2][1] = 2;
 
 $table->data[3][0] = __('Threshold');
-$table->data[3][1] = html_print_input_text('action_threshold', $action_threshold, '', 5, 7, true);
+$table->data[3][1] = html_print_extended_select_for_time(
+    'action_threshold',
+    $action_threshold,
+    '',
+    '',
+    '',
+    false,
+    true,
+    false,
+    true,
+    '',
+    $is_central_policies_on_node,
+    false,
+    '',
+    false,
+    true
+);
 $table->colspan[3][1] = 2;
 
 $table->data[4][0] = '';
@@ -227,12 +283,12 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     // Store the value in a hidden to keep it on first execution
     $table->data['field'.$i][1] .= html_print_input_hidden(
         'field'.$i.'_value',
-        !empty($action['field'.$i]) ? $action['field'.$i] : '',
+        (!empty($action['field'.$i]) || $action['field'.$i] == 0) ? $action['field'.$i] : '',
         true
     );
     $table->data['field'.$i][2] .= html_print_input_hidden(
         'field'.$i.'_recovery_value',
-        !empty($action['field'.$i.'_recovery']) ? $action['field'.$i.'_recovery'] : '',
+        (!empty($action['field'.$i.'_recovery']) || $action['field'.$i] == 0) ? $action['field'.$i.'_recovery'] : '',
         true
     );
 }
@@ -241,46 +297,44 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 echo '<form method="post" action="'.'index.php?sec='.$sec.'&'.'sec2=godmode/alerts/alert_actions&'.'pure='.$pure.'">';
 $table_html = html_print_table($table, true);
 
-//
-// Hack to hook the bubble dialog of clippy in any place, the intro.js
-// fails with new elements in the dom from javascript code
-// ----------------------------------------------------------------------
-/*
-    $table_html = str_replace(
-    "</table>",
-    "</div>",
-    $table_html);
-    $table_html = str_replace(
-    '<tr id="table_macros-field1" style="" class="datos2">',
-    "</tbody></table>
-    <div id=\"clippy_fields\">
-    <table>
-    <tbody>
-    <tr id=\"table_macros-field1\" class=\"datos\">",
-    $table_html);
-*/
-//
 echo $table_html;
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if ($id) {
-    html_print_input_hidden('id', $id);
-    if ($al_action['id_group'] == 0) {
-        // then must have "PM" access privileges
-        if (check_acl($config['id_user'], 0, 'PM')) {
+if ($is_central_policies_on_node === false) {
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    if ($id) {
+        html_print_input_hidden('id', $id);
+        if ($al_action['id_group'] == 0) {
+            // Then must have "PM" access privileges.
+            if (check_acl($config['id_user'], 0, 'PM')) {
+                html_print_input_hidden('update_action', 1);
+                html_print_submit_button(
+                    __('Update'),
+                    'create',
+                    false,
+                    'class="sub upd"'
+                );
+            }
+        } else {
             html_print_input_hidden('update_action', 1);
-            html_print_submit_button(__('Update'), 'create', false, 'class="sub upd"');
+            html_print_submit_button(
+                __('Update'),
+                'create',
+                false,
+                'class="sub upd"'
+            );
         }
     } else {
-        html_print_input_hidden('update_action', 1);
-        html_print_submit_button(__('Update'), 'create', false, 'class="sub upd"');
+        html_print_input_hidden('create_action', 1);
+        html_print_submit_button(
+            __('Create'),
+            'create',
+            false,
+            'class="sub wand"'
+        );
     }
-} else {
-    html_print_input_hidden('create_action', 1);
-    html_print_submit_button(__('Create'), 'create', false, 'class="sub wand"');
+
+    echo '</div>';
 }
 
-echo '</div>';
 echo '</form>';
 
 enterprise_hook('close_meta_frame');
@@ -295,7 +349,7 @@ $(document).ready (function () {
     var origicommand_descriptionnal_command;
 
     if (<?php echo (int) $id_command; ?>) {
-        original_command = "<?php echo addslashes(io_safe_output(alerts_get_alert_command_command($id_command))); ?>";
+        original_command = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_command($id_command)))); ?>";
         render_command_preview(original_command);
         command_description = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_description($id_command)))); ?>";
         
@@ -320,18 +374,18 @@ $(document).ready (function () {
                 original_command = data["command"];
                 render_command_preview (original_command);
                 command_description = data["description"];
-                render_command_description(command_description);
+                if (command_description != undefined) {
+                    render_command_description(command_description);
+                } else {
+                    render_command_description('');
+
+                }
                 
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
                 
                 // Change the selected group
                 $("#group option").each(function(index, value) {
                     var current_group = $(value).val();
-                    if (data.id_group != 0 && current_group != 0 && current_group != data.id_group) {
-                        $(value).hide();
-                    } else {
-                        $(value).show();
-                    }
                 });
                 if (data.id_group != 0 && $("#group").val() != data.id_group) {
                     $("#group").val(0);

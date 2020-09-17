@@ -4360,7 +4360,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['value']) === true) ? $data['value'] : ''),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : '')
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false)
             );
         break;
 

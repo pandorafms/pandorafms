@@ -292,6 +292,7 @@ if (is_ajax()) {
             if (!is_metaconsole()) {
                 $fields[] = 'am.nombre as module_name';
                 $fields[] = 'am.id_agente_modulo as id_agentmodule';
+                $fields[] = 'am.custom_id as module_custom_id';
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
@@ -470,9 +471,13 @@ $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
-$tag_with = json_decode(base64_decode($tag_with), true);
-$tag_without = json_decode(base64_decode($tag_without), true);
+if (is_array($tag_with) === false) {
+    $tag_with = json_decode(base64_decode($tag_with), true);
+}
 
+if (is_array($tag_without) === false) {
+    $tag_without = json_decode(base64_decode($tag_without), true);
+}
 
 foreach ($tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
@@ -1315,10 +1320,12 @@ try {
             // 'timestamp_rep',
             // 'timestamp_rep_min',
             // 'module_name',
+            // 'custom_id',
         [
             'text'  => 'options',
             'class' => 'action_buttons w120px',
-        ],[
+        ],
+        [
             'text'  => 'm',
             'extra' => $checkbox_all,
             'class' => 'mw120px',
@@ -2004,6 +2011,9 @@ function process_datatables_item(item) {
 
     /* Module name */
     item.id_agentmodule = item.module_name;
+
+    // Module custom_id.
+    item.custom_id = item.module_custom_id;
 }
 
 /* Datatables auxiliary functions ends */

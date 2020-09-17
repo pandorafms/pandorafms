@@ -207,6 +207,7 @@ function events_get_all_fields()
     $columns['server_name'] = __('Server name');
     $columns['data'] = __('Data');
     $columns['module_status'] = __('Module status');
+    $columns['module_custom_id'] = __('Module custom id');
 
     return $columns;
 }
@@ -290,6 +291,9 @@ function events_get_column_name($field, $table_alias=false)
 
         case 'module_status':
         return __('Module Status');
+
+        case 'module_custom_id':
+        return __('Module custom ID');
 
         case 'options':
         return __('Options');

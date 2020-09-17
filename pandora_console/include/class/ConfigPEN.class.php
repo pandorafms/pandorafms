@@ -495,8 +495,8 @@ class ConfigPEN extends HTML
     public function add()
     {
         $pen = get_parameter('pen', 0);
-        $manufacturer = get_parameter('manufacturer', '');
-        $description = get_parameter('description', '');
+        $manufacturer = io_safe_input(strip_tags(io_safe_output((string) get_parameter('manufacturer'))));
+        $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
         $is_new = (bool) get_parameter('is_new', false);
 
         if (empty($pen)) {

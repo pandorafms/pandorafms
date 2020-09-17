@@ -116,7 +116,7 @@ if ($create_special_day) {
     $same_day = (string) get_parameter('same_day');
     $values = [];
     $values['id_group'] = (string) get_parameter('id_group');
-    $values['description'] = (string) get_parameter('description');
+    $values['description'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
 
     $aviable_description = true;
     if (preg_match('/script/i', $values['description'])) {
@@ -180,7 +180,7 @@ if ($update_special_day) {
     $date = (string) get_parameter('date');
     $date_orig = (string) get_parameter('date_orig');
     $same_day = (string) get_parameter('same_day');
-    $description = (string) get_parameter('description');
+    $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
     $id_group = (string) get_parameter('id_group');
     $id_group_orig = (string) get_parameter('id_group_orig');
 
@@ -515,7 +515,11 @@ for ($month = 1; $month <= 12; $month++) {
                     break;
                 }
 
-                $cal_table->data[$cal_line][$week] .= ui_print_help_tip($special_day['description'], true);
+                // Only show description if is filled.
+                if (empty($special_day['description']) === false) {
+                    $cal_table->data[$cal_line][$week] .= ui_print_help_tip($special_day['description'], true);
+                }
+
                 if ($special_day['id_group'] || ($can_manage_group_all && $special_day['id_group'] == 0)) {
                     $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&id='.$special_day['id'].'" title=';
                     $cal_table->data[$cal_line][$week] .= __('Edit');

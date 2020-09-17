@@ -3891,7 +3891,6 @@ $(document).ready (function () {
             case 'historical_data':
             case 'agent_configuration':
             case 'module_histogram_graph':
-            case 'event_report_log':
             case 'increment':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
@@ -3911,6 +3910,12 @@ $(document).ready (function () {
                     return false;
                     }
                     break;
+            case 'event_report_log':
+                if ($("#id_agents3").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+                break;
             default:
                 break;
         }

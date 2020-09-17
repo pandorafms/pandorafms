@@ -1396,6 +1396,8 @@ sub db_concat ($$) {
 ########################################################################
 sub get_priority_name ($) {
 	my ($priority_id) = @_;
+
+	return '' unless defined($priority_id);
 	
 	if ($priority_id == 0) {
 		return 'Maintenance';

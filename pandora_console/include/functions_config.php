@@ -331,6 +331,10 @@ function config_update_config()
                         $error_update[] = __('Audit log enabled');
                     }
 
+                    if (!config_update_value('module_custom_id_ro', get_parameter('module_custom_id_ro'))) {
+                        $error_update[] = __('Module Custom ID read only');
+                    }
+
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
                         $error_update[] = __('unique_ip');
                     }
@@ -1944,6 +1948,10 @@ function config_process_config()
 
     if (!isset($config['audit_log_enabled'])) {
         config_update_value('audit_log_enabled', 0);
+    }
+
+    if (!isset($config['module_custom_id_ro'])) {
+        config_update_value('module_custom_id_ro', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {

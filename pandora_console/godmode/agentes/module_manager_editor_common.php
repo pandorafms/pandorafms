@@ -528,10 +528,10 @@ $table_advanced->data[0][1] = html_print_input_text(
     20,
     65,
     true,
-    $disabledBecauseInPolicy,
+    (($config['module_custom_id_ro']) ? true : $disabledBecauseInPolicy),
     false,
     '',
-    $classdisabledBecauseInPolicy
+    (($config['module_custom_id_ro']) ? 'readonly' : $classdisabledBecauseInPolicy)
 );
 
 $table_advanced->data[0][3] = __('Unit');

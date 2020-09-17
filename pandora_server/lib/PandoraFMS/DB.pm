@@ -99,6 +99,8 @@ our @EXPORT = qw(
 		get_user_exists
 		get_user_profile_id
 		get_group_children
+		get_agentmodule_custom_id
+		set_agentmodule_custom_id
 		is_agent_address
 		is_group_disabled
 		get_agent_status
@@ -444,6 +446,35 @@ sub get_agentmodule_data ($$$$$) {
 	#	ORDER BY utimestamp ASC", 1);
 	
 	return @rows;
+}
+
+##########################################################################
+## Return module custom ID given the module id.
+##########################################################################
+sub get_agentmodule_custom_id ($$) {
+	my ($dbh, $id_agent_module) = @_;
+
+	my $rc = get_db_value(
+		$dbh,
+		"SELECT custom_id FROM tagente_modulo WHERE id_agente_modulo = ?",
+		safe_input($id_agent_module)
+	);
+	return defined($rc) ? $rc : undef;
+}
+
+##########################################################################
+## Updates module custom ID given the module id and custom Id.
+##########################################################################
+sub set_agentmodule_custom_id ($$$) {
+	my ($dbh, $id_agent_module, $custom_id) = @_;
+
+	my $rc = db_update(
+		$dbh,
+		"UPDATE tagente_modulo SET custom_id = ? WHERE id_agente_modulo = ?",
+		safe_input($custom_id),
+		safe_input($id_agent_module)
+	);
+	return defined($rc) ? ($rc eq '0E0' ? 0 : $rc) : -1;
 }
 
 ########################################################################

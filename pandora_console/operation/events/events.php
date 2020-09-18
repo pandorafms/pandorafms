@@ -470,10 +470,6 @@ $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
-
-$tags_select_without = [];
-$tag_with_temp = [];
-$tag_without_temp = [];
 if (is_array($tag_with) === false) {
     $tag_with = json_decode(base64_decode($tag_with), true);
 }

@@ -86,7 +86,7 @@ $login_body_class = '';
 // Overrides the default background with the defined by the user.
 if (!empty($config['login_background'])) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
-    $login_body_style = "style=\"background:linear-gradient(74deg, #02020255 36%, transparent 36%), url('".$background_url."');\"";
+    $login_body_style = "style=\"background:linear-gradient(74deg, rgba(2, 2, 2, 0.333) 36%, transparent 36%), url('".$background_url."');\"";
 }
 
 // Support for Internet Explorer and Microsoft Edge browsers

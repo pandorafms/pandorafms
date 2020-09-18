@@ -261,7 +261,16 @@ function process_user_login_remote($login, $pass, $api=false)
         if (($config['auth'] === 'ad')) {
             // Check if autocreate  remote users is active.
             if ($config['autocreate_remote_users'] == 1) {
-                change_local_user_pass_ldap($login, $pass);
+                if ($config['ad_save_password']) {
+                    $update_credentials = change_local_user_pass_ldap($login, $pass);
+
+                    if ($update_credentials) {
+                        $config['auth_error'] = __('Your permissions have changed. Please, login again.');
+                        return false;
+                    }
+                } else {
+                    delete_user_pass_ldap($login);
+                }
             }
 
             if (isset($config['ad_advanced_config']) && $config['ad_advanced_config']) {
@@ -948,7 +957,7 @@ function create_user_and_permisions_ldap(
     $values = $user_info;
     $values['id_user'] = $id_user;
 
-    if ($config['ldap_save_password']) {
+    if ($config['ldap_save_password'] || $config['ad_save_password']) {
         $values['password'] = md5($password);
     }
 

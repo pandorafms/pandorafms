@@ -59,6 +59,26 @@ abstract class Entity
 
 
     /**
+     * Instances a new object using array definition.
+     *
+     * @param string $class_str Class name.
+     * @param array  $data      Fields data.
+     *
+     * @return object With current definition.
+     */
+    public static function build(string $class_str, array $data=[])
+    {
+        $obj = new $class_str();
+        // Set values.
+        foreach ($data as $k => $v) {
+            $obj->{$k}($v);
+        }
+
+        return $obj;
+    }
+
+
+    /**
      * Defines a generic constructor to extract information of the object.
      *
      * @param string      $table            Table.

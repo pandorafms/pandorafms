@@ -3548,6 +3548,11 @@ function ui_print_datatable(array $parameters)
     $output = $err_msg.$filter.$extra.$table.$js;
 
     ui_require_css_file('datatables.min', 'include/styles/js/');
+    ui_require_css_file('tables');
+    if (is_metaconsole()) {
+        ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+    }
+
     ui_require_javascript_file('datatables.min');
     ui_require_javascript_file('buttons.dataTables.min');
     ui_require_javascript_file('dataTables.buttons.min');

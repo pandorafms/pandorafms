@@ -394,24 +394,14 @@ function print_snmp_tags_active_filters($filter_resume=[])
     }
 
     // Date from
-    if (isset($filter_resume['date_from_trap']) && $filter_resume['date_from_trap'] != '') {
-        if (isset($filter_resume['time_from_trap']) && $filter_resume['time_from_trap'] != '') {
-            array_push(
-                $tags_set,
-                [
-                    'title' => __('From'),
-                    'value' => $filter_resume['date_from_trap'].' '.$filter_resume['time_from_trap'],
-                ]
-            );
-        } else {
-            array_push(
-                $tags_set,
-                [
-                    'title' => __('From'),
-                    'value' => $filter_resume['date_from_trap'],
-                ]
-            );
-        }
+    if (isset($filter_resume['hours_ago']) === true) {
+        array_push(
+            $tags_set,
+            [
+                'title' => __('Max. hours old'),
+                'value' => $filter_resume['hours_ago'].' '.__('hours'),
+            ]
+        );
     }
 
     // Date to

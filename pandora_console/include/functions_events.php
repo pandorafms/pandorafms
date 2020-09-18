@@ -1412,8 +1412,6 @@ function events_get_all(
             );
         }
 
-        error_log(obhd($can_manage));
-
         $can_write = '0 as user_can_write';
         if (!empty($EW_groups)) {
             $can_write = sprintf(

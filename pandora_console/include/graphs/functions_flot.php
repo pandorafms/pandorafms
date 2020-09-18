@@ -279,20 +279,18 @@ function flot_area_graph(
         $series_type_unique['data_'.$graph_id.'_'.$k] = $v;
     }
 
-    /*
-        // Store data series in javascript format.
-        $extra_width = (int) ($params['width'] / 3);
-        $return .= "<div id='extra_$graph_id'
-        style='font-size: ".$params['font_size'].'pt;
-        display:none; position:absolute; overflow: auto;
-        max-height: '.($params['height'] + 50).'px;
-        width: '.$extra_width."px;
-        background:#fff; padding: 2px 2px 2px 2px;
-        border: solid #000 1px;'></div>";
+    // Store data series in javascript format.
+    $extra_width = (int) ($params['width'] / 3);
+    $return .= "<div id='extra_$graph_id'
+    style='font-size: ".$params['font_size'].'pt;
+    display:none; position:absolute; overflow: auto;
+    max-height: '.($params['height'] + 50).'px;
+    width: '.$extra_width."px;
+    background:#fff; padding: 2px 2px 2px 2px;
+    border: solid #000 1px;'></div>";
 
-        // Trick to get translated string from javascript.
-        $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
-    */
+    // Trick to get translated string from javascript.
+    $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
     $values = json_encode($array_data);
 

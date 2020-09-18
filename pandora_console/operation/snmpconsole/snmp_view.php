@@ -46,6 +46,11 @@ if (!$agent_a && !$agent_w) {
 }
 
 // Read parameters.
+$now = new DateTime();
+$ago = new DateTime();
+$interval = new DateInterval('PT8H');
+$ago->sub($interval);
+
 $filter_severity = (int) get_parameter('filter_severity', -1);
 $filter_fired = (int) get_parameter('filter_fired', -1);
 $filter_status = (int) get_parameter('filter_status', 0);
@@ -56,10 +61,10 @@ $trap_type = (int) get_parameter('trap_type', -1);
 $group_by = (int) get_parameter('group_by', 0);
 $refr = (int) get_parameter('refresh');
 $default_refr = !empty($refr) ? $refr : $config['vc_refr'];
-$date_from_trap = get_parameter('date_from_trap', '');
-$date_to_trap = get_parameter('date_to_trap', '');
-$time_from_trap = get_parameter('time_from_trap', '');
-$time_to_trap = get_parameter('time_to_trap', '');
+$date_from_trap = get_parameter('date_from_trap', $ago->format('Y/m/d'));
+$date_to_trap = get_parameter('date_to_trap', $now->format('Y/m/d'));
+$time_from_trap = get_parameter('time_from_trap', $ago->format('H:i:s'));
+$time_to_trap = get_parameter('time_to_trap', $now->format('H:i:s'));
 
 $user_groups = users_get_groups($config['id_user'], $access, false);
 

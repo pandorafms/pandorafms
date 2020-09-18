@@ -1143,7 +1143,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true).'</div>';
 }
 
-echo '<form id="user_profile_form" method="post" autocomplete="off">';
+echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
 
 
 if (!$id) {
@@ -1195,29 +1195,43 @@ if (!empty($ehorus)) {
 
 echo '</div>';
 
-profile_print_profile_table($id);
-
 echo '<div style="width: 100%" class="action-buttons">';
 if ($config['admin_can_add_user']) {
     html_print_csrf_hidden();
     if ($new_user) {
         html_print_input_hidden('create_user', 1);
-        html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand"');
     } else {
         html_print_input_hidden('update_user', 1);
-        html_print_submit_button(__('Update'), 'uptbutton', false, 'class="sub upd"');
     }
 }
 
+echo '</div>';
+
 html_print_input_hidden('json_profile', '');
 
-echo '</div>';
 echo '</form>';
+
+
+profile_print_profile_table($id);
+
 echo '<br />';
+
+echo '<div style="width: 100%" class="action-buttons">';
+if ($config['admin_can_add_user']) {
+    if ($new_user) {
+        html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand" form="user_profile_form"');
+    } else {
+        html_print_submit_button(__('Update'), 'uptbutton', false, 'class="sub upd" form="user_profile_form"');
+    }
+}
+
+echo '</div>';
+
+
+echo '</div>';
 
 enterprise_hook('close_meta_frame');
 $delete_image = html_print_input_image('del', 'images/cross.png', 1, '', true, ['onclick' => 'delete_profile(event, this)']);
-
 
 if (!is_metaconsole()) {
     ?>
@@ -1335,7 +1349,7 @@ $(document).ready (function () {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
         if (rows <= 3) {
-            if (!confirm('<?php echo __('Deleting last profile'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
+            if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
                 return;
             }
         }

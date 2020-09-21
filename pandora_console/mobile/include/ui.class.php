@@ -779,6 +779,7 @@ class Ui
 
         echo "	</head>\n";
         echo "	<body>\n";
+        echo include_javascript_dependencies_flot_graph(false, false);
         echo "		<div class='ui-loader-background'> </div>";
         if (!empty($this->dialogs)) {
             if (!empty($this->dialogs['onStart'])) {

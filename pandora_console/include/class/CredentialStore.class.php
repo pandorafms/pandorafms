@@ -875,7 +875,7 @@ class CredentialStore extends Wizard
                     'AWS'    => __('Aws'),
                     'AZURE'  => __('Azure'),
                     'SAP'    => __('SAP'),
-                // 'GOOGLE' => __('Google'),
+                    'GOOGLE' => __('Google'),
                 ],
                 'selected'    => (isset($values['product']) ? $values['product'] : 'CUSTOM'),
                 'disabled'    => (bool) $values['product'],

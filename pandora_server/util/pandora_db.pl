@@ -1069,6 +1069,13 @@ if ($conf{'_history_db_enabled'} eq '1') {
 	}
 }
 
+# Only run on master servers.
+pandora_set_master(\%conf, $dbh);
+if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) { 
+	log_message ('', " [*] Not a master server.\n\n");
+	exit 1;
+}
+
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');
 if ($lock == 0 && $conf{'_force'} == 0) { 

@@ -283,7 +283,7 @@ class Diagnostics extends Wizard
             $return .= '</div>';
         }
 
-        return $return;
+        return false;
     }
 
 
@@ -1596,7 +1596,7 @@ class Diagnostics extends Wizard
             }
         }
 
-        return $result;
+        return true;
     }
 
 

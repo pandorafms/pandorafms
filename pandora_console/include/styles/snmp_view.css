@@ -1,0 +1,13 @@
+#filter_form input:not([type="submit"]):not([type="radio"]),
+#filter_form select {
+  width: 100%;
+  min-width: 200px;
+}
+
+#filter_form td {
+  min-width: 120px;
+}
+
+.white-box-content {
+  min-width: 750px;
+}

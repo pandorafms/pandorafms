@@ -379,7 +379,7 @@ function get_name_xml_resource($hook_enterprise)
         break;
     }
 
-    $file = $name.'.ptr';
+    $file = io_safe_output($name).'.ptr';
 
     return $file;
 }

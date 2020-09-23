@@ -424,7 +424,7 @@ Pandora_Windows_Service::killTentacleProxy() {
 int 
 Pandora_Windows_Service::launchTentacleProxy() {
 	string server_ip, server_port, proxy_max_connections, proxy_timeout, server_ssl;
-	string proxy_cmd;
+	string proxy_cmd, proxy_address, proxy_port;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;	
 	
@@ -460,7 +460,19 @@ Pandora_Windows_Service::launchTentacleProxy() {
 			proxy_cmd = "tentacle_server.exe";
 		}
 
-		proxy_cmd += " -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout;
+		// Proxy address.
+		proxy_address = conf->getValue("proxy_address");
+		if (proxy_address == "") {
+			proxy_address = "0.0.0.0";
+		}
+
+		// Proxy port.
+		proxy_port = conf->getValue("proxy_port");
+		if (proxy_port == "") {
+			proxy_port = "41121";
+		}
+
+		proxy_cmd += " -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout + " -a " + proxy_address + " -p " + proxy_port;
 
 		ZeroMemory (&si, sizeof (si));
 		ZeroMemory (&pi, sizeof (pi));

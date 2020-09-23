@@ -2681,13 +2681,17 @@ function html_print_textarea(
     $attributes='',
     $return=false,
     $class='',
-    $disable=false
+    $disable=false,
+    $id=false
 ) {
     $disabled = ($disable) ? 'disabled' : '';
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
+    if ($id === false) {
+        $id = 'textarea_'.$name;
+    }
+
+    $output = '<textarea id="'.$id.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
     $output .= '</textarea>';
-
     if ($return) {
         return $output;
     }
@@ -4361,7 +4365,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false)
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['id']) === true) ? $data['id'] : false)
             );
         break;
 

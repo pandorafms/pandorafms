@@ -249,22 +249,24 @@ function load_modal(settings) {
             });
           } else {
             settings.form.forEach(function(element) {
-              $("#" + element + " :input").each(function() {
-                // TODO VALIDATE ALL INPUTS.
-                if (this.type == "file") {
-                  if ($(this).prop("files")[0]) {
-                    formdata.append(this.name, $(this).prop("files")[0]);
-                  }
-                } else {
-                  if ($(this).attr("type") == "checkbox") {
-                    if (this.checked) {
-                      formdata.append(this.name, "on");
+              $("#" + element + " :input, #" + element + " textarea").each(
+                function() {
+                  // TODO VALIDATE ALL INPUTS.
+                  if (this.type == "file") {
+                    if ($(this).prop("files")[0]) {
+                      formdata.append(this.name, $(this).prop("files")[0]);
                     }
                   } else {
-                    formdata.append(this.name, $(this).val());
+                    if ($(this).attr("type") == "checkbox") {
+                      if (this.checked) {
+                        formdata.append(this.name, "on");
+                      }
+                    } else {
+                      formdata.append(this.name, $(this).val());
+                    }
                   }
                 }
-              });
+              );
             });
           }
 

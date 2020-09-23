@@ -1024,7 +1024,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'last_value',
                     '1',
                     ((int) $period === 0),
@@ -1110,7 +1110,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;"><?php echo __('Only display wrong SLAs'); ?></td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'checkbox_only_display_wrong',
                     1,
                     $only_display_wrong
@@ -1125,7 +1125,13 @@ $class = 'databox filters';
             </td>
 
             <td style="font-weight:bold;">
-                <?php html_print_checkbox('current_month', 1, $current_month); ?>
+                <?php 
+                html_print_checkbox_switch(
+                         'current_month',
+                         1,
+                         $current_month
+                );
+                ?>
             </td>
         </tr>
 
@@ -1138,46 +1144,60 @@ $class = 'databox filters';
                 <table border="0">
                     <tr>
                         <td>
-                            <?php
-                            echo __('Monday');
-                            html_print_checkbox('monday', 1, $monday);
-                            ?>
+                        <p style="margin-right:30px;">
+                                <?php
+                                echo __('Monday')."<br>";
+                                html_print_checkbox_switch('monday', 1, $monday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Tuesday');
-                            html_print_checkbox('tuesday', 1, $tuesday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Tuesday')."<br>";
+                                html_print_checkbox_switch('tuesday', 1, $tuesday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Wednesday');
-                            html_print_checkbox('wednesday', 1, $wednesday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Wednesday')."<br>";
+                                html_print_checkbox_switch('wednesday', 1, $wednesday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Thursday');
-                            html_print_checkbox('thursday', 1, $thursday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Thursday')."<br>";
+                                html_print_checkbox_switch('thursday', 1, $thursday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Friday');
-                            html_print_checkbox('friday', 1, $friday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Friday')."<br>";
+                                html_print_checkbox_switch('friday', 1, $friday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Saturday');
-                            html_print_checkbox('saturday', 1, $saturday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Saturday')."<br>";
+                                html_print_checkbox_switch('saturday', 1, $saturday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Sunday');
-                            html_print_checkbox('sunday', 1, $sunday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Sunday')."<br>";
+                                html_print_checkbox_switch('sunday', 1, $sunday);
+                                ?>
+                            </p>
                         </td>
                     </tr>
                     <tr>
@@ -1224,7 +1244,7 @@ $class = 'databox filters';
                         </td>
                         <td colspan="6">
                         <?php
-                        html_print_checkbox(
+                        html_print_checkbox_switch(
                             'compare_work_time',
                             1,
                             $compare_work_time
@@ -1260,7 +1280,7 @@ $class = 'databox filters';
                     );
                 }
 
-                echo '&nbsp;&nbsp;&nbsp;'.__('Recursion').html_print_checkbox(
+                echo '&nbsp;&nbsp;&nbsp;'.__('Recursion').'&nbsp;&nbsp;&nbsp;'.html_print_checkbox_switch(
                     'recursion',
                     1,
                     $recursion,
@@ -1975,7 +1995,7 @@ $class = 'databox filters';
             </td>
             <td>
             <?php
-            html_print_checkbox(
+            html_print_checkbox_switch(
                 'checkbox_row_group_by_agent',
                 1,
                 $group_by_agent
@@ -2079,7 +2099,7 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'time_compare_overlapped',
                     1,
                     $time_compare_overlapped
@@ -2097,7 +2117,14 @@ $class = 'databox filters';
             );
             ?>
             </td>
-            <td><?php html_print_checkbox('fullscale', 1, $fullscale); ?></td>
+            <td><?php 
+                html_print_checkbox_switch(
+                    'fullscale',
+                     1,
+                      $fullscale
+                );
+                ?>
+            </td>
         </tr>
 
         <tr id="row_percentil" style="" class="datos">
@@ -2167,32 +2194,32 @@ $class = 'databox filters';
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Total time');
-                html_print_checkbox('total_time', 1, $total_time);
+                echo __('Total time')."<br>";
+                html_print_checkbox_switch('total_time', 1, $total_time);
                 ?>
              </p>
             </td>
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time failed');
-                html_print_checkbox('time_failed', 1, $time_failed);
+                echo __('Time failed')."<br>";
+                html_print_checkbox_switch('time_failed', 1, $time_failed);
                 ?>
                 </p>
             </td>
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time in OK status');
-                html_print_checkbox('time_in_ok_status', 1, $time_in_ok_status);
+                echo __('Time in OK status')."<br>";
+                html_print_checkbox_switch('time_in_ok_status', 1, $time_in_ok_status);
                 ?>
                 </p>
             </td>
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time in unknown status');
-                html_print_checkbox(
+                echo __('Time in unknown status')."<br>";
+                html_print_checkbox_switch(
                     'time_in_unknown_status',
                     1,
                     $time_in_unknown_status
@@ -2203,8 +2230,8 @@ $class = 'databox filters';
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time of not initialized module');
-                html_print_checkbox(
+                echo __('Time of not initialized module')."<br>";
+                html_print_checkbox_switch(
                     'time_of_not_initialized_module',
                     1,
                     $time_of_not_initialized_module
@@ -2215,8 +2242,8 @@ $class = 'databox filters';
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time of downtime');
-                html_print_checkbox('time_of_downtime', 1, $time_of_downtime);
+                echo __('Time of downtime')."<br>";
+                html_print_checkbox_switch('time_of_downtime', 1, $time_of_downtime);
                 ?>
                 </p>
             </td>
@@ -2349,7 +2376,7 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'show_summary_group',
                     true,
                     $show_summary_group
@@ -2447,7 +2474,7 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'include_extended_events',
                     true,
                     $include_extended_events
@@ -2461,8 +2488,8 @@ $class = 'databox filters';
             <td>
                 <span id="row_event_graph_by_agent">
                 <?php
-                echo __('By agent');
-                html_print_checkbox(
+                echo __('By agent ');
+                html_print_checkbox_switch(
                     'event_graph_by_agent',
                     true,
                     $event_graph_by_agent
@@ -2471,8 +2498,8 @@ $class = 'databox filters';
                 </span>
                 <span id="row_event_graph_by_user">
                 <?php
-                echo __('By user validator');
-                html_print_checkbox(
+                echo __('By user validator ');
+                html_print_checkbox_switch(
                     'event_graph_by_user_validator',
                     true,
                     $event_graph_by_user_validator
@@ -2481,8 +2508,8 @@ $class = 'databox filters';
                 </span>
                 <span id="row_event_graph_by_criticity">
                 <?php
-                echo __('By criticity');
-                html_print_checkbox(
+                echo __('By criticity ');
+                html_print_checkbox_switch(
                     'event_graph_by_criticity',
                     true,
                     $event_graph_by_criticity
@@ -2491,8 +2518,8 @@ $class = 'databox filters';
                 </span>
                 <span id="row_event_graph_by_validated">
                 <?php
-                echo __('Validated vs unvalidated');
-                html_print_checkbox(
+                echo __('Validated vs unvalidated ');
+                html_print_checkbox_switch(
                     'event_graph_validated_vs_unvalidated',
                     true,
                     $event_graph_validated_vs_unvalidated
@@ -2513,7 +2540,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox('historical_db_check', 1, $historical_db);
+                html_print_checkbox_switch('historical_db_check', 1, $historical_db);
                 ?>
             </td>
         </tr>
@@ -2548,7 +2575,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'show_in_same_row',
                     '1',
                     $show_in_same_row,
@@ -2684,7 +2711,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox('lapse_calc', 1, $lapse_calc);
+                html_print_checkbox_switch('lapse_calc', 1, $lapse_calc);
                 ?>
             </td>
         </tr>
@@ -2784,7 +2811,7 @@ $class = 'databox filters';
             </td>
             <td style="">
             <?php
-            html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
+            html_print_checkbox_switch('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
             ?>
             </td>
         </tr>
@@ -2795,7 +2822,7 @@ $class = 'databox filters';
             echo __('Show item in landscape format (only PDF)');
             ?>
             </td>
-            <td><?php html_print_checkbox('landscape', 1, $landscape); ?></td>
+            <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
         </tr>
 
         <tr id="row_pagebreak" style="" class="datos">
@@ -2804,7 +2831,7 @@ $class = 'databox filters';
             echo __('Page break at the end of the item (only PDF)');
             ?>
             </td>
-            <td><?php html_print_checkbox('pagebreak', 1, $pagebreak); ?></td>
+            <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
         </tr>
 
     </tbody>

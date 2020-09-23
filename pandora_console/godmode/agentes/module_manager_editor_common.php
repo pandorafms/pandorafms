@@ -382,7 +382,7 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
-$table_simple->data[2][0] = __('Warning status');
+$table_simple->data[2][0] = __('Warning threshold');
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
     $table_simple->data[2][1] .= html_print_input_text(
@@ -435,7 +435,7 @@ if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
-$table_simple->data[3][0] = __('Critical status');
+$table_simple->data[3][0] = __('Critical threshold');
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[3][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
     $table_simple->data[3][1] .= html_print_input_text(

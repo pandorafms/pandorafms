@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Stop the agent process
+`launchctl stop com.pandorafms.pandorafms`
+PFMSAGENT=`ps aux | grep pandora_agent | grep -v grep | wc -l`
+if [ "$PFMSAGENT" -gt "0" ]
+then
+        PIDAGENT=`ps aux | grep pandora_agent | grep -v grep | awk '{print $2}'`
+        kill $PIDAGENT
+fi
+
+# Remove local files
+rm -Rf /etc/pandora
+rm -Rf /usr/local/share/pandora_agent/
+rm -f /usr/local/bin/pandora_agent
+rm -f /usr/local/bin/pandora_agent_exec
+rm -f /usr/local/bin/pandora_revent
+rm -f /usr/local/bin/tentacle_client
+rm -f /usr/local/share/man/man1/pandora_agent.1.gz
+rm -f /usr/local/share/man/man1/tentacle_client.1.gz
+rm -f /var/log/pandora/pandora_agent.*
+rm -f /etc/newsyslog.d/pandora_agent.conf
+
+# Remove everything related with Pandora FMS agent
+`launchctl remove com.pandorafms.pandorafms`
+rm -f /Library/LaunchDaemons/com.pandorafms.pandorafms.plist
+
+# Remove all packages residual files
+rm -f /private/var/db/receipts/com.pandorafms*
+
+# Remove the uninstall app too
+rm -Rf /Applications/PandoraFMS*
+

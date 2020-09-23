@@ -171,7 +171,7 @@ if (isset($_GET['user_del'])) {
         if ($result) {
             db_pandora_audit(
                 'User management',
-                __('Deleted user %s', io_safe_input($id_user))
+                __('Deleted user %s', io_safe_output($id_user))
             );
         }
 

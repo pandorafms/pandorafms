@@ -112,7 +112,7 @@ function returnError($typeError, $returnType='string')
                 $returnType,
                 [
                     'type' => 'string',
-                    'data' => __('Id does not exist in BD.'),
+                    'data' => __('Id does not exist in database.'),
                 ]
             );
         break;
@@ -14374,6 +14374,11 @@ function api_get_agents_id_name_by_cluster_id($cluster_id, $trash1, $trash2, $re
     }
 
     $clusters = Cluster::search(['id' => $cluster_id]);
+
+    if ($clusters === false) {
+        returnError('id_not_found', $returnType);
+    }
+
     $cluster = $clusters[0];
 
     if (!check_acl($config['id_user'], $cluster['group'], 'AR')) {
@@ -14412,10 +14417,6 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
     }
 
     $clusters = Cluster::search(['name' => $cluster_name]);
-
-    if ($clusters === false) {
-        returnError('id_not_found', $returnType);
-    }
 
     $cluster = $clusters[0];
 
@@ -14495,6 +14496,11 @@ function api_get_modules_id_name_by_cluster_id($cluster_id)
     }
 
     $clusters = Cluster::search(['id' => $cluster_id]);
+
+    if ($clusters === false) {
+        returnError('error_clusters', 'Id does not exist in database.');
+    }
+
     $cluster = $clusters[0];
 
     if (!check_acl($config['id_user'], $cluster['group'], 'AR')) {

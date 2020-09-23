@@ -14070,7 +14070,7 @@ function api_set_delete_cluster($id, $thrash1, $thrast2, $thrash3)
     $tcluster_items_delete = db_process_sql('delete from tcluster_item where id_cluster = '.$id);
     $tcluster_agents_delete = db_process_sql('delete from tcluster_agent where id_cluster = '.$id);
     $tcluster_delete = db_process_sql('delete from tcluster where id = '.$id);
-    $tcluster_agent_delete = agents_delete_agent($temp_id_cluster[0]['id_agent']);
+    $tcluster_agent_delete = $temp_id_cluster[0]['id_agent'] !== null ? agents_delete_agent($temp_id_cluster[0]['id_agent']) : 0;
 
     if (($tcluster_modules_delete + $tcluster_items_delete + $tcluster_agents_delete + $tcluster_delete + $tcluster_agent_delete) == 0) {
         returnError('error_delete', 'Error in delete operation.');

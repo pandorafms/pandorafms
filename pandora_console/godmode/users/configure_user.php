@@ -1312,7 +1312,7 @@ $(document).ready (function () {
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
 
     var img_delete = '<?php echo $delete_image; ?>';
-    var id_user = '<?php echo $id; ?>';
+    var id_user = '<?php echo io_safe_output($id); ?>';
     var data = [];
 
     $('input:image[name="add"]').click(function (e) {

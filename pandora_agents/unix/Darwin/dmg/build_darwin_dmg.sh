@@ -22,9 +22,9 @@ fi
 
 # DMG package version
 if [ "$#" -ge 2 ]; then
-	VERSION="$2"
+	VERSION="7.0NG.749"
 else
-	VERSION="7.0NG.748"
+	VERSION="7.0NG.749"
 fi
 
 # Path for the generated DMG file
@@ -37,7 +37,7 @@ fi
 BUILD_DMG="$BUILD_PATH/build"
 BUILD_TMP="$BUILD_PATH/buildtmp"
 
-FULLNAME="$DMGNAME-$VERSION.dmg"
+FULLNAME="7.0NG.749"
 echo "VERSION-"$VERSION" NAME-"$DMGNAME
 pushd .
 cd $LOCALINST

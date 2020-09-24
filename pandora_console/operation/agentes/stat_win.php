@@ -22,6 +22,7 @@ require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
+require_once $config['homedir'].'/include/php_to_js_values.php';
 enterprise_include_once('include/functions_agents.php');
 
 check_login();
@@ -55,6 +56,12 @@ $alias       = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 $label       = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id);
 // $agent = agents_get_agent_with_ip ("192.168.50.31");
 // $label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));
+ui_require_css_file('register', 'include/styles/', true);
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

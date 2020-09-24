@@ -380,12 +380,7 @@ class NetworkMapWidget extends Widget
             [
                 'cellId'        => $this->cellId,
                 'page'          => 'enterprise/include/ajax/map_enterprise.ajax',
-                'url'           => ui_get_full_url(
-                    'ajax.php',
-                    false,
-                    false,
-                    false
-                ),
+                'url'           => ui_get_full_url('ajax.php'),
                 'networkmap_id' => $id_networkmap,
                 'x_offset'      => $x_offset,
                 'y_offset'      => $y_offset,

@@ -2489,6 +2489,10 @@ class ConsoleSupervisor
         $nodes = $cluster->getNodes();
 
         foreach ($nodes as $node) {
+            if ($node['status'] == HA_DISABLED) {
+                continue;
+            }
+
             $cluster_master = $cluster->isClusterMaster($node);
             $db_master = $cluster->isDBMaster($node);
 

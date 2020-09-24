@@ -130,8 +130,8 @@ if ($config['public_dashboard'] === true) {
     $urlRefresh = $url.'&'.http_build_query($queryRefresh);
 }
 
-$comboRefresh['text'] = '<div class="dashboard-countdown" style="display: inline;"></div>';
-$comboRefresh['text'] .= '<form id="refr-form" method="post" action="'.$urlRefresh.'">';
+$comboRefreshCountdown['text'] = '<div class="dashboard-countdown" style="display: inline;"></div>';
+$comboRefresh['text'] = '<form id="refr-form" method="post" style="margin-top: 13px;" action="'.$urlRefresh.'">';
 $comboRefresh['text'] .= __('Refresh').':';
 $comboRefresh['text'] .= html_print_select(
     \get_refresh_time_array(),
@@ -191,7 +191,7 @@ $newWidget['text'] .= '</a>';
 if ($config['public_dashboard'] === true) {
     $buttons = [
         'combo_refresh_one_dashboard' => $comboRefresh,
-        // 'slides'                      => $slides,
+        'combo_refresh_countdown'     => $comboRefreshCountdown,
     ];
 } else if ($config['pure']) {
     if (check_acl($config['id_user'], 0, 'RW') === 0) {
@@ -200,16 +200,25 @@ if ($config['public_dashboard'] === true) {
             'normalscreen'                => $normalscreen,
             'combo_refresh_one_dashboard' => $comboRefresh,
             'slides'                      => $slides,
+            'combo_refresh_countdown'     => $comboRefreshCountdown,
         ];
     } else {
-        $buttons = [
-            'back_to_dashboard_list'      => $back_to_dashboard_list,
-            'save_layout'                 => $save_layout_dashboard,
-            'normalscreen'                => $normalscreen,
-            'combo_refresh_one_dashboard' => $comboRefresh,
-            'slides'                      => $slides,
-            'options'                     => $options,
-        ];
+        if ($publicLink === true) {
+            $buttons = [
+                'combo_refresh_one_dashboard' => $comboRefresh,
+                'combo_refresh_countdown'     => $comboRefreshCountdown,
+            ];
+        } else {
+            $buttons = [
+                'back_to_dashboard_list'      => $back_to_dashboard_list,
+                'save_layout'                 => $save_layout_dashboard,
+                'normalscreen'                => $normalscreen,
+                'combo_refresh_one_dashboard' => $comboRefresh,
+                'slides'                      => $slides,
+                'options'                     => $options,
+                'combo_refresh_countdown'     => $comboRefreshCountdown,
+            ];
+        }
     }
 } else {
     if (check_acl($config['id_user'], 0, 'RW') === 0) {
@@ -235,11 +244,23 @@ if ($config['public_dashboard'] === true) {
     }
 }
 
-ui_print_page_header(
-    $dashboardName,
-    '',
-    false,
-    '',
-    false,
-    $buttons
-);
+if ($publicLink === false) {
+    ui_print_page_header(
+        $dashboardName,
+        '',
+        false,
+        '',
+        false,
+        $buttons
+    );
+} else {
+    $output = '<div id="dashboard-controls">';
+    foreach ($buttons as $key => $value) {
+        $output .= '<div>';
+        $output .= $value['text'];
+        $output .= '</div>';
+    }
+
+    $output .= '</div>';
+    echo $output;
+}

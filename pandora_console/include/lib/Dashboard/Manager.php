@@ -153,6 +153,13 @@ class Manager
     private $refr;
 
     /**
+     * Public Link.
+     *
+     * @var boolean
+     */
+    private $publicLink;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -185,6 +192,7 @@ class Manager
 
         // Check ACL.
         $hash = get_parameter('hash', false);
+        $this->publicLink = false;
         // Check user access.
         if ($hash === false) {
             check_login();
@@ -201,6 +209,12 @@ class Manager
                 include 'general/noaccess.php';
                 exit;
             }
+
+            $this->publicLink = true;
+        }
+
+        if (empty(get_parameter('auth_hash', '')) === false) {
+            $this->publicLink = true;
         }
 
         // User is admin.
@@ -411,7 +425,8 @@ class Manager
             $this->widgetId,
             $width,
             $height,
-            $gridWidth
+            $gridWidth,
+            $this->publicLink
         );
 
         return $instance;
@@ -992,6 +1007,7 @@ class Manager
                     'url'            => $this->url,
                     'dashboardName'  => $this->dashboardFields['name'],
                     'hash'           => self::generatePublicHash(),
+                    'publicLink'     => $this->publicLink,
                 ]
             );
         } else {
@@ -1185,6 +1201,7 @@ class Manager
         $cellData = $cellClass->get();
 
         $instance = '';
+
         if ((int) $cellData['id_widget'] !== 0 || $this->widgetId !== 0) {
             $instance = $this->instanceWidget(
                 $newWidth,

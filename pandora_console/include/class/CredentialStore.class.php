@@ -605,10 +605,10 @@ class CredentialStore extends Wizard
             'identifier' => $identifier,
             'id_group'   => $id_group,
             'product'    => $product,
-            'username'   => io_input_password($username),
-            'password'   => io_input_password($password),
-            'extra_1'    => io_input_password($extra_1),
-            'extra_2'    => io_input_password($extra_2),
+            'username'   => io_input_password(io_safe_output($username)),
+            'password'   => io_input_password(io_safe_output($password)),
+            'extra_1'    => io_input_password(io_safe_output($extra_1)),
+            'extra_2'    => io_input_password(io_safe_output($extra_2)),
         ];
 
         // Spaces  are not allowed.

@@ -136,8 +136,8 @@ $id_agent = get_parameter(
     $filter['id_agent']
 );
 $text_module = get_parameter(
-    'filter[text_module]',
-    $filter['text_module']
+    'filter[module_search]',
+    $filter['module_search']
 );
 $id_agent_module = get_parameter(
     'filter[id_agent_module]',
@@ -470,17 +470,26 @@ $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
+if (is_array($tag_with) === false) {
+    $tag_with = json_decode(base64_decode($tag_with), true);
+}
+
+if (is_array($tag_without) === false) {
+    $tag_without = json_decode(base64_decode($tag_without), true);
+}
+
+
 foreach ($tags as $id_tag => $tag) {
-    if ((array_search($id_tag, $tag_with) === false)
-        || (array_search($id_tag, $tag_with) === null)
+    if (is_array($tag_with) === true
+        && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
         $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {
         $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
     }
 
-    if ((array_search($id_tag, $tag_without) === false)
-        || (array_search($id_tag, $tag_without) === null)
+    if (is_array($tag_without) === true
+        && ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null))
     ) {
         $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
     } else {

@@ -372,6 +372,9 @@ define('MODULE_PREDICTION_CLUSTER_AP', 7);
 // Forced agent OS ID for cluster agents.
 define('CLUSTER_OS_ID', 100);
 
+// Forced agent OS ID for satellite agents.
+define('SATELLITE_OS_ID', 19);
+
 // Type of Webserver Modules.
 define('MODULE_WEBSERVER_CHECK_LATENCY', 30);
 define('MODULE_WEBSERVER_CHECK_SERVER_RESPONSE', 31);

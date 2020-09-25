@@ -929,9 +929,9 @@ function events_get_all(
     }
 
     if (!$user_is_admin) {
-        $ER_groups = users_get_groups($config['id_user'], 'ER', false);
-        $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
-        $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
+        $ER_groups = users_get_groups($config['id_user'], 'ER', true);
+        $EM_groups = users_get_groups($config['id_user'], 'EM', true, true);
+        $EW_groups = users_get_groups($config['id_user'], 'EW', true, true);
     }
 
     if (!$user_is_admin && !users_can_manage_group_all('ER')) {
@@ -1042,7 +1042,13 @@ function events_get_all(
         $tags = json_decode($tag_with, true);
         if (is_array($tags) && !in_array('0', $tags)) {
             if (!$user_is_admin) {
-                $user_tags = array_flip(tags_get_tags_for_module_search());
+                $getUserTags = tags_get_tags_for_module_search();
+                // Prevent false value for array_flip
+                if ($getUserTags === false) {
+                    $getUserTags = [];
+                }
+
+                $user_tags = array_flip($getUserTags);
                 if ($user_tags != null) {
                     foreach ($tags as $id_tag) {
                         // User cannot filter with those tags.

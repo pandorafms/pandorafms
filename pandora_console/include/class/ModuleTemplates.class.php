@@ -136,7 +136,7 @@ class ModuleTemplates extends HTML
         $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_module_templates');
         // Capture all parameters before start.
         $this->id_np            = get_parameter('id_np', -1);
-        $this->action           = get_parameter('action_button', '');
+        $this->action           = get_parameter('action', '');
         // Profile exists. Set the attributes with the info.
         if ($this->id_np > 0 || empty($this->action)) {
             $this->setNetworkProfile();
@@ -303,12 +303,12 @@ class ModuleTemplates extends HTML
         if (!empty($this->action)) {
             // Success variable.
             $success     = false;
-            $this->name             = get_parameter('name', '');
-            $this->description      = get_parameter('description', '');
+            $this->name             = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+            $this->description      = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
             $this->pen              = get_parameter('pen', '');
 
             switch ($this->action) {
-                case 'Update':
+                case 'update':
                     $dbResult_tnp = db_process_sql_update(
                         'tnetwork_profile',
                         [
@@ -351,7 +351,7 @@ class ModuleTemplates extends HTML
                     }
                 break;
 
-                case 'Create':
+                case 'create':
                     $dbResult_tnp = db_process_sql_insert(
                         'tnetwork_profile',
                         [
@@ -393,7 +393,7 @@ class ModuleTemplates extends HTML
                     }
                 break;
 
-                case 'Delete':
+                case 'delete':
                     $success = db_process_sql_delete('tnetwork_profile', ['id_np' => $this->id_np]);
 
                     if ($success != false) {
@@ -406,7 +406,7 @@ class ModuleTemplates extends HTML
                     $this->id_np = -1;
                 break;
 
-                case 'Export':
+                case 'export':
                     global $config;
 
                     $id_network_profile = safe_int($this->id_np);
@@ -847,8 +847,8 @@ class ModuleTemplates extends HTML
                 true,
                 ['title' => 'Export to CSV']
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&action_button=Delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&action_button=Export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
 
             array_push($table->data, $data);
         }
@@ -918,12 +918,12 @@ class ModuleTemplates extends HTML
         if ($createNewTemplate) {
             // Assignation for submit button.
             $formButtonClass = 'sub wand';
-            $formButtonValue = 'create';
+            $formAction = 'create';
             $formButtonLabel = __('Create');
         } else {
             // Assignation for submit button.
             $formButtonClass = 'sub upd';
-            $formButtonValue = 'update';
+            $formAction = 'update';
             $formButtonLabel = __('Update');
         }
 
@@ -997,6 +997,16 @@ class ModuleTemplates extends HTML
             ],
         ];
 
+        $inputs[] = [
+            'id'        => 'inp-action',
+            'arguments' => [
+                'name'   => 'action',
+                'type'   => 'hidden',
+                'value'  => $formAction,
+                'return' => true,
+            ],
+        ];
+
         $availableButtons = [];
 
         $availableButtons[] = [
@@ -1004,7 +1014,6 @@ class ModuleTemplates extends HTML
                 'name'       => 'action_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
-                'value'      => $formButtonValue,
                 'attributes' => 'class="float-right '.$formButtonClass.'"',
                 'return'     => true,
             ],
@@ -1229,7 +1238,7 @@ class ModuleTemplates extends HTML
         * Function for action of delete modules or blocks in template form
         */
         function deleteModuleTemplate(type, id){
-            var input_hidden = '<input type="hidden" name="action_button" value="del_'+type+'_'+id+'"/>';
+            var input_hidden = '<input type="hidden" name="action" value="del_'+type+'_'+id+'"/>';
             $('#module_template_form').append(input_hidden);
             $('#module_template_form').submit();
         }
@@ -1382,7 +1391,7 @@ class ModuleTemplates extends HTML
                 }
 
                 if (confirm(message)) {
-                    let hidden = '<input type="hidden" name="action_button" value="del_template_'+templatesList+'">';
+                    let hidden = '<input type="hidden" name="action" value="del_template_'+templatesList+'">';
                     $('#main_management_form').append(hidden);
                     $('#main_management_form').submit();
                 }

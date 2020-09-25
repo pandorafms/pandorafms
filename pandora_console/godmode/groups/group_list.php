@@ -135,7 +135,7 @@ if (is_ajax()) {
         }
 
         if ($search != '') {
-            $filter['string'] = $search;
+            $filter['aliasRegex'] = $search;
         }
 
         if ($status_agents != AGENT_STATUS_ALL) {
@@ -169,6 +169,15 @@ if (is_ajax()) {
             $add_alert_bulk_op,
             $force_serialized
         );
+
+        $agents_aux = [];
+        foreach ($agents as $key => $value) {
+            if (preg_match('/'.$search.'/', io_safe_output($value))) {
+                $agents_aux[$key] = $value;
+            }
+        }
+
+        $agents = $agents_aux;
 
         $agents_disabled = [];
         // Add keys prefix.

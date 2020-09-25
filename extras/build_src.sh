@@ -24,7 +24,7 @@ cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_server-$LOCAL_VERSION.tar.g
 cd $CODEHOME/pandora_agents/shellscript && tar zcvf $RPMHOME/SOURCES/pandorafms_agent-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn --exclude nohup linux || exit 1
 
 # Unix agent
-cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn --exclude nohup --exclude NT4 unix || exit 1
+cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn --exclude nohup --exclude NT4 --exclude Darwin/dmg unix || exit 1
 
 # Enterprise console
 cd $PANDHOME_ENT/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz --exclude \.exe --exclude \.svn enterprise/* || exit 1

@@ -14,7 +14,7 @@
 // Load global vars
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access massive profile deletion'
@@ -48,37 +48,27 @@ $delete_profiles = (int) get_parameter('delete_profiles');
 if ($delete_profiles) {
     $profiles_id = get_parameter('profiles_id', -1);
     $groups_id = get_parameter('groups_id', -1);
-    $users_id = get_parameter('users_id', -1);
+    $users = get_parameter('users_id', -1);
 
-    if ($profiles_id == -1 || $groups_id == -1 || $users_id == -1) {
+    if ($profiles_id == -1 || $groups_id == -1 || $users == -1) {
         $result = false;
     } else {
-        foreach ($profiles_id as $profile) {
-            foreach ($groups_id as $group) {
-                foreach ($users_id as $id_up) {
-                    if ($id_up == 0) {
-                        ui_print_error_message(__('Not deleted. You must select an existing user'));
-                        $result = '';
-                    } else {
-                        $user = (string) db_get_value_filter('id_usuario', 'tusuario_perfil', ['id_up' => $id_up]);
+        foreach ($users as $user) {
+            db_pandora_audit(
+                'User management',
+                'Deleted profile for user '.io_safe_input($user)
+            );
 
-                        db_pandora_audit(
-                            'User management',
-                            'Deleted profile for user '.io_safe_input($user)
-                        );
-
-                        $result = profile_delete_user_profile($user, $id_up);
-                    }
-                }
-            }
+            $result = profile_delete_user_profile_group($user, $profiles_id[0], $groups_id[0]);
         }
     }
 
     $info = [
         'Profiles' => implode(',', $profiles_id),
         'Groups'   => implode(',', $groups_id),
-        'Users'    => implode(',', $users_id),
+        'Users'    => implode(',', $users),
     ];
+
     if ($result) {
         db_pandora_audit('Massive management', 'Delete profile ', false, false, json_encode($info));
     } else {
@@ -115,24 +105,50 @@ $table->size[2] = '33%';
 
 $data = [];
 $data[0] = '<form method="post" id="form_profiles" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=delete_profiles">';
-$data[0] .= html_print_select(
-    profile_get_profiles(),
-    'profiles_id[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    false,
-    false,
-    '',
-    false,
-    'width: 100%'
-);
+$display_all_group = true;
+if (check_acl($config['id_user'], 0, 'PM')) {
+    $data[0] .= html_print_select(
+        profile_get_profiles(),
+        'profiles_id[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width: 100%'
+    );
+} else {
+    $display_all_group = false;
+    $data[0] .= html_print_select(
+        profile_get_profiles(
+            [
+                'pandora_management' => '<> 1',
+                'db_management'      => '<> 1',
+                'user_management'    => '<> 1',
+            ]
+        ),
+        'profiles_id[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width: 100%'
+    );
+}
+
 $data[1] = html_print_select_groups(
     $config['id_user'],
     'UM',
-    true,
+    $display_all_group,
     'groups_id[]',
     '',
     '',
@@ -153,8 +169,9 @@ $users_order = [
     'field' => 'id_user',
     'order' => 'ASC',
 ];
+
 $data[2] .= html_print_select(
-    users_get_info($users_order, 'id_user'),
+    [],
     'users_id[]',
     '',
     '',
@@ -167,7 +184,6 @@ $data[2] .= html_print_select(
     false,
     'width: 100%'
 );
-
 
 array_push($table->data, $data);
 
@@ -192,11 +208,13 @@ ui_require_jquery_file('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-    
+    update_users();
+
     function update_users() {
         var $select = $("#users_id").disable ();
         $("#users_loading").show ();
         $("option", $select).remove ();
+        console.log($("#groups_id").val());
         jQuery.post ("ajax.php",
             {"page" : "godmode/massive/massive_delete_profiles",
             "get_users" : 1,
@@ -206,7 +224,7 @@ $(document).ready (function () {
             function (data, status) {
                 options = "";
                 jQuery.each (data, function (id, value) {
-                    options += "<option value=\""+id+"\">"+value+"</option>";
+                    options += "<option value=\""+value+"\">"+value+"</option>";
                 });
                 $("#users_id").append (options);
                 $("#users_loading").hide ();
@@ -215,11 +233,11 @@ $(document).ready (function () {
             "json"
         );
     }
-    
+
     $("#groups_id").change (function () {
         update_users();
     });
-    
+
     $("#profiles_id").change (function () {
         update_users();
     });

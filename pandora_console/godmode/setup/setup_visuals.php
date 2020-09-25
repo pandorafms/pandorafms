@@ -996,7 +996,7 @@ $row++;
     $table_report->width = '100%';
     $table_report->class = 'databox filters';
     $table_report->style[0] = 'font-weight: bold;';
-    $table_report->size[0] = '50%';
+    $table_report->size[0] = '20%';
 
     $table_report->data = [];
 
@@ -1097,7 +1097,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_header']),
-        'style="width: 38em;"',
+        'style="width: 90%; height: 300px !important;"',
         true
     );
 
@@ -1120,7 +1120,7 @@ $row++;
         15,
         15,
         $custom_report_front_firstpage,
-        'style="width: 38em; height: 20em;"',
+        'style="width: 90%; height: 300px !important;"',
         true
     );
 
@@ -1133,7 +1133,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_footer']),
-        'style="width: 38em;"',
+        'style="width: 90%; height: 300px !important;"',
         true
     );
 
@@ -1474,30 +1474,17 @@ function change_servicetree_nodes_padding () {
     }
 }
 
-tinyMCE.init({
-    mode : "exact",
-    elements: "textarea_custom_report_front_header, textarea_custom_report_front_footer",
-    theme : "advanced",
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    theme_advanced_statusbar_location : "none"
-});
+var added_config1 = {
+        "elements":"textarea_custom_report_front_header, textarea_custom_report_front_footer",
+    }
 
-tinyMCE.init({
-    mode : "exact",
-    elements: "textarea_custom_report_front_firstpage",
-    theme : "advanced",
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    convert_urls : false,
-    theme_advanced_statusbar_location : "none"
-});
+    defineTinyMCE(added_config1);
+
+    var added_config2 = {
+        "elements":"textarea_custom_report_front_firstpage",
+    }
+
+    defineTinyMCE(added_config2);
 
 $(document).ready (function () {
 

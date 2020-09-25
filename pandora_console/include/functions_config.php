@@ -720,6 +720,14 @@ function config_update_config()
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
                     }
+
+                    if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
+                        if (!config_update_value('ad_save_password', get_parameter('ad_save_password'))) {
+                            $error_update[] = __('Save Password');
+                        }
+                    } else if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 1) {
+                        config_update_value('ad_save_password', 1);
+                    }
                 break;
 
                 case 'perf':

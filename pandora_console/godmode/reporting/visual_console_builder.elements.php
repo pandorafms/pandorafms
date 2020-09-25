@@ -710,48 +710,25 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 <script type="text/javascript">
     $(document).ready (function () {
-        
-        tinymce.init({
-            selector: "#tinyMCE_editor",
-            theme : "advanced",
-            <?php
-            if ($config['style'] == 'pandora_legacy') {
-                echo 'content_css: "'.ui_get_full_url('include/styles/pandora_legacy.css', false, false, false).'",'."\n";
-            } else {
-                echo 'content_css: "'.ui_get_full_url('include/styles/pandora.css', false, false, false).'",'."\n";
-            }
-            ?>
-            theme_advanced_font_sizes :
-                "4pt=.visual_font_size_4pt, " +
-                "6pt=.visual_font_size_6pt, " +
-                "8pt=.visual_font_size_8pt, " +
-                "10pt=.visual_font_size_10pt, " +
-                "12pt=.visual_font_size_12pt, " +
-                "14pt=.visual_font_size_14pt, " +
-                "18pt=.visual_font_size_18pt, " +
-                "24pt=.visual_font_size_24pt, " +
-                "28pt=.visual_font_size_28pt, " +
-                "36pt=.visual_font_size_36pt, " +
-                "48pt=.visual_font_size_48pt, " +
-                "60pt=.visual_font_size_60pt, " +
-                "72pt=.visual_font_size_72pt, " +
-                "84pt=.visual_font_size_84pt, " +
-                "96pt=.visual_font_size_96pt, " +
-                "116pt=.visual_font_size_116pt, " +
-                "128pt=.visual_font_size_128pt, " +
-                "140pt=.visual_font_size_140pt, " +
-                "154pt=.visual_font_size_154pt, " +
-                "196pt=.visual_font_size_196pt",
-            theme_advanced_toolbar_location : "top",
-            theme_advanced_toolbar_align : "left",
-            theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",
-            theme_advanced_buttons2 : "",
-            theme_advanced_buttons3 : "",
-            theme_advanced_statusbar_location : "none",
-            width: "400",
-            height: "200",
-            nowrap: true
-        });
+       
+        var added_config = {
+            "selector": "#tinyMCE_editor",
+            "elements": "text-label",
+            "plugins": "noneditable",
+            "theme_advanced_buttons1": 
+                "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
+            "valid_children": "+body[style]",
+            "theme_advanced_font_sizes": "true",
+            "content_css": 
+                <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
+            "editor_deselector": "noselected",
+            "inline_styles": true,
+            "nowrap": true,
+            "width": "400",
+            "height": "200",
+    }
+    
+    defineTinyMCE(added_config);
         
         $("#dialog_label_editor").hide ()
             .dialog ({

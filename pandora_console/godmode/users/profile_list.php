@@ -81,7 +81,7 @@ if ($delete_profile) {
     } else {
         db_pandora_audit(
             'Profile management',
-            'Delete profile '.$profile['name']
+            'Delete profile '.io_safe_output($profile['name'])
         );
         ui_print_success_message(__('Successfully deleted'));
     }
@@ -196,7 +196,7 @@ if ($update_profile) {
 
             db_pandora_audit(
                 'User management',
-                'Update profile '.$name,
+                'Update profile '.io_safe_output($name),
                 false,
                 false,
                 $info
@@ -247,7 +247,7 @@ if ($create_profile) {
 
             db_pandora_audit(
                 'User management',
-                'Created profile '.$name,
+                'Created profile '.io_safe_output($name),
                 false,
                 false,
                 $info

@@ -159,7 +159,7 @@ function set_center(id) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "ajax.php"
+    url: window.base_url_homedir + "/ajax.php"
   });
 }
 
@@ -208,7 +208,7 @@ function delete_link(
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           var found = -1;
@@ -266,7 +266,7 @@ function update_fictional_node(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_edit").dialog("close");
@@ -306,7 +306,7 @@ function update_node_name(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_edit").dialog("close");
@@ -352,7 +352,7 @@ function change_shape(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         $("#shape_icon_in_progress").css("display", "none");
         if (data["correct"]) {
@@ -629,7 +629,7 @@ function update_link(row_index, id_link) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $(".edit_icon_progress_" + row_index).css("display", "none");
 
@@ -756,7 +756,7 @@ function move_to_networkmap(node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           window.location =
@@ -831,7 +831,7 @@ function edit_node(data_node, dblClick) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           $("#node_details-0-1").html(
             '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
@@ -920,7 +920,7 @@ function get_interface_data_to_table(node_selected, selected_links) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data.length == 0) {
         $("#interface_information")
@@ -1008,7 +1008,7 @@ function load_interfaces(selected_links) {
       type: "POST",
       async: true,
       cache: false,
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $(
@@ -1175,7 +1175,7 @@ function add_agent_node(agents) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             $("#agent_name").val("");
@@ -1374,7 +1374,7 @@ function delete_nodes() {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             var found = -1;
@@ -1712,7 +1712,7 @@ function update_networkmap() {
           data: params.join("&"),
           dataType: "json",
           type: "POST",
-          url: "ajax.php",
+          url: window.base_url_homedir + "/ajax.php",
           success: function(data) {
             d3.select(
               "#id_node_" + d.id + networkmap_id + " .node_shape"
@@ -1733,7 +1733,7 @@ function update_networkmap() {
             data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: "ajax.php",
+            url: window.base_url_homedir + "/ajax.php",
             success: function(data) {
               d3.selectAll(".id_module_start_" + d.id_module_start).attr(
                 "marker-start",
@@ -1756,7 +1756,7 @@ function update_networkmap() {
             data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: "ajax.php",
+            url: window.base_url_homedir + "/ajax.php",
             success: function(data) {
               d3.selectAll(".id_module_end_" + d.id_module_end).attr(
                 "marker-end",
@@ -2284,7 +2284,7 @@ function add_interface_link(data_parent) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         var parent_name = data_parent.text;
         var child_name = child_data.text;
@@ -2350,7 +2350,7 @@ function add_interface_link_js() {
     },
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data["correct"]) {
         var temp_link = {};
@@ -2423,7 +2423,7 @@ function refresh_holding_area() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           window.holding_area = data["holding_area"];
@@ -2639,7 +2639,7 @@ function proceed_to_restart_map() {
     data: params.join("&"),
     dataType: "html",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $("#restart_map_form")
         .html(data)
@@ -2657,7 +2657,7 @@ function reset_map_from_form(new_elements) {
     data: data,
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(d) {
       window.location =
         "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
@@ -2722,7 +2722,7 @@ function set_parent(parent_data) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             var child_index = -1;
@@ -2838,7 +2838,7 @@ function init_drag_and_drop() {
           jQuery.ajax({
             dataType: "json",
             type: "POST",
-            url: "ajax.php",
+            url: window.base_url_homedir + "/ajax.php",
             data: {
               node: JSON.stringify(d),
               x: holding_pos_x,
@@ -2879,7 +2879,7 @@ function init_drag_and_drop() {
           data: params.join("&"),
           dataType: "json",
           type: "POST",
-          url: "ajax.php",
+          url: window.base_url_homedir + "/ajax.php",
           success: function(data) {
             if (data["correct"]) {
               $("#open_version_dialog").dialog();
@@ -2945,7 +2945,7 @@ function add_fictional_node() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_add").dialog("close");
@@ -3066,6 +3066,7 @@ function init_graph(parameter_object) {
   window.show_minimap = false;
   window.show_labels = true;
   window.context_minimap;
+  window.base_url_homedir = parameter_object.base_url_homedir;
 
   window.holding_area_dimensions = [200, 200];
   if (typeof parameter_object.holding_area_dimensions != "undefined") {
@@ -4123,7 +4124,7 @@ function choose_group_for_show_agents() {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             $("#agents_filter_group").html("");
@@ -4189,7 +4190,7 @@ function get_status_node() {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "../../../ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data["correct"]) {
         color_status_node = data["status_agent"];
@@ -4211,7 +4212,7 @@ function get_status_module() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "../../../ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           modules[data["id"]].status_color = data["status_color"];
@@ -4309,7 +4310,7 @@ function show_tooltip_content(id) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "../../../ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data["correct"]) {
         $("#tooltip").html(data["content"]);
@@ -4329,7 +4330,7 @@ function show_tooltip(id, x, y) {
   jQuery.ajax({
     data: params1.join("&"),
     type: "POST",
-    url: "../../../ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $("#tooltip").html(data);
       $("#tooltip").css("display", "");
@@ -4577,17 +4578,6 @@ function move_to_networkmap_widget(networkmap_id, id_cell) {
     $("#body_cell").empty();
   });
 
-  var pathname = window.location.pathname;
-  var path;
-
-  if (
-    pathname == "/pandora_console/enterprise/dashboard/public_dashboard.php"
-  ) {
-    path = "../../ajax.php";
-  } else {
-    path = "ajax.php";
-  }
-
   params.push("networkmap=true");
   params.push("networkmap_id=" + networkmap_id);
 
@@ -4596,7 +4586,7 @@ function move_to_networkmap_widget(networkmap_id, id_cell) {
     data: params.join("&"),
     dataType: "html",
     type: "POST",
-    url: path,
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $(".widget_content").each(function(i) {
         $("#body_cell").append(data);

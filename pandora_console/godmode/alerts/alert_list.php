@@ -208,18 +208,21 @@ if ($delete_alert) {
     $agent_alias = agents_get_alias(
         db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module)
     );
+    $unsafe_alert_template_name = io_safe_output($alert_template_name);
+    $unsafe_module_name = io_safe_output($module_name);
+    $unsafe_agent_alias = io_safe_output($agent_alias);
 
     $result = alerts_delete_alert_agent_module($id_alert_agent_module);
 
     if ($result) {
         db_pandora_audit(
             'Alert management',
-            "Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'"
+            "Deleted alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
         );
     } else {
         db_pandora_audit(
             'Alert management',
-            "Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'"
+            "Fail to deleted alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
         );
     }
 

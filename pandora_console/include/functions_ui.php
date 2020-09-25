@@ -541,11 +541,9 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         pandora_setlocale();
 
         $title = human_time_comparation($unixtime);
-        $strf_format = date2strftime_format($config['date_format'], $unixtime);
-        $data = strftime(
-            $strf_format,
-            $unixtime
-        );
+        $date = new DateTime();
+        $date->setTimestamp($unixtime);
+        $data = $date->format($config['date_format']);
     } else if ($prominent == 'compact') {
         $units = 'tiny';
         $title = date($config['date_format'], $unixtime);
@@ -3550,6 +3548,11 @@ function ui_print_datatable(array $parameters)
     $output = $err_msg.$filter.$extra.$table.$js;
 
     ui_require_css_file('datatables.min', 'include/styles/js/');
+    ui_require_css_file('tables');
+    if (is_metaconsole()) {
+        ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+    }
+
     ui_require_javascript_file('datatables.min');
     ui_require_javascript_file('buttons.dataTables.min');
     ui_require_javascript_file('dataTables.buttons.min');

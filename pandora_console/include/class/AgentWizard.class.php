@@ -233,6 +233,13 @@ class AgentWizard extends HTML
     private $interfacesFound;
 
     /**
+     * X64 Interfaces
+     *
+     * @var boolean
+     */
+    private $interfacesx64;
+
+    /**
      * Protocol
      *
      * @var string
@@ -985,6 +992,8 @@ class AgentWizard extends HTML
         }
 
         if ($this->wizardSection === 'snmp_interfaces_explorer') {
+            // First, try x64 interfaces.
+            $this->interfacesx64 = true;
             // Explore interface names.
             $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
         } else {
@@ -1009,6 +1018,30 @@ class AgentWizard extends HTML
             $this->server,
             $this->extraArguments
         );
+
+        if (empty($receivedOid) || preg_grep('/no.*object/i', $receivedOid)) {
+            $this->interfacesx64 = false;
+
+            $oidExplore = '1.3.6.1.2.1.2.2.1.2';
+            // Doc Interfaces de red.
+            $receivedOid = get_snmpwalk(
+                $this->targetIp,
+                $this->version,
+                $this->community,
+                $this->authUserV3,
+                $this->securityLevelV3,
+                $this->authMethodV3,
+                $this->authPassV3,
+                $this->privacyMethodV3,
+                $this->privacyPassV3,
+                0,
+                $oidExplore,
+                $this->targetPort,
+                $this->server,
+                $this->extraArguments
+            );
+        }
+
         // The snmpwalk return information.
         if (empty($receivedOid) === false) {
             if ($this->wizardSection === 'snmp_interfaces_explorer') {
@@ -4078,13 +4111,13 @@ class AgentWizard extends HTML
     }
 
 
-    /**
-     * This function return the definition of modules for SNMP Interfaces
-     *
-     * @param array $data Data.
-     *
-     * @return array Return modules for defect.
-     */
+        /**
+         * This function return the definition of modules for SNMP Interfaces
+         *
+         * @param array $data Data.
+         *
+         * @return array Return modules for defect.
+         */
     private function getInterfacesModules(array $data=[])
     {
         $moduleDescription  = '';
@@ -4110,57 +4143,7 @@ class AgentWizard extends HTML
 
         // Definition object.
         $definition = [];
-        // IfInOctets.
-        $moduleName = $name.'ifInOctets';
-        $definition['ifInOctets'] = [
-            'module_name'        => $moduleName,
-            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
-            'module_description' => sprintf(
-                '(%s%s)',
-                $moduleDescription,
-                $moduleName
-            ),
-            'module_info'        => 'The total number of octets received on the interface, including framing characters',
-            'execution_type'     => 'network',
-            'value'              => '1.3.6.1.2.1.2.2.1.10.'.$value,
-            'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
-            'module_enabled'     => false,
-            'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
-            ],
 
-        ];
-        // IfOutOctets.
-        $moduleName = $name.'ifOutOctets';
-        $definition['ifOutOctets'] = [
-            'module_name'        => $moduleName,
-            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
-            'module_description' => sprintf(
-                '(%s%s)',
-                $moduleDescription,
-                $moduleName
-            ),
-            'module_info'        => 'The total number of octets transmitted out of the interface, including framing characters',
-            'execution_type'     => 'network',
-            'value'              => '1.3.6.1.2.1.2.2.1.16.'.$value,
-            'module_unit'        => 'bytes/s',
-            'default_enabled'    => true,
-            'module_enabled'     => false,
-            'module_thresholds'  => [
-                'min_warning'  => '0',
-                'max_warning'  => '0',
-                'inv_warning'  => false,
-                'min_critical' => '0',
-                'max_critical' => '0',
-                'inv_critical' => false,
-            ],
-        ];
         // IfOperStatus.
         $adminStatusValue = 1;
         if (empty($data) === false) {
@@ -4344,6 +4327,108 @@ class AgentWizard extends HTML
                 'inv_critical' => false,
             ],
         ];
+
+        // Get x86 or x64 modules.
+        if ($this->interfacesx64 === true) {
+            $definitionx64 = $this->getInterfacesModulesx64($data);
+            if (empty($definitionx64) === false) {
+                $definition = array_merge($definition, $definitionx64);
+            }
+        } else {
+            $definitionx86 = $this->getInterfacesModulesx86($data);
+            if (empty($definitionx86) === false) {
+                $definition = array_merge($definition, $definitionx86);
+            }
+        }
+
+        return $definition;
+    }
+
+
+    /**
+     * This function return the definition of modules for x86 SNMP Interfaces
+     *
+     * @param array $data Data.
+     *
+     * @return array Return modules for defect.
+     */
+    private function getInterfacesModulesx86(array $data=[])
+    {
+        $moduleDescription  = '';
+        $name               = '';
+        $value              = '1';
+        // Unpack the array with data.
+        if (empty($data) === false) {
+            if (empty($data['mac']) === false) {
+                $moduleDescription .= 'MAC: '.$data['mac'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
+            if (empty($data['ip']) === false) {
+                $moduleDescription .= 'IP: '.$data['ip'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
+            $name   = $data['name'].'_';
+            $value  = $data['index'];
+        }
+
+        // Definition object.
+        $definition = [];
+        // IfInOctets.
+        $moduleName = $name.'ifInOctets';
+        $definition['ifInOctets'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The total number of octets received on the interface, including framing characters',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.2.2.1.10.'.$value,
+            'module_unit'        => 'bytes/s',
+            'default_enabled'    => true,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+
+        ];
+        // IfOutOctets.
+        $moduleName = $name.'ifOutOctets';
+        $definition['ifOutOctets'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The total number of octets transmitted out of the interface, including framing characters',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.2.2.1.16.'.$value,
+            'module_unit'        => 'bytes/s',
+            'default_enabled'    => true,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
+
         // IfInUcastPkts.
         $moduleName = $name.'ifInUcastPkts';
         $definition['ifInUcastPkts'] = [
@@ -4432,6 +4517,196 @@ class AgentWizard extends HTML
             'module_info'        => 'The total number of packets that higher-level protocols requested be transmitted, and which were addressed to a multicast or broadcast address at this sub-layer, including those that were discarded or not sent',
             'execution_type'     => 'network',
             'value'              => '1.3.6.1.2.1.2.2.1.18.'.$value,
+            'module_unit'        => 'packets/s',
+            'default_enabled'    => false,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
+
+        return $definition;
+    }
+
+
+    /**
+     * This function return the definition of modules for x64 SNMP Interfaces
+     *
+     * @param array $data Data.
+     *
+     * @return array Return modules for defect.
+     */
+    private function getInterfacesModulesx64(array $data=[])
+    {
+        $moduleDescription  = '';
+        $name               = '';
+        $value              = '1';
+        // Unpack the array with data.
+        if (empty($data) === false) {
+            if (empty($data['mac']) === false) {
+                $moduleDescription .= 'MAC: '.$data['mac'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
+            if (empty($data['ip']) === false) {
+                $moduleDescription .= 'IP: '.$data['ip'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
+            $name   = $data['name'].'_';
+            $value  = $data['index'];
+        }
+
+        // Definition object.
+        $definition = [];
+        // ifHCInOctets.
+        $moduleName = $name.'ifHCInOctets';
+        $definition['ifHCInOctets'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The total number of octets received on the interface, including framing characters',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.31.1.1.1.6.'.$value,
+            'module_unit'        => 'bytes/s',
+            'default_enabled'    => true,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+
+        ];
+        // ifHCOutOctets.
+        $moduleName = $name.'ifHCOutOctets';
+        $definition['ifHCOutOctets'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The total number of octets transmitted out of the interface, including framing characters',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.31.1.1.1.10.'.$value,
+            'module_unit'        => 'bytes/s',
+            'default_enabled'    => true,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
+
+        // ifHCInUcastPkts.
+        $moduleName = $name.'ifHCInUcastPkts';
+        $definition['ifHCInUcastPkts'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The number of packets, delivered by this sub-layer to a higher (sub-)layer, which were not addressed to a multicast or broadcast address at this sub-layer',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.31.1.1.1.7.'.$value,
+            'module_unit'        => 'packets/s',
+            'default_enabled'    => false,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
+
+        // ifHCOutUcastPkts.
+        $moduleName = $name.'ifHCOutUcastPkts';
+        $definition['ifHCOutUcastPkts'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The total number of packets that higher-level protocols requested be transmitted, and which were not addressed to a multicast or broadcast address at this sub-layer, including those that were discarded or not sent',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.31.1.1.1.11.'.$value,
+            'module_unit'        => 'packets/s',
+            'default_enabled'    => false,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
+        // ifHCInNUcastPkts.
+        $moduleName = $name.'ifHCInNUcastPkts';
+        $definition['ifHCInNUcastPkts'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The number of packets, delivered by this sub-layer to a higher (sub-)layer, which were addressed to a multicast or broadcast address at this sub-layer',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.31.1.1.1.7.'.$value,
+            'module_unit'        => 'packets/s',
+            'default_enabled'    => false,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
+        // IfOutNUcastPkts.
+        $moduleName = $name.'ifHCOutNUcastPkts';
+        $definition['ifHCOutNUcastPkts'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'The total number of packets that higher-level protocols requested be transmitted, and which were addressed to a multicast or broadcast address at this sub-layer, including those that were discarded or not sent',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.2.1.31.1.1.1.11.'.$value,
             'module_unit'        => 'packets/s',
             'default_enabled'    => false,
             'module_enabled'     => false,

@@ -14,7 +14,7 @@
 global $config;
 
 
-function include_javascript_dependencies_flot_graph($return=false)
+function include_javascript_dependencies_flot_graph($return=false, $mobile=false)
 {
     global $config;
 
@@ -28,8 +28,16 @@ function include_javascript_dependencies_flot_graph($return=false)
             $metaconsole_hack = '../../';
         }
 
+        $output = '';
+
+        if ($mobile === true) {
+            $output .= '
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.js').'"></script>
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.3.1.js').'"></script>';
+        }
+
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
-        $output = '
+        $output .= '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/excanvas.js').'"></script><![endif]-->
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.min.js').'"></script>
@@ -139,7 +147,13 @@ function flot_area_graph(
     }
 
     // Parent layer.
-    $return = "<div class='parent_graph' style='width: ".$params['width'].'px;'.$background_style."'>";
+    if (strpos($params['width'], '%') === false) {
+        $width = 'width: '.$params['width'].'px;';
+    } else {
+        $width = 'width: '.$params['width'].';';
+    }
+
+    $return = "<div class='parent_graph' style='".$width.$background_style."'>";
 
     if ($params['title'] === true && empty($params['title']) === false) {
         $return .= '<p style="text-align:center;">'.$params['title'].'</p>';
@@ -226,14 +240,13 @@ function flot_area_graph(
         $config['custom_graph_width'],
         true
     );
-    /*
-        $return .= "<div id='timestamp_$graph_id'
-                    class='timestamp_graph'
-                    style='    font-size:".$params['font_size']."pt;
-                            display:none; position:absolute;
-                            background:#fff; border: solid 1px #aaa;
-                            padding: 2px; z-index:1000;'></div>";
-    */
+    $return .= "<div id='timestamp_$graph_id'
+                     class='timestamp_graph'
+                     style='font-size:".$params['font_size']."pt;
+                        display:none; position:absolute;
+                        background:#fff; border: solid 1px #aaa;
+                        padding: 2px; z-index:1000;
+                '></div>";
     $return .= "<div id='$graph_id' class='";
 
     if ($params['type'] == 'area_simple') {

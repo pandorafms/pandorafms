@@ -24,6 +24,7 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 
 $action = get_parameter('action', 'new');
 $idOS = get_parameter('id_os', 0);
+$id_message = get_parameter('message', 0);
 if (is_metaconsole()) {
     $tab = get_parameter('tab2', 'list');
 } else {
@@ -50,6 +51,7 @@ switch ($action) {
         $textButton = __('Create');
         $classButton = 'class="sub next"';
     break;
+
     case 'edit':
         $actionHidden = 'update';
         $textButton = __('Update');
@@ -71,14 +73,20 @@ switch ($action) {
         }
 
         if ($resultOrId === false) {
-            $message = ui_print_error_message(__('Fail creating OS'), '', true);
+            $message = 2;
             $tab = 'builder';
             $actionHidden = 'save';
             $textButton = __('Create');
             $classButton = 'class="sub next"';
         } else {
-            $message = ui_print_success_message(__('Success creating OS'), '', true);
             $tab = 'list';
+            $message = 1;
+        }
+
+        if (is_metaconsole()) {
+            header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2='.$tab.'&message='.$message);
+        } else {
+            header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
         }
     break;
 
@@ -90,6 +98,10 @@ switch ($action) {
         $values = [];
         $values['name'] = $name;
         $values['description'] = $description;
+        // Only for Metaconsole. Save the previous name for synchronizing.
+        if (is_metaconsole()) {
+            $values['previous_name'] = db_get_value('name', 'tconfig_os', 'id_os', $idOS);
+        }
 
         if (($icon !== 0) && ($icon != '')) {
             $values['icon_name'] = $icon;
@@ -100,10 +112,11 @@ switch ($action) {
             $result = db_process_sql_update('tconfig_os', $values, ['id_os' => $idOS]);
         }
 
-        $message = ui_print_result_message($result, __('Success updatng OS'), __('Error updating OS'), '', true);
         if ($result !== false) {
+            $message = 3;
             $tab = 'list';
         } else {
+            $message = 4;
             $tab = 'builder';
             $os = db_get_row_filter('tconfig_os', ['id_os' => $idOS]);
             $name = $os['name'];
@@ -112,6 +125,11 @@ switch ($action) {
         $actionHidden = 'update';
         $textButton = __('Update');
         $classButton = 'class="sub upd"';
+        if (is_metaconsole()) {
+            header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2='.$tab.'&message='.$message);
+        } else {
+            header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
+        }
     break;
 
     case 'delete':
@@ -120,11 +138,20 @@ switch ($action) {
         $count = $count[0]['count'];
 
         if ($count > 0) {
-            $message = ui_print_error_message(__('There are agents with this OS.'), '', true);
+            $message = 5;
         } else {
             $result = (bool) db_process_sql_delete('tconfig_os', ['id_os' => $idOS]);
+            if ($result) {
+                $message = 6;
+            } else {
+                $message = 7;
+            }
+        }
 
-            $message = ui_print_result_message($result, __('Success deleting'), __('Error deleting'), '', true);
+        if (is_metaconsole()) {
+            header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2='.$tab.'&message='.$message);
+        } else {
+            header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
         }
     break;
 }
@@ -143,11 +170,45 @@ $buttons = [
 $buttons[$tab]['active'] = true;
 
 if (!is_metaconsole()) {
-    // Header
+    // Header.
     ui_print_page_header(__('Edit OS'), '', false, '', true, $buttons);
 }
 
-echo $message;
+if (!empty($id_message)) {
+    switch ($id_message) {
+        case 1:
+            echo ui_print_success_message(__('Success creating OS'), '', true);
+        break;
+
+        case 2:
+            echo ui_print_error_message(__('Fail creating OS'), '', true);
+        break;
+
+        case 3:
+            echo ui_print_success_message(__('Success updating OS'), '', true);
+        break;
+
+        case 4:
+            echo ui_print_error_message(__('Error updating OS'), '', true);
+        break;
+
+        case 5:
+            echo ui_print_error_message(__('There are agents with this OS.'), '', true);
+        break;
+
+        case 6:
+            echo ui_print_success_message(__('Success deleting'), '', true);
+        break;
+
+        case 7:
+            echo ui_print_error_message(__('Error deleting'), '', true);
+        break;
+
+        default:
+            // Default.
+        break;
+    }
+}
 
 switch ($tab) {
     case 'list':

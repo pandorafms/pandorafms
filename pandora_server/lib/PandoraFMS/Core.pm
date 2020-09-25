@@ -1018,9 +1018,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne ""  ? $action->{'field15'} : $alert->{'field15'};
 	}
 	else {
-		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}   ne "" ? $alert->{'field1'}   : $action->{'field1'};
-		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}   ne "" ? $alert->{'field2'}   : $action->{'field2'};
-		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}   ne "" ? $alert->{'field3'}   : $action->{'field3'};
+		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne "" ? $action->{'field1'}  : $alert->{'field1'};
+		$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne "" ? $action->{'field2'}  : $alert->{'field2'};
+		$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne "" ? $action->{'field3'}  : $alert->{'field3'};
 		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne "" ? $action->{'field4'}  : $alert->{'field4'};
 		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne "" ? $action->{'field5'}  : $alert->{'field5'};
 		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne "" ? $action->{'field6'}  : $alert->{'field6'};
@@ -1190,7 +1190,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => undef,
+				_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", get_db_value ($dbh, "SELECT id_policy FROM tpolicy_modules WHERE id = ?", $module->{'id_policy_module'})) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
@@ -1717,9 +1717,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
 	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
 	my $mark_for_update = 0;
-
+	
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
-	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});      
+	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
 	$agent_status->{'datos'} = "" unless defined($agent_status->{'datos'});
 	
 	# Do we have to save module data?
@@ -1732,24 +1732,13 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_try = ($1 == 0) ? 0 : strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
-
+	
 	# Received stale data. Save module data if needed and return.
 	if ($pa_config->{'dataserver_lifo'} == 1 && $utimestamp <= $agent_status->{'utimestamp'}) {
 		logger($pa_config, "Received stale data from agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-
-		# Save module data. Async and log4x modules are not compressed.
-		if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
-
-			# If previous timestamp data changes, save the last one to avoid errors on SLA or graphs.
-			if($last_data_value ne $processed_data) { 
-
-				my $last_data_timestamp =  $agent_status->{'utimestamp'};
-				my $last_data_object;
-				
-				$last_data_object->{'data'} = $last_data_value;
-
-				save_module_data ($last_data_object, $module, $module_type, $last_data_timestamp, $dbh);
-			} 
+		
+		# Save module data. Compression does not work for stale data.
+		if ($module->{'history_data'} == 1) {
 			save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
 		}
 
@@ -3185,6 +3174,21 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'type'};
 	delete $parameters->{'datalist'};
 	delete $parameters->{'status'};
+	delete $parameters->{'manufacturer_id'};
+	delete $parameters->{'enabled'};
+	delete $parameters->{'scan_type'};
+	delete $parameters->{'execution_type'};
+	delete $parameters->{'query_filters'};
+	delete $parameters->{'query_class'};
+	delete $parameters->{'protocol'};
+	delete $parameters->{'value_operations'};
+	delete $parameters->{'value'};
+	delete $parameters->{'module_enabled'};
+	delete $parameters->{'scan_filters'};
+	delete $parameters->{'query_key_field'};
+	delete $parameters->{'name_oid'};
+	delete $parameters->{'module_type'};
+
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};
 	}
@@ -4346,6 +4350,12 @@ sub check_min_max ($$$$) {
 
 	# Out of bounds
 	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
+		if($module->{'max'} < $module->{'min'}) {
+			# Compare if there is only setted min or max.
+			return 1 unless (($module->{'max'} == 0 && $data < $module->{'min'}) || ($module->{'min'} == 0 && $data > $module->{'max'}));
+			
+		}  
+
 		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		return 0;
 	}

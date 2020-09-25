@@ -31,6 +31,8 @@ if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
 
+require 'vendor/autoload.php';
+
 if (__PAN_XHPROF__ === 1) {
     if (function_exists('tideways_xhprof_enable')) {
         tideways_xhprof_enable();
@@ -140,6 +142,14 @@ if ((! file_exists('include/config.php'))
 
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
+
+if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+    ini_set('log_errors', 1);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', 0);
+    ini_set('error_log', 0);
+}
 
 if (isset($config['error'])) {
     $login_screen = $config['error'];
@@ -1078,6 +1088,9 @@ if ($searchPage) {
                 }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else {
                 $main_sec = $sec;
             }
@@ -1166,7 +1179,7 @@ if ($searchPage) {
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
                     } else {
-                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc.'&refr=60';
+                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
 
                     parse_str($str, $res);
@@ -1238,6 +1251,12 @@ echo '</div>';
 
 echo '<div id="um_msg_receiver">';
 echo '</div>';
+
+
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 
 if ($config['pure'] == 0) {
     echo '</div>';

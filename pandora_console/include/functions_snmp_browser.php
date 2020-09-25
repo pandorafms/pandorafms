@@ -273,7 +273,7 @@ function snmp_browser_get_tree(
         break;
 
         case '2':
-            $snmp_version = SNMP::VERSION_2c;
+            $snmp_version = SNMP::VERSION_2C;
         break;
 
         case '2c':
@@ -286,7 +286,7 @@ function snmp_browser_get_tree(
         break;
 
         default:
-            $snmp_version = SNMP::VERSION_2c;
+            $snmp_version = SNMP::VERSION_2C;
         break;
     }
 
@@ -301,7 +301,7 @@ function snmp_browser_get_tree(
             $snmp3_auth_pass,
             $snmp3_privacy_method,
             $snmp3_privacy_pass,
-            $community,
+            '',
             $snmp3_context_engine_id
         );
     }
@@ -419,6 +419,10 @@ function snmp_browser_get_oid(
 
     if ($target_oid == '') {
         return;
+    }
+
+    if ($version == '2') {
+        $version = '2c';
     }
 
     $output = get_snmpwalk(
@@ -945,6 +949,12 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             $description = io_safe_input(preg_replace('/\s+/', ' ', $oid['description']));
         }
 
+        if (!empty($oid['type'])) {
+            $module_type = snmp_module_get_type($oid['type']);
+        } else {
+            $module_type = 17;
+        }
+
         if ($module_target == 'network_component') {
             $name_check = db_get_value(
                 'name',
@@ -956,7 +966,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             if (!$name_check) {
                 $id = network_components_create_network_component(
                     $oid['oid'],
-                    17,
+                    $module_type,
                     1,
                     [
                         'description'           => $description,
@@ -1009,12 +1019,13 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                         'min_ff_event_critical' => 0,
                         'ff_type'               => 0,
                         'each_ff'               => 0,
+                        'history_data'          => 1,
                     ]
                 );
             }
         } else if ($module_target == 'agent') {
                 $values = [
-                    'id_tipo_modulo'        => 17,
+                    'id_tipo_modulo'        => $module_type,
                     'descripcion'           => $description,
                     'module_interval'       => 300,
                     'max'                   => 0,
@@ -1065,6 +1076,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'ff_type'               => 0,
                     'each_ff'               => 0,
                     'ip_target'             => $target_ip,
+                    'history_data'          => 1,
                 ];
                 foreach ($id_target as $agent) {
                     $ids[] = modules_create_agent_module($agent, $oid['oid'], $values);
@@ -1073,7 +1085,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             // Policies only in enterprise version.
             if (enterprise_installed()) {
                 $values = [
-                    'id_tipo_modulo'        => 17,
+                    'id_tipo_modulo'        => $module_type,
                     'description'           => $description,
                     'module_interval'       => 300,
                     'max'                   => 0,
@@ -1123,6 +1135,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'each_ff'               => 0,
                     'ip_target'             => $target_ip,
                     'configuration_data'    => '',
+                    'history_data'          => 1,
                 ];
 
                 enterprise_include_once('include/functions_policies.php');

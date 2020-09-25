@@ -64,14 +64,22 @@ class Tree
     const TV_DEFAULT_AGENT_STATUS = -1;
 
 
-    public function __construct($type, $rootType='', $id=-1, $rootID=-1, $serverID=false, $childrenMethod='on_demand', $access='AR')
-    {
+    public function __construct(
+        $type,
+        $rootType='',
+        $id=-1,
+        $rootID=-1,
+        $serverID=false,
+        $childrenMethod='on_demand',
+        $access='AR',
+        $id_meta_server=0
+    ) {
         $this->type = $type;
         $this->rootType = !empty($rootType) ? $rootType : $type;
         $this->id = $id;
         $this->rootID = !empty($rootID) ? $rootID : $id;
         $this->serverID = $serverID;
-        if (is_metaconsole()) {
+        if (is_metaconsole() && $id_meta_server == 0) {
             $this->serverName = metaconsole_get_server_by_id($serverID);
         }
 
@@ -90,7 +98,7 @@ class Tree
         include_once $config['homedir'].'/include/functions_tags.php';
         enterprise_include_once('include/functions_agents.php');
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() && $id_meta_server == 0) {
             enterprise_include_once('meta/include/functions_ui_meta.php');
         }
     }

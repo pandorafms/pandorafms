@@ -119,7 +119,7 @@ if ($create_special_day) {
     $values['description'] = (string) get_parameter('description');
 
     $aviable_description = true;
-    if (preg_match('<script>', $values['description'])) {
+    if (preg_match('/script/i', $values['description'])) {
         $aviable_description = false;
     }
 
@@ -185,7 +185,7 @@ if ($update_special_day) {
     $id_group_orig = (string) get_parameter('id_group_orig');
 
     $aviable_description = true;
-    if (preg_match('<script>', $description)) {
+    if (preg_match('/script/i', $description)) {
         $aviable_description = false;
     }
 

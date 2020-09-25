@@ -35,12 +35,15 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
-enterprise_include_once('meta/include/functions_agents_meta.php');
+
+if (is_metaconsole()) {
+    enterprise_include_once('include/functions_metaconsole.php');
+    enterprise_include_once('meta/include/functions_agents_meta.php');
+    enterprise_hook('open_meta_frame');
+}
 
 if (is_ajax()) {
     if (! check_acl($config['id_user'], 0, 'AR')) {
@@ -348,7 +351,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $propagate = (bool) get_parameter('propagate');
 
     $aviable_name = true;
-    if (preg_match('<script>', $name)) {
+    if (preg_match('/script/i', $name)) {
         $aviable_name = false;
     }
 
@@ -403,7 +406,7 @@ if ($update_group) {
     $other = (string) get_parameter('other');
 
     $aviable_name = true;
-    if (preg_match('<script>', $name)) {
+    if (preg_match('/script/i', $name)) {
         $aviable_name = false;
     }
 
@@ -714,7 +717,12 @@ if ($tab == 'tree') {
 
         foreach ($groups as $key => $group) {
             $url = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
+            if (is_metaconsole()) {
+                $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
+            } else {
+                $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
+            }
+
             $table->data[$key][0] = $group['id_grupo'];
             $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
             if ($group['icon'] != '') {
@@ -724,8 +732,8 @@ if ($tab == 'tree') {
                     [
                         'style' => '',
                         'class' => 'bot',
-                        'alt'   => $group['nombre'],
-                        'title' => $group['nombre'],
+                        'alt'   => io_safe_input($group['nombre']),
+                        'title' => io_safe_input($group['nombre']),
                     ],
                     false,
                     false,

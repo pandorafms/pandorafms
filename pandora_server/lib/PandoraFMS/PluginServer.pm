@@ -227,6 +227,7 @@ sub data_consumer ($$) {
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',

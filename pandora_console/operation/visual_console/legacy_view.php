@@ -257,7 +257,6 @@ if ($config['pure']) {
         body.pure {
             min-height: 100px;
             margin: 0px;
-            overflow: hidden;
             height: 100%;
             <?php
             echo 'background-color: '.$layout['background_color'].';';
@@ -321,8 +320,8 @@ $ignored_params['refr'] = '';
             startCountDown(refr, false);
             
             var controls = document.getElementById('vc-controls');
-            // autoHideElement(controls, 1000);
-            
+            autoHideElement(controls, 1000);
+
             $('select#refr').change(function (event) {
                 refr = Number.parseInt(event.target.value, 10);
                 new_count = event.target.value;

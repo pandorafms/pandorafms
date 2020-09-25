@@ -36,7 +36,8 @@ function forecast_projection_graph(
     $prediction_period,
     $max_value=false,
     $min_value=false,
-    $csv=false
+    $csv=false,
+    $server_name=''
 ) {
     global $config;
 
@@ -55,7 +56,7 @@ function forecast_projection_graph(
         'projection'      => true,
     ];
 
-    $module_data = grafico_modulo_sparse($params);
+    $module_data = grafico_modulo_sparse($params, $server_name);
 
     if (empty($module_data)) {
         return [];
@@ -252,12 +253,13 @@ function forecast_prediction_date(
     $module_id,
     $period=SECONDS_2MONTHS,
     $max_value=0,
-    $min_value=0
+    $min_value=0,
+    $server_name=''
 ) {
     // Checks interval
     if ($min_value > $max_value) {
         return false;
     }
 
-    return forecast_projection_graph($module_id, $period, false, $max_value, $min_value);
+    return forecast_projection_graph($module_id, $period, false, $max_value, $min_value, false, $server_name);
 }

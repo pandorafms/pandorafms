@@ -55,6 +55,25 @@ function update_manager_verify_registration()
 
 
 /**
+ * Check if a trial license is in use.
+ *
+ * @return boolean true if a trial license is in use, false otherwise.
+ */
+function update_manager_verify_trial()
+{
+    global $config;
+
+    if (isset($config['license_licensed_to'])
+        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== false
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * Parses responses from configuration wizard.
  *
  * @return void
@@ -439,6 +458,11 @@ function registration_wiz_modal(
 ) {
     global $config;
     $output = '';
+
+    // Do not show the wizard for trial licenses.
+    if (update_manager_verify_trial()) {
+        return '';
+    }
 
     $product_name = get_product_name();
 
@@ -1819,9 +1843,15 @@ function update_manager_recurse_copy($src, $dst, $black_list)
     while (false !== ( $file = readdir($dir))) {
         if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) {
             if (is_dir($src.'/'.$file)) {
+                $dir_dst = $dst;
+
+                if ($file != 'pandora_console') {
+                    $dir_dst .= '/'.$file;
+                }
+
                 if (!update_manager_recurse_copy(
                     $src.'/'.$file,
-                    $dst.'/'.$file,
+                    $dir_dst,
                     $black_list
                 )
                 ) {

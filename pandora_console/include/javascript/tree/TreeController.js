@@ -43,7 +43,7 @@ var TreeController = {
           var $group = $("<ul></ul>");
 
           // First group
-          if (typeof rootGroup != "undefinded" && rootGroup == true) {
+          if (typeof rootGroup != "undefined" && rootGroup == true) {
             $group
               .addClass("tree-root")
               .hide()
@@ -450,7 +450,10 @@ var TreeController = {
             var postData = {
               page: controller.ajaxPage,
               getDetail: 1,
-              type: type
+              type: type,
+              auth_class: controller.auth_class,
+              id_user: controller.id_user,
+              auth_hash: controller.auth_hash
             };
 
             if (typeof id !== "undefined") postData.id = id;
@@ -769,34 +772,38 @@ var TreeController = {
 
                 // Data pop-up
                 if (typeof element.id != "undefined" && !isNaN(element.id)) {
-                  var $dataImage = $(
-                    '<img src="' +
-                      (controller.baseURL.length > 0
-                        ? controller.baseURL
-                        : "") +
-                      'images/binary.png" /> '
-                  );
-                  $dataImage.addClass("module-data").click(function(e) {
-                    e.stopPropagation();
+                  if (isNaN(element.metaID)) {
+                    var $dataImage = $(
+                      '<img src="' +
+                        (controller.baseURL.length > 0
+                          ? controller.baseURL
+                          : "") +
+                        'images/binary.png" /> '
+                    );
+                    $dataImage.addClass("module-data").click(function(e) {
+                      e.stopPropagation();
 
-                    try {
-                      var serverName =
-                        element.serverName.length > 0 ? element.serverName : "";
-                      if ($("#module_details_window").length > 0)
-                        show_module_detail_dialog(
-                          element.id,
-                          "",
-                          serverName,
-                          0,
-                          86400,
-                          element.name.replace(/&#x20;/g, " ")
-                        );
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  });
+                      try {
+                        var serverName =
+                          element.serverName.length > 0
+                            ? element.serverName
+                            : "";
+                        if ($("#module_details_window").length > 0)
+                          show_module_detail_dialog(
+                            element.id,
+                            "",
+                            serverName,
+                            0,
+                            86400,
+                            element.name.replace(/&#x20;/g, " ")
+                          );
+                      } catch (error) {
+                        // console.log(error);
+                      }
+                    });
 
-                  $content.append($dataImage);
+                    $content.append($dataImage);
+                  }
                 }
               }
 
@@ -966,11 +973,6 @@ var TreeController = {
               });
             }
           }
-          // Get hash and user.
-          var public_hash = $("#hidden-publi_dash_tree_view_hash").val();
-          if (typeof public_hash === "undefined") public_hash = 0;
-          var public_user = $("#hidden-publi_dash_tree_view_id_user").val();
-          if (typeof public_user === "undefined") public_user = 0;
 
           if (
             typeof element.searchChildren != "undefined" &&
@@ -1008,9 +1010,11 @@ var TreeController = {
                       rootID: element.rootID,
                       serverID: element.serverID,
                       rootType: element.rootType,
+                      metaID: element.metaID,
                       filter: controller.filter,
-                      hash: public_hash,
-                      id_user: public_user
+                      auth_class: controller.auth_class,
+                      id_user: controller.id_user,
+                      auth_hash: controller.auth_hash
                     },
                     complete: function(xhr, textStatus) {
                       $node.removeClass("leaf-loading");
@@ -1143,6 +1147,16 @@ var TreeController = {
         }
         if (typeof data.filter !== "undefined") {
           this.filter = data.filter;
+        }
+
+        if (typeof data.auth_class !== "undefined") {
+          this.auth_class = data.auth_class;
+        }
+        if (typeof data.id_user !== "undefined") {
+          this.id_user = data.id_user;
+        }
+        if (typeof data.auth_hash !== "undefined") {
+          this.auth_hash = data.auth_hash;
         }
 
         this.load();

@@ -31,7 +31,7 @@ fi
 
 export WS_ENGINE="/var/www/html/pandora_console/ws.php"
 export PHP=/usr/bin/php
-export WS_LOG="/var/www/html/pandora_console/pandora_console.log"
+export WS_LOG="/var/log/pandora/web_socket.log"
 export GOTTY="/tmp/"
 
 # Environment variables

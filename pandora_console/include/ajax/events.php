@@ -871,6 +871,11 @@ if ($get_response_description) {
 }
 
 if ($get_response_params) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $params = db_get_value('params', 'tevent_response', 'id', $response_id);
@@ -885,6 +890,11 @@ if ($get_response_params) {
 }
 
 if ($get_response_target) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = (int) get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id');
@@ -901,6 +911,11 @@ if ($get_response_target) {
 }
 
 if ($get_response) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
@@ -917,11 +932,21 @@ if ($get_response) {
 if ($perform_event_response) {
     global $config;
 
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $target = get_parameter('target', '');
     $response_id = get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id', 0);
 
-    $command = events_get_response_target($event_id, $response_id, $server_id);
+    if (empty($target)) {
+        $command = events_get_response_target($event_id, $response_id, $server_id);
+    } else {
+        $command = $target;
+    }
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
@@ -1011,6 +1036,11 @@ if ($perform_event_response) {
 if ($dialogue_event_response) {
     global $config;
 
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $event_id = get_parameter('event_id');
     $response_id = get_parameter('response_id');
     $command = get_parameter('target');
@@ -1063,7 +1093,8 @@ if ($dialogue_event_response) {
                 }
             } else {
                 echo "<div style='text-align:left'>";
-                echo $prompt.sprintf(__('Executing command: %s', $command));
+
+                echo $prompt."Executing command: $command";
                 echo '</div><br>';
 
                 echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
@@ -1090,7 +1121,7 @@ if ($dialogue_event_response) {
 if ($add_comment) {
     $aviability_comment = true;
     $comment = get_parameter('comment');
-    if (preg_match('<script>', io_safe_output($comment))) {
+    if (preg_match('/script/i', io_safe_output($comment))) {
         $aviability_comment = false;
         $return = false;
     }

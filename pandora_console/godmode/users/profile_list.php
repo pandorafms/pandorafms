@@ -22,7 +22,7 @@ require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 
-if (! check_acl($config['id_user'], 0, 'UM')) {
+if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access User Management'

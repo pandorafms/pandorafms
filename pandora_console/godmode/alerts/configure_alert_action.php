@@ -168,7 +168,7 @@ $table->data[1][0] = __('Group');
 
 $own_info = get_user_info($config['id_user']);
 
-$table->data[1][1] = html_print_select_groups(
+$table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     'LW',
     true,
@@ -182,7 +182,7 @@ $table->data[1][1] = html_print_select_groups(
     true,
     '',
     $is_central_policies_on_node
-);
+).'</div>';
 $table->colspan[1][1] = 2;
 
 $table->data[2][0] = __('Command');

@@ -306,7 +306,7 @@ $table->data[1][1] = html_print_select(
     false
 );
 $table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
-$table->data[1][1] .= html_print_select_groups(
+$table->data[1][1] .= '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'AR',
     $return_all_groups,
@@ -316,7 +316,7 @@ $table->data[1][1] .= html_print_select_groups(
     __('Select group'),
     '',
     true
-);
+).'</div>';
 
 $table->data[2][0] = __('Subject');
 $table->data[2][1] = html_print_input_text(

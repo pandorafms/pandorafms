@@ -453,6 +453,14 @@ select:-internal-list-box {
   width: 120px;
   max-width: 120px;
 }
+.w240px {
+  width: 240px;
+  max-width: 240px;
+}
+.w250px {
+  width: 250px;
+  max-width: 250px;
+}
 .mw120px {
   min-width: 120px;
 }
@@ -476,6 +484,9 @@ select:-internal-list-box {
 }
 .nowrap {
   white-space: nowrap;
+}
+.inline {
+  display: inline-block;
 }
 .w10p {
   width: 10%;
@@ -593,11 +604,6 @@ select:-internal-list-box {
 .flex-start {
   justify-content: flex-start;
 }
-
-.nowrap {
-  flex-wrap: nowrap;
-}
-
 .padding-2 {
   padding: 2em;
 }

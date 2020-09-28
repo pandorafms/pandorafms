@@ -176,7 +176,9 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
     $data[0] .= '<input type="text" name="subject" size="35" value="'.$subject.'">';
 
     $data[1] = __('Group').'<br>';
+    $data[1] .= '<div class="w250px">';
     $data[1] .= html_print_select_groups($config['id_user'], 'ER', users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, '');
+    $data[1] .= '</div>';
 
     $data[2] = __('Modal screen').'<br>';
     $data[2] .= html_print_checkbox_extended('modal', 1, $modal, false, '', 'style="margin-top: 5px;margin-bottom: 7px;"', true);

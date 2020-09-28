@@ -1096,7 +1096,7 @@ if ($step == 2) {
     }
 
     $table->data[0][1] .= '&nbsp;';
-    $table->data[0][1] .= html_print_select_groups(
+    $table->data[0][1] .= '<div class="w250px inline">'.html_print_select_groups(
         false,
         'AR',
         $display_all_group,
@@ -1110,7 +1110,7 @@ if ($step == 2) {
         true,
         '',
         $is_central_policies_on_node
-    );
+    ).'</div>';
 
 
     $table->data[1][0] = __('Description');

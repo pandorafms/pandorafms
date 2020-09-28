@@ -1200,7 +1200,10 @@ class DiscoveryTaskList extends HTML
         $output = '';
 
         // Header information.
-        if ((int) $task['status'] <= 0 && empty($summary)) {
+        if ((int) $task['status'] <= 0
+            && empty($summary)
+            && $task['id_recon_script'] == 0
+        ) {
             $output .= ui_print_info_message(
                 __('This task has never executed'),
                 '',

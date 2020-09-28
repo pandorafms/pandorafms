@@ -462,9 +462,20 @@ function html_print_select_groups(
     $size=false,
     $simple_multiple_options=false
 ) {
-    global $config;
-    ui_require_css_file('select2.min');
-    ui_require_javascript_file('select2.min');
+    $output = '';
+
+    if (is_ajax()) {
+        $output .= '<script src="';
+        $output .= ui_get_full_url('include/javascript/select2.min.js');
+        $output .= '" type="text/javascript"></script>';
+
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url('include/styles/select2.min.css');
+        $output .= '"/>';
+    } else {
+        ui_require_css_file('select2.min');
+        ui_require_javascript_file('select2.min');
+    }
 
     if ($name === null) {
         static $idcounter = [];
@@ -499,7 +510,7 @@ function html_print_select_groups(
         $json_inclusions = json_encode($include_groups);
     }
 
-    $output = html_print_select(
+    $output .= html_print_select(
         $fields,
         $name,
         $selected,

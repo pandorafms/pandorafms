@@ -53,8 +53,6 @@ class View
     {
         global $config;
 
-        ob_start('ui_process_page_head');
-
         if (is_array($data) === true) {
             extract($data);
         }
@@ -69,12 +67,6 @@ class View
         } else {
             ui_print_error_message(__('View %s not found', $page), true);
         }
-
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
-        }
-
     }
 
 

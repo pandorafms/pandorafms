@@ -3237,6 +3237,11 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_timestamp_idx` (`timestamp`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_module_status_idx` (`module_status`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_criticity_idx` (`criticity`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_agent_name_idx` (`agent_name`);
+
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
 -- ---------------------------------------------------------------------
@@ -3283,6 +3288,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 -- Criticity: 4 - Critical (red) (status 1)
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
+
+ALTER TABLE tmetaconsole_event_history ADD INDEX `tmeh_estado_idx` (`estado`);
+ALTER TABLE tmetaconsole_event_history ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
 
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
@@ -3370,6 +3378,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE tmetaconsole_agent ADD INDEX `tma_id_os_idx` (`id_os`);
+ALTER TABLE tmetaconsole_agent ADD INDEX `tma_server_name_idx` (`server_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`

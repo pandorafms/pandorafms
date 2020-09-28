@@ -323,7 +323,7 @@ function profile_print_profile_table($id)
     $data['group'] = html_print_select_groups(
         $config['id_user'],
         'UM',
-        users_is_admin($config['id_user']),
+        users_can_manage_group_all('UM'),
         'assign_group',
         -1,
         '',

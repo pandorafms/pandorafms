@@ -482,6 +482,8 @@ function html_print_select_groups(
     if (is_array($selected) === false) {
         if (empty($selected) === false) {
             $fields = [ $selected => groups_get_name($selected) ];
+        } else if ($returnAllGroup === true) {
+            $fields = [ $selected => groups_get_name(null, true) ];
         }
     } else {
         foreach ($selected as $k) {

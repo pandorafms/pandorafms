@@ -435,6 +435,7 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
  * @param array   $include_groups          Add groups to select.
  * @param string  $size                    Style, size (width) of element.
  * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -460,7 +461,8 @@ function html_print_select_groups(
     $delete_groups=false,
     $include_groups=false,
     $size=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
     $output = '';
 
@@ -528,7 +530,8 @@ function html_print_select_groups(
         false,
         '',
         false,
-        $simple_multiple_options
+        $simple_multiple_options,
+        $required
     );
 
     if (empty($size) === true) {
@@ -644,7 +647,8 @@ function html_print_select(
     $modal=false,
     $message='',
     $select_all=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
     $output = "\n";
 
@@ -694,7 +698,11 @@ function html_print_select(
         $styleText = 'style="'.$style.'"';
     }
 
-    $output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    if ($required) {
+        $required = 'required';
+    }
+
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -4362,7 +4370,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
                 ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
 

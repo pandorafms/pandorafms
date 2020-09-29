@@ -322,7 +322,16 @@ $table_primary_group = '<div class="label_select"><p class="input_label">'.__('P
 $table_primary_group .= '<div class="label_select_parent">';
 // Cannot change primary group if user have not permission for that group.
 if (isset($groups[$grupo]) || $new_agent) {
-    $table_primary_group .= html_print_select_groups(false, 'AR', false, 'grupo', $grupo, '', '', 0, true);
+    $table_primary_group .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'returnAllGroup' => false,
+            'name'           => 'grupo',
+            'selected'       => $grupo,
+            'return'         => true,
+            'required'       => true,
+        ]
+    );
 } else {
     $table_primary_group .= groups_get_name($grupo);
     $table_primary_group .= html_print_input_hidden('grupo', $grupo, true);

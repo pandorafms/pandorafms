@@ -193,7 +193,7 @@ if ($create_agent) {
     $direccion_agente = io_safe_input($direccion_agente);
 
     $nombre_agente = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
-    $grupo = get_parameter_post('grupo', null);
+    $grupo = (int) get_parameter_post('grupo');
     $intervalo = (string) get_parameter_post('intervalo', SECONDS_5MINUTES);
     $comentarios = (string) get_parameter_post('comentarios', '');
     $modo = (int) get_parameter_post('modo');
@@ -215,13 +215,6 @@ if ($create_agent) {
     $secondary_groups = (string) get_parameter('secondary_hidden', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
-    if ($grupo === null) {
-        $agent_creation_error = __('No group specified');
-        $agent_created_ok = 0;
-    } else {
-        $grupo = (int) $grupo;
-    }
-
     if ($fields === false) {
         $fields = [];
     }
@@ -236,7 +229,7 @@ if ($create_agent) {
     if ($alias == '') {
         $agent_creation_error = __('No agent alias specified');
         $agent_created_ok = 0;
-    } else if ($agent_created_ok != 0) {
+    } else {
         if ($alias_as_name) {
             $sql = 'SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"';
             $exists_alias  = db_get_row_sql($sql);

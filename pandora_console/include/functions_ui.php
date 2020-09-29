@@ -6136,7 +6136,13 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
  */
 function ui_print_reveal_password(string $name, bool $return=false)
 {
-    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="images/eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
+    if (is_metaconsole()) {
+        $imagePath = '../../images/';
+    } else {
+        $imagePath = 'images/';
+    }
+
+    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="'.$imagePath.'eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
 
     if ($return === true) {
         return $output;

@@ -556,12 +556,19 @@ function infoMessage(data, idMsg) {
 function reveal_password(name) {
   var passwordElement = $("#password-" + name);
   var revealElement = $("#reveal_password_" + name);
+  var imagesPath = "";
+
+  if ($("#hidden-metaconsole_activated").val() == 1) {
+    imagesPath = "../../images/";
+  } else {
+    imagesPath = "images/";
+  }
 
   if (passwordElement.attr("type") == "password") {
     passwordElement.attr("type", "text");
-    revealElement.attr("src", "images/eye_hide.png");
+    revealElement.attr("src", imagesPath + "eye_hide.png");
   } else {
     passwordElement.attr("type", "password");
-    revealElement.attr("src", "images/eye_show.png");
+    revealElement.attr("src", imagesPath + "eye_show.png");
   }
 }

@@ -493,7 +493,7 @@ function html_print_select_groups(
     if (is_array($selected) === false) {
         if (empty($selected) === false) {
             $fields = [ $selected => groups_get_name($selected) ];
-        } else if ($returnAllGroup === true) {
+        } else if ($returnAllGroup === true && $multiple === false) {
             $fields = [ $selected => groups_get_name(null, true) ];
         }
     } else {
@@ -551,6 +551,8 @@ function html_print_select_groups(
             $('select[name="<?php echo $name; ?>"]').each(
                 function() {
                     $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
                         debug: 0,
                         width: '<?php echo $size; ?>',
                         templateResult: function(node) {
@@ -582,6 +584,14 @@ function html_print_select_groups(
                     });
                 }
             );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+        <?php
+    }
+    ?>
         });
     </script>
 

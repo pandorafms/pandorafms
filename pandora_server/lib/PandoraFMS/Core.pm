@@ -1880,29 +1880,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			}
 		}
 	} else {
-		if ($status == $new_status) {
-			# If the status is equal to the previous status reset the counters.
-			$ff_normal = 0;
-			$ff_critical = 0;
-			$ff_warning = 0;
-		} else {
-			# Sequential critical and normal status are needed
-			# if don't, reset counters.
-			if ($last_known_status == 1 && $new_status != 1) {
-				$ff_critical = 0;
-			} elsif ($last_known_status == 0 && $new_status != 0) {
-				$ff_normal = 0;
-			}
+		# Increase counters.
+		$ff_critical++ if ($new_status == 1);
+		$ff_warning++  if ($new_status == 2);
+		$ff_normal++   if ($new_status == 0);
 
-			# Increase counters.
-			$ff_critical++ if ($new_status == 1);
-			$ff_warning++  if ($new_status == 2);
-			$ff_normal++   if ($new_status == 0);
-		}
-		
-		if ( ($new_status == 0 && $ff_normal >= $min_ff_event)
-		  || ($new_status == 1 && $ff_critical >= $min_ff_event)
-		  || ($new_status == 2 && $ff_warning >= $min_ff_event)) {
+		# Generate event for 'going_normal' only if status is previously different from 
+		# Normal.
+		if ( ($new_status != $status && ($new_status == 0 && $ff_normal > $min_ff_event))
+			|| ($new_status == 1 && $ff_critical > $min_ff_event)
+			|| ($new_status == 2 && $ff_warning > $min_ff_event)
+		) {
 			# Change status generate event.
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 			$status = $new_status;
@@ -1918,11 +1906,19 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
 			}
 
-			# Reset counters because change status.
+			# After launch an event, counters are reset.
 			$ff_normal = 0;
 			$ff_critical = 0;
 			$ff_warning = 0;
+
 		} else {
+			if($new_status == 0 && $ff_normal > $min_ff_event) {
+				# Reached normal FF but status have not changed, reset counters.
+				$ff_normal = 0;
+				$ff_critical = 0;
+				$ff_warning = 0;
+			}
+
 			# Active ff interval
 			if ($module->{'module_ff_interval'} != 0) {
 				$current_interval = $module->{'module_ff_interval'};

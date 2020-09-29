@@ -6,13 +6,16 @@
         <string>com.pandorafms.pandorafms</string>
         <key>ProgramArguments</key>
         <array>
-                <string>/usr/bin/pandora_agent</string>
+                <string>/usr/local/bin/pandora_agent</string>
                 <string>/etc/pandora</string>
         </array>
+        <key>EnvironmentVariables</key>
+        <dict>
+	        <key>PATH</key>
+	        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Library/Apple/bin</string>
+        </dict>
         <key>RunAtLoad</key>
         <true/>
-        <key>ServiceDescription</key>
-        <string>PandoraFMS agent</string>
         <key>UserName</key>
         <string>root</string>
 </dict>

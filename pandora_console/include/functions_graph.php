@@ -1286,7 +1286,7 @@ function graphic_combined_module(
 
         if ($count_modules > 0) {
             foreach ($module_list as $key => $value) {
-                $sources[$key]['id_server'] = $value['server'];
+                $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['id_server'];
                 $sources[$key]['id_agent_module'] = $value['module'];
                 $sources[$key]['weight'] = $weights[$key];
                 $sources[$key]['label'] = $params_combined['labels'];
@@ -1339,6 +1339,7 @@ function graphic_combined_module(
         $modules = [];
         foreach ($sources as $source) {
             if (is_metaconsole() === true) {
+                metaconsole_restore_db();
                 $server = metaconsole_get_connection_by_id($source['id_server']);
                 if (metaconsole_connect($server) != NOERR) {
                     continue;
@@ -1499,8 +1500,9 @@ function graphic_combined_module(
                 }
 
                 if (is_metaconsole()) {
+                    metaconsole_restore_db();
                     $server = metaconsole_get_connection_by_id(
-                        $agent_module_id['server']
+                        isset($agent_module_id['server']) ? $agent_module_id['server'] : $source['id_server']
                     );
                     if (metaconsole_connect($server) != NOERR) {
                         continue;

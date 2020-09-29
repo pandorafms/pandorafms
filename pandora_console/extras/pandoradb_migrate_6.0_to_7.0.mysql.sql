@@ -978,6 +978,10 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1026,6 +1030,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(22,5) default NULL;
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_estado_idx` (`estado`);
+ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
 -- ---------------------------------------------------------------------
@@ -1119,7 +1125,9 @@ ALTER TABLE `tmetaconsole_agent` ADD COLUMN `remote` tinyint(1) NOT NULL DEFAULT
 	ADD COLUMN `alias` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
 	MODIFY COLUMN `update_secondary_groups` tinyint(1) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0',
-	ADD INDEX `id_tagente_idx` (`id_tagente`);
+	ADD INDEX `id_tagente_idx` (`id_tagente`),
+	ADD INDEX `tma_id_os_idx` (`id_os`),
+    ADD INDEX `tma_server_name_idx` (`server_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`
@@ -1308,11 +1316,21 @@ ALTER TABLE talert_actions ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field16_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field17_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field18_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field19_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field20_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE `talert_actions` ADD COLUMN `previous_name` text;
 
 ALTER TABLE `talert_actions` MODIFY COLUMN `field11` text NOT NULL,

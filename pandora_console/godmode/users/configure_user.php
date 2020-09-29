@@ -101,6 +101,7 @@ $id = get_parameter('id', get_parameter('id_user', ''));
 $pure = get_parameter('pure', 0);
 
 $user_info = get_user_info($id);
+$is_err = false;
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
@@ -124,7 +125,7 @@ if (is_ajax()) {
 
         db_pandora_audit(
             'User management',
-            'Deleted profile for user '.io_safe_input($id2),
+            'Deleted profile for user '.io_safe_output($id2),
             false,
             false,
             'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
@@ -145,7 +146,7 @@ if (is_ajax()) {
             if ($result) {
                 db_pandora_audit(
                     'User management',
-                    __('Deleted user %s', io_safe_input($id_user))
+                    __('Deleted user %s', io_safe_output($id_user))
                 );
             }
 
@@ -167,7 +168,7 @@ if (is_ajax()) {
                     if ($result) {
                         db_pandora_audit(
                             'User management',
-                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
                         );
                     }
 
@@ -313,7 +314,7 @@ if ($create_user) {
     $password_confirm = (string) get_parameter('password_confirm', '');
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
-    $values['comments'] = (string) get_parameter('comments');
+    $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
     $values['is_admin'] = $user_is_admin;
     $values['language'] = get_parameter('language', 'default');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -370,23 +371,27 @@ if ($create_user) {
 
     if ($id == '') {
         ui_print_error_message(__('User ID cannot be empty'));
+        $is_err = true;
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
     } else if (preg_match('/^\s+|\s+$/', io_safe_output($id))) {
         ui_print_error_message(__('Invalid user ID: leading or trailing blank spaces not allowed'));
+        $is_err = true;
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
     } else if ($password_new == '') {
+        $is_err = true;
         ui_print_error_message(__('Passwords cannot be empty'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
         $new_user = true;
     } else if ($password_new != $password_confirm) {
+        $is_err = true;
         ui_print_error_message(__('Passwords didn\'t match'));
         $user_info = $values;
         $password_new = '';
@@ -422,7 +427,7 @@ if ($create_user) {
 
         db_pandora_audit(
             'User management',
-            'Created user '.io_safe_input($id),
+            'Created user '.io_safe_output($id),
             false,
             false,
             $info
@@ -465,7 +470,7 @@ if ($create_user) {
 
                         db_pandora_audit(
                             'User management',
-                            'Added profile for user '.io_safe_input($id2),
+                            'Added profile for user '.io_safe_output($id2),
                             false,
                             false,
                             'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
@@ -500,7 +505,7 @@ if ($update_user) {
     $values['lastname'] = (string) get_parameter('lastname');
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
-    $values['comments'] = (string) get_parameter('comments');
+    $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
     $values['is_admin'] = get_parameter('is_admin', 0);
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -656,7 +661,7 @@ if ($update_user) {
 
             db_pandora_audit(
                 'User management',
-                'Updated user '.io_safe_input($id),
+                'Updated user '.io_safe_output($id),
                 false,
                 false,
                 $info
@@ -724,7 +729,7 @@ if ($add_profile && empty($json_profile)) {
 
     db_pandora_audit(
         'User management',
-        'Added profile for user '.io_safe_input($id2),
+        'Added profile for user '.io_safe_output($id2),
         false,
         false,
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
@@ -1143,7 +1148,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true).'</div>';
 }
 
-echo '<form id="user_profile_form" method="post" autocomplete="off">';
+echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
 
 
 if (!$id) {
@@ -1160,13 +1165,17 @@ if (is_metaconsole()) {
     $access_or_pagination = $size_pagination;
 }
 
+if ($id != '' && !$is_err) {
+    $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
+    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+} else {
+    $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
+    <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+}
 
 echo '<div id="user_form">
 <div class="user_edit_first_row">
-    <div class="edit_user_info white_box">
-        <div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-        <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>
-    </div>  
+    <div class="edit_user_info white_box">'.$div_user_info.'</div>  
     <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
@@ -1195,29 +1204,43 @@ if (!empty($ehorus)) {
 
 echo '</div>';
 
-profile_print_profile_table($id);
-
 echo '<div style="width: 100%" class="action-buttons">';
 if ($config['admin_can_add_user']) {
     html_print_csrf_hidden();
     if ($new_user) {
         html_print_input_hidden('create_user', 1);
-        html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand"');
     } else {
         html_print_input_hidden('update_user', 1);
-        html_print_submit_button(__('Update'), 'uptbutton', false, 'class="sub upd"');
     }
 }
 
+echo '</div>';
+
 html_print_input_hidden('json_profile', '');
 
-echo '</div>';
 echo '</form>';
+
+
+profile_print_profile_table($id);
+
 echo '<br />';
+
+echo '<div style="width: 100%" class="action-buttons">';
+if ($config['admin_can_add_user']) {
+    if ($new_user) {
+        html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand" form="user_profile_form"');
+    } else {
+        html_print_submit_button(__('Update'), 'uptbutton', false, 'class="sub upd" form="user_profile_form"');
+    }
+}
+
+echo '</div>';
+
+
+echo '</div>';
 
 enterprise_hook('close_meta_frame');
 $delete_image = html_print_input_image('del', 'images/cross.png', 1, '', true, ['onclick' => 'delete_profile(event, this)']);
-
 
 if (!is_metaconsole()) {
     ?>
@@ -1289,7 +1312,7 @@ $(document).ready (function () {
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
 
     var img_delete = '<?php echo $delete_image; ?>';
-    var id_user = '<?php echo $id; ?>';
+    var id_user = '<?php echo io_safe_output($id); ?>';
     var data = [];
 
     $('input:image[name="add"]').click(function (e) {
@@ -1335,7 +1358,7 @@ $(document).ready (function () {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
         if (rows <= 3) {
-            if (!confirm('<?php echo __('Deleting last profile'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
+            if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
                 return;
             }
         }

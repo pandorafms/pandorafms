@@ -4913,6 +4913,7 @@ input:checked + .p-slider:before {
 
 .edit_user_labels {
   color: #343434;
+  text-align: left;
   font-weight: bold;
   padding-right: 10px;
   margin: 0px 0px 5px 0px;

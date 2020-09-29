@@ -1470,6 +1470,7 @@ if ($create_alert || $update_alert) {
                 unset($table);
 }
 
+ui_require_javascript_file('pandora', 'include/javascript/', true);
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 <script language="javascript" type="text/javascript">
@@ -1575,24 +1576,19 @@ $(document).ready (function () {
         }
     });
     
-    tinyMCE.init({
-        selector: 'textarea.tiny-mce-editor',
-        theme : "advanced",
-        plugins : "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
-        theme_advanced_buttons2 : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-        theme_advanced_buttons3 : "",
-        theme_advanced_toolbar_location : "top",
-        theme_advanced_toolbar_align : "left",
-        theme_advanced_resizing : true,
-        theme_advanced_statusbar_location : "bottom",
-        force_p_newlines : false,
-        forced_root_block : '',
-        inline_styles : true,
-        valid_children : "+body[style]",
-        element_format : "html"
-    });
+    var added_config = {
+        "selector": "textarea.tiny-mce-editor",
+        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+        "theme_advanced_buttons1" : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
+        "theme_advanced_buttons2" : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
+        "force_p_newlines": false,
+        "forced_root_block": '',
+        "inline_styles": true,
+        "valid_children": "+body[style]",
+        "element_format": "html",
+    }
 
+    defineTinyMCE(added_config);
 });
 
 function show_add_action_snmp(id_alert_snmp) {

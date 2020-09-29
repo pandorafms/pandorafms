@@ -571,6 +571,11 @@ class CredentialStore extends Wizard
             $error = __('You must specify a username and/or password');
         }
 
+        if (isset($error)) {
+            $this->ajaxMsg('error', $error);
+            exit;
+        }
+
         // Encrypt content (if needed).
         $values = [
             'identifier' => $identifier,

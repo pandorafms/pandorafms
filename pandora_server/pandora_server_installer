@@ -9,7 +9,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.749"
-PI_BUILD="200914"
+PI_BUILD="200929"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -210,7 +210,7 @@ install () {
 			echo "You are missing the following dependencies"
 			echo " "
 			cat output | awk -F ": prerequisite" '{print $2}' | awk -F " " '{print $1}'
-			echo "The complete installation guide is at: http://openideas.info/wiki/index.php?title=Pandora"
+			echo "The complete installation guide is at: https://pandorafms.com/docs/"
 			echo " "
 			echo "Debian-based distribution do:"
 			echo "	# apt-get install snmp snmpd libjson-perllibio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 snmp-mibs-downloader"

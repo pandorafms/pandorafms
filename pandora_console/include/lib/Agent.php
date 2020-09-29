@@ -63,11 +63,16 @@ class Agent extends Entity
     ) {
         $table = 'tagente';
         $filter = ['id_agente' => $id_agent];
+        $enterprise_class = '\PandoraFMS\Enterprise\Agent';
 
         if (is_numeric($id_agent) === true
             && $id_agent > 0
         ) {
-            parent::__construct($table, $filter);
+            parent::__construct(
+                $table,
+                $filter,
+                $enterprise_class
+            );
             if ($load_modules === true) {
                 $rows = \db_get_all_rows_filter(
                     'tagente_modulo',
@@ -84,7 +89,7 @@ class Agent extends Entity
             }
         } else {
             // Create empty skel.
-            parent::__construct($table);
+            parent::__construct($table, null, $enterprise_class);
 
             // New agent has no modules.
             $this->modulesLoaded = true;
@@ -408,11 +413,12 @@ class Agent extends Entity
     /**
      * Search for modules into this agent.
      *
-     * @param array $filter Filters.
+     * @param array   $filter Filters.
+     * @param integer $limit  Limit search results.
      *
      * @return PandoraFMS\Module Module found.
      */
-    public function searchModules(array $filter)
+    public function searchModules(array $filter, int $limit=0)
     {
         $filter['id_agente'] = $this->id_agente();
 
@@ -423,7 +429,7 @@ class Agent extends Entity
             foreach ($this->modules as $module) {
                 $found = true;
                 foreach ($filter as $field => $value) {
-                    if ($module->{$field}() !== $value) {
+                    if ($module->{$field}() != $value) {
                         $found = false;
                         break;
                     }
@@ -437,7 +443,7 @@ class Agent extends Entity
             return $results;
         } else {
             // Search in db.
-            return Module::search($filter);
+            return Module::search($filter, $limit);
         }
 
     }

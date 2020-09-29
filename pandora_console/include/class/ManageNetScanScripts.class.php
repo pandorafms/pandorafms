@@ -180,7 +180,7 @@ class ManageNetScanScripts extends Wizard
         $result = [];
 
         $reconscript_name = get_parameter('form_name', '');
-        $reconscript_description = get_parameter('form_description', '');
+        $reconscript_description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('form_description'))));
         $reconscript_script = get_parameter('form_script', '');
 
         // Get macros.
@@ -260,7 +260,7 @@ class ManageNetScanScripts extends Wizard
 
         // If modified any parameter.
         $reconscript_name = get_parameter('form_name', '');
-        $reconscript_description = get_parameter('form_description', '');
+        $reconscript_description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('form_description'))));
         $reconscript_script = get_parameter('form_script', '');
 
         // Get macros.

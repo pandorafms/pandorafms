@@ -10,14 +10,14 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.749"
-PI_BUILD="200914"
+PI_BUILD="200929"
 OS_NAME=`uname -s`
 
 FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 
 PREFIX=/usr
-if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ]
+if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ] || [ "$OS_NAME" = "Darwin" ]
 then
 	PREFIX=/usr/local
 fi
@@ -146,6 +146,7 @@ help () {
 uninstall () {
 	if [ "$OS_NAME" = "Darwin" ]
         then
+		launchctl stop com.pandorafms.pandorafms
 		launchctl remove com.pandorafms.pandorafms 
 		rm /Library/LaunchDaemons/com.pandorafms.pandorafms.plist 2> /dev/null
 	fi
@@ -162,6 +163,7 @@ uninstall () {
 	rm -Rf $PANDORA_BASE$PANDORA_EXEC_BIN 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_REVENT_BIN 2> /dev/null
 	rm -f  $DESTDIR/etc/logrotate.d/pandora_agent
+	rm -f  $DESTDIR/etc/newsyslog.d/pandora_agent.conf
 
 	# Remove systemd service if exists
 	if [ `systemctl --v 2> /dev/null | grep systemd | wc -l` != 0 ]
@@ -305,7 +307,7 @@ install () {
 		# Backup the configuration file
 		cp -f "$AGENT_CFG" "${AGENT_CFG}.bak"
 
-		if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ]
+		if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ] || [ "$OS_NAME" = "Darwin" ]
 		then
 			sed -e "\|^PATH=|s|=|=$PANDORA_BASE$PREFIX/bin:|" \
 				-e "s|/usr/local/etc/pandora|$PANDORA_BASE$PANDORA_CFG|g" \
@@ -503,12 +505,16 @@ install () {
 		[ "$MSG" ] && echo "$MSG"
 	fi
 	
-	if [ -d /etc/logrotate.d ]
+	if [ -d /etc/logrotate.d ] && [ "$OS_NAME" != "Darwin" ]
 	then
 		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
 		echo "Creating logrotate.d entry for Pandora FMS log management"
 		sed -e "s|^/var/log/pandora/pandora_agent.log|$PANDORA_BASE_REAL$PANDORA_LOG_DIR/$PANDORA_LOG|" pandora_agent_logrotate \
 			> $DESTDIR/etc/logrotate.d/pandora_agent
+	elif [ "$OS_NAME" = "Darwin" ]
+	then
+		echo "Creating newsyslog entry for Pandora FMS log management"
+		echo "/var/log/pandora/pandora_agent.log        :        640        5        2048        *        Z" > $DESTDIR/etc/newsyslog.d/pandora_agent.conf
 	else
 		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi

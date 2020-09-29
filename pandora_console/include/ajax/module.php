@@ -150,6 +150,9 @@ if (check_login()) {
         $date_to = (string) get_parameter('date_to', date(DATE_FORMAT, $utimestamp));
         $time_to = (string) get_parameter('time_to', date(TIME_FORMAT, $utimestamp));
 
+        // Definition of new table.
+        $formtable = new stdClass();
+
         $formtable->width = '98%';
         $formtable->class = 'databox';
         $formtable->data = [];
@@ -326,6 +329,9 @@ if (check_login()) {
             // Paginate the result.
             $result = array_slice($module_data, $offset, $block_size);
         }
+
+        // Definition of new class.
+        $table = new stdClass();
 
         $table->width = '100%';
         $table->class = 'databox data';

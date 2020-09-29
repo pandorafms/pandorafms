@@ -552,3 +552,16 @@ function infoMessage(data, idMsg) {
     })
     .show();
 }
+
+function reveal_password(name) {
+  var passwordElement = $("#password-" + name);
+  var revealElement = $("#reveal_password_" + name);
+
+  if (passwordElement.attr("type") == "password") {
+    passwordElement.attr("type", "text");
+    revealElement.attr("src", "images/eye_hide.png");
+  } else {
+    passwordElement.attr("type", "password");
+    revealElement.attr("src", "images/eye_show.png");
+  }
+}

@@ -6124,3 +6124,23 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
         echo '</div>';
     echo '</div>';
 }
+
+
+/**
+ * Generate a button for reveal the content of the password field.
+ *
+ * @param string  $name   Name of the field.
+ * @param boolean $return If true, return the string with the formed element.
+ *
+ * @return string
+ */
+function ui_print_reveal_password(string $name, bool $return=false)
+{
+    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="images/eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
+
+    if ($return === true) {
+        return $output;
+    }
+
+    echo $output;
+}

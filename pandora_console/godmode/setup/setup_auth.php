@@ -221,6 +221,20 @@ if (is_ajax()) {
         );
         $table->data['double_auth_enabled'] = $row;
 
+        // Enable 2FA for all users.
+        // Set default value.
+        set_unless_defined($config['2FA_all_users'], false);
+        $row = [];
+        $row['name'] = __('Force 2FA for all users is enabled');
+        $row['control'] .= html_print_checkbox_switch(
+            '
+            ',
+            1,
+            $config['2FA_all_users'],
+            true
+        );
+        $table->data['2FA_all_users'] = $row;
+
         // Session timeout.
         // Default session timeout.
         set_when_empty($config['session_timeout'], 90);
@@ -313,6 +327,23 @@ echo '</form>';
 ?>
 
 <script type="text/javascript">
+
+    $( document ).ready(function() {   
+    //For change autocreate remote users
+        $('input[type=checkbox][name=double_auth_enabled]').change(function () {
+            if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
+                $('#table1-2FA_all_users').show();
+                $('#table3-2FA_all_users').show();
+                $('#table5-2FA_all_users').show();
+            }
+            else {
+                $('#table1-2FA_all_users').hide();
+                $('#table3-2FA_all_users').hide();
+                $('#table5-2FA_all_users').hide();
+            }
+            }).change();
+        });
+
     $('#auth').on('change', function(){
         type_auth = $('#auth').val();
         $.ajax({

@@ -717,6 +717,10 @@ function config_update_config()
                         $error_update[] = __('Double authentication');
                     }
 
+                    if (!config_update_value('2FA_all_users', get_parameter('2FA_all_users'))) {
+                        $error_update[] = __('2FA all users');
+                    }
+
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
                     }

@@ -685,8 +685,8 @@ function change_macro_fields() {
     if (value <= 0) {
         $("#text-max_macro_fields").val(1);
     }
-    else if (value > 15) {
-        $("#text-max_macro_fields").val(15);
+    else if (value > 20) {
+        $("#text-max_macro_fields").val(20);
     }
 }
 

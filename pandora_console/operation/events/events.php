@@ -479,6 +479,7 @@ if (is_array($tag_without) === false) {
     $tag_without = json_decode(base64_decode($tag_without), true);
 }
 
+
 foreach ($tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
         && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
@@ -1320,12 +1321,10 @@ try {
             // 'timestamp_rep',
             // 'timestamp_rep_min',
             // 'module_name',
-            // 'custom_id',
         [
             'text'  => 'options',
             'class' => 'action_buttons w120px',
-        ],
-        [
+        ],[
             'text'  => 'm',
             'extra' => $checkbox_all,
             'class' => 'mw120px',
@@ -2011,9 +2010,6 @@ function process_datatables_item(item) {
 
     /* Module name */
     item.id_agentmodule = item.module_name;
-
-    // Module custom_id.
-    item.custom_id = item.module_custom_id;
 }
 
 /* Datatables auxiliary functions ends */

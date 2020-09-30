@@ -171,7 +171,7 @@ if (isset($_GET['user_del'])) {
         if ($result) {
             db_pandora_audit(
                 'User management',
-                __('Deleted user %s', io_safe_input($id_user))
+                __('Deleted user %s', io_safe_output($id_user))
             );
         }
 
@@ -366,16 +366,12 @@ if (!defined('METACONSOLE')) {
 }
 
 $group_um = users_get_groups_UM($config['id_user']);
-if (isset($group_um[0])) {
-    $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
-} else {
-    $group_um_string = implode(',', array_keys($group_um));
-}
-
 
 $info1 = [];
+
+$user_is_admin = users_is_admin();
 // Is admin or has group permissions all.
-if (users_is_admin() || isset($group_um[0])) {
+if ($user_is_admin || isset($group_um[0])) {
     $info1 = get_users($order);
 } else {
     foreach ($group_um as $group => $value) {
@@ -434,13 +430,13 @@ $rowPair = true;
 $iterator = 0;
 $cont = 0;
 foreach ($info as $user_id => $user_info) {
-    if (!users_is_admin() && $user_info['is_admin']) {
+    if (!$user_is_admin && $user_info['is_admin']) {
         // If user is not admin then don't display admin users.
         continue;
     }
 
     // User profiles.
-    if (users_is_admin() || $user_id == $config['id_user'] || isset($group_um[0])) {
+    if ($user_is_admin || $user_id == $config['id_user'] || isset($group_um[0])) {
         $user_profiles = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $user_id);
     } else {
         $user_profiles_aux = users_get_user_profile($user_id);
@@ -492,7 +488,7 @@ foreach ($info as $user_id => $user_info) {
 
     $iterator++;
 
-    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || isset($group_um[0]) || (isset($user_info['edit']) && $user_info['edit'])))) {
+    if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || isset($group_um[0]) || (isset($user_info['edit']) && $user_info['edit'])))) {
         $data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
     } else {
         $data[0] = $user_id;
@@ -560,7 +556,7 @@ foreach ($info as $user_id => $user_info) {
 
     $table->cellclass[][6] = 'action_buttons';
     $data[6] = '';
-    if (users_is_admin() || $config['id_user'] == $user_info['id_user'] || isset($group_um[0]) || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
+    if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || isset($group_um[0]) || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
         if (!isset($user_info['not_delete'])) {
             if ($user_info['disabled'] == 0) {
                 $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable')]).'</a>';

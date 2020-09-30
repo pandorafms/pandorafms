@@ -283,7 +283,7 @@ class Diagnostics extends Wizard
             $return .= '</div>';
         }
 
-        return $return;
+        return false;
     }
 
 
@@ -1596,7 +1596,7 @@ class Diagnostics extends Wizard
             }
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -1882,7 +1882,7 @@ class Diagnostics extends Wizard
         $inputs = [];
 
         $inputs[] = [
-            'label'     => __('What happened').'?',
+            'label'     => __('What happened?'),
             'id'        => 'div-what-happened',
             'class'     => 'flex-row',
             'arguments' => [

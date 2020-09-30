@@ -115,7 +115,7 @@ if ($agent_to_delete) {
 
 if ($enable_agent) {
     $result = db_process_sql_update('tagente', ['disabled' => 0], ['id_agente' => $enable_agent]);
-    $alias = agents_get_alias($enable_agent);
+    $alias = io_safe_output(agents_get_alias($enable_agent));
 
     if ($result) {
         // Update the agent from the metaconsole cache.
@@ -137,7 +137,7 @@ if ($enable_agent) {
 
 if ($disable_agent) {
     $result = db_process_sql_update('tagente', ['disabled' => 1], ['id_agente' => $disable_agent]);
-    $alias = agents_get_alias($disable_agent);
+    $alias = io_safe_output(agents_get_alias($disable_agent));
 
     if ($result) {
         // Update the agent from the metaconsole cache.

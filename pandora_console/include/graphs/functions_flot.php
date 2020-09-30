@@ -39,7 +39,6 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
         $output .= '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/excanvas.js').'"></script><![endif]-->
-			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.min.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.time.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.pie.js').'"></script>
@@ -79,7 +78,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
 				percent = parseFloat(obj.series.percent).toFixed(2);
 				alert(''+obj.series.label+': '+obj.series.data[0][1]+' ('+percent+'%)');
 			}
-			</script>";
+            </script>";
 
         if (!$return) {
             echo $output;
@@ -279,20 +278,18 @@ function flot_area_graph(
         $series_type_unique['data_'.$graph_id.'_'.$k] = $v;
     }
 
-    /*
-        // Store data series in javascript format.
-        $extra_width = (int) ($params['width'] / 3);
-        $return .= "<div id='extra_$graph_id'
-        style='font-size: ".$params['font_size'].'pt;
-        display:none; position:absolute; overflow: auto;
-        max-height: '.($params['height'] + 50).'px;
-        width: '.$extra_width."px;
-        background:#fff; padding: 2px 2px 2px 2px;
-        border: solid #000 1px;'></div>";
+    // Store data series in javascript format.
+    $extra_width = (int) ($params['width'] / 3);
+    $return .= "<div id='extra_$graph_id'
+    style='font-size: ".$params['font_size'].'pt;
+    display:none; position:absolute; overflow: auto;
+    max-height: '.($params['height'] + 50).'px;
+    width: '.$extra_width."px;
+    background:#fff; padding: 2px 2px 2px 2px;
+    border: solid #000 1px;'></div>";
 
-        // Trick to get translated string from javascript.
-        $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
-    */
+    // Trick to get translated string from javascript.
+    $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
     $values = json_encode($array_data);
 

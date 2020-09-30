@@ -55,7 +55,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.749';
-use constant AGENT_BUILD => '200917';
+use constant AGENT_BUILD => '200930';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -192,6 +192,8 @@ my %DefaultConf = (
 	'udp_server_port' => 41122,
 	'udp_server_auth_address' => '0.0.0.0',
 	'udp_server' => 0,
+	'proxy_address' => '0.0.0.0',
+	'proxy_port' => 41121,
 	'proxy_mode' => 0,
 	'proxy_max_connection' => 10,
 	'proxy_timeout' => 1,
@@ -1383,7 +1385,7 @@ sub launch_tentacle_proxy () {
 		if ($tentacle_pid == 0) {
 
 			#Execute tentacle server as a daemon
-			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
+			my $new_process = "tentacle_server -a ".$Conf{'proxy_address'}." -p ".$Conf{'proxy_port'}." -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
 
 			$new_process .= ' -C' if ($Conf{'server_ssl'} eq '1');
 

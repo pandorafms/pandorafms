@@ -767,7 +767,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             $table->data['edit35'][2] = __('SNMP version');
             $table->data['edit35'][3] = html_print_select(
                 $snmp_versions,
-                'tcp_send',
+                'snmp_version',
                 '',
                 '',
                 __('No change'),
@@ -1933,6 +1933,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'command_text',
         'command_credential_identifier',
         'command_os',
+        'snmp_version',
     ];
     $values = [];
 
@@ -2028,15 +2029,17 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             break;
 
             case 'tcp_send2':
-                if ($value != '') {
-                    $values['tcp_send'] = $value;
-                }
+                $tcp_send2 = $value;
             break;
 
             case 'plugin_parameter_text':
                 if ($value != '') {
                     $values['plugin_parameter'] = $value;
                 }
+            break;
+
+            case 'snmp_version':
+                $snmp_version = $value;
             break;
 
             default:
@@ -2096,7 +2099,10 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         $modules = db_get_all_rows_filter(
             'tagente_modulo',
             $filter_modules,
-            ['id_agente_modulo']
+            [
+                'id_agente_modulo',
+                'id_tipo_modulo',
+            ]
         );
     } else {
         if ($module_name == '0') {
@@ -2104,7 +2110,10 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             $modules = db_get_all_rows_filter(
                 'tagente_modulo',
                 ['id_agente' => $agents_select],
-                ['id_agente_modulo']
+                [
+                    'id_agente_modulo',
+                    'id_tipo_modulo',
+                ]
             );
         } else {
             $modules = db_get_all_rows_filter(
@@ -2113,7 +2122,10 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
                     'id_agente' => $agents_select,
                     'nombre'    => $module_name,
                 ],
-                ['id_agente_modulo']
+                [
+                    'id_agente_modulo',
+                    'id_tipo_modulo',
+                ]
             );
         }
     }
@@ -2137,6 +2149,21 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
     }
 
     foreach ($modules as $module) {
+        // Set tcp_send value according to module type since the purpose of this field in database varies in case of SNMP modules.
+        if ($module['id_tipo_modulo'] >= 15 && $module['id_tipo_modulo'] <= 18) {
+            if ($snmp_version != '') {
+                $values['tcp_send'] = $snmp_version;
+            } else {
+                unset($values['tcp_send']);
+            }
+        } else {
+            if ($tcp_send2 != '') {
+                $values['tcp_send'] = $tcp_send2;
+            } else {
+                unset($values['tcp_send']);
+            }
+        }
+
         $result = modules_update_agent_module(
             $module['id_agente_modulo'],
             $values,

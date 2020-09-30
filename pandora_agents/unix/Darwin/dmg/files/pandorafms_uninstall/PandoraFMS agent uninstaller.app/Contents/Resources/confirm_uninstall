@@ -1,0 +1,23 @@
+#!/usr/bin/osascript
+
+set first_time to 1
+set text_display to "Are you sure you want to uninstall Pandora FMS agent?"
+
+repeat
+	if (first_time = 1) then
+		set text_display to "Are you sure you want to uninstall Pandora FMS agent?"
+	end if
+	set my_remotecfg to display dialog ¬
+		text_display with title ¬
+		"Confirm uninstall" ¬
+		buttons {"No", "Yes"} ¬
+		default button "No"
+	if (button returned of my_remotecfg) is "Yes" then
+	 	set confirm_uninstall to "1"
+	else
+		set confirm_uninstall to "0"
+	end if
+	exit repeat
+end repeat
+
+return (confirm_uninstall)

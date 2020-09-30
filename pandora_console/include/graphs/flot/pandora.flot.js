@@ -1918,8 +1918,7 @@ function pandoraFlotArea(
         case "points":
           line_show = false;
           points_show = true;
-          filled = false;
-          steps_chart = false;
+          filled = true;
           radius = 3;
           fill_points = fill_color;
           break;
@@ -1959,7 +1958,8 @@ function pandoraFlotArea(
           points: {
             show: points_show,
             radius: radius,
-            fillColor: fill_points
+            fillColor: fill_points,
+            fill: filled
           },
           legend: legend.index
         });
@@ -2521,7 +2521,7 @@ function pandoraFlotArea(
       plot.unhighlight();
 
       $("#extra_" + graph_id).css("width", "170px");
-      $("#extra_" + graph_id).css("height", "60px");
+      $("#extra_" + graph_id).css("height", "auto");
 
       var extra_info = "<i>No info to show</i>";
       var extra_show = false;
@@ -2537,7 +2537,7 @@ function pandoraFlotArea(
       var width_graph = plot.width();
       var height_legend = $("#legend_" + graph_id).height();
       var coord_x = pos.pageX - offset_relative.left + offset_graph.left;
-      var coord_y = offset_graph.top + height_legend + extra_height;
+      var coord_y = offset_graph.top + height_legend + extra_height + 50;
 
       if (coord_x + extra_width > width_graph) {
         coord_x = coord_x - extra_width;

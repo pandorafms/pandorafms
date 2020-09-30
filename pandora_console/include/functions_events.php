@@ -933,9 +933,9 @@ function events_get_all(
     }
 
     if (!$user_is_admin) {
-        $ER_groups = users_get_groups($config['id_user'], 'ER', false);
-        $EM_groups = users_get_groups($config['id_user'], 'EM', false, true);
-        $EW_groups = users_get_groups($config['id_user'], 'EW', false, true);
+        $ER_groups = users_get_groups($config['id_user'], 'ER', true);
+        $EM_groups = users_get_groups($config['id_user'], 'EM', true, true);
+        $EW_groups = users_get_groups($config['id_user'], 'EW', true, true);
     }
 
     if (!$user_is_admin && !users_can_manage_group_all('ER')) {

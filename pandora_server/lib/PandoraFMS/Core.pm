@@ -997,7 +997,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my $clean_name = safe_output($action->{'name'});
 
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
-	my ($field11, $field12, $field13, $field14, $field15);
+	my ($field11, $field12, $field13, $field14, $field15, $field16, $field17, $field18, $field19, $field20);
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
@@ -1016,6 +1016,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne ""  ? $action->{'field13'} : $alert->{'field13'};
 		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne ""  ? $action->{'field14'} : $alert->{'field14'};
 		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne ""  ? $action->{'field15'} : $alert->{'field15'};
+		$field16 = defined($action->{'field16'}) && $action->{'field16'} ne ""  ? $action->{'field16'} : $alert->{'field16'};
+		$field17 = defined($action->{'field17'}) && $action->{'field17'} ne ""  ? $action->{'field17'} : $alert->{'field17'};
+		$field18 = defined($action->{'field18'}) && $action->{'field18'} ne ""  ? $action->{'field18'} : $alert->{'field18'};
+		$field19 = defined($action->{'field19'}) && $action->{'field19'} ne ""  ? $action->{'field19'} : $alert->{'field19'};
+		$field20 = defined($action->{'field20'}) && $action->{'field20'} ne ""  ? $action->{'field20'} : $alert->{'field20'};
 	}
 	else {
 		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne "" ? $action->{'field1'}  : $alert->{'field1'};
@@ -1033,6 +1038,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne "" ? $action->{'field13'} : $alert->{'field13'};
 		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne "" ? $action->{'field14'} : $alert->{'field14'};
 		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne "" ? $action->{'field15'} : $alert->{'field15'};
+		$field16 = defined($action->{'field16'}) && $action->{'field16'} ne "" ? $action->{'field16'} : $alert->{'field16'};
+		$field17 = defined($action->{'field17'}) && $action->{'field17'} ne "" ? $action->{'field17'} : $alert->{'field17'};
+		$field18 = defined($action->{'field18'}) && $action->{'field18'} ne "" ? $action->{'field18'} : $alert->{'field18'};
+		$field19 = defined($action->{'field19'}) && $action->{'field19'} ne "" ? $action->{'field19'} : $alert->{'field19'};
+		$field20 = defined($action->{'field20'}) && $action->{'field20'} ne "" ? $action->{'field20'} : $alert->{'field20'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
@@ -1096,6 +1106,26 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field15 = defined($field15)                      && $field15                      ne "" ? "[RECOVER]" . $field15        : "";
 		$field15 = defined($alert->{'field15_recovery'})  && $alert->{'field15_recovery'}  ne "" ? $alert->{'field15_recovery'}  : $field15;
 		$field15 = defined($action->{'field15_recovery'}) && $action->{'field15_recovery'} ne "" ? $action->{'field15_recovery'} : $field15;
+
+		$field16 = defined($field16)                      && $field16                      ne "" ? "[RECOVER]" . $field16       : "";
+		$field16 = defined($alert->{'field16_recovery'})  && $alert->{'field16_recovery'}  ne "" ? $alert->{'field16_recovery'}  : $field16;
+		$field16 = defined($action->{'field16_recovery'}) && $action->{'field16_recovery'} ne "" ? $action->{'field16_recovery'} : $field16;
+
+		$field17 = defined($field17)                      && $field17                      ne "" ? "[RECOVER]" . $field17        : "";
+		$field17 = defined($alert->{'field17_recovery'})  && $alert->{'field17_recovery'}  ne "" ? $alert->{'field17_recovery'}  : $field17;
+		$field17 = defined($action->{'field17_recovery'}) && $action->{'field17_recovery'} ne "" ? $action->{'field17_recovery'} : $field17;
+
+		$field18 = defined($field18)                      && $field18                      ne "" ? "[RECOVER]" . $field18        : "";
+		$field18 = defined($alert->{'field18_recovery'})  && $alert->{'field18_recovery'}  ne "" ? $alert->{'field18_recovery'}  : $field18;
+		$field18 = defined($action->{'field18_recovery'}) && $action->{'field18_recovery'} ne "" ? $action->{'field18_recovery'} : $field18;
+
+		$field19 = defined($field19)                      && $field19                      ne "" ? "[RECOVER]" . $field19        : "";
+		$field19 = defined($alert->{'field19_recovery'})  && $alert->{'field19_recovery'}  ne "" ? $alert->{'field19_recovery'}  : $field19;
+		$field19 = defined($action->{'field19_recovery'}) && $action->{'field19_recovery'} ne "" ? $action->{'field19_recovery'} : $field19;
+
+		$field20 = defined($field20)                      && $field20                      ne "" ? "[RECOVER]" . $field20        : "";
+		$field20 = defined($alert->{'field20_recovery'})  && $alert->{'field20_recovery'}  ne "" ? $alert->{'field20_recovery'}  : $field20;
+		$field20 = defined($action->{'field20_recovery'}) && $action->{'field20_recovery'} ne "" ? $action->{'field20_recovery'} : $field20;
 	}
 
 	$field1  = defined($field1)  && $field1  ne "" ? decode_entities($field1)  : "";
@@ -1113,6 +1143,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	$field13 = defined($field13) && $field13 ne "" ? decode_entities($field13) : "";
 	$field14 = defined($field14) && $field14 ne "" ? decode_entities($field14) : "";
 	$field15 = defined($field15) && $field15 ne "" ? decode_entities($field15) : "";
+	$field16 = defined($field16) && $field16 ne "" ? decode_entities($field16) : "";
+	$field17 = defined($field17) && $field17 ne "" ? decode_entities($field17) : "";
+	$field18 = defined($field18) && $field18 ne "" ? decode_entities($field18) : "";
+	$field19 = defined($field19) && $field19 ne "" ? decode_entities($field19) : "";
+	$field20 = defined($field20) && $field20 ne "" ? decode_entities($field20) : "";
 
 	# Get group info
 	my $group = undef;
@@ -1147,6 +1182,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field13_ => $field13,
 				_field14_ => $field14,
 				_field15_ => $field15,
+				_field11_ => $field16,
+				_field12_ => $field17,
+				_field13_ => $field18,
+				_field14_ => $field19,
+				_field15_ => $field20,
 				_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
 				_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
@@ -1229,6 +1269,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field16_} = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field17_} = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field18_} = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field19_} = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field20_} = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		my @command_args = ();
 		# divide command into words based on quotes and whitespaces

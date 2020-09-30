@@ -574,6 +574,8 @@ function html_print_select_groups(
                                     search: params.term,
                                     page: 'include/ajax/group',
                                     method: 'getGroupsForSelect',
+                                    id_user: '<?php echo $id_user; ?>',
+                                    privilege: '<?php echo $privilege; ?>',
                                     exclusions: '<?php echo $json_exclusions; ?>',
                                     inclusions: '<?php echo $json_inclusions; ?>',
                                     step: params.page || 1,
@@ -592,6 +594,9 @@ function html_print_select_groups(
     if (empty($fields) === true) {
         ?>
             $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
         <?php
     }
     ?>

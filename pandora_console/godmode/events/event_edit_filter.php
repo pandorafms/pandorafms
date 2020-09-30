@@ -269,7 +269,7 @@ $table->data[2][1] = '<div class="w250px">'.html_print_select_groups(
     'AR',
     $display_all_group,
     'id_group',
-    $idGroup,
+    $id_group,
     '',
     '',
     '',

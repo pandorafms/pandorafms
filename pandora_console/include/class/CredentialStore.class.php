@@ -855,7 +855,7 @@ class CredentialStore extends Wizard
                 'id'             => 'id_group',
                 'input_class'    => 'flex-row',
                 'type'           => 'select_groups',
-                'returnAllGroup' => false,
+                'returnAllGroup' => true,
                 'selected'       => $values['id_group'],
                 'return'         => true,
                 'class'          => 'w50p',

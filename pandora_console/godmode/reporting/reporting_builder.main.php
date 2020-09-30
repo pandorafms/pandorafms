@@ -106,7 +106,7 @@ $table->data['group'][1] .= html_print_select_groups(
     'AR',
     true,
     'id_group',
-    $idGroup,
+    $idGroupReport,
     '',
     '',
     '',

@@ -275,6 +275,10 @@ class Group extends Entity
         $exclusions = get_parameter('exclusions', '[]');
         $inclusions = get_parameter('inclusions', '[]');
 
+        if (empty($id_user) === true) {
+            $id_user = false;
+        }
+
         $groups = self::search(
             [
                 'id_user'          => $id_user,

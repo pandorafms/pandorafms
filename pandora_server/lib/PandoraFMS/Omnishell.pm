@@ -40,6 +40,21 @@ sub get_last_error {
   return '';
 }
 
+################################################################################
+# Try to load extra libraries.c
+################################################################################
+sub load_libraries {
+	my $self = shift;
+
+	# Dynamic load. Avoid unwanted behaviour.
+	eval {eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');};
+	if ($@) {
+		$self->set_last_error($@);
+		return 0;
+	} else {
+		return 1;
+	}
+}
 
 ################################################################################
 # Create new omnishell handler.
@@ -62,6 +77,16 @@ sub new {
   return $self;
 }
 
+################################################################################
+# Run process.
+################################################################################
+sub run {
+	my ($self) = @_;
+
+	if($self->load_libraries()) {
+		$self->prepare_commands();
+	}
+}
 
 ################################################################################
 # Check for remote commands defined.

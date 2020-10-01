@@ -274,20 +274,6 @@ sub error ($) {
 }
 
 ################################################################################
-# Try to load extra libraries.c
-################################################################################
-sub load_libraries() {
-	# Dynamic load. Avoid unwanted behaviour.
-	eval {eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');};
-	if ($@) {
-		$YAML = 0;
-		print STDERR $@;
-	} else {
-		$YAML = 1;
-	}
-}
-
-################################################################################
 # Erase blank spaces before and after the string
 ################################################################################
 sub trim {
@@ -3095,8 +3081,6 @@ my $iter_base_time = time();
 $LogFileIdx = -1;
 # Loop
 while (1) {
-	load_libraries();
-
 	if (-e $Conf{'logfile'} && (stat($Conf{'logfile'}))[7] > $Conf{'logsize'}) {
 		rotate_log();
 	}
@@ -3114,7 +3098,12 @@ while (1) {
 	if ($Conf{'debug'} ne '1') {
 		# Check scheduled commands	
 		my $omni = new PandoraFMS::Omnishell(\%Conf);
-		$omni->prepare_commands();
+		log_message('log', "Running omnishell process");
+		if (!$omni->run()) {
+			log_message('error', "Failed to run omnishell process: ".$omni->get_last_error());
+		} else {
+			log_message('log', "Omnishell process completed.");
+		}
 	}
 
 	# Launch broker agents

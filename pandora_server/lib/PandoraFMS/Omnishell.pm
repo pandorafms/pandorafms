@@ -213,6 +213,19 @@ sub new {
 
   my $system = init();
   my $self = {
+	'server_ip' => 'localhost',
+	  'server_path' => '/var/spool/pandora/data_in',
+	  'server_port' => 41121,
+	  'transfer_mode' => 'tentacle',
+	  'transfer_mode_user' => 'apache',
+	  'transfer_timeout' => 30,
+	  'server_user' => 'pandora',
+	  'server_pwd' => '',
+	  'server_ssl' => '0',
+	  'server_opts' => '',
+	  'delayed_startup' => 0,
+	  'pandora_nice' => 10,
+	  'cron_mode' => 0,
     'last_error' => undef,
     %{$system},
     %{$args},
@@ -225,9 +238,33 @@ sub new {
 }
 
 ################################################################################
-# Run process.
+# Run all, output mode 'xml'  will dump to STDOUT and return an array of strings
+#, any other option will return an array with all results.
 ################################################################################
 sub run {
+  my ($self, $output_mode) = @_;
+
+  my @results;
+
+  foreach my $ref (keys %{$self->{'commands'}}) {
+    my $rs = $self->runCommand($ref, $output_mode);
+    if ($rs) {
+      push @results, $rs;
+    }
+  }
+
+  if ($output_mode eq 'xml') {
+    print join("\n",@results);
+  }
+
+  return \@results;
+}
+
+################################################################################
+# Run command, output mode 'xml'  will dump to STDOUT, other will return a hash
+# with all results.
+################################################################################
+sub runCommand {
   my ($self, $ref, $output_mode) = @_;
 
   if($self->load_libraries()) {

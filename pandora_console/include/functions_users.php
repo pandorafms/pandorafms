@@ -404,7 +404,7 @@ function users_get_groups(
         }
 
         // Update the group cache.
-        $group_cache[$id_user] = $forest_acl;
+        $group_cache[$users_group_cache_key] = $forest_acl;
     }
 
     $user_groups = [];

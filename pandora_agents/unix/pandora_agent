@@ -3248,7 +3248,7 @@ while (1) {
 					log_message('debug', 'Running omnishell commmand ['.$command.']');
 				}
 
-				my $output = $omnishell->run($command, 'xml');
+				my $output = $omnishell->runCommand($command, 'xml');
 				if (!empty($output)) {
 					$Xml .= $output;
 				} else {

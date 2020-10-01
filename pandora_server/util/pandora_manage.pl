@@ -4631,6 +4631,8 @@ sub cli_get_module_custom_id {
 	
 	if (defined($custom_id)) {
 		print $custom_id;
+	} else {
+		print "\n";
 	}
 }
 

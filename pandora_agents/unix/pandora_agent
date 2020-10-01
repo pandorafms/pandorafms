@@ -33,6 +33,9 @@ use IO::Socket;
 use Sys::Syslog;
 use Time::Local;
 
+use lib '/usr/lib/perl5';
+use PandoraFMS::Omnishell;
+
 # Agent XML data
 my $Xml;
 
@@ -43,7 +46,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.749';
-use constant AGENT_BUILD => '200930';
+use constant AGENT_BUILD => '201001';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1057,8 +1060,6 @@ sub fix_directory ($) {
 	return $dir if ($char eq '/');
 	return $dir . $char;
 }
-
-
 
 ################################################################################
 # Sends a file to the server.
@@ -3079,8 +3080,11 @@ my $main_agent = -1;
 # base time to start eatch iteration with the same interval.
 my $iter_base_time = time();
 $LogFileIdx = -1;
+
 # Loop
 while (1) {
+	my $omnishell;
+
 	if (-e $Conf{'logfile'} && (stat($Conf{'logfile'}))[7] > $Conf{'logsize'}) {
 		rotate_log();
 	}
@@ -3095,15 +3099,17 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
-	if ($Conf{'debug'} ne '1') {
-		# Check scheduled commands	
-		my $omni = new PandoraFMS::Omnishell(\%Conf);
-		log_message('log', "Running omnishell process");
-		if (!$omni->run()) {
-			log_message('error', "Failed to run omnishell process: ".$omni->get_last_error());
-		} else {
-			log_message('log', "Omnishell process completed.");
-		}
+	eval {
+		# Omnishell controller.
+		$omnishell = new PandoraFMS::Omnishell(
+			{
+				%Conf,
+				'ConfDir' => $ConfDir
+			}
+		);
+	};
+	if ($@) {
+		log_message('error', "Omnishell process error: ".$@);
 	}
 
 	# Launch broker agents
@@ -3237,18 +3243,22 @@ while (1) {
 
 	if (ref ($Conf{'commands'}) eq "HASH") {
 		foreach my $command (keys %{$Conf{'commands'}}) {
-			my $result = evaluate_command($command);
-			if (ref($result) eq "HASH") {
-				# Process command result.
-				$Xml .= "<cmd_report>\n";
-				$Xml .= "  <cmd_response>\n";
-				$Xml .= "    <cmd_name><![CDATA[".$result->{'name'}."]]></cmd_name>\n";
-				$Xml .= "    <cmd_key><![CDATA[".$command."]]></cmd_key>\n";
-				$Xml .= "    <cmd_errorlevel><![CDATA[".$result->{'error_level'}."]]></cmd_errorlevel>\n";
-				$Xml .= "    <cmd_stdout><![CDATA[".$result->{'stdout'}."]]></cmd_stdout>\n";
-				$Xml .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_stderr>\n";
-				$Xml .= "  </cmd_response>\n";
-				$Xml .= "</cmd_report>\n";
+			eval {
+				if ($Conf{'debug'} eq '1') {
+					log_message('debug', 'Running omnishell commmand ['.$command.']');
+				}
+
+				my $output = $omnishell->run($command, 'xml');
+				if (!empty($output)) {
+					$Xml .= $output;
+				} else {
+					if ($Conf{'debug'} eq '1') {
+						log_message('error', 'Omnishell result: '.$omnishell->get_last_error());
+					}
+				}
+			};
+			if ($@) {
+				log_message('error', 'Omnishell error: '.$@);
 			}
 		}
 	}

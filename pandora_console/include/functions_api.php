@@ -2520,6 +2520,70 @@ function api_get_module_id($id, $thrash1, $name, $thrash3)
 
 
 /**
+ * Retrieves custom_id from given module_id.
+ *
+ * @param integer $id Module id.
+ *
+ * @return void
+ */
+function api_get_module_custom_id($id)
+{
+    if (is_metaconsole()) {
+        return;
+    }
+
+    try {
+        $module = new Module($id);
+        if (!util_api_check_agent_and_print_error(
+            $module->id_agente(),
+            'json'
+        )
+        ) {
+            return;
+        }
+    } catch (Exception $e) {
+        returnError('id_not_found', 'json');
+    }
+
+    returnData('json', $module->custom_id());
+}
+
+
+/**
+ * Retrieves custom_id from given module_id.
+ *
+ * @param integer $id Module id.
+ *
+ * @return void
+ */
+function api_set_module_custom_id($id, $value)
+{
+    if (is_metaconsole()) {
+        return;
+    }
+
+    try {
+        $module = new Module($id);
+        if (!util_api_check_agent_and_print_error(
+            $module->id_agente(),
+            'json',
+            'AW'
+        )
+        ) {
+            return;
+        }
+
+        $module->custom_id($value);
+        $module->save();
+    } catch (Exception $e) {
+        returnError('id_not_found', 'json');
+    }
+
+    returnData('json', ['type' => 'string', 'data' => $module->custom_id()]);
+}
+
+
+/**
  * Get modules for an agent, and print all the result like a csv.
  *
  * @param $thrash1 Don't use.

@@ -647,7 +647,7 @@ if (!empty($network_interfaces)) {
                 $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
                 $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=";
                 $graph_link .= $params_encoded."','";
-                $graph_link .= $win_handle."', 1000, 650)\">";
+                $graph_link .= $win_handle."', 800, 480)\">";
                 $graph_link .= html_print_image(
                     'images/chart_curve.png',
                     true,

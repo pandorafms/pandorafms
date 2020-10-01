@@ -4228,7 +4228,7 @@ function events_page_details($event, $server='')
 
             $graph_params_str = http_build_query($graph_params);
 
-            $link = "winopeng('".$url.'?'.$graph_params_str."','".$win_handle."')";
+            $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
 
             $data[1] = '<a href="javascript:'.$link.'">';
             $data[1] .= html_print_image('images/chart_curve.png', true);

@@ -267,13 +267,13 @@ function grafico_modulo_sparse_data(
             || $data_module_graph['id_module_type'] == 31
             || $data_module_graph['id_module_type'] == 100
         ) {
-                $array_data = grafico_modulo_sparse_data_chart(
-                    $agent_module_id,
-                    $date_array,
-                    $data_module_graph,
-                    $params,
-                    $series_suffix
-                );
+            $array_data = grafico_modulo_sparse_data_chart(
+                $agent_module_id,
+                $date_array,
+                $data_module_graph,
+                $params,
+                $series_suffix
+            );
         } else {
             $data_slice = ($date_array['period'] / (250 * $params['zoom']) + 100);
             $array_data = fullscale_data(
@@ -287,6 +287,10 @@ function grafico_modulo_sparse_data(
                 $params['type_mode_graph']
             );
         }
+    }
+
+    if (empty($array_data) === true) {
+        return [];
     }
 
     if ($array_data === false && (!$params['graph_combined']
@@ -1005,7 +1009,7 @@ function grafico_modulo_sparse($params, $server_name='')
             $return .= graph_nodata_image($params['width'], $params['height']);
         }
     } else {
-        if (!empty($array_data)) {
+        if (empty($array_data) === false) {
             $return = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -4168,6 +4172,10 @@ function fullscale_data(
         $data_slice
     );
 
+    if ($data_uncompress === false) {
+        return [];
+    }
+
     $data = [];
     $previous_data = 0;
     // Normal.
@@ -4413,10 +4421,6 @@ function fullscale_data(
             $data['sum'.$series_suffix]['avg'] = ($sum_data_avg / $count_data_total);
         }
     } else {
-        if ($data_uncompress === false) {
-            $data_uncompress = [];
-        }
-
         foreach ($data_uncompress as $k) {
             foreach ($k['data'] as $v) {
                 if (isset($v['type']) && $v['type'] == 1) {
@@ -4991,7 +4995,14 @@ function graph_nodata_image(
     if ($percent === true) {
         $div = $image_div;
     } else {
-        $style = 'width:'.$width.'px; height:'.$height.'px; background-color: white; margin: 0 auto;';
+        if (strpos($width, '%') === false) {
+            $width = 'width: '.$width.'px;';
+        } else {
+            $width = 'width: '.$width.';';
+        }
+
+        $style = $width.' height:'.$height.'px;';
+        $style .= ' background-color: white; margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
     }
 

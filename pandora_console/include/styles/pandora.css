@@ -583,10 +583,12 @@ select:-internal-list-box {
   justify-content: space-between;
   align-content: center;
 }
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
 .flex-row-baseline {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   align-items: baseline;
 }
 

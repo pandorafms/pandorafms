@@ -758,8 +758,8 @@ var TreeController = {
                         winopeng_var(
                           element.moduleGraph.url,
                           element.moduleGraph.handle,
-                          1000,
-                          650
+                          800,
+                          480
                         );
                       } catch (error) {
                         // console.log(error);

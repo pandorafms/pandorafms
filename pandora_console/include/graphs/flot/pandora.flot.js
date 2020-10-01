@@ -3030,7 +3030,7 @@ function number_format(number, force_integer, unit, short_data, divisor) {
   var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
   var pos = 0;
 
-  while (number >= divisor) {
+  while (Math.abs(number) >= divisor) {
     // As long as the number can be divided by 1000 or 1024.
     pos++;
     number = number / divisor;

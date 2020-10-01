@@ -1704,7 +1704,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 }
 
 int
-Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
+Pandora_Windows_Service::sendXml (Pandora_Module_List *modules, string extra /* = ""*/) {
     int rc = 0, rc_sec = 0, xml_buffer;
     string            data_xml;
 	string            xml_filename, random_integer;
@@ -1785,10 +1785,13 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 			modules->goNext ();
 		}
 	}
-	
+
+	/* Write extra content (omnishell, for instance) */
+	data_xml += extra;
+
 	/* Close the XML header */
 	data_xml += "</agent_data>";
-	
+
 	/* Generate temporal filename */
 	random_integer = inttostr (rand());
 	tmp_filename = conf->getValue ("agent_name");
@@ -2018,7 +2021,7 @@ Pandora_Windows_Service::pandora_run () {
 void
 Pandora_Windows_Service::pandora_run (int forced_run) {
 	Pandora_Agent_Conf  *conf = NULL;
-	string server_addr, conf_file, *all_conf;
+	string server_addr, conf_file, *all_conf, omnishell_output, omnishell_path;
 	int startup_delay = 0;
 	int i, num;
 	static bool startup = true;
@@ -2054,6 +2057,15 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 		}
 		this->checkCollections ();
 	}
+
+	
+	/* Execute omnishell commands */
+	omnishell_path = Pandora::getPandoraInstallDir ();
+	omnishell_path += "util\\omnishell_client.exe \"" + conf_file+"\"";
+	if (getPandoraDebug () != false) {
+		pandoraLog ("Omnishell: Running");
+	}
+	omnishell_output = getValueFromCmdExec(omnishell_path.c_str(), 6000000);
 
 	server_addr = conf->getValue ("server_ip");
 
@@ -2126,7 +2138,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 				
 		// Send the XML
 		if (!server_addr.empty ()) {
-		  this->sendXml (this->modules);
+		  this->sendXml (this->modules, omnishell_output);
 		}
 	}
 	

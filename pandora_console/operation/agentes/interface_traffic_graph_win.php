@@ -302,7 +302,7 @@ html_print_div(
 );
 
 // Graph.
-echo '<div>';
+echo '<div id="stat-win-interface-graph">';
 
 $height = 280;
 $width  = '90%';

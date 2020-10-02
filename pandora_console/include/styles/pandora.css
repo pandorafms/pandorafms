@@ -3077,6 +3077,7 @@ div.nodata_container {
   display: table;
 }
 
+div#stat-win-interface-graph div.nodata_container,
 div#stat-win-module-graph div.nodata_container {
   width: 30%;
   height: 100%;

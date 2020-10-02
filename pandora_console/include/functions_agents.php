@@ -2957,7 +2957,6 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     }
 
     $ni_by_agents = [];
-
     foreach ($agents as $agent) {
         $agent_id = $agent['id_agente'];
         $agent_group_id = $agent['id_grupo'];
@@ -2965,27 +2964,52 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
         $agent_interfaces = [];
 
         $accepted_module_types = [];
-        $remote_snmp_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_snmp_proc');
+        $remote_snmp_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_snmp_proc'
+        );
         if ($remote_snmp_proc) {
             $accepted_module_types[] = $remote_snmp_proc;
         }
 
-        $remote_icmp_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_icmp_proc');
+        $remote_icmp_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_icmp_proc'
+        );
         if ($remote_icmp_proc) {
             $accepted_module_types[] = $remote_icmp_proc;
         }
 
-        $remote_tcp_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_tcp_proc');
+        $remote_tcp_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_tcp_proc'
+        );
         if ($remote_tcp_proc) {
             $accepted_module_types[] = $remote_tcp_proc;
         }
 
-        $generic_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'generic_proc');
+        $generic_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'generic_proc'
+        );
         if ($generic_proc) {
             $accepted_module_types[] = $generic_proc;
         }
 
-        $remote_snmp = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_snmp');
+        $remote_snmp = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_snmp'
+        );
         if ($remote_snmp) {
             $accepted_module_types[] = $remote_snmp;
         }
@@ -3008,8 +3032,13 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
         }
 
         $filter = " tagente_modulo.id_agente = $agent_id AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo IN (".implode(',', $accepted_module_types).") AND (tagente_modulo.nombre LIKE '%_ifOperStatus' OR tagente_modulo.nombre LIKE 'ifOperStatus_%')";
-        $modules = agents_get_modules($agent_id, $columns, $filter, true, false);
-
+        $modules = agents_get_modules(
+            $agent_id,
+            $columns,
+            $filter,
+            true,
+            false
+        );
         if (!empty($modules)) {
             $interfaces = [];
 

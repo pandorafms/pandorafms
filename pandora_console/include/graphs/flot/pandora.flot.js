@@ -2469,7 +2469,9 @@ function pandoraFlotArea(
           });
 
           label_aux =
-            legend[series.label].split(":")[0] + data_legend[series.label];
+            legend[series.label].split(": Min")[0] +
+            ": " +
+            data_legend[series.label];
           $("#legend_" + graph_id + " .legendLabel")
             .eq(i)
             .html(label_aux);

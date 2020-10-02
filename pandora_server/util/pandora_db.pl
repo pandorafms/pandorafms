@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.749 PS200930";
+my $version = "7.0NG.749 PS201002";
 
 # Pandora server configuration
 my %conf;
@@ -1067,6 +1067,13 @@ if ($conf{'_history_db_enabled'} eq '1') {
 			die ("$@\n");
 		}
 	}
+}
+
+# Only run on master servers.
+pandora_set_master(\%conf, $dbh);
+if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) { 
+	log_message ('', " [*] Not a master server.\n\n");
+	exit 1;
 }
 
 # Get a lock

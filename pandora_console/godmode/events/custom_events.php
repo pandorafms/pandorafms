@@ -114,6 +114,7 @@ $fields_available['server_name'] = __('Server Name');
 $fields_available['data'] = __('Data');
 $fields_available['module_status'] = __('Module Status');
 $fields_available['mini_severity'] = __('Severity mini');
+$fields_available['module_custom_id'] = __('Module custom ID');
 
 
 // Remove fields already selected.

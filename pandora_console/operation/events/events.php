@@ -292,6 +292,7 @@ if (is_ajax()) {
             if (!is_metaconsole()) {
                 $fields[] = 'am.nombre as module_name';
                 $fields[] = 'am.id_agente_modulo as id_agentmodule';
+                $fields[] = 'am.custom_id as module_custom_id';
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';

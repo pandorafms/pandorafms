@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_agent_unix
 %define version     7.0NG.749
-%define release     200930
+%define release     201002
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -87,7 +87,7 @@ fi
 if [ ! -f /etc/pandora/pandora_agent.conf ] ; then
 	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
 else
-	ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
+	[[ ! -f /etc/pandora/pandora_agent.conf.rpmnew ]] && ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
 fi
 
 if [ ! -e /etc/pandora/plugins ]; then

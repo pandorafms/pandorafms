@@ -267,13 +267,13 @@ function grafico_modulo_sparse_data(
             || $data_module_graph['id_module_type'] == 31
             || $data_module_graph['id_module_type'] == 100
         ) {
-                $array_data = grafico_modulo_sparse_data_chart(
-                    $agent_module_id,
-                    $date_array,
-                    $data_module_graph,
-                    $params,
-                    $series_suffix
-                );
+            $array_data = grafico_modulo_sparse_data_chart(
+                $agent_module_id,
+                $date_array,
+                $data_module_graph,
+                $params,
+                $series_suffix
+            );
         } else {
             $data_slice = ($date_array['period'] / (250 * $params['zoom']) + 100);
             $array_data = fullscale_data(
@@ -287,6 +287,10 @@ function grafico_modulo_sparse_data(
                 $params['type_mode_graph']
             );
         }
+    }
+
+    if (empty($array_data) === true) {
+        return [];
     }
 
     if ($array_data === false && (!$params['graph_combined']
@@ -1005,7 +1009,7 @@ function grafico_modulo_sparse($params, $server_name='')
             $return .= graph_nodata_image($params['width'], $params['height']);
         }
     } else {
-        if (!empty($array_data)) {
+        if (empty($array_data) === false) {
             $return = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -2554,20 +2558,35 @@ function truncate_negatives(&$element)
 
 
 /**
- * Print a pie graph with events data of agent or all agents (if id_agent = false)
+ * Print a pie graph with events
+ * data of agent or all agents (if id_agent = false).
  *
- * @param integer id_agent Agent ID
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param bool return or echo flag
- * @param bool show_not_init flag
+ * @param integer $id_agent           Agent ID.
+ * @param integer $width              Pie graph width.
+ * @param integer $height             Pie graph height.
+ * @param boolean $return             Flag.
+ * @param boolean $show_not_init      Flag.
+ * @param array   $data_agents        Data.
+ * @param boolean $donut_narrow_graph Flag type graph.
+ *
+ * @return string Html chart.
  */
-function graph_agent_status($id_agent=false, $width=300, $height=200, $return=false, $show_not_init=false, $data_agents=false, $donut_narrow_graph=false)
-{
+function graph_agent_status(
+    $id_agent=false,
+    $width=300,
+    $height=200,
+    $return=false,
+    $show_not_init=false,
+    $data_agents=false,
+    $donut_narrow_graph=false
+) {
     global $config;
 
     if ($data_agents == false) {
-        $groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+        $groups = implode(
+            ',',
+            array_keys(users_get_groups(false, 'AR', false))
+        );
         $p_table = 'tagente';
         $s_table = 'tagent_secondary_group';
         if (is_metaconsole()) {
@@ -2575,10 +2594,8 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
             $s_table = 'tmetaconsole_agent_secondary_group';
         }
 
-        $data = db_get_row_sql(
-            sprintf(
-                'SELECT
-                SUM(critical_count) AS Critical,
+        $sql = sprintf(
+            'SELECT SUM(critical_count) AS Critical,
                 SUM(warning_count) AS Warning,
                 SUM(normal_count) AS Normal,
                 SUM(unknown_count) AS Unknown
@@ -2589,19 +2606,20 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
                 ta.disabled = 0 AND
                 %s
                 (ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-                $show_not_init ? ', SUM(notinit_count) "Not init"' : '',
-                $p_table,
-                $s_table,
-                empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
-                $groups,
-                $groups
-            )
+            $show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+            $p_table,
+            $s_table,
+            (empty($id_agent) === true) ? '' : 'ta.id_agente = '.$id_agent.' AND',
+            $groups,
+            $groups
         );
+
+        $data = db_get_row_sql($sql);
     } else {
         $data = $data_agents;
     }
 
-    if (empty($data)) {
+    if (empty($data) === true) {
         $data = [];
     }
 
@@ -2610,11 +2628,15 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     if ($config['fixed_graph'] == false) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+            'url'  => ui_get_full_url(
+                'images/logo_vertical_water.png',
+                false,
+                false,
+                false
+            ),
         ];
     }
 
-    // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
     $colors['Critical'] = COL_CRITICAL;
     $colors['Warning'] = COL_WARNING;
     $colors['Normal'] = COL_NORMAL;
@@ -4150,6 +4172,10 @@ function fullscale_data(
         $data_slice
     );
 
+    if ($data_uncompress === false) {
+        return [];
+    }
+
     $data = [];
     $previous_data = 0;
     // Normal.
@@ -4395,10 +4421,6 @@ function fullscale_data(
             $data['sum'.$series_suffix]['avg'] = ($sum_data_avg / $count_data_total);
         }
     } else {
-        if ($data_uncompress === false) {
-            $data_uncompress = [];
-        }
-
         foreach ($data_uncompress as $k) {
             foreach ($k['data'] as $v) {
                 if (isset($v['type']) && $v['type'] == 1) {
@@ -4973,7 +4995,14 @@ function graph_nodata_image(
     if ($percent === true) {
         $div = $image_div;
     } else {
-        $style = 'width:'.$width.'px; height:'.$height.'px; background-color: white; margin: 0 auto;';
+        if (strpos($width, '%') === false) {
+            $width = 'width: '.$width.'px;';
+        } else {
+            $width = 'width: '.$width.';';
+        }
+
+        $style = $width.' height:'.$height.'px;';
+        $style .= ' background-color: white; margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
     }
 

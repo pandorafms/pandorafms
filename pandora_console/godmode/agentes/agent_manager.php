@@ -258,7 +258,7 @@ if (!$new_agent && $alias != '') {
     $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').'</p>';
     $table_qr_code .= '<div id="qr_container_image"></div>';
     if ($id_agente) {
-        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
+        $table_qr_code .= "<a id='qr_code_agent_view' href='".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente).");'></a>";
     }
 
     // Add Custom id div.

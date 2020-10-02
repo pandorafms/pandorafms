@@ -231,6 +231,7 @@ sub new {
     %{$args},
   };
 
+  $self->{'temporal'} =~ s/\"|\'//g;
   $self = bless($self, $class);
   $self->prepare_commands();
 
@@ -584,8 +585,8 @@ sub evaluate_command {
   # [0] because how library works.
   my $cmd = $self->{'commands'}->{$ref}->[0];
 
-  my $std_files = ' >> '.$self->{'temporal'}.'/'.$ref.'.stdout ';
-  $std_files .= ' 2>> '.$self->{'temporal'}.'/'.$ref.'.stderr ';
+  my $std_files = ' >> "'.$self->{'temporal'}.'/'.$ref.'.stdout" ';
+  $std_files .= ' 2>> "'.$self->{'temporal'}.'/'.$ref.'.stderr" ';
 
   # Check preconditions
   my $err_level;

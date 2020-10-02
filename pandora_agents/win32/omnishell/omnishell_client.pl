@@ -66,6 +66,10 @@ if (!defined($ConfFile) || !-e $ConfFile) {
   exit 1;
 }
 
+if(!-d dirname($ConfFile).'\commands') {
+	mkdir(dirname($ConfFile).'\commands');
+}
+
 eval {
   # Check scheduled commands	
   my $omnishell = new PandoraFMS::Omnishell(

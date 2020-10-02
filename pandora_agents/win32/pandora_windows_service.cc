@@ -2060,8 +2060,8 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 
 	
 	/* Execute omnishell commands */
-	omnishell_path = Pandora::getPandoraInstallDir ();
-	omnishell_path += "util\\omnishell_client.exe \"" + conf_file+"\"";
+	omnishell_path = '"'+Pandora::getPandoraInstallDir ();
+	omnishell_path += "util\\omnishell_client.exe\" \"" + conf_file+"\"";
 	if (getPandoraDebug () != false) {
 		pandoraLog ("Omnishell: Running");
 	}

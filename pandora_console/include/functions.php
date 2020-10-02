@@ -3771,7 +3771,11 @@ function series_type_graph_array($data, $show_elements_graph)
                         }
                     } else {
                         $name_legend = '';
-                        if ((int) $config['type_mode_graph'] === 1) {
+                        if (isset($show_elements_graph['fullscale']) === true
+                            && (int) $show_elements_graph['fullscale'] === 1
+                        ) {
+                            $name_legend .= 'Tip: ';
+                        } else {
                             $name_legend .= 'Avg: ';
                         }
 
@@ -3839,7 +3843,8 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['series_type'][$key] = $type_graph;
 
                 $name_legend = '';
-                if ((int) $config['type_mode_graph'] === 1) {
+
+                if ((int) $show_elements_graph['type_mode_graph'] != 0) {
                     if (strpos($key, 'min') !== false) {
                         $name_legend .= 'Min: ';
                     }

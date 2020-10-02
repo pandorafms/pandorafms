@@ -108,30 +108,6 @@ class Agent
     }
 
 
-    public function ajax($parameter2=false)
-    {
-        $system = System::getInstance();
-
-        if (!$this->correct_acl) {
-            return;
-        } else {
-            switch ($parameter2) {
-                case 'render_events_bar':
-                    $agent_id = $system->getRequest('agent_id', '0');
-                    $width = $system->getRequest('width', '400');
-                    graph_graphic_agentevents(
-                        $agent_id,
-                        $width,
-                        30,
-                        SECONDS_1DAY,
-                        ui_get_full_url(false)
-                    );
-                exit;
-            }
-        }
-    }
-
-
     private function show_agent()
     {
         $ui = Ui::getInstance();
@@ -194,24 +170,14 @@ class Agent
             }
 
             $address = $this->agent['direccion'];
-            // ~ foreach ($addresses as $k => $add) {
-                // ~ if ($add == $address) {
-                    // ~ unset($addresses[$k]);
-                // ~ }
-            // ~ }
-            // ~ $ip = html_print_image('images/world.png',
-                // ~ true, array('title' => __('IP address'))) .
-                // ~ '&nbsp;&nbsp;';
-            $ip .= empty($address) ? '<em>'.__('N/A').'</em>' : $address;
+            $ip .= (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
+            $last_contact = '<b>'.__('Last contact').'</b>:&nbsp;';
+            $last_contact .= ui_print_timestamp(
+                $this->agent['ultimo_contacto'],
+                true
+            );
 
-            // ~ if (!empty($addresses)) {
-                // ~ $ip .= ui_print_help_tip(__('Other IP addresses') .
-                    // ~ ':  ' . implode(', ',$addresses), true);
-            // ~ }
-            $last_contact = '<b>'.__('Last contact').'</b>:&nbsp;'.ui_print_timestamp($this->agent['ultimo_contacto'], true);
-
-            // ~ $description = '<b>' . __('Description') . ':</b>&nbsp;';
-            if (empty($agent['comentarios'])) {
+            if (empty($agent['comentarios']) === true) {
                 $description .= '<i>'.__('N/A').'</i>';
             } else {
                 $description .= $this->agent['comentarios'];
@@ -241,30 +207,38 @@ class Agent
             $html .= $description;
             $html .= '</div>';
 
+            $ui->contentGridAddCell($html, 'agent_details');
+
+            ob_start();
+
+            // Fixed width non interactive charts.
+            $status_chart_width = 160;
+            $graph_width = 160;
+
+            $html = '<div class="agent_graphs">';
+            $html .= '<b>'.__('Modules by status').'</b>';
+            $html .= '<div id="status_pie" style="margin: auto; width: '.$status_chart_width.'px; margin-bottom: 10px;">';
+            $html .= graph_agent_status(
+                $this->id,
+                $graph_width,
+                160,
+                true,
+                false,
+                false,
+                true
+            );
+            $html .= '</div>';
+            $graph_js = ob_get_clean();
+            $html = $graph_js.$html;
+
+            unset($this->agent['fired_count']);
+
             if ($system->getConfig('metaconsole')) {
                 metaconsole_connect(
                     null,
                     $this->agent['id_tmetaconsole_setup']
                 );
             }
-
-            $ui->contentGridAddCell($html, 'agent_details');
-
-            ob_start();
-
-            // Fixed width non interactive charts
-            $status_chart_width = 160;
-            $graph_width = 160;
-
-            $html = '<div class="agent_graphs">';
-            $html .= '<b>'.__('Modules by status').'</b>';
-            $html .= '<div id="status_pie" style="margin: auto; width: '.$status_chart_width.'px;">';
-            $html .= graph_agent_status($this->id, $graph_width, 160, true);
-            $html .= '</div>';
-            $graph_js = ob_get_clean();
-            $html = $graph_js.$html;
-
-            unset($this->agent['fired_count']);
 
             if ($this->agent['total_count'] > 0) {
                 $html .= '<div class="agents_tiny_stats agents_tiny_stats_tactical">'.reporting_tiny_stats($this->agent, true, 'agent', '&nbsp;').' </div>';
@@ -273,7 +247,20 @@ class Agent
             $html .= '</div>';
             $html .= '<div class="events_bar">';
             $html .= '<b>'.__('Events (24h)').'</b>';
-            $html .= '<div id="events_bar"></div>';
+            $html .= '<div id="events_bar" style ="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; width: 100%; height: 96px;" >';
+            $html .= graph_graphic_agentevents(
+                $this->id,
+                95,
+                45,
+                SECONDS_1DAY,
+                '',
+                true,
+                false,
+                true,
+                1,
+                ''
+            );
+            $html .= '</div>';
             $html .= '</div>';
 
             $ui->contentGridAddCell($html, 'agent_graphs');
@@ -306,7 +293,10 @@ class Agent
             $ui->contentEndCollapsible();
 
             if ($system->getConfig('metaconsole')) {
-                metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
+                metaconsole_connect(
+                    null,
+                    $this->agent['id_tmetaconsole_setup']
+                );
             }
 
             $alerts = new Alerts();
@@ -371,46 +361,19 @@ class Agent
 						$('.agent_details').height(max_height);
 					}
 				}
-									
+
 				if ($('.ui-block-a').css('float') != 'none') {
 					set_same_heigth();
 				}
-				
+
 				$('.ui-collapsible').bind('expand', function () {
 					refresh_link_listener_last_agent_events();
 					refresh_link_listener_list_agent_Modules();
 				});
-				
-				function ajax_load_events_bar() {
-					$('#events_bar').html('<div style=\"text-align: center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
-					
-					var bar_width = $('.agent_graphs').width() * 0.9;
 
-					postvars = {};
-					postvars[\"action\"] = \"ajax\";
-					postvars[\"parameter1\"] = \"agent\";
-					postvars[\"parameter2\"] = \"render_events_bar\";
-					postvars[\"agent_id\"] = \"".$this->id."\";
-					postvars[\"width\"] = bar_width;
-					$.post(\"index.php\",
-						postvars,
-						function (data) {
-							$('#events_bar').html(data);
-							if ($('.ui-block-a').css('float') != 'none') {
-								set_same_heigth();
-							}
-						},
-						\"html\");
-				}
-				
-				ajax_load_events_bar();
-				
 				// Detect orientation change to refresh dinamic content
 				$(window).on({
 					orientationchange: function(e) {
-						// Refresh events bar
-						ajax_load_events_bar();
-						
 						// Keep same height on boxes
 						if ($('.ui-block-a').css('float') == 'none') {
 							$('.agent_graphs').height('auto');
@@ -419,14 +382,13 @@ class Agent
 						else {
 							set_same_heigth();
 						}
-					  
 					}
 				});
-										
+
 				if ($('.ui-block-a').css('float') != 'none') {
 					set_same_heigth();
 				}
-			});			
+			});
 			</script>"
         );
 

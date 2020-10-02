@@ -1632,10 +1632,21 @@ switch ($action) {
                             break;
 
                             case 'simple_graph':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
+                                );
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
                                     'time_compare_overlapped'
+                                );
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'network_interfaces_report':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
                                 $good_format = true;
@@ -2274,10 +2285,21 @@ switch ($action) {
                             break;
 
                             case 'simple_graph':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
+                                );
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
                                     'time_compare_overlapped'
+                                );
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'network_interfaces_report':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
                                 $good_format = true;

@@ -198,6 +198,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'sparse':
+            $params['pdf'] = true;
             echo grafico_modulo_sparse($params);
         break;
 

@@ -267,13 +267,13 @@ function grafico_modulo_sparse_data(
             || $data_module_graph['id_module_type'] == 31
             || $data_module_graph['id_module_type'] == 100
         ) {
-                $array_data = grafico_modulo_sparse_data_chart(
-                    $agent_module_id,
-                    $date_array,
-                    $data_module_graph,
-                    $params,
-                    $series_suffix
-                );
+            $array_data = grafico_modulo_sparse_data_chart(
+                $agent_module_id,
+                $date_array,
+                $data_module_graph,
+                $params,
+                $series_suffix
+            );
         } else {
             $data_slice = ($date_array['period'] / (250 * $params['zoom']) + 100);
             $array_data = fullscale_data(
@@ -289,19 +289,27 @@ function grafico_modulo_sparse_data(
         }
     }
 
+    if (empty($array_data) === true) {
+        return [];
+    }
+
     if ($array_data === false && (!$params['graph_combined']
         && !isset($array_data['sum1']['data'][0][1]) && !$params['baseline'])
     ) {
         return false;
     }
 
-    $array_data = series_suffix_leyend(
-        'sum',
-        $series_suffix,
-        $agent_module_id,
-        $data_module_graph,
-        $array_data
-    );
+    if ((int) $params['type_mode_graph'] !== 2
+        && (int) $params['type_mode_graph'] !== 3
+    ) {
+        $array_data = series_suffix_leyend(
+            'sum',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+    }
 
     if ($params['percentil']) {
         $array_data = series_suffix_leyend(
@@ -313,22 +321,30 @@ function grafico_modulo_sparse_data(
         );
     }
 
-    if ($params['type_mode_graph']) {
-        $array_data = series_suffix_leyend(
-            'min',
-            $series_suffix,
-            $agent_module_id,
-            $data_module_graph,
-            $array_data
-        );
+    if ($params['type_mode_graph'] > 0) {
+        if ((int) $params['type_mode_graph'] === 1
+            || (int) $params['type_mode_graph'] === 3
+        ) {
+            $array_data = series_suffix_leyend(
+                'min',
+                $series_suffix,
+                $agent_module_id,
+                $data_module_graph,
+                $array_data
+            );
+        }
 
-        $array_data = series_suffix_leyend(
-            'max',
-            $series_suffix,
-            $agent_module_id,
-            $data_module_graph,
-            $array_data
-        );
+        if ((int) $params['type_mode_graph'] === 1
+            || (int) $params['type_mode_graph'] === 2
+        ) {
+            $array_data = series_suffix_leyend(
+                'max',
+                $series_suffix,
+                $agent_module_id,
+                $data_module_graph,
+                $array_data
+            );
+        }
     }
 
     // This is for a specific type of report that consists in passing
@@ -610,6 +626,7 @@ function grafico_modulo_sparse_data(
  * 'return_img_base_64'  => false,
  * 'image_treshold'      => false,
  * 'graph_combined'      => false,
+ * 'graph_render'        => 0,
  * 'zoom'                => 1,
  * 'server_id'           => null,
  * 'stacked'             => 0.
@@ -772,14 +789,28 @@ function grafico_modulo_sparse($params, $server_name='')
 
     if (!isset($params['type_mode_graph'])) {
         $params['type_mode_graph'] = $config['type_mode_graph'];
+        if (isset($params['graph_render']) === true) {
+            $params['type_mode_graph'] = $params['graph_render'];
+        }
     }
 
     if (!isset($params['projection'])) {
         $params['projection'] = false;
     }
 
+    if (isset($params['pdf']) === false) {
+        $params['pdf'] = false;
+    }
+
     if (!isset($params['agent_module_id'])) {
-        return graph_nodata_image($params['width'], $params['height']);
+        return graph_nodata_image(
+            $params['width'],
+            $params['height'],
+            'area',
+            '',
+            false,
+            $params['pdf']
+        );
     } else {
         $agent_module_id = $params['agent_module_id'];
     }
@@ -811,12 +842,6 @@ function grafico_modulo_sparse($params, $server_name='')
     $date_array['period']     = $params['period'];
     $date_array['final_date'] = $params['date'];
     $date_array['start_date'] = ($params['date'] - $params['period']);
-
-    if (is_metaconsole()) {
-        $id_meta = metaconsole_get_id_server($server_name);
-        $server  = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-    }
 
     if ($agent_module_id) {
         $module_data = db_get_row_sql(
@@ -975,7 +1000,14 @@ function grafico_modulo_sparse($params, $server_name='')
                 $array_events_alerts
             );
         } else {
-            $return = graph_nodata_image($params['width'], $params['height']);
+            $return = graph_nodata_image(
+                $params['width'],
+                $params['height'],
+                'area',
+                '',
+                false,
+                $params['pdf']
+            );
         }
 
         $return .= '<br>';
@@ -1002,10 +1034,17 @@ function grafico_modulo_sparse($params, $server_name='')
                 $array_events_alerts
             );
         } else {
-            $return .= graph_nodata_image($params['width'], $params['height']);
+            $return = graph_nodata_image(
+                $params['width'],
+                $params['height'],
+                'area',
+                '',
+                false,
+                $params['pdf']
+            );
         }
     } else {
-        if (!empty($array_data)) {
+        if (empty($array_data) === false) {
             $return = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -1023,13 +1062,11 @@ function grafico_modulo_sparse($params, $server_name='')
                 $params['width'],
                 $params['height'],
                 'area',
-                __('No data to display within the selected interval')
+                __('No data to display within the selected interval'),
+                false,
+                $params['pdf']
             );
         }
-    }
-
-    if (is_metaconsole()) {
-        metaconsole_restore_db();
     }
 
     return $return;
@@ -1243,8 +1280,17 @@ function graphic_combined_module(
     }
 
     if (!isset($params['type_mode_graph'])) {
-        // $config['type_mode_graph']
         $params['type_mode_graph'] = 0;
+        if (isset($params['graph_render']) === true) {
+            $params['type_mode_graph'] = $params['graph_render'];
+            $params_combined['type_mode_graph'] = $params['graph_render'];
+        }
+    }
+
+    if (isset($params['fullscale']) === false) {
+        $params_combined['fullscale'] = false;
+    } else {
+        $params_combined['fullscale'] = $params['fullscale'];
     }
 
     $params['graph_combined'] = true;
@@ -1277,7 +1323,7 @@ function graphic_combined_module(
 
     $sources = false;
 
-    if ($params_combined['id_graph'] == 0) {
+    if ((int) $params_combined['id_graph'] === 0) {
         $count_modules = count($module_list);
 
         if (!$params_combined['weight_list']) {
@@ -1286,7 +1332,7 @@ function graphic_combined_module(
 
         if ($count_modules > 0) {
             foreach ($module_list as $key => $value) {
-                $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['id_server'];
+                $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['server_id'];
                 $sources[$key]['id_agent_module'] = $value['module'];
                 $sources[$key]['weight'] = $weights[$key];
                 $sources[$key]['label'] = $params_combined['labels'];
@@ -2554,20 +2600,35 @@ function truncate_negatives(&$element)
 
 
 /**
- * Print a pie graph with events data of agent or all agents (if id_agent = false)
+ * Print a pie graph with events
+ * data of agent or all agents (if id_agent = false).
  *
- * @param integer id_agent Agent ID
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param bool return or echo flag
- * @param bool show_not_init flag
+ * @param integer $id_agent           Agent ID.
+ * @param integer $width              Pie graph width.
+ * @param integer $height             Pie graph height.
+ * @param boolean $return             Flag.
+ * @param boolean $show_not_init      Flag.
+ * @param array   $data_agents        Data.
+ * @param boolean $donut_narrow_graph Flag type graph.
+ *
+ * @return string Html chart.
  */
-function graph_agent_status($id_agent=false, $width=300, $height=200, $return=false, $show_not_init=false, $data_agents=false, $donut_narrow_graph=false)
-{
+function graph_agent_status(
+    $id_agent=false,
+    $width=300,
+    $height=200,
+    $return=false,
+    $show_not_init=false,
+    $data_agents=false,
+    $donut_narrow_graph=false
+) {
     global $config;
 
     if ($data_agents == false) {
-        $groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+        $groups = implode(
+            ',',
+            array_keys(users_get_groups(false, 'AR', false))
+        );
         $p_table = 'tagente';
         $s_table = 'tagent_secondary_group';
         if (is_metaconsole()) {
@@ -2575,10 +2636,8 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
             $s_table = 'tmetaconsole_agent_secondary_group';
         }
 
-        $data = db_get_row_sql(
-            sprintf(
-                'SELECT
-                SUM(critical_count) AS Critical,
+        $sql = sprintf(
+            'SELECT SUM(critical_count) AS Critical,
                 SUM(warning_count) AS Warning,
                 SUM(normal_count) AS Normal,
                 SUM(unknown_count) AS Unknown
@@ -2589,19 +2648,20 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
                 ta.disabled = 0 AND
                 %s
                 (ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-                $show_not_init ? ', SUM(notinit_count) "Not init"' : '',
-                $p_table,
-                $s_table,
-                empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
-                $groups,
-                $groups
-            )
+            $show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+            $p_table,
+            $s_table,
+            (empty($id_agent) === true) ? '' : 'ta.id_agente = '.$id_agent.' AND',
+            $groups,
+            $groups
         );
+
+        $data = db_get_row_sql($sql);
     } else {
         $data = $data_agents;
     }
 
-    if (empty($data)) {
+    if (empty($data) === true) {
         $data = [];
     }
 
@@ -2610,11 +2670,15 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     if ($config['fixed_graph'] == false) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+            'url'  => ui_get_full_url(
+                'images/logo_vertical_water.png',
+                false,
+                false,
+                false
+            ),
         ];
     }
 
-    // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
     $colors['Critical'] = COL_CRITICAL;
     $colors['Warning'] = COL_WARNING;
     $colors['Normal'] = COL_NORMAL;
@@ -4150,6 +4214,10 @@ function fullscale_data(
         $data_slice
     );
 
+    if ($data_uncompress === false) {
+        return [];
+    }
+
     $data = [];
     $previous_data = 0;
     // Normal.
@@ -4232,20 +4300,22 @@ function fullscale_data(
                         }
                     }
 
-                    if (isset($v['datos']) && $v['datos']) {
-                        // Max.
-                        if ($v['datos'] >= $max_value) {
+                    // Max.
+                    if ($v['datos'] === false || $v['datos'] >= $max_value) {
+                        if ($v['datos'] === false) {
+                            $max_value = 0;
+                        } else {
                             $max_value = $v['datos'];
                         }
-
-                        // Min.
-                        if ($v['datos'] <= $min_value) {
-                            $min_value = $v['datos'];
-                        }
-
-                        // Avg sum.
-                        $sum_data += $v['datos'];
                     }
+
+                    // Min.
+                    if ($v['datos'] <= $min_value) {
+                        $min_value = $v['datos'];
+                    }
+
+                    // Avg sum.
+                    $sum_data += $v['datos'];
 
                     // Avg count.
                     $count_data++;
@@ -4265,23 +4335,30 @@ function fullscale_data(
                         $real_date = ($k['data'][0]['utimestamp'] * 1000);
                     }
 
-                    $data['sum'.$series_suffix]['data'][] = [
-                        $real_date,
-                        ($sum_data / $count_data),
-                    ];
+                    if ($type_mode_graph <= 1) {
+                        $data['sum'.$series_suffix]['data'][] = [
+                            $real_date,
+                            ($sum_data / $count_data),
+                        ];
+                    }
+
                     if ($type_mode_graph && !$params['baseline']) {
-                        if ($min_value != PHP_INT_MAX) {
-                            $data['min'.$series_suffix]['data'][] = [
-                                $real_date,
-                                $min_value,
-                            ];
+                        if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
+                            if ($min_value != PHP_INT_MAX) {
+                                $data['min'.$series_suffix]['data'][] = [
+                                    $real_date,
+                                    $min_value,
+                                ];
+                            }
                         }
 
-                        if ($max_value != (-PHP_INT_MAX)) {
-                            $data['max'.$series_suffix]['data'][] = [
-                                $real_date,
-                                $max_value,
-                            ];
+                        if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 2) {
+                            if ($max_value != (-PHP_INT_MAX)) {
+                                $data['max'.$series_suffix]['data'][] = [
+                                    $real_date,
+                                    $max_value,
+                                ];
+                            }
                         }
                     } else {
                         if ($min_value != PHP_INT_MAX) {
@@ -4374,31 +4451,35 @@ function fullscale_data(
             }
         }
 
-        $data['sum'.$series_suffix]['min'] = $min_value_total;
-        $data['sum'.$series_suffix]['max'] = $max_value_total;
-        $data['sum'.$series_suffix]['avg'] = 0;
-        if (isset($count_data_total) === true) {
-            $data['sum'.$series_suffix]['avg'] = ($sum_data_total / $count_data_total);
+        if ($type_mode_graph <= 1) {
+            $data['sum'.$series_suffix]['min'] = $min_value_total;
+            $data['sum'.$series_suffix]['max'] = $max_value_total;
+            $data['sum'.$series_suffix]['avg'] = 0;
+            if (isset($count_data_total) === true) {
+                $data['sum'.$series_suffix]['avg'] = ($sum_data_total / $count_data_total);
+            }
         }
 
         if ($type_mode_graph && !$params['baseline']) {
-            $data['min'.$series_suffix]['min'] = $min_value_min;
-            $data['min'.$series_suffix]['max'] = $min_value_max;
-            $data['min'.$series_suffix]['avg'] = ($sum_data_min / $count_data_total);
+            if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
+                $data['min'.$series_suffix]['min'] = $min_value_min;
+                $data['min'.$series_suffix]['max'] = $min_value_max;
+                $data['min'.$series_suffix]['avg'] = ($sum_data_min / $count_data_total);
+            }
 
-            $data['max'.$series_suffix]['min'] = $max_value_min;
-            $data['max'.$series_suffix]['max'] = $max_value_max;
-            $data['max'.$series_suffix]['avg'] = ($sum_data_max / $count_data_total);
+            if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 2) {
+                $data['max'.$series_suffix]['min'] = $max_value_min;
+                $data['max'.$series_suffix]['max'] = $max_value_max;
+                $data['max'.$series_suffix]['avg'] = ($sum_data_max / $count_data_total);
+            }
 
-            $data['sum'.$series_suffix]['min'] = $avg_value_min;
-            $data['sum'.$series_suffix]['max'] = $avg_value_max;
-            $data['sum'.$series_suffix]['avg'] = ($sum_data_avg / $count_data_total);
+            if ($type_mode_graph <= 1) {
+                $data['sum'.$series_suffix]['min'] = $avg_value_min;
+                $data['sum'.$series_suffix]['max'] = $avg_value_max;
+                $data['sum'.$series_suffix]['avg'] = ($sum_data_avg / $count_data_total);
+            }
         }
     } else {
-        if ($data_uncompress === false) {
-            $data_uncompress = [];
-        }
-
         foreach ($data_uncompress as $k) {
             foreach ($k['data'] as $v) {
                 if (isset($v['type']) && $v['type'] == 1) {
@@ -4521,20 +4602,28 @@ function fullscale_data(
             $last_data,
         ];
     } else {
-        $data['sum'.$series_suffix]['data'][] = [
-            ($date_array['final_date'] * 1000),
-            $last_data,
-        ];
+        if ($type_mode_graph <= 1) {
+            $data['sum'.$series_suffix]['data'][] = [
+                ($date_array['final_date'] * 1000),
+                $last_data,
+            ];
+        }
+
         if ($data_slice) {
             if ($type_mode_graph && !$params['baseline']) {
-                $data['min'.$series_suffix]['data'][] = [
-                    ($date_array['final_date'] * 1000),
-                    $min_value,
-                ];
-                $data['max'.$series_suffix]['data'][] = [
-                    ($date_array['final_date'] * 1000),
-                    $max_value,
-                ];
+                if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
+                    $data['min'.$series_suffix]['data'][] = [
+                        ($date_array['final_date'] * 1000),
+                        $min_value,
+                    ];
+                }
+
+                if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 2) {
+                    $data['max'.$series_suffix]['data'][] = [
+                        ($date_array['final_date'] * 1000),
+                        $max_value,
+                    ];
+                }
             } else {
                 $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['min'] = $min_value;
                 $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['avg'] = 0;
@@ -4953,8 +5042,20 @@ function graph_nodata_image(
     $height=110,
     $type='area',
     $text='',
-    $percent=false
+    $percent=false,
+    $base64=false
 ) {
+    if ($base64 === true) {
+        $dataImg = file_get_contents(
+            html_print_image(
+                'images/image_problem_area.png',
+                false,
+                ['style' => 'width:150px;']
+            )
+        );
+        return base64_encode($dataImg);
+    }
+
     $image = ui_get_full_url(
         'images/image_problem_area.png',
         false,
@@ -4973,7 +5074,14 @@ function graph_nodata_image(
     if ($percent === true) {
         $div = $image_div;
     } else {
-        $style = 'width:'.$width.'px; height:'.$height.'px; background-color: white; margin: 0 auto;';
+        if (strpos($width, '%') === false) {
+            $width = 'width: '.$width.'px;';
+        } else {
+            $width = 'width: '.$width.';';
+        }
+
+        $style = $width.' height:'.$height.'px;';
+        $style .= ' background-color: white; margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
     }
 

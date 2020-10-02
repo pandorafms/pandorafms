@@ -3684,17 +3684,24 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
     $return['failed'] = null;
     $return['data'] = [];
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
         $server_names = metaconsole_get_connection_names();
-        if (isset($server_names) && is_array($server_names)) {
+
+        if (isset($server_names) === true
+            && is_array($server_names) === true
+        ) {
             foreach ($server_names as $key => $value) {
                 $id_meta = metaconsole_get_id_server($value);
                 $connection = metaconsole_get_connection_by_id($id_meta);
                 if (metaconsole_connect($connection) != NOERR) {
                     continue;
                 } else {
-                    $network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
+                    $network_interfaces_by_agents = agents_get_network_interfaces(
+                        false,
+                        $filter
+                    );
+
                     $return = agents_get_network_interfaces_array(
                         $network_interfaces_by_agents,
                         $return,
@@ -3737,81 +3744,90 @@ function agents_get_network_interfaces_array(
     $pdf,
     $id_meta
 ) {
-    if (empty($network_interfaces_by_agents)) {
-        $return['failed'] = __('The group has no agents or none of the agents has any network interface');
+    global $config;
+
+    if (empty($network_interfaces_by_agents) === true
+        && is_metaconsole() === false
+    ) {
+        $return['failed'] = __(
+            'The group has no agents or none of the agents has any network interface'
+        );
         $return['data'] = [];
     } else {
-        foreach ($network_interfaces_by_agents as $agent_id => $agent) {
-            $row_data = [];
-            $row_data['agent'] = $agent['name'];
-            $row_data['interfaces'] = [];
-            foreach ($agent['interfaces'] as $interface_name => $interface) {
-                $row_interface = [];
-                $row_interface['name'] = $interface_name;
-                $row_interface['ip'] = $interface['ip'];
-                $row_interface['mac'] = $interface['mac'];
-                $row_interface['status'] = $interface['status_image'];
-                $row_interface['chart'] = null;
+        if (isset($network_interfaces_by_agents) === true
+            && is_array($network_interfaces_by_agents) === true
+        ) {
+            foreach ($network_interfaces_by_agents as $agent_id => $agent) {
+                $row_data = [];
+                $row_data['agent'] = $agent['name'];
+                $row_data['interfaces'] = [];
+                foreach ($agent['interfaces'] as $interface_name => $interface) {
+                    $row_interface = [];
+                    $row_interface['name'] = $interface_name;
+                    $row_interface['ip'] = $interface['ip'];
+                    $row_interface['mac'] = $interface['mac'];
+                    $row_interface['status'] = $interface['status_image'];
+                    $row_interface['chart'] = null;
 
-                $width = null;
+                    $params = [
+                        'period'             => $content['period'],
+                        'unit_name'          => array_fill(0, count($interface['traffic']), __('bytes/s')),
+                        'date'               => $report['datetime'],
+                        'only_image'         => $pdf,
+                        'homeurl'            => $config['homeurl'],
+                        'fullscale'          => $fullscale,
+                        'server_id'          => $id_meta,
+                        'height'             => $config['graph_image_height'],
+                        'landscape'          => $content['landscape'],
+                        'return_img_base_64' => true,
+                        'graph_render'       => $content['graph_render'],
+                    ];
 
-                $params = [
-                    'period'             => $content['period'],
-                    'width'              => $width,
-                    'unit_name'          => array_fill(0, count($interface['traffic']), __('bytes/s')),
-                    'date'               => $report['datetime'],
-                    'only_image'         => $pdf,
-                    'homeurl'            => $config['homeurl'],
-                    'fullscale'          => $fullscale,
-                    'server_id'          => $id_meta,
-                    'height'             => $config['graph_image_height'],
-                    'landscape'          => $content['landscape'],
-                    'return_img_base_64' => true,
-                ];
+                    $params_combined = [
+                        'labels'         => array_keys($interface['traffic']),
+                        'modules_series' => array_values($interface['traffic']),
+                        'stacked'        => CUSTOM_GRAPH_LINE,
+                    ];
 
-                $params_combined = [
-                    'labels'         => array_keys($interface['traffic']),
-                    'modules_series' => array_values($interface['traffic']),
-                ];
+                    switch ($type) {
+                        case 'dinamic':
+                        case 'static':
+                            if (!empty($interface['traffic'])) {
+                                if ($pdf === false) {
+                                    $row_interface['chart'] = graphic_combined_module(
+                                        array_values($interface['traffic']),
+                                        $params,
+                                        $params_combined
+                                    );
+                                } else {
+                                    $row_interface['chart'] = '<img src="data:image/jpg;base64,';
+                                    $row_interface['chart'] .= graphic_combined_module(
+                                        array_values($interface['traffic']),
+                                        $params,
+                                        $params_combined
+                                    );
+                                    $row_interface['chart'] .= '" />';
+                                }
+                            }
+                        break;
 
-                switch ($type) {
-                    case 'dinamic':
-                    case 'static':
-                        if (!empty($interface['traffic'])) {
-                            if ($pdf === false) {
+                        case 'data':
+                            if (!empty($interface['traffic'])) {
+                                $params['return_data'] = true;
                                 $row_interface['chart'] = graphic_combined_module(
                                     array_values($interface['traffic']),
                                     $params,
                                     $params_combined
                                 );
-                            } else {
-                                $row_interface['chart'] = '<img src="data:image/jpg;base64,';
-                                $row_interface['chart'] .= graphic_combined_module(
-                                    array_values($interface['traffic']),
-                                    $params,
-                                    $params_combined
-                                );
-                                $row_interface['chart'] .= '" />';
                             }
-                        }
-                    break;
+                        break;
+                    }
 
-                    case 'data':
-                        if (!empty($interface['traffic'])) {
-                            $params['return_data'] = true;
-                            $row_interface['chart'] = graphic_combined_module(
-                                array_values($interface['traffic']),
-                                $params,
-                                $params_combined
-                            );
-                        }
-                    break;
+                    $row_data['interfaces'][] = $row_interface;
                 }
 
-                $row_data['interfaces'][] = $row_interface;
+                $return['data'][] = $row_data;
             }
-
-            $return['data'][] = $row_data;
         }
     }
 
@@ -8435,6 +8451,7 @@ function reporting_simple_graph(
                 'landscape'          => $content['landscape'],
                 'backgroundColor'    => 'transparent',
                 'return_img_base_64' => true,
+                'graph_render'       => $content['graph_render'],
             ];
 
             if ($only_image === false) {

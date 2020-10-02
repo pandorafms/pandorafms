@@ -2516,7 +2516,7 @@ function reporting_html_group_configuration($table, $item, $pdf=0)
 function reporting_html_network_interfaces_report($table, $item, $pdf=0)
 {
     $return_pdf = '';
-    if (!empty($item['failed'])) {
+    if (empty($item['failed']) === false) {
         if ($pdf === 0) {
             $table->colspan['interfaces']['cell'] = 3;
             $table->cellstyle['interfaces']['cell'] = 'text-align: left;';
@@ -5120,7 +5120,7 @@ function reporting_get_last_activity()
 function reporting_get_event_histogram($events, $text_header_event=false)
 {
     global $config;
-    if (!defined('METACONSOLE')) {
+    if (!is_metaconsole()) {
         include_once $config['homedir'].'/include/graphs/functions_gd.php';
     } else {
         include_once '../../include/graphs/functions_gd.php';
@@ -5128,7 +5128,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
 
     $max_value = count($events);
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $max_value = SECONDS_1HOUR;
     }
 
@@ -5149,7 +5149,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
         EVENT_CRIT_CRITICAL      => COL_CRITICAL,
     ];
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole()) {
         $full_legend = [];
         $cont = 0;
     }
@@ -5193,7 +5193,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
             break;
         }
 
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole()) {
             $full_legend[$cont] = $data['timestamp'];
             $graph_data[] = [
                 'data'       => $color,
@@ -5212,17 +5212,18 @@ function reporting_get_event_histogram($events, $text_header_event=false)
     $table->width = '100%';
     $table->data = [];
     $table->size = [];
+    $table->size[0] = '100%';
     $table->head = [];
     $table->title = '<span>'.$text_header_event.'</span>';
     $table->data[0][0] = '';
 
-    if (!empty($graph_data)) {
-        $url_slice = defined('METACONSOLE') ? $url : $urlImage;
+    if (empty($graph_data) === false) {
+        $url_slice = is_metaconsole() ? $url : $urlImage;
 
         $slicebar = flot_slicesbar_graph(
             $graph_data,
             $max_value,
-            100,
+            '450px;border:0',
             25,
             $full_legend,
             $colors,
@@ -5235,8 +5236,8 @@ function reporting_get_event_histogram($events, $text_header_event=false)
             0,
             [],
             true,
-            $ttl,
-            true,
+            1,
+            false,
             false
         );
 
@@ -5245,7 +5246,7 @@ function reporting_get_event_histogram($events, $text_header_event=false)
         $table->data[0][0] = __('No events');
     }
 
-    if (!defined('METACONSOLE')) {
+    if (!is_metaconsole()) {
         if (!$text_header_event) {
             $event_graph = '<fieldset class="databox tactical_set">
                         <legend>'.$text_header_event.'</legend>'.html_print_table($table, true).'</fieldset>';

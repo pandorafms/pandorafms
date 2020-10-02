@@ -208,6 +208,11 @@ sub data_consumer ($$) {
 		my @wmi_columns = split /\s*,\s*/, $1;
 		my $selected_col = $wmi_columns[$module->{'tcp_port'}];
 
+		if (!defined($selected_col)) {
+			logger($pa_config, 'Warning, WMI module ' . safe_output($module->{'name'}) . ' column missconfigured, using first available.', 10);
+			$selected_col = shift @wmi_columns;
+		}
+
 		# Get result col number
 		my @output_col = split(/\|/, $output[1]);
 

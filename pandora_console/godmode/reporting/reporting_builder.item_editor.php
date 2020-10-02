@@ -156,6 +156,8 @@ $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
 
+$graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
+
 switch ($action) {
     case 'new':
         $actionParameter = 'save';
@@ -259,7 +261,8 @@ switch ($action) {
 
                 case 'simple_graph':
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
-                    $percentil = isset($style['percentil']) ? $config['percentil'] : 0;
+                    $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
+                    $graph_render = $item['graph_render'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
                 case 'projection_graph':
@@ -653,6 +656,7 @@ switch ($action) {
                     $period = $item['period'];
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $recursion = $item['recursion'];
+                    $graph_render = $item['graph_render'];
                 break;
 
                 case 'top_n':
@@ -2094,18 +2098,24 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_time_compare_overlapped" style="" class="datos">
+        <tr id="row_graph_render" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
-            echo __('Time compare (Overlapped)');
+            echo __('Graph render');
             ?>
             </td>
             <td>
                 <?php
-                html_print_checkbox_switch(
-                    'time_compare_overlapped',
-                    1,
-                    $time_compare_overlapped
+                $list_graph_render = [
+                    1 => __('Avg, max & min'),
+                    2 => __('Max only'),
+                    3 => __('Min only'),
+                    0 => __('Avg only'),
+                ];
+                html_print_select(
+                    $list_graph_render,
+                    'graph_render',
+                    $graph_render
                 );
                 ?>
             </td>
@@ -2131,9 +2141,26 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_time_compare_overlapped" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Time compare (Overlapped)');
+            ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'time_compare_overlapped',
+                    1,
+                    $time_compare_overlapped
+                );
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_percentil" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Percentil'); ?></td>
-            <td><?php html_print_checkbox('percentil', 1, $percentil); ?></td>
+            <td><?php html_print_checkbox_switch('percentil', 1, $percentil); ?></td>
         </tr>
 
         <tr id="row_exception_condition_value" style="" class="datos">
@@ -3894,6 +3921,16 @@ $(document).ready (function () {
         });
     });
 
+    $("#checkbox-fullscale").change(function(e){
+        if(e.target.checked === true) {
+            $("#graph_render").prop('disabled', 'disabled');
+        } else {
+            $("#graph_render").prop('disabled', false);
+        }
+    });
+
+    $('#checkbox-fullscale').trigger('change');
+
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
@@ -4909,6 +4946,7 @@ function chooseType() {
     $("#row_show_graph").hide();
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
+    $("#row_graph_render").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
     $("#row_exception_condition_value").hide();
@@ -5013,8 +5051,14 @@ function chooseType() {
         case 'simple_graph':
             $("#row_time_compare_overlapped").show();
             $("#row_fullscale").show();
-            if ($("#checkbox-percentil").prop("checked"))
-                $("#row_percentil").show();
+            $("#row_graph_render").show();
+            $("#row_percentil").show();
+
+            // Force type.
+            if('<?php echo $action; ?>' === 'new'){
+                $("#graph_render").val(<?php echo $graph_render; ?>);
+            }
+
             // The break hasn't be forgotten, this element
             // only should be shown on the simple graphs.
         case 'simple_baseline_graph':
@@ -5380,7 +5424,12 @@ function chooseType() {
             $("#row_description").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            $("#row_graph_render").show();
             $("#row_fullscale").show();
+            // Force MAX type.
+            if('<?php echo $action; ?>' === 'new'){
+                $("#graph_render").val(2);
+            }
             break;
 
         case 'top_n':

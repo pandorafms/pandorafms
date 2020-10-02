@@ -468,11 +468,21 @@ function html_print_select_groups(
 
     if (is_ajax()) {
         $output .= '<script src="';
-        $output .= ui_get_full_url('include/javascript/select2.min.js');
+        $output .= ui_get_full_url(
+            'include/javascript/select2.min.js',
+            false,
+            false,
+            false
+        );
         $output .= '" type="text/javascript"></script>';
 
         $output .= '<link rel="stylesheet" href="';
-        $output .= ui_get_full_url('include/styles/select2.min.css');
+        $output .= ui_get_full_url(
+            'include/styles/select2.min.css',
+            false,
+            false,
+            false
+        );
         $output .= '"/>';
     } else {
         ui_require_css_file('select2.min');

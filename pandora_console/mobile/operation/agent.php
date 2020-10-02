@@ -215,8 +215,6 @@ class Agent
             $status_chart_width = 160;
             $graph_width = 160;
 
-            hd($this->agent, true);
-
             $html = '<div class="agent_graphs">';
             $html .= '<b>'.__('Modules by status').'</b>';
             $html .= '<div id="status_pie" style="margin: auto; width: '.$status_chart_width.'px; margin-bottom: 10px;">';

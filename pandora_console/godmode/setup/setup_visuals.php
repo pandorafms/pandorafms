@@ -917,6 +917,15 @@ $row++;
     );
     $row++;
 
+    $table_chars->data[$row][0] = __('Chart fit to content');
+    $table_chars->data[$row][1] = html_print_checkbox_switch(
+        'maximum_y_axis',
+        1,
+        $config['maximum_y_axis'],
+        true
+    );
+    $row++;
+
     $table_chars->data[$row][0] = __('Type of module charts');
     $table_chars->data[$row][1] = __('Area').'&nbsp;'.html_print_radio_button(
         'type_module_charts',

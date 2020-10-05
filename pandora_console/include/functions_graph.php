@@ -629,172 +629,177 @@ function grafico_modulo_sparse_data(
  * 'graph_render'        => 0,
  * 'zoom'                => 1,
  * 'server_id'           => null,
- * 'stacked'             => 0.
+ * 'stacked'             => 0
+ * 'maximum_y_axis'      => 0.
  *
  * @return string html Content graphs.
  */
-function grafico_modulo_sparse($params, $server_name='')
+function grafico_modulo_sparse($params)
 {
     global $config;
 
-    if (!isset($params) || !is_array($params)) {
+    if (isset($params) === false || is_array($params) === false) {
         return false;
     }
 
-    if (!isset($params['period'])) {
+    if (isset($params['period']) === false) {
         return false;
     }
 
-    if (!isset($params['show_events'])) {
+    if (isset($params['show_events']) === false) {
         $params['show_events'] = false;
     }
 
-    if (!isset($params['width'])) {
+    if (isset($params['width']) === false) {
         $params['width'] = '90%';
     }
 
-    if (!isset($params['height'])) {
+    if (isset($params['height']) === false) {
         $params['height'] = 450;
     }
 
-    if (!isset($params['title'])) {
+    if (isset($params['title']) === false) {
         $params['title'] = '';
     }
 
-    if (!isset($params['unit_name'])) {
+    if (isset($params['unit_name']) === false) {
         $params['unit_name'] = null;
     }
 
-    if (!isset($params['show_alerts'])) {
+    if (isset($params['show_alerts']) === false) {
         $params['show_alerts'] = false;
     }
 
-    if (!isset($params['date']) || !$params['date']) {
+    if (isset($params['date']) === false || !$params['date']) {
         $params['date'] = get_system_time();
     }
 
-    if (!isset($params['unit'])) {
+    if (isset($params['unit']) === false) {
         $params['unit'] = '';
     }
 
-    if (!isset($params['baseline'])) {
+    if (isset($params['baseline']) === false) {
         $params['baseline'] = 0;
     }
 
-    if (!isset($params['return_data'])) {
+    if (isset($params['return_data']) === false) {
         $params['return_data'] = 0;
     }
 
-    if (!isset($params['show_title'])) {
+    if (isset($params['show_title']) === false) {
         $show_title = true;
     }
 
-    if (!isset($params['only_image'])) {
+    if (isset($params['only_image']) === false) {
         $params['only_image'] = false;
     }
 
-    if (!isset($params['homeurl'])) {
+    if (isset($params['homeurl']) === false) {
         $params['homeurl'] = $config['homeurl'];
     }
 
-    if (!isset($params['ttl'])) {
+    if (isset($params['ttl']) === false) {
         $params['ttl'] = 1;
     }
 
-    if (!isset($params['adapt_key'])) {
+    if (isset($params['adapt_key']) === false) {
         $params['adapt_key'] = '';
     }
 
-    if (!isset($params['compare'])) {
+    if (isset($params['compare']) === false) {
         $params['compare'] = false;
     }
 
-    if (!isset($params['show_unknown'])) {
+    if (isset($params['show_unknown']) === false) {
         $params['show_unknown'] = false;
     }
 
-    if (!isset($params['menu'])) {
+    if (isset($params['menu']) === false) {
         $params['menu'] = true;
     }
 
-    if (!isset($params['show_legend'])) {
+    if (isset($params['show_legend']) === false) {
         $params['show_legend'] = true;
     }
 
-    if (!isset($params['show_overview'])) {
+    if (isset($params['show_overview']) === false) {
         $params['show_overview'] = true;
     }
 
-    if (!isset($params['show_export_csv'])) {
+    if (isset($params['show_export_csv']) === false) {
         $params['show_export_csv'] = true;
     }
 
-    if (!isset($params['backgroundColor'])) {
+    if (isset($params['backgroundColor']) === false) {
         $params['backgroundColor'] = 'white';
     }
 
-    if (!isset($params['percentil'])) {
+    if (isset($params['percentil']) === false) {
         $params['percentil'] = null;
     }
 
-    if (!isset($params['dashboard'])) {
+    if (isset($params['dashboard']) === false) {
         $params['dashboard'] = false;
     }
 
-    if (!isset($params['vconsole']) || $params['vconsole'] == false) {
+    if (isset($params['vconsole']) === false || $params['vconsole'] == false) {
         $params['vconsole'] = false;
     } else {
         $params['menu'] = false;
     }
 
-    if (!isset($params['type_graph'])) {
+    if (isset($params['type_graph']) === false) {
         $params['type_graph'] = $config['type_module_charts'];
     }
 
-    if (!isset($params['fullscale'])) {
+    if (isset($params['fullscale']) === false) {
         $params['fullscale'] = false;
     }
 
-    if (!isset($params['id_widget_dashboard'])) {
+    if (isset($params['id_widget_dashboard']) === false) {
         $params['id_widget_dashboard'] = false;
     }
 
-    if (!isset($params['force_interval'])) {
+    if (isset($params['force_interval']) === false) {
         $params['force_interval'] = '';
     }
 
-    if (!isset($params['time_interval'])) {
+    if (isset($params['time_interval']) === false) {
         $params['time_interval'] = 300;
     }
 
-    if (!isset($params['array_data_create'])) {
+    if (isset($params['array_data_create']) === false) {
         $params['array_data_create'] = 0;
     }
 
-    if (!isset($params['return_img_base_64'])) {
+    if (isset($params['return_img_base_64']) === false) {
         $params['return_img_base_64'] = false;
     }
 
-    if (!isset($params['image_treshold'])) {
+    if (isset($params['image_treshold']) === false) {
         $params['image_treshold'] = false;
     }
 
-    if (!isset($params['graph_combined'])) {
+    if (isset($params['graph_combined']) === false) {
         $params['graph_combined'] = false;
     }
 
-    if (!isset($params['zoom'])) {
+    if (isset($params['zoom']) === false) {
         $params['zoom'] = ($config['zoom_graph']) ? $config['zoom_graph'] : 1;
     }
 
-    if (!isset($params['type_mode_graph'])) {
+    if (isset($params['type_mode_graph']) === false) {
         $params['type_mode_graph'] = $config['type_mode_graph'];
         if (isset($params['graph_render']) === true) {
             $params['type_mode_graph'] = $params['graph_render'];
         }
     }
 
-    if (!isset($params['projection'])) {
+    if (isset($params['maximum_y_axis']) === false) {
+        $params['maximum_y_axis'] = $config['maximum_y_axis'];
+    }
+
+    if (isset($params['projection']) === false) {
         $params['projection'] = false;
     }
 
@@ -802,7 +807,7 @@ function grafico_modulo_sparse($params, $server_name='')
         $params['pdf'] = false;
     }
 
-    if (!isset($params['agent_module_id'])) {
+    if (isset($params['agent_module_id']) === false) {
         return graph_nodata_image(
             $params['width'],
             $params['height'],
@@ -815,14 +820,12 @@ function grafico_modulo_sparse($params, $server_name='')
         $agent_module_id = $params['agent_module_id'];
     }
 
-    if (!isset($params['stacked'])) {
+    if (isset($params['stacked']) === false) {
         $params['stacked'] = 0;
     }
 
-    // TODO: Configurable.
     $params['grid_color'] = '#C1C1C1';
     $params['legend_color'] = '#636363';
-
     $params['font'] = $config['fontpath'];
     $params['font_size']  = $config['font_size'];
     $params['short_data'] = $config['short_module_graph_data'];
@@ -880,14 +883,14 @@ function grafico_modulo_sparse($params, $server_name='')
     }
 
     // Format of the graph.
-    if (empty($params['unit'])) {
+    if (empty($params['unit']) === true) {
         $params['unit'] = $module_data['unit'];
         if (modules_is_unit_macro($params['unit'])) {
             $params['unit'] = '';
         }
     }
 
-    if (empty($params['divisor'])) {
+    if (empty($params['divisor']) === true) {
         $params['divisor'] = get_data_multiplier($params['unit']);
     }
 
@@ -986,7 +989,7 @@ function grafico_modulo_sparse($params, $server_name='')
 
     // Check available data.
     if ($params['compare'] === 'separated') {
-        if (!empty($array_data)) {
+        if (empty($array_data) === false) {
             $return = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -1011,7 +1014,7 @@ function grafico_modulo_sparse($params, $server_name='')
         }
 
         $return .= '<br>';
-        if (!empty($array_data_prev)) {
+        if (empty($array_data_prev) === false) {
             $series_type_array = series_type_graph_array(
                 $array_data_prev,
                 $params
@@ -1116,11 +1119,11 @@ function graphic_combined_module(
 ) {
     global $config;
 
-    if (!isset($params_combined['from_interface'])) {
+    if (isset($params_combined['from_interface']) === false) {
         $params_combined['from_interface'] = false;
     }
 
-    if (!isset($params_combined['stacked'])) {
+    if (isset($params_combined['stacked']) === false) {
         if ($params_combined['from_interface']) {
             if ($config['type_interface_charts'] == 'line') {
                 $params_combined['stacked'] = CUSTOM_GRAPH_LINE;
@@ -1131,155 +1134,165 @@ function graphic_combined_module(
             if ($params_combined['id_graph'] == 0) {
                 $params_combined['stacked'] = CUSTOM_GRAPH_AREA;
             } else {
-                $params_combined['stacked'] = db_get_row('tgraph', 'id_graph', $params_combined['id_graph']);
+                $params_combined['stacked'] = db_get_row(
+                    'tgraph',
+                    'id_graph',
+                    $params_combined['id_graph']
+                );
             }
         }
     }
 
     $params['stacked'] = $params_combined['stacked'];
 
-    if (!isset($params_combined['projection']) || $params_combined['projection'] == false) {
+    if (isset($params_combined['projection']) === false
+        || $params_combined['projection'] == false
+    ) {
         $params_combined['projection'] = false;
     } else {
         $params['stacked'] = 'area';
         $params['projection'] = true;
     }
 
-    if (!isset($params_combined['labels'])) {
+    if (isset($params_combined['labels']) === false) {
         $params_combined['labels'] = [];
     }
 
-    if (!isset($params_combined['summatory'])) {
+    if (isset($params_combined['summatory']) === false) {
         $params_combined['summatory'] = 0;
     }
 
-    if (!isset($params_combined['average'])) {
+    if (isset($params_combined['average']) === false) {
         $params_combined['average'] = 0;
     }
 
-    if (!isset($params_combined['modules_series'])) {
+    if (isset($params_combined['modules_series']) === false) {
         $params_combined['modules_series'] = 0;
     }
 
-    if (!isset($params_combined['return'])) {
+    if (isset($params_combined['return']) === false) {
         $params_combined['return'] = 1;
     }
 
-    if (!isset($params_combined['id_graph'])) {
+    if (isset($params_combined['id_graph']) === false) {
         $params_combined['id_graph'] = 0;
     }
 
-    if (!isset($params_combined['type_report'])) {
+    if (isset($params_combined['type_report']) === false) {
         $params_combined['type_report'] = '';
     }
 
-    if (!isset($params['percentil'])) {
+    if (isset($params['percentil']) === false) {
         $params_combined['percentil'] = null;
     } else {
         $params_combined['percentil'] = $params['percentil'];
     }
 
-    if (!isset($params['period'])) {
+    if (isset($params['period']) === false) {
         return false;
     }
 
-    if (!isset($params['width'])) {
+    if (isset($params['width']) === false) {
         $params['width'] = '90%';
     }
 
-    if (!isset($params['height'])) {
+    if (isset($params['height']) === false) {
         $params['height'] = 450;
     }
 
-    if (!isset($params['title'])) {
+    if (isset($params['title']) === false) {
         $params['title'] = '';
     }
 
-    if (!isset($params['unit_name'])) {
+    if (isset($params['unit_name']) === false) {
         $params['unit_name'] = null;
     }
 
-    if (!isset($params['show_alerts'])) {
+    if (isset($params['show_alerts']) === false) {
         $params['show_alerts'] = false;
     }
 
-    if (!isset($params['date']) || !$params['date']) {
+    if (isset($params['date']) === false || !$params['date']) {
         $params['date'] = get_system_time();
     }
 
-    if (!isset($params['only_image'])) {
+    if (isset($params['only_image']) === false) {
         $params['only_image'] = false;
     }
 
-    if (!isset($params['ttl'])) {
+    if (isset($params['ttl']) === false) {
         $params['ttl'] = 1;
     }
 
-    if (!isset($params['backgroundColor'])) {
+    if (isset($params['backgroundColor']) === false) {
         $params['backgroundColor'] = 'white';
     }
 
-    if (!isset($params['dashboard'])) {
+    if (isset($params['dashboard']) === false) {
         $params['dashboard'] = false;
     }
 
-    if (!isset($params['menu']) || $params['only_image']) {
+    if (isset($params['menu']) === false
+        || $params['only_image']
+    ) {
         $params['menu'] = true;
     } else {
         $params['menu'] = false;
     }
 
-    if (!isset($params['vconsole']) || $params['vconsole'] == false) {
+    if (isset($params['vconsole']) === false
+        || $params['vconsole'] == false
+    ) {
         $params['vconsole'] = false;
     } else {
         $params['menu'] = false;
     }
 
-    if (!isset($params['type_graph'])) {
+    if (isset($params['type_graph']) === false) {
         $params['type_graph'] = $config['type_module_charts'];
     }
 
-    if (!isset($params['percentil'])) {
+    if (isset($params['percentil']) === false) {
         $params['percentil'] = null;
     }
 
-    if (!isset($params['fullscale'])) {
+    if (isset($params['fullscale']) === false) {
         $params['fullscale'] = false;
     }
 
-    if (!isset($params['id_widget_dashboard'])) {
+    if (isset($params['id_widget_dashboard']) === false) {
         $params['id_widget_dashboard'] = false;
     }
 
-    if (!isset($params['homeurl'])) {
+    if (isset($params['homeurl']) === false) {
         $params['homeurl'] = ui_get_full_url(false, false, false, false);
     }
 
-    if (!isset($params['show_legend'])) {
+    if (isset($params['show_legend']) === false) {
         $params['show_legend'] = true;
     }
 
-    if (!isset($params['show_overview'])) {
+    if (isset($params['show_overview']) === false) {
         $params['show_overview'] = true;
     }
 
-    if (!isset($params['show_export_csv'])) {
+    if (isset($params['show_export_csv']) === false) {
         $params['show_export_csv'] = true;
     }
 
-    if (!isset($params['return_img_base_64'])) {
+    if (isset($params['return_img_base_64']) === false) {
         $params['return_img_base_64'] = false;
     }
 
-    if (!isset($params['image_treshold'])) {
+    if (isset($params['image_treshold']) === false) {
         $params['image_treshold'] = false;
     }
 
-    if (!isset($params['show_unknown'])) {
+    if (isset($params['show_unknown']) === false) {
         $params['show_unknown'] = false;
     }
 
-    if (!isset($params['type_mode_graph'])) {
+    if (isset($params['type_mode_graph']) === false) {
         $params['type_mode_graph'] = 0;
         if (isset($params['graph_render']) === true) {
             $params['type_mode_graph'] = $params['graph_render'];
@@ -1291,6 +1304,10 @@ function graphic_combined_module(
         $params_combined['fullscale'] = false;
     } else {
         $params_combined['fullscale'] = $params['fullscale'];
+    }
+
+    if (isset($params['maximum_y_axis']) === false) {
+        $params['maximum_y_axis'] = $config['maximum_y_axis'];
     }
 
     $params['graph_combined'] = true;
@@ -1305,11 +1322,10 @@ function graphic_combined_module(
         );
     }
 
-    if (!isset($params['zoom'])) {
+    if (isset($params['zoom']) === false) {
         $params['zoom'] = 1;
     }
 
-    // TODO: Configurable.
     $params['grid_color']   = '#C1C1C1';
     $params['legend_color'] = '#636363';
 
@@ -1454,23 +1470,23 @@ function graphic_combined_module(
         $params_combined['modules_id'] = $modules;
     }
 
-    if (isset($summatory)) {
+    if (isset($summatory) === true) {
         $params_combined['summatory'] = $summatory;
     }
 
-    if (isset($average)) {
+    if (isset($average) === true) {
         $params_combined['average'] = $average;
     }
 
-    if (isset($modules_series)) {
+    if (isset($modules_series) === true) {
         $params_combined['modules_series'] = $modules_series;
     }
 
-    if (isset($labels)) {
+    if (isset($labels) === true) {
         $params_combined['labels'] = $labels;
     }
 
-    if (isset($weights)) {
+    if (isset($weights) === true) {
         $params_combined['weight_list'] = $weights;
     }
 
@@ -1660,7 +1676,7 @@ function graphic_combined_module(
                 }
             }
 
-            if (empty($array_data)) {
+            if (empty($array_data) === true) {
                 if ($params_combined['return']) {
                     return graph_nodata_image($width, $height);
                 }
@@ -4392,7 +4408,7 @@ function fullscale_data(
                     // Avg count total.
                     $count_data_total++;
 
-                    if ($type_mode_graph && !$params['baseline']) {
+                    if (!$params['baseline']) {
                         // MIN.
                         // max min.
                         if ($min_value >= $min_value_max
@@ -4460,7 +4476,7 @@ function fullscale_data(
             }
         }
 
-        if ($type_mode_graph && !$params['baseline']) {
+        if (!$params['baseline']) {
             if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
                 $data['min'.$series_suffix]['min'] = $min_value_min;
                 $data['min'.$series_suffix]['max'] = $min_value_max;

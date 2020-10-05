@@ -925,6 +925,10 @@ function config_update_config()
                         $error_update[] = __('Use round corners');
                     }
 
+                    if (!config_update_value('maximum_y_axis', (bool) get_parameter('maximum_y_axis'))) {
+                        $error_update[] = __('Chart fit to content');
+                    }
+
                     if (!config_update_value('show_qr_code_header', (bool) get_parameter('show_qr_code_header'))) {
                         $error_update[] = __('Show QR code header');
                     }
@@ -1770,6 +1774,10 @@ function config_process_config()
 
     if (!isset($config['round_corner'])) {
         config_update_value('round_corner', false);
+    }
+
+    if (isset($config['maximum_y_axis']) === false) {
+        config_update_value('maximum_y_axis', false);
     }
 
     if (!isset($config['show_qr_code_header'])) {

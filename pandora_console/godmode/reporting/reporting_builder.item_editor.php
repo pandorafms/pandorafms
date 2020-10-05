@@ -2122,7 +2122,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;">
             <?php
             echo __('Full resolution graph (TIP)').ui_print_help_tip(
-                __('This option may cause performance issues.'),
+                __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
                 true
             );
             ?>

@@ -1063,6 +1063,7 @@ function events_get_all(
                 }
             }
 
+            $_tmp = '';
             foreach ($tags as $id_tag) {
                 if (!isset($tags_names[$id_tag])) {
                     $tags_names[$id_tag] = tags_get_name($id_tag);
@@ -1304,6 +1305,7 @@ function events_get_all(
 
     $tgrupo_join = 'LEFT';
     $tgrupo_join_filters = [];
+
     if (isset($groups)
         && (is_array($groups)
         || $groups > 0)
@@ -1311,17 +1313,21 @@ function events_get_all(
         $tgrupo_join = 'INNER';
         if (is_array($groups)) {
             $tgrupo_join_filters[] = sprintf(
-                ' AND (tg.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+                 OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s)))',
                 join(', ', $groups),
                 join(', ', $groups)
             );
         } else {
             $tgrupo_join_filters[] = sprintf(
-                ' AND (tg.id_grupo = %s OR tasg.id_group = %s)',
+                ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
+                 OR (te.id_agente = tasg.id_agent AND tasg.id_group = %s)',
                 $groups,
                 $groups
             );
         }
+    } else {
+        $tgrupo_join_filters[] = ' te.id_grupo = tg.id_grupo';
     }
 
     $server_join = '';
@@ -1376,8 +1382,7 @@ function events_get_all(
            %s
            %s
          %s JOIN tgrupo tg
-           ON te.id_grupo = tg.id_grupo
-           %s
+           ON %s
          %s
          WHERE 1=1
          %s

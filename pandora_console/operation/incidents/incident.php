@@ -354,7 +354,9 @@ if ($count_total >= 1) {
     echo '</td></tr><tr><td colspan=3>';
 
     echo '<b>'.__('Groups:').'</b>'.'&nbsp;&nbsp;';
+    echo '<div class="w250px inline">';
     html_print_select_groups($config['id_user'], 'IR', true, 'grupo', $grupo, 'javascript:this.form.submit();', '', '', false, false, false, 'w155');
+    echo '</div>';
 
     // echo "&nbsp;&nbsp;&nbsp;&nbsp;";
     echo '</td></tr><tr><td colspan=3>';

@@ -1264,6 +1264,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;"><?php echo __('Group'); ?></td>
             <td style="">
                 <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
                 if (check_acl($config['id_user'], 0, 'RW')) {
                     html_print_select_groups(
                         $config['id_user'],
@@ -1283,6 +1284,8 @@ $class = 'databox filters';
                         ''
                     );
                 }
+
+                echo '</div>';
 
                 echo '&nbsp;&nbsp;&nbsp;'.__('Recursion').'&nbsp;&nbsp;&nbsp;'.html_print_checkbox_switch(
                     'recursion',

@@ -23,11 +23,17 @@
 }
 
 .multi-select-container .filter input,
-.multi-select-container .filter select {
+.multi-select-container .filter select,
+.multi-select-container .filter .select2 {
   float: right;
   width: 50%;
   text-align: left;
 }
+
+.multi-select-container .filter .select2 {
+  width: 50% !important;
+}
+
 .multi-select-container .filter input[type="checkbox"] {
   width: auto;
 }

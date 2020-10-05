@@ -173,8 +173,9 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
     $return_all_group = true;
 }
 
+echo '<div class="w250px inline">';
 html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
-
+echo '</div>';
 echo '<td>';
 echo __('Show Agents').'&nbsp;';
 $fields = [

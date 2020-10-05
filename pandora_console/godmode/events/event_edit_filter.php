@@ -241,7 +241,7 @@ if ($returnAllGroup === false && $id_group_filter == 0) {
     $returnAllGroup = true;
 }
 
-$table->data[1][1] = html_print_select_groups(
+$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     $access,
     $returnAllGroup,
@@ -260,21 +260,21 @@ $table->data[1][1] = html_print_select_groups(
     false,
     'id_grupo',
     $strict_user
-);
+).'</div>';
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';
 $display_all_group = (users_is_admin() || users_can_manage_group_all('AR'));
-$table->data[2][1] = html_print_select_groups(
+$table->data[2][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'AR',
     $display_all_group,
     'id_group',
-    $idGroup,
+    $id_group,
     '',
     '',
     '',
     true
-);
+).'</div>';
 
 $types = get_event_types();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)

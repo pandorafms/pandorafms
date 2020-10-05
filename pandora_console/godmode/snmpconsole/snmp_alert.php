@@ -776,6 +776,7 @@ if ($create_alert || $update_alert) {
 
     // Group
     echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
+    echo '<div class="w250px">';
     html_print_select_groups(
         $config['id_user'],
         'AR',
@@ -796,6 +797,7 @@ if ($create_alert || $update_alert) {
         'id_grupo',
         false
     );
+    echo '</div>';
     echo '</td></tr>';
 
     // Trap type

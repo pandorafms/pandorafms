@@ -591,7 +591,7 @@ sub main() {
 		my $include_api = 'include/api.php';
 		# If public_url is empty in database
 		if ( $console_api_url eq '' ) {
-			$Config{"console_api_url"} = 'http://localhost/pandora_console/' . $include_api;
+			$Config{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
 			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
 		} else {
 			$Config{"console_api_url"} = $console_api_url . $include_api;	
@@ -713,8 +713,7 @@ sub main() {
 	my $curl_execution = "'".$Config{'console_api_url'}."?op=get&op2=test&apipass=".$Config{"console_api_pass"}."&user=".$Config{"console_user"}."&pass=".$Config{"console_pass"}."'";
 	my $exe_testing_api = `curl $curl_execution 2>/dev/null`;
 	my @res_testing_api = split(',', $exe_testing_api);
-	logger(\%Config, Dumper(@res_testing_api), 1);
-	logger(\%Config, $curl_execution, 1);
+
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
 		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);

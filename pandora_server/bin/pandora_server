@@ -714,6 +714,7 @@ sub main() {
 	my $exe_testing_api = `curl $curl_execution 2>/dev/null`;
 	my @res_testing_api = split(',', $exe_testing_api);
 	logger(\%Config, Dumper(@res_testing_api), 1);
+	logger(\%Config, $curl_execution, 1);
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
 		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);

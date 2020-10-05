@@ -395,7 +395,12 @@ $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user',
 
 if ($config['double_auth_enabled']) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
-    $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    if ($config['double_auth_enabled']) {
+        $double_authentication .= html_print_checkbox_switch('double_auth', 1, 1, true);
+    } else {
+        $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    }
+
     // Dialog.
     $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
 }
@@ -878,17 +883,19 @@ $(document).ready (function () {
             $("#text-block_size").removeAttr('disabled');
         }
     }
+    var fa_enable = <?php echo $config['2FA_all_users']; ?>
 
     $("input#checkbox-double_auth").change(function (e) {
         e.preventDefault();
+        if(fa_enable != 1){
+            if (this.checked) {
+                show_double_auth_activation();
+            } else {
+                show_double_auth_deactivation();
+            }
+        }
+    }); 
 
-        if (this.checked) {
-            show_double_auth_activation();
-        }
-        else {
-            show_double_auth_deactivation();
-        }
-    });
     
     show_data_section();
 });

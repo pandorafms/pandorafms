@@ -227,8 +227,7 @@ if (is_ajax()) {
         $row = [];
         $row['name'] = __('Force 2FA for all users is enabled');
         $row['control'] .= html_print_checkbox_switch(
-            '
-            ',
+            '2FA_all_users',
             1,
             $config['2FA_all_users'],
             true
@@ -333,13 +332,9 @@ echo '</form>';
         $('input[type=checkbox][name=double_auth_enabled]').change(function () {
             if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
                 $('#table1-2FA_all_users').show();
-                $('#table3-2FA_all_users').show();
-                $('#table5-2FA_all_users').show();
             }
             else {
                 $('#table1-2FA_all_users').hide();
-                $('#table3-2FA_all_users').hide();
-                $('#table5-2FA_all_users').hide();
             }
             }).change();
         });

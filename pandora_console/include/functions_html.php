@@ -410,25 +410,32 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
 
 
 /**
- * Prints the groups of user of fields in a popup menu of a form.
+ * Print or return selector for groups.
  *
- * @param string User id
- * @param string The privilege to evaluate
- * @param boolean                                                                                 $returnAllGroup   Flag the return group, by default true.
- * @param boolean                                                                                 $returnAllColumns Flag to return all columns of groups.
- * @param array Array with dropdown values. Example: $fields["value"] = "label"
- * @param string Select form name
- * @param variant Current selected value. Can be a single value or an
- *        array of selected values (in combination with multiple)
- * @param string Javascript onChange code.
- * @param string Label when nothing is selected.
- * @param variant Value when nothing is selected
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param bool Set the input to allow multiple selections (optional, single selection by default).
- * @param bool Whether to sort the options or not (optional, unsorted by default).
- * @param string                                                                                  $style            The string of style.
- * @param integer                                                                                 $id_group         The id of node that must do not show the children and own.
- * @param string                                                                                  $keys_field       The field of the group used in the array keys. By default ID
+ * @param string  $id_user                 User id.
+ * @param string  $privilege               The privilege to evaluate.
+ * @param boolean $returnAllGroup          Flag the return group, (true).
+ * @param boolean $name                    Name of input field.
+ * @param array   $selected                Array with dropdown values. Example:
+ *                                         $fields["value"] = "label".
+ * @param string  $script                  Javascript onChange code.
+ * @param mixed   $nothing                 Label when nothing is selected.
+ * @param array   $nothing_value           Value when nothing is selected.
+ * @param string  $return                  Return string or dump to output.
+ * @param boolean $multiple                Enable multiple select.
+ * @param mixed   $sort                    Sort values or not (default false).
+ * @param boolean $class                   CSS classes to apply.
+ * @param boolean $disabled                Disabled or enabled.
+ * @param boolean $style                   CSS inline style.
+ * @param string  $option_style            CSS inline style in array format.
+ * @param array   $id_group                Groups to be manually added.
+ * @param string  $keys_field              Field to be used as array key, (id).
+ * @param boolean $strict_user             Strict.
+ * @param array   $delete_groups           Remove groups from select.
+ * @param array   $include_groups          Add groups to select.
+ * @param string  $size                    Style, size (width) of element.
+ * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -436,14 +443,14 @@ function html_print_select_groups(
     $id_user=false,
     $privilege='AR',
     $returnAllGroup=true,
-    $name,
+    $name=null,
     $selected='',
     $script='',
     $nothing='',
     $nothing_value=0,
     $return=false,
     $multiple=false,
-    $sort=true,
+    $sort=false,
     $class='',
     $disabled=false,
     $style=false,
@@ -454,39 +461,68 @@ function html_print_select_groups(
     $delete_groups=false,
     $include_groups=false,
     $size=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
-    global $config;
+    $output = '';
 
-    $fields = users_get_groups_for_select(
-        $id_user,
-        $privilege,
-        $returnAllGroup,
-        true,
-        $id_group,
-        $keys_field
-    );
+    if (is_ajax()) {
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/select2.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
 
-    if ($delete_groups && is_array($delete_groups)) {
-        foreach ($delete_groups as $value) {
-            unset($fields[$value]);
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/select2.min.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+    } else {
+        ui_require_css_file('select2.min');
+        ui_require_javascript_file('select2.min');
+    }
+
+    if ($name === null) {
+        static $idcounter = [];
+        if (isset($idcounter[$name]) === true) {
+            $idcounter[$name]++;
+        } else {
+            $idcounter[$name] = 0;
+        }
+
+        $name = 'group_select'.$idcounter[$name];
+    }
+
+    $fields = [];
+    // Preload selector.
+    if (is_array($selected) === false) {
+        if (empty($selected) === false) {
+            $fields = [ $selected => groups_get_name($selected) ];
+        } else if ($returnAllGroup === true && $multiple === false) {
+            $fields = [ $selected => groups_get_name(null, true) ];
+        }
+    } else {
+        foreach ($selected as $k) {
+            $fields[$k] = groups_get_name($k);
         }
     }
 
-    if (is_array($include_groups)) {
-        $field = [];
-        foreach ($include_groups as $value) {
-            $field[$value] = $fields[$value];
-        }
-
-        $fields = array_intersect($fields, $field);
+    if (is_array($delete_groups) === true) {
+        $json_exclusions = json_encode($delete_groups);
     }
 
-    if ($strict_user) {
-        $fields = users_get_strict_mode_groups($config['id_user'], $returnAllGroup);
+    if (is_array($include_groups) === true) {
+        $json_inclusions = json_encode($include_groups);
     }
 
-    $output = html_print_select(
+    $output .= html_print_select(
         $fields,
         $name,
         $selected,
@@ -495,7 +531,7 @@ function html_print_select_groups(
         $nothing_value,
         $return,
         $multiple,
-        false,
+        $sort,
         $class,
         $disabled,
         $style,
@@ -504,8 +540,81 @@ function html_print_select_groups(
         false,
         '',
         false,
-        $simple_multiple_options
+        $simple_multiple_options,
+        $required
     );
+
+    if (empty($size) === true) {
+        $size = '100%';
+    }
+
+    ob_start();
+    ?>
+    <style type="text/css">
+    .select2-search__field {
+        background: url('<?php echo ui_get_full_url('images/zoom.png'); ?>') no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('select[name="<?php echo $name; ?>"]').each(
+                function() {
+                    $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
+                        debug: 0,
+                        width: '<?php echo $size; ?>',
+                        templateResult: function(node) {
+                            if (!node.id) {
+                                return node.text;
+                            }
+                            return $('<span style="padding-left:' + (5 * node.level) + 'px;">' + node.text + '</span>');
+                        },
+                        ajax: {
+                            delay: 500,
+                            method: 'post',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: function (params) {
+                                var query = {
+                                    search: params.term,
+                                    page: 'include/ajax/group',
+                                    method: 'getGroupsForSelect',
+                                    id_user: '<?php echo $id_user; ?>',
+                                    privilege: '<?php echo $privilege; ?>',
+                                    exclusions: '<?php echo $json_exclusions; ?>',
+                                    inclusions: '<?php echo $json_inclusions; ?>',
+                                    step: params.page || 1,
+                                    strict: "<?php echo $strict_user; ?>",
+                                    returnAllGroup: <?php echo (int) $returnAllGroup; ?>
+                                }
+
+                                return query;
+                            }
+                        }
+                    });
+                }
+            );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
+        <?php
+    }
+    ?>
+        });
+    </script>
+
+    <?php
+    $output .= ob_get_clean();
 
     if ($return) {
         return $output;
@@ -553,7 +662,8 @@ function html_print_select(
     $modal=false,
     $message='',
     $select_all=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
     $output = "\n";
 
@@ -603,7 +713,11 @@ function html_print_select(
         $styleText = 'style="'.$style.'"';
     }
 
-    $output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    if ($required) {
+        $required = 'required';
+    }
+
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -4271,7 +4385,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
                 ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
 

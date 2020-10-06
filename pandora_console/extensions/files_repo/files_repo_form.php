@@ -53,7 +53,28 @@ foreach ($groups as $id => $name) {
 
 $row = [];
 $row[0] = __('Groups');
-$row[1] = html_print_select($groups, 'groups[]', $groups_selected, '', '', '', true, true, '', '', '');
+$row[1] = '<div class="w290px">'.html_print_select_groups(
+    // Id_user.
+    false,
+    // Privilege.
+    'AR',
+    // ReturnAllGroup.
+    true,
+    // Name.
+    'groups[]',
+    // Selected.
+    $groups_selected,
+    // Script.
+    '',
+    // Nothing.
+    '',
+    // Nothing_value.
+    0,
+    // Return.
+    true,
+    // Multiple.
+    true
+).'</div>';
 $table->data[] = $row;
 $table->colspan[][1] = 3;
 

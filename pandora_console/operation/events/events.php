@@ -878,24 +878,17 @@ if (is_metaconsole() !== true) {
  */
 
 // Group.
-$user_groups_array = users_get_groups_for_select(
-    $config['id_user'],
-    $access,
-    true,
-    true,
-    false
-);
-$data = html_print_select(
-    $user_groups_array,
-    'id_group_filter',
-    $id_group_filter,
-    '',
-    '',
-    0,
-    true,
-    false,
-    false,
-    'w130'
+$data = html_print_input(
+    [
+        'name'           => 'id_group_filter',
+        'returnAllGroup' => true,
+        'privilege'      => 'AR',
+        'type'           => 'select_groups',
+        'selected'       => (defined($id_group_filter) ? $id_group_filter : 0),
+        'nothing'        => false,
+        'return'         => true,
+        'size'           => '80%',
+    ]
 );
 $in = '<div class="filter_input"><label>'.__('Group').'</label>';
 $in .= $data.'</div>';

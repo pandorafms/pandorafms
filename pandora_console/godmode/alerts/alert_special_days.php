@@ -296,7 +296,9 @@ if (!users_can_manage_group_all('LM')) {
     $can_manage_group_all = true;
 }
 
+echo '<div class="inline w250px">';
 html_print_select_groups(false, 'LM', $can_manage_group_all, 'id_group', $id_group, false, '', 0, false, false, true, '', false, 'width:100px;');
+echo '</div>';
 echo '</td><td>';
 echo __('Overwrite');
 ui_print_help_tip(__('Check this box, if you want to overwrite existing same days.'), false);

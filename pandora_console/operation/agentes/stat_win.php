@@ -80,6 +80,18 @@ $label = db_get_value(
     'id_agente_modulo',
     $id
 );
+
+ui_require_css_file('register', 'include/styles/', true);
+// Connection lost alert.
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog(
+    $conn_title,
+    $conn_text,
+    'connection',
+    '/images/error_1.png'
+);
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -170,6 +182,11 @@ $label = db_get_value(
         } else {
             $fullscale = get_parameter('fullscale', 0);
         }
+
+        $type_mode_graph = get_parameter_checkbox(
+            'type_mode_graph',
+            ($fullscale === 1) ? 0 : $config['type_mode_graph']
+        );
 
         $time_compare = false;
 
@@ -294,14 +311,8 @@ $label = db_get_value(
             true
         );
 
-        $table->data[3][2] = __('Show full scale graph (TIP)');
-        $table->data[3][3] = html_print_checkbox_switch(
-            'fullscale',
-            1,
-            (bool) $fullscale,
-            true,
-            false
-        );
+        $table->data[3][2] = '';
+        $table->data[3][3] = '';
 
         if (!modules_is_boolean($id)) {
             $table->data[4][0] = __('Zoom');
@@ -347,6 +358,29 @@ $label = db_get_value(
             1,
             (bool) $time_compare_separated,
             true
+        );
+
+
+        $table->data[6][0] = __('Show AVG/MAX/MIN data series in graph');
+        $table->data[6][1] = html_print_checkbox_switch(
+            'type_mode_graph',
+            1,
+            (bool) $type_mode_graph,
+            true,
+            false
+        );
+
+        $table->data[6][2] = __('Show full scale graph (TIP)');
+        $table->data[6][2] .= ui_print_help_tip(
+            __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
+            true
+        );
+        $table->data[6][3] = html_print_checkbox_switch(
+            'fullscale',
+            1,
+            (bool) $fullscale,
+            true,
+            false
         );
 
         $form_table = html_print_table($table, true);
@@ -433,6 +467,7 @@ $label = db_get_value(
                     'fullscale'       => $fullscale,
                     'zoom'            => $zoom,
                     'height'          => 300,
+                    'type_mode_graph' => $type_mode_graph,
                 ];
                 $output .= grafico_modulo_sparse($params);
                 $output .= '<br>';
@@ -479,51 +514,68 @@ ui_include_time_picker(true);
 ?>
 
 <script>
-    $('#checkbox-time_compare_separated').click(function() {
-        $('#checkbox-time_compare_overlapped').removeAttr('checked');
-    });
-    $('#checkbox-time_compare_overlapped').click(function() {
-        $('#checkbox-time_compare_separated').removeAttr('checked');
-    });
+    $(document).ready (function () {
+        $('#checkbox-time_compare_separated').click(function(e) {
+            if(e.target.checked === true) {
+                $('#checkbox-time_compare_overlapped').prop('checked', false);
+            }
+        });
+        $('#checkbox-time_compare_overlapped').click(function(e) {
+            if(e.target.checked === true) {
+                $('#checkbox-time_compare_separated').prop('checked', false);
+            }
+        });
 
-    // Add datepicker and timepicker
-    $("#text-start_date").datepicker({
-        dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
-    });
-    $("#text-start_time").timepicker({
-        showSecond: true,
-        timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-        timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-        timeText: '<?php echo __('Time'); ?>',
-        hourText: '<?php echo __('Hour'); ?>',
-        minuteText: '<?php echo __('Minute'); ?>',
-        secondText: '<?php echo __('Second'); ?>',
-        currentText: '<?php echo __('Now'); ?>',
-        closeText: '<?php echo __('Close'); ?>'
-    });
+        $('#checkbox-fullscale').click(function(e) {
+            if(e.target.checked === true) {
+                $('#checkbox-type_mode_graph').prop('checked', false);
+            }
+        });
 
-    $.datepicker.setDefaults(
-        $.datepicker.regional["<?php echo $custom_user_language; ?>"]
-    );
+        $('#checkbox-type_mode_graph').click(function(e) {
+            if(e.target.checked === true) {
+                $('#checkbox-fullscale').prop('checked', false);
+            }
+        });
 
-    // Menu.
-    $('#module_graph_menu_header').on('click', function(){
-        var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
-        var arrow_up = 'arrow_up_green';
-        var arrow_down = 'arrow_down_green';
-        if( $('.module_graph_menu_content').hasClass(
-            'module_graph_menu_content_closed')){
-            $('.module_graph_menu_content').show();
-            $('.module_graph_menu_content').removeClass(
-                'module_graph_menu_content_closed');
-            arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
-        }
-        else{
-            $('.module_graph_menu_content').hide();
-            $('.module_graph_menu_content').addClass(
-                'module_graph_menu_content_closed');
-            arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
-        }
+        // Add datepicker and timepicker
+        $("#text-start_date").datepicker({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
+        });
+        $("#text-start_time").timepicker({
+            showSecond: true,
+            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+            timeText: '<?php echo __('Time'); ?>',
+            hourText: '<?php echo __('Hour'); ?>',
+            minuteText: '<?php echo __('Minute'); ?>',
+            secondText: '<?php echo __('Second'); ?>',
+            currentText: '<?php echo __('Now'); ?>',
+            closeText: '<?php echo __('Close'); ?>'
+        });
+
+        $.datepicker.setDefaults(
+            $.datepicker.regional["<?php echo $custom_user_language; ?>"]
+        );
+
+        // Menu.
+        $('#module_graph_menu_header').on('click', function(){
+            var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
+            var arrow_up = 'arrow_up_green';
+            var arrow_down = 'arrow_down_green';
+            if( $('.module_graph_menu_content').hasClass(
+                'module_graph_menu_content_closed')){
+                $('.module_graph_menu_content').show();
+                $('.module_graph_menu_content').removeClass(
+                    'module_graph_menu_content_closed');
+                arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
+            }
+            else{
+                $('.module_graph_menu_content').hide();
+                $('.module_graph_menu_content').addClass(
+                    'module_graph_menu_content_closed');
+                arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
+            }
+        });
     });
-
 </script>

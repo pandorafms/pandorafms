@@ -537,8 +537,6 @@ $.fn.VUseTooltip = function() {
 
         var color = item.series.color;
 
-        //console.log(item.series.xaxis.ticks[x].label);
-
         /*
         "<strong>" +
             item.series.label +
@@ -1003,6 +1001,7 @@ function pandoraFlotArea(
   var update_legend = {};
   var force_integer = 0;
   var divisor = params.divisor;
+  var maximum_y_axis = params.maximum_y_axis;
 
   if (typeof divisor === "undefined") {
     divisor = 1000;
@@ -1896,6 +1895,13 @@ function pandoraFlotArea(
         fill_color = "green";
       }
 
+      if (typeof maximum_y_axis !== "undefined" && maximum_y_axis != 0) {
+        maximum_y_axis =
+          parseInt(value.max) > parseInt(maximum_y_axis)
+            ? parseInt(value.max)
+            : parseInt(maximum_y_axis);
+      }
+
       switch (series_type[index]) {
         case "area":
           line_show = true;
@@ -2043,6 +2049,10 @@ function pandoraFlotArea(
       labelFormatter: lFormatter
     }
   };
+
+  if (typeof maximum_y_axis !== "undefined" && maximum_y_axis != 0) {
+    options.yaxis.max = maximum_y_axis;
+  }
 
   if (vconsole) {
     options.grid["hoverable"] = false;

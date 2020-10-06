@@ -37,9 +37,11 @@ if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 
 }
 
 $agents = agents_get_group_agents(0, false, 'none', false, true);
-
+ob_start('ui_process_page_head');
+ob_start();
 echo '<html>';
 echo '<head>';
+
 echo '<title>'.__('Sound Events').'</title>';
 ?>
 <style type='text/css'>
@@ -99,8 +101,6 @@ $table->data[0][3] .= html_print_image('images/tick_sound_events.png', true, ['i
 
 html_print_table($table);
 ?>
-
-<script src="../../include/javascript/jquery.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 var group = 0;
@@ -265,5 +265,11 @@ $(document).ready (function () {
 
 <?php
 echo '</body>';
+
+while (@ob_end_flush()) {
+    // Dumping...
+    continue;
+}
+
 echo '</html>';
 

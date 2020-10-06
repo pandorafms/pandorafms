@@ -268,6 +268,11 @@ class SystemGroupStatusWidget extends Widget
         }
 
         // Restrict access to group.
+        $selected_groups = [];
+        if ($values['groupId']) {
+            $selected_groups = explode(',', $values['groupId'][0]);
+        }
+
         $inputs[] = [
             'label'     => __('Groups'),
             'arguments' => [
@@ -275,7 +280,7 @@ class SystemGroupStatusWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'ER',
-                'selected'       => explode(',', $values['groupId'][0]),
+                'selected'       => $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
             ],

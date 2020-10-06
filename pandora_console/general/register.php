@@ -183,6 +183,89 @@ try {
     $welcome = false;
 }
 
+$double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
+
+if (!$double_auth_enabled && $config['2FA_all_users'] != ''
+    && $config['2Fa_auth'] != '1'
+    && $config['double_auth_enabled']
+) {
+    echo '<div id="doble_auth_window" style="display: none"; >';
+    ?>
+    <script type="text/javascript">
+  var userID = "<?php echo $config['id_user']; ?>";
+  console.log(userID);
+
+  var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+  var $dialogContainer = $("div#doble_auth_window");
+
+  $dialogContainer.html($loadingSpinner);
+
+  // Load the info page
+  var request = $.ajax({
+    url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+    type: 'POST',
+    dataType: 'html',
+    data: {
+      page: 'include/ajax/double_auth.ajax',
+      id_user: userID,
+      get_double_auth_info_page: 1,
+      containerID: $dialogContainer.prop('id')
+    },
+    complete: function (xhr, textStatus) {
+
+    },
+    success: function (data, textStatus, xhr) {
+      // isNaN = is not a number
+      if (isNaN(data)) {
+        $dialogContainer.html(data);
+      }
+      // data is a number, convert it to integer to do the compare
+      else if (Number(data) === -1) {
+        $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+      }
+      else {
+        $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Error').'</div></b>'; ?>");
+      }
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error loading the data').'</div></b>'; ?>");
+    }
+  });
+
+  $("div#doble_auth_window").dialog({
+    <?php config_update_value('2Fa_auth', ''); ?>
+    resizable: true,
+    draggable: true,
+    modal: true,
+    title: "<?php echo __('Double autentication activation'); ?>",
+    overlay: {
+      opacity: 0.5,
+      background: "black"
+    },
+    width: 500,
+    height: 400,
+    close: function (event, ui) {
+        
+    <?php
+    if (!$double_auth_enabled) {
+        config_update_value('2Fa_auth', '1');
+    }
+    ?>
+      // Abort the ajax request
+      if (typeof request != 'undefined'){
+        request.abort();
+      }
+      // Remove the contained html
+      $dialogContainer.empty();
+
+      //document.location.reload();
+    }
+  })
+    .show();    </script>
+    <?php
+    echo '</div>';
+}
+
 $newsletter = null;
 
 ?>

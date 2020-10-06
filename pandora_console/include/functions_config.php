@@ -1990,6 +1990,10 @@ function config_process_config()
         config_update_value('welcome_state', WELCOME_STARTED);
     }
 
+    if (!isset($config['2Fa_auth'])) {
+        config_update_value('2Fa_auth', '');
+    }
+
      /*
       * Parse the ACL IP list for access API
       */

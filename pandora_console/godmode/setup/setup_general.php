@@ -59,18 +59,10 @@ global $config;
 check_login();
 
 if (is_ajax()) {
-    enterprise_include_once('include/functions_cron.php');
-
     $test_address = get_parameter('test_address', '');
 
-    $res = enterprise_hook(
-        'send_email_attachment',
-        [
-            $test_address,
-            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
-            __('Testing Pandora FMS email'),
-            null,
-        ]
+    $res = send_test_email(
+        $test_address
     );
 
     echo $res;
@@ -469,7 +461,6 @@ function show_email_test(id) {
         resizable: true,
         draggable: true,
         modal: true,
-        height: 175,
         width: 450,
         overlay: {
             opacity: 0.5,
@@ -487,7 +478,11 @@ function perform_email_test () {
         data: "page=godmode/setup/setup_general&test_address="+test_address,
         dataType: "html",
         success: function(data) {
-            $('#email_test_sent_message').show();
+            if (parseInt(data) === 1) {
+                $('#email_test_sent_message').show();
+            } else {
+                $('#email_test_failure_message').show();
+            }
         },
         error: function() {
             $('#email_test_failure_message').show();

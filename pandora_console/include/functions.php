@@ -5735,3 +5735,60 @@ function get_data_multiplier($unit)
 
     return $multiplier;
 }
+
+
+/**
+ * Send test email to check email setups.
+ *
+ * @param string $to Target email account.
+ *
+ * @return integer Status of the email send task.
+ */
+function send_test_email(
+    string $to
+) {
+    global $config;
+
+    $result = false;
+    try {
+        $transport = new Swift_SmtpTransport(
+            $config['email_smtpServer'],
+            $config['email_smtpPort']
+        );
+
+        $transport->setUsername($config['email_username']);
+        $transport->setPassword($config['email_password']);
+
+        if ($config['email_encryption']) {
+            $transport->setEncryption($config['email_encryption']);
+        }
+
+        $mailer = new Swift_Mailer($transport);
+
+        $message = new Swift_Message(io_safe_output(__('Testing Pandora FMS email')));
+
+        $message->setFrom(
+            [
+                $config['email_from_dir'] => io_safe_output(
+                    $config['email_from_name']
+                ),
+            ]
+        );
+
+        $to = trim($to);
+        $message->setTo([$to => $to]);
+        $message->setBody(
+            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            'text/html'
+        );
+
+        ini_restore('sendmail_from');
+
+        $result = $mailer->send($message);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        db_pandora_audit('Cron jobs mail', $e->getMessage());
+    }
+
+    return $result;
+}

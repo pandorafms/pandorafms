@@ -707,7 +707,9 @@ function events_get_all(
     }
 
     $count = false;
-    if (!is_array($fields) && $fields == 'count') {
+    if (is_array($fields) === false && $fields === 'count'
+        || (is_array($fields) === true && $fields[0] === 'count')
+    ) {
         $fields = ['te.*'];
         $count = true;
     } else if (!is_array($fields)) {
@@ -877,9 +879,10 @@ function events_get_all(
             $groups
         );
 
-        if (!$propagate) {
+        if (!$propagate && isset($groups)) {
             $sql_filters[] = sprintf(
                 ' AND (te.id_grupo = %d OR tasg.id_group = %d)',
+                $groups,
                 $groups
             );
         } else {
@@ -1314,7 +1317,7 @@ function events_get_all(
         if (is_array($groups)) {
             $tgrupo_join_filters[] = sprintf(
                 ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                 OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s)))',
+                 OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
                 join(', ', $groups),
                 join(', ', $groups)
             );
@@ -1572,7 +1575,9 @@ function events_get_events_no_grouped(
 
     $table = events_get_events_table($meta, $history);
 
-    $sql = 'SELECT * FROM '.$table.' te WHERE 1=1 '.$sql_post;
+    $sql = 'SELECT * FROM '.$table.' te ';
+    $sql .= events_get_secondary_groups_left_join($table);
+    $sql .= $sql_post;
 
     $events = db_get_all_rows_sql($sql, $history_db);
 
@@ -1947,7 +1952,7 @@ function events_change_status(
  *
  * @param mixed   $id_event  Event ID or array of events.
  * @param string  $new_owner Id_user of the new owner. If is false, the current
- *                           owner will be setted.
+ *                           owner will be set, if empty, will be cleaned.
  * @param boolean $force     Flag to force the change or not (not force is
  *                           change only when it hasn't owner).
  * @param boolean $meta      Metaconsole mode flag.
@@ -1987,11 +1992,10 @@ function events_change_owner(
         return false;
     }
 
-    // If no new_owner is provided, the current user will be the owner
-    // * #2250: Comment this lines because if possible selected None owner.
-    // if (empty($new_owner)) {
-    // $new_owner = $config['id_user'];
-    // }
+    if ($new_owner === false) {
+        $new_owner = $config['id_user'];
+    }
+
     // Only generate comment when is forced (sometimes is owner changes when
     // comment).
     if ($force) {
@@ -2000,7 +2004,9 @@ function events_change_owner(
             '',
             'Change owner to '.$new_owner,
             $meta,
-            $history
+            $history,
+            true,
+            false
         );
     }
 
@@ -2056,13 +2062,14 @@ function events_get_events_table($meta, $history)
 /**
  * Comment events in a transresponse
  *
- * @param mixed   $id_event Event ID or array of events.
- * @param string  $comment  Comment to be registered.
- * @param string  $action   Action performed with comment. By default just add
- *                          a comment.
- * @param boolean $meta     Flag of metaconsole mode.
- * @param boolean $history  Flag of history mode.
- * @param boolean $similars Similars.
+ * @param mixed   $id_event     Event ID or array of events.
+ * @param string  $comment      Comment to be registered.
+ * @param string  $action       Action performed with comment. By default just add
+ *                              a comment.
+ * @param boolean $meta         Flag of metaconsole mode.
+ * @param boolean $history      Flag of history mode.
+ * @param boolean $similars     Similars.
+ * @param boolean $update_owner Update owner.
  *
  * @return boolean Whether or not it was successful
  */
@@ -2072,7 +2079,8 @@ function events_comment(
     $action='Added comment',
     $meta=false,
     $history=false,
-    $similars=true
+    $similars=true,
+    $update_owner=true
 ) {
     global $config;
 
@@ -2100,8 +2108,10 @@ function events_comment(
         return false;
     }
 
-    // If the event hasn't owner, assign the user as owner.
-    events_change_owner($id_event);
+    if ($update_owner) {
+        // If the event hasn't owner, assign the user as owner.
+        events_change_owner($id_event);
+    }
 
     // Get the current event comments.
     $first_event = $id_event;
@@ -2980,9 +2990,13 @@ function events_get_agent(
 
     if ($events_group) {
         $sql_where .= sprintf(
-            ' AND id_grupo IN (%s) AND utimestamp > %d
-			AND utimestamp <= %d ',
-            implode(',', $id_group),
+            ' INNER JOIN tgrupo tg
+               ON  (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
+                OR (te.id_agente = tasg.id_agent AND tasg.id_group = %s)
+            WHERE utimestamp > %d
+            AND utimestamp <= %d ',
+            join(',', $id_group),
+            join(',', $id_group),
             $datelimit,
             $date
         );
@@ -5018,20 +5032,26 @@ function events_get_count_events_by_agent(
     $tevento = 'tevento';
 
     $sql = sprintf(
-        'SELECT id_agente,
-		(SELECT t2.alias
-			FROM %s t2
-			WHERE t2.id_agente = t3.id_agente) AS agent_name,
-		COUNT(*) AS count
-		FROM %s t3
+        'SELECT 
+          ta.id_agente,
+          ta.alias as agent_name,
+          count(*) as count
+        FROM %s te
+        %s
+        INNER JOIN %s ta
+            ON te.id_agente = ta.id_agente
+        INNER JOIN tgrupo tg
+            ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+            OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))
 		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) 
-		GROUP BY id_agente',
-        $tagente,
+        GROUP BY ta.id_agente',
         $tevento,
+        events_get_secondary_groups_left_join($tevento),
+        $tagente,
+        implode(',', $id_group),
+        implode(',', $id_group),
         $datelimit,
         $date,
-        implode(',', $id_group),
         $sql_where
     );
 
@@ -5082,8 +5102,10 @@ function events_get_count_events_validated_by_user(
     $dbmeta=false
 ) {
     global $config;
+    $tevento = 'tevento';
+
     // Group.
-    $sql_filter = ' AND 1=1 ';
+    $tgroup_join = '';
     if (isset($filter['id_group'])) {
         $id_group = groups_safe_acl($config['id_user'], $filter['id_group'], 'AR');
 
@@ -5092,7 +5114,15 @@ function events_get_count_events_validated_by_user(
             return false;
         }
 
-        $sql_filter .= sprintf(' AND id_grupo IN (%s) ', implode(',', $id_group));
+        $tgroup_join = sprintf(
+            '%s
+            INNER JOIN tgrupo tg
+                ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+                OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+            events_get_secondary_groups_left_join($tevento),
+            implode(',', $id_group),
+            implode(',', $id_group)
+        );
     }
 
     if (!empty($filter['id_agent'])) {
@@ -5191,24 +5221,29 @@ function events_get_count_events_validated_by_user(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
-    $tevento = 'tevento';
-
     $sql = sprintf(
-        'SELECT id_usuario,
-		(SELECT t2.fullname
-			FROM tusuario t2
-			WHERE t2.id_user = t3.id_usuario) AS user_name,
-		COUNT(*) AS count
-		FROM %s t3
-		WHERE utimestamp > %d AND utimestamp <= %d
-			%s %s
-		GROUP BY id_usuario',
+        'SELECT 
+          te.id_usuario,
+          tu.fullname as user_name,
+          count(*) as count
+        FROM %s te
+        %s
+        LEFT JOIN tusuario tu
+            ON te.owner_user = tu.id_user
+		WHERE
+            te.utimestamp > %d AND te.utimestamp <= %d
+            AND te.estado = %d
+            %s
+        GROUP BY te.id_usuario',
         $tevento,
+        $tgroup_join,
         $datelimit,
         $date,
+        EVENT_VALIDATE,
         $sql_filter,
         $sql_where
     );
+
     $rows = db_get_all_rows_sql($sql);
 
     if ($rows == false) {
@@ -5219,7 +5254,7 @@ function events_get_count_events_validated_by_user(
     foreach ($rows as $row) {
         $user_name = $row['user_name'];
         if (empty($row['user_name'])) {
-            $user_name = __('Unknown');
+            $user_name = __('Validated but not assigned');
         }
 
         $return[$user_name] = $row['count'];
@@ -5257,7 +5292,10 @@ function events_get_count_events_by_criticity(
 ) {
     global $config;
 
-    $sql_filter = ' AND 1=1 ';
+    $tevento = 'tevento';
+
+    $sql_filter = '';
+    $tgroup_join = '';
     if (isset($filter['id_group'])) {
         $id_group = groups_safe_acl($config['id_user'], $filter['id_group'], 'AR');
 
@@ -5266,7 +5304,15 @@ function events_get_count_events_by_criticity(
             return false;
         }
 
-        $sql_filter .= sprintf(' AND id_grupo IN (%s) ', implode(',', $id_group));
+        $tgroup_join = sprintf(
+            '%s
+            INNER JOIN tgrupo tg
+                ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+                OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+            events_get_secondary_groups_left_join($tevento),
+            implode(',', $id_group),
+            implode(',', $id_group)
+        );
     }
 
     if (!empty($filter['id_agent'])) {
@@ -5366,16 +5412,19 @@ function events_get_count_events_by_criticity(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
-    $tevento = 'tevento';
-
     $sql = sprintf(
-        'SELECT criticity,
-		COUNT(*) AS count
-		FROM %s
-		WHERE utimestamp > %d AND utimestamp <= %d
-			%s %s
-		GROUP BY criticity',
+        'SELECT 
+          te.criticity,
+          count(*) as count
+        FROM %s te
+        %s
+        WHERE
+            te.utimestamp > %d AND te.utimestamp <= %d
+            %s
+            %s
+        GROUP BY te.id_usuario',
         $tevento,
+        $tgroup_join,
         $datelimit,
         $date,
         $sql_filter,
@@ -5424,23 +5473,26 @@ function events_get_count_events_validated(
     $dbmeta=false
 ) {
     global $config;
+    $tevento = 'tevento';
 
     // Group.
-    $sql_filter = ' 1=1 ';
+    $sql_filter = '';
+    $tgroup_join = '';
     if (isset($filter['id_group'])) {
-        $id_group = groups_safe_acl(
-            $config['id_user'],
-            $filter['id_group'],
-            'AR'
-        );
+        $id_group = groups_safe_acl($config['id_user'], $filter['id_group'], 'AR');
 
         if (empty($id_group)) {
             // An empty array means the user doesn't have access.
             return false;
         }
 
-        $sql_filter .= sprintf(
-            ' AND id_grupo IN (%s) ',
+        $tgroup_join = sprintf(
+            '%s
+            INNER JOIN tgrupo tg
+                ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
+                OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+            events_get_secondary_groups_left_join($tevento),
+            implode(',', $id_group),
             implode(',', $id_group)
         );
     }
@@ -5571,9 +5623,24 @@ function events_get_count_events_validated(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
-    $tevento = 'tevento';
-
-    $sql = sprintf('SELECT estado, COUNT(*) AS count FROM %s WHERE %s %s GROUP BY estado', $tevento, $sql_filter, $sql_where);
+    $sql = sprintf(
+        'SELECT 
+          te.estado,
+          count(*) as count
+        FROM %s te
+        %s
+        WHERE
+            te.utimestamp > %d AND te.utimestamp <= %d
+            %s
+            %s
+        GROUP BY te.id_usuario',
+        $tevento,
+        $tgroup_join,
+        $datelimit,
+        $date,
+        $sql_filter,
+        $sql_where
+    );
 
     $rows = db_get_all_rows_sql($sql);
 

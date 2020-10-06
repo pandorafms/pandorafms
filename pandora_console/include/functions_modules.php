@@ -2359,7 +2359,7 @@ function modules_get_agentmodule_data_for_humans($module)
         } else {
             $salida = ui_print_module_string_value(
                 $module['datos'],
-                $module['id_agente_modulo'],
+                $module['id'],
                 $module['current_interval'],
                 $module['module_name']
             );

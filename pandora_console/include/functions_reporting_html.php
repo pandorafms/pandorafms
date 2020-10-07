@@ -2788,7 +2788,7 @@ function reporting_html_graph($table, $item)
 {
     $table->colspan['chart']['cell'] = 3;
     $table->cellstyle['chart']['cell'] = 'text-align: center;';
-    $table->data['chart']['cell'] = $item['chart'].'<br><br><br><br>';
+    $table->data['chart']['cell'] = $item['chart'];
 }
 
 

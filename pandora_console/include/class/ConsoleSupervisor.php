@@ -2105,6 +2105,14 @@ class ConsoleSupervisor
 
         $fontpath = io_safe_output($config['fontpath']);
 
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $fontpath = $config['homedir'].'\include\fonts\\'.$fontpath;
+        } else {
+            $home = str_replace('\\', '/', $config['homedir']);
+            $fontpath = $home.'/include/fonts/'.$fontpath;
+        }
+
         if (($fontpath == '')
             || (file_exists($fontpath) === false)
         ) {

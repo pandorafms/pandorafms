@@ -1317,14 +1317,14 @@ function events_get_all(
         if (is_array($groups)) {
             $tgrupo_join_filters[] = sprintf(
                 ' (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                 OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+                 OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
                 join(', ', $groups),
                 join(', ', $groups)
             );
         } else {
             $tgrupo_join_filters[] = sprintf(
                 ' (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
-                 OR (te.id_agente = tasg.id_agent AND tasg.id_group = %s)',
+                 OR (tg.id_grupo = tasg.id_group AND tasg.id_group = %s)',
                 $groups,
                 $groups
             );
@@ -2992,7 +2992,7 @@ function events_get_agent(
         $sql_where .= sprintf(
             ' INNER JOIN tgrupo tg
                ON  (te.id_grupo = tg.id_grupo AND tg.id_grupo = %s)
-                OR (te.id_agente = tasg.id_agent AND tasg.id_group = %s)
+               OR (tg.id_grupo = tasg.id_group AND tasg.id_group = %s)
             WHERE utimestamp > %d
             AND utimestamp <= %d ',
             join(',', $id_group),
@@ -5042,7 +5042,7 @@ function events_get_count_events_by_agent(
             ON te.id_agente = ta.id_agente
         INNER JOIN tgrupo tg
             ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-            OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))
+            OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))
 		WHERE utimestamp > %d AND utimestamp <= %d
         GROUP BY ta.id_agente',
         $tevento,
@@ -5118,7 +5118,7 @@ function events_get_count_events_validated_by_user(
             '%s
             INNER JOIN tgrupo tg
                 ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+                OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
             events_get_secondary_groups_left_join($tevento),
             implode(',', $id_group),
             implode(',', $id_group)
@@ -5308,7 +5308,7 @@ function events_get_count_events_by_criticity(
             '%s
             INNER JOIN tgrupo tg
                 ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+                OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
             events_get_secondary_groups_left_join($tevento),
             implode(',', $id_group),
             implode(',', $id_group)
@@ -5490,7 +5490,7 @@ function events_get_count_events_validated(
             '%s
             INNER JOIN tgrupo tg
                 ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
-                OR (te.id_agente = tasg.id_agent AND tasg.id_group IN (%s))',
+                OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))',
             events_get_secondary_groups_left_join($tevento),
             implode(',', $id_group),
             implode(',', $id_group)

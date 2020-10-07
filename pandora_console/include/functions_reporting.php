@@ -3909,30 +3909,10 @@ function reporting_alert_report_group($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    if ($content['id_group'] == 0) {
-        $agent_modules = db_get_all_rows_sql(
-            '
-            SELECT distinct(id_agent_module)
-            FROM talert_template_modules
-            WHERE disabled = 0
-                AND id_agent_module IN (
-                    SELECT id_agente_modulo
-                    FROM tagente_modulo)'
-        );
-    } else {
-        $agent_modules = db_get_all_rows_sql(
-            '
-            SELECT distinct(id_agent_module)
-            FROM talert_template_modules
-            WHERE disabled = 0
-                AND id_agent_module IN (
-                    SELECT id_agente_modulo
-                    FROM tagente_modulo
-                    WHERE id_agente IN (
-                        SELECT id_agente
-                        FROM tagente WHERE id_grupo = '.$content['id_group'].'))'
-        );
-    }
+    $agent_modules = alerts_get_agent_modules(
+        $content['id_group'],
+        $content['recursion']
+    );
 
     if (empty($alerts)) {
         $alerts = [];

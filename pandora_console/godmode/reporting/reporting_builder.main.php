@@ -1,18 +1,28 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Reporting builder main.
+ *
+ * @category   Options reports.
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2019 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
+
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'RW')) {
@@ -29,6 +39,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 $groups = users_get_groups();
 
 switch ($action) {
+    default:
     case 'new':
         $actionButtonHtml = html_print_submit_button(
             __('Save'),
@@ -39,7 +50,6 @@ switch ($action) {
         );
         $hiddenFieldAction = 'save';
     break;
-
     case 'update':
     case 'edit':
         $actionButtonHtml = html_print_submit_button(
@@ -59,7 +69,7 @@ $table->id = 'add_alert_table';
 $table->class = 'databox filters';
 $table->head = [];
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $table->head[0] = __('Main data');
     $table->head_colspan[0] = 4;
     $table->headstyle[0] = 'text-align: center';
@@ -70,7 +80,7 @@ $table->size = [];
 $table->size = [];
 $table->size[0] = '15%';
 $table->size[1] = '90%';
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     $table->style[0] = 'font-weight: bold; vertical-align: top;';
 } else {
     $table->style[0] = 'font-weight: bold;';
@@ -89,14 +99,18 @@ $table->data['name'][1] = html_print_input_text(
 );
 
 $table->data['group'][0] = __('Group');
-$write_groups = users_get_groups_for_select(false, 'AR', true, true, false, 'id_grupo');
+$write_groups = users_get_groups_for_select(
+    false,
+    'AR',
+    true,
+    true,
+    false,
+    'id_grupo'
+);
 
-
-
-
-
-// If the report group is not among the RW groups (special permission) we add it
-if (!isset($write_groups[$idGroupReport]) && $idGroupReport) {
+// If the report group is not among the
+// RW groups (special permission) we add it.
+if (isset($write_groups[$idGroupReport]) === false && $idGroupReport) {
     $write_groups[$idGroupReport] = groups_get_name($idGroupReport);
 }
 
@@ -123,7 +137,11 @@ if ($report_id_user == $config['id_user']
         'group_edit' => __('The next group can edit the report'),
         'user_edit'  => __('Only the user and admin user can edit the report'),
     ];
-    $table->data['access'][0] = __('Write Access').ui_print_help_tip(__('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'), true);
+    $table->data['access'][0] = __('Write Access');
+    $table->data['access'][0] .= ui_print_help_tip(
+        __('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'),
+        true
+    );
     $table->data['access'][1] = html_print_select(
         $type_access,
         'type_access',
@@ -163,14 +181,19 @@ if ($enterpriseEnable) {
     }
 
     $table->data['interactive_report'][0] = __('Non interactive report');
-    $table->data['interactive_report'][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button(
+    $table->data['interactive_report'][1] = __('Yes');
+    $table->data['interactive_report'][1] .= '&nbsp;&nbsp;&nbsp;';
+    $table->data['interactive_report'][1] .= html_print_radio_button(
         'non_interactive',
         1,
         '',
         $non_interactive_check,
         true
-    ).'&nbsp;&nbsp;';
-    $table->data['interactive_report'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button(
+    );
+    $table->data['interactive_report'][1] .= '&nbsp;&nbsp;';
+    $table->data['interactive_report'][1] .= __('No');
+    $table->data['interactive_report'][1] .= '&nbsp;&nbsp;&nbsp;';
+    $table->data['interactive_report'][1] .= html_print_radio_button(
         'non_interactive',
         0,
         '',
@@ -180,7 +203,32 @@ if ($enterpriseEnable) {
 }
 
 $table->data['description'][0] = __('Description');
-$table->data['description'][1] = html_print_textarea('description', 5, 15, $description, '', true);
+$table->data['description'][1] = html_print_textarea(
+    'description',
+    5,
+    15,
+    $description,
+    '',
+    true
+);
+
+if (enterprise_installed() === true) {
+    $table->data['cover'][0] = __('Generate cover page in PDF render');
+    $table->data['cover'][1] = html_print_checkbox_switch(
+        'cover_page_render',
+        1,
+        $cover_page_render,
+        true
+    );
+
+    $table->data['index'][0] = __('Generate index in PDF render');
+    $table->data['index'][1] = html_print_checkbox_switch(
+        'index_render',
+        1,
+        $index_render,
+        true
+    );
+}
 
 echo '<form class="" method="post">';
 html_print_table($table);

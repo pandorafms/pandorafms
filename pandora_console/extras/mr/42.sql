@@ -25,4 +25,10 @@ ALTER TABLE talert_actions ADD COLUMN `field20_recovery` TEXT NOT NULL DEFAULT "
 ALTER TABLE `treport_content` add column `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content_template` add column `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
 
+ALTER TABLE `treport` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `treport` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
+
+ALTER TABLE `treport_template` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `treport_template` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
+
 COMMIT;

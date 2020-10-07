@@ -1473,6 +1473,8 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
 	`hidden` tinyint(1) DEFAULT 0,
 	`orientation` varchar(25) NOT NULL default 'vertical',
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3052,6 +3054,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`agent_regex` varchar(600) BINARY NOT NULL default '',
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

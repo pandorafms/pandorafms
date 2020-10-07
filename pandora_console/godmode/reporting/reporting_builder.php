@@ -1180,6 +1180,8 @@ switch ($action) {
                 $report_id_user = 0;
                 $type_access_selected = reports_get_type_access(false);
                 $id_group_edit = 0;
+                $cover_page_render = true;
+                $index_render = true;
             break;
 
             case 'item_editor':
@@ -1215,6 +1217,12 @@ switch ($action) {
                 $report_id_user = get_parameter('report_id_user');
                 $non_interactive = get_parameter('non_interactive', 0);
 
+                $cover_page_render = get_parameter_switch(
+                    'cover_page_render',
+                    0
+                );
+                $index_render = get_parameter_switch('index_render', 0);
+
                 $custom_font = $config['custom_report_front_font'];
 
                 switch ($type_access_selected) {
@@ -1241,12 +1249,14 @@ switch ($action) {
                 if ($action == 'update') {
                     if ($reportName != '' && $idGroupReport != '') {
                         $new_values = [
-                            'name'            => $reportName,
-                            'id_group'        => $idGroupReport,
-                            'description'     => $description,
-                            'private'         => $private,
-                            'id_group_edit'   => $id_group_edit,
-                            'non_interactive' => $non_interactive,
+                            'name'              => $reportName,
+                            'id_group'          => $idGroupReport,
+                            'description'       => $description,
+                            'private'           => $private,
+                            'id_group_edit'     => $id_group_edit,
+                            'non_interactive'   => $non_interactive,
+                            'cover_page_render' => $cover_page_render,
+                            'index_render'      => $index_render,
                         ];
 
 
@@ -1311,19 +1321,21 @@ switch ($action) {
                         $idOrResult = db_process_sql_insert(
                             'treport',
                             [
-                                'name'            => $reportName,
-                                'id_group'        => $idGroupReport,
-                                'description'     => $description,
-                                'first_page'      => $first_page,
-                                'private'         => $private,
-                                'id_group_edit'   => $id_group_edit,
-                                'id_user'         => $config['id_user'],
-                                'metaconsole'     => $metaconsole_report,
-                                'non_interactive' => $non_interactive,
-                                'custom_font'     => $custom_font,
-                                'custom_logo'     => $logo,
-                                'header'          => $header,
-                                'footer'          => $footer,
+                                'name'              => $reportName,
+                                'id_group'          => $idGroupReport,
+                                'description'       => $description,
+                                'first_page'        => $first_page,
+                                'private'           => $private,
+                                'id_group_edit'     => $id_group_edit,
+                                'id_user'           => $config['id_user'],
+                                'metaconsole'       => $metaconsole_report,
+                                'non_interactive'   => $non_interactive,
+                                'custom_font'       => $custom_font,
+                                'custom_logo'       => $logo,
+                                'header'            => $header,
+                                'footer'            => $footer,
+                                'cover_page_render' => $cover_page_render,
+                                'index_render'      => $index_render,
                             ]
                         );
 
@@ -2736,6 +2748,8 @@ switch ($action) {
         $id_group_edit = $report['id_group_edit'];
         $report_id_user = $report['id_user'];
         $non_interactive = $report['non_interactive'];
+        $cover_page_render = $report['cover_page_render'];
+        $index_render = $report['index_render'];
     break;
 
     case 'delete':
@@ -3106,22 +3120,23 @@ if ($enterpriseEnable) {
     }
 }
 
+$urlB = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
 $buttons = [
     'list_reports' => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
     ],
     'main'         => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data')]).'</a>',
     ],
     'list_items'   => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items')]).'</a>',
     ],
     'item_editor'  => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Item editor')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Item editor')]).'</a>',
     ],
 ];
 

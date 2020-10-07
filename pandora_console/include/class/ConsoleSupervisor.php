@@ -46,6 +46,13 @@ class ConsoleSupervisor
 {
 
     /**
+     * Being executed while navigation.
+     *
+     * @var boolean
+     */
+    private $quick;
+
+    /**
      * Show if console supervisor is enabled or not.
      *
      * @var boolean
@@ -149,8 +156,6 @@ class ConsoleSupervisor
      */
     public function runBasic()
     {
-        global $config;
-
         /*
          * PHP configuration warnings:
          *   NOTIF.PHP.SAFE_MODE
@@ -213,30 +218,35 @@ class ConsoleSupervisor
          * Check if the Server and Console has
          * the same versions.
          */
+
         $this->checkConsoleServerVersions();
 
         /*
          * Check if AllowOverride is None or All.
          *  NOTIF.ALLOWOVERIDE.MESSAGE
          */
+
         $this->checkAllowOverrideEnabled();
 
         /*
          * Check if AllowOverride is None or All.
          *  NOTIF.HAMASTER.MESSAGE
          */
+
         $this->checkHaStatus();
 
         /*
          * Check if the Pandora Console log
          * file remains in old location.
          */
+
         $this->checkPandoraConsoleLogOldLocation();
 
         /*
          * Check if the audit log file
          * remains in old location.
          */
+
         $this->checkAuditLogOldLocation();
 
     }
@@ -462,16 +472,19 @@ class ConsoleSupervisor
          * Check if the Server and Console has
          * the same versions.
          */
+
         $this->checkConsoleServerVersions();
 
         /*
          * Check if AllowOverride is None or All.
          */
-        $this->checkAllowOverrideEnabled();
 
-          /*
-           * Check if HA status.
-           */
+         $this->checkAllowOverrideEnabled();
+
+        /*
+         * Check if HA status.
+         */
+
         if (enterprise_installed()) {
             $this->checkHaStatus();
         }
@@ -480,11 +493,13 @@ class ConsoleSupervisor
          * Check if the audit log file
          * remains in old location.
          */
+
         $this->checkAuditLogOldLocation();
 
         /*
-            Check if AllowOverride is None or All.
-        */
+         *   Check if AllowOverride is None or All.
+         */
+
         $this->checkAllowOverrideEnabled();
 
     }
@@ -594,7 +609,7 @@ class ConsoleSupervisor
     public function notify(
         array $data,
         int $source_id=0,
-        int $max_age=86400
+        int $max_age=SECONDS_1DAY
     ) {
         // Uses 'check failed' logic.
         if (is_array($data) === false) {
@@ -663,8 +678,8 @@ class ConsoleSupervisor
                 // NOTIF.SERVER.MASTER.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
                 if (preg_match('/^NOTIF.SERVER/', $data['type']) === true) {
-                    // Component notifications require be inmediate.
-                    $max_age = 0;
+                    // Send notification once a day.
+                    $max_age = SECONDS_1DAY;
                 }
 
                 // Else ignored.
@@ -943,7 +958,7 @@ class ConsoleSupervisor
     {
         global $config;
 
-        $remote_config_dir = io_safe_output($config['remote_config']);
+        $remote_config_dir = (string) io_safe_output($config['remote_config']);
 
         if (enterprise_installed()
             && isset($config['license_nms'])
@@ -1183,6 +1198,8 @@ class ConsoleSupervisor
      */
     public function checkPandoraServers()
     {
+        global $config;
+
         $servers = db_get_all_rows_sql(
             'SELECT
                 id_server,
@@ -1280,6 +1297,8 @@ class ConsoleSupervisor
      */
     public function checkPandoraServerMasterAvailable()
     {
+        global $config;
+
         $n_masters = db_get_value_sql(
             'SELECT
                 count(*) as n
@@ -2524,7 +2543,7 @@ class ConsoleSupervisor
     }
 
 
-    /*
+    /**
      * Check if Pandora console log file remains in old location.
      *
      * @return void

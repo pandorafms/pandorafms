@@ -61,7 +61,7 @@ thead.header_tr tr th.th_first {
 }
 
 thead.header_tr tr th.th_description {
-  background-color: #fafafa;
+  background-color: #ffffff;
   color: #1c1c1c;
   text-align: justify;
 }
@@ -126,7 +126,6 @@ div.mpdf_toc_level_1 {
   margin-left: 2em;
   text-indent: -2em;
   padding-right: 1em;
-  padding-bottom: 1em;
 }
 
 span.mpdf_toc_t_level_1 {

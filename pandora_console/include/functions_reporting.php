@@ -3780,6 +3780,7 @@ function agents_get_network_interfaces_array(
                         'height'             => $config['graph_image_height'],
                         'landscape'          => $content['landscape'],
                         'return_img_base_64' => true,
+                        'backgroundColor'    => 'transparent',
                         'graph_render'       => $content['graph_render'],
                     ];
 
@@ -8257,6 +8258,7 @@ function reporting_custom_graph(
                 'height'             => $config['graph_image_height'],
                 'landscape'          => $content['landscape'],
                 'return_img_base_64' => true,
+                'backgroundColor'    => 'transparent',
             ];
 
             $params_combined = [

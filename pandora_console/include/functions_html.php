@@ -514,6 +514,11 @@ function html_print_select_groups(
         }
     }
 
+    if (empty($nothing) === false) {
+        $fields[$nothing_value] = $nothing;
+        $include_groups[$nothing_value] = $nothing;
+    }
+
     if (is_array($delete_groups) === true) {
         $json_exclusions = json_encode($delete_groups);
     }

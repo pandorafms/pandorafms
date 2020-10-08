@@ -4462,7 +4462,7 @@ function reporting_sql_graph(
         case 'dinamic':
         case 'static':
             $return['chart'] = graph_custom_sql_graph(
-                $content['id_rc'],
+                $content,
                 $width,
                 $height,
                 $content['type'],

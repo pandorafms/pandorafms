@@ -3718,7 +3718,7 @@ function grafico_eventos_usuario($width, $height)
  * @param integer Graph type 1 vbar, 2 hbar, 3 pie
  */
 function graph_custom_sql_graph(
-    $id,
+    $content,
     $width,
     $height,
     $type='sql_graph_vbar',
@@ -3731,26 +3731,29 @@ function graph_custom_sql_graph(
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $content['server_name'] !== '0') {
         $server = metaconsole_get_connection_names();
         $connection = metaconsole_get_connection($server);
         metaconsole_connect($connection);
     }
 
-    $report_content = db_get_row('treport_content', 'id_rc', $id);
+    $report_content = db_get_row('treport_content', 'id_rc', $content['id_rc']);
 
     if ($report_content == false || $report_content == '') {
-        $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        $report_content = db_get_row('treport_content_template', 'id_rc', $content['id_rc']);
     }
 
     if ($report_content == false || $report_content == '') {
-        enterprise_hook('metaconsole_restore_db');
-        $report_content = db_get_row('treport_content', 'id_rc', $id);
-        if ($report_content == false || $report_content == '') {
-            $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        if (is_metaconsole() && $content['server_name'] !== '0') {
+            enterprise_hook('metaconsole_restore_db');
         }
 
-        if (is_metaconsole()) {
+        $report_content = db_get_row('treport_content', 'id_rc', $content['id_rc']);
+        if ($report_content == false || $report_content == '') {
+            $report_content = db_get_row('treport_content_template', 'id_rc', $content['id_rc']);
+        }
+
+        if ((is_metaconsole() & $content['server_name']) !== '0') {
             $server = metaconsole_get_connection_names();
             $connection = metaconsole_get_connection($server);
             metaconsole_connect($connection);
@@ -3758,7 +3761,7 @@ function graph_custom_sql_graph(
     }
 
     if ($id != null) {
-        $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$id);
+        $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$content['id_rc']);
     } else {
         $historical_db = $content['historical_db'];
     }
@@ -3772,7 +3775,7 @@ function graph_custom_sql_graph(
 
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if (is_metaconsole()) {
+    if ((is_metaconsole() & $content['server_name']) !== '0') {
         enterprise_hook('metaconsole_restore_db');
     }
 

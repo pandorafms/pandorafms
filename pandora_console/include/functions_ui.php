@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -6123,4 +6123,106 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
             echo '</div>';
         echo '</div>';
     echo '</div>';
+}
+
+
+/**
+ * Build a Query-Result editor structure
+ *
+ * @param string $name Name of the structure
+ *
+ * @return null
+ */
+
+
+function ui_query_result_editor($name='default')
+{
+    $editorSubContainer = html_print_div(
+        [
+            'id'      => $name.'_editor_title',
+            'content' => '<p>'.__('Query').'</p>',
+        ],
+        true
+    );
+
+    $editorSubContainer .= html_print_div(
+        [
+            'id'    => $name.'_editor',
+            'class' => 'query_result_editor',
+        ],
+        true
+    );
+
+    $editorSubContainer .= html_print_div(
+        [
+            'class'   => 'action-buttons edit-button',
+            'content' => html_print_submit_button(
+                __('Execute query'),
+                'execute_query',
+                false,
+                'class="sub next"',
+                true
+            ),
+        ],
+        true
+    );
+
+    $editorContainer = html_print_div(
+        [
+            'id'      => $name.'_editor_container',
+            'class'   => 'query_result_editor_container',
+            'content' => $editorSubContainer,
+        ],
+        true
+    );
+
+    $viewSubContainer = html_print_div(
+        [
+            'id'      => $name.'_view_title',
+            'content' => '<p>'.__('Results').'</p>',
+        ],
+        true
+    );
+
+    $viewSubContainer .= html_print_div(
+        [
+            'id'    => $name.'_view',
+            'class' => 'query_result_view',
+        ],
+        true
+    );
+
+    $viewSubContainer .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => '',
+        ],
+        true
+    );
+
+    $viewContainer = html_print_div(
+        [
+            'id'      => $name.'_view_container',
+            'class'   => 'query_result_view_container',
+            'content' => $viewSubContainer,
+        ],
+        true
+    );
+
+    html_print_div(
+        [
+            'id'      => 'query_result_container',
+            'class'   => 'databox',
+            'content' => $editorContainer.$viewContainer,
+        ]
+    );
+    // This is needed for Javascript
+    html_print_div(
+        [
+            'id'      => 'pandora_full_url',
+            'hidden'  => true,
+            'content' => ui_get_full_url(false, false, false, false),
+        ]
+    );
+
 }

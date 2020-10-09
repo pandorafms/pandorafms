@@ -280,6 +280,11 @@ if ($pure === false) {
             __('Color cloud'),
             'color_cloud_min link-create-item'
         );
+        visual_map_print_button_editor_refactor(
+            'NETWORK_LINK',
+            __('Network link'),
+            'network_link_min link-create-item'
+        );
         enterprise_include_once('include/functions_visual_map_editor.php');
         enterprise_hook(
             'enterprise_visual_map_editor_print_toolbox_refactor'

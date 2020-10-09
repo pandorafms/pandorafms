@@ -20,6 +20,7 @@ import Item, {
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
 import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
+import NetworkLink, { networkLinkPropsDecoder } from "./items/NetworkLink";
 import Group, { groupPropsDecoder } from "./items/Group";
 import Clock, { clockPropsDecoder } from "./items/Clock";
 import Box, { boxPropsDecoder } from "./items/Box";
@@ -82,6 +83,8 @@ function itemInstanceFrom(data: AnyObject) {
       return new Clock(clockPropsDecoder(data), meta);
     case ItemType.COLOR_CLOUD:
       return new ColorCloud(colorCloudPropsDecoder(data), meta);
+    case ItemType.NETWORK_LINK:
+      return new NetworkLink(networkLinkPropsDecoder(data), meta);
     default:
       throw new TypeError("item not found");
   }
@@ -130,6 +133,8 @@ function decodeProps(data: AnyObject) {
       return clockPropsDecoder(data);
     case ItemType.COLOR_CLOUD:
       return colorCloudPropsDecoder(data);
+    case ItemType.NETWORK_LINK:
+      return networkLinkPropsDecoder(data);
     default:
       throw new TypeError("decoder not found");
   }
@@ -973,7 +978,8 @@ export default class VisualConsole {
     [ItemType.DONUT_GRAPH]: DonutGraph,
     [ItemType.BARS_GRAPH]: BarsGraph,
     [ItemType.CLOCK]: Clock,
-    [ItemType.COLOR_CLOUD]: ColorCloud
+    [ItemType.COLOR_CLOUD]: ColorCloud,
+    [ItemType.NETWORK_LINK]: NetworkLink
   };
 
   /**

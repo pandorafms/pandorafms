@@ -345,6 +345,9 @@ final class Container extends Model
             case COLOR_CLOUD:
             return Items\ColorCloud::class;
 
+            case NETWORK_LINK:
+            return Items\NetworkLink::class;
+
             default:
             return Item::class;
         }

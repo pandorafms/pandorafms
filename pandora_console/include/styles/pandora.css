@@ -6019,3 +6019,12 @@ form#form-filter-interfaces ul li.select-interfaces {
 li .select2 {
   max-width: 400px !important;
 }
+
+div.graph td.legendLabel {
+  text-align: justify;
+}
+
+div.graph div.legend div,
+div.graph div.legend table {
+  top: 25px !important;
+}

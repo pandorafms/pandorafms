@@ -4368,6 +4368,18 @@ function reporting_alert_report_module($report, $content)
 }
 
 
+/**
+ * Sql graph.
+ *
+ * @param array   $report             Info report.
+ * @param array   $content            Content.
+ * @param string  $type               Type.
+ * @param integer $force_width_chart  Width.
+ * @param integer $force_height_chart Height.
+ * @param string  $type_sql_graph     Type.
+ *
+ * @return array Return array.
+ */
 function reporting_sql_graph(
     $report,
     $content,
@@ -4380,6 +4392,7 @@ function reporting_sql_graph(
 
     switch ($type_sql_graph) {
         case 'sql_graph_hbar':
+        default:
             $return['type'] = 'sql_graph_hbar';
         break;
 
@@ -4392,9 +4405,10 @@ function reporting_sql_graph(
         break;
     }
 
-    if (empty($content['name'])) {
+    if (empty($content['name']) === true) {
         switch ($type_sql_graph) {
             case 'sql_graph_vbar':
+            default:
                 $content['name'] = __('SQL Graph Vertical Bars');
             break;
 
@@ -4409,13 +4423,20 @@ function reporting_sql_graph(
     }
 
     // Get chart.
-    reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
+    reporting_set_conf_charts(
+        $width,
+        $height,
+        $only_image,
+        $type,
+        $content,
+        $ttl
+    );
 
-    if (!empty($force_width_chart)) {
+    if (empty($force_width_chart) === false) {
         $width = $force_width_chart;
     }
 
-    if (!empty($force_height_chart)) {
+    if (empty($force_height_chart) === false) {
         $height = $force_height_chart;
     }
 
@@ -4431,7 +4452,7 @@ function reporting_sql_graph(
          WHERE id_graph = '.$content['id_gs']
     );
 
-    if (isset($module_source) && is_array($module_source)) {
+    if (isset($module_source) === true && is_array($module_source) === true) {
         $modules = [];
         foreach ($module_source as $key => $value) {
             $modules[$key] = $value['id_agent_module'];
@@ -4441,6 +4462,7 @@ function reporting_sql_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        default:
             $return['chart'] = graph_custom_sql_graph(
                 $content,
                 $width,
@@ -8575,6 +8597,7 @@ function reporting_set_conf_charts(
 ) {
     switch ($type) {
         case 'dinamic':
+        default:
             $only_image = false;
             $width = 900;
             $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
@@ -8584,23 +8607,15 @@ function reporting_set_conf_charts(
         case 'static':
             $ttl = 2;
             $only_image = true;
-            $height = 360;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
             $width = 780;
         break;
 
         case 'data':
+            // Nothing.
         break;
     }
 }
-
-
-//
-//
-//
-// MAYBE MOVE THE NEXT FUNCTIONS TO A FILE NAMED AS FUNCTION_REPORTING.UTILS.PHP //
-//
-//
-//
 
 
 /**

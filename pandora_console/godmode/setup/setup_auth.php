@@ -329,13 +329,7 @@ echo '</form>';
 
     $( document ).ready(function() {   
     //For change autocreate remote users
-    console.log($('input[type=checkbox][id=checkbox-double_auth_enabled]:checked').val());
-    if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
-                $('#table1-2FA_all_users').show();
-            }
-            else {
-                $('#table1-2FA_all_users').hide();
-            }
+
         $('input[type=checkbox][name=double_auth_enabled]').change(function () {
             if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
                 $('#table1-2FA_all_users').show();

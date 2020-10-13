@@ -1349,7 +1349,7 @@ function graphic_combined_module(
         if ($count_modules > 0) {
             foreach ($module_list as $key => $value) {
                 $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['server_id'];
-                $sources[$key]['id_agent_module'] = $value['module'];
+                $sources[$key]['id_agent_module'] = (isset($value['module']) === true) ? $value['module'] : $value;
                 $sources[$key]['weight'] = $weights[$key];
                 $sources[$key]['label'] = $params_combined['labels'];
             }

@@ -590,7 +590,7 @@ sub main() {
 		my $include_api = 'include/api.php';
 		# If public_url is empty in database
 		if ( $console_api_url eq '' ) {
-			$Config{"console_api_url"} = 'http://localhost/pandora_console/' . $include_api;
+			$Config{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
 			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
 		} else {
 			$Config{"console_api_url"} = $console_api_url . $include_api;	

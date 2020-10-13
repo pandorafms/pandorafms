@@ -105,7 +105,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('show_vc', 1),
 ('inventory_changes_blacklist', '1,2,20,21'),
 ('custom_report_front', 0),
-('custom_report_front_font', 'FreeSans.ttf'),
+('custom_report_front_font', 'opensans.ttf'),
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),

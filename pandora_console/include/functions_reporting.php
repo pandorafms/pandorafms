@@ -3780,6 +3780,7 @@ function agents_get_network_interfaces_array(
                         'height'             => $config['graph_image_height'],
                         'landscape'          => $content['landscape'],
                         'return_img_base_64' => true,
+                        'backgroundColor'    => 'transparent',
                         'graph_render'       => $content['graph_render'],
                     ];
 
@@ -3909,30 +3910,10 @@ function reporting_alert_report_group($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
 
-    if ($content['id_group'] == 0) {
-        $agent_modules = db_get_all_rows_sql(
-            '
-            SELECT distinct(id_agent_module)
-            FROM talert_template_modules
-            WHERE disabled = 0
-                AND id_agent_module IN (
-                    SELECT id_agente_modulo
-                    FROM tagente_modulo)'
-        );
-    } else {
-        $agent_modules = db_get_all_rows_sql(
-            '
-            SELECT distinct(id_agent_module)
-            FROM talert_template_modules
-            WHERE disabled = 0
-                AND id_agent_module IN (
-                    SELECT id_agente_modulo
-                    FROM tagente_modulo
-                    WHERE id_agente IN (
-                        SELECT id_agente
-                        FROM tagente WHERE id_grupo = '.$content['id_group'].'))'
-        );
-    }
+    $agent_modules = alerts_get_agent_modules(
+        $content['id_group'],
+        $content['recursion']
+    );
 
     if (empty($alerts)) {
         $alerts = [];
@@ -4387,6 +4368,18 @@ function reporting_alert_report_module($report, $content)
 }
 
 
+/**
+ * Sql graph.
+ *
+ * @param array   $report             Info report.
+ * @param array   $content            Content.
+ * @param string  $type               Type.
+ * @param integer $force_width_chart  Width.
+ * @param integer $force_height_chart Height.
+ * @param string  $type_sql_graph     Type.
+ *
+ * @return array Return array.
+ */
 function reporting_sql_graph(
     $report,
     $content,
@@ -4399,6 +4392,7 @@ function reporting_sql_graph(
 
     switch ($type_sql_graph) {
         case 'sql_graph_hbar':
+        default:
             $return['type'] = 'sql_graph_hbar';
         break;
 
@@ -4411,9 +4405,10 @@ function reporting_sql_graph(
         break;
     }
 
-    if (empty($content['name'])) {
+    if (empty($content['name']) === true) {
         switch ($type_sql_graph) {
             case 'sql_graph_vbar':
+            default:
                 $content['name'] = __('SQL Graph Vertical Bars');
             break;
 
@@ -4428,13 +4423,20 @@ function reporting_sql_graph(
     }
 
     // Get chart.
-    reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
+    reporting_set_conf_charts(
+        $width,
+        $height,
+        $only_image,
+        $type,
+        $content,
+        $ttl
+    );
 
-    if (!empty($force_width_chart)) {
+    if (empty($force_width_chart) === false) {
         $width = $force_width_chart;
     }
 
-    if (!empty($force_height_chart)) {
+    if (empty($force_height_chart) === false) {
         $height = $force_height_chart;
     }
 
@@ -4450,7 +4452,7 @@ function reporting_sql_graph(
          WHERE id_graph = '.$content['id_gs']
     );
 
-    if (isset($module_source) && is_array($module_source)) {
+    if (isset($module_source) === true && is_array($module_source) === true) {
         $modules = [];
         foreach ($module_source as $key => $value) {
             $modules[$key] = $value['id_agent_module'];
@@ -4460,8 +4462,9 @@ function reporting_sql_graph(
     switch ($type) {
         case 'dinamic':
         case 'static':
+        default:
             $return['chart'] = graph_custom_sql_graph(
-                $content['id_rc'],
+                $content,
                 $width,
                 $height,
                 $content['type'],
@@ -8257,6 +8260,7 @@ function reporting_custom_graph(
                 'height'             => $config['graph_image_height'],
                 'landscape'          => $content['landscape'],
                 'return_img_base_64' => true,
+                'backgroundColor'    => 'transparent',
             ];
 
             $params_combined = [
@@ -8593,6 +8597,7 @@ function reporting_set_conf_charts(
 ) {
     switch ($type) {
         case 'dinamic':
+        default:
             $only_image = false;
             $width = 900;
             $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
@@ -8602,23 +8607,15 @@ function reporting_set_conf_charts(
         case 'static':
             $ttl = 2;
             $only_image = true;
-            $height = 360;
+            $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
             $width = 780;
         break;
 
         case 'data':
+            // Nothing.
         break;
     }
 }
-
-
-//
-//
-//
-// MAYBE MOVE THE NEXT FUNCTIONS TO A FILE NAMED AS FUNCTION_REPORTING.UTILS.PHP //
-//
-//
-//
 
 
 /**

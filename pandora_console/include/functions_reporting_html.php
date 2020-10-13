@@ -2788,7 +2788,7 @@ function reporting_html_graph($table, $item)
 {
     $table->colspan['chart']['cell'] = 3;
     $table->cellstyle['chart']['cell'] = 'text-align: center;';
-    $table->data['chart']['cell'] = $item['chart'].'<br><br><br><br>';
+    $table->data['chart']['cell'] = $item['chart'];
 }
 
 
@@ -3435,12 +3435,12 @@ function reporting_html_availability($table, $item, $pdf=0)
                 $table_row[] = '--';
             } else {
                 $table_row[] = $row['agent'];
-                $item = $row['availability_item'];
+                $item_name = $row['availability_item'];
                 if ((bool) $row['compare'] === true) {
-                    $item .= ' ('.__('24 x 7').')';
+                    $item_name .= ' ('.__('24 x 7').')';
                 }
 
-                $table_row[] = $item;
+                $table_row[] = $item_name;
             }
 
             if ($row['time_total'] != 0 && $item['fields']['total_time']) {
@@ -3568,12 +3568,12 @@ function reporting_html_availability($table, $item, $pdf=0)
                 $table_row2[] = '--';
             } else {
                 $table_row2[] = $row['agent'];
-                $item = $row['availability_item'];
+                $item_name = $row['availability_item'];
                 if ((bool) $row['compare'] === true) {
-                    $item .= ' ('.__('24 x 7').')';
+                    $item_name .= ' ('.__('24 x 7').')';
                 }
 
-                $table_row2[] = $item;
+                $table_row2[] = $item_name;
             }
 
             if ($item['fields']['total_checks']) {

@@ -376,10 +376,22 @@ function menu_graph(
 }
 
 
-//
-//
-//
-// Prints a FLOT pie chart
+/**
+ * Pie chart.
+ *
+ * @param array   $values          Values.
+ * @param array   $labels          Labels.
+ * @param integer $width           Width.
+ * @param integer $height          Height.
+ * @param boolean $water_mark      Water mark.
+ * @param string  $font            Font.
+ * @param integer $font_size       Font Size.
+ * @param string  $legend_position Psition Legend.
+ * @param string  $colors          Array Colors.
+ * @param boolean $hide_labels     Hide labels.
+ *
+ * @return void
+ */
 function flot_pie_chart(
     $values,
     $labels,
@@ -392,9 +404,9 @@ function flot_pie_chart(
     $colors='',
     $hide_labels=false
 ) {
-    // include_javascript_dependencies_flot_graph();
-    $series = sizeof($values);
-    if (($series != sizeof($labels)) || ($series == 0)) {
+    $series = count($values);
+
+    if (($series !== count($labels)) || ($series === 0)) {
         return;
     }
 
@@ -407,11 +419,11 @@ function flot_pie_chart(
 
         case 'right':
         default:
-            // TODO FOR TOP OR LEFT OR RIGHT
+            // TODO FOR TOP OR LEFT OR RIGHT.
         break;
     }
 
-    $return = "<div id='$graph_id' class='graph' style='width: ".$width.'px; height: '.$height."px;'></div>";
+    $return = "<div id='".$graph_id."' class='graph' style='width: ".$width.'px; height: '.$height."px;'></div>";
 
     if ($water_mark != '') {
         $return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
@@ -424,15 +436,24 @@ function flot_pie_chart(
 
     $labels = implode($separator, $labels);
     $values = implode($separator, $values);
-    if (!empty($colors)) {
+    if (empty($colors) === false) {
         $colors = implode($separator, $colors);
     }
 
-    // include_javascript_dependencies_flot_graph();
     $return .= "<script type='text/javascript'>";
-    $return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
-		'$series', '$width', $font_size, $water_mark, '$separator',
-		'$legend_position', '$height', '$colors', ".json_encode($hide_labels).')';
+    $return .= "pandoraFlotPie(
+        '$graph_id',
+        '$values',
+        '$labels',
+        '$series',
+        '$width',
+        $font_size,
+        $water_mark,
+        '$separator',
+        '$legend_position',
+        '$height',
+        '$colors',
+        ".json_encode($hide_labels).')';
     $return .= '</script>';
 
     return $return;

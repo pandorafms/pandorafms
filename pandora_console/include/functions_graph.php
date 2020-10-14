@@ -3935,7 +3935,7 @@ function graph_custom_sql_graph(
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
 
-                $output .= '<img style="margin-left:20px;" src="data:image/jpg;base64,';
+                $output .= '<img src="data:image/jpg;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';
             } else {
@@ -5112,13 +5112,10 @@ function graph_nodata_image(
     $percent=false,
     $base64=false
 ) {
+    global $config;
     if ($base64 === true) {
         $dataImg = file_get_contents(
-            html_print_image(
-                'images/image_problem_area.png',
-                false,
-                ['style' => 'width:150px;']
-            )
+            $config['homedir'].'/images/image_problem_area_150.png'
         );
         return base64_encode($dataImg);
     }

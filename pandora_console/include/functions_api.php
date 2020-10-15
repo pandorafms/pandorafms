@@ -1851,7 +1851,9 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
     }
 
     if (is_metaconsole()) {
-        if (!check_acl($config['id_user'], 0, 'PM')) {
+        if (!check_acl($config['id_user'], 0, 'PM')
+            && !check_acl($config['id_user'], 0, 'AW')
+        ) {
             returnError('forbidden', 'string');
             return;
         }

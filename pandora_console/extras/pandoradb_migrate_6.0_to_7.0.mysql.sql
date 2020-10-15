@@ -770,7 +770,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`agent_regex` varchar(600) NOT NULL default '',
-
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2228,13 +2229,15 @@ INSERT INTO tlog_graph_models VALUES (6, 'Pages&#x20;with&#x20;warnings',
 INSERT INTO tlog_graph_models VALUES (7, 'Users&#x20;login',
 'Starting&#x20;Session&#x20;&#92;d+&#92;&#x20;of&#x20;user&#x20;&#40;.*&#41;',
 'user', 0);
+
 -- -----------------------------------------------------
 -- Add column in table `treport`
 -- -----------------------------------------------------
-
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE `treport` ADD COLUMN `orientation` varchar(25) NOT NULL default 'vertical';
 ALTER TABLE `treport` MODIFY COLUMN `hidden` tinyint(1) NULL DEFAULT '0' AFTER `non_interactive`;
+ALTER TABLE `treport` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `treport` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
 
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';

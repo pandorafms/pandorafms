@@ -27,26 +27,78 @@ if (!viewport_height) {
 }
 
 if (type_graph_pdf == "combined") {
-  post_data =
-    "data=" +
-    url_params +
-    "&data_combined=" +
-    url_params_comb +
-    "&data_module_list=" +
-    url_module_list +
-    "&type_graph_pdf=" +
-    type_graph_pdf +
-    "&session_id=" +
-    session_id;
+  post_data = {
+    data: url_params,
+    session_id: session_id,
+    type_graph_pdf: type_graph_pdf,
+    data_module_list: url_module_list,
+    data_combined: url_params_comb
+  };
 } else {
-  post_data =
-    "data=" +
-    url_params +
-    "&type_graph_pdf=" +
-    type_graph_pdf +
-    "&session_id=" +
-    session_id;
+  post_data = {
+    data: url_params,
+    session_id: session_id,
+    type_graph_pdf: type_graph_pdf
+  };
 }
+
+/* DEBUG
+page.onAlert = function() {
+  console.log("onAlert");
+};
+page.onCallback = function() {
+  console.log("onCallback");
+};
+page.onClosing = function() {
+  console.log("onClosing");
+};
+page.onConfirm = function() {
+  console.log("onConfirm");
+};
+page.onConsoleMessage = function() {
+  console.log("onConsoleMessage");
+};
+page.onError = function() {
+  console.log("onError");
+};
+page.onFilePicker = function() {
+  console.log("onFilePicker");
+};
+page.onInitialized = function() {
+  console.log("onInitialized");
+};
+page.onLoadFinished = function() {
+  console.log("onLoadFinished");
+};
+page.onLoadStarted = function() {
+  console.log("onLoadStarted");
+};
+page.onNavigationRequested = function() {
+  console.log("onNavigationRequested");
+};
+page.onPageCreated = function() {
+  console.log("onPageCreated");
+};
+page.onPrompt = function() {
+  console.log("onPrompt");
+};
+page.onResourceError = function() {
+  console.log("onResourceError");
+};
+page.onResourceReceived = function(res) {
+  console.log("onResourceReceived" + ";" + res.url + ";" + res.status);
+};
+page.onResourceRequested = function(res) {
+  console.log("onResourceRequested" + ";" + res.url);
+};
+page.onResourceTimeout = function() {
+  console.log("onResourceTimeout");
+};
+page.onUrlChanged = function(url) {
+  console.log("onUrlChanged" + ";" + url);
+};
+
+*/
 
 var page = require("webpage").create();
 
@@ -80,8 +132,15 @@ page.viewportSize = {
 
 page.zoomFactor = 1;
 
+page.settings.userAgent =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36";
+page.settings.resourceTimeout = 2000;
+page.settings.localToRemoteUrlAccessEnabled = true;
+
 page.onConsoleMessage = function(msg) {
   console.log(msg);
+  page.close();
+  phantom.exit();
 };
 
 page.onError = function(msg) {
@@ -102,7 +161,9 @@ page.onCallback = function() {
   phantom.exit();
 };
 
-page.open(url, "POST", post_data, function(status) {
+page.open(url, "POST", "data=" + btoa(JSON.stringify(post_data)), function(
+  status
+) {
   if (status == "fail") {
     console.out("Failed to generate chart.");
     phantom.exit();

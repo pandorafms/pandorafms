@@ -107,13 +107,13 @@ class ConsoleSupervisor
         $this->verbose = $verbose;
 
         if ($source === false) {
-            $this->enabled = false;
+            $this->notificationsEnabled = false;
             $this->sourceId = null;
 
             $this->targetGroups = null;
             $this->targetUsers = null;
         } else {
-            $this->enabled = (bool) $source['enabled'];
+            $this->notificationsEnabled = (bool) $source['enabled'];
             $this->sourceId = $source['id'];
 
             // Assign targets.
@@ -251,8 +251,10 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if ($this->enabled === false) {
-            // Feature not enabled.
+        $this->maintenanceOperations();
+
+        if ($this->notificationsEnabled === false) {
+            // Notifications not enabled.
             return;
         }
 
@@ -487,6 +489,21 @@ class ConsoleSupervisor
         */
         $this->checkAllowOverrideEnabled();
 
+    }
+
+
+    /**
+     * Executes console maintenance operations. Executed ALWAYS through CRON.
+     *
+     * @return void
+     */
+    public function maintenanceOperations()
+    {
+        /*
+         * Process cache clean if needed.
+         */
+
+        $this->checkCleanPhantomCache();
     }
 
 
@@ -2105,6 +2122,14 @@ class ConsoleSupervisor
 
         $fontpath = io_safe_output($config['fontpath']);
 
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $fontpath = $config['homedir'].'\include\fonts\\'.$fontpath;
+        } else {
+            $home = str_replace('\\', '/', $config['homedir']);
+            $fontpath = $home.'/include/fonts/'.$fontpath;
+        }
+
         if (($fontpath == '')
             || (file_exists($fontpath) === false)
         ) {
@@ -2586,6 +2611,32 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.AUDIT.LOG.OLD');
         }
+    }
+
+
+    /**
+     * Clean Phantom cache if needed.
+     *
+     * @return void
+     */
+    public function checkCleanPhantomCache()
+    {
+        global $config;
+
+        if ((int) $config['clean_phantomjs_cache'] !== 1) {
+            return;
+        }
+
+        $cache_dir = $config['homedir'].'/attachment/cache';
+        if (is_dir($cache_dir) === true) {
+            rrmdir($cache_dir);
+        }
+
+        // Clean process has ended.
+        config_update_value(
+            'clean_phantomjs_cache',
+            0
+        );
     }
 
 

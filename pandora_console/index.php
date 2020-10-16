@@ -961,18 +961,22 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
 
 // Log off.
 if (isset($_GET['bye'])) {
-    include 'general/logoff.php';
     $iduser = $_SESSION['id_usuario'];
+    $samlid = $_SESSION['samlid'];
+
+    // Process logout.
+    include 'general/logoff.php';
+
+    if ($config['auth'] == 'saml' && empty($samlid) === false) {
+        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
+        enterprise_include('include/auth/saml.php');
+        enterprise_hook('saml_logout', [$samlid]);
+    }
 
     $_SESSION = [];
     session_destroy();
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
-
-    if ($config['auth'] == 'saml') {
-        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        saml_logout();
-    }
 
     while (@ob_end_flush()) {
         // Dumping...

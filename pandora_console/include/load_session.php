@@ -198,11 +198,63 @@ function pandora_session_gc($max_lifetime=300)
 }
 
 
-$result_handler = session_set_save_handler(
-    'pandora_session_open',
-    'pandora_session_close',
-    'pandora_session_read',
-    'pandora_session_write',
-    'pandora_session_destroy',
-    'pandora_session_gc'
-);
+/**
+ * Enables custom session handlers.
+ *
+ * @return boolean Context changed or  not.
+ */
+function enable_session_handlers()
+{
+    global $config;
+
+    if ($config['_using_pandora_sessionhandlers'] !== true) {
+        if (session_status() !== PHP_SESSION_NONE) {
+            // Close previous version.
+            session_write_close();
+        }
+
+        $sesion_handler = session_set_save_handler(
+            'pandora_session_open',
+            'pandora_session_close',
+            'pandora_session_read',
+            'pandora_session_write',
+            'pandora_session_destroy',
+            'pandora_session_gc'
+        );
+
+        session_start();
+
+        // Restore previous session.
+        $config['_using_pandora_sessionhandlers'] = true;
+        return $sesion_handler;
+    }
+
+    return false;
+}
+
+
+/**
+ * Disables custom session handlers.
+ *
+ * @return void
+ */
+function disable_session_handlers()
+{
+    global $config;
+
+    if (session_status() !== PHP_SESSION_NONE) {
+        // Close previous version.
+        session_write_close();
+    }
+
+    $ss = new SessionHandler();
+    session_set_save_handler($ss, true);
+
+    session_start();
+
+    $config['_using_pandora_sessionhandlers'] = false;
+}
+
+
+// Always enable session handler.
+$result_handler = enable_session_handlers();

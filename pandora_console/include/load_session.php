@@ -236,9 +236,11 @@ function enable_session_handlers()
 /**
  * Disables custom session handlers.
  *
+ * @param string|null $id_session Force swap to target session.
+ *
  * @return void
  */
-function disable_session_handlers()
+function disable_session_handlers($id_session=null)
 {
     global $config;
 
@@ -249,6 +251,10 @@ function disable_session_handlers()
 
     $ss = new SessionHandler();
     session_set_save_handler($ss, true);
+
+    if ($id_session !== null) {
+        session_id($id_session);
+    }
 
     session_start();
 

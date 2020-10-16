@@ -411,8 +411,7 @@ if (! isset($config['id_user'])) {
                 $nick_in_db = $saml_user_id;
                 if (!$nick_in_db) {
                     include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                    $as = new SimpleSAML_Auth_Simple($config['saml_source']);
-                    $as->logout();
+                    saml_logout();
                 }
             }
         } else {
@@ -972,8 +971,7 @@ if (isset($_GET['bye'])) {
 
     if ($config['auth'] == 'saml') {
         include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        $as = new SimpleSAML_Auth_Simple($config['saml_source']);
-        $as->logout();
+        saml_logout();
     }
 
     while (@ob_end_flush()) {

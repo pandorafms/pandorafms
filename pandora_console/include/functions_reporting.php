@@ -8608,7 +8608,7 @@ function reporting_set_conf_charts(
             $ttl = 2;
             $only_image = true;
             $height = isset($content['style']['dyn_height']) ? $content['style']['dyn_height'] : 230;
-            $width = 780;
+            $width = 650;
         break;
 
         case 'data':

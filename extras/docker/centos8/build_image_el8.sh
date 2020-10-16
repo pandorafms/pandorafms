@@ -42,7 +42,6 @@ fi
 
 oconsoleurl=$TARGET_URL/Releases/7.0NG.$VERSION/$OS/noarch/pandorafms_console-7.0NG.$VERSION.noarch.rpm
 oserverurl=$TARGET_URL/Releases/7.0NG.$VERSION/$OS/noarch/pandorafms_server-7.0NG.$VERSION.noarch.rpm
-
 url=$(curl -I -s $TARGET_URL/Releases/7.0NG.$VERSION/ 2> /dev/null | grep "200 OK" | wc -l)
 
 # log in into docker acount to acces private repo.
@@ -62,13 +61,15 @@ rm -rf ./pandorafms_*
 
 # Downloading new packages
 wget $oconsoleurl
-wget oserverurl
+wget $oserverurl
 
 if [ "$BASEBUILD" == 1 ] ; then
 	# Open Base image
 	echo "building Base el8 image"
 	cd $DOCKER_PATH/base
 	docker build -t $OBASE_IMAGE:$VERSION -f $DOCKER_PATH/base/Dockerfile $DOCKER_PATH/base
+	echo "Taging Open stack el8 latest image before upload"	
+	docker tag $OBASE_IMAGE:$VERSION  $OBASE_IMAGE:latest
 	echo -e ">>>> \n"
 fi
 
@@ -84,6 +85,8 @@ fi
 echo "building Open el8 image"
 cd $DOCKER_PATH/pandora-stack
 docker build -t $OSTACK_IMAGE:$VERSION -f $DOCKER_PATH/pandora-stack/Dockerfile $DOCKER_PATH/pandora-stack
+echo "Taging Open base latest image before upload"	
+docker tag $OSTACK_IMAGE:$VERSION  $OSTACK_IMAGE:latest
 echo -e ">>>> \n"
 
 # Upload images
@@ -91,9 +94,6 @@ echo -e ">>>> \n"
 if [ "$UPDATE" == 1 ] ; then
 	if [ "$BASEBUILD" == 1 ] ; then
 	#Open base Images
-		echo "Taging Open stack el8 latest image before upload"	
-		docker tag $OBASE_IMAGE:$VERSION  $OBASE_IMAGE:latest
-		
 		echo "Uploading Open $OBASE_IMAGE:$VERSION . . ."
 		docker push $OBASE_IMAGE:$VERSION
 		docker push $OBASE_IMAGE:latest
@@ -106,9 +106,6 @@ if [ "$UPDATE" == 1 ] ; then
 	fi
 
 	#Open Stack Images
-	echo "Taging Open base latest image before upload"	
-	docker tag $OSTACK_IMAGE:$VERSION  $OBASE_IMAGE:latest
-	
 	echo "Uploading Open $OSTACK_IMAGE:$VERSION . . ."
 	docker push $OSTACK_IMAGE:$VERSION
 	docker push $OSTACK_IMAGE:latest

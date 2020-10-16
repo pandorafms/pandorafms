@@ -3737,14 +3737,18 @@ function graph_custom_sql_graph(
     global $config;
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
-
-    if (is_metaconsole() && $content['server_name'] !== '0') {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true
+        && empty($content['server_name']) === false
+    ) {
+        $connection = metaconsole_get_connection($content['server_name']);
         metaconsole_connect($connection);
     }
 
-    $report_content = db_get_row('treport_content', 'id_rc', $content['id_rc']);
+    $report_content = db_get_row(
+        'treport_content',
+        'id_rc',
+        $content['id_rc']
+    );
 
     if ($report_content == false || $report_content == '') {
         $report_content = db_get_row(
@@ -3755,7 +3759,9 @@ function graph_custom_sql_graph(
     }
 
     if ($report_content == false || $report_content == '') {
-        if (is_metaconsole() && $content['server_name'] !== '0') {
+        if (is_metaconsole() === true
+            && empty($content['server_name']) === false
+        ) {
             enterprise_hook('metaconsole_restore_db');
         }
 
@@ -3772,9 +3778,10 @@ function graph_custom_sql_graph(
             );
         }
 
-        if ((is_metaconsole() & $content['server_name']) !== '0') {
-            $server = metaconsole_get_connection_names();
-            $connection = metaconsole_get_connection($server);
+        if (is_metaconsole() === true
+            && empty($content['server_name']) === false
+        ) {
+            $connection = metaconsole_get_connection($content['server_name']);
             metaconsole_connect($connection);
         }
     }
@@ -3800,7 +3807,7 @@ function graph_custom_sql_graph(
 
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if ((is_metaconsole() & $content['server_name']) !== '0') {
+    if (is_metaconsole() === true && empty($content['server_name']) === false) {
         enterprise_hook('metaconsole_restore_db');
     }
 
@@ -3908,6 +3915,7 @@ function graph_custom_sql_graph(
         ];
     }
 
+    $output = '';
     switch ($type) {
         case 'sql_graph_vbar':
         default:
@@ -3927,7 +3935,7 @@ function graph_custom_sql_graph(
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
 
-                $output .= '<img style="margin-left:20px;" src="data:image/jpg;base64,';
+                $output .= '<img src="data:image/jpg;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';
             } else {
@@ -3936,48 +3944,48 @@ function graph_custom_sql_graph(
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '</div>';
             }
-        return $output;
+        break;
 
-            break;
         case 'sql_graph_hbar':
             // Horizontal bar.
-        return hbar_graph(
-            $data,
-            $width,
-            $height,
-            [],
-            [],
-            '',
-            '',
-            '',
-            '',
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            false,
-            $ttl,
-            $homeurl,
-            'white',
-            '#c1c1c1'
-        );
+            $output .= hbar_graph(
+                $data,
+                $width,
+                $height,
+                [],
+                [],
+                '',
+                '',
+                '',
+                '',
+                $water_mark,
+                $config['fontpath'],
+                $config['font_size'],
+                false,
+                $ttl,
+                $homeurl,
+                'white',
+                '#c1c1c1'
+            );
+        break;
 
-            break;
         case 'sql_graph_pie':
             // Pie.
-        return pie_graph(
-            $data,
-            $width,
-            $height,
-            __('other'),
-            $homeurl,
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
-        );
-
-            break;
+            $output .= pie_graph(
+                $data,
+                $width,
+                $height,
+                __('other'),
+                $homeurl,
+                $water_mark,
+                $config['fontpath'],
+                $config['font_size'],
+                $ttl
+            );
+        break;
     }
+
+    return $output;
 }
 
 
@@ -5104,13 +5112,10 @@ function graph_nodata_image(
     $percent=false,
     $base64=false
 ) {
+    global $config;
     if ($base64 === true) {
         $dataImg = file_get_contents(
-            html_print_image(
-                'images/image_problem_area.png',
-                false,
-                ['style' => 'width:150px;']
-            )
+            $config['homedir'].'/images/image_problem_area_150.png'
         );
         return base64_encode($dataImg);
     }

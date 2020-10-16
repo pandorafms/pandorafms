@@ -1,6 +1,6 @@
 #docker build -t pandorafms/pandorafms-open-stack-el8:$VERSION -f $HOME/code/pandorafms/extras/docker/centos8/pandora-stack/Dockerfile $HOME/code/pandorafms/extras/docker/centos8/pandora-stack/
 
-FROM pandorafms/pandorafms-open-base:el8
+FROM pandorafms/pandorafms-open-base-el8
 
 ENV DBNAME=pandora
 ENV DBUSER=pandora

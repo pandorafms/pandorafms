@@ -408,10 +408,12 @@ if (! isset($config['id_user'])) {
                     enterprise_hook('saml_logout');
                 }
 
-                $_SESSION = [];
-                session_destroy();
-                header_remove('Set-Cookie');
-                setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+                if (session_status() !== PHP_SESSION_NONE) {
+                    $_SESSION = [];
+                    session_destroy();
+                    header_remove('Set-Cookie');
+                    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+                }
 
                 // Process logout.
                 include 'general/logoff.php';
@@ -973,10 +975,12 @@ if (isset($_GET['bye'])) {
         enterprise_hook('saml_logout');
     }
 
-    $_SESSION = [];
-    session_destroy();
-    header_remove('Set-Cookie');
-    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    if (session_status() !== PHP_SESSION_NONE) {
+        $_SESSION = [];
+        session_destroy();
+        header_remove('Set-Cookie');
+        setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    }
 
 
     // Process logout.

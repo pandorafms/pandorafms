@@ -22,9 +22,9 @@ fi
 
 # DMG package version
 if [ "$#" -ge 2 ]; then
-	VERSION="7.0NG.749"
+	VERSION="7.0NG.750"
 else
-	VERSION="7.0NG.749"
+	VERSION="7.0NG.750"
 fi
 
 # Path for the generated DMG file

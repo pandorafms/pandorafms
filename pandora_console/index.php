@@ -398,9 +398,15 @@ if (! isset($config['id_user'])) {
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
             $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
-                include_once 'general/noaccesssaml.php';
-            }
+                $login_failed = true;
+                include_once 'general/login_page.php';
+                while (@ob_end_flush()) {
+                    // Dumping...
+                    continue;
+                }
 
+                exit('</html>');
+            }
 
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {

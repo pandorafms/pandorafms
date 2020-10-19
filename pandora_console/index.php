@@ -222,7 +222,7 @@ echo '<head>'."\n";
 ob_start('ui_process_page_head');
 
 // Enterprise main.
-enterprise_include('index.php');
+enterprise_include_once('index.php');
 
 echo '<script type="text/javascript">';
     echo 'var dispositivo = navigator.userAgent.toLowerCase();';
@@ -395,23 +395,25 @@ if (! isset($config['id_user'])) {
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            $saml_path = $config['homedir'].'/'.ENTERPRISE_DIR.'/include/auth/saml.php';
-            if (!$saml_path) {
+            enterprise_include_once('include/auth/saml.php');
+            $saml_user_id = enterprise_hook('saml_process_user_login');
+            if (!$saml_user_id) {
                 include_once 'general/noaccesssaml.php';
-            } else {
-                include_once $saml_path;
-
-                $saml_user_id = saml_process_user_login();
-
-                if (!$saml_user_id) {
-                    include_once 'general/noaccesssaml.php';
-                }
+            }
 
 
-                $nick_in_db = $saml_user_id;
-                if (!$nick_in_db) {
+            $nick_in_db = $saml_user_id;
+            if (!$nick_in_db) {
+                $samlid = $_SESSION['samlid'];
+                $_SESSION = [];
+                session_destroy();
+                header_remove('Set-Cookie');
+                setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+
+                if ($config['auth'] == 'saml' && empty($samlid) === false) {
                     include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                    saml_logout();
+                    enterprise_include_once('include/auth/saml.php');
+                    enterprise_hook('saml_logout', [$samlid]);
                 }
             }
         } else {
@@ -735,7 +737,7 @@ if (! isset($config['id_user'])) {
 
             exit('</html>');
         }
-    } else {
+    } else if (isset($_GET['bye']) === false) {
         // There is no user connected.
         if ($config['enterprise_installed']) {
             enterprise_include_once('include/functions_reset_pass.php');
@@ -962,21 +964,48 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
 // Log off.
 if (isset($_GET['bye'])) {
     $iduser = $_SESSION['id_usuario'];
-    $samlid = $_SESSION['samlid'];
+
+    if ($config['auth'] === 'saml') {
+        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
+        enterprise_include_once('include/auth/saml.php');
+
+        $samlid = $_SESSION['samlid'];
+        $saml_logout_state = (string) get_parameter('LogoutState', '');
+
+        if (empty($saml_logout_state) === false) {
+            try {
+                $state = \SimpleSAML\Auth\State::loadState(
+                    $saml_logout_state,
+                    'MyLogoutState'
+                );
+                $ls = $state['saml:sp:LogoutStatus'];
+                // Only works for SAML SP.
+                if ($ls['Code'] === 'urn:oasis:names:tc:SAML:2.0:status:Success'
+                    && isset($ls['SubCode']) === false
+                ) {
+                    // Successful logout.
+                    $config['logout_msg'] = 'You have been logged out.';
+                } else {
+                    // Logout failed. Tell the user to close the browser.
+                    $config['logout_msg'] = 'We were unable to log you out of all your sessions. To be completely sure that you are logged out, you need to close your web browser.';
+                }
+            } catch (Exception $e) {
+                $config['logout_msg'] = 'Failed to logout from SAML: '.$e->getMessage();
+            }
+        }
+    }
 
     // Process logout.
     include 'general/logoff.php';
-
-    if ($config['auth'] == 'saml' && empty($samlid) === false) {
-        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        enterprise_include('include/auth/saml.php');
-        enterprise_hook('saml_logout', [$samlid]);
-    }
 
     $_SESSION = [];
     session_destroy();
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+
+    if ($config['auth'] == 'saml' && empty($samlid) === false) {
+        enterprise_hook('saml_logout', [$samlid]);
+    }
 
     while (@ob_end_flush()) {
         // Dumping...

@@ -510,7 +510,7 @@ function html_print_select_groups(
         }
     } else {
         foreach ($selected as $k) {
-            $fields[$k] = groups_get_name($k);
+            $fields[$k] = groups_get_name($k, $returnAllGroup);
         }
     }
 

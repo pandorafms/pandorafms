@@ -510,7 +510,15 @@ function html_print_select_groups(
         }
     } else {
         foreach ($selected as $k) {
+            if ($k === null || $k === '') {
+                continue;
+            }
+
             $fields[$k] = groups_get_name($k, $returnAllGroup);
+        }
+
+        if (empty($fields) === true && $returnAllGroup) {
+            $fields[0] = groups_get_name(null, true);
         }
     }
 

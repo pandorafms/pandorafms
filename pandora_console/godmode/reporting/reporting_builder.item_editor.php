@@ -3744,6 +3744,19 @@ $(document).ready (function () {
 
     $("#combo_group").change (
         function () {
+
+            // Alert report group must show all matches when selecting All group
+            // ignoring 'recursion' option. #6497.
+            if ($('#type').val() == 'alert_report_group'
+                && $("#combo_group").val() == 0
+            ) {
+                $('#checkbox-recursion').attr('disabled',true)
+                $('#checkbox-recursion').attr('checked','checked')
+            } else {
+                $('#checkbox-recursion').removeAttr('checked')
+                $('#checkbox-recursion').removeAttr('disabled')
+            }
+
             $("#id_agents").html('');
             $("#id_agents2").html('');
             $("#module").html('');
@@ -3772,6 +3785,7 @@ $(document).ready (function () {
             );
         }
     );
+    $("#combo_group").change();
 
     $("#checkbox-recursion").change (
         function () {

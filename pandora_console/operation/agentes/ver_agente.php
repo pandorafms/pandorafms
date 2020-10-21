@@ -88,7 +88,7 @@ if (is_ajax()) {
 
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
-        $recursion = (bool) get_parameter('recursion');
+        $recursion = (get_parameter_switch('recursion', 'false') === 'true');
         $id_os = get_parameter('id_os', '');
         $agent_name = get_parameter('name', '');
 

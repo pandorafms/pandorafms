@@ -1935,16 +1935,21 @@ function process_datatables_item(item) {
 
     /* Status */
     img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
+    state = '0';
     switch (item.estado) {
         case "<?php echo EVENT_STATUS_NEW; ?>":
             img = '<?php echo html_print_image('images/star.png', true, ['title' => __('New event'), 'class' => 'forced-title']); ?>';
         break;
 
         case "<?php echo EVENT_STATUS_VALIDATED; ?>":
+
+            state = '1';
             img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title']); ?>';
         break;
 
         case "<?php echo EVENT_STATUS_INPROCESS; ?>":
+            state = '2';
+
             img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title']); ?>';
         break;
     }
@@ -1976,6 +1981,9 @@ function process_datatables_item(item) {
     }
 
     item.estado = '<div>';
+    item.estado += '<span style="display: none">';
+    item.estado += state;
+    item.estado += '</span>';
     item.estado += img;
     item.estado += '</div>';
 

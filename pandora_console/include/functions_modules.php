@@ -2494,6 +2494,8 @@ function modules_get_color_status($status, $force_module=false)
         case STATUS_AGENT_CRITICAL:
         case STATUS_MODULE_CRITICAL_BALL:
         case STATUS_AGENT_CRITICAL_BALL:
+        case STATUS_SERVER_CRASH:
+        case STATUS_SERVER_CRASH_BALL:
         return COL_CRITICAL;
 
         case AGENT_MODULE_STATUS_WARNING:

@@ -501,6 +501,8 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->head[5] = __('Status');
 
             $table1->headstyle = [];
+            $table1->headstyle[0] = 'text-align: left';
+            $table1->headstyle[1] = 'text-align: left';
             $table1->headstyle[2] = 'text-align: right';
             $table1->headstyle[3] = 'text-align: right';
             $table1->headstyle[4] = 'text-align: right';
@@ -536,6 +538,8 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table2->head[6] = __('Downtime');
 
             $table2->headstyle = [];
+            $table2->headstyle[0] = 'text-align: left';
+            $table2->headstyle[1] = 'text-align: left';
             $table2->headstyle[2] = 'text-align: right';
             $table2->headstyle[3] = 'text-align: right';
             $table2->headstyle[4] = 'text-align: right';
@@ -548,7 +552,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
 
             $table3->align = [];
             $table3->align[0] = 'left';
-            $table3->align[1] = 'left';
+            $table3->align[1] = 'right';
             $table3->align[2] = 'right';
             $table3->align[3] = 'right';
             $table3->align[4] = 'right';
@@ -565,6 +569,8 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table3->head[4] = __('Checks Unknown');
 
             $table3->headstyle = [];
+            $table3->headstyle[0] = 'text-align: left';
+            $table3->headstyle[1] = 'text-align: right';
             $table3->headstyle[2] = 'text-align: right';
             $table3->headstyle[3] = 'text-align: right';
             $table3->headstyle[4] = 'text-align: right';
@@ -721,23 +727,23 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     true
                 );
             } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
+                // $table1->title = $item['title'];
+                // $table1->titleclass = 'title_table_pdf';
+                // $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true
                 );
-                $table2->title = $item['title'];
-                $table2->titleclass = 'title_table_pdf';
-                $table2->titlestyle = 'text-align:left;';
+                // $table2->title = $item['title'];
+                // $table2->titleclass = 'title_table_pdf';
+                // $table2->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table2,
                     true
                 );
-                $table3->title = $item['title'];
-                $table3->titleclass = 'title_table_pdf';
-                $table3->titlestyle = 'text-align:left;';
+                // $table3->title = $item['title'];
+                // $table3->titleclass = 'title_table_pdf';
+                // $table3->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table3,
                     true
@@ -782,9 +788,9 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     true
                 );
             } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
+                // $table1->title = $item['title'];
+                // $table1->titleclass = 'title_table_pdf';
+                // $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true
@@ -3617,9 +3623,9 @@ function reporting_html_availability($table, $item, $pdf=0)
         $data[0] = html_print_table($table1, true);
         array_push($table->data, $data);
     } else {
-        $table1->title = $item['title'];
-        $table1->titleclass = 'title_table_pdf';
-        $table1->titlestyle = 'text-align:left;';
+        // $table1->title = $item['title'];
+        // $table1->titleclass = 'title_table_pdf';
+        // $table1->titlestyle = 'text-align:left;';
         $return_pdf .= html_print_table($table1, true);
     }
 
@@ -3629,9 +3635,9 @@ function reporting_html_availability($table, $item, $pdf=0)
             $data2[0] = html_print_table($table2, true);
             array_push($table->data, $data2);
         } else {
-            $table2->title = $item['title'];
-            $table2->titleclass = 'title_table_pdf';
-            $table2->titlestyle = 'text-align:left;';
+            // $table2->title = $item['title'];
+            // $table2->titleclass = 'title_table_pdf';
+            // $table2->titlestyle = 'text-align:left;';
             $return_pdf .= html_print_table($table2, true);
         }
     }
@@ -3699,9 +3705,9 @@ function reporting_html_availability($table, $item, $pdf=0)
                 );
                 array_push($table->data, $data);
             } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
+                // $table1->title = $item['title'];
+                // $table1->titleclass = 'title_table_pdf';
+                // $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true

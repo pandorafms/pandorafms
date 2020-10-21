@@ -546,7 +546,7 @@ if (!empty($search_custom)) {
 if ($group_id > 0) {
     $groups = [$group_id];
     if ($recursion) {
-        $groups = groups_get_id_recursive($group_id, true);
+        $groups = groups_get_children_ids($group_id, true);
     }
 } else {
     $groups = [];
@@ -576,7 +576,7 @@ if ($strict_user) {
     if ($group_id > 0) {
         $groups = [$group_id];
         if ($recursion) {
-            $groups = groups_get_id_recursive($group_id, true);
+            $groups = groups_get_children_ids($group_id, true);
         }
 
         $filter['id_group'] = implode(',', $groups);

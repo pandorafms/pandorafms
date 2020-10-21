@@ -1108,11 +1108,14 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, false)
+                    groups_get_children_ids($parent, $noACL)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, false);
+            $id_group = array_merge(
+                [$id_group],
+                groups_get_children_ids($id_group, $noACL)
+            );
         }
 
         // Check available groups for target user only if asking for 'All' group.

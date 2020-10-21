@@ -871,37 +871,23 @@ function events_get_all(
     }
 
     $groups = $filter['id_group_filter'];
-    if (isset($groups) && $groups > 0) {
-        $propagate = db_get_value(
-            'propagate',
-            'tgrupo',
-            'id_grupo',
-            $groups
-        );
+    if (isset($groups) === true && $groups > 0) {
+        $children = groups_get_children($groups);
 
-        if (!$propagate && isset($groups)) {
-            $sql_filters[] = sprintf(
-                ' AND (te.id_grupo = %d OR tasg.id_group = %d)',
-                $groups,
-                $groups
-            );
-        } else {
-            $children = groups_get_children($groups);
-            $_groups = [ $groups ];
-            if (!empty($children)) {
-                foreach ($children as $child) {
-                    $_groups[] = (int) $child['id_grupo'];
-                }
+        $_groups = [ $groups ];
+        if (empty($children) === false) {
+            foreach ($children as $child) {
+                $_groups[] = (int) $child['id_grupo'];
             }
-
-            $groups = $_groups;
-
-            $sql_filters[] = sprintf(
-                ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-                join(',', $groups),
-                join(',', $groups)
-            );
         }
+
+        $groups = $_groups;
+
+        $sql_filters[] = sprintf(
+            ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+            join(',', $groups),
+            join(',', $groups)
+        );
     }
 
     // Skip system messages if user is not PM.

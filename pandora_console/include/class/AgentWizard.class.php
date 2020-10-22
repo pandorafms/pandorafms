@@ -4571,7 +4571,7 @@ class AgentWizard extends HTML
 
         // Definition object.
         $definition = [];
-        // ifHCInOctets.
+        // IfHCInOctets.
         $moduleName = $name.'ifHCInOctets';
         $definition['ifHCInOctets'] = [
             'module_name'        => $moduleName,
@@ -4597,7 +4597,7 @@ class AgentWizard extends HTML
             ],
 
         ];
-        // ifHCOutOctets.
+        // IfHCOutOctets.
         $moduleName = $name.'ifHCOutOctets';
         $definition['ifHCOutOctets'] = [
             'module_name'        => $moduleName,
@@ -4623,7 +4623,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        // ifHCInUcastPkts.
+        // IfHCInUcastPkts.
         $moduleName = $name.'ifHCInUcastPkts';
         $definition['ifHCInUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4649,7 +4649,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        // ifHCOutUcastPkts.
+        // IfHCOutUcastPkts.
         $moduleName = $name.'ifHCOutUcastPkts';
         $definition['ifHCOutUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4674,7 +4674,7 @@ class AgentWizard extends HTML
                 'inv_critical' => false,
             ],
         ];
-        // ifHCInNUcastPkts.
+        // IfHCInNUcastPkts.
         $moduleName = $name.'ifHCInNUcastPkts';
         $definition['ifHCInNUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4738,6 +4738,7 @@ class AgentWizard extends HTML
      * @param integer|null $type      Module type.
      *
      * @return string
+     * @throws Exception Handle of unwanted operations.
      */
     private function evalOperation(
         string $operation,

@@ -32,7 +32,7 @@ $action = get_parameter('action', 'new_map');
 
 $gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
 
-if (!check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
+if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
     db_pandora_audit('ACL Violation', 'Trying to access map builder');
     include 'general/noaccess.php';
     return;

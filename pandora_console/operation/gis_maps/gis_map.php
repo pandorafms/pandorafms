@@ -170,9 +170,16 @@ if ($maps !== false) {
         $data['name'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$map['id_tgis_map'].'">'.$map['map_name'].'</a> ';
         $data['group'] = ui_print_group_icon($map['group_id'], true);
 
-        $data['op'] = '';
+        if (check_acl($config['id_user'], 0, 'MW')
+            || check_acl($config['id_user'], 0, 'MM')
+        ) {
+            $data['default'] = '';
+            $data['op'] = '';
+        }
 
-        if (check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW') || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM')) {
+        if (check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
+            || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM')
+        ) {
             if (check_acl_restricted_all($config['id_user'], 0, 'MM')) {
                 $checked = false;
                 if ($map['default_map']) {

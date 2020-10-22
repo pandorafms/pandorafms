@@ -3002,7 +3002,7 @@ class AgentWizard extends HTML
                         $newModule = $module;
                         // Split the values got to obtain the name.
                         $tmpFirst = explode('.', $value);
-                        $tmpSecond = explode(' ', $tmpFirst[1]);
+                        $tmpSecond = explode(' ', $tmpFirst[(count($tmpFirst) - 1)]);
                         // Position 0 is the index, Position 3 is the MIB name.
                         $snmpwalkNames[$tmpSecond[0]] = $tmpSecond[3];
                         // Perform the operations for get the values.
@@ -3011,6 +3011,11 @@ class AgentWizard extends HTML
                             $currentOid = $oid.'.'.$tmpSecond[0];
                             $macros['macros'][$oidName] = $currentOid;
                             $currentOidValue = $this->snmpgetValue($currentOid);
+                            // If for any reason the value comes empty, add 1.
+                            if ($currentOidValue == '') {
+                                $currentOidValue = 1;
+                            }
+
                             $thisOperation = preg_replace(
                                 '/'.$oidName.'/',
                                 $currentOidValue,
@@ -4739,11 +4744,11 @@ class AgentWizard extends HTML
         string $unit='',
         ?int $type=0
     ) {
-        // Avoid non-numeric or arithmetic chars for security reasons.
-        if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
-            $output = 'ERROR';
-        } else {
-            try {
+        try {
+            // Avoid non-numeric or arithmetic chars for security reasons.
+            if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
+                throw new Exception(sprintf(__("The operation '%s' is not permitted. Review for remote components."), $operation));
+            } else {
                 // Get the result of the operation and set it.
                 $output = '';
                 eval('$output = '.$operation.';');
@@ -4753,9 +4758,11 @@ class AgentWizard extends HTML
                     $unit,
                     $type
                 );
-            } catch (Exception $e) {
-                $output = 'ERROR';
             }
+        } catch (Exception $e) {
+            $this->message['type'][]    = 'error';
+            $this->message['message'][] = $e->getMessage();
+            $this->showMessage();
         }
 
         return $output;

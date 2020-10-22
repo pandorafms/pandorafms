@@ -155,6 +155,11 @@ if (empty($dashboards) === true) {
         $data['full_screen'] .= '</a>';
 
         if ($manageDashboards === 1) {
+            $data['copy'] = '';
+            $data['delete'] = '';
+        }
+
+        if (check_acl_restricted_all($config['id_user'], $dashboard['id_group'], 'RM')) {
             $dataQueryCopy = [
                 'dashboardId'   => $dashboard['id'],
                 'copyDashboard' => 1,

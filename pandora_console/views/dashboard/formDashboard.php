@@ -43,6 +43,12 @@ if (empty($arrayDashboard) === true) {
     }
 }
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
+}
+
 $dataQuery = ['dashboardId' => $dashboardId];
 
 $url = ui_get_full_url(
@@ -100,11 +106,12 @@ $inputs = [
             [
                 'label'     => __('Group'),
                 'arguments' => [
-                    'name'     => 'id_group',
-                    'id'       => 'id_group',
-                    'type'     => 'select_groups',
-                    'selected' => $arrayDashboard['id_group'],
-                    'return'   => true,
+                    'name'           => 'id_group',
+                    'id'             => 'id_group',
+                    'type'           => 'select_groups',
+                    'returnAllGroup' => $return_all_group,
+                    'selected'       => $arrayDashboard['id_group'],
+                    'return'         => true,
                 ],
             ],
         ],

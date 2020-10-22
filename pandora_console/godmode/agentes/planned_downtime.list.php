@@ -476,22 +476,42 @@ else {
         if (in_array($downtime['id_group'], $groupsAD)) {
             // Stop button
             if ($downtime['type_execution'] == 'once' && $downtime['executed'] == 1) {
-                $data['stop'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
+                    || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
+                ) {
+                    $data['stop'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                } else {
+                    $data['stop'] = html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                }
             } else {
                 $data['stop'] = '';
             }
 
             // Edit & delete buttons.
             if ($downtime['executed'] == 0) {
-                // Edit.
-                $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
-                // Delete.
-                $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+                if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
+                    || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
+                ) {
+                    // Edit.
+                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
+                    // Delete.
+                    $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+                } else {
+                    $data['edit'] = '';
+                    $data['delete'] = '';
+                }
             } else if ($downtime['executed'] == 1 && $downtime['type_execution'] == 'once') {
-                // Edit.
-                $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
-                // Delete.
-                $data['delete'] = __('N/A');
+                if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
+                    || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
+                ) {
+                    // Edit.
+                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
+                    // Delete.
+                    $data['delete'] = __('N/A');
+                } else {
+                    $data['edit'] = '';
+                    $data['delete'] = '';
+                }
             } else {
                 $data['edit'] = '';
                 $data['delete'] = '';

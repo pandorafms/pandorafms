@@ -83,6 +83,20 @@ $change_weight = (bool) get_parameter('change_weight', false);
 $change_label = (bool) get_parameter('change_label', false);
 $id_graph = (int) get_parameter('id', 0);
 
+if ($id_graph > 0) {
+    $graph_group = db_get_value('id_group', 'tgraph', 'id_graph', $id_graph);
+    if (!check_acl_restricted_all($config['id_user'], $graph_group, 'RW')
+        && !check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access graph builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
+
 if ($id_graph !== 0) {
     $sql = "SELECT * FROM tgraph 
 	WHERE (private = 0 OR (private = 1 AND id_user = '".$config['id_user']."'))

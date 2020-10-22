@@ -80,9 +80,15 @@ if ($edit_networkmap) {
     } else {
         $id_group = $values['id_group'];
 
+        $id_group_acl_check = $id_group_map;
+
+        if ($id_group_map === null) {
+            $id_group_acl_check = $values['id_group_map'];
+        }
+
         // ACL for the network map.
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_acl_check, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_acl_check, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -265,6 +271,12 @@ if ($not_found) {
         true
     );
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('AR') === true) {
+        $return_all_group = true;
+    }
+
     $table->data[1][0] = __('Group');
     $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
         // Id_user.
@@ -272,7 +284,7 @@ if ($not_found) {
         // Privilege.
         'AR',
         // ReturnAllGroup.
-        true,
+        $return_all_group,
         // Name.
         'id_group_map',
         // Selected.

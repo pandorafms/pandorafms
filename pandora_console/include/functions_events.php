@@ -3254,7 +3254,7 @@ function events_get_status($status_id)
  *
  * @return boolean True if the user has permissions or false otherwise.
  */
-function events_check_event_filter_group($id_filter)
+function events_check_event_filter_group($id_filter, $restrict_all_group=false)
 {
     global $config;
 
@@ -3265,7 +3265,11 @@ function events_check_event_filter_group($id_filter)
 
     // Permissions in any group allow to edit "All group" filters.
     if ($id_group == 0 && !empty($groups_user)) {
-        return true;
+        if ($restrict_all_group === true) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     $groups_id = [];

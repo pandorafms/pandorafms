@@ -114,11 +114,17 @@ if (isset($write_groups[$idGroupReport]) === false && $idGroupReport) {
     $write_groups[$idGroupReport] = groups_get_name($idGroupReport);
 }
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
+}
+
 $table->data['group'][1] = '<div class="w290px inline">';
 $table->data['group'][1] .= html_print_select_groups(
     $config['id_user'],
     'AR',
-    true,
+    $return_all_group,
     'id_group',
     $idGroupReport,
     '',

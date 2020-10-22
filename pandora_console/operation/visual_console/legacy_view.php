@@ -97,9 +97,9 @@ $bheight = $layout['height'];
 $pure_url = '&pure='.$config['pure'];
 
 // ACL
-$vconsole_read = check_acl($config['id_user'], $id_group, 'VR');
-$vconsole_write = check_acl($config['id_user'], $id_group, 'VW');
-$vconsole_manage = check_acl($config['id_user'], $id_group, 'VM');
+$vconsole_read = check_acl_restricted_all($config['id_user'], $id_group, 'VR');
+$vconsole_write = check_acl_restricted_all($config['id_user'], $id_group, 'VW');
+$vconsole_manage = check_acl_restricted_all($config['id_user'], $id_group, 'VM');
 
 if (! $vconsole_read && !$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(

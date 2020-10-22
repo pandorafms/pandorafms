@@ -55,6 +55,10 @@ $table->head[3] = __('Actions');
 $table->data = [];
 
 foreach ($event_responses as $response) {
+    if (!check_acl_restricted_all($config['id_user'], $response['id_group'], 'PM')) {
+        continue;
+    }
+
     $data = [];
     $data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.$response['name'].'</a>';
     $data[1] = $response['description'];

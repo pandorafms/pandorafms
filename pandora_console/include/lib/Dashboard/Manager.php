@@ -1008,6 +1008,7 @@ class Manager
                     'dashboardName'  => $this->dashboardFields['name'],
                     'hash'           => self::generatePublicHash(),
                     'publicLink'     => $this->publicLink,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         } else {
@@ -1025,6 +1026,7 @@ class Manager
                     'cells'          => $this->cells,
                     'cellModeSlides' => $this->cellModeSlides,
                     'cellId'         => ($this->cellId === 0) ? $this->cells[0]['id'] : $this->cellId,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         }

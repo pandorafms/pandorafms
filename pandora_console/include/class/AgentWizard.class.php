@@ -5034,7 +5034,7 @@ class AgentWizard extends HTML
                 var imageInfoModules = $("#image-info-modules-" + blockNumber);
                 var totalCount = 0;
                 var markedCount = 0;
-                var hidden_input  = document.getElementById("hidden-module-active-"+switchName[2]+"_"+switchName[3]);
+                var hidden_input = document.getElementById("hidden-module-active-"+switchName[2]+"_0-0");
                 var id_input = hidden_input.id.split("_");
                 if (type == 'block') {
                     selectedBlock

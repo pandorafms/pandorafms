@@ -263,11 +263,6 @@ function process_user_login_remote($login, $pass, $api=false)
             if ($config['autocreate_remote_users'] == 1) {
                 if ($config['ad_save_password']) {
                     $update_credentials = change_local_user_pass_ldap($login, $pass);
-
-                    if ($update_credentials) {
-                        $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                        return false;
-                    }
                 } else {
                     delete_user_pass_ldap($login);
                 }
@@ -288,11 +283,6 @@ function process_user_login_remote($login, $pass, $api=false)
                 if ($return === 'error_permissions') {
                     $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
                     return false;
-                } else {
-                    if ($return === 'permissions_changed') {
-                        $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                        return false;
-                    }
                 }
             }
         } else if ($config['auth'] === 'ldap') {
@@ -300,11 +290,6 @@ function process_user_login_remote($login, $pass, $api=false)
             if ($config['autocreate_remote_users'] == 1) {
                 if ($config['ldap_save_password']) {
                     $update_credentials = change_local_user_pass_ldap($login, $pass);
-
-                    if ($update_credentials) {
-                        $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                        return false;
-                    }
                 } else {
                     delete_user_pass_ldap($login);
                 }
@@ -326,11 +311,6 @@ function process_user_login_remote($login, $pass, $api=false)
                     if ($return === 'error_permissions') {
                         $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
                         return false;
-                    } else {
-                        if ($return === 'permissions_changed') {
-                            $config['auth_error'] = __('Your permissions have changed. Please, login again.');
-                            return false;
-                        }
                     }
                 }
             }

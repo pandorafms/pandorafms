@@ -104,13 +104,22 @@ class Agent extends Entity
     /**
      * Return last value (status) of the agent.
      *
+     * @param boolean $recalc Forcre recalculation.
+     *
      * @return integer Status of the agent.
      */
-    public function lastStatus()
+    public function lastStatus($force=false)
     {
+        if ($force === true) {
+            return \agents_get_status(
+                $this->id_agente()
+            );
+        }
+
         return \agents_get_status_from_counts(
             $this->toArray()
         );
+
     }
 
 

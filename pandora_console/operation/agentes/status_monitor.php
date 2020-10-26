@@ -701,7 +701,6 @@ foreach ($custom_fields as $custom_field) {
     $table_custom_fields->data[] = $row;
 }
 
-
 $filters = '<form method="post" action="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;module_option='.$module_option.'&amp;ag_modulename='.$ag_modulename.'&amp;moduletype='.$moduletype.'&amp;datatype='.$datatype.'&amp;status='.$status.'&amp;sort_field='.$sortField.'&amp;sort='.$sort.'&amp;pure='.$config['pure'].$ag_custom_fields_params.'">';
 if (is_metaconsole()) {
     $table->colspan[4][0] = 7;
@@ -1750,24 +1749,13 @@ if (!empty($result)) {
 
 // End Build List Result.
 echo "<div id='monitor_details_window'></div>";
-// Strict user hidden.
-echo '<div id="strict_hidden" style="display:none;">';
-html_print_input_text('strict_user_hidden', $strict_user);
-echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file('pandora_modules');
 
 ?>
-<script type='text/javascript'>
-$(document).ready (function () {
-    if ($('#ag_group').val() != 0) {
-        $('#tag_filter').css('display', 'none');
-        $('#tag_td').css('display', 'none');
-    }
-});
-
+<script type="text/javascript">
 
 $('#moduletype').click(function() {
     jQuery.get (
@@ -1789,17 +1777,6 @@ $('#moduletype').click(function() {
     return false;
 });
 
-$('#ag_group').change (function () {
-    strict_user = $('#text-strict_user_hidden').val();
-    
-    if (($('#ag_group').val() != 0) && (strict_user != 0)) {
-        $('#tag_filter').css('display', 'none');
-        $('#tag_td').css('display', 'none');
-    } else {
-        $('#tag_filter').css('display', '');
-        $('#tag_td').css('display', '');
-    }
-});
 
 function toggle_full_value(id) {
     text = $('#hidden_value_module_' + id).html();

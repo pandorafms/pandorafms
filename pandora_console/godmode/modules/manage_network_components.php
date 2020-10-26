@@ -330,7 +330,7 @@ if ($create_component) {
 
     if ($name && !$name_check) {
         $id = network_components_create_network_component(
-            strip_tags(io_safe_input($name), '<br>'),
+            $name,
             $type,
             $id_group,
             [
@@ -431,7 +431,7 @@ if ($update_component) {
             $id,
             [
                 'type'                  => $type,
-                'name'                  => strip_tags(io_safe_input($name, '<br>')),
+                'name'                  => $name,
                 'id_group'              => $id_group,
                 'description'           => $description,
                 'module_interval'       => $module_interval,

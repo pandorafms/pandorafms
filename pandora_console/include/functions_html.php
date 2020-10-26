@@ -1351,6 +1351,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
  * @param mixed   $size           Max elements showed in select or default (size=10)
  * @param integer $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
  * @param integer $class          Class to apply.
+ * @param boolean $required       Select is required or not.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -1368,7 +1369,8 @@ function html_print_select_from_sql(
     $style=false,
     $size=false,
     $trucate_size=GENERIC_SIZE_TEXT,
-    $class=''
+    $class='',
+    $required=false
 ) {
     global $config;
 
@@ -1404,7 +1406,17 @@ function html_print_select_from_sql(
         $disabled,
         $style,
         '',
-        $size
+        $size,
+        // Modal.
+        false,
+        // Message.
+        '',
+        // Select_all.
+        false,
+        // Simple_multiple_options.
+        false,
+        // Required.
+        $required
     );
 }
 
@@ -4363,7 +4375,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['style']) === true) ? $data['style'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
-                ((isset($data['class']) === true) ? $data['class'] : '')
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
 

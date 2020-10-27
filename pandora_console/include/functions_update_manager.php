@@ -1753,6 +1753,12 @@ function update_manager_extract_package()
         return false;
     }
 
+    // An update have been applied, clean phantomjs cache.
+    config_update_value(
+        'clean_phantomjs_cache',
+        1
+    );
+
     db_process_sql_update(
         'tconfig',
         ['value' => 50],

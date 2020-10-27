@@ -1349,7 +1349,7 @@ function graphic_combined_module(
         if ($count_modules > 0) {
             foreach ($module_list as $key => $value) {
                 $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['server_id'];
-                $sources[$key]['id_agent_module'] = $value['module'];
+                $sources[$key]['id_agent_module'] = (isset($value['module']) === true) ? $value['module'] : $value;
                 $sources[$key]['weight'] = $weights[$key];
                 $sources[$key]['label'] = $params_combined['labels'];
             }
@@ -3710,12 +3710,19 @@ function grafico_eventos_usuario($width, $height)
 
 
 /**
- * Print a custom SQL-defined graph
+ * Undocumented function
  *
- * @param integer ID of report content, used to get SQL code to get information for graph
- * @param integer height graph height
- * @param integer width graph width
- * @param integer Graph type 1 vbar, 2 hbar, 3 pie
+ * @param array   $content          ID of report content
+ *            used to get SQL code to get information for graph.
+ * @param integer $width            Graph width.
+ * @param integer $height           Graph height.
+ * @param string  $type             Graph type 1 vbar, 2 hbar, 3 pie.
+ * @param boolean $only_image       Only image.
+ * @param string  $homeurl          Url.
+ * @param integer $ttl              Ttl.
+ * @param integer $max_num_elements Max elements.
+ *
+ * @return string Graph.
  */
 function graph_custom_sql_graph(
     $content,
@@ -3730,38 +3737,59 @@ function graph_custom_sql_graph(
     global $config;
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
-
-    if (is_metaconsole() && $content['server_name'] !== '0') {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true
+        && empty($content['server_name']) === false
+    ) {
+        $connection = metaconsole_get_connection($content['server_name']);
         metaconsole_connect($connection);
     }
 
-    $report_content = db_get_row('treport_content', 'id_rc', $content['id_rc']);
+    $report_content = db_get_row(
+        'treport_content',
+        'id_rc',
+        $content['id_rc']
+    );
 
     if ($report_content == false || $report_content == '') {
-        $report_content = db_get_row('treport_content_template', 'id_rc', $content['id_rc']);
+        $report_content = db_get_row(
+            'treport_content_template',
+            'id_rc',
+            $content['id_rc']
+        );
     }
 
     if ($report_content == false || $report_content == '') {
-        if (is_metaconsole() && $content['server_name'] !== '0') {
+        if (is_metaconsole() === true
+            && empty($content['server_name']) === false
+        ) {
             enterprise_hook('metaconsole_restore_db');
         }
 
-        $report_content = db_get_row('treport_content', 'id_rc', $content['id_rc']);
+        $report_content = db_get_row(
+            'treport_content',
+            'id_rc',
+            $content['id_rc']
+        );
         if ($report_content == false || $report_content == '') {
-            $report_content = db_get_row('treport_content_template', 'id_rc', $content['id_rc']);
+            $report_content = db_get_row(
+                'treport_content_template',
+                'id_rc',
+                $content['id_rc']
+            );
         }
 
-        if ((is_metaconsole() & $content['server_name']) !== '0') {
-            $server = metaconsole_get_connection_names();
-            $connection = metaconsole_get_connection($server);
+        if (is_metaconsole() === true
+            && empty($content['server_name']) === false
+        ) {
+            $connection = metaconsole_get_connection($content['server_name']);
             metaconsole_connect($connection);
         }
     }
 
     if ($id != null) {
-        $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$content['id_rc']);
+        $historical_db = db_get_value_sql(
+            'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
+        );
     } else {
         $historical_db = $content['historical_db'];
     }
@@ -3769,13 +3797,17 @@ function graph_custom_sql_graph(
     if ($report_content['external_source'] != '') {
         $sql = io_safe_output($report_content['external_source']);
     } else {
-        $sql = db_get_row('treport_custom_sql', 'id', $report_content['treport_custom_sql_id']);
+        $sql = db_get_row(
+            'treport_custom_sql',
+            'id',
+            $report_content['treport_custom_sql_id']
+        );
         $sql = io_safe_output($sql['sql']);
     }
 
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if ((is_metaconsole() & $content['server_name']) !== '0') {
+    if (is_metaconsole() === true && empty($content['server_name']) === false) {
         enterprise_hook('metaconsole_restore_db');
     }
 
@@ -3790,24 +3822,32 @@ function graph_custom_sql_graph(
     foreach ($data_result as $data_item) {
         $count++;
         $value = 0;
-        if (!empty($data_item['value'])) {
+        if (empty($data_item['value']) === false) {
             $value = $data_item['value'];
         }
 
         if ($count <= $max_num_elements) {
             $label = __('Data');
-            if (!empty($data_item['label'])) {
+            if (empty($data_item['label']) === false) {
                 $label = io_safe_output($data_item['label']);
                 if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
                     $first_label = $label;
-                    $label = substr($first_label, 0, floor($SQL_GRAPH_MAX_LABEL_SIZE / 2));
+                    $label = substr(
+                        $first_label,
+                        0,
+                        floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                    );
                     $label .= '...';
-                    $label .= substr($first_label, floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2));
+                    $label .= substr(
+                        $first_label,
+                        floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                    );
                 }
             }
 
             switch ($type) {
                 case 'sql_graph_vbar':
+                default:
                     // Vertical bar.
                     $data[] = [
                         'tick' => $label.'_'.$count,
@@ -3816,18 +3856,19 @@ function graph_custom_sql_graph(
                 break;
 
                 case 'sql_graph_hbar':
-                    // horizontal bar
+                    // Horizontal bar.
                     $data[$label.'_'.$count]['g'] = $value;
                 break;
 
                 case 'sql_graph_pie':
-                    // Pie
+                    // Pie.
                     $data[$label.'_'.$count] = $value;
                 break;
             }
         } else {
             switch ($type) {
                 case 'sql_graph_vbar':
+                default:
                     // Vertical bar.
                     if ($flagOther === false) {
                         $data[] = [
@@ -3842,8 +3883,8 @@ function graph_custom_sql_graph(
                 break;
 
                 case 'sql_graph_hbar':
-                    // horizontal bar
-                    if (!isset($data[__('Other')]['g'])) {
+                    // Horizontal bar.
+                    if (isset($data[__('Other')]['g']) === false) {
                         $data[__('Other')]['g'] = 0;
                     }
 
@@ -3851,8 +3892,8 @@ function graph_custom_sql_graph(
                 break;
 
                 case 'sql_graph_pie':
-                    // Pie
-                    if (!isset($data[__('Other')])) {
+                    // Pie.
+                    if (isset($data[__('Other')]) === false) {
                         $data[__('Other')] = 0;
                     }
 
@@ -3865,12 +3906,19 @@ function graph_custom_sql_graph(
     if ($config['fixed_graph'] == false) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+            'url'  => ui_get_full_url(
+                'images/logo_vertical_water.png',
+                false,
+                false,
+                false
+            ),
         ];
     }
 
+    $output = '';
     switch ($type) {
         case 'sql_graph_vbar':
+        default:
             // Vertical bar.
             $color = color_graph_array();
 
@@ -3887,7 +3935,7 @@ function graph_custom_sql_graph(
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
 
-                $output .= '<img style="margin-left:20px;" src="data:image/jpg;base64,';
+                $output .= '<img src="data:image/jpg;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';
             } else {
@@ -3896,48 +3944,48 @@ function graph_custom_sql_graph(
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '</div>';
             }
-        return $output;
+        break;
 
-            break;
         case 'sql_graph_hbar':
-            // horizontal bar
-        return hbar_graph(
-            $data,
-            $width,
-            $height,
-            [],
-            [],
-            '',
-            '',
-            '',
-            '',
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            false,
-            $ttl,
-            $homeurl,
-            'white',
-            '#c1c1c1'
-        );
+            // Horizontal bar.
+            $output .= hbar_graph(
+                $data,
+                $width,
+                $height,
+                [],
+                [],
+                '',
+                '',
+                '',
+                '',
+                $water_mark,
+                $config['fontpath'],
+                $config['font_size'],
+                false,
+                $ttl,
+                $homeurl,
+                'white',
+                '#c1c1c1'
+            );
+        break;
 
-            break;
         case 'sql_graph_pie':
-            // Pie
-        return pie_graph(
-            $data,
-            $width,
-            $height,
-            __('other'),
-            $homeurl,
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
-        );
-
-            break;
+            // Pie.
+            $output .= pie_graph(
+                $data,
+                $width,
+                $height,
+                __('other'),
+                $homeurl,
+                $water_mark,
+                $config['fontpath'],
+                $config['font_size'],
+                $ttl
+            );
+        break;
     }
+
+    return $output;
 }
 
 
@@ -5064,13 +5112,10 @@ function graph_nodata_image(
     $percent=false,
     $base64=false
 ) {
+    global $config;
     if ($base64 === true) {
         $dataImg = file_get_contents(
-            html_print_image(
-                'images/image_problem_area.png',
-                false,
-                ['style' => 'width:150px;']
-            )
+            $config['homedir'].'/images/image_problem_area_150.png'
         );
         return base64_encode($dataImg);
     }

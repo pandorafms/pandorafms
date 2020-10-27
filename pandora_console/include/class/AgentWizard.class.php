@@ -4566,7 +4566,7 @@ class AgentWizard extends HTML
 
         // Definition object.
         $definition = [];
-        // ifHCInOctets.
+        // IfHCInOctets.
         $moduleName = $name.'ifHCInOctets';
         $definition['ifHCInOctets'] = [
             'module_name'        => $moduleName,
@@ -4592,7 +4592,7 @@ class AgentWizard extends HTML
             ],
 
         ];
-        // ifHCOutOctets.
+        // IfHCOutOctets.
         $moduleName = $name.'ifHCOutOctets';
         $definition['ifHCOutOctets'] = [
             'module_name'        => $moduleName,
@@ -4618,7 +4618,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        // ifHCInUcastPkts.
+        // IfHCInUcastPkts.
         $moduleName = $name.'ifHCInUcastPkts';
         $definition['ifHCInUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4644,7 +4644,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        // ifHCOutUcastPkts.
+        // IfHCOutUcastPkts.
         $moduleName = $name.'ifHCOutUcastPkts';
         $definition['ifHCOutUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4669,7 +4669,7 @@ class AgentWizard extends HTML
                 'inv_critical' => false,
             ],
         ];
-        // ifHCInNUcastPkts.
+        // IfHCInNUcastPkts.
         $moduleName = $name.'ifHCInNUcastPkts';
         $definition['ifHCInNUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -5034,15 +5034,13 @@ class AgentWizard extends HTML
                 var imageInfoModules = $("#image-info-modules-" + blockNumber);
                 var totalCount = 0;
                 var markedCount = 0;
-                var hidden_input  = document.getElementById("hidden-module-active-"+switchName[2]+"_"+switchName[3]);
-                var id_input = hidden_input.id.split("_");
                 if (type == 'block') {
                     selectedBlock
                             .parent()
                             .removeClass("alpha50");
                     if (selectedBlock.prop("checked")) {
                         // Set to active the values of fields.
-                        $("[id*='"+id_input[0]+"']")
+                        $("[id*=hidden-module-active-"+blockNumber+"]")
                         .each(function(){
                             $(this).val('1');
                         });
@@ -5054,7 +5052,7 @@ class AgentWizard extends HTML
                         imageInfoModules.removeClass('hidden');
                     } else {
                         // Set to inactive the values of fields.
-                        $("[id*='"+id_input[0]+"']")
+                        $("[id*=hidden-module-active-"+blockNumber+"]")
                          .each(function(){
                             $(this).val('0');
                         });

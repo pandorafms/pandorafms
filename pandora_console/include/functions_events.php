@@ -3787,7 +3787,7 @@ function events_get_response_target(
     if (strpos($target, '_event_date_') !== false) {
         $target = str_replace(
             '_event_date_',
-            date($config['date_format'], $event['utimestamp']),
+            io_safe_output(date($config['date_format'], $event['utimestamp'])),
             $target
         );
     }

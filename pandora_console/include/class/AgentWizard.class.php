@@ -5034,15 +5034,13 @@ class AgentWizard extends HTML
                 var imageInfoModules = $("#image-info-modules-" + blockNumber);
                 var totalCount = 0;
                 var markedCount = 0;
-                var hidden_input = document.getElementById("hidden-module-active-"+switchName[2]+"_0-0");
-                var id_input = hidden_input.id.split("_");
                 if (type == 'block') {
                     selectedBlock
                             .parent()
                             .removeClass("alpha50");
                     if (selectedBlock.prop("checked")) {
                         // Set to active the values of fields.
-                        $("[id*='"+id_input[0]+"']")
+                        $("[id*=hidden-module-active-"+blockNumber+"]")
                         .each(function(){
                             $(this).val('1');
                         });
@@ -5054,7 +5052,7 @@ class AgentWizard extends HTML
                         imageInfoModules.removeClass('hidden');
                     } else {
                         // Set to inactive the values of fields.
-                        $("[id*='"+id_input[0]+"']")
+                        $("[id*=hidden-module-active-"+blockNumber+"]")
                          .each(function(){
                             $(this).val('0');
                         });

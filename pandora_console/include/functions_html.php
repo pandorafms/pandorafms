@@ -500,7 +500,7 @@ function html_print_select_groups(
         $name = 'group_select'.$idcounter[$name];
     }
 
-    if ($id_group !== null) {
+    if ($id_group !== false) {
         $children = groups_get_children($id_group);
         foreach ($children as $child) {
             $delete_groups[] = $child['id_grupo'];

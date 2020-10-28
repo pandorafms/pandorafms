@@ -1885,9 +1885,15 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
         }
     } else {
         // Delete only if the centralised mode is disabled.
-        if (is_central_policies_on_node()) {
+        $headers = getallheaders();
+        if (!isset($headers['idk']) || !is_management_allowed($headers['idk'])) {
             returnError('centralized');
             exit;
+        }
+
+        // Support for Pandora Enterprise.
+        if (license_free() === false) {
+            define('PANDORA_ENTERPRISE', true);
         }
 
         if ($agent_by_alias) {

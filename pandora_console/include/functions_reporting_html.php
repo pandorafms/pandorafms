@@ -2971,8 +2971,26 @@ function reporting_html_min_value(&$table, $item, $mini)
 }
 
 
-function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
+/**
+ * Htlm report AVg, min, Max, Only.
+ *
+ * @param array   $table       Table.
+ * @param array   $item        Data.
+ * @param boolean $mini        Is mini.
+ * @param boolean $only_value  Only value.
+ * @param boolean $check_empty Empty.
+ * @param integer $pdf         PDF Mode.
+ *
+ * @return string Html output.
+ */
+function reporting_html_value(
+    $table,
+    $item,
+    $mini,
+    $only_value=false,
+    $check_empty=false,
+    $pdf=0
+) {
     global $config;
 
     if ($mini) {
@@ -2981,8 +2999,12 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         $font_size = $config['font_size_item_report'].'em';
     }
 
-    if (isset($item['visual_format']) && $item['visual_format'] != 0
-        && ($item['type'] == 'max_value' || $item['type'] == 'min_value' || $item['type'] == 'avg_value')
+    $return_pdf = '';
+
+    if (isset($item['visual_format']) === true && $item['visual_format'] != 0
+        && ($item['type'] == 'max_value'
+        || $item['type'] == 'min_value'
+        || $item['type'] == 'avg_value')
     ) {
         $table2 = new stdClass();
         $table2->width = '100%';
@@ -3004,6 +3026,7 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
             break;
 
             case 'avg_value':
+            default:
                 $table2->head = [
                     __('Agent'),
                     __('Module'),
@@ -3031,14 +3054,27 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         $table->colspan[2][0] = 3;
         $table->colspan[3][0] = 3;
 
-        array_push($table->data, html_print_table($table2, true));
+        if ($pdf === 0) {
+            array_push($table->data, html_print_table($table2, true));
+        } else {
+            $return_pdf .= html_print_table($table2, true);
+        }
+
         unset($item['data'][0]);
 
         if ($item['visual_format'] != 1) {
             $value = $item['data'][1]['value'];
-            array_push($table->data, $value);
-            unset($item['data'][1]);
+            if ($pdf === 0) {
+                array_push($table->data, $value);
+            } else {
+                $style_div_pdf = 'text-align:center;margin-bottom:20px;';
+                $return_pdf .= '<div style="'.$style_div_pdf.'">';
+                $return_pdf .= $value;
+                $return_pdf .= '</div>';
+            }
         }
+
+        unset($item['data'][1]);
 
         if ($item['visual_format'] != 2) {
             $table1 = new stdClass();
@@ -3059,6 +3095,7 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
                 break;
 
                 case 'avg_value':
+                default:
                     $table1->head = [
                         __('Lapse'),
                         __('Average'),
@@ -3067,8 +3104,9 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
             }
 
             $table1->data = [];
+            $row = [];
             foreach ($item['data'] as $data) {
-                if (!is_numeric($data[__('Maximun')])) {
+                if (is_numeric($data[__('Maximun')]) === false) {
                     $row = [
                         $data[__('Lapse')],
                         $data[__('Maximun')],
@@ -3076,7 +3114,12 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
                 } else {
                     $row = [
                         $data[__('Lapse')],
-                        remove_right_zeros(number_format($data[__('Maximun')], $config['graph_precision'])),
+                        remove_right_zeros(
+                            number_format(
+                                $data[__('Maximun')],
+                                $config['graph_precision']
+                            )
+                        ),
                     ];
                 }
 
@@ -3086,10 +3129,22 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
             $table1->title = $item['title'];
             $table1->titleclass = 'title_table_pdf';
             $table1->titlestyle = 'text-align:left;';
+            if ($pdf === 0) {
+                array_push($table->data, html_print_table($table1, true));
+            } else {
+                $return_pdf .= html_print_table($table1, true);
+            }
+        }
 
-            array_push($table->data, html_print_table($table1, true));
+        if ($pdf !== 0) {
+            return $return_pdf;
         }
     } else {
+        if ($pdf !== 0) {
+            $table = new stdClass();
+            $table->width = '100%';
+        }
+
         $table->colspan['data']['cell'] = 3;
         $table->cellstyle['data']['cell'] = 'text-align: left;';
 
@@ -3104,6 +3159,10 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         }
 
         $table->data['data']['cell'] .= '</p>';
+
+        if ($pdf !== 0) {
+            return html_print_table($table, true);
+        }
     }
 }
 

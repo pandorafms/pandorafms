@@ -3912,7 +3912,7 @@ function reporting_alert_report_group($report, $content)
 
     $agent_modules = alerts_get_agent_modules(
         $content['id_group'],
-        $content['recursion']
+        (((string) $content['id_group'] === '0') ? true : $content['recursion'])
     );
 
     if (empty($alerts)) {
@@ -4979,6 +4979,16 @@ function reporting_agent_configuration($report, $content)
 }
 
 
+/**
+ * Report Min, Max and Avg.
+ *
+ * @param array   $report  Info report.
+ * @param array   $content Content report.
+ * @param string  $type    Type report.
+ * @param boolean $pdf     Is pdf.
+ *
+ * @return array Data draw report.
+ */
 function reporting_value($report, $content, $type, $pdf=false)
 {
     global $config;
@@ -4993,16 +5003,17 @@ function reporting_value($report, $content, $type, $pdf=false)
             $return['type'] = 'min_value';
         break;
 
-        case 'avg':
-            $return['type'] = 'avg_value';
-        break;
-
         case 'sum':
             $return['type'] = 'sumatory';
         break;
+
+        case 'avg':
+        default:
+            $return['type'] = 'avg_value';
+        break;
     }
 
-    if (empty($content['name'])) {
+    if (empty($content['name']) === true) {
         switch ($type) {
             case 'max':
                 $content['name'] = __('Max. Value');
@@ -5012,17 +5023,18 @@ function reporting_value($report, $content, $type, $pdf=false)
                 $content['name'] = __('Min. Value');
             break;
 
-            case 'avg':
-                $content['name'] = __('AVG. Value');
-            break;
-
             case 'sum':
                 $content['name'] = __('Summatory');
+            break;
+
+            case 'avg':
+            default:
+                $content['name'] = __('AVG. Value');
             break;
         }
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
 
         $server = metaconsole_get_connection_by_id($id_meta);
@@ -5060,14 +5072,15 @@ function reporting_value($report, $content, $type, $pdf=false)
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
 
+    $only_image = false;
     if ($pdf) {
-        $only_image = 1;
+        $only_image = true;
     }
 
     $params = [
         'agent_module_id'    => $content['id_agent_module'],
         'period'             => $content['period'],
-        'width'              => '600px',
+        'width'              => '90%',
         'pure'               => false,
         'date'               => $report['datetime'],
         'only_image'         => $only_image,
@@ -5086,6 +5099,7 @@ function reporting_value($report, $content, $type, $pdf=false)
         case 'max':
         case 'min':
         case 'avg':
+        default:
             $divisor = get_data_multiplier($unit);
 
             if ($content['lapse_calc'] == 0) {
@@ -5107,6 +5121,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                     break;
 
                     case 'avg':
+                    default:
                         $value = reporting_get_agentmodule_data_average(
                             $content['id_agent_module'],
                             $content['period'],
@@ -5118,7 +5133,14 @@ function reporting_value($report, $content, $type, $pdf=false)
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
                 } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
+                    $formated_value = format_for_graph(
+                        $value,
+                        $config['graph_precision'],
+                        '.',
+                        ',',
+                        $divisor,
+                        $unit
+                    );
                 }
             } else {
                 $return['visual_format'] = $content['visual_format'];
@@ -5126,17 +5148,51 @@ function reporting_value($report, $content, $type, $pdf=false)
                 switch ($type) {
                     case 'max':
                         $params['force_interval'] = 'max_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
+                        $value = format_for_graph(
+                            reporting_get_agentmodule_data_max(
+                                $content['id_agent_module'],
+                                $content['period'],
+                                $report['datetime']
+                            ),
+                            $config['graph_precision'],
+                            '.',
+                            ',',
+                            $divisor,
+                            $unit
+                        );
                     break;
 
                     case 'min':
                         $params['force_interval'] = 'min_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
+                        $value = format_for_graph(
+                            reporting_get_agentmodule_data_min(
+                                $content['id_agent_module'],
+                                $content['period'],
+                                $report['datetime']
+                            ),
+                            $config['graph_precision'],
+                            '.',
+                            ',',
+                            $divisor,
+                            $unit
+                        );
                     break;
 
                     case 'avg':
+                    default:
                         $params['force_interval'] = 'avg_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
+                        $value = format_for_graph(
+                            reporting_get_agentmodule_data_average(
+                                $content['id_agent_module'],
+                                $content['period'],
+                                $report['datetime']
+                            ),
+                            $config['graph_precision'],
+                            '.',
+                            ',',
+                            $divisor,
+                            $unit
+                        );
                     break;
                 }
 
@@ -5166,15 +5222,49 @@ function reporting_value($report, $content, $type, $pdf=false)
                         if ($i > $time_begin['utimestamp']) {
                             switch ($type) {
                                 case 'max':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
+                                    $row[__('Maximun')] = format_for_graph(
+                                        reporting_get_agentmodule_data_max(
+                                            $content['id_agent_module'],
+                                            $content['lapse'],
+                                            ($i + $content['lapse'])
+                                        ),
+                                        $config['graph_precision'],
+                                        '.',
+                                        ',',
+                                        $divisor,
+                                        $unit
+                                    );
                                 break;
 
                                 case 'min':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
+                                    $row[__('Maximun')] = format_for_graph(
+                                        reporting_get_agentmodule_data_min(
+                                            $content['id_agent_module'],
+                                            $content['lapse'],
+                                            ($i + $content['lapse'])
+                                        ),
+                                        $config['graph_precision'],
+                                        '.',
+                                        ',',
+                                        $divisor,
+                                        $unit
+                                    );
                                 break;
 
                                 case 'avg':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
+                                default:
+                                    $row[__('Maximun')] = format_for_graph(
+                                        reporting_get_agentmodule_data_average(
+                                            $content['id_agent_module'],
+                                            $content['lapse'],
+                                            ($i + $content['lapse'])
+                                        ),
+                                        $config['graph_precision'],
+                                        '.',
+                                        ',',
+                                        $divisor,
+                                        $unit
+                                    );
                                 break;
                             }
                         } else {
@@ -5185,7 +5275,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                     }
                 }
 
-                if ($config['metaconsole']) {
+                if (is_metaconsole() === true) {
                     metaconsole_restore_db();
                 }
 
@@ -5205,7 +5295,14 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $divisor = get_data_multiplier($unit);
 
-                $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
+                $formated_value = format_for_graph(
+                    $value,
+                    $config['graph_precision'],
+                    '.',
+                    ',',
+                    $divisor,
+                    $unit
+                );
             }
         break;
     }
@@ -5215,7 +5312,7 @@ function reporting_value($report, $content, $type, $pdf=false)
         'formated_value' => $formated_value,
     ];
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -9072,7 +9169,7 @@ function reporting_get_group_stats($id_group=0, $access='AR')
         $covered_groups = [];
         $group_array = [];
         foreach ($id_group as $group) {
-            $children = groups_get_childrens($group);
+            $children = groups_get_children($group);
 
             // Show empty groups only if they have children with agents
             // $group_array = array();

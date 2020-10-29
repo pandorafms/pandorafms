@@ -1480,6 +1480,7 @@ table.databox {
   padding: 9px 7px;
   font-weight: normal;
   color: #fff;
+  text-align: justify;
 }
 
 .databox > th * {

@@ -358,6 +358,21 @@ if (is_ajax()) {
                             $tmp->comments = ui_print_comments($tmp->comments);
                         }
 
+                        // Show last event.
+                        if (isset($tmp->max_id_evento) && $tmp->max_id_evento !== $tmp->id_evento) {
+                            $max_event = db_get_row_sql(
+                                sprintf(
+                                    'SELECT criticity, timestamp FROM %s
+                                    WHERE id_evento = %s',
+                                    ($tmp->meta) ? 'tmetaconsole_event' : 'tevento',
+                                    $tmp->max_id_evento
+                                )
+                            );
+
+                            $tmp->timestamp = $max_event['timestamp'];
+                            $tmp->criticity = $max_event['criticity'];
+                        }
+
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             $tmp->ack_utimestamp,

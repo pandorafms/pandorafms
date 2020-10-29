@@ -428,7 +428,7 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
  * @param boolean $disabled                Disabled or enabled.
  * @param boolean $style                   CSS inline style.
  * @param string  $option_style            CSS inline style in array format.
- * @param array   $id_group                Groups to be manually added.
+ * @param integer $id_group                Exclude group branch from id_group.
  * @param string  $keys_field              Field to be used as array key, (id).
  * @param boolean $strict_user             Strict.
  * @param array   $delete_groups           Remove groups from select.
@@ -500,6 +500,15 @@ function html_print_select_groups(
         $name = 'group_select'.$idcounter[$name];
     }
 
+    if ($id_group !== false) {
+        $children = groups_get_children($id_group);
+        foreach ($children as $child) {
+            $delete_groups[] = $child['id_grupo'];
+        }
+
+        $delete_groups[] = $id_group;
+    }
+
     $fields = [];
     // Preload selector.
     if (is_array($selected) === false) {
@@ -510,7 +519,15 @@ function html_print_select_groups(
         }
     } else {
         foreach ($selected as $k) {
-            $fields[$k] = groups_get_name($k);
+            if ($k === null || $k === '') {
+                continue;
+            }
+
+            $fields[$k] = groups_get_name($k, $returnAllGroup);
+        }
+
+        if (empty($fields) === true && $returnAllGroup) {
+            $fields[0] = groups_get_name(null, true);
         }
     }
 

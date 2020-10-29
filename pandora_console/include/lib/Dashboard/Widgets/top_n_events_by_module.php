@@ -277,6 +277,11 @@ class TopNEventByModuleWidget extends Widget
             ],
         ];
 
+        $selected_groups = [];
+        if ($values['groupId']) {
+            $selected_groups = explode(',', $values['groupId'][0]);
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -285,7 +290,7 @@ class TopNEventByModuleWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => explode(',', $values['groupId'][0]),
+                'selected'       => $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
             ],

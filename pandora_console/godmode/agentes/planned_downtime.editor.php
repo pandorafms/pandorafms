@@ -877,7 +877,7 @@ if ($id_downtime > 0) {
     $filter_cond = '';
     if ($filter_group > 0) {
         if ($recursion) {
-            $rg = groups_get_id_recursive($filter_group, true);
+            $rg = groups_get_children_ids($filter_group, true);
             $filter_cond .= ' AND id_grupo IN (';
 
             $i = 0;

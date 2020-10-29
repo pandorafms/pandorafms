@@ -43,6 +43,8 @@ enterprise_include('index.php');
 $url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
 echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
 
+html_print_input_hidden('homeurl', $config['homeurl']);
+
 $url_css_modal = ui_get_full_url('include/styles/register.css', false, false, false);
 echo '<link rel="stylesheet" href="'.$url_css_modal.'" type="text/css" />';
 // Connection lost alert.

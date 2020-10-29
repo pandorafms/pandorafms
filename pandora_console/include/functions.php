@@ -3753,7 +3753,16 @@ function series_type_graph_array($data, $show_elements_graph)
                         $name_legend .= __('Unit ').' ';
                         $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        if (isset($show_elements_graph['from_interface']) === true
+                            && (bool) $show_elements_graph['from_interface'] === true
+                        ) {
+                            $label_interfaces = array_flip($show_elements_graph['modules_series']);
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']][$label_interfaces[$value['agent_module_id']]].': ';
+                        } else if (is_array($show_elements_graph['labels'][$value['agent_module_id']]) === true) {
+                            $name_legend = 'Avg: ';
+                        } else {
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        }
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {

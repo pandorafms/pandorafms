@@ -2024,7 +2024,7 @@ function getServerUrl() {
     server_url = get_php_value("homeurl");
   } catch (SyntaxError) {
     console.warn("Pandora homeurl cannot be found.");
-    server_url = window.location.origin + "/pandora_console";
+    server_url = $("#hidden-homeurl").val();
   }
   return server_url;
 }

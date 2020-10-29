@@ -335,6 +335,11 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
 
         // Filter by agents id.
         $id_agents_list = implode(',', $id_agent);
+
+        if ($id_agents_list === '') {
+            $id_agents_list = '0';
+        }
+
         $subQuery .= ' AND id_agente in ('.$id_agents_list.')';
     } else if ($id_agent === false || empty($id_agent)) {
         if ($allModules) {

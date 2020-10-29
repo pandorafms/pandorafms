@@ -3682,6 +3682,38 @@ function events_get_response_target(
     $event_response = db_get_row('tevent_response', 'id', $response_id);
     $target = io_safe_output($event_response['target']);
 
+    if (strpos($target, '_agent_alias_') !== false) {
+        if ($meta) {
+            $agente_table_name = 'tmetaconsole_agent';
+            $filter = [
+                'id_tagente'            => $event['id_agente'],
+                'id_tmetaconsole_setup' => $server_id,
+            ];
+        } else {
+            $agente_table_name = 'tagente';
+            $filter = ['id_agente' => $event['id_agente']];
+        }
+
+        $alias = db_get_value_filter('alias', $agente_table_name, $filter);
+        $target = str_replace('_agent_alias_', io_safe_output($alias), $target);
+    }
+
+    if (strpos($target, '_agent_name_') !== false) {
+        if ($meta) {
+            $agente_table_name = 'tmetaconsole_agent';
+            $filter = [
+                'id_tagente'            => $event['id_agente'],
+                'id_tmetaconsole_setup' => $server_id,
+            ];
+        } else {
+            $agente_table_name = 'tagente';
+            $filter = ['id_agente' => $event['id_agente']];
+        }
+
+        $name = db_get_value_filter('nombre', $agente_table_name, $filter);
+        $target = str_replace('_agent_name_', io_safe_output($name), $target);
+    }
+
     // Substitute each macro.
     if (strpos($target, '_agent_address_') !== false) {
         if ($meta) {

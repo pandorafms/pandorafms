@@ -1244,7 +1244,11 @@ function events_get_all(
     // Order.
     $order_by = '';
     if (isset($order, $sort_field)) {
-        $order_by = events_get_sql_order($sort_field, $order);
+        if (isset($filter['group_rep']) && $filter['group_rep'] == 1) {
+            $order_by = events_get_sql_order('MAX('.$sort_field.')', $order);
+        } else {
+            $order_by = events_get_sql_order($sort_field, $order);
+        }
     }
 
     // Pagination.

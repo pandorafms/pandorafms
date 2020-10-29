@@ -278,7 +278,7 @@ if ($ag_group > 0) {
     $ag_groups = [];
     $ag_groups = (array) $ag_group;
     if ($recursion) {
-        $ag_groups = groups_get_id_recursive($ag_group, true);
+        $ag_groups = groups_get_children_ids($ag_group, true);
     }
 }
 

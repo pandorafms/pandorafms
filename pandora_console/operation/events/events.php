@@ -442,6 +442,7 @@ if ($user_filter !== false && $from_event_graph != 1) {
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
         $id_agent_module = $filter['id_agent_module'];
+        $text_module = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $filter['id_agent_module']]));
         $pagination = $filter['pagination'];
         $event_view_hr = $filter['event_view_hr'];
         $id_user_ack = $filter['id_user_ack'];
@@ -878,13 +879,17 @@ if (is_metaconsole() !== true) {
  */
 
 // Group.
+if ($id_group_filter === null) {
+    $id_group_filter = 0;
+}
+
 $data = html_print_input(
     [
         'name'           => 'id_group_filter',
         'returnAllGroup' => true,
         'privilege'      => 'AR',
         'type'           => 'select_groups',
-        'selected'       => (defined($id_group_filter) ? $id_group_filter : 0),
+        'selected'       => $id_group_filter,
         'nothing'        => false,
         'return'         => true,
         'size'           => '80%',
@@ -1996,6 +2001,9 @@ function process_datatables_item(item) {
 
     /* Group name */
     if (item.id_grupo == "0") {
+        var severity_value = "<?php echo $severity; ?>";
+        const multiple = severity_value.split(",");
+        $("#severity").val(multiple);
         item.id_grupo = "<?php echo __('All'); ?>";
     } else {
         item.id_grupo = item.group_name;

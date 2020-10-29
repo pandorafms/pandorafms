@@ -637,7 +637,20 @@ var TreeController = {
                   .css("cursor", "pointer");
 
                 $content.append($serviceDetailImage);
-                $content.append(" " + element.name);
+                if (
+                  typeof element.elementDescription !== "undefined" &&
+                  element.elementDescription != ""
+                ) {
+                  $content.append(" " + element.elementDescription);
+                } else if (
+                  typeof element.description !== "undefined" &&
+                  element.description != ""
+                ) {
+                  $content.append(" " + element.description);
+                } else {
+                  $content.append(" " + element.name);
+                }
+                // $content.append(" " + element.name);
               } else {
                 $content.remove($node);
               }

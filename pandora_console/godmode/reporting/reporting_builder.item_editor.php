@@ -223,8 +223,9 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && !empty($server_name)) {
+            if ($meta && empty($server_name) === false) {
                 $connection = metaconsole_get_connection($server_name);
+                $server_id = $connection['id'];
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     continue;
                 }
@@ -1383,8 +1384,7 @@ $class = 'databox filters';
 
                 html_print_input_hidden('id_agent', $idAgent);
                 html_print_input_hidden('server_name', $server_name);
-                html_print_input_hidden('server_id', $server_name);
-                html_print_input_hidden('id_server', '');
+                html_print_input_hidden('server_id', $server_id);
 
                 $params = [];
                 $params['show_helptip'] = false;
@@ -3744,6 +3744,16 @@ $(document).ready (function () {
 
     $("#combo_group").change (
         function () {
+
+            // Alert report group must show all matches when selecting All group
+            // ignoring 'recursion' option. #6497.
+            if ($("#combo_group").val() == 0) {
+                $('#checkbox-recursion').attr('disabled',true)
+                $('#checkbox-recursion').attr('checked','checked')
+            } else {
+                $('#checkbox-recursion').removeAttr('disabled')
+            }
+
             $("#id_agents").html('');
             $("#id_agents2").html('');
             $("#module").html('');
@@ -3772,6 +3782,7 @@ $(document).ready (function () {
             );
         }
     );
+    $("#combo_group").change();
 
     $("#checkbox-recursion").change (
         function () {

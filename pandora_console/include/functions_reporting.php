@@ -2972,7 +2972,11 @@ function reporting_group_report($report, $content)
 
     $return['data']['count_events'] = count($events);
 
-    $return['data']['group_stats'] = reporting_get_group_stats($content['id_group']);
+    $return['data']['group_stats'] = reporting_get_group_stats(
+        $content['id_group'],
+        'AR',
+        (bool) $content['recursion']
+    );
 
     if ($config['metaconsole']) {
         metaconsole_restore_db();
@@ -9066,7 +9070,7 @@ function reporting_get_agents_detailed_event(
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats($id_group=0, $access='AR')
+function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
 {
     global $config;
 
@@ -9168,16 +9172,19 @@ function reporting_get_group_stats($id_group=0, $access='AR')
         // Store the groups where we are quering
         $covered_groups = [];
         $group_array = [];
-        foreach ($id_group as $group) {
-            $children = groups_get_children($group);
 
-            // Show empty groups only if they have children with agents
-            // $group_array = array();
-            foreach ($children as $sub) {
-                // If the group is quering previously, we ingore it
-                if (!in_array($sub['id_grupo'], $covered_groups)) {
-                    array_push($covered_groups, $sub['id_grupo']);
-                    array_push($group_array, $sub['id_grupo']);
+        foreach ($id_group as $group) {
+            if ($recursion === true) {
+                $children = groups_get_children($group);
+
+                // Show empty groups only if they have children with agents
+                // $group_array = array();
+                foreach ($children as $sub) {
+                    // If the group is quering previously, we ingore it
+                    if (!in_array($sub['id_grupo'], $covered_groups)) {
+                        array_push($covered_groups, $sub['id_grupo']);
+                        array_push($group_array, $sub['id_grupo']);
+                    }
                 }
             }
 

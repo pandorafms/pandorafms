@@ -3747,13 +3747,10 @@ $(document).ready (function () {
 
             // Alert report group must show all matches when selecting All group
             // ignoring 'recursion' option. #6497.
-            if ($('#type').val() == 'alert_report_group'
-                && $("#combo_group").val() == 0
-            ) {
+            if ($("#combo_group").val() == 0) {
                 $('#checkbox-recursion').attr('disabled',true)
                 $('#checkbox-recursion').attr('checked','checked')
             } else {
-                $('#checkbox-recursion').removeAttr('checked')
                 $('#checkbox-recursion').removeAttr('disabled')
             }
 

@@ -6988,7 +6988,9 @@ function events_get_field_value_by_event_id(
     if (strpos($value, '_event_date_') !== false) {
         $value = str_replace(
             '_event_date_',
-            date($config['date_format'], $event['utimestamp']),
+            io_safe_output(
+                date($config['date_format'], $event['utimestamp'])
+            ),
             $value
         );
     }

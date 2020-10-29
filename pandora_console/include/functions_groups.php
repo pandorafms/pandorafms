@@ -266,16 +266,21 @@ function groups_check_used($idGroup)
 
 
 /**
- * Return a array of id_group of children of given parent.
+ * Return a array of id_group of children of given parent INCLUDING PARENT!!.
  *
  * @param integer $parent          The id_grupo parent to search its children.
  * @param array   $ignorePropagate Ignore propagate.
  * @param string  $privilege       Default privilege.
+ * @param boolean $selfInclude     Include group "id_parent" in return.
  *
  * @return array Of Groups, children of $parent.
  */
-function groups_get_children($parent, $ignorePropagate=false, $privilege='AR')
-{
+function groups_get_children(
+    $parent,
+    $ignorePropagate=false,
+    $privilege='AR',
+    $selfInclude=true
+) {
     static $groups;
     static $user_groups;
 
@@ -296,7 +301,15 @@ function groups_get_children($parent, $ignorePropagate=false, $privilege='AR')
     // Admin see always all groups.
     $ignorePropagate = users_is_admin() || $ignorePropagate;
 
+    // Prepare array.
     $return = [];
+
+    if ($selfInclude === true) {
+        if (array_key_exists($parent, $user_groups) === true) {
+            $return[$parent] = $groups[$parent];
+        }
+    }
+
     foreach ($groups as $key => $g) {
         if ($g['id_grupo'] == 0) {
             continue;
@@ -317,7 +330,9 @@ function groups_get_children($parent, $ignorePropagate=false, $privilege='AR')
                 if ($g['propagate'] || $ignorePropagate) {
                     $return += groups_get_children(
                         $g['id_grupo'],
-                        $ignorePropagate
+                        $ignorePropagate,
+                        $privilege,
+                        $selfInclude
                     );
                 }
             }
@@ -490,16 +505,28 @@ function groups_get_all($groupWithAgents=false)
 
 
 /**
- * Get all groups recursive from an initial group.
+ * Get all groups recursive from an initial group  INCLUDING PARENT!!.
  *
- * @param int Id of the parent group
- * @param bool Whether to force recursive search ignoring propagation (true) or not (false)
+ * @param integer $id_parent       Id of the parent group.
+ * @param boolean $ignorePropagate Whether to force recursive search ignoring
+ *                                 propagation (true) or not (false).
+ * @param boolean $selfInclude     Include group "id_parent" in return.
+ * @param string  $privilege       Privilege flag to search for default 'AR'.
  *
- * @return array with all result groups
+ * @return array With all result groups.
  */
-function groups_get_children_ids($id_parent, $all=false)
-{
-    $return = groups_get_children($id_parent, $all);
+function groups_get_children_ids(
+    $id_parent,
+    $ignorePropagate=false,
+    $selfInclude=true,
+    $privilege='AR'
+) {
+    $return = groups_get_children(
+        $id_parent,
+        $ignorePropagate,
+        $privilege,
+        $selfInclude
+    );
 
     return array_keys($return);
 }

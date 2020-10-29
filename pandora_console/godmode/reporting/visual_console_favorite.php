@@ -143,7 +143,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $ag_groups = [];
             $ag_groups = (array) $ag_group;
             if ($recursion) {
-                $ag_groups = groups_get_id_recursive($ag_group, true);
+                $ag_groups = groups_get_children_ids($ag_group, true);
             }
         } else if ($own_info['is_admin']) {
             $returnAllGroups = 1;

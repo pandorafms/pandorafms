@@ -3912,7 +3912,7 @@ function reporting_alert_report_group($report, $content)
 
     $agent_modules = alerts_get_agent_modules(
         $content['id_group'],
-        $content['recursion']
+        (((string) $content['id_group'] === '0') ? true : $content['recursion'])
     );
 
     if (empty($alerts)) {
@@ -9169,7 +9169,7 @@ function reporting_get_group_stats($id_group=0, $access='AR')
         $covered_groups = [];
         $group_array = [];
         foreach ($id_group as $group) {
-            $children = groups_get_childrens($group);
+            $children = groups_get_children($group);
 
             // Show empty groups only if they have children with agents
             // $group_array = array();

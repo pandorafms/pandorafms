@@ -19,17 +19,18 @@
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
-require_once $config['homedir'].'/include/functions_users.php';/**
-                                                                * Return the agent if exists in the DB.
-                                                                *
-                                                                * @param integer $id_agent      The agent id.
-                                                                * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
-                                                                * @param boolean $force_meta
-                                                                *
-                                                                * @return boolean The result to check if the agent is in the DB.
-                                                                */
+require_once $config['homedir'].'/include/functions_users.php';
 
 
+/**
+ * Return the agent if exists in the DB.
+ *
+ * @param integer $id_agent      The agent id.
+ * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+ * @param boolean $force_meta
+ *
+ * @return boolean The result to check if the agent is in the DB.
+ */
 function agents_get_agent($id_agent, $show_disabled=true, $force_meta=false)
 {
     $agent = db_get_row_filter(
@@ -1113,11 +1114,14 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, false)
+                    groups_get_children_ids($parent, $noACL)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, false);
+            $id_group = array_merge(
+                [$id_group],
+                groups_get_children_ids($id_group, $noACL)
+            );
         }
 
         // Check available groups for target user only if asking for 'All' group.

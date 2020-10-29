@@ -810,7 +810,7 @@ class NetworkMap
                 $filter['id_grupo'] = $this->idGroup;
             } else {
                 // Show current group and children.
-                $childrens = groups_get_childrens($this->idGroup, null, true);
+                $childrens = groups_get_children($this->idGroup, null, true);
                 if (!empty($childrens)) {
                     $childrens = array_keys($childrens);
 

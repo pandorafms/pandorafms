@@ -266,48 +266,25 @@ function groups_check_used($idGroup)
 
 
 /**
- * Return a array of id_group of childrens (to branches down)
- *
- * @param integer $parent The id_group parent to search the childrens.
- * @param array   $groups The groups, its for optimize the querys to DB.
- */
-function groups_get_childrens_ids($parent, $groups=null)
-{
-    if (empty($groups)) {
-        $groups = db_get_all_rows_in_table('tgrupo');
-    }
-
-    $return = '';
-
-    foreach ($groups as $key => $group) {
-        if ($group['id_grupo'] == 0) {
-            continue;
-        }
-
-        if ($group['parent'] == $parent) {
-            $return .= $group['id_grupo'].',';
-            $propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $group['id_grupo']);
-            if ($propagate) {
-                $return .= groups_get_childrens_ids($group['id_grupo']);
-            }
-        }
-    }
-
-    return $return;
-}
-
-
-/**
- * Return a array of id_group of children of given parent.
+ * Return a array of id_group of children of given parent INCLUDING PARENT!!.
  *
  * @param integer $parent          The id_grupo parent to search its children.
  * @param array   $ignorePropagate Ignore propagate.
+ * @param string  $privilege       Default privilege.
+ * @param boolean $selfInclude     Include group "id_parent" in return.
+ *
+ * @return array Of Groups, children of $parent.
  */
-function groups_get_children($parent, $ignorePropagate=false)
-{
+function groups_get_children(
+    $parent,
+    $ignorePropagate=false,
+    $privilege='AR',
+    $selfInclude=true
+) {
     static $groups;
+    static $user_groups;
 
-    if (empty($groups)) {
+    if (empty($groups) === true) {
         $aux_groups = [];
         $groups = db_get_all_rows_in_table('tgrupo');
         foreach ($groups as $key => $value) {
@@ -317,53 +294,47 @@ function groups_get_children($parent, $ignorePropagate=false)
         $groups = $aux_groups;
     }
 
+    if (empty($user_groups) === true) {
+        $user_groups = users_get_groups(false, $privilege, true);
+    }
+
+    // Admin see always all groups.
+    $ignorePropagate = users_is_admin() || $ignorePropagate;
+
+    // Prepare array.
     $return = [];
+
+    if ($selfInclude === true) {
+        if (array_key_exists($parent, $user_groups) === true) {
+            $return[$parent] = $groups[$parent];
+        }
+    }
+
     foreach ($groups as $key => $g) {
         if ($g['id_grupo'] == 0) {
             continue;
         }
 
-        if ($ignorePropagate || $parent == 0 || $groups[$parent]['propagate']) {
+        // IgnorePropagate will be true if user can access child.
+        $allowed = $ignorePropagate || array_key_exists(
+            $g['id_grupo'],
+            $user_groups
+        );
+
+        if ($allowed === true
+            || (int) $parent === 0
+            || (bool) $groups[$parent]['propagate'] === true
+        ) {
             if ($g['parent'] == $parent) {
                 $return += [$g['id_grupo'] => $g];
                 if ($g['propagate'] || $ignorePropagate) {
                     $return += groups_get_children(
                         $g['id_grupo'],
-                        $ignorePropagate
+                        $ignorePropagate,
+                        $privilege,
+                        $selfInclude
                     );
                 }
-            }
-        }
-    }
-
-    return $return;
-}
-
-
-/**
- * @deprecated This is not working. Expects 'propagate' on CHILD not on PARENT!!!
- *
- * Return a array of id_group of childrens (to branches down)
- *
- * @param integer $parent The id_group parent to search the childrens.
- * @param array   $groups The groups, its for optimize the querys to DB.
- */
-function groups_get_childrens($parent, $groups=null, $onlyPropagate=false)
-{
-    if (empty($groups)) {
-        $groups = db_get_all_rows_in_table('tgrupo');
-    }
-
-    $return = [];
-
-    foreach ($groups as $key => $group) {
-        if ($group['id_grupo'] == 0) {
-            continue;
-        }
-
-        if ($group['propagate'] || $onlyPropagate) {
-            if ($group['parent'] == $parent) {
-                $return = ($return + [$group['id_grupo'] => $group] + groups_get_childrens($group['id_grupo'], $groups, $onlyPropagate));
             }
         }
     }
@@ -534,42 +505,30 @@ function groups_get_all($groupWithAgents=false)
 
 
 /**
- * Get all groups recursive from an initial group.
+ * Get all groups recursive from an initial group  INCLUDING PARENT!!.
  *
- * @param int Id of the parent group
- * @param bool Whether to force recursive search ignoring propagation (true) or not (false)
+ * @param integer $id_parent       Id of the parent group.
+ * @param boolean $ignorePropagate Whether to force recursive search ignoring
+ *                                 propagation (true) or not (false).
+ * @param boolean $selfInclude     Include group "id_parent" in return.
+ * @param string  $privilege       Privilege flag to search for default 'AR'.
  *
- * @return array with all result groups
+ * @return array With all result groups.
  */
-function groups_get_id_recursive($id_parent, $all=false)
-{
-    $return = [];
+function groups_get_children_ids(
+    $id_parent,
+    $ignorePropagate=false,
+    $selfInclude=true,
+    $privilege='AR'
+) {
+    $return = groups_get_children(
+        $id_parent,
+        $ignorePropagate,
+        $privilege,
+        $selfInclude
+    );
 
-    $return = array_merge($return, [$id_parent]);
-
-    // Check propagate
-    $propagate = db_get_value_filter('propagate', 'tgrupo', ['id_grupo' => $id_parent]);
-
-    if (($propagate == 1) || $all) {
-        $children = db_get_all_rows_filter('tgrupo', ['parent' => $id_parent, 'disabled' => 0], ['id_grupo']);
-
-        if ($children === false) {
-            $children = [];
-        } else {
-            $temp = [];
-            foreach ($children as $id_children) {
-                $temp = array_merge($temp, [$id_children['id_grupo']]);
-            }
-
-            $children = $temp;
-        }
-
-        foreach ($children as $id_children) {
-            $return = array_merge($return, groups_get_id_recursive($id_children, $all));
-        }
-    }
-
-    return $return;
+    return array_keys($return);
 }
 
 

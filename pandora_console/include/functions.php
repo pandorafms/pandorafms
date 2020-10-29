@@ -1343,6 +1343,73 @@ function get_priority_name($priority)
 
 
 /**
+ * Translates status into string.
+ *
+ * @param integer $status Agent status.
+ *
+ * @return string Translation.
+ */
+function get_agent_status_string($status)
+{
+    switch ($status) {
+        case AGENT_STATUS_CRITICAL:
+        return __('CRITICAL');
+
+        case AGENT_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_STATUS_ALERT_FIRED:
+        return __('ALERT FIRED');
+
+        case AGENT_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_STATUS_NORMAL:
+        return __('NORMAL');
+
+        case AGENT_STATUS_UNKNOWN:
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates status into string.
+ *
+ * @param integer $status Module status.
+ *
+ * @return string Translation.
+ */
+function get_module_status_string($status)
+{
+    switch ($status) {
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return __('CRITICAL');
+
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        return __('ALERT FIRED');
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        return __('UNKNOWN');
+
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        default:
+        return __('NORMAL');
+    }
+}
+
+
+/**
  * Get priority class (CSS class) from priority value.
  *
  * @param int priority value (integer) as stored eg. in database.
@@ -3753,7 +3820,16 @@ function series_type_graph_array($data, $show_elements_graph)
                         $name_legend .= __('Unit ').' ';
                         $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        if (isset($show_elements_graph['from_interface']) === true
+                            && (bool) $show_elements_graph['from_interface'] === true
+                        ) {
+                            $label_interfaces = array_flip($show_elements_graph['modules_series']);
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']][$label_interfaces[$value['agent_module_id']]].': ';
+                        } else if (is_array($show_elements_graph['labels'][$value['agent_module_id']]) === true) {
+                            $name_legend = 'Avg: ';
+                        } else {
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        }
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {

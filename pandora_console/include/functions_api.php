@@ -1973,7 +1973,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             $ag_groups = $other['data'][1];
             // Recursion.
             if ($other['data'][6] === '1') {
-                $ag_groups = groups_get_id_recursive($ag_groups, true);
+                $ag_groups = groups_get_children_ids($ag_groups, true);
             }
 
             $ag_groups = implode(',', (array) $ag_groups);
@@ -12513,7 +12513,13 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            if (is_metaconsole()) {
+                $table_event = 'tmetaconsole_event';
+            } else {
+                $table_event = 'tevento';
+            }
+
+            $sql_validation = 'SELECT id_evento FROM '.$table_event.' where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {

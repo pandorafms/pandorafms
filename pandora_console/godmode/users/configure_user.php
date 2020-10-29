@@ -1313,6 +1313,7 @@ $(document).ready (function () {
 
     var img_delete = '<?php echo $delete_image; ?>';
     var id_user = '<?php echo io_safe_output($id); ?>';
+    var is_metaconsole = '<?php echo $meta; ?>';
     var data = [];
 
     $('input:image[name="add"]').click(function (e) {
@@ -1357,7 +1358,7 @@ $(document).ready (function () {
     $('input:image[name="del"]').click(function (e) {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
-        if (rows <= 3) {
+        if ((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) {
             if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
                 return;
             }
@@ -1379,7 +1380,7 @@ $(document).ready (function () {
             success: function (data) {
                 row.remove();
                 var rows = $("#table_profiles tr").length;
-                if (rows <= 2) {
+                if ((is_metaconsole === '1' && rows <= 3) || (is_metaconsole === '' && rows <= 2)) {
                     window.location.replace("<?php echo ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0', false, false, false); ?>");
                 }
             }
@@ -1389,7 +1390,7 @@ $(document).ready (function () {
     $('#submit-crtbutton').click(function (e) {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
-        if (rows <= 2) {
+        if ((is_metaconsole === '1' && rows <= 3) || (is_metaconsole === '' && rows <= 2)) {
             alert('<?php echo __('please add a profile'); ?>');
         } else {
             this.form.submit();

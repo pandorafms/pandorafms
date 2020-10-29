@@ -546,7 +546,7 @@ if (!empty($search_custom)) {
 if ($group_id > 0) {
     $groups = [$group_id];
     if ($recursion) {
-        $groups = groups_get_id_recursive($group_id, true);
+        $groups = groups_get_children_ids($group_id, true);
     }
 } else {
     $groups = [];
@@ -576,7 +576,7 @@ if ($strict_user) {
     if ($group_id > 0) {
         $groups = [$group_id];
         if ($recursion) {
-            $groups = groups_get_id_recursive($group_id, true);
+            $groups = groups_get_children_ids($group_id, true);
         }
 
         $filter['id_group'] = implode(',', $groups);
@@ -902,7 +902,6 @@ if (!empty($table->data)) {
     if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
         echo '<div style="text-align: right; float: right;">';
         echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_input_hidden('new_agent', 1);
             html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
         echo '</form>';
         echo '</div>';
@@ -913,7 +912,6 @@ if (!empty($table->data)) {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
     echo '<div style="text-align: right; float: right;">';
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-        html_print_input_hidden('new_agent', 1);
         html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
     echo '</form>';
     echo '</div>';

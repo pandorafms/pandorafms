@@ -1170,6 +1170,380 @@ class HostDevices extends Wizard
                 ];
             }
 
+            // Input: SNMP enabled.
+            $form['inputs'][] = [
+                'label'     => __('SNMP enabled'),
+                'arguments' => [
+                    'name'    => 'snmp_enabled',
+                    'type'    => 'switch',
+                    'return'  => true,
+                    'value'   => (isset($this->task['snmp_enabled'])) ? $this->task['snmp_enabled'] : 1,
+                    'onclick' => 'extraSNMP();',
+
+                ],
+            ];
+
+            // SNMP CONFIGURATION.
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_extra',
+                'class'         => 'indented',
+                'block_content' => [
+                    [
+                        'label'     => __('SNMP version'),
+                        'arguments' => [
+                            'name'     => 'snmp_version',
+                            'fields'   => [
+                                '1'  => 'v. 1',
+                                '2c' => 'v. 2c',
+                                '3'  => 'v. 3',
+                            ],
+                            'type'     => 'select',
+                            'script'   => 'SNMPExtraShow(this.value)',
+                            'selected' => $this->task['snmp_version'],
+                            'return'   => true,
+                        ],
+                    ],
+                ],
+            ];
+
+            // SNMP Options pack v1.
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_options_basic',
+                'class'         => 'indented',
+                'block_content' => [
+                    [
+                        'label'     => __('SNMP communities to try with').ui_print_help_tip(
+                            __(
+                                'You can specify several values, separated by commas, for example: public,mysecret,1234'
+                            ),
+                            true
+                        ),
+                        'arguments' => [
+                            'name'   => 'community',
+                            'type'   => 'text',
+                            'value'  => $this->task['snmp_community'],
+                            'size'   => 25,
+                            'return' => true,
+
+                        ],
+                    ],
+                ],
+            ];
+
+            // SNMP Options pack v3.
+            $form['inputs'][] = [
+                'hidden'        => 1,
+                'block_id'      => 'snmp_options_v3',
+                'class'         => 'indented',
+                'block_content' => [
+                    [
+                        'label'     => '<b>'.__('Context').'</b>',
+                        'arguments' => [
+                            'name'   => 'snmp_context',
+                            'type'   => 'text',
+                            'value'  => $this->task['snmp_community'],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Auth user').'</b>',
+                        'arguments' => [
+                            'name'   => 'snmp_auth_user',
+                            'type'   => 'text',
+                            'value'  => $this->task['snmp_auth_user'],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Auth password').'</b>'.ui_print_help_tip(
+                            __(
+                                'The pass length must be eight character minimum.'
+                            ),
+                            true
+                        ),
+                        'arguments' => [
+                            'name'   => 'snmp_auth_pass',
+                            'type'   => 'password',
+                            'value'  => $this->task['snmp_auth_pass'],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Privacy method').'</b>',
+                        'arguments' => [
+                            'name'     => 'snmp_privacy_method',
+                            'type'     => 'select',
+                            'fields'   => [
+                                'DES' => __('DES'),
+                                'AES' => __('AES'),
+                            ],
+                            'selected' => $this->task['snmp_privacy_method'],
+                            'size'     => 15,
+                            'return'   => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Privacy pass').'</b>'.ui_print_help_tip(
+                            __(
+                                'The pass length must be eight character minimum.'
+                            ),
+                            true
+                        ),
+                        'arguments' => [
+                            'name'   => 'snmp_privacy_pass',
+                            'type'   => 'password',
+                            'value'  => $this->task['snmp_privacy_pass'],
+                            'size'   => 15,
+                            'return' => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Auth method').'</b>',
+                        'arguments' => [
+                            'name'     => 'snmp_auth_method',
+                            'type'     => 'select',
+                            'fields'   => [
+                                'MD5' => __('MD5'),
+                                'SHA' => __('SHA'),
+                            ],
+                            'selected' => $this->task['snmp_auth_method'],
+                            'size'     => 15,
+                            'return'   => true,
+
+                        ],
+                    ],
+                    [
+                        'label'     => '<b>'.__('Security level').'</b>',
+                        'arguments' => [
+                            'name'     => 'snmp_security_level',
+                            'type'     => 'select',
+                            'fields'   => [
+                                'noAuthNoPriv' => __('Not auth and not privacy method'),
+                                'authNoPriv'   => __('Auth and not privacy method'),
+                                'authPriv'     => __('Auth and privacy method'),
+                            ],
+                            'selected' => $this->task['snmp_security_level'],
+                            'size'     => 15,
+                            'return'   => true,
+
+                        ],
+                    ],
+
+                ],
+            ];
+
+            // Input: Enforce os detection.
+            $form['inputs'][] = [
+                'label'     => __('OS detection'),
+                'arguments' => [
+                    'name'   => 'os_detect',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['os_detect'])) ? $this->task['os_detect'] : 1,
+
+                ],
+            ];
+
+            // Input: Name resolution.
+            $form['inputs'][] = [
+                'label'     => __('Name resolution'),
+                'arguments' => [
+                    'name'   => 'resolve_names',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['resolve_names'])) ? $this->task['resolve_names'] : 1,
+                ],
+            ];
+
+            // Input: Parent detection.
+            $form['inputs'][] = [
+                'label'     => __('Parent detection'),
+                'arguments' => [
+                    'name'   => 'parent_detection',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['parent_detection'])) ? $this->task['parent_detection'] : 1,
+                ],
+            ];
+
+            // Input: Parent recursion.
+            $form['inputs'][] = [
+                'label'     => __('Parent recursion'),
+                'arguments' => [
+                    'name'   => 'parent_recursion',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['parent_recursion'])) ? $this->task['parent_recursion'] : 1,
+                ],
+            ];
+
+            // Input: VLAN enabled.
+            $form['inputs'][] = [
+                'label'     => __('VLAN enabled'),
+                'arguments' => [
+                    'name'   => 'vlan_enabled',
+                    'type'   => 'switch',
+                    'return' => true,
+                    'value'  => (isset($this->task['vlan_enabled'])) ? $this->task['vlan_enabled'] : 1,
+                ],
+            ];
+
+            // Input: WMI enabled.
+            $form['inputs'][] = [
+                'label'     => __('WMI enabled'),
+                'arguments' => [
+                    'name'    => 'wmi_enabled',
+                    'type'    => 'switch',
+                    'value'   => (isset($this->task['wmi_enabled'])) ? $this->task['wmi_enabled'] : 0,
+                    'return'  => true,
+                    'onclick' => 'toggleAuth();',
+
+                ],
+            ];
+
+             // AUTH CONFIGURATION.
+            $show_auth = false;
+            if ((isset($this->task['wmi_enabled']) && $this->task['wmi_enabled'] > 0)
+                || (isset($this->task['rcmd_enabled']) && $this->task['rcmd_enabled'] > 0)
+            ) {
+                $show_auth = true;
+            }
+
+            include_once $config['homedir'].'/include/class/CredentialStore.class.php';
+            $available_keys = CredentialStore::getKeys('CUSTOM');
+            if (check_acl($config['id_user'], 0, 'PM')) {
+                $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
+                    'index.php?sec=gagente&sec2=godmode/groups/group_list&tab=credbox'
+                ).'" >';
+                $link_to_cs .= __('No credentials available').', ';
+                $link_to_cs .= strtolower(__('Manage credentials')).'</a>';
+            } else {
+                $link_to_cs = __('No credentials available');
+            }
+
+            if (count($available_keys) > 0) {
+                $form['inputs'][] = [
+                    'block_id'      => 'auth_block',
+                    'class'         => 'indented',
+                    'hidden'        => !$show_auth,
+                    'block_content' => [
+                        [
+                            'label'     => __('Credentials to try with'),
+                            'arguments' => [
+                                'type'     => 'select',
+                                'name'     => 'auth_strings[]',
+                                'fields'   => CredentialStore::getKeys('CUSTOM'),
+                                'selected' => explode(
+                                    ',',
+                                    $this->task['auth_strings']
+                                ),
+
+                                'multiple' => true,
+                                'class'    => 'select_multiple',
+                            ],
+                        ],
+                    ],
+                ];
+            } else {
+                $form['inputs'][] = [
+                    'block_id'      => 'auth_block',
+                    'class'         => 'indented',
+                    'hidden'        => !$show_auth,
+                    'block_content' => [
+                        [
+                            'label' => __('Credentials'),
+                            'extra' => $link_to_cs,
+                        ],
+                    ],
+                ];
+            }
+
+            ui_require_jquery_file('tag-editor.min');
+            ui_require_jquery_file('caret.min');
+            ui_require_css_file('jquery.tag-editor');
+
+            $form['js'] = '
+                $(\'#text-community\').tagEditor({
+                    forceLowercase: false
+                });
+
+                function SNMPExtraShow(target) {
+                    $("#snmp_options_basic").hide();
+                    $("#snmp_options_v3").hide();
+                    if (document.getElementsByName("snmp_enabled")[0].checked) {
+                        $("#snmp_extra").show();
+                        if (target == 3) {
+                            $("#snmp_options_v3").show();
+                        } else {
+                            $("#snmp_options_basic").show();
+                        }
+                    }
+                }
+
+                function extraSNMP() {
+                    if (document.getElementsByName("snmp_enabled")[0].checked) {
+                        SNMPExtraShow($("#snmp_version").val());
+                        $("#snmp_extra").show();
+
+                        // Enable snmp dependant checks
+                        if (!document.getElementsByName("parent_recursion")[0].checked)
+                            $("input[name=parent_recursion]").click();
+
+                        if (!document.getElementsByName("parent_detection")[0].checked)
+                            $("input[name=parent_detection]").click();
+
+                        if (!document.getElementsByName("resolve_names")[0].checked)
+                            $("input[name=resolve_names]").click();
+
+                        if (!document.getElementsByName("vlan_enabled")[0].checked)
+                            $("input[name=vlan_enabled]").click();
+                    } else {
+                        // Hide unusable sections
+                        $("#snmp_extra").hide();
+                        $("#snmp_options_basic").hide();
+                        $("#snmp_options_v3").hide();
+
+                        // Disable snmp dependant checks
+                        if (document.getElementsByName("parent_recursion")[0].checked)
+                            $("input[name=parent_recursion]").click();
+
+                        if (document.getElementsByName("parent_detection")[0].checked)
+                            $("input[name=parent_detection]").click();
+
+                        if (document.getElementsByName("resolve_names")[0].checked)
+                            $("input[name=resolve_names]").click();
+
+                        if (document.getElementsByName("vlan_enabled")[0].checked)
+                            $("input[name=vlan_enabled]").click();
+                    }
+                }
+
+                function toggleAuth() {
+                    if (document.getElementsByName("wmi_enabled")[0].checked
+                        || (typeof document.getElementsByName("rcmd_enabled")[0] != "undefined"
+                            && document.getElementsByName("rcmd_enabled")[0].checked)
+                    ) {
+                        $("#auth_block").show();
+                    } else {
+                        $("#auth_block").hide();
+                    }
+                }
+
+                $(function() {
+                    SNMPExtraShow($("#snmp_version").val());
+                });
+            ';
+
             if (enterprise_installed()) {
                 // Feature configuration.
                 $extra = enterprise_hook('hd_showextrainputs', [$this]);
@@ -1178,7 +1552,7 @@ class HostDevices extends Wizard
                         $form['inputs'],
                         $extra['inputs']
                     );
-                    $form['js'] = $extra['js'];
+                    $form['js'] .= $extra['js'];
                 }
             }
 

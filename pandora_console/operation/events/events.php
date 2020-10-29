@@ -2328,9 +2328,8 @@ $(document).ready( function() {
                     url: '<?php echo ui_get_full_url('ajax.php'); ?>',
                     data: {
                         page: 'include/ajax/events',
-                        load_filter_modal: 1,
-                        current_filter: $('#latest_filter_id').val()
-                    },
+                        load_filter_modal: 1
+                        },
                     success: function (data){
                         $('#load-modal-filter')
                         .empty()

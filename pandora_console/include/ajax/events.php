@@ -356,7 +356,7 @@ if ($get_filter_values) {
             'filter_id'         => 0,
         ];
     } else {
-        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => 9]));
+        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
         $a = array_keys(users_get_groups(false));
         $event_filter['group_name'] = '';
         foreach ($a as $key => $value) {
@@ -365,7 +365,7 @@ if ($get_filter_values) {
             }
         }
 
-        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => 9]));
+        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
     }
 
     $event_filter['search'] = io_safe_output($event_filter['search']);
@@ -385,7 +385,7 @@ if ($get_filter_values) {
 }
 
 if ($load_filter_modal) {
-    $current = get_parameter('current_filter', '');
+    $current = db_get_value_filter('default_event_filter', 'tusuario', ['id_user' => $config['id_user']]);
     $filters = events_get_event_filter_select();
     $user_groups_array = users_get_groups_for_select(
         $config['id_user'],

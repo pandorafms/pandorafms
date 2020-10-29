@@ -362,6 +362,9 @@ if ($get_filter_values) {
         foreach ($a as $key => $value) {
             if ($value == $event_filter['id_group']) {
                 $event_filter['group_name'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $event_filter['id_group_filter']);
+                if ($event_filter['group_name'] === false) {
+                    $event_filter['group_name'] = __('All');
+                }
             }
         }
 
@@ -465,6 +468,7 @@ function load_form_filter() {
         },
         function (data) {
             jQuery.each (data, function (i, val) {
+                console.log(val);
                 if (i == 'id_name')
                     $("#hidden-id_name").val(val);
                 if (i == 'id_group'){

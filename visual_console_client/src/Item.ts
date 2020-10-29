@@ -843,6 +843,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.classList.remove("is-editing");
       }
     }
+
     if (!prevMeta || prevMeta.isFetching !== this.meta.isFetching) {
       if (this.meta.isFetching) {
         this.elementRef.classList.add("is-fetching");
@@ -1003,8 +1004,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   protected resizeElement(width: number, height: number): void {
     // The most valuable size is the content size.
-    this.childElementRef.style.width = width > 0 ? `${width}px` : null;
-    this.childElementRef.style.height = height > 0 ? `${height}px` : null;
+    if (
+      this.props.type != ItemType.LINE_ITEM &&
+      this.props.type != ItemType.NETWORK_LINK
+    ) {
+      this.childElementRef.style.width = width > 0 ? `${width}px` : "0";
+      this.childElementRef.style.height = height > 0 ? `${height}px` : "0";
+    }
 
     if (this.props.label && this.props.label.length > 0) {
       // Ugly table to show the label as its legacy counterpart.
@@ -1015,11 +1021,11 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         switch (this.props.labelPosition) {
           case "up":
           case "down":
-            table.style.width = width > 0 ? `${width}px` : null;
+            table.style.width = width > 0 ? `${width}px` : "0";
             break;
           case "left":
           case "right":
-            table.style.height = height > 0 ? `${height}px` : null;
+            table.style.height = height > 0 ? `${height}px` : "0";
             break;
         }
       }
@@ -1182,7 +1188,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
 
     this.initMovementListener(this.elementRef);
-    if (this.props.type !== 13) {
+    if (this.props.type !== ItemType.LINE_ITEM) {
       this.initResizementListener(this.elementRef);
     }
   }
@@ -1198,7 +1204,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
 
     this.stopMovementListener();
-    if (this.props.type !== 13) {
+    if (this.props.type !== ItemType.LINE_ITEM) {
       this.stopResizementListener();
     }
   }

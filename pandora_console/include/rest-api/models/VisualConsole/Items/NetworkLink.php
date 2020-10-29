@@ -186,6 +186,7 @@ final class NetworkLink extends Model
      * Obtain a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
+     * @param float $ratio  Adjustment ratio factor.
      *
      * @return array The Visual Console line data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.

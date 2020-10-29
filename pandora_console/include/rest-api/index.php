@@ -109,7 +109,7 @@ if ($getVisualConsole === true) {
         $ratio
     );
 
-    echo '['.implode($vcItems, ',').']';
+    echo '['.implode(',', $vcItems).']';
     return;
 } else if ($getVisualConsoleItem === true
     || $updateVisualConsoleItem === true
@@ -245,7 +245,9 @@ if ($getVisualConsole === true) {
     $item = VisualConsole::getItemFromDB($itemId);
     $data = $item->toArray();
     $data['id_layout'] = $visualConsoleId;
-    if ($data['type'] === LINE_ITEM) {
+    if ($data['type'] === LINE_ITEM
+        || $data['type'] === NETWORK_LINK
+    ) {
         $data['endX'] = ($data['endX'] + 20);
         $data['endY'] = ($data['endY'] + 20);
         $data['startX'] = ($data['startX'] + 20);

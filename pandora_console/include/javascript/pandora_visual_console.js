@@ -186,13 +186,17 @@ function createVisualConsole(
       var item = e.item || {};
       var meta = item.meta || {};
 
-      if ((meta.editMode || meta.lineMode) && !meta.isUpdating) {
+      if (meta.editMode && !meta.isUpdating) {
         createOrUpdateVisualConsoleItem(
           visualConsole,
           asyncTaskManager,
           baseUrl,
           item
         );
+      } else if (meta.lineMode && item.props.type == 21) {
+        confirmDialog({
+          title: "todo"
+        });
       }
     });
     // VC Item moved.
@@ -203,7 +207,7 @@ function createVisualConsole(
         y: e.newPosition.y,
         type: e.item.props.type
       };
-      if (e.item.props.type === 13) {
+      if (e.item.props.type === 13 || e.item.props.type === 21) {
         var startIsLeft =
           e.item.props.startPosition.x - e.item.props.endPosition.x <= 0;
         var startIsTop =
@@ -427,6 +431,7 @@ function createVisualConsole(
     },
     createItem: function(typeString) {
       var type;
+      console.log(typeString);
       switch (typeString) {
         case "STATIC_GRAPH":
           type = 0;
@@ -478,6 +483,9 @@ function createVisualConsole(
           break;
         case "COLOR_CLOUD":
           type = 20;
+          break;
+        case "NETWORK_LINK":
+          type = 21;
           break;
         default:
           type = 0;
@@ -565,7 +573,7 @@ function createVisualConsole(
               item.setMeta({ isUpdating: false });
 
               var itemRetrieved = item.props;
-              if (itemRetrieved["type"] == 13) {
+              if (itemRetrieved["type"] == 13 || itemRetrieved["type"] == 21) {
                 var startIsLeft =
                   itemRetrieved["startPosition"]["x"] -
                     itemRetrieved["endPosition"]["x"] <=
@@ -1179,6 +1187,9 @@ function createOrUpdateVisualConsoleItem(
     case 20:
       nameType = "Color Cloud";
       break;
+    case 21:
+      nameType = "Network Link";
+      break;
 
     default:
       nameType = "Static graph";
@@ -1259,7 +1270,8 @@ function createOrUpdateVisualConsoleItem(
           tinyMCE != undefined &&
           tinyMCE.editors.length > 0 &&
           item.itemProps.type != 12 &&
-          item.itemProps.type != 13
+          item.itemProps.type != 13 &&
+          item.itemProps.type != 21
         ) {
           // Content tiny.
           var label = tinyMCE.activeEditor.getContent();

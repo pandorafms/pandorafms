@@ -81,7 +81,9 @@ class View extends \HTML
         $activetabs = 2;
         if ($type === LABEL) {
             $activetabs = 0;
-        } else if ($type === LINE_ITEM) {
+        } else if ($type === LINE_ITEM
+            || $type === NETWORK_LINK
+        ) {
             $activetabs = 0;
             $tabs = [
                 [
@@ -306,7 +308,7 @@ class View extends \HTML
             );
         } else {
             // Only Create, settings default values if not enter tab general.
-            if ($itemId === 0 && $type != LINE_ITEM) {
+            if ($itemId === 0 && $type != LINE_ITEM && $type != NETWORK_LINK) {
                 $class = VisualConsole::getItemClass((int) $type);
                 $data = $class::getDefaultGeneralValues($data);
             }
@@ -489,6 +491,17 @@ class View extends \HTML
 
             case LABEL:
                 $data['isLinkEnabled'] = true;
+            break;
+
+            case NETWORK_LINK:
+                $data['borderColor'] = \get_parameter('borderColor');
+                $data['borderWidth'] = \get_parameter('borderWidth');
+                $data['isOnTop'] = \get_parameter_switch('isOnTop');
+                // Insert line default position ball end.
+                if ($itemId === 0) {
+                    $data['height'] = 100;
+                    $data['width'] = 100;
+                }
             break;
 
             default:

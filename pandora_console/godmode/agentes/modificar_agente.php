@@ -754,7 +754,6 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     // Create agent button.
     echo '<div style="text-align: right;">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-    html_print_input_hidden('new_agent', 1);
     html_print_submit_button(
         __('Create agent'),
         'crt-2',

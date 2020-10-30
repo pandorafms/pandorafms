@@ -293,6 +293,29 @@ class AgentWizard extends HTML
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
+
+        if (!empty($this->idAgent)) {
+            $array_aux = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT ip FROM taddress ta
+                    INNER JOIN taddress_agent taa ON taa.id_a = ta.id_a
+                    WHERE taa.id_agent = %d',
+                    $this->idAgent
+                )
+            );
+
+            if (!empty($array_aux)) {
+                $this->datalist = [];
+                foreach ($array_aux as $key => $value) {
+                    $this->datalist[] = $value['ip'];
+                }
+            }
+
+            if (count($this->datalist) === 1 && $this->targetIp === '') {
+                $this->targetIp = $this->datalist[0];
+            }
+        }
+
         $this->server = (int) get_parameter('server', '1');
         if ($this->server !== 0) {
             $this->serverType = (int) db_get_value(
@@ -563,6 +586,18 @@ class AgentWizard extends HTML
             ],
         ];
 
+        if (!empty($this->datalist)) {
+            $inputs[] = [
+                'id'        => 'li_address_list',
+                'arguments' => [
+                    'name'   => 'address_list',
+                    'type'   => 'datalist',
+                    'value'  => $this->datalist,
+                    'return' => true,
+                ],
+            ];
+        }
+
         $inputs[] = [
             'label'     => __('Target IP'),
             'id'        => 'txt-targetIp',
@@ -573,6 +608,7 @@ class AgentWizard extends HTML
                 'class'       => '',
                 'value'       => $this->targetIp,
                 'return'      => true,
+                'list'        => 'address_list',
             ],
         ];
 

@@ -2032,6 +2032,7 @@ function html_print_input_text_extended(
         'required',
         'autocomplete',
         'form',
+        'list',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
@@ -2257,7 +2258,8 @@ function html_print_input_text(
     $onKeyDown='',
     $formTo='',
     $onKeyUp='',
-    $disabled=false
+    $disabled=false,
+    $list=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2300,6 +2302,10 @@ function html_print_input_text(
 
     if ($formTo != '') {
         $attr['form'] = $formTo;
+    }
+
+    if ($list != '') {
+        $attr['list'] = $list;
     }
 
     return html_print_input_text_extended(
@@ -4234,7 +4240,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
-                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : '')
+                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['list']) === true) ? $data['list'] : '')
             );
         break;
 
@@ -4731,6 +4739,14 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_select_multiple_modules_filtered($data);
         break;
 
+        case 'datalist':
+            $output .= html_print_datalist(
+                $data['name'],
+                $data['value'],
+                ((isset($data['return']) === true) ? $data['return'] : true)
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -4910,4 +4926,33 @@ function html_print_tabs(array $tabs)
     $result .= '</div>';
 
     return $result;
+}
+
+
+/**
+ * Create a datalist.
+ *
+ * @param string $id          Use custom id.
+ * @param string $values      Input values.
+ * @param string $returnparam Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_datalist(
+    $id,
+    $values,
+    $return=false
+) {
+    $result = '<datalist id="'.$id.'">';
+    foreach ($values as $key => $value) {
+        $result .= '<option value="'.$value.'">';
+    }
+
+    $result .= '</datalist>';
+
+    if ($return) {
+        return $result;
+    } else {
+        echo $result;
+    }
 }

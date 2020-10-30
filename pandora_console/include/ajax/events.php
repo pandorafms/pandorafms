@@ -1147,12 +1147,37 @@ if ($change_status) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
 
-    $return = events_change_status(explode(',', $event_ids), $new_status, $meta, $history);
+    $return = events_change_status(
+        explode(',', $event_ids),
+        $new_status,
+        $meta,
+        $history
+    );
 
-    if ($return) {
-        echo 'status_ok';
+    if ($return !== false) {
+        echo json_encode(
+            [
+                'status' => 'status_ok',
+                'user'   => db_get_value(
+                    'fullname',
+                    'tusuario',
+                    'id_user',
+                    $config['id_user']
+                ),
+            ]
+        );
     } else {
-        echo 'status_error';
+        echo json_encode(
+            [
+                'status' => 'status_error',
+                'user'   => db_get_value(
+                    'fullname',
+                    'tusuario',
+                    'id_user',
+                    $config['id_user']
+                ),
+            ]
+        );
     }
 
     return;

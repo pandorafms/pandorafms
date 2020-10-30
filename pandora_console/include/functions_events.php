@@ -4701,16 +4701,24 @@ function events_page_general($event)
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.
+    $table_general->cellclass[8][1] = 'general_acknowleded';
+
     $data = [];
     $data[0] = __('Acknowledged by');
 
     if ($event['estado'] == 1) {
-        $user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-        if (empty($user_ack)) {
+        $user_ack = db_get_value(
+            'fullname',
+            'tusuario',
+            'id_user',
+            $event['id_usuario']
+        );
+
+        if (empty($user_ack) === true) {
             $user_ack = $event['id_usuario'];
         }
 
-        $date_ack = date($config['date_format'], $event['ack_utimestamp']);
+        $date_ack = io_safe_output($event['ack_utimestamp']);
         $data[1] = $user_ack.' ('.$date_ack.')';
     } else {
         $data[1] = '<i>'.__('N/A').'</i>';

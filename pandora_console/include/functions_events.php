@@ -3761,7 +3761,7 @@ function events_get_response_target(
     if (strpos($target, '_group_name_') !== false) {
         $target = str_replace(
             '_group_name_',
-            groups_get_name($event['id_grupo'], true),
+            io_safe_output(groups_get_name($event['id_grupo'], true)),
             $target
         );
     }

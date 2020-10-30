@@ -673,15 +673,16 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
 /**
  * Retrieve all events filtered.
  *
- * @param array   $fields     Fields to retrieve.
- * @param array   $filter     Filters to be applied.
- * @param integer $offset     Offset (pagination).
- * @param integer $limit      Limit (pagination).
- * @param string  $order      Sort order.
- * @param string  $sort_field Sort field.
- * @param boolean $history    Apply on historical table.
- * @param boolean $return_sql Return SQL (true) or execute it (false).
- * @param string  $having     Having filter.
+ * @param array   $fields          Fields to retrieve.
+ * @param array   $filter          Filters to be applied.
+ * @param integer $offset          Offset (pagination).
+ * @param integer $limit           Limit (pagination).
+ * @param string  $order           Sort order.
+ * @param string  $sort_field      Sort field.
+ * @param boolean $history         Apply on historical table.
+ * @param boolean $return_sql      Return SQL (true) or execute it (false).
+ * @param string  $having          Having filter.
+ * @param boolean $validatedEvents If true, evaluate validated events.
  *
  * @return array Events.
  * @throws Exception On error.
@@ -695,7 +696,8 @@ function events_get_all(
     $sort_field=null,
     $history=false,
     $return_sql=false,
-    $having=''
+    $having='',
+    $validatedEvents=false
 ) {
     global $config;
 
@@ -912,10 +914,20 @@ function events_get_all(
             break;
 
             case EVENT_NO_VALIDATED:
+                // Show comments in validated events.
+                $validatedState = '';
+                if ($validatedEvents === true) {
+                    $validatedState = sprintf(
+                        'OR estado = %d',
+                        EVENT_VALIDATE
+                    );
+                }
+
                 $sql_filters[] = sprintf(
-                    ' AND (estado = %d OR estado = %d)',
+                    ' AND (estado = %d OR estado = %d %s)',
                     EVENT_NEW,
-                    EVENT_PROCESS
+                    EVENT_PROCESS,
+                    $validatedState
                 );
             break;
         }

@@ -114,7 +114,9 @@ if ($get_comments) {
             sprintf(
                 ' HAVING max_id_evento = %d',
                 $event['id_evento']
-            )
+            ),
+            // True for show comments of validated events.
+            true
         );
         if ($events !== false) {
             $event = $events[0];

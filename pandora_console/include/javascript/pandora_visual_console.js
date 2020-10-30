@@ -195,7 +195,13 @@ function createVisualConsole(
         );
       } else if (meta.lineMode && item.props.type == 21) {
         confirmDialog({
-          title: "todo"
+          title: "todo",
+          message:
+            "<pre>" +
+            item.props.labelStart +
+            "</pre><br><pre>" +
+            item.props.labelEnd +
+            "</pre>"
         });
       }
     });

@@ -56,15 +56,21 @@ final class NetworkLink extends Model
     protected function decode(array $data): array
     {
         return [
-            'id'          => (int) $data['id'],
-            'type'        => NETWORK_LINK,
-            'startX'      => static::extractStartX($data),
-            'startY'      => static::extractStartY($data),
-            'endX'        => static::extractEndX($data),
-            'endY'        => static::extractEndY($data),
-            'isOnTop'     => static::extractIsOnTop($data),
-            'borderWidth' => static::extractBorderWidth($data),
-            'borderColor' => static::extractBorderColor($data),
+            'id'               => (int) $data['id'],
+            'type'             => NETWORK_LINK,
+            'startX'           => static::extractStartX($data),
+            'startY'           => static::extractStartY($data),
+            'endX'             => static::extractEndX($data),
+            'endY'             => static::extractEndY($data),
+            'isOnTop'          => static::extractIsOnTop($data),
+            'borderWidth'      => static::extractBorderWidth($data),
+            'borderColor'      => static::extractBorderColor($data),
+            'labelStart'       => static::extractLabelStart($data),
+            'labelEnd'         => static::extractLabelEnd($data),
+            'labelStartWidth'  => static::extractlabelStartWidth($data),
+            'labelEndWidth'    => static::extractlabelEndWidth($data),
+            'labelStartHeight' => static::extractlabelStartHeight($data),
+            'labelEndHeight'   => static::extractlabelEndHeight($data),
         ];
     }
 
@@ -183,6 +189,130 @@ final class NetworkLink extends Model
 
 
     /**
+     * Extract information to fullfil labels in NetworkLinks.
+     *
+     * @param string $ref  Sub-data to extract from "label".
+     * @param array  $data Unknown input data structure.
+     *
+     * @return mixed Reference from json encoded data stored in db.
+     */
+    private static function extractExtra(?string $ref, array $data)
+    {
+        if ($data['label'] === null) {
+            return null;
+        }
+
+        $return = json_decode($data['label'], true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            if ($ref !== null) {
+                return $return[$ref];
+            }
+
+            return $return;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Extract label Start.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing label Start or null.
+     */
+    private static function extractLabelStart(array $data)
+    {
+        return static::extractExtra(
+            'labelStart',
+            $data
+        );
+    }
+
+
+    /**
+     * Extract label End.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing label End or null.
+     */
+    private static function extractLabelEnd(array $data)
+    {
+        return static::extractExtra(
+            'labelEnd',
+            $data
+        );
+    }
+
+
+    /**
+     * Extract label StartWidth.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed Float representing label StartWidth or null.
+     */
+    private static function extractlabelStartWidth(array $data)
+    {
+        return static::extractExtra(
+            'labelStartWidth',
+            $data
+        );
+    }
+
+
+    /**
+     * Extract label EndWidth.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed Float representing label EndWidth or null.
+     */
+    private static function extractlabelEndWidth(array $data)
+    {
+        return static::extractExtra(
+            'labelEndWidth',
+            $data
+        );
+    }
+
+
+    /**
+     * Extract label StartHeight.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed Float representing label StartHeight or null.
+     */
+    private static function extractlabelStartHeight(array $data)
+    {
+        return static::extractExtra(
+            'labelStartHeight',
+            $data
+        );
+    }
+
+
+    /**
+     * Extract label EndHeight.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed Float representing label EndHeight or null.
+     */
+    private static function extractlabelEndHeight(array $data)
+    {
+        return static::extractExtra(
+            'labelEndHeight',
+            $data
+        );
+    }
+
+
+    /**
      * Obtain a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
@@ -213,6 +343,26 @@ final class NetworkLink extends Model
         }
 
         return $row;
+    }
+
+
+    /**
+     * Builds a label depending on the information available.
+     *
+     * @return string JSON encoded results to be stored in DB.
+     */
+    private function buildLabels()
+    {
+        return json_encode(
+            [
+                'labelStart'       => 'cadena inicio',
+                'labelEnd'         => 'cadena fin',
+                'labelStartWidth'  => 105,
+                'labelStartHeight' => 105,
+                'labelEndWidth'    => 105,
+                'labelEndHeight'   => 105,
+            ]
+        );
     }
 
 
@@ -286,6 +436,9 @@ final class NetworkLink extends Model
             $result['border_color'] = $borderColor;
         }
 
+        // Build labels.
+        $result['label'] = $this->buildLabels();
+
         $showOnTop = static::issetInArray(
             $data,
             [
@@ -330,38 +483,6 @@ final class NetworkLink extends Model
         return static::parseIntOr(
             static::issetInArray($data, ['id_layout', 'idLayout', 'layoutId']),
             0
-        );
-    }
-
-
-    /**
-     * Extract item width.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return integer Item width. 0 by default.
-     */
-    private static function getWidth(array $data)
-    {
-        return static::parseIntOr(
-            static::issetInArray($data, ['width', 'endX']),
-            null
-        );
-    }
-
-
-    /**
-     * Extract item height.
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return integer Item height. 0 by default.
-     */
-    private static function getHeight(array $data)
-    {
-        return static::parseIntOr(
-            static::issetInArray($data, ['height', 'endY']),
-            null
         );
     }
 

@@ -1,5 +1,10 @@
 import { AnyObject, Position, ItemMeta } from "../lib/types";
-import { debounce, addMovementListener } from "../lib";
+import {
+  debounce,
+  addMovementListener,
+  notEmptyStringOr,
+  parseIntOr
+} from "../lib";
 import { ItemType } from "../Item";
 import Line, { LineProps, linePropsDecoder } from "./Line";
 
@@ -8,6 +13,8 @@ const svgNS = "http://www.w3.org/2000/svg";
 export interface NetworkLinkProps extends LineProps {
   // Overrided properties.
   type: number;
+  labelStart: string;
+  labelEnd: string;
 }
 
 /**
@@ -26,13 +33,17 @@ export function networkLinkPropsDecoder(
     ...linePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.NETWORK_LINK,
     viewportOffsetX: 300,
-    viewportOffsetY: 300
+    viewportOffsetY: 300,
+    labelEnd: notEmptyStringOr(data.labelEnd, ""),
+    labelEndWidth: parseIntOr(data.labelEndWidth, 0),
+    labelEndHeight: parseIntOr(data.labelEndHeight, 0),
+    labelStart: notEmptyStringOr(data.labelStart, ""),
+    labelStartWidth: parseIntOr(data.labelStartWidth, 0),
+    labelStartHeight: parseIntOr(data.labelStartHeight, 0)
   };
 }
 
 export default class NetworkLink extends Line {
-  private labelStart: string;
-  private labelEnd: string;
   /**
    * @override
    */
@@ -50,14 +61,6 @@ export default class NetworkLink extends Line {
       }
     );
 
-    const x1 = props.startPosition.x - props.x + props.lineWidth / 2;
-    const y1 = props.startPosition.y - props.y + props.lineWidth / 2;
-    const x2 = props.endPosition.x - props.x + props.lineWidth / 2;
-    const y2 = props.endPosition.y - props.y + props.lineWidth / 2;
-
-    this.labelStart = `start (${x1},${y1})`;
-    this.labelEnd = `end (${x2},${y2})`;
-
     this.render();
   }
 
@@ -65,12 +68,13 @@ export default class NetworkLink extends Line {
    * @override
    */
   protected debouncedStartPositionMovementSave = debounce(
-    500, // ms.
+    50, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
       const startPosition = { x, y };
 
-      this.labelStart = "start (" + x + "," + y + ")";
+      // Re-Paint after move.
+      this.render();
 
       // Emit the movement event.
       this.lineMovedEventManager.emit({
@@ -82,12 +86,16 @@ export default class NetworkLink extends Line {
   );
 
   protected debouncedEndPositionMovementSave = debounce(
-    500, // ms.
+    50, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
-      const endPosition = { x, y };
+      const endPosition = {
+        x,
+        y
+      };
 
-      this.labelEnd = "end (" + x + "," + y + ")";
+      // Re-Paint after move.
+      this.render();
 
       // Emit the movement event.
       this.lineMovedEventManager.emit({
@@ -100,6 +108,7 @@ export default class NetworkLink extends Line {
 
   protected updateDomElement(element: HTMLElement): void {
     super.updateDomElement(element);
+
     let {
       x, // Box x
       y, // Box y
@@ -108,15 +117,51 @@ export default class NetworkLink extends Line {
       viewportOffsetY, // viewport heigth,
       startPosition, // Line start position
       endPosition, // Line end position
-      color // Line color
+      color, // Line color
+      labelEnd,
+      labelStart,
+      labelEndWidth,
+      labelEndHeight,
+      labelStartWidth,
+      labelStartHeight
     } = this.props;
+
+    if (labelStart == "" && labelEnd == "") {
+      // No more actions are required.
+      return;
+    }
+    const svgs = element.getElementsByTagName("svg");
+    let line;
+    let svg;
+
+    if (svgs.length > 0) {
+      svg = svgs.item(0);
+
+      if (svg != null) {
+        // Set SVG size.
+        const lines = svg.getElementsByTagNameNS(svgNS, "line");
+        let groups = svg.getElementsByTagNameNS(svgNS, "g");
+        while (groups.length > 0) {
+          groups[0].remove();
+        }
+
+        if (lines.length > 0) {
+          line = lines.item(0);
+        }
+      }
+    } else {
+      // No line or svg, no more actions are required.
+      return;
+    }
+
+    if (svg == null || line == null) {
+      // No more actionas are required.
+      return;
+    }
 
     // Font size and text adjustments.
     const fontsize = 7.4;
     const adjustment = 50;
-
-    // console.log(`startPosition [${startPosition.x},${startPosition.y}]`);
-    // console.log(`x.y [${x},${y}]`);
 
     let x1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
     let y1 = startPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
@@ -132,10 +177,18 @@ export default class NetworkLink extends Line {
 
     // Calculate effective 'text' box sizes.
     const fontheight = 23;
-    let labelStartWidth = this.labelStart.length * fontsize;
-    let labelEndWidth = this.labelEnd.length * fontsize;
-    let labelStartHeight = fontheight;
-    let labelEndHeight = fontheight;
+    if (labelStartWidth <= 0) {
+      labelStartWidth = labelStart.length * fontsize;
+    }
+    if (labelEndWidth <= 0) {
+      labelEndWidth = labelEnd.length * fontsize;
+    }
+    if (labelStartHeight <= 0) {
+      labelStartHeight = fontheight;
+    }
+    if (labelEndHeight <= 0) {
+      labelEndHeight = fontheight;
+    }
 
     if (x1 < x2) {
       // x1 on left of x2.
@@ -165,86 +218,57 @@ export default class NetworkLink extends Line {
       color = "#000";
     }
 
-    // console.log(`to        : ${x1},${y1} -------- ${x2}, ${y2}`);
-    // console.log(`inclinacion de ${g}`);
+    if (labelStart != "") {
+      let start = document.createElementNS(svgNS, "g");
+      start.setAttribute("x", `${x1}`);
+      start.setAttribute("y", `${y1}`);
+      start.setAttribute("width", `${labelStartWidth + fontsize * 2}`);
+      start.setAttribute("height", `${labelStartHeight}`);
+      start.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
 
-    const svgs = element.getElementsByTagName("svg");
+      let sr = document.createElementNS(svgNS, "rect");
+      sr.setAttribute("x", `${x1}`);
+      sr.setAttribute("y", `${y1}`);
+      sr.setAttribute("width", `${labelStartWidth}`);
+      sr.setAttribute("height", `${labelStartHeight}`);
+      sr.setAttribute("stroke", `${color}`);
+      sr.setAttribute("stroke-width", "2");
+      sr.setAttribute("fill", "#FFF");
+      start.append(sr);
 
-    if (svgs.length > 0) {
-      const svg = svgs.item(0);
+      let st = document.createElementNS(svgNS, "text");
+      st.setAttribute("x", `${x1 + fontsize}`);
+      st.setAttribute("y", `${y1 + (fontheight * 2) / 3}`);
+      st.setAttribute("fill", "#000");
+      st.textContent = labelStart;
+      st.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
+      start.append(st);
 
-      if (svg != null) {
-        // Set SVG size.
-        const lines = svg.getElementsByTagNameNS(svgNS, "line");
-        let groups = svg.getElementsByTagNameNS(svgNS, "g");
-        while (groups.length > 0) {
-          groups[0].remove();
-        }
+      svg.append(start);
+    }
 
-        if (lines.length > 0) {
-          const line = lines.item(0);
+    if (labelEnd != "") {
+      let end = document.createElementNS(svgNS, "g");
+      let er = document.createElementNS(svgNS, "rect");
+      er.setAttribute("x", `${x2}`);
+      er.setAttribute("y", `${y2}`);
+      er.setAttribute("width", `${labelEndWidth + fontsize * 2}`);
+      er.setAttribute("height", `${labelEndHeight}`);
+      er.setAttribute("stroke", `${color}`);
+      er.setAttribute("stroke-width", "2");
+      er.setAttribute("fill", "#FFF");
+      er.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
+      end.append(er);
 
-          if (line != null) {
-            // let rect = document.createElementNS(
-            //   "http://www.w3.org/2000/svg",
-            //   "rect"
-            // );
-            // rect.setAttribute("x", SVGRect.x);
-            // rect.setAttribute("y", SVGRect.y);
-            // rect.setAttribute("width", SVGRect.width);
-            // rect.setAttribute("height", SVGRect.height);
-            // rect.setAttribute("fill", "yellow");
+      let et = document.createElementNS(svgNS, "text");
+      et.setAttribute("x", `${x2 + fontsize}`);
+      et.setAttribute("y", `${y2 + (fontheight * 2) / 3}`);
+      et.setAttribute("fill", "#000");
+      et.textContent = labelEnd;
+      et.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
+      end.append(et);
 
-            let start = document.createElementNS(svgNS, "g");
-            start.setAttribute("x", `${x1}`);
-            start.setAttribute("y", `${y1}`);
-            start.setAttribute("width", `${labelStartWidth + fontsize * 2}`);
-            start.setAttribute("height", `${labelStartHeight}`);
-            start.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
-
-            let sr = document.createElementNS(svgNS, "rect");
-            sr.setAttribute("x", `${x1}`);
-            sr.setAttribute("y", `${y1}`);
-            sr.setAttribute("width", `${labelStartWidth}`);
-            sr.setAttribute("height", `${labelStartHeight}`);
-            sr.setAttribute("stroke", `${color}`);
-            sr.setAttribute("stroke-width", "2");
-            sr.setAttribute("fill", "#FFF");
-            start.append(sr);
-
-            let st = document.createElementNS(svgNS, "text");
-            st.setAttribute("x", `${x1 + fontsize}`);
-            st.setAttribute("y", `${y1 + (fontheight * 2) / 3}`);
-            st.setAttribute("fill", "#000");
-            st.textContent = this.labelStart;
-            st.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
-            start.append(st);
-
-            let end = document.createElementNS(svgNS, "g");
-            let er = document.createElementNS(svgNS, "rect");
-            er.setAttribute("x", `${x2}`);
-            er.setAttribute("y", `${y2}`);
-            er.setAttribute("width", `${labelEndWidth + fontsize * 2}`);
-            er.setAttribute("height", `${labelEndHeight}`);
-            er.setAttribute("stroke", `${color}`);
-            er.setAttribute("stroke-width", "2");
-            er.setAttribute("fill", "#FFF");
-            er.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
-            end.append(er);
-
-            let et = document.createElementNS(svgNS, "text");
-            et.setAttribute("x", `${x2 + fontsize}`);
-            et.setAttribute("y", `${y2 + (fontheight * 2) / 3}`);
-            et.setAttribute("fill", "#000");
-            et.textContent = this.labelEnd;
-            et.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
-            end.append(et);
-
-            svg.append(start);
-            svg.append(end);
-          }
-        }
-      }
+      svg.append(end);
     }
   }
 }

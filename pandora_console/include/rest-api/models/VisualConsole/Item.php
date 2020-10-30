@@ -2257,7 +2257,7 @@ class Item extends CachedModel
             }
         }
 
-        if ($result === false && $result === '') {
+        if ($result === false || $result === '') {
             $result = [];
         }
 

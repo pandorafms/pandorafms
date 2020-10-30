@@ -3805,7 +3805,7 @@ function events_get_response_target(
     if (strpos($target, '_group_name_') !== false) {
         $target = str_replace(
             '_group_name_',
-            groups_get_name($event['id_grupo'], true),
+            io_safe_output(groups_get_name($event['id_grupo'], true)),
             $target
         );
     }
@@ -3821,7 +3821,7 @@ function events_get_response_target(
     if (strpos($target, '_event_date_') !== false) {
         $target = str_replace(
             '_event_date_',
-            date($config['date_format'], $event['utimestamp']),
+            io_safe_output(date($config['date_format'], $event['utimestamp'])),
             $target
         );
     }
@@ -3845,7 +3845,7 @@ function events_get_response_target(
     if (strpos($target, '_alert_id_') !== false) {
         $target = str_replace(
             '_alert_id_',
-            empty($event['is_alert_am']) ? __('N/A') : $event['is_alert_am'],
+            empty($event['id_alert_am']) ? __('N/A') : $event['id_alert_am'],
             $target
         );
     }
@@ -3925,6 +3925,15 @@ function events_get_response_target(
     // This will replace the macro with the current logged user.
     if (strpos($target, '_current_user_') !== false) {
         $target = str_replace('_current_user_', $config['id_user'], $target);
+    }
+
+    // This will replace the macro with the command timeout value.
+    if (strpos($target, '_command_timeout_') !== false) {
+        $target = str_replace(
+            '_command_timeout_',
+            $event_response['command_timeout'],
+            $target
+        );
     }
 
     return $target;
@@ -7007,7 +7016,7 @@ function events_get_field_value_by_event_id(
     if (strpos($value, '_group_name_') !== false) {
         $value = str_replace(
             '_group_name_',
-            groups_get_name($event['id_grupo'], true),
+            io_safe_output(groups_get_name($event['id_grupo'], true)),
             $value
         );
     }
@@ -7023,7 +7032,9 @@ function events_get_field_value_by_event_id(
     if (strpos($value, '_event_date_') !== false) {
         $value = str_replace(
             '_event_date_',
-            date($config['date_format'], $event['utimestamp']),
+            io_safe_output(
+                date($config['date_format'], $event['utimestamp'])
+            ),
             $value
         );
     }

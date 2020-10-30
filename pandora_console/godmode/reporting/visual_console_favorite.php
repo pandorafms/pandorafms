@@ -115,7 +115,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $return_all_group,
             'ag_group',
             $ag_group,
-            'this.form.submit();',
+            '',
             '',
             0,
             false,
@@ -126,7 +126,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
         );
         echo "</li></ul></li><li class='second_elements'><ul><li>";
         echo __('Group Recursion');
-        html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
+        html_print_checkbox('recursion', 1, $recursion, false, false, '');
         echo '</li><li>';
         echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
         echo '</li></ul></li></ul>';

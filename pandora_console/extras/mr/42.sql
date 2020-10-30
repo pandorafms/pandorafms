@@ -31,4 +31,6 @@ ALTER TABLE `treport` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
 ALTER TABLE `treport_template` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
 ALTER TABLE `treport_template` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
 
+UPDATE `tconfig` SET value = '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.00097656250000":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}' WHERE token = 'post_process_custom_values';
+
 COMMIT;

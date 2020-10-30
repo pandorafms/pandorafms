@@ -311,7 +311,7 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
 }
 
 // Build the condition of the events query.
-$sql_post = '';
+$sql_post = ' WHERE 1=1 ';
 
 $id_user = $config['id_user'];
 
@@ -1214,7 +1214,7 @@ if ($group_rep == 0) {
     $sql = 'SELECT COUNT(DISTINCT id_evento)
 			FROM $event_table te
 			$event_lj
-			WHERE 1=1 $sql_post';
+			$sql_post';
     $total_events = (int) db_get_sql($sql);
 } else if ($group_rep == 1) {
     $total_events = events_get_events_grouped(

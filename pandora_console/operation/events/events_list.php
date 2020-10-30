@@ -1477,7 +1477,8 @@ $(document).ready( function() {
                             $("#text-id_extra").val(val);
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
-                        
+                        if (i == 'module_search')
+                            $("#text-module_search").val(val);
                         if(i == 'id_source_event')
                             $("#text-id_source_event").val(val);
                         }

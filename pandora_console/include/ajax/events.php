@@ -333,17 +333,52 @@ if ($get_filter_values) {
 
     if ($event_filter === false) {
         $event_filter = [
-            'status'        => EVENT_NO_VALIDATED,
-            'event_view_hr' => $config['event_view_hr'],
-            'group_rep'     => 1,
-            'tag_with'      => [],
-            'tag_without'   => [],
-            'history'       => false,
+            'status'            => EVENT_NO_VALIDATED,
+            'event_view_hr'     => $config['event_view_hr'],
+            'group_rep'         => 1,
+            'tag_with'          => [],
+            'tag_without'       => [],
+            'history'           => false,
+            'module_search'     => '',
+            'filter_only_alert' => '-1',
+            'user_comment'      => '',
+            'id_extra'          => '',
+            'id_user_ack'       => '',
+            'date_from'         => '',
+            'date_to'           => '',
+            'severity'          => '',
+            'event_type'        => '',
+            'group_rep'         => 0,
+            'id_group'          => 0,
+            'id_group_filter'   => 0,
+            'group_name'        => 'All',
+            'text_agent'        => '',
+            'id_agent'          => 0,
+            'id_name'           => 'None',
+            'filter_id'         => 0,
         ];
+    } else {
+        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
+        $a = array_keys(users_get_groups(false));
+        $event_filter['group_name'] = '';
+        foreach ($a as $key => $value) {
+            if ($value == $event_filter['id_group']) {
+                $event_filter['group_name'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $event_filter['id_group_filter']);
+                if ($event_filter['group_name'] === false) {
+                    $event_filter['group_name'] = __('All');
+                }
+            }
+        }
+
+        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
     }
 
     $event_filter['search'] = io_safe_output($event_filter['search']);
     $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
+    $event_filter['text_agent'] = io_safe_output($event_filter['text_agent']);
+    $event_filter['source'] = io_safe_output($event_filter['source']);
+
+
     $event_filter['tag_with'] = base64_encode(
         io_safe_output($event_filter['tag_with'])
     );
@@ -355,7 +390,7 @@ if ($get_filter_values) {
 }
 
 if ($load_filter_modal) {
-    $current = get_parameter('current_filter', '');
+    $current = db_get_value_filter('default_event_filter', 'tusuario', ['id_user' => $config['id_user']]);
     $filters = events_get_event_filter_select();
     $user_groups_array = users_get_groups_for_select(
         $config['id_user'],
@@ -435,10 +470,12 @@ function load_form_filter() {
         },
         function (data) {
             jQuery.each (data, function (i, val) {
+                console.log(val);
                 if (i == 'id_name')
                     $("#hidden-id_name").val(val);
-                if (i == 'id_group')
-                    $("#id_group").val(val);
+                if (i == 'id_group'){
+                    $('#id_group').val(val);
+                }
                 if (i == 'event_type')
                     $("#event_type").val(val);
                 if (i == 'severity') {
@@ -448,9 +485,9 @@ function load_form_filter() {
                 if (i == 'status')
                     $("#status").val(val);
                 if (i == 'search')
-                    $("#text-search").val(val);
+                    $('#text-search').val(val);
                 if (i == 'text_agent')
-                    $("#text_id_agent").val(val);
+                    $('input[name=text_agent]').val(val);
                 if (i == 'id_agent')
                     $('input:hidden[name=id_agent]').val(val);
                 if (i == 'id_agent_module')
@@ -479,6 +516,15 @@ function load_form_filter() {
                     $("#text-user_comment").val(val);
                 if (i == 'id_source_event')
                     $("#text-id_source_event").val(val);
+                if(i == 'date_from')
+                    $("#text-date_from").val(val);
+                if(i == 'date_to')
+                    $("#text-date_to").val(val);
+                if(i == 'module_search')
+                    $('input[name=module_search]').val(val);
+                if(i == 'group_name')
+                $("#select2-id_group_filter-container").text(val);
+
             });
             reorder_tags_inputs();
             // Update the info with the loaded filter

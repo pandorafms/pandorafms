@@ -4203,8 +4203,16 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         }
     }
 
+    // If wrapper has attributes.
+    // TODO. There is possible improve this handle of attributes.
+    if (isset($data['wrapper_attributes'])) {
+        $wrapper_attributes = $data['wrapper_attributes'];
+    } else {
+        $wrapper_attributes = '';
+    }
+
     if (isset($data['wrapper']) === true) {
-        $output = '<'.$data['wrapper'].' id="wr_'.$data['name'].'" ';
+        $output = '<'.$data['wrapper'].' '.$wrapper_attributes.' id="wr_'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
     }
 

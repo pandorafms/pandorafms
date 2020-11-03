@@ -1393,12 +1393,16 @@ $(document).ready (function () {
             // Admin does not require profiles.
             $('#user_profile_form').submit();
         } else {
-            confirmDialog({
-                message: "<?php echo __('User will be created without profiles assigned and won\'t be able to log in, are you sure?'); ?>",
-                onAccept: function() {
-                    $('#user_profile_form').submit();
-                }
-            });
+            if ($('#table_profiles tbody').children().length == 1) {
+                confirmDialog({
+                    message: "<?php echo __('User will be created without profiles assigned and won\'t be able to log in, are you sure?'); ?>",
+                    onAccept: function() {
+                        $('#user_profile_form').submit();
+                    }
+                });
+            } else {
+                $('#user_profile_form').submit();
+            }
         }
     });
 });

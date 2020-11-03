@@ -1387,7 +1387,7 @@ $(document).ready (function () {
         });
     });
 
-    $('#submit-crtbutton').click(function (e) {
+    function checkProfiles(e) {
         e.preventDefault();
         if ($('input[name="is_admin"]:checked').val() == 1) {
             // Admin does not require profiles.
@@ -1405,6 +1405,14 @@ $(document).ready (function () {
                 $('#user_profile_form').submit();
             }
         }
+    }
+
+    $('#submit-crtbutton').click(function (e) {
+        checkProfiles(e);
+    });
+
+    $('#submit-uptbutton').click(function (e) {
+        checkProfiles(e);
     });
 });
 

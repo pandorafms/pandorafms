@@ -786,13 +786,12 @@ function post_process_select_events_unit(name, selected) {
 function post_process_select_events(name) {
   $("." + name + "_toggler").click(function() {
     var value = $("#text-" + name + "_text").val();
-
     var count = $("#" + name + "_select option").filter(function(i, item) {
       if (Number($(item).val()) == Number(value)) return true;
       else return false;
     }).length;
 
-    if (count != 1) {
+    if (count < 1) {
       $("#" + name + "_select").append(
         $("<option>")
           .val(value)

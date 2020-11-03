@@ -1813,11 +1813,9 @@ switch ($action) {
                         );
                         $values['id_group'] = get_parameter('combo_group');
 
-                        if ($values['server_name'] == '') {
-                            $values['server_name'] = get_parameter(
-                                'combo_server'
-                            );
-                        }
+                        $values['server_name'] = get_parameter(
+                            'combo_server'
+                        );
 
                         if ((($values['type'] == 'custom_graph')
                             || ($values['type'] == 'automatic_custom_graph'))
@@ -2354,6 +2352,8 @@ switch ($action) {
                             break;
                         }
 
+                        hd($values['server_name']);
+                        hd(2);
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
                                 'combo_server'

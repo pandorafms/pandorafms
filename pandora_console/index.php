@@ -750,7 +750,17 @@ if (! isset($config['id_user'])) {
         $pass2 = get_parameter_post('pass2');
         $id_user = get_parameter_post('id_user');
 
-        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user)) {
+        if ($reset_hash != '') {
+            $hash_data = explode(':::', $reset_hash);
+            $id_user = $hash_data[0];
+            $codified_hash = $hash_data[1];
+
+            $db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', ['id_user' => $id_user, 'cod_hash' => $id_user.':::'.$codified_hash]);
+        }
+
+        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user) && $db_reset_pass_entry) {
+            delete_reset_pass_entry($id_user);
+
             $correct_reset_pass_process = '';
             $process_error_message = '';
 
@@ -787,21 +797,14 @@ if (! isset($config['id_user'])) {
             include_once 'general/login_page.php';
         } else {
             if ($reset_hash != '') {
-                $hash_data = explode(':::', $reset_hash);
-                $id_user = $hash_data[0];
-                $codified_hash = $hash_data[1];
-
-                $db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', ['id_user' => $id_user, 'cod_hash' => $id_user.':::'.$codified_hash]);
                 $process_error_message = '';
 
                 if ($db_reset_pass_entry) {
                     if (($db_reset_pass_entry + SECONDS_2HOUR) < time()) {
                         register_pass_change_try($id_user, 0);
                         $process_error_message = __('Too much time since password change request');
-                        delete_reset_pass_entry($id_user);
                         include_once 'general/login_page.php';
                     } else {
-                        delete_reset_pass_entry($id_user);
                         include_once 'enterprise/include/process_reset_pass.php';
                     }
                 } else {

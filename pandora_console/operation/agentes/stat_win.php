@@ -35,6 +35,7 @@ require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
+require_once $config['homedir'].'/include/php_to_js_values.php';
 enterprise_include_once('include/functions_agents.php');
 
 check_login();

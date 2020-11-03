@@ -31,6 +31,10 @@
   z-index: 2;
 }
 
+.visual-console-item * {
+  overflow: visible;
+}
+
 .visual-console-item.is-editing {
   border: 2px dashed #b2b2b2;
   -webkit-transform: translateX(-2px) translateY(-2px);
@@ -41,9 +45,14 @@
           user-select: none;
 }
 
+.visual-console-item.is-editing:hover {
+  border-color: #82b92e;
+}
+
 .visual-console-item.is-editing.is-selected {
   border: 2px dashed #2b2b2b;
   cursor: move;
+  z-index: 10;
 }
 .visual-console-item.is-editing > .resize-draggable {
   float: right;

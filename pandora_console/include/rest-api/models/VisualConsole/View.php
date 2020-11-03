@@ -30,6 +30,8 @@
 namespace Models\VisualConsole;
 use Models\VisualConsole\Container as VisualConsole;
 
+define('__DEBUG', 1);
+
 global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
 enterprise_include_once('include/functions_metaconsole.php');
@@ -65,12 +67,14 @@ class View extends \HTML
                 'id'   => 'tab-label',
                 'href' => $url.'&tabSelected=label',
                 'img'  => 'label-settings.png',
-            ],[
+            ],
+            [
                 'name' => __('General settings'),
                 'id'   => 'tab-general',
                 'href' => $url.'&tabSelected=general',
                 'img'  => 'general-settings.png',
-            ],[
+            ],
+            [
                 'name' => __('Specific settings'),
                 'id'   => 'tab-specific',
                 'href' => $url.'&tabSelected=specific',
@@ -101,7 +105,8 @@ class View extends \HTML
                     'id'   => 'tab-general',
                     'href' => $url.'&tabSelected=general',
                     'img'  => 'pencil.png',
-                ],[
+                ],
+                [
                     'name' => __('Specific settings'),
                     'id'   => 'tab-specific',
                     'href' => $url.'&tabSelected=specific',
@@ -244,7 +249,7 @@ class View extends \HTML
             true
         );
 
-        return $form.$jsforms;
+        return $form;
 
     }
 
@@ -516,8 +521,12 @@ class View extends \HTML
                 // Save the new item.
                 $data['id_layout'] = $vCId;
                 $itemId = $class::save($data);
-            } catch (\Throwable $th) {
+            } catch (\Exception $e) {
                 // Bad params.
+                if (__DEBUG === 1) {
+                    error_log($e->getMessage());
+                }
+
                 http_response_code(400);
                 return false;
             }
@@ -526,8 +535,12 @@ class View extends \HTML
             try {
                 $item = VisualConsole::getItemFromDB($itemId);
                 $result = $item->toArray();
-            } catch (Throwable $e) {
+            } catch (\Exception $e) {
                 // Bad params.
+                if (__DEBUG === 1) {
+                    error_log($e->getMessage());
+                }
+
                 http_response_code(400);
                 return false;
             }
@@ -535,8 +548,12 @@ class View extends \HTML
             // UpdateVC.
             try {
                 $item = VisualConsole::getItemFromDB($itemId);
-            } catch (Throwable $e) {
+            } catch (\Exception $e) {
                 // Bad params.
+                if (__DEBUG === 1) {
+                    error_log($e->getMessage());
+                }
+
                 http_response_code(400);
                 return false;
             }

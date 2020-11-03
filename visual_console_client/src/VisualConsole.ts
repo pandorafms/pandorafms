@@ -211,6 +211,12 @@ export default class VisualConsole {
   private relations: {
     [key: string]: Line;
   } = {};
+
+  // Dictionary which store the created links.
+  private lineLinks: {
+    [key: string]: Line;
+  } = {};
+
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for double click events.
@@ -502,7 +508,9 @@ export default class VisualConsole {
   public updateElement(item: AnyObject): void {
     // Update item.
     try {
-      this.elementsById[item.id].props = decodeProps(item);
+      this.elementsById[item.id].props = {
+        ...decodeProps(item)
+      };
     } catch (error) {
       console.log("Error updating element:", error.message);
     }

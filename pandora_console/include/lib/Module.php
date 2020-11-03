@@ -136,11 +136,12 @@ class Module extends Entity
     /**
      * Creates a module object from given data. Avoid query duplication.
      *
-     * @param array $data Module information.
+     * @param array  $data      Module information.
+     * @param string $class_str Class name.
      *
      * @return PandoraFMS\Module Object.
      */
-    public static function build(array $data=[])
+    public static function build(array $data=[], string $class_str=__CLASS__)
     {
         $obj = new Module();
 

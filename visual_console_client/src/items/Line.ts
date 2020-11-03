@@ -24,6 +24,8 @@ export interface LineProps extends ItemProps {
   viewportOffsetY: number;
   labelEnd: string;
   labelStart: string;
+  linkedEnd: number | null;
+  linkedStart: number | null;
   labelEndWidth: number;
   labelEndHeight: number;
   labelStartWidth: number;
@@ -67,6 +69,8 @@ export function linePropsDecoder(data: AnyObject): LineProps | never {
     viewportOffsetY: 0,
     labelEnd: notEmptyStringOr(data.labelEnd, ""),
     labelEndWidth: parseIntOr(data.labelEndWidth, 0),
+    linkedEnd: data.linkedEnd,
+    linkedStart: data.linkedStart,
     labelEndHeight: parseIntOr(data.labelEndHeight, 0),
     labelStart: notEmptyStringOr(data.labelStart, ""),
     labelStartWidth: parseIntOr(data.labelStartWidth, 0),

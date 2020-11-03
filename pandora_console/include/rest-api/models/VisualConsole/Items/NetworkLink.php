@@ -71,6 +71,8 @@ final class NetworkLink extends Model
             'labelEndWidth'    => static::extractlabelEndWidth($data),
             'labelStartHeight' => static::extractlabelStartHeight($data),
             'labelEndHeight'   => static::extractlabelEndHeight($data),
+            'linkedStart'      => static::extractlinkedStart($data),
+            'linkedEnd'        => static::extractlinkedEnd($data),
         ];
     }
 
@@ -313,6 +315,38 @@ final class NetworkLink extends Model
 
 
     /**
+     * Extract label StartHeight.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed Float representing label StartHeight or null.
+     */
+    private static function extractlinkedStart(array $data)
+    {
+        return static::extractExtra(
+            'linkedStart',
+            $data
+        );
+    }
+
+
+    /**
+     * Extract label EndHeight.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed Float representing label EndHeight or null.
+     */
+    private static function extractlinkedEnd(array $data)
+    {
+        return static::extractExtra(
+            'linkedEnd',
+            $data
+        );
+    }
+
+
+    /**
      * Obtain a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
@@ -342,25 +376,135 @@ final class NetworkLink extends Model
             $row['pos_y'] = ($row['pos_y'] * $ratio);
         }
 
+        $row['label'] = static::buildLabels($row);
+
         return $row;
+    }
+
+
+    /**
+     * Calculates linked elements given line data.
+     *
+     * @param array $data Input data (item).
+     *
+     * @return array With start and end elements.
+     */
+    private static function getLinkedItems(array $data)
+    {
+        $startX = $data['startX'];
+        $startY = $data['startY'];
+        $endX = $data['endX'];
+        $endY = $data['endY'];
+
+        if (isset($data['width'])) {
+            // Row format.
+            $startX = $data['pos_x'];
+            $startY = $data['pos_y'];
+            $endX = $data['width'];
+            $endY = $data['height'];
+        }
+
+        $start = \db_get_row_filter(
+            'tlayout_data',
+            [
+                'id_layout'      => $data['id_layout'],
+                'pos_x'          => '<'.$startX,
+                'pos_y'          => '<'.$startY,
+                'pos_x`+`width'  => '>'.$startX,
+                'pos_y`+`height' => '>'.$startY,
+                'order'          => [
+                    [
+                        'field' => 'show_on_top',
+                        'order' => 'desc',
+                    ],
+                    [
+                        'field' => 'id',
+                        'order' => 'desc',
+                    ],
+                ],
+            ]
+        );
+
+        $end = \db_get_row_filter(
+            'tlayout_data',
+            [
+                'id_layout'      => $data['id_layout'],
+                'pos_x'          => '<'.$endX,
+                'pos_y'          => '<'.$endY,
+                'pos_x`+`width'  => '>'.$endX,
+                'pos_y`+`height' => '>'.$endY,
+                'order'          => [
+                    [
+                        'field' => 'show_on_top',
+                        'order' => 'desc',
+                    ],
+                    [
+                        'field' => 'id',
+                        'order' => 'desc',
+                    ],
+                ],
+            ]
+        );
+
+        return [
+            'start' => $start,
+            'end'   => $end,
+        ];
     }
 
 
     /**
      * Builds a label depending on the information available.
      *
+     * @param array $data Input data.
+     *
      * @return string JSON encoded results to be stored in DB.
      */
-    private function buildLabels()
+    private static function buildLabels(array $data)
     {
+        $links = self::getLinkedItems($data);
+
+        $labelStart = null;
+        $labelEnd = null;
+        $linkedStart = null;
+        $linkedEnd = null;
+
+        if (isset($links['start']) === true) {
+            $linkedStart = $links['start']['id'];
+            if (is_numeric($links['start']['id_agente_modulo']) === true
+                && $links['start']['id_agente_modulo'] > 0
+            ) {
+                $module = new \PandoraFMS\Module(
+                    (int) $links['start']['id_agente_modulo']
+                );
+
+                $labelStart = $module->nombre();
+            }
+        }
+
+        if (isset($links['end']) === true) {
+            $linkedEnd = $links['end']['id'];
+            if (is_numeric($links['end']['id_agente_modulo']) === true
+                && $links['end']['id_agente_modulo'] > 0
+            ) {
+                $module = new \PandoraFMS\Module(
+                    (int) $links['end']['id_agente_modulo']
+                );
+
+                $labelEnd = $module->nombre();
+            }
+        }
+
         return json_encode(
             [
-                'labelStart'       => 'cadena inicio',
-                'labelEnd'         => 'cadena fin',
-                'labelStartWidth'  => 105,
-                'labelStartHeight' => 105,
-                'labelEndWidth'    => 105,
-                'labelEndHeight'   => 105,
+                'labelStart'  => io_safe_output($labelStart),
+                'labelEnd'    => io_safe_output($labelEnd),
+                'linkedStart' => $linkedStart,
+                'linkedEnd'   => $linkedEnd,
+                // 'labelStartWidth'  => 105,
+                // 'labelStartHeight' => 105,
+                // 'labelEndWidth'    => 105,
+                // 'labelEndHeight'   => 105,
             ]
         );
     }
@@ -437,7 +581,7 @@ final class NetworkLink extends Model
         }
 
         // Build labels.
-        $result['label'] = $this->buildLabels();
+        $result['label'] = static::buildLabels($data);
 
         $showOnTop = static::issetInArray(
             $data,

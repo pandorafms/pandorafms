@@ -32,8 +32,8 @@ export function networkLinkPropsDecoder(
   return {
     ...linePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.NETWORK_LINK,
-    viewportOffsetX: 300,
-    viewportOffsetY: 300,
+    viewportOffsetX: 0,
+    viewportOffsetY: 0,
     labelEnd: notEmptyStringOr(data.labelEnd, ""),
     labelEndWidth: parseIntOr(data.labelEndWidth, 0),
     labelEndHeight: parseIntOr(data.labelEndHeight, 0),
@@ -71,6 +71,7 @@ export default class NetworkLink extends Line {
     50, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
+
       const startPosition = { x, y };
 
       // Re-Paint after move.
@@ -126,10 +127,6 @@ export default class NetworkLink extends Line {
       labelStartHeight
     } = this.props;
 
-    if (labelStart == "" && labelEnd == "") {
-      // No more actions are required.
-      return;
-    }
     const svgs = element.getElementsByTagName("svg");
     let line;
     let svg;
@@ -159,8 +156,13 @@ export default class NetworkLink extends Line {
       return;
     }
 
+    if (labelStart == "" && labelEnd == "") {
+      // No more actions are required.
+      return;
+    }
+
     // Font size and text adjustments.
-    const fontsize = 7.4;
+    const fontsize = 10;
     const adjustment = 50;
 
     let x1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
@@ -220,16 +222,10 @@ export default class NetworkLink extends Line {
 
     if (labelStart != "") {
       let start = document.createElementNS(svgNS, "g");
-      start.setAttribute("x", `${x1}`);
-      start.setAttribute("y", `${y1}`);
-      start.setAttribute("width", `${labelStartWidth + fontsize * 2}`);
-      start.setAttribute("height", `${labelStartHeight}`);
-      start.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
-
       let sr = document.createElementNS(svgNS, "rect");
       sr.setAttribute("x", `${x1}`);
       sr.setAttribute("y", `${y1}`);
-      sr.setAttribute("width", `${labelStartWidth}`);
+      sr.setAttribute("width", `${labelStartWidth + fontsize * 2}`);
       sr.setAttribute("height", `${labelStartHeight}`);
       sr.setAttribute("stroke", `${color}`);
       sr.setAttribute("stroke-width", "2");
@@ -240,8 +236,8 @@ export default class NetworkLink extends Line {
       st.setAttribute("x", `${x1 + fontsize}`);
       st.setAttribute("y", `${y1 + (fontheight * 2) / 3}`);
       st.setAttribute("fill", "#000");
+      st.setAttribute("font-size", `${fontsize}`);
       st.textContent = labelStart;
-      st.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
       start.append(st);
 
       svg.append(start);
@@ -257,15 +253,14 @@ export default class NetworkLink extends Line {
       er.setAttribute("stroke", `${color}`);
       er.setAttribute("stroke-width", "2");
       er.setAttribute("fill", "#FFF");
-      er.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
       end.append(er);
 
       let et = document.createElementNS(svgNS, "text");
       et.setAttribute("x", `${x2 + fontsize}`);
       et.setAttribute("y", `${y2 + (fontheight * 2) / 3}`);
       et.setAttribute("fill", "#000");
+      et.setAttribute("font-size", `${fontsize}`);
       et.textContent = labelEnd;
-      et.setAttribute("transform", `rotate(${g} ${x1} ${y1})`);
       end.append(et);
 
       svg.append(end);

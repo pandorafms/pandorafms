@@ -289,6 +289,7 @@ function createVisualConsole(
         endX: e.endPosition.x,
         endY: e.endPosition.y
       };
+
       var taskId = "visual-console-item-update-" + id;
 
       // Persist the new position.
@@ -312,6 +313,12 @@ function createVisualConsole(
                 // TODO: Move the element to its initial position.
               }
 
+              try {
+                var decoded_data = JSON.parse(data);
+                visualConsole.updateElement(decoded_data);
+              } catch (error) {
+                console.error(error);
+              }
               done();
             }
           );

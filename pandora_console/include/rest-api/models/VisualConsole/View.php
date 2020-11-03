@@ -613,4 +613,55 @@ class View extends \HTML
     }
 
 
+    /**
+     * Returns a popup for networkLink viewer.
+     *
+     * @return void
+     */
+    public function networkLinkPopup()
+    {
+        global $config;
+        include_once $config['homedir'].'/include/functions_graph.php';
+        $item_idFrom = get_parameter('from');
+        $item_idTo = get_parameter('to');
+
+        $itemFrom = db_get_row_filter(
+            'tlayout_data',
+            ['id' => $item_idFrom]
+        );
+
+        $itemTo = db_get_row_filter(
+            'tlayout_data',
+            ['id' => $item_idTo]
+        );
+
+        $from = new \PandoraFMS\Module((int) $itemFrom['id_agente_modulo']);
+        $to = new \PandoraFMS\Module((int) $itemTo['id_agente_modulo']);
+
+        echo 'From '.$from->nombre().' con valor '.$from->lastValue();
+        ini_set('display_errors', 1);
+
+        echo \grafico_modulo_sparse(
+            [
+                'agent_module_id' => $from->id_agente_modulo(),
+                'period'          => SECONDS_1DAY,
+                'height'          => 150,
+                'menu'            => false,
+            ]
+        );
+
+        echo 'To '.$to->nombre().' con valor '.$to->lastValue();
+
+        echo \grafico_modulo_sparse(
+            [
+                'agent_module_id' => $to->id_agente_modulo(),
+                'period'          => SECONDS_1DAY,
+                'height'          => 150,
+                'menu'            => false,
+            ]
+        );
+
+    }
+
+
 }

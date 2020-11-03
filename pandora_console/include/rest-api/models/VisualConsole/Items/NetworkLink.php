@@ -479,6 +479,7 @@ final class NetworkLink extends Model
                 );
 
                 $labelStart = $module->nombre();
+                $labelStart .= ': '.$module->lastValue();
             }
         }
 
@@ -492,6 +493,7 @@ final class NetworkLink extends Model
                 );
 
                 $labelEnd = $module->nombre();
+                $labelEnd .= ': '.$module->lastValue();
             }
         }
 

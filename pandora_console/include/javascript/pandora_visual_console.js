@@ -194,15 +194,36 @@ function createVisualConsole(
           item
         );
       } else if (meta.lineMode && item.props.type == 21) {
-        confirmDialog({
-          title: "todo",
-          message:
-            "<pre>" +
-            item.props.labelStart +
-            "</pre><br><pre>" +
-            item.props.labelEnd +
-            "</pre>"
+        load_modal({
+          url: baseUrl + "/ajax.php",
+          modal: {
+            title: "NetworkLink information",
+            ok: "Ok"
+          },
+          extradata: [
+            {
+              name: "from",
+              value: item.props.linkedStart
+            },
+            {
+              name: "to",
+              value: item.props.linkedEnd
+            }
+          ],
+          onshow: {
+            page: "include/rest-api/index",
+            method: "networkLinkPopup"
+          }
         });
+        // confirmDialog({
+        //   title: "todo",
+        //   message:
+        //     "<pre>" +
+        //     item.props.labelStart +
+        //     "</pre><br><pre>" +
+        //     item.props.labelEnd +
+        //     "</pre>"
+        // });
       }
     });
     // VC Item moved.

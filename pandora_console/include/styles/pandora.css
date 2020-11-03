@@ -462,6 +462,10 @@ select:-internal-list-box {
   width: 120px;
   max-width: 120px;
 }
+.w200px {
+  width: 200px;
+  max-width: 200px;
+}
 .w240px {
   width: 240px;
   max-width: 240px;
@@ -3074,6 +3078,12 @@ div#stat-win-module-graph div.nodata_container {
 }
 
 .menu_graph {
+  width: 30px;
+  height: 150px;
+  left: 100%;
+  position: absolute;
+  top: 0px;
+  background-color: transparent;
   -moz-border-top-right-radius: 6px;
   -webkit-border-top-right-radius: 6px;
   border-top-right-radius: 6px;
@@ -5866,7 +5876,7 @@ table.table_modal_alternate tr td:first-child {
 }
 
 .flot-text {
-  width: 101%;
+  width: 100%;
 }
 
 /*Font header feedback*/

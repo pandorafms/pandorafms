@@ -77,7 +77,7 @@ $table->data[0][2] = __('Type');
 $table->data[0][3] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();').__('Alert fired').'<br />'.html_print_checkbox('critical', 'critical', true, true, false, 'changeType();').__('Monitor critical').'<br />'.html_print_checkbox('unknown', 'unknown', true, true, false, 'changeType();').__('Monitor unknown').'<br />'.html_print_checkbox('warning', 'warning', true, true, false, 'changeType();').__('Monitor warning').'<br />';
 
 $table->data[1][0] = __('Agent');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true, '', '', '', 'width:120px; height:100px', '', false, '', '', true);
+$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true, '', '', '', 'max-width:200px; height:100px', '', false, '', '', true);
 
 $table->data[1][2] = __('Event');
 $table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly="readonly" style="max-height:100px; background: #ddd; resize:none;"', true);
@@ -152,10 +152,26 @@ function changeGroup() {
 }
 
 function changeType() {
-    alert_fired = $("input[name=alert_fired]").attr('checked');
-    critical = $("input[name=critical]").attr('checked');
-    warning = $("input[name=warning]").attr('checked');
-    unknown = $("input[name=unknown]").attr('checked');
+    alert_fired = false;
+    critical = false;
+    warning = false;
+    unknown = false;
+
+    if($("input[name=alert_fired]").is(':checked') ) {
+        alert_fired = true;
+    }
+
+    if($("input[name=critical]").is(':checked') ) {
+        critical = true;
+    }
+
+    if($("input[name=warning]").is(':checked') ) {
+        warning = true;
+    }
+
+    if($("input[name=unknown]").is(':checked') ) {
+        unknown = true;
+    }
 }
 
 function toggleButton() {
@@ -256,9 +272,6 @@ $(document).ready (function () {
     setInterval("check_event()", (10 * 1000)); //10 seconds between ajax request
     $("#table1").css("background-color", "#fff");
     $("#table2").css("background-color", "#fff");
-
-    group_width = $("#group").width();
-    $("#id_agents").width(group_width + 9);
 });
 
 </script>

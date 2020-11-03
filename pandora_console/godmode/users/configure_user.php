@@ -1395,6 +1395,7 @@ $(document).ready (function () {
         } else {
             if ($('#table_profiles tbody').children().length == 1) {
                 confirmDialog({
+                    title: "<?php echo __('Warning'); ?>",
                     message: "<?php echo __('User will be created without profiles assigned and won\'t be able to log in, are you sure?'); ?>",
                     onAccept: function() {
                         $('#user_profile_form').submit();

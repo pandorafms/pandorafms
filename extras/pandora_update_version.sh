@@ -143,7 +143,7 @@ done
 
 # Darwin dmg installer files
 echo "Updating DARWIN DMG files..."
-sed -i -e "/VERSION/s/=.*/=\"$VERSION\"/" "$AGENT_DARWIN_BUILDER"
+sed -i -e "/VERSION/s/=\"7.0NG.*/=\"$VERSION\"/" "$AGENT_DARWIN_BUILDER"
 sed -i -r "s/(version=\").*(\"\s+onConclusion=)/\1$VERSION\2/g"  "$AGENT_DARWIN_DISTR"
 sed -i -r "s/(CFBundleVersion<\/key>\s*<string>).*(<\/string>)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
 sed -i -r "s/(CFBundleShortVersionString<\/key>\s*<string>).*(<\/string>)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"

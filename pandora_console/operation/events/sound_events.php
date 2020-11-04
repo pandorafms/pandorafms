@@ -61,6 +61,13 @@ echo '</head>';
 echo "<body style='background-color: #494949; max-width: 550px; max-height: 400px; margin-top:40px;'>";
 echo "<h1 class='modalheaderh1'>".__('Sound console').'</h1>';
 
+// Connection lost alert.
+ui_require_css_file('register', 'include/styles/', true);
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_require_javascript_file('connection_check');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+
 $table = new StdClass;
 $table->width = '100%';
 $table->styleTable = 'padding-left:16px; padding-right:16px; padding-top:16px;';

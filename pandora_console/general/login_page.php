@@ -457,7 +457,12 @@ if ($login_screen == 'logout') {
             echo '<div class="content_message_alert">';
                 echo '<div class="text_message_alert">';
                     echo '<h1>'.__('Logged out').'</h1>';
-                    echo '<p>'.__('Your session has ended. Please close your browser window to close this %s session.', get_product_name()).'</p>';
+    if (empty($config['logout_msg']) === true) {
+        echo '<p>'.__('Your session has ended. Please close your browser window to close this %s session.', get_product_name()).'</p>';
+    } else {
+        echo '<p>'.__($config['logout_msg']).'</p>';
+    }
+
                 echo '</div>';
                 echo '<div class="button_message_alert">';
                     html_print_submit_button('Ok', 'hide-login-logout', false);

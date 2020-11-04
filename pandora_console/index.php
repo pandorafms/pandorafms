@@ -222,7 +222,7 @@ echo '<head>'."\n";
 ob_start('ui_process_page_head');
 
 // Enterprise main.
-enterprise_include('index.php');
+enterprise_include_once('index.php');
 
 echo '<script type="text/javascript">';
     echo 'var dispositivo = navigator.userAgent.toLowerCase();';
@@ -273,6 +273,7 @@ if (strlen($search) > 0) {
 }
 
 // Login process.
+enterprise_include_once('include/auth/saml.php');
 if (! isset($config['id_user'])) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
@@ -395,24 +396,33 @@ if (! isset($config['id_user'])) {
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            $saml_configured = include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/include/auth/saml.php';
-
-            if (!$saml_configured) {
-                include_once 'general/noaccesssaml.php';
-            }
-
-            $saml_user_id = saml_process_user_login();
-
+            $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
-                include_once 'general/noaccesssaml.php';
-            }
+                $login_failed = true;
+                include_once 'general/login_page.php';
+                while (@ob_end_flush()) {
+                    // Dumping...
+                    continue;
+                }
 
+                exit('</html>');
+            }
 
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {
-                include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                $as = new SimpleSAML_Auth_Simple($config['saml_source']);
-                $as->logout();
+                if ($config['auth'] === 'saml') {
+                    enterprise_hook('saml_logout');
+                }
+
+                if (session_status() !== PHP_SESSION_NONE) {
+                    $_SESSION = [];
+                    session_destroy();
+                    header_remove('Set-Cookie');
+                    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+                }
+
+                // Process logout.
+                include 'general/logoff.php';
             }
         } else {
             // process_user_login is a virtual function which should be defined in each auth file.
@@ -735,7 +745,7 @@ if (! isset($config['id_user'])) {
 
             exit('</html>');
         }
-    } else {
+    } else if (isset($_GET['bye']) === false) {
         // There is no user connected.
         if ($config['enterprise_installed']) {
             enterprise_include_once('include/functions_reset_pass.php');
@@ -953,6 +963,10 @@ if (! isset($config['id_user'])) {
             }
 
             exit('</html>');
+        } else {
+            if ($config['auth'] === 'saml') {
+                enterprise_hook('saml_login_status_verifier');
+            }
         }
     }
 }
@@ -964,19 +978,19 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
 
 // Log off.
 if (isset($_GET['bye'])) {
-    include 'general/logoff.php';
     $iduser = $_SESSION['id_usuario'];
+
+    if ($config['auth'] === 'saml') {
+        enterprise_hook('saml_logout');
+    }
 
     $_SESSION = [];
     session_destroy();
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
 
-    if ($config['auth'] == 'saml') {
-        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
-        $as->logout();
-    }
+    // Process logout.
+    include 'general/logoff.php';
 
     while (@ob_end_flush()) {
         // Dumping...
